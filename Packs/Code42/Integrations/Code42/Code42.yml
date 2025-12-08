@@ -2,30 +2,39 @@ category: Endpoint
 commonfields:
   id: Code42
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - defaultvalue: console.us.code42.com
   display: Code42 Console URL for your Code42 environment
   name: console_url
-  required: true
+  required: false
   type: 0
+  section: Connect
+  hidden: true
 - defaultvalue: api.us.code42.com
   display: API Gateway URL for your Code42 environment
   name: api_url
   required: true
   type: 0
+  section: Connect
 - display: API Client ID
   name: credentials
   required: true
   type: 9
   displaypassword: API Client Secret
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Alert severities to fetch when fetching incidents
   name: alert_severity
   options:
@@ -35,26 +44,31 @@ configuration:
   - Low
   type: 16
   required: false
+  section: Collect
 - defaultvalue: 24 hours
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: fetch_time
   type: 0
   required: false
+  section: Collect
 - defaultvalue: '5'
   display: Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once
   name: fetch_limit
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 'false'
   display: Include the list of files in returned incidents.
   name: include_files
   type: 8
   required: false
+  section: Collect
 - name: incidentFetchInterval
   display: Incidents Fetch Interval
   defaultvalue: '3'
   type: 19
   required: false
+  section: Collect
 description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 display: Code42
 name: Code42
@@ -170,7 +184,8 @@ script:
       description: The email of the user to create.
       name: email
       required: true
-    description: Creates a Code42 user.
+    deprecated: true
+    description: DEPRECATED. Use the Incydr console to create users.
     name: code42-user-create
     outputs:
     - contextPath: Code42.User.Username
@@ -186,7 +201,8 @@ script:
     - description: The username of the user to block.
       name: username
       required: true
-    description: Blocks a user in Code42.  A blocked user is not allowed to log in or restore files. Backups will continue if the user is still active.
+    deprecated: true
+    description: DEPRECATED. Use the Incydr console to block users.
     name: code42-user-block
     outputs:
     - contextPath: Code42.User.UserID
@@ -206,7 +222,8 @@ script:
     - description: The username of the user to unblock.
       name: username
       required: true
-    description: Removes a block, if one exists, on the user with the given user ID. Unblocked users are allowed to log in and restore.
+    deprecated: true
+    description: DEPRECATED. Use the Incydr console to unblock users.
     name: code42-user-unblock
     outputs:
     - contextPath: Code42.User.UserID
@@ -305,6 +322,45 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
+  - name: code42-download-file-by-xfc-id
+    description: Downloads a file from Incydr using the XFC Event ID.
+    arguments:
+      - description: The XFC Event ID of the file to download.
+        name: xfc_id
+        required: true
+      - description: The filename to save the file as.
+        name: filename
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
   - name: code42-watchlists-list
     description: List all existing watchlists in your environment.
     outputs:
@@ -336,6 +392,8 @@ script:
     - contextPath: Code42.UsersAddedToWatchlists.Success
       description: If the user was added successfully.
       type: boolean
+    compliantpolicies:
+    - User Soft Remediation
   - name: code42-watchlists-remove-user
     description: Remove a user from a watchlist.
     arguments:
@@ -418,6 +476,8 @@ script:
     - contextPath: Code42.UpdatedUserRiskProfiles.Success
       description: If the risk profile update was successful.
       type: boolean
+    compliantpolicies:
+    - User Soft Remediation
   - name: code42-file-events-table
     description: Render Code42 file events from the context as a markdown table.
     arguments:
@@ -432,7 +492,7 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.117258
+  dockerimage: demisto/py42:1.0.0.5470953
   isfetch: true
   runonce: false
   script: '-'

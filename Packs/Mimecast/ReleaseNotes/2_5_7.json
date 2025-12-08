@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Fixed an issue where the ***fetch-incidents*** command only fetched 100 incidents in a fetch cycle. Please make sure to set the Incidents Fetch Interval to a maximum of 15 minutes if the number of incidents is expected to exceed the specified max fetch limit in each fetch cycle."
+}

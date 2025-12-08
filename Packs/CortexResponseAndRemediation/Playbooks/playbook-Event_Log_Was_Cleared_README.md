@@ -1,4 +1,4 @@
-This playbook is designed to handle the following alerts:  
+This playbook is designed to handle the following alerts:
 - Windows Event Log was cleared using wevtutil.exe
 - Security Event Log was cleared using wevtutil.exe
 - A Sensitive Windows Event Log was cleared using wevtutil.exe

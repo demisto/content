@@ -2,7 +2,7 @@
     "name": "Signum",
     "description": "To list all the users in a domain on Signum",
     "support": "community",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.5",
     "author": "davistonehub",
     "url": "",
     "email": "",
@@ -25,6 +25,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

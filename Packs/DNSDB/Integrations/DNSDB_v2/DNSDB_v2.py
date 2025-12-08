@@ -1,16 +1,14 @@
 import inspect
+import json
 import locale
-from collections.abc import Iterator, Iterable
+import re
 import urllib
 import urllib.parse
-
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-
+from collections.abc import Iterable, Iterator
 from datetime import datetime
-import json
-import re
 
 import urllib3
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -492,9 +490,7 @@ def _handle_saf(i: Iterable[str]):
         try:
             saf_msg = json.loads(line)
         except json.JSONDecodeError as e:
-            raise DemistoException(
-                f"saf protocol error: could not decode json: {line}"
-            ) from e
+            raise DemistoException(f"saf protocol error: could not decode json: {line}") from e
 
         cond = saf_msg.get("cond")
         obj = saf_msg.get("obj")

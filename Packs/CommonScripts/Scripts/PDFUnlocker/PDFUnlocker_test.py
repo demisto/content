@@ -9,18 +9,12 @@ class TestPDFUnlocker:
     @staticmethod
     def mock_context(mocker, args_value=None):
         if not args_value:
-            args_value = {
-                "entryID": "entry_id",
-                "password": "test"
-            }
+            args_value = {"entryID": "entry_id", "password": "test"}
         mocker.patch.object(demisto, "args", return_value=args_value)
 
     @staticmethod
     def mock_file_path(mocker, path, name):
-        mocker.patch.object(demisto, "getFilePath", return_value={
-            "path": path,
-            "name": name
-        })
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": path, "name": name})
 
     @staticmethod
     def mock_demisto(mocker, args_value=None, file_obj=None):
@@ -35,10 +29,7 @@ class TestPDFUnlocker:
 
     @staticmethod
     def create_file_object(file_path):
-        return {
-            "path": file_path,
-            "name": file_path.split("/")[-1]
-        }
+        return {"path": file_path, "name": file_path.split("/")[-1]}
 
     def test_parse_word_doc(self, mocker):
         """
@@ -53,10 +44,11 @@ class TestPDFUnlocker:
 
         """
         from PDFUnlocker import main
+
         self.mock_demisto(mocker, file_obj=self.create_file_object("./test_data/sample.pdf"))
         main()
         result = self.get_demisto_results()
-        assert result.get('File') == 'UNLOCKED_sample.pdf'
+        assert result.get("File") == "UNLOCKED_sample.pdf"
 
     def test_unlock_encrypted_with_quotation_mark(self, mocker):
         """
@@ -71,11 +63,15 @@ class TestPDFUnlocker:
 
         """
         from PDFUnlocker import main
-        self.mock_demisto(mocker, file_obj=self.create_file_object("./test_data/Testpdf_.pdf"),
-                          args_value={"entryID": "entry_id", "password": '"12345"'})
+
+        self.mock_demisto(
+            mocker,
+            file_obj=self.create_file_object("./test_data/Testpdf_.pdf"),
+            args_value={"entryID": "entry_id", "password": '"12345"'},
+        )
         main()
         result = self.get_demisto_results()
-        assert result.get('File') == 'UNLOCKED_Testpdf_.pdf'
+        assert result.get("File") == "UNLOCKED_Testpdf_.pdf"
 
     def test_unlock_encrypted_with_incorrect_password(self, mocker):
         """
@@ -90,8 +86,12 @@ class TestPDFUnlocker:
 
         """
         from PDFUnlocker import main
-        self.mock_demisto(mocker, file_obj=self.create_file_object("./test_data/Testpdf_.pdf"),
-                          args_value={"entryID": "entry_id", "password": "123"})
+
+        self.mock_demisto(
+            mocker,
+            file_obj=self.create_file_object("./test_data/Testpdf_.pdf"),
+            args_value={"entryID": "entry_id", "password": "123"},
+        )
         return_error_mock = mocker.patch("PDFUnlocker.return_error")
 
         main()

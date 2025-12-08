@@ -1,7 +1,7 @@
 Integration with Graylog to search for logs and events
 This integration was integrated and tested with version 3.3.6 of Graylog
-## Configure Graylog in Cortex
 
+## Configure Graylog in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -15,33 +15,36 @@ This integration was integrated and tested with version 3.3.6 of Graylog
 | incidentType | Incident type | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### graylog-cluster-status
+
 ***
 Get Cluster nodes status
-
 
 #### Base Command
 
 `graylog-cluster-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Graylog.ClusterStatus | String | Status of nodes in the Cluster | 
-
+| Graylog.ClusterStatus | String | Status of nodes in the Cluster |
 
 #### Command Example
+
 ```!graylog-cluster-status```
 
 #### Context Example
+
 ```json
 {
     "Graylog": {
@@ -68,37 +71,38 @@ Get Cluster nodes status
 #### Human Readable Output
 
 >### Results
+>
 >|95ba5102-13c9-4520-ac75-c8736f206953|
 >|---|
 >| facility: graylog-server<br/>codename: Sloth Rocket<br/>node_id: 95ba5102-13c9-4520-ac75-c8736f206953<br/>cluster_id: 70a69af5-7368-4244-ac12-cf5b87c83ac2<br/>version: 3.3.6+92fb41e<br/>started_at: 2020-10-07T16:04:07.506Z<br/>hostname: graylog<br/>lifecycle: running<br/>lb_status: alive<br/>timezone: UTC<br/>operating_system: Linux 4.15.0-118-generic<br/>is_processing: true |
 
-
 ### graylog-cluster-node-jvm
+
 ***
 Get JVM status of a node in cluster
-
 
 #### Base Command
 
 `graylog-cluster-node-jvm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| nodeId | Node ID of the cluster member | Required | 
-
+| nodeId | Node ID of the cluster member | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Graylog.ClusterNodeJVM | String | JVM info of Node | 
-
+| Graylog.ClusterNodeJVM | String | JVM info of Node |
 
 #### Command Example
-```!graylog-cluster-node-jvm nodeId=95ba5102-13c9-4520-ac75-c8736f206953	```
+
+```!graylog-cluster-node-jvm nodeId=95ba5102-13c9-4520-ac75-c8736f206953```
 
 #### Context Example
+
 ```json
 {
     "Graylog": {
@@ -134,36 +138,37 @@ Get JVM status of a node in cluster
 #### Human Readable Output
 
 >### Results
+>
 >|free_memory|info|max_memory|node_id|pid|total_memory|used_memory|
 >|---|---|---|---|---|---|---|
 >| bytes: 387725360<br/>kilobytes: 378638<br/>megabytes: 369 | Private Build 1.8.0_265 on Linux 4.15.0-118-generic | bytes: 1020067840<br/>kilobytes: 996160<br/>megabytes: 972 | 95ba5102-13c9-4520-ac75-c8736f206953 | 550 | bytes: 1020067840<br/>kilobytes: 996160<br/>megabytes: 972 | bytes: 632342480<br/>kilobytes: 617521<br/>megabytes: 603 |
 
-
 ### graylog-cluster-inputstates
+
 ***
 Get input states of the cluster
-
 
 #### Base Command
 
 `graylog-cluster-inputstates`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Graylog.ClusterInputStates | String | Input states of the cluster | 
-
+| Graylog.ClusterInputStates | String | Input states of the cluster |
 
 #### Command Example
+
 ```!graylog-cluster-inputstates```
 
 #### Context Example
+
 ```json
 {
     "Graylog": {
@@ -212,36 +217,37 @@ Get input states of the cluster
 #### Human Readable Output
 
 >### Results
+>
 >|95ba5102-13c9-4520-ac75-c8736f206953|
 >|---|
 >| {'id': '5f7433f60f4d9c360092a070', 'state': 'RUNNING', 'started_at': '2020-10-07T16:04:28.814Z', 'detailed_message': None, 'message_input': {'title': 'PAN-OS-input', 'global': True, 'name': 'Palo Alto Networks TCP (PAN-OS v9.x)', 'content_pack': None, 'created_at': '2020-09-30T07:29:58.169Z', 'type': 'org.graylog.integrations.inputs.paloalto9.PaloAlto9xInput', 'creator_user_id': 'harri', 'attributes': {'recv_buffer_size': 1048576, 'tcp_keepalive': False, 'use_null_delimiter': False, 'number_worker_threads': 2, 'tls_client_auth_cert_file': '', 'bind_address': '0.0.0.0', 'tls_cert_file': '', 'store_full_message': False, 'port': 5555, 'tls_key_file': '', 'tls_enable': False, 'tls_key_password': '', 'max_message_size': 2097152, 'tls_client_auth': 'disabled'}, 'static_fields': {}, 'node': None, 'id': '5f7433f60f4d9c360092a070'}} |
 
-
 ### graylog-cluster-processing-status
+
 ***
 Shows the processing status of the cluster
-
 
 #### Base Command
 
 `graylog-cluster-processing-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Graylog.ClusterProcessingStatus | String | Processing status of the cluster | 
-
+| Graylog.ClusterProcessingStatus | String | Processing status of the cluster |
 
 #### Command Example
+
 ```!graylog-cluster-processing-status```
 
 #### Context Example
+
 ```json
 {
     "Graylog": {
@@ -261,36 +267,37 @@ Shows the processing status of the cluster
 #### Human Readable Output
 
 >### Results
+>
 >|95ba5102-13c9-4520-ac75-c8736f206953|
 >|---|
 >| receive_times: {"ingest": "2020-10-08T10:08:29.353Z", "post_processing": "2020-10-08T10:08:29.353Z", "post_indexing": "2020-10-08T10:08:29.353Z"} |
 
-
 ### graylog-indexer-cluster-health
+
 ***
 Get health of the indexer
-
 
 #### Base Command
 
 `graylog-indexer-cluster-health`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Graylog.IndexerHealth | String | Health of Indexer | 
-
+| Graylog.IndexerHealth | String | Health of Indexer |
 
 #### Command Example
+
 ```!graylog-indexer-cluster-health```
 
 #### Context Example
+
 ```json
 {
     "Graylog": {
@@ -310,44 +317,45 @@ Get health of the indexer
 #### Human Readable Output
 
 >### Results
+>
 >|shards|status|
 >|---|---|
 >| active: 20<br/>initializing: 0<br/>relocating: 0<br/>unassigned: 0 | green |
 
-
 ### graylog-search
+
 ***
 Search for messages in a relative timerange, specified as seconds from now. Example: 300 means search from 5 minutes ago to now.
-
 
 #### Base Command
 
 `graylog-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query (Lucene syntax) | Required | 
-| range | Relative timeframe to search in. Default 300s | Optional | 
-| limit | Maximum number of messages to return. Default 20 | Optional | 
-| offset | offset (integer) | Optional | 
-| filter | filter | Optional | 
-| fields | Comma separated list of fields to return | Optional | 
-| sort | Sorting (field:asc / field:desc) | Optional | 
-| decorate | Run decorators on search result (default True) | Optional | 
-
+| query | Query (Lucene syntax) | Required |
+| range | Relative timeframe to search in. Default 300s | Optional |
+| limit | Maximum number of messages to return. Default 20 | Optional |
+| offset | offset (integer) | Optional |
+| filter | filter | Optional |
+| fields | Comma separated list of fields to return | Optional |
+| sort | Sorting (field:asc / field:desc) | Optional |
+| decorate | Run decorators on search result (default True) | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Graylog.Search | String | Search results | 
-
+| Graylog.Search | String | Search results |
 
 #### Command Example
+
 ```!graylog-search query=\<query here\>```
 
 #### Context Example
+
 ```json
 {
     "Graylog": {
@@ -583,43 +591,44 @@ Search for messages in a relative timerange, specified as seconds from now. Exam
 #### Human Readable Output
 
 >### Results
+>
 >|built_query|decoration_stats|fields|from|messages|query|time|to|total_results|used_indices|
 >|---|---|---|---|---|---|---|---|---|---|
 >| {<br/>  "from" : 0,<br/>  "size" : 20,<br/>  "query" : {<br/>    "bool" : {<br/>      "must" : [<br/>        {<br/>          "query_string" : {<br/>            "query" : "\<query here\>",<br/>            "fields" : [ ],<br/>            "use_dis_max" : true,<br/>            "tie_breaker" : 0.0,<br/>            "default_operator" : "or",<br/>            "auto_generate_phrase_queries" : false,<br/>            "max_determinized_states" : 10000,<br/>            "allow_leading_wildcard" : false,<br/>            "enable_position_increments" : true,<br/>            "fuzziness" : "AUTO",<br/>            "fuzzy_prefix_length" : 0,<br/>            "fuzzy_max_expansions" : 50,<br/>            "phrase_slop" : 0,<br/>            "escape" : false,<br/>            "split_on_whitespace" : true,<br/>            "boost" : 1.0<br/>          }<br/>        }<br/>      ],<br/>      "filter" : [<br/>        {<br/>          "bool" : {<br/>            "must" : [<br/>              {<br/>                "range" : {<br/>                  "timestamp" : {<br/>                    "from" : "2020-10-08 00:08:57.306",<br/>                    "to" : "2020-10-08 10:08:57.306",<br/>                    "include_lower" : true,<br/>                    "include_upper" : true,<br/>                    "boost" : 1.0<br/>                  }<br/>                }<br/>              }<br/>            ],<br/>            "disable_coord" : false,<br/>            "adjust_pure_negative" : true,<br/>            "boost" : 1.0<br/>          }<br/>        }<br/>      ],<br/>      "disable_coord" : false,<br/>      "adjust_pure_negative" : true,<br/>      "boost" : 1.0<br/>    }<br/>  },<br/>  "sort" : [<br/>    {<br/>      "timestamp" : {<br/>        "order" : "desc"<br/>      }<br/>    }<br/>  ]<br/>} |  | event_received_time,<br/>pan_log_subtype,<br/>pan_dev_group_level_4,<br/>pan_dev_group_level_3,<br/>network_interface_out,<br/>source,<br/>pan_url_index,<br/>vendor_event_action,<br/>pan_dev_group_level_2,<br/>pan_dev_group_level_1,<br/>source_ip,<br/>host_virtfw_id,<br/>application_name,<br/>destination_ip,<br/>pan_ppid,<br/>alert_indicator,<br/>host_hostname,<br/>source_location_name,<br/>alert_signature_id,<br/>rule_name,<br/>source_zone,<br/>gl2_message_id,<br/>network_protocol,<br/>network_tunnel_type,<br/>alert_definitions_version,<br/>destination_nat_ip,<br/>pan_log_action,<br/>pan_http2,<br/>source_nat_ip,<br/>destination_nat_port,<br/>http_url_category,<br/>policy_uid,<br/>destination_port,<br/>pan_log_panorama,<br/>pan_tunnel_id,<br/>pan_alert_direction,<br/>vendor_alert_severity,<br/>event_uid,<br/>destination_location_name,<br/>source_port,<br/>event_log_name,<br/>event_repeat_count,<br/>timestamp,<br/>event_source_product,<br/>source_nat_port,<br/>destination_zone,<br/>session_id,<br/>message,<br/>alert_category,<br/>pan_parent_session_id,<br/>host_id,<br/>network_interface_in,<br/>pan_wildfire_report_id,<br/>pan_pcap_id,<br/>pan_flags,<br/>pan_assoc_id,<br/>pan_monitor_tag | 2020-10-08T00:08:57.306Z | {'highlight_ranges': {}, 'message': {'event_received_time': '2020/10/08 07:59:53', 'pan_log_subtype': 'url', 'gl2_remote_ip': 'bbb.bbb.bbb.bbb', 'gl2_remote_port': 51371, 'pan_dev_group_level_4': 0, 'pan_dev_group_level_3': 0, 'network_interface_out': 'ethernet1/4', 'source': 'PA-220', 'gl2_source_input': '5f7433f60f4d9c360092a070', 'pan_url_index': 0, 'vendor_event_action': 'alert', 'pan_dev_group_level_2': 0, 'pan_dev_group_level_1': 0, 'source_ip': 'ccc.ccc.ccc.ccc', 'host_virtfw_id': 'vsys1', 'application_name': 'ssl', 'destination_ip': 'aaa.aaa.aaa.aaa', 'pan_ppid': 4294967295, 'gl2_source_node': '95ba5102-13c9-4520-ac75-c8736f206953', 'alert_indicator': '\<query here\>/', 'host_hostname': 'PA-220', 'source_location_name': '192.168.0.0-192.168.255.255', 'gl2_accounted_message_size': 2027, 'alert_signature_id': '(9999)', 'rule_name': 'FromTrust', 'source_zone': 'Trust-L3', 'streams': ['000000000000000000000001'], 'gl2_message_id': 'ABCD', 'network_protocol': 'tcp', 'network_tunnel_type': 'N/A', 'alert_definitions_version': 'AppThreat-0-0', 'destination_nat_ip': 'aaa.aaa.aaa.aaa', 'pan_log_action': 'default', 'pan_http2': '0', 'source_nat_ip': 'ddd.ddd.ddd.ddd', '_id': '1acb0472-0923-11eb-a959-000c29d42d8e', 'destination_nat_port': 443, 'http_url_category': 'news,low-risk', 'policy_uid': '4093544d-2f66-4d80-af2d-17f361609984', 'destination_port': 443, 'pan_log_panorama': '0xa000000000000000', 'pan_tunnel_id': '0', 'pan_alert_direction': 'client-to-server', 'vendor_alert_severity': 'informational', 'event_uid': '7665475', 'destination_location_name': 'United States', 'source_port': 61323, 'event_log_name': 'THREAT', 'event_repeat_count': 1, 'timestamp': '2020-10-08T04:59:55.169Z', 'event_source_product': 'PAN', 'source_nat_port': 48189, 'destination_zone': 'Untrust-L3', 'session_id': 23366, 'message': '1,2020/10/08 07:59:53,ABCDEFGHIJK,THREAT,url,2560,2020/10/08 07:59:53,ccc.ccc.ccc.ccc,aaa.aaa.aaa.aaa,ddd.ddd.ddd.ddd,aaa.aaa.aaa.aaa,FromTrust,,,ssl,vsys1,Trust-L3,Untrust-L3,ethernet1/3,ethernet1/4,default,2020/10/08 07:59:53,23366,1,61323,443,48189,443,0x816400,tcp,alert,"\<query here\>/",(9999),news,informational,client-to-server,7665475,0xa000000000000000,192.168.0.0-192.168.255.255,United States,0,,0,,,0,,,,,,,,0,0,0,0,0,,PA-220,,,,,0,,0,,N/A,unknown,AppThreat-0-0,0x0,0,4294967295,,"news,low-risk",4093544d-2f66-4d80-af2d-17f361609984,0,,0.0.0.0,,,,,,,,,,,,,,,,,,,,,,,,,,,0,2020-10-08T07:59:54.289+03:00,,,', 'alert_category': 'news', 'pan_parent_session_id': '0', 'host_id': 'ABCDEFGHIJK', 'network_interface_in': 'ethernet1/3', 'pan_wildfire_report_id': 0, 'pan_pcap_id': '0', 'pan_flags': '0x816400', 'pan_assoc_id': 0, 'pan_monitor_tag': 0}, 'index': 'graylog_0', 'decoration_stats': None},<br/>{'highlight_ranges': {}, 'message': {'event_received_time': '2020/10/08 07:59:53', 'pan_log_subtype': 'url', 'gl2_remote_ip': 'bbb.bbb.bbb.bbb', 'gl2_remote_port': 51371, 'pan_dev_group_level_4': 0, 'pan_dev_group_level_3': 0, 'network_interface_out': 'ethernet1/4', 'source': 'PA-220', 'gl2_source_input': '5f7433f60f4d9c360092a070', 'pan_url_index': 0, 'vendor_event_action': 'alert', 'pan_dev_group_level_2': 0, 'pan_dev_group_level_1': 0, 'source_ip': 'ccc.ccc.ccc.ccc', 'host_virtfw_id': 'vsys1', 'application_name': 'ssl', 'destination_ip': 'aaa.aaa.aaa.aaa', 'pan_ppid': 4294967295, 'gl2_source_node': '95ba5102-13c9-4520-ac75-c8736f206953', 'alert_indicator': '\<query here\>/', 'host_hostname': 'PA-220', 'source_location_name': '192.168.0.0-192.168.255.255', 'gl2_accounted_message_size': 2027, 'alert_signature_id': '(9999)', 'rule_name': 'FromTrust', 'source_zone': 'Trust-L3', 'streams': ['000000000000000000000001'], 'gl2_message_id': 'ABCD', 'network_protocol': 'tcp', 'network_tunnel_type': 'N/A', 'alert_definitions_version': 'AppThreat-0-0', 'destination_nat_ip': 'aaa.aaa.aaa.aaa', 'pan_log_action': 'default', 'pan_http2': '0', 'source_nat_ip': 'ddd.ddd.ddd.ddd', '_id': '1acb0470-0923-11eb-a959-000c29d42d8e', 'destination_nat_port': 443, 'http_url_category': 'news,low-risk', 'policy_uid': '4093544d-2f66-4d80-af2d-17f361609984', 'destination_port': 443, 'pan_log_panorama': '0xa000000000000000', 'pan_tunnel_id': '0', 'pan_alert_direction': 'client-to-server', 'vendor_alert_severity': 'informational', 'event_uid': '7665473', 'destination_location_name': 'United States', 'source_port': 61322, 'event_log_name': 'THREAT', 'event_repeat_count': 1, 'timestamp': '2020-10-08T04:59:55.169Z', 'event_source_product': 'PAN', 'source_nat_port': 29959, 'destination_zone': 'Untrust-L3', 'session_id': 24085, 'message': '1,2020/10/08 07:59:53,ABCDEFGHIJK,THREAT,url,2560,2020/10/08 07:59:53,ccc.ccc.ccc.ccc,aaa.aaa.aaa.aaa,ddd.ddd.ddd.ddd,aaa.aaa.aaa.aaa,FromTrust,,,ssl,vsys1,Trust-L3,Untrust-L3,ethernet1/3,ethernet1/4,default,2020/10/08 07:59:53,24085,1,61322,443,29959,443,0x816400,tcp,alert,"\<query here\>/",(9999),news,informational,client-to-server,7665473,0xa000000000000000,192.168.0.0-192.168.255.255,United States,0,,0,,,0,,,,,,,,0,0,0,0,0,,PA-220,,,,,0,,0,,N/A,unknown,AppThreat-0-0,0x0,0,4294967295,,"news,low-risk",4093544d-2f66-4d80-af2d-17f361609984,0,,0.0.0.0,,,,,,,,,,,,,,,,,,,,,,,,,,,0,2020-10-08T07:59:54.289+03:00,,,', 'alert_category': 'news', 'pan_parent_session_id': '0', 'host_id': 'ABCDEFGHIJK', 'network_interface_in': 'ethernet1/3', 'pan_wildfire_report_id': 0, 'pan_pcap_id': '0', 'pan_flags': '0x816400', 'pan_assoc_id': 0, 'pan_monitor_tag': 0}, 'index': 'graylog_0', 'decoration_stats': None} | \<query here\> | 11 | 2020-10-08T10:08:57.306Z | 2 | {'index_name': 'graylog_0', 'begin': '1970-01-01T00:00:00.000Z', 'end': '1970-01-01T00:00:00.000Z', 'calculated_at': '2020-09-30T07:24:40.163Z', 'took_ms': 0} |
 
-
 ### graylog-events-search
+
 ***
 Events overview and search
-
 
 #### Base Command
 
 `graylog-events-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query to use | Optional | 
-| filter | filter to use | Optional | 
-| page | number of pages as integer | Optional | 
-| sort_direction | Ascending or Descending | Optional | 
-| per_page | how many per page (integer) | Optional | 
-| timerange | Relative timerange to search in seconds | Optional | 
-| sort_by | how to sort | Optional | 
-
+| query | Query to use | Optional |
+| filter | filter to use | Optional |
+| page | number of pages as integer | Optional |
+| sort_direction | Ascending or Descending | Optional |
+| per_page | how many per page (integer) | Optional |
+| timerange | Relative timerange to search in seconds | Optional |
+| sort_by | how to sort | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Graylog.EventsSearch | String | Result of Events Search | 
-
+| Graylog.EventsSearch | String | Result of Events Search |
 
 #### Command Example
+
 ```!graylog-events-search query=gmail timerange=1000```
 
 #### Context Example
+
 ```json
 {
     "Graylog": {
@@ -921,45 +930,46 @@ Events overview and search
 #### Human Readable Output
 
 >### Results
+>
 >|context|duration|events|parameters|total_events|used_indices|
 >|---|---|---|---|---|---|
 >| event_definitions: {"5f7436c60f4d9c360092a3ac": {"id": "5f7436c60f4d9c360092a3ac", "title": "Gmail", "description": ""}}<br/>streams: {"000000000000000000000002": {"id": "000000000000000000000002", "title": "All events", "description": "Stream containing all events created by Graylog"}} | 4 | {'event': {'id': 'ABCD', 'event_definition_type': 'aggregation-v1', 'event_definition_id': '5f7436c60f4d9c360092a3ac', 'origin_context': 'urn:graylog:message:es:graylog_0:e6befc60-094d-11eb-a959-000c29d42d8e', 'timestamp': '2020-10-08T10:06:16.169Z', 'timestamp_processing': '2020-10-08T10:07:04.269Z', 'timerange_start': None, 'timerange_end': None, 'streams': ['000000000000000000000002'], 'source_streams': [], 'message': 'Gmail', 'source': 'graylog', 'key_tuple': [], 'key': None, 'priority': 1, 'alert': False, 'fields': {}}, 'index_name': 'gl-events_1', 'index_type': 'message'},<br/>{'event': {'id': 'ABCD', 'event_definition_type': 'aggregation-v1', 'event_definition_id': '5f7436c60f4d9c360092a3ac', 'origin_context': 'urn:graylog:message:es:graylog_0:c265df01-094d-11eb-a959-000c29d42d8e', 'timestamp': '2020-10-08T10:05:15.169Z', 'timestamp_processing': '2020-10-08T10:07:04.269Z', 'timerange_start': None, 'timerange_end': None, 'streams': ['000000000000000000000002'], 'source_streams': [], 'message': 'Gmail', 'source': 'graylog', 'key_tuple': [], 'key': None, 'priority': 1, 'alert': False, 'fields': {}}, 'index_name': 'gl-events_1', 'index_type': 'message'},<br/>{'event': {'id': 'ABCD', 'event_definition_type': 'aggregation-v1', 'event_definition_id': '5f7436c60f4d9c360092a3ac', 'origin_context': 'urn:graylog:message:es:graylog_0:9e9e0521-094d-11eb-a959-000c29d42d8e', 'timestamp': '2020-10-08T10:04:15.169Z', 'timestamp_processing': '2020-10-08T10:07:04.269Z', 'timerange_start': None, 'timerange_end': None, 'streams': ['000000000000000000000002'], 'source_streams': [], 'message': 'Gmail', 'source': 'graylog', 'key_tuple': [], 'key': None, 'priority': 1, 'alert': False, 'fields': {}}, 'index_name': 'gl-events_1', 'index_type': 'message'},<br/>{'event': {'id': 'ABCD', 'event_definition_type': 'aggregation-v1', 'event_definition_id': '5f7436c60f4d9c360092a3ac', 'origin_context': 'urn:graylog:message:es:graylog_0:7ad9d4c1-094d-11eb-a959-000c29d42d8e', 'timestamp': '2020-10-08T10:03:15.169Z', 'timestamp_processing': '2020-10-08T10:07:04.269Z', 'timerange_start': None, 'timerange_end': None, 'streams': ['000000000000000000000002'], 'source_streams': [], 'message': 'Gmail', 'source': 'graylog', 'key_tuple': [], 'key': None, 'priority': 1, 'alert': False, 'fields': {}}, 'index_name': 'gl-events_1', 'index_type': 'message'},<br/>{'event': {'id': 'ABCD', 'event_definition_type': 'aggregation-v1', 'event_definition_id': '5f7436c60f4d9c360092a3ac', 'origin_context': 'urn:graylog:message:es:graylog_0:571c5b22-094d-11eb-a959-000c29d42d8e', 'timestamp': '2020-10-08T10:02:16.169Z', 'timestamp_processing': '2020-10-08T10:07:04.269Z', 'timerange_start': None, 'timerange_end': None, 'streams': ['000000000000000000000002'], 'source_streams': [], 'message': 'Gmail', 'source': 'graylog', 'key_tuple': [], 'key': None, 'priority': 1, 'alert': False, 'fields': {}}, 'index_name': 'gl-events_1', 'index_type': 'message'},<br/>{'event': {'id': 'ABCD', 'event_definition_type': 'aggregation-v1', 'event_definition_id': '5f7436c60f4d9c360092a3ac', 'origin_context': 'urn:graylog:message:es:graylog_0:3351e930-094d-11eb-a959-000c29d42d8e', 'timestamp': '2020-10-08T10:01:16.169Z', 'timestamp_processing': '2020-10-08T10:02:04.510Z', 'timerange_start': None, 'timerange_end': None, 'streams': ['000000000000000000000002'], 'source_streams': [], 'message': 'Gmail', 'source': 'graylog', 'key_tuple': [], 'key': None, 'priority': 1, 'alert': False, 'fields': {}}, 'index_name': 'gl-events_1', 'index_type': 'message'},<br/>{'event': {'id': 'ABCD', 'event_definition_type': 'aggregation-v1', 'event_definition_id': '5f7436c60f4d9c360092a3ac', 'origin_context': 'urn:graylog:message:es:graylog_0:10cb68f1-094d-11eb-a959-000c29d42d8e', 'timestamp': '2020-10-08T10:00:17.169Z', 'timestamp_processing': '2020-10-08T10:02:04.510Z', 'timerange_start': None, 'timerange_end': None, 'streams': ['000000000000000000000002'], 'source_streams': [], 'message': 'Gmail', 'source': 'graylog', 'key_tuple': [], 'key': None, 'priority': 1, 'alert': False, 'fields': {}}, 'index_name': 'gl-events_1', 'index_type': 'message'},<br/>{'event': {'id': 'ABCD', 'event_definition_type': 'aggregation-v1', 'event_definition_id': '5f7436c60f4d9c360092a3ac', 'origin_context': 'urn:graylog:message:es:graylog_0:ef65e911-094c-11eb-a959-000c29d42d8e', 'timestamp': '2020-10-08T09:59:21.169Z', 'timestamp_processing': '2020-10-08T10:02:04.510Z', 'timerange_start': None, 'timerange_end': None, 'streams': ['000000000000000000000002'], 'source_streams': [], 'message': 'Gmail', 'source': 'graylog', 'key_tuple': [], 'key': None, 'priority': 1, 'alert': False, 'fields': {}}, 'index_name': 'gl-events_1', 'index_type': 'message'},<br/>{'event': {'id': 'ABCD', 'event_definition_type': 'aggregation-v1', 'event_definition_id': '5f7436c60f4d9c360092a3ac', 'origin_context': 'urn:graylog:message:es:graylog_0:c805f451-094c-11eb-a959-000c29d42d8e', 'timestamp': '2020-10-08T09:58:15.169Z', 'timestamp_processing': '2020-10-08T10:02:04.510Z', 'timerange_start': None, 'timerange_end': None, 'streams': ['000000000000000000000002'], 'source_streams': [], 'message': 'Gmail', 'source': 'graylog', 'key_tuple': [], 'key': None, 'priority': 1, 'alert': False, 'fields': {}}, 'index_name': 'gl-events_1', 'index_type': 'message'},<br/>{'event': {'id': 'ABCD', 'event_definition_type': 'aggregation-v1', 'event_definition_id': '5f7436c60f4d9c360092a3ac', 'origin_context': 'urn:graylog:message:es:graylog_0:a441c3f0-094c-11eb-a959-000c29d42d8e', 'timestamp': '2020-10-08T09:57:15.169Z', 'timestamp_processing': '2020-10-08T10:02:04.510Z', 'timerange_start': None, 'timerange_end': None, 'streams': ['000000000000000000000002'], 'source_streams': [], 'message': 'Gmail', 'source': 'graylog', 'key_tuple': [], 'key': None, 'priority': 1, 'alert': False, 'fields': {}}, 'index_name': 'gl-events_1', 'index_type': 'message'} | page: 1<br/>per_page: 10<br/>timerange: {"type": "relative", "range": 1000}<br/>query: gmail<br/>filter: {"alerts": "include", "event_definitions": []}<br/>sort_by: timestamp<br/>sort_direction: desc | 14 | gl-events_1,<br/>gl-system-events_1 |
 
-
 ### graylog-search-absolute
+
 ***
 Search with absolute times
-
 
 #### Base Command
 
 `graylog-search-absolute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query in lucene syntax | Required | 
-| from | Search for messages using an absolute timerange, specified as from/to with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd HH:mm:ss. | Required | 
-| to | Search for messages using an absolute timerange, specified as from/to with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd HH:mm:ss. | Required | 
-| limit | Maximum number of messages to return. | Optional | 
-| offset | Offset | Optional | 
-| filter | Filter | Optional | 
-| fields | Comma separated list of fields to return | Optional | 
-| sort | Sorting (field:asc / field:desc) | Optional | 
-| decorate | Run decorators on search result | Optional | 
-
+| query | Query in lucene syntax | Required |
+| from | Search for messages using an absolute timerange, specified as from/to with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd HH:mm:ss. | Required |
+| to | Search for messages using an absolute timerange, specified as from/to with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd HH:mm:ss. | Required |
+| limit | Maximum number of messages to return. | Optional |
+| offset | Offset | Optional |
+| filter | Filter | Optional |
+| fields | Comma separated list of fields to return | Optional |
+| sort | Sorting (field:asc / field:desc) | Optional |
+| decorate | Run decorators on search result | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Graylog.SearchAbsolute | String | Search results of Absolute search | 
-
+| Graylog.SearchAbsolute | String | Search results of Absolute search |
 
 #### Command Example
+
 ```!graylog-search-absolute query="\<query here\>" from=<timefrom> to=<timeto>```
 
 #### Context Example
+
 ```json
 {
     "Graylog": {
@@ -1195,6 +1205,7 @@ Search with absolute times
 #### Human Readable Output
 
 >### Results
+>
 >|built_query|decoration_stats|fields|from|messages|query|time|to|total_results|used_indices|
 >|---|---|---|---|---|---|---|---|---|---|
 >| {<br/>  "from" : 0,<br/>  "size" : 20,<br/>  "query" : {<br/>    "bool" : {<br/>      "must" : [<br/>        {<br/>          "query_string" : {<br/>            "query" : "\<query here\>",<br/>            "fields" : [ ],<br/>            "use_dis_max" : true,<br/>            "tie_breaker" : 0.0,<br/>            "default_operator" : "or",<br/>            "auto_generate_phrase_queries" : false,<br/>            "max_determinized_states" : 10000,<br/>            "allow_leading_wildcard" : false,<br/>            "enable_position_increments" : true,<br/>            "fuzziness" : "AUTO",<br/>            "fuzzy_prefix_length" : 0,<br/>            "fuzzy_max_expansions" : 50,<br/>            "phrase_slop" : 0,<br/>            "escape" : false,<br/>            "split_on_whitespace" : true,<br/>            "boost" : 1.0<br/>          }<br/>        }<br/>      ],<br/>      "filter" : [<br/>        {<br/>          "bool" : {<br/>            "must" : [<br/>              {<br/>                "range" : {<br/>                  "timestamp" : {<br/>                    "from" : "2020-10-04 15:34:49.000",<br/>                    "to" : "2020-10-08 15:34:49.000",<br/>                    "include_lower" : true,<br/>                    "include_upper" : true,<br/>                    "boost" : 1.0<br/>                  }<br/>                }<br/>              }<br/>            ],<br/>            "disable_coord" : false,<br/>            "adjust_pure_negative" : true,<br/>            "boost" : 1.0<br/>          }<br/>        }<br/>      ],<br/>      "disable_coord" : false,<br/>      "adjust_pure_negative" : true,<br/>      "boost" : 1.0<br/>    }<br/>  },<br/>  "sort" : [<br/>    {<br/>      "timestamp" : {<br/>        "order" : "desc"<br/>      }<br/>    }<br/>  ]<br/>} |  | event_received_time,<br/>pan_log_subtype,<br/>pan_dev_group_level_4,<br/>pan_dev_group_level_3,<br/>network_interface_out,<br/>source,<br/>pan_url_index,<br/>vendor_event_action,<br/>pan_dev_group_level_2,<br/>pan_dev_group_level_1,<br/>source_ip,<br/>host_virtfw_id,<br/>application_name,<br/>destination_ip,<br/>pan_ppid,<br/>alert_indicator,<br/>host_hostname,<br/>source_location_name,<br/>alert_signature_id,<br/>rule_name,<br/>source_zone,<br/>gl2_message_id,<br/>network_protocol,<br/>network_tunnel_type,<br/>alert_definitions_version,<br/>destination_nat_ip,<br/>pan_log_action,<br/>pan_http2,<br/>source_nat_ip,<br/>destination_nat_port,<br/>http_url_category,<br/>policy_uid,<br/>destination_port,<br/>pan_log_panorama,<br/>pan_tunnel_id,<br/>pan_alert_direction,<br/>vendor_alert_severity,<br/>event_uid,<br/>destination_location_name,<br/>source_port,<br/>event_log_name,<br/>event_repeat_count,<br/>timestamp,<br/>event_source_product,<br/>source_nat_port,<br/>destination_zone,<br/>session_id,<br/>message,<br/>alert_category,<br/>pan_parent_session_id,<br/>host_id,<br/>network_interface_in,<br/>pan_wildfire_report_id,<br/>pan_pcap_id,<br/>pan_flags,<br/>pan_assoc_id,<br/>pan_monitor_tag | 2020-10-04T15:34:49.000Z | {'highlight_ranges': {}, 'message': {'event_received_time': '2020/10/08 07:59:53', 'pan_log_subtype': 'url', 'gl2_remote_ip': 'bbb.bbb.bbb.bbb', 'gl2_remote_port': 51371, 'pan_dev_group_level_4': 0, 'pan_dev_group_level_3': 0, 'network_interface_out': 'ethernet1/4', 'source': 'PA-220', 'gl2_source_input': '5f7433f60f4d9c360092a070', 'pan_url_index': 0, 'vendor_event_action': 'alert', 'pan_dev_group_level_2': 0, 'pan_dev_group_level_1': 0, 'source_ip': 'ccc.ccc.ccc.ccc', 'host_virtfw_id': 'vsys1', 'application_name': 'ssl', 'destination_ip': 'aaa.aaa.aaa.aaa', 'pan_ppid': 4294967295, 'gl2_source_node': '95ba5102-13c9-4520-ac75-c8736f206953', 'alert_indicator': '\<query here\>/', 'host_hostname': 'PA-220', 'source_location_name': '192.168.0.0-192.168.255.255', 'gl2_accounted_message_size': 2027, 'alert_signature_id': '(9999)', 'rule_name': 'FromTrust', 'source_zone': 'Trust-L3', 'streams': ['000000000000000000000001'], 'gl2_message_id': 'ABCD', 'network_protocol': 'tcp', 'network_tunnel_type': 'N/A', 'alert_definitions_version': 'AppThreat-0-0', 'destination_nat_ip': 'aaa.aaa.aaa.aaa', 'pan_log_action': 'default', 'pan_http2': '0', 'source_nat_ip': 'ddd.ddd.ddd.ddd', '_id': '1acb0472-0923-11eb-a959-000c29d42d8e', 'destination_nat_port': 443, 'http_url_category': 'news,low-risk', 'policy_uid': '4093544d-2f66-4d80-af2d-17f361609984', 'destination_port': 443, 'pan_log_panorama': '0xa000000000000000', 'pan_tunnel_id': '0', 'pan_alert_direction': 'client-to-server', 'vendor_alert_severity': 'informational', 'event_uid': '7665475', 'destination_location_name': 'United States', 'source_port': 61323, 'event_log_name': 'THREAT', 'event_repeat_count': 1, 'timestamp': '2020-10-08T04:59:55.169Z', 'event_source_product': 'PAN', 'source_nat_port': 48189, 'destination_zone': 'Untrust-L3', 'session_id': 23366, 'message': '1,2020/10/08 07:59:53,ABCDEFGHIJK,THREAT,url,2560,2020/10/08 07:59:53,ccc.ccc.ccc.ccc,aaa.aaa.aaa.aaa,ddd.ddd.ddd.ddd,aaa.aaa.aaa.aaa,FromTrust,,,ssl,vsys1,Trust-L3,Untrust-L3,ethernet1/3,ethernet1/4,default,2020/10/08 07:59:53,23366,1,61323,443,48189,443,0x816400,tcp,alert,"\<query here\>/",(9999),news,informational,client-to-server,7665475,0xa000000000000000,192.168.0.0-192.168.255.255,United States,0,,0,,,0,,,,,,,,0,0,0,0,0,,PA-220,,,,,0,,0,,N/A,unknown,AppThreat-0-0,0x0,0,4294967295,,"news,low-risk",4093544d-2f66-4d80-af2d-17f361609984,0,,0.0.0.0,,,,,,,,,,,,,,,,,,,,,,,,,,,0,2020-10-08T07:59:54.289+03:00,,,', 'alert_category': 'news', 'pan_parent_session_id': '0', 'host_id': 'ABCDEFGHIJK', 'network_interface_in': 'ethernet1/3', 'pan_wildfire_report_id': 0, 'pan_pcap_id': '0', 'pan_flags': '0x816400', 'pan_assoc_id': 0, 'pan_monitor_tag': 0}, 'index': 'graylog_0', 'decoration_stats': None},<br/>{'highlight_ranges': {}, 'message': {'event_received_time': '2020/10/08 07:59:53', 'pan_log_subtype': 'url', 'gl2_remote_ip': 'bbb.bbb.bbb.bbb', 'gl2_remote_port': 51371, 'pan_dev_group_level_4': 0, 'pan_dev_group_level_3': 0, 'network_interface_out': 'ethernet1/4', 'source': 'PA-220', 'gl2_source_input': '5f7433f60f4d9c360092a070', 'pan_url_index': 0, 'vendor_event_action': 'alert', 'pan_dev_group_level_2': 0, 'pan_dev_group_level_1': 0, 'source_ip': 'ccc.ccc.ccc.ccc', 'host_virtfw_id': 'vsys1', 'application_name': 'ssl', 'destination_ip': 'aaa.aaa.aaa.aaa', 'pan_ppid': 4294967295, 'gl2_source_node': '95ba5102-13c9-4520-ac75-c8736f206953', 'alert_indicator': '\<query here\>/', 'host_hostname': 'PA-220', 'source_location_name': '192.168.0.0-192.168.255.255', 'gl2_accounted_message_size': 2027, 'alert_signature_id': '(9999)', 'rule_name': 'FromTrust', 'source_zone': 'Trust-L3', 'streams': ['000000000000000000000001'], 'gl2_message_id': 'ABCD', 'network_protocol': 'tcp', 'network_tunnel_type': 'N/A', 'alert_definitions_version': 'AppThreat-0-0', 'destination_nat_ip': 'aaa.aaa.aaa.aaa', 'pan_log_action': 'default', 'pan_http2': '0', 'source_nat_ip': 'ddd.ddd.ddd.ddd', '_id': '1acb0470-0923-11eb-a959-000c29d42d8e', 'destination_nat_port': 443, 'http_url_category': 'news,low-risk', 'policy_uid': '4093544d-2f66-4d80-af2d-17f361609984', 'destination_port': 443, 'pan_log_panorama': '0xa000000000000000', 'pan_tunnel_id': '0', 'pan_alert_direction': 'client-to-server', 'vendor_alert_severity': 'informational', 'event_uid': '7665473', 'destination_location_name': 'United States', 'source_port': 61322, 'event_log_name': 'THREAT', 'event_repeat_count': 1, 'timestamp': '2020-10-08T04:59:55.169Z', 'event_source_product': 'PAN', 'source_nat_port': 29959, 'destination_zone': 'Untrust-L3', 'session_id': 24085, 'message': '1,2020/10/08 07:59:53,ABCDEFGHIJK,THREAT,url,2560,2020/10/08 07:59:53,ccc.ccc.ccc.ccc,aaa.aaa.aaa.aaa,ddd.ddd.ddd.ddd,aaa.aaa.aaa.aaa,FromTrust,,,ssl,vsys1,Trust-L3,Untrust-L3,ethernet1/3,ethernet1/4,default,2020/10/08 07:59:53,24085,1,61322,443,29959,443,0x816400,tcp,alert,"\<query here\>/",(9999),news,informational,client-to-server,7665473,0xa000000000000000,192.168.0.0-192.168.255.255,United States,0,,0,,,0,,,,,,,,0,0,0,0,0,,PA-220,,,,,0,,0,,N/A,unknown,AppThreat-0-0,0x0,0,4294967295,,"news,low-risk",4093544d-2f66-4d80-af2d-17f361609984,0,,0.0.0.0,,,,,,,,,,,,,,,,,,,,,,,,,,,0,2020-10-08T07:59:54.289+03:00,,,', 'alert_category': 'news', 'pan_parent_session_id': '0', 'host_id': 'ABCDEFGHIJK', 'network_interface_in': 'ethernet1/3', 'pan_wildfire_report_id': 0, 'pan_pcap_id': '0', 'pan_flags': '0x816400', 'pan_assoc_id': 0, 'pan_monitor_tag': 0}, 'index': 'graylog_0', 'decoration_stats': None} | \<query here\> | 2 | 2020-10-08T15:34:49.000Z | 2 | {'index_name': 'graylog_0', 'begin': '1970-01-01T00:00:00.000Z', 'end': '1970-01-01T00:00:00.000Z', 'calculated_at': '2020-09-30T07:24:40.163Z', 'took_ms': 0} |

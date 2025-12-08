@@ -10,41 +10,62 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
+import copy
 import json
 import os
-import pytest
 from contextlib import nullcontext as does_not_raise
-import copy
 
 import demistomock as demisto
-from CommonServerPython import DemistoException
-
+import pytest
 import VectraDetect
-from VectraDetect import MAX_RESULTS, UI_ACCOUNTS, UI_HOSTS, UI_DETECTIONS, UTM_PIVOT, VectraException, \
-    fetch_incidents, get_modified_remote_data_command, Client, get_remote_data_command, \
-    update_remote_system_command, OUTPUT_PREFIXES, ENDPOINTS, ERRORS, NOTE_OUTPUT_KEY_FIELD, \
-    markall_detections_asfixed_command, BACK_IN_TIME_SEARCH_IN_MINUTES, vectra_group_list_command, \
-    API_ENDPOINT_GROUPS, VALID_IMPORTANCE_VALUE, VALID_GROUP_TYPE, vectra_group_assign_command, \
-    vectra_group_unassign_command
+from CommonServerPython import DemistoException
+from VectraDetect import (
+    API_ENDPOINT_GROUPS,
+    BACK_IN_TIME_SEARCH_IN_MINUTES,
+    ENDPOINTS,
+    ERRORS,
+    MAX_RESULTS,
+    NOTE_OUTPUT_KEY_FIELD,
+    OUTPUT_PREFIXES,
+    UI_ACCOUNTS,
+    UI_DETECTIONS,
+    UI_HOSTS,
+    UTM_PIVOT,
+    VALID_GROUP_TYPE,
+    VALID_IMPORTANCE_VALUE,
+    Client,
+    VectraException,
+    fetch_incidents,
+    get_modified_remote_data_command,
+    get_remote_data_command,
+    markall_detections_asclosed_command,
+    markall_detections_asfixed_command,
+    mark_detections_asclosed_command,
+    mark_detections_asopen_command,
+    update_remote_system_command,
+    vectra_group_assign_command,
+    vectra_group_list_command,
+    vectra_group_unassign_command,
+)
 
 SERVER_FQDN = "vectra.test"
 SERVER_URL = f"https://{SERVER_FQDN}"
-API_VERSION_URI = '/api/v2.5'
-API_URL = f'{SERVER_URL}{API_VERSION_URI}'
-API_SEARCH_ENDPOINT_ACCOUNTS = '/search/accounts'
-API_SEARCH_ENDPOINT_DETECTIONS = '/search/detections'
-API_SEARCH_ENDPOINT_HOSTS = '/search/hosts'
-API_ENDPOINT_ASSIGNMENTS = '/assignments'
-API_ENDPOINT_DETECTIONS = '/detections'
-API_ENDPOINT_OUTCOMES = '/assignment_outcomes'
-API_ENDPOINT_USERS = '/users'
-API_TAGGING = '/tagging'
-API_ENDPOINT_HOST = '/hosts'
-API_ENDPOINT_ACCOUNT = '/accounts'
+API_VERSION_URI = "/api/v2.5"
+API_URL = f"{SERVER_URL}{API_VERSION_URI}"
+API_SEARCH_ENDPOINT_ACCOUNTS = "/search/accounts"
+API_SEARCH_ENDPOINT_DETECTIONS = "/search/detections"
+API_SEARCH_ENDPOINT_HOSTS = "/search/hosts"
+API_ENDPOINT_ASSIGNMENTS = "/assignments"
+API_ENDPOINT_DETECTIONS = "/detections"
+API_ENDPOINT_OUTCOMES = "/assignment_outcomes"
+API_ENDPOINT_USERS = "/users"
+API_TAGGING = "/tagging"
+API_ENDPOINT_HOST = "/hosts"
+API_ENDPOINT_ACCOUNT = "/accounts"
 
 
 def load_test_data(json_path):
-    relative_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_data')
+    relative_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data")
     with open(os.path.join(relative_dir, json_path)) as f:
         return json.load(f)
 
@@ -53,8 +74,21 @@ def load_test_data(json_path):
 def client():
     from VectraDetect import Client
 
+    # Call the functionbals
+    return Client(base_url=f"{API_URL}", verify=True, proxy=False, use_oauth=False, api_token="test_api_token")
+
+
+@pytest.fixture
+def oauth_client():
+    from VectraDetect import Client
+
     return Client(
-        base_url=f'{API_URL}', headers={}
+        base_url=f"{API_URL}",
+        verify=True,
+        proxy=False,
+        use_oauth=True,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
     )
 
 
@@ -72,6 +106,7 @@ def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
+
 #####
 # ## Validate helpers
 #
@@ -80,16 +115,16 @@ def util_load_json(path):
 @pytest.mark.parametrize(
     "input,expected",
     [
-        ('true', True),
-        ('True', True),
-        ('trUE', True),
-        ('YES', True),
-        ('false', False),
-        ('NO', False),
-        ('vectra', None),
-        ('', None),
-        (None, None)
-    ]
+        ("true", True),
+        ("True", True),
+        ("trUE", True),
+        ("YES", True),
+        ("false", False),
+        ("NO", False),
+        ("vectra", None),
+        ("", None),
+        (None, None),
+    ],
 )
 def test_str2bool(input, expected):
     """
@@ -100,15 +135,7 @@ def test_str2bool(input, expected):
     assert str2bool(input) == expected
 
 
-@pytest.mark.parametrize(
-    "input,expected",
-    [
-        (100, 100),
-        (8, 8),
-        ('10', 10),
-        (250, MAX_RESULTS)
-    ]
-)
+@pytest.mark.parametrize("input,expected", [(100, 100), (8, 8), ("10", 10), (250, MAX_RESULTS)])
 def test_sanitize_max_results(input, expected):
     """
     Tests sanitize_max_results helper function.
@@ -119,13 +146,7 @@ def test_sanitize_max_results(input, expected):
 
 
 @pytest.mark.parametrize(
-    "input_threat,input_certainty,expected",
-    [
-        (5, 5, 'Low'),
-        (39, 55, 'Medium'),
-        (51, 35, 'High'),
-        (50, 50, 'Critical')
-    ]
+    "input_threat,input_certainty,expected", [(5, 5, "Low"), (39, 55, "Medium"), (51, 35, "High"), (50, 50, "Critical")]
 )
 def test_scores_to_severity(input_threat, input_certainty, expected):
     """
@@ -137,15 +158,7 @@ def test_scores_to_severity(input_threat, input_certainty, expected):
 
 
 @pytest.mark.parametrize(
-    "input_severity,expected",
-    [
-        ('Critical', 4),
-        ('High', 3),
-        ('Medium', 2),
-        ('Low', 1),
-        ('test', 0),
-        ('', 0)
-    ]
+    "input_severity,expected", [("Critical", 4), ("High", 3), ("Medium", 2), ("Low", 1), ("test", 0), ("", 0)]
 )
 def test_severity_string_to_int(input_severity, expected):
     """
@@ -159,11 +172,11 @@ def test_severity_string_to_int(input_severity, expected):
 @pytest.mark.parametrize(
     "input_date,expected",
     [
-        ('2022-10-10T14:28:56Z', '2022-10-10T14:28:56.000Z'),
-        ('2022-01-01T01:01:01Z', '2022-01-01T01:01:01.000Z'),
-        ('Vectra', None),
-        (None, None)
-    ]
+        ("2022-10-10T14:28:56Z", "2022-10-10T14:28:56.000Z"),
+        ("2022-01-01T01:01:01Z", "2022-01-01T01:01:01.000Z"),
+        ("Vectra", None),
+        (None, None),
+    ],
 )
 def test_convert_date(input_date, expected):
     """
@@ -176,46 +189,54 @@ def test_convert_date(input_date, expected):
 
 # Compute all combinations
 validate_argument_test_data = []
-for input_type in {'min_id', 'max_id'}:
-    for valid_value in {1, 5}:
+for input_type in ("min_id", "max_id"):
+    for valid_value in (1, 5):
         validate_argument_test_data.append(
-            pytest.param(input_type, valid_value, does_not_raise(),
-                         id=f"{input_type}_{valid_value}_no-exception"))
-    for invalid_value in {0, -3, 12.3, 'vectra', '', None}:
+            pytest.param(input_type, valid_value, does_not_raise(), id=f"{input_type}_{valid_value}_no-exception")
+        )
+    for invalid_value in {0, -3, 12.3, "vectra", "", None}:
         validate_argument_test_data.append(
-            pytest.param(input_type, invalid_value,
-                         pytest.raises(ValueError, match=f'"{input_type}" must be an integer greater than 0'),
-                         id=f"{input_type}_{'none' if invalid_value is None else invalid_value}_gt-0"))
-for input_type in {'min_threat', 'min_certainty', 'max_threat', 'max_certainty'}:
-    for valid_value in {0, 99}:
+            pytest.param(
+                input_type,
+                invalid_value,
+                pytest.raises(ValueError, match=f'"{input_type}" must be an integer greater than 0'),
+                id=f"{input_type}_{'none' if invalid_value is None else invalid_value}_gt-0",
+            )
+        )
+for input_type in ("min_threat", "min_certainty", "max_threat", "max_certainty"):
+    for valid_value in (0, 99):
         validate_argument_test_data.append(
-            pytest.param(input_type, valid_value, does_not_raise(),
-                         id=f"{input_type}_{valid_value}_no-exception"))
-    for invalid_value in {-1, 100, -3, 12.3, 'vectra', '', None}:
+            pytest.param(input_type, valid_value, does_not_raise(), id=f"{input_type}_{valid_value}_no-exception")
+        )
+    for invalid_value in {-1, 100, -3, 12.3, "vectra", "", None}:
         validate_argument_test_data.append(
-            pytest.param(input_type, invalid_value,
-                         pytest.raises(ValueError, match=f'"{input_type}" must be an integer between 0 and 99'),
-                         id=f"{input_type}_{'none' if invalid_value is None else invalid_value}_0-99"))
-for input_type in {'min_privilege_level'}:
-    for valid_value in {1, 5, 10}:
+            pytest.param(
+                input_type,
+                invalid_value,
+                pytest.raises(ValueError, match=f'"{input_type}" must be an integer between 0 and 99'),
+                id=f"{input_type}_{'none' if invalid_value is None else invalid_value}_0-99",
+            )
+        )
+for input_type in ("min_privilege_level",):
+    for valid_value in (1, 5, 10):
         validate_argument_test_data.append(
-            pytest.param(input_type, valid_value, does_not_raise(),
-                         id=f"{input_type}_{valid_value}_no-exception"))
-    for invalid_value in {0, 11, -3, 12.3, 'vectra', '', None}:
+            pytest.param(input_type, valid_value, does_not_raise(), id=f"{input_type}_{valid_value}_no-exception")
+        )
+    for invalid_value in {0, 11, -3, 12.3, "vectra", "", None}:
         validate_argument_test_data.append(
-            pytest.param(input_type, invalid_value,
-                         pytest.raises(ValueError, match=f'"{input_type}" must be an integer between 1 and 10'),
-                         id=f"{input_type}_{'none' if invalid_value is None else invalid_value}_1-10"))
+            pytest.param(
+                input_type,
+                invalid_value,
+                pytest.raises(ValueError, match=f'"{input_type}" must be an integer between 1 and 10'),
+                id=f"{input_type}_{'none' if invalid_value is None else invalid_value}_1-10",
+            )
+        )
 validate_argument_test_data.append(
-    pytest.param('vectra', 'vectra',
-                 pytest.raises(SystemError, match='Unknown argument type'),
-                 id='invalid-argument_exception'))
-
-
-@pytest.mark.parametrize(
-    "input_type,input_value,expected",
-    validate_argument_test_data
+    pytest.param("vectra", "vectra", pytest.raises(SystemError, match="Unknown argument type"), id="invalid-argument_exception")
 )
+
+
+@pytest.mark.parametrize("input_type,input_value,expected", validate_argument_test_data)
 def test_validate_argument(input_type, input_value, expected):
     """
     Tests validate_argument helper command
@@ -229,12 +250,12 @@ def test_validate_argument(input_type, input_value, expected):
 @pytest.mark.parametrize(
     "min_type,min_value,max_type,max_value,expected",
     [
-        ('min_id', 12, 'max_id', 15, does_not_raise()),
-        ('min_id', 20, 'max_id', 20, does_not_raise()),
-        ('min_id', 30, 'max_id', 25, pytest.raises(ValueError, match='"max_id" must be greater than or equal to "min_id"')),
-        ('min_threat', 12, 'max_threat', 35, does_not_raise()),
-        ('min_certainty', 15, 'max_certainty', 35, does_not_raise()),
-    ]
+        ("min_id", 12, "max_id", 15, does_not_raise()),
+        ("min_id", 20, "max_id", 20, does_not_raise()),
+        ("min_id", 30, "max_id", 25, pytest.raises(ValueError, match='"max_id" must be greater than or equal to "min_id"')),
+        ("min_threat", 12, "max_threat", 35, does_not_raise()),
+        ("min_certainty", 15, "max_certainty", 35, does_not_raise()),
+    ],
 )
 def test_validate_min_max(min_type, min_value, max_type, max_value, expected):
     """
@@ -250,28 +271,14 @@ def test_validate_min_max(min_type, min_value, max_type, max_value, expected):
 @pytest.mark.parametrize(
     "input_list,expected,exception",
     [
-        pytest.param(None, None,
-                     does_not_raise(),
-                     id="none_no-exception"),
-        pytest.param('', None,
-                     does_not_raise(),
-                     id="empty_no-exception"),
-        pytest.param('1', {1},
-                     does_not_raise(),
-                     id="single-element_no-exception"),
-        pytest.param('1,2,3', {1, 2, 3},
-                     does_not_raise(),
-                     id="multiple-elements_no-exception"),
-        pytest.param('1 , 2, 3', {1, 2, 3},
-                     does_not_raise(),
-                     id="with-spaces_no-exception"),
-        pytest.param('1 , 2, 3', {1, 2, 3},
-                     does_not_raise(),
-                     id="with-spaces_no-exception"),
-        pytest.param('1 , 2, , 3', {1, 2, 3},
-                     does_not_raise(),
-                     id="with-empty-element_no-exception"),
-    ]
+        pytest.param(None, None, does_not_raise(), id="none_no-exception"),
+        pytest.param("", None, does_not_raise(), id="empty_no-exception"),
+        pytest.param("1", {1}, does_not_raise(), id="single-element_no-exception"),
+        pytest.param("1,2,3", {1, 2, 3}, does_not_raise(), id="multiple-elements_no-exception"),
+        pytest.param("1 , 2, 3", {1, 2, 3}, does_not_raise(), id="with-spaces_no-exception"),
+        pytest.param("1 , 2, 3", {1, 2, 3}, does_not_raise(), id="with-spaces_no-exception"),
+        pytest.param("1 , 2, , 3", {1, 2, 3}, does_not_raise(), id="with-empty-element_no-exception"),
+    ],
 )
 def test_sanitize_str_ids_list_to_set(input_list, expected, exception):
     """
@@ -287,25 +294,28 @@ def test_sanitize_str_ids_list_to_set(input_list, expected, exception):
 @pytest.mark.parametrize(
     "object_type,params,expected",
     [
-        pytest.param('account', {'min_id': '12'},
-                     'account.id:>=12',
-                     id="account_min-id"),
-        pytest.param('account', {'max_threat': '12'},
-                     'account.threat:<=12',
-                     id="account_max-threat"),
-        pytest.param('account', {'min_id': '12', 'max_certainty': '28'},
-                     'account.id:>=12 account.certainty:<=28',
-                     id="account_min-id_max-certainty"),
-        pytest.param('host', {'min_id': '12', 'state': 'inactive'},
-                     'host.id:>=12 host.state:"inactive"',
-                     id="host_min-id_state"),
-        pytest.param('host', {'last_timestamp': '20220101T0123', 'state': 'active'},
-                     'host.last_detection_timestamp:>=20220101T0123 host.state:"active"',
-                     id="host_last_timestamp_state"),
-        pytest.param('detection', {'last_timestamp': '20220101T0123', 'state': 'active'},
-                     'detection.last_timestamp:>=20220101T0123 detection.state:"active"',
-                     id="detection_last_timestamp_state"),
-    ]
+        pytest.param("account", {"min_id": "12"}, "account.id:>=12", id="account_min-id"),
+        pytest.param("account", {"max_threat": "12"}, "account.threat:<=12", id="account_max-threat"),
+        pytest.param(
+            "account",
+            {"min_id": "12", "max_certainty": "28"},
+            "account.id:>=12 account.certainty:<=28",
+            id="account_min-id_max-certainty",
+        ),
+        pytest.param("host", {"min_id": "12", "state": "inactive"}, 'host.id:>=12 host.state:"inactive"', id="host_min-id_state"),
+        pytest.param(
+            "host",
+            {"last_timestamp": "20220101T0123", "state": "active"},
+            'host.last_detection_timestamp:>=20220101T0123 host.state:"active"',
+            id="host_last_timestamp_state",
+        ),
+        pytest.param(
+            "detection",
+            {"last_timestamp": "20220101T0123", "state": "active"},
+            'detection.last_timestamp:>=20220101T0123 detection.state:"active"',
+            id="detection_last_timestamp_state",
+        ),
+    ],
 )
 def test_build_search_query(object_type, params, expected):
     """
@@ -320,22 +330,12 @@ def test_build_search_query(object_type, params, expected):
 @pytest.mark.parametrize(
     "object_type,id,expected,exception",
     [
-        pytest.param('account', 123, f"{SERVER_URL}{UI_ACCOUNTS}/123{UTM_PIVOT}",
-                     does_not_raise(),
-                     id="account_ok"),
-        pytest.param('host', 234, f"{SERVER_URL}{UI_HOSTS}/234{UTM_PIVOT}",
-                     does_not_raise(),
-                     id="host_ok"),
-        pytest.param('detection', 345, f"{SERVER_URL}{UI_DETECTIONS}/345{UTM_PIVOT}",
-                     does_not_raise(),
-                     id="detection_ok"),
-        pytest.param('vectra', 15, True,
-                     pytest.raises(Exception, match='Unknown type : vectra'),
-                     id="invalid-type_exception"),
-        pytest.param('account', None, True,
-                     pytest.raises(Exception, match='Missing ID'),
-                     id="invalid-id_exception"),
-    ]
+        pytest.param("account", 123, f"{SERVER_URL}{UI_ACCOUNTS}/123{UTM_PIVOT}", does_not_raise(), id="account_ok"),
+        pytest.param("host", 234, f"{SERVER_URL}{UI_HOSTS}/234{UTM_PIVOT}", does_not_raise(), id="host_ok"),
+        pytest.param("detection", 345, f"{SERVER_URL}{UI_DETECTIONS}/345{UTM_PIVOT}", does_not_raise(), id="detection_ok"),
+        pytest.param("vectra", 15, True, pytest.raises(Exception, match="Unknown type : vectra"), id="invalid-type_exception"),
+        pytest.param("account", None, True, pytest.raises(Exception, match="Missing ID"), id="invalid-id_exception"),
+    ],
 )
 def test_forge_entity_url(object_type, id, expected, exception):
     """
@@ -345,6 +345,7 @@ def test_forge_entity_url(object_type, id, expected, exception):
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
     with exception:
@@ -354,16 +355,22 @@ def test_forge_entity_url(object_type, id, expected, exception):
 @pytest.mark.parametrize(
     "api_entry,expected",
     [
-        pytest.param(load_test_data('single_account.json'),
-                     load_test_data('single_account_extracted.json').get('common_extract'),
-                     id="common_account_ok"),
-        pytest.param(load_test_data('single_host.json'),
-                     load_test_data('single_host_extracted.json').get('common_extract'),
-                     id="common_host_ok"),
-        pytest.param(load_test_data('single_detection.json'),
-                     load_test_data('single_detection_extracted.json').get('common_extract'),
-                     id="common_detection_ok"),
-    ]
+        pytest.param(
+            load_test_data("single_account.json"),
+            load_test_data("single_account_extracted.json").get("common_extract"),
+            id="common_account_ok",
+        ),
+        pytest.param(
+            load_test_data("single_host.json"),
+            load_test_data("single_host_extracted.json").get("common_extract"),
+            id="common_host_ok",
+        ),
+        pytest.param(
+            load_test_data("single_detection.json"),
+            load_test_data("single_detection_extracted.json").get("common_extract"),
+            id="common_detection_ok",
+        ),
+    ],
 )
 def test_common_extract_data(api_entry, expected):
     """
@@ -377,10 +384,12 @@ def test_common_extract_data(api_entry, expected):
 @pytest.mark.parametrize(
     "api_entry,expected",
     [
-        pytest.param(load_test_data('single_account.json'),
-                     load_test_data('single_account_extracted.json').get('account_extract'),
-                     id="account_ok")
-    ]
+        pytest.param(
+            load_test_data("single_account.json"),
+            load_test_data("single_account_extracted.json").get("account_extract"),
+            id="account_ok",
+        )
+    ],
 )
 def test_extract_account_data(api_entry, expected):
     """
@@ -390,6 +399,7 @@ def test_extract_account_data(api_entry, expected):
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
     from VectraDetect import extract_account_data
@@ -400,10 +410,12 @@ def test_extract_account_data(api_entry, expected):
 @pytest.mark.parametrize(
     "api_entry,expected",
     [
-        pytest.param(load_test_data('single_detection.json'),
-                     load_test_data('single_detection_extracted.json').get('detection_extract'),
-                     id="common_detection_ok"),
-    ]
+        pytest.param(
+            load_test_data("single_detection.json"),
+            load_test_data("single_detection_extracted.json").get("detection_extract"),
+            id="common_detection_ok",
+        ),
+    ],
 )
 def test_extract_detection_data(api_entry, expected):
     """
@@ -413,6 +425,7 @@ def test_extract_detection_data(api_entry, expected):
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
     from VectraDetect import extract_detection_data
@@ -423,10 +436,12 @@ def test_extract_detection_data(api_entry, expected):
 @pytest.mark.parametrize(
     "api_entry,expected",
     [
-        pytest.param(load_test_data('single_host.json'),
-                     load_test_data('single_host_extracted.json').get('host_extract'),
-                     id="common_host_ok"),
-    ]
+        pytest.param(
+            load_test_data("single_host.json"),
+            load_test_data("single_host_extracted.json").get("host_extract"),
+            id="common_host_ok",
+        ),
+    ],
 )
 def test_extract_host_data(api_entry, expected):
     """
@@ -436,6 +451,7 @@ def test_extract_host_data(api_entry, expected):
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
     from VectraDetect import extract_host_data
@@ -446,10 +462,10 @@ def test_extract_host_data(api_entry, expected):
 @pytest.mark.parametrize(
     "api_entry,expected",
     [
-        pytest.param(load_test_data('single_assignment.json'),
-                     load_test_data('single_assignment_extracted.json'),
-                     id="assignment_ok")
-    ]
+        pytest.param(
+            load_test_data("single_assignment.json"), load_test_data("single_assignment_extracted.json"), id="assignment_ok"
+        )
+    ],
 )
 def test_extract_assignment_data(api_entry, expected):
     """
@@ -462,11 +478,7 @@ def test_extract_assignment_data(api_entry, expected):
 
 @pytest.mark.parametrize(
     "api_entry,expected",
-    [
-        pytest.param(load_test_data('single_outcome.json'),
-                     load_test_data('single_outcome_extracted.json'),
-                     id="outcome_ok")
-    ]
+    [pytest.param(load_test_data("single_outcome.json"), load_test_data("single_outcome_extracted.json"), id="outcome_ok")],
 )
 def test_extract_outcome_data(api_entry, expected):
     """
@@ -480,19 +492,23 @@ def test_extract_outcome_data(api_entry, expected):
 @pytest.mark.parametrize(
     "input_date,look_back,expected,exception",
     [
-        pytest.param('2022-06-30T01:23:45Z', '60', '2022-06-30T0023',
-                     does_not_raise(),
-                     id="timestamp_ok"),
-        pytest.param('2022-06-30T01:23:45.000Z', '60', '2022-06-30T0023',
-                     does_not_raise(),
-                     id="timestamp-with-milli_ok"),
-        pytest.param('vectra', BACK_IN_TIME_SEARCH_IN_MINUTES, 'exception',
-                     pytest.raises(SystemError, match='Invalid ISO date'),
-                     id="string_exception"),
-        pytest.param('2022-06-30T01:23:45.000Z', '-1', '-1',
-                     pytest.raises(ValueError, match=ERRORS['POSITIVE_VALUE'].format('look back')),
-                     id="negative_value_exception"),
-    ]
+        pytest.param("2022-06-30T01:23:45Z", "60", "2022-06-30T0023", does_not_raise(), id="timestamp_ok"),
+        pytest.param("2022-06-30T01:23:45.000Z", "60", "2022-06-30T0023", does_not_raise(), id="timestamp-with-milli_ok"),
+        pytest.param(
+            "vectra",
+            BACK_IN_TIME_SEARCH_IN_MINUTES,
+            "exception",
+            pytest.raises(SystemError, match="Invalid ISO date"),
+            id="string_exception",
+        ),
+        pytest.param(
+            "2022-06-30T01:23:45.000Z",
+            "-1",
+            "-1",
+            pytest.raises(ValueError, match=ERRORS["POSITIVE_VALUE"].format("look back")),
+            id="negative_value_exception",
+        ),
+    ],
 )
 def test_iso_date_to_vectra_start_time(input_date, look_back, expected, exception):
     """
@@ -505,13 +521,7 @@ def test_iso_date_to_vectra_start_time(input_date, look_back, expected, exceptio
 
 
 @pytest.mark.parametrize(
-    "input_severity,expected",
-    [
-        ('critical', 'Critical'),
-        ('HIGH', 'High'),
-        ('mEdIuM', 'Medium'),
-        ('', 'Unknown')
-    ]
+    "input_severity,expected", [("critical", "Critical"), ("HIGH", "High"), ("mEdIuM", "Medium"), ("", "Unknown")]
 )
 def test_unify_severity(input_severity, expected):
     """
@@ -525,12 +535,12 @@ def test_unify_severity(input_severity, expected):
 @pytest.mark.parametrize(
     "input_category,expected",
     [
-        ('benign_true_positive', 'Benign True Positive'),
-        ('malicious_true_positive', 'Malicious True Positive'),
-        ('false_positive', 'False Positive'),
-        ('dummy', None),
-        ('', None),
-    ]
+        ("benign_true_positive", "Benign True Positive"),
+        ("malicious_true_positive", "Malicious True Positive"),
+        ("false_positive", "False Positive"),
+        ("dummy", None),
+        ("", None),
+    ],
 )
 def test_convert_outcome_category_raw2text(input_category, expected):
     """
@@ -544,12 +554,12 @@ def test_convert_outcome_category_raw2text(input_category, expected):
 @pytest.mark.parametrize(
     "input_category,expected",
     [
-        ('Benign True Positive', 'benign_true_positive'),
-        ('Malicious True Positive', 'malicious_true_positive'),
-        ('False Positive', 'false_positive'),
-        ('dummy', None),
-        ('', None),
-    ]
+        ("Benign True Positive", "benign_true_positive"),
+        ("Malicious True Positive", "malicious_true_positive"),
+        ("False Positive", "false_positive"),
+        ("dummy", None),
+        ("", None),
+    ],
 )
 def test_convert_outcome_category_text2raw(input_category, expected):
     """
@@ -564,68 +574,73 @@ def test_convert_outcome_category_text2raw(input_category, expected):
 # ## Validate functions
 #
 
+
 @pytest.mark.parametrize(
     "integration_params,expected",
     [
-        pytest.param({},
-                     'ok',
-                     id="no-fetch"),
-        pytest.param({'isFetch': True, 'first_fetch': 'vectra'},
-                     'Fetch first timestamp is invalid.',
-                     id="wrong-fetch-time"),
-        pytest.param({'isFetch': True, 'first_fetch': '7 days', 'fetch_entity_types': ['vectra']},
-                     'This entity type "vectra" is invalid.',
-                     id="wrong-entity-type"),
-        pytest.param({'isFetch': True, 'first_fetch': '7 days', 'fetch_entity_types': ['Hosts']},
-                     'ok',
-                     id="hosts-entity"),
-        pytest.param({'isFetch': True, 'first_fetch': '7 days', 'fetch_entity_types': ['Hosts'], 'max_fetch': 'vectra'},
-                     '"vectra" is an invalid value for Max incidents per fetch. The value must be between 1 to 200.',
-                     id="string-max-fetch"),
-        pytest.param({'isFetch': True, 'first_fetch': '7 days', 'fetch_entity_types': ['Hosts'], 'max_fetch': '0'},
-                     '"0" is an invalid value for Max incidents per fetch. The value must be between 1 to 200.',
-                     id="0-max-fetch"),
-        pytest.param({'isFetch': True, 'first_fetch': '7d', 'fetch_entity_types': ['Hosts', 'Detections'], 'max_fetch': '1'},
-                     "Max incidents per fetch (1) must be >= to the number of entity types you're fetching (2)",
-                     id="too-low-max-fetch"),
-        pytest.param({'isFetch': True, 'first_fetch': '7d', 'fetch_entity_types': ['Hosts', 'Detections'], 'max_fetch': '201'},
-                     ERRORS['INVALID_MAX_FETCH'].format(201), id="too-high-max-fetch"),
-        pytest.param({'isFetch': True, 'first_fetch': '7d', 'fetch_entity_types': ['Hosts', 'Accounts'], 'max_fetch': '5'},
-                     'ok',
-                     id="all-good"),
-    ]
+        pytest.param({}, "ok", id="no-fetch"),
+        pytest.param({"isFetch": True, "first_fetch": "vectra"}, "Fetch first timestamp is invalid.", id="wrong-fetch-time"),
+        pytest.param(
+            {"isFetch": True, "first_fetch": "7 days", "fetch_entity_types": ["vectra"]},
+            'This entity type "vectra" is invalid.',
+            id="wrong-entity-type",
+        ),
+        pytest.param({"isFetch": True, "first_fetch": "7 days", "fetch_entity_types": ["Hosts"]}, "ok", id="hosts-entity"),
+        pytest.param(
+            {"isFetch": True, "first_fetch": "7 days", "fetch_entity_types": ["Hosts"], "max_fetch": "vectra"},
+            '"vectra" is an invalid value for Max incidents per fetch. The value must be between 1 to 200.',
+            id="string-max-fetch",
+        ),
+        pytest.param(
+            {"isFetch": True, "first_fetch": "7 days", "fetch_entity_types": ["Hosts"], "max_fetch": "0"},
+            '"0" is an invalid value for Max incidents per fetch. The value must be between 1 to 200.',
+            id="0-max-fetch",
+        ),
+        pytest.param(
+            {"isFetch": True, "first_fetch": "7d", "fetch_entity_types": ["Hosts", "Detections"], "max_fetch": "1"},
+            "Max incidents per fetch (1) must be >= to the number of entity types you're fetching (2)",
+            id="too-low-max-fetch",
+        ),
+        pytest.param(
+            {"isFetch": True, "first_fetch": "7d", "fetch_entity_types": ["Hosts", "Detections"], "max_fetch": "201"},
+            ERRORS["INVALID_MAX_FETCH"].format(201),
+            id="too-high-max-fetch",
+        ),
+        pytest.param(
+            {"isFetch": True, "first_fetch": "7d", "fetch_entity_types": ["Hosts", "Accounts"], "max_fetch": "5"},
+            "ok",
+            id="all-good",
+        ),
+    ],
 )
 # @freeze_time("2022-07-01 11:00:00 GMT")
-def test_test_module(requests_mock, integration_params, expected):
+def test_test_module(requests_mock, client, integration_params, expected):
     """
     Tests test_module command function.
     """
-    from VectraDetect import Client, test_module
+    from VectraDetect import test_module
 
-    account_data = load_test_data('single_account.json')
-    account_response = {'count': 1, 'results': [account_data]}
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}', json=account_response)
-    host_data = load_test_data('single_host.json')
-    host_response = {'count': 1, 'results': [host_data]}
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}', json=host_response)
-    detection_data = load_test_data('single_detection.json')
-    detection_response = {'count': 1, 'results': [detection_data]}
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}', json=detection_response)
+    account_data = load_test_data("single_account.json")
+    account_response = {"count": 1, "results": [account_data]}
+    requests_mock.get(f"{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}", json=account_response)
+    host_data = load_test_data("single_host.json")
+    host_response = {"count": 1, "results": [host_data]}
+    requests_mock.get(f"{API_URL}{API_SEARCH_ENDPOINT_HOSTS}", json=host_response)
+    detection_data = load_test_data("single_detection.json")
+    detection_response = {"count": 1, "results": [detection_data]}
+    requests_mock.get(f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}", json=detection_response)
 
-    assignment_data = load_test_data('single_assignment.json')
-    assignment_response = {'count': 1, 'results': [assignment_data]}
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}?accounts=36', json=assignment_response)
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}?hosts=472', json=assignment_response)
+    assignment_data = load_test_data("single_assignment.json")
+    assignment_response = {"count": 1, "results": [assignment_data]}
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}?accounts=36", json=assignment_response)
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}?hosts=472", json=assignment_response)
 
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_DETECTIONS}?state=active&host_id=472',
-                      complete_qs=True, json={'results': [detection_data]})
-
-    group_res = load_test_data('group_list_response.json')
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_GROUPS}', json=group_res)
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(
+        f"{API_URL}{API_ENDPOINT_DETECTIONS}?state=active&host_id=472", complete_qs=True, json={"results": [detection_data]}
     )
+
+    group_res = load_test_data("group_list_response.json")
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_GROUPS}", json=group_res)
 
     assert test_module(client=client, integration_params=integration_params) == expected
 
@@ -644,49 +659,52 @@ def test_fetch_incidents(mocker, client, requests_mock):
     - Assert that the number of fetched incidents is equal to the number of entities in the entity data.
     """
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
-    last_run = load_test_data('fetch_incidents_last_run.json')
-    mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+    last_run = load_test_data("fetch_incidents_last_run.json")
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
 
-    account_data = load_test_data('single_account.json')
-    account_response = {'count': 1, 'results': [account_data]}
-    mocker.patch.object(client, 'search_accounts', return_value=account_response)
-    host_data = load_test_data('single_host.json')
-    host_response = {'count': 1, 'results': [host_data]}
-    mocker.patch.object(client, 'search_hosts', return_value=host_response)
-    detection_data = load_test_data('single_detection.json')
-    detection_response = {'count': 1, 'results': [detection_data]}
-    mocker.patch.object(client, 'search_detections', return_value=detection_response)
+    account_data = load_test_data("single_account.json")
+    account_response = {"count": 1, "results": [account_data]}
+    mocker.patch.object(client, "search_accounts", return_value=account_response)
+    host_data = load_test_data("single_host.json")
+    host_response = {"count": 1, "results": [host_data]}
+    mocker.patch.object(client, "search_hosts", return_value=host_response)
+    detection_data = load_test_data("single_detection.json")
+    detection_response = {"count": 1, "results": [detection_data]}
+    mocker.patch.object(client, "search_detections", return_value=detection_response)
 
-    assignment_data = load_test_data('single_assignment.json')
-    assignment_response = {'count': 1, 'results': [assignment_data]}
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}?accounts=36', json=assignment_response)
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}?hosts=472', json=assignment_response)
+    assignment_data = load_test_data("single_assignment.json")
+    assignment_response = {"count": 1, "results": [assignment_data]}
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}?accounts=36", json=assignment_response)
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}?hosts=472", json=assignment_response)
 
-    assignment_data = load_test_data('single_assignment.json')
-    assignment_response = {'count': 1, 'results': [assignment_data]}
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}?accounts=36', json=assignment_response)
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}?hosts=472', json=assignment_response)
+    assignment_data = load_test_data("single_assignment.json")
+    assignment_response = {"count": 1, "results": [assignment_data]}
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}?accounts=36", json=assignment_response)
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}?hosts=472", json=assignment_response)
 
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_DETECTIONS}?state=active&host_id=472',
-                      complete_qs=True, json={'results': [detection_data]})
+    requests_mock.get(
+        f"{API_URL}{API_ENDPOINT_DETECTIONS}?state=active&host_id=472", complete_qs=True, json={"results": [detection_data]}
+    )
 
-    group_res = load_test_data('group_list_response.json')
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_GROUPS}', json=group_res)
+    group_res = load_test_data("group_list_response.json")
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_GROUPS}", json=group_res)
 
     params = {
-        'isFetch': True,
-        'first_fetch': '1 hour',
-        'max_fetch': '201',
-        'fetch_entity_types': ['Accounts', 'Hosts', 'Detections'],
-        'tags': 'hello,world'
+        "isFetch": True,
+        "first_fetch": "1 hour",
+        "max_fetch": "201",
+        "fetch_entity_types": ["Accounts", "Hosts", "Detections"],
+        "tags": "hello,world,tags%test",
+        "fetch_escalated_accounts_and_hosts": True,
     }
     new_last_run, incidents = fetch_incidents(client, params)
-    new_last_run_expected = load_test_data('fetch_incidents_new_last_run.json')
+    new_last_run_expected = load_test_data("fetch_incidents_new_last_run.json")
     assert new_last_run == new_last_run_expected
 
-    incidents_expected = load_test_data('fetch_incidents_expected.json')
+    incidents_expected = load_test_data("fetch_incidents_expected.json")
     assert incidents == incidents_expected
 
 
@@ -694,15 +712,23 @@ def test_fetch_incidents(mocker, client, requests_mock):
 @pytest.mark.parametrize(
     "query_args,expected_outputs,expected_readable,exception",
     [
-        pytest.param({'search_query_only': 'no-count'}, None, None,
-                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
-                     id="api-no-count_exception"),
-        pytest.param({'search_query': 'no-results'}, None, None,
-                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
-                     id="api-no-results_exception")
-    ]
+        pytest.param(
+            {"search_query_only": "no-count"},
+            None,
+            None,
+            pytest.raises(VectraException, match="API issue - Response is empty or invalid"),
+            id="api-no-count_exception",
+        ),
+        pytest.param(
+            {"search_query": "no-results"},
+            None,
+            None,
+            pytest.raises(VectraException, match="API issue - Response is empty or invalid"),
+            id="api-no-results_exception",
+        ),
+    ],
 )
-def test_vectra_search_accounts_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+def test_vectra_search_accounts_command(requests_mock, client, query_args, expected_outputs, expected_readable, exception):
     """
     Tests vectra_search_accounts_command command function.
     """
@@ -710,27 +736,28 @@ def test_vectra_search_accounts_command(requests_mock, query_args, expected_outp
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
-    from VectraDetect import Client, vectra_search_accounts_command
+    from VectraDetect import vectra_search_accounts_command
 
     # Default answer
     # Not implemented yet
 
     # Specific answers
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}'
-                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
-                      f'&query_string=no-count',
-                      complete_qs=True,
-                      json={'results': []})
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}'
-                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
-                      f'&query_string=account.state:"active" AND no-results',
-                      complete_qs=True,
-                      json={'count': 1})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}"
+        f"?page=1&order_field=last_detection_timestamp&page_size=200"
+        f"&query_string=no-count",
+        complete_qs=True,
+        json={"results": []},
+    )
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}"
+        f"?page=1&order_field=last_detection_timestamp&page_size=200"
+        f'&query_string=account.state:"active" AND no-results',
+        complete_qs=True,
+        json={"count": 1},
     )
 
     with exception:
@@ -744,15 +771,23 @@ def test_vectra_search_accounts_command(requests_mock, query_args, expected_outp
 @pytest.mark.parametrize(
     "query_args,expected_outputs,expected_readable,exception",
     [
-        pytest.param({'search_query_only': 'no-count'}, None, None,
-                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
-                     id="api-no-count_exception"),
-        pytest.param({'search_query': 'no-results'}, None, None,
-                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
-                     id="api-no-results_exception")
-    ]
+        pytest.param(
+            {"search_query_only": "no-count"},
+            None,
+            None,
+            pytest.raises(VectraException, match="API issue - Response is empty or invalid"),
+            id="api-no-count_exception",
+        ),
+        pytest.param(
+            {"search_query": "no-results"},
+            None,
+            None,
+            pytest.raises(VectraException, match="API issue - Response is empty or invalid"),
+            id="api-no-results_exception",
+        ),
+    ],
 )
-def test_vectra_search_detections_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+def test_vectra_search_detections_command(requests_mock, client, query_args, expected_outputs, expected_readable, exception):
     """
     Tests vectra_search_detections_command command function.
     """
@@ -760,27 +795,26 @@ def test_vectra_search_detections_command(requests_mock, query_args, expected_ou
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
-    from VectraDetect import Client, vectra_search_detections_command
+    from VectraDetect import vectra_search_detections_command
 
     # Default answer
     # Not implemented yet
 
     # Specific answers
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
-                      f'?page=1&order_field=last_timestamp&page_size=200'
-                      f'&query_string=no-count',
-                      complete_qs=True,
-                      json={'results': []})
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
-                      f'?page=1&order_field=last_timestamp&page_size=200'
-                      f'&query_string=detection.state:"active" AND no-results',
-                      complete_qs=True,
-                      json={'count': 1})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}?page=1&order_field=last_timestamp&page_size=200&query_string=no-count",
+        complete_qs=True,
+        json={"results": []},
+    )
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}"
+        f"?page=1&order_field=last_timestamp&page_size=200"
+        f'&query_string=detection.state:"active" AND no-results',
+        complete_qs=True,
+        json={"count": 1},
     )
 
     with exception:
@@ -794,15 +828,23 @@ def test_vectra_search_detections_command(requests_mock, query_args, expected_ou
 @pytest.mark.parametrize(
     "query_args,expected_outputs,expected_readable,exception",
     [
-        pytest.param({'search_query_only': 'no-count'}, None, None,
-                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
-                     id="api-no-count_exception"),
-        pytest.param({'search_query': 'no-results'}, None, None,
-                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
-                     id="api-no-results_exception")
-    ]
+        pytest.param(
+            {"search_query_only": "no-count"},
+            None,
+            None,
+            pytest.raises(VectraException, match="API issue - Response is empty or invalid"),
+            id="api-no-count_exception",
+        ),
+        pytest.param(
+            {"search_query": "no-results"},
+            None,
+            None,
+            pytest.raises(VectraException, match="API issue - Response is empty or invalid"),
+            id="api-no-results_exception",
+        ),
+    ],
 )
-def test_vectra_search_hosts_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+def test_vectra_search_hosts_command(requests_mock, client, query_args, expected_outputs, expected_readable, exception):
     """
     Tests vectra_search_hosts_command command function.
     """
@@ -810,27 +852,26 @@ def test_vectra_search_hosts_command(requests_mock, query_args, expected_outputs
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
-    from VectraDetect import Client, vectra_search_hosts_command
+    from VectraDetect import vectra_search_hosts_command
 
     # Default answer
     # Not implemented yet
 
     # Specific answers
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}'
-                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
-                      f'&query_string=no-count',
-                      complete_qs=True,
-                      json={'results': []})
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}'
-                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
-                      f'&query_string=host.state:"active" AND no-results',
-                      complete_qs=True,
-                      json={'count': 1})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_HOSTS}?page=1&order_field=last_detection_timestamp&page_size=200&query_string=no-count",
+        complete_qs=True,
+        json={"results": []},
+    )
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_HOSTS}"
+        f"?page=1&order_field=last_detection_timestamp&page_size=200"
+        f'&query_string=host.state:"active" AND no-results',
+        complete_qs=True,
+        json={"count": 1},
     )
 
     with exception:
@@ -842,26 +883,19 @@ def test_vectra_search_hosts_command(requests_mock, query_args, expected_outputs
 
 @pytest.mark.parametrize(
     "query_args,expected_outputs,expected_readable,exception",
-    [
-        pytest.param({}, [load_test_data('single_assignment_extracted.json')], None,
-                     does_not_raise(),
-                     id="full-pull")
-    ]
+    [pytest.param({}, [load_test_data("single_assignment_extracted.json")], None, does_not_raise(), id="full-pull")],
 )
-def test_vectra_search_assignments_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+def test_vectra_search_assignments_command(requests_mock, client, query_args, expected_outputs, expected_readable, exception):
     """
     Tests vectra_search_assignments_command command function.
     """
-    from VectraDetect import Client, vectra_search_assignments_command
+    from VectraDetect import vectra_search_assignments_command
 
     # Specific answers
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}'
-                      f'?resolved=false',
-                      complete_qs=True,
-                      json={'count': 1, 'results': [load_test_data('single_assignment.json')]})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(
+        f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}?resolved=false",
+        complete_qs=True,
+        json={"count": 1, "results": [load_test_data("single_assignment.json")]},
     )
 
     with exception:
@@ -871,28 +905,262 @@ def test_vectra_search_assignments_command(requests_mock, query_args, expected_o
             assert result.readable_output == expected_readable
 
 
+# Authentication Tests
+
+
+def test_generate_tokens(oauth_client, requests_mock):
+    """
+    Given:
+    - Mocked response for generating access tokens.
+    - VectraDetect Client instance.
+
+    When:
+    - Calling the `_generate_tokens` method.
+
+    Then:
+    - Ensure the generated access token matches the expected access token.
+    """
+
+    # Set up
+    access_token = "test_access_token"
+    response_data = {"access_token": access_token, "token_type": "Bearer"}
+    requests_mock.post(f"{API_URL}/oauth2/token", json=response_data, status_code=200)
+
+    token = oauth_client._generate_tokens()
+    assert token == access_token
+
+
+def test_generate_tokens_failure(oauth_client, requests_mock, mocker):
+    """
+    Given:
+    - Mocked failed response for generating access tokens.
+    - VectraDetect Client instance.
+
+    When:
+    - Calling the `_generate_tokens` method.
+
+    Then:
+    - Ensure the method raises an exception.
+    """
+    mocker.patch("VectraDetect.get_integration_context", return_value={})
+    response_data = {"message": "Invalid payload"}
+    requests_mock.post(f"{API_URL}/oauth2/token", json=response_data, status_code=401)
+
+    with pytest.raises(DemistoException) as e:
+        oauth_client._generate_tokens()
+
+    assert ERRORS["GENERAL_AUTH_ERROR"].format("401") in str(e.value)
+
+
+@pytest.mark.parametrize(
+    "resp_type,response_data,error_message",
+    [
+        ("json", {"message": "Invalid payload"}, "Failed to generate OAuth access token - no access_token in response"),
+        ("text", "Invalid Response", "Failed to parse json object from response: b'Invalid Response'"),
+    ],
+)
+def test_generate_tokens_ivalid_response(oauth_client, requests_mock, mocker, resp_type, response_data, error_message):
+    """
+    Given:
+    - Mocked failed response for generating access tokens.
+    - VectraDetect Client instance.
+
+    When:
+    - Calling the `_generate_tokens` method.
+
+    Then:
+    - Ensure the method raises an exception.
+    """
+    mocker.patch("VectraDetect.get_integration_context", return_value={})
+    if resp_type == "json":
+        requests_mock.post(f"{API_URL}/oauth2/token", json=response_data, status_code=200)
+    else:
+        requests_mock.post(f"{API_URL}/oauth2/token", text=response_data, status_code=200)
+
+    with pytest.raises(DemistoException) as e:
+        oauth_client._generate_tokens()
+
+    assert error_message in str(e.value)
+
+
+@pytest.mark.parametrize(
+    "use_oauth,expected_auth_header",
+    [
+        (False, "token test_api_token"),
+        (True, "Bearer test_access_token"),
+    ],
+)
+def test_get_auth_headers(client, oauth_client, use_oauth, expected_auth_header):
+    """
+    Given:
+    - Client configured with different authentication methods.
+
+    When:
+    - Calling _get_auth_headers method.
+
+    Then:
+    - Ensure correct authorization header is returned for each auth type.
+    """
+    headers = oauth_client._get_auth_headers() if use_oauth else client._get_auth_headers()
+
+    assert "Authorization" in headers
+    assert headers["Authorization"] == expected_auth_header
+    assert "User-Agent" in headers
+
+
+def test_http_request_oauth_token_refresh_on_401(oauth_client, mocker, requests_mock):
+    """
+    Given:
+    - Client configured with OAuth authentication.
+    - HTTP request that returns 401 (token expired).
+
+    When:
+    - Making an HTTP request that triggers token refresh.
+
+    Then:
+    - Ensure token is refreshed and request is retried successfully.
+    """
+    # Mock integration context with expired token
+    mocker.patch(
+        "VectraDetect.get_integration_context",
+        return_value={
+            "oauth_token": {"access_token": "expired_token", "expire": 0}  # Already expired
+        },
+    )
+    mock_set_context = mocker.patch("VectraDetect.set_integration_context")
+
+    # Mock first request returning 401, then success on retry
+    requests_mock.get(
+        f"{API_URL}/test",
+        [
+            {"status_code": 401, "json": {"detail": "Incorrect authentication credentials."}},
+            {"status_code": 200, "json": {"success": True}},
+        ],
+    )
+
+    # Mock token refresh endpoint with expires_in field
+    requests_mock.post(
+        f"{API_URL}/oauth2/token", json={"access_token": "refreshed_token", "token_type": "Bearer", "expires_in": 21600}
+    )
+
+    # Make request that should trigger token refresh
+    result = oauth_client.http_request("GET", "/test", resp_type="response")
+
+    # Verify token refresh was called and context was updated
+    mock_set_context.assert_called()
+    # Check that the context was updated with oauth_token structure
+    call_args = mock_set_context.call_args[0][0]
+    assert "oauth_token" in call_args
+    assert call_args["oauth_token"]["access_token"] == "refreshed_token"
+    assert "expire" in call_args["oauth_token"]
+
+    assert result.status_code == 200
+
+    # Verify that the OAuth token refresh endpoint was called
+    token_requests = [req for req in requests_mock.request_history if req.method == "POST" and "/oauth2/token" in req.url]
+    assert len(token_requests) >= 1
+    assert token_requests[0].method == "POST"
+    assert f"{API_URL}/oauth2/token" in token_requests[0].url
+
+
+def test_http_request_oauth_token_refresh_on_401_all_retries_failed(oauth_client, mocker, requests_mock):
+    """
+    Given:
+    - Client configured with OAuth authentication.
+    - HTTP request that returns 401 (token expired) for every API call.
+
+    When:
+    - Making an HTTP request that triggers token refresh.
+
+    Then:
+    - Ensure token is refreshed and request is retried successfully.
+    """
+    # Mock integration context with expired token
+    mocker.patch(
+        "VectraDetect.get_integration_context",
+        return_value={
+            "oauth_token": {"access_token": "expired_token", "expire": 0}  # Already expired
+        },
+    )
+    invalid_response = {"detail": "Incorrect authentication credentials."}
+    requests_mock.get(f"{API_URL}/test", json=invalid_response, status_code=401)
+
+    requests_mock.post(
+        f"{API_URL}/oauth2/token", json={"access_token": "refreshed_token", "token_type": "Bearer", "expires_in": 21600}
+    )
+
+    with pytest.raises(DemistoException) as err:
+        oauth_client.http_request("GET", "/test")
+
+    assert ERRORS["UNAUTHORIZED_REQUEST"].format(401, invalid_response) in str(err.value)
+
+
+@pytest.mark.parametrize(
+    "integration_params,expected_error",
+    [
+        pytest.param({}, "Missing integration setting : 'Server FQDN'"),
+        pytest.param(
+            {"server_fqdn": "test.vectra.com", "authentication_type": "API Token", "credentials": {"password": "  "}},
+            "Missing integration setting : 'Credentials password' or 'API token'",
+        ),
+        pytest.param(
+            {"server_fqdn": "test.vectra.com", "authentication_type": "OAuth 2.0", "oauth_credentials": None},
+            "Missing integration setting : 'OAuth 2.0 Credentials' are required for OAuth 2.0 authentication",
+        ),
+        pytest.param(
+            {
+                "server_fqdn": "test.vectra.com",
+                "authentication_type": "OAuth 2.0",
+                "oauth_credentials": {"identifier": "client_id", "password": "  "},
+            },
+            "Missing integration setting : 'Client ID' and 'Client Secret' are required for OAuth 2.0 authentication",
+        ),
+        pytest.param(
+            {
+                "server_fqdn": "test.vectra.com",
+                "authentication_type": "OAuth 2.0",
+                "oauth_credentials": {"identifier": "      ", "password": "client_secret"},
+            },
+            "Missing integration setting : 'Client ID' and 'Client Secret' are required for OAuth 2.0 authentication",
+        ),
+    ],
+)
+def test_main_function_authentication_invalid_params(mocker, integration_params, expected_error):
+    """
+    Given:
+    - Various integration parameter configurations.
+
+    When:
+    - Calling the main function with different authentication setups.
+
+    Then:
+    - Ensure proper authentication validation and client creation.
+    """
+    from VectraDetect import main
+
+    # Mock demisto functions
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    with pytest.raises(DemistoException) as e:
+        main()
+
+    assert expected_error in str(e.value)
+
+
 @pytest.mark.parametrize(
     "query_args,expected_outputs,expected_readable,exception",
-    [
-        pytest.param({}, [load_test_data('single_outcome_extracted.json')], None,
-                     does_not_raise(),
-                     id="full-pull")
-    ]
+    [pytest.param({}, [load_test_data("single_outcome_extracted.json")], None, does_not_raise(), id="full-pull")],
 )
-def test_vectra_search_outcomes_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+def test_vectra_search_outcomes_command(requests_mock, client, query_args, expected_outputs, expected_readable, exception):
     """
     Tests vectra_search_outcomes_command command function.
     """
-    from VectraDetect import Client, vectra_search_outcomes_command
+    from VectraDetect import vectra_search_outcomes_command
 
     # Specific answers
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_OUTCOMES}'
-                      f'?page=1&page_size=200',
-                      complete_qs=True,
-                      json={'count': 1, 'results': [load_test_data('single_outcome.json')]})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(
+        f"{API_URL}{API_ENDPOINT_OUTCOMES}?page=1&page_size=200",
+        complete_qs=True,
+        json={"count": 1, "results": [load_test_data("single_outcome.json")]},
     )
 
     with exception:
@@ -904,25 +1172,17 @@ def test_vectra_search_outcomes_command(requests_mock, query_args, expected_outp
 
 @pytest.mark.parametrize(
     "query_args,expected_outputs,expected_readable,exception",
-    [
-        pytest.param({}, [load_test_data('single_user_extracted.json')], None,
-                     does_not_raise(),
-                     id="full-pull")
-    ]
+    [pytest.param({}, [load_test_data("single_user_extracted.json")], None, does_not_raise(), id="full-pull")],
 )
-def test_vectra_search_users_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+def test_vectra_search_users_command(requests_mock, client, query_args, expected_outputs, expected_readable, exception):
     """
     Tests vectra_search_users_command command function.
     """
-    from VectraDetect import Client, vectra_search_users_command
+    from VectraDetect import vectra_search_users_command
 
     # Specific answers
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_USERS}',
-                      complete_qs=True,
-                      json={'count': 1, 'results': [load_test_data('single_user.json')]})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(
+        f"{API_URL}{API_ENDPOINT_USERS}", complete_qs=True, json={"count": 1, "results": [load_test_data("single_user.json")]}
     )
 
     with exception:
@@ -935,27 +1195,39 @@ def test_vectra_search_users_command(requests_mock, query_args, expected_outputs
 @pytest.mark.parametrize(
     "id,expected_outputs,expected_readable,exception",
     [
-        pytest.param(None, None, None,
-                     pytest.raises(VectraException, match='"id" not specified'),
-                     id="no-id_exception"),
-        pytest.param('no-count', None, None,
-                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
-                     id="api-no-count_exception"),
-        pytest.param('no-results', None, None,
-                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
-                     id="api-no-results_exception"),
-        pytest.param('multiple', None, None,
-                     pytest.raises(VectraException, match='Multiple Accounts found'),
-                     id="api-multiple-results_exception"),
-        pytest.param('1', None, 'Cannot find Account with ID "1".',
-                     does_not_raise(),
-                     id="not-found_no-exception"),
-        pytest.param('36', load_test_data('single_account_extracted.json').get('account_extract'), None,
-                     does_not_raise(),
-                     id="valid-id_no-exception"),
-    ]
+        pytest.param(None, None, None, pytest.raises(VectraException, match='"id" not specified'), id="no-id_exception"),
+        pytest.param(
+            "no-count",
+            None,
+            None,
+            pytest.raises(VectraException, match="API issue - Response is empty or invalid"),
+            id="api-no-count_exception",
+        ),
+        pytest.param(
+            "no-results",
+            None,
+            None,
+            pytest.raises(VectraException, match="API issue - Response is empty or invalid"),
+            id="api-no-results_exception",
+        ),
+        pytest.param(
+            "multiple",
+            None,
+            None,
+            pytest.raises(VectraException, match="Multiple Accounts found"),
+            id="api-multiple-results_exception",
+        ),
+        pytest.param("1", None, 'Cannot find Account with ID "1".', does_not_raise(), id="not-found_no-exception"),
+        pytest.param(
+            "36",
+            load_test_data("single_account_extracted.json").get("account_extract"),
+            None,
+            does_not_raise(),
+            id="valid-id_no-exception",
+        ),
+    ],
 )
-def test_vectra_get_account_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+def test_vectra_get_account_by_id_command(requests_mock, client, id, expected_outputs, expected_readable, exception):
     """
     Tests vectra_get_account_by_id_command command function.
     """
@@ -963,37 +1235,41 @@ def test_vectra_get_account_by_id_command(requests_mock, id, expected_outputs, e
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
-    from VectraDetect import Client, vectra_get_account_by_id_command
+    from VectraDetect import vectra_get_account_by_id_command
 
     # Default answer
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}',
-                      json={'count': 0, 'results': []})
+    requests_mock.get(f"{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}", json={"count": 0, "results": []})
     # Specific answers
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}'
-                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
-                      f'&query_string=account.id:no-count',
-                      complete_qs=True,
-                      json={'results': []})
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}'
-                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
-                      f'&query_string=account.id:no-results',
-                      complete_qs=True,
-                      json={'count': 1})
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}'
-                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
-                      f'&query_string=account.id:multiple',
-                      complete_qs=True,
-                      json={'count': 2, 'results': []})
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}'
-                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
-                      f'&query_string=account.id:36',
-                      complete_qs=True,
-                      json={'count': 1, 'results': [load_test_data('single_account.json')]})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}"
+        f"?page=1&order_field=last_detection_timestamp&page_size=200"
+        f"&query_string=account.id:no-count",
+        complete_qs=True,
+        json={"results": []},
+    )
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}"
+        f"?page=1&order_field=last_detection_timestamp&page_size=200"
+        f"&query_string=account.id:no-results",
+        complete_qs=True,
+        json={"count": 1},
+    )
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}"
+        f"?page=1&order_field=last_detection_timestamp&page_size=200"
+        f"&query_string=account.id:multiple",
+        complete_qs=True,
+        json={"count": 2, "results": []},
+    )
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}"
+        f"?page=1&order_field=last_detection_timestamp&page_size=200"
+        f"&query_string=account.id:36",
+        complete_qs=True,
+        json={"count": 1, "results": [load_test_data("single_account.json")]},
     )
 
     with exception:
@@ -1006,27 +1282,39 @@ def test_vectra_get_account_by_id_command(requests_mock, id, expected_outputs, e
 @pytest.mark.parametrize(
     "id,expected_outputs,expected_readable,exception",
     [
-        pytest.param(None, None, None,
-                     pytest.raises(VectraException, match='"id" not specified'),
-                     id="no-id_exception"),
-        pytest.param('no-count', None, None,
-                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
-                     id="api-no-count_exception"),
-        pytest.param('no-results', None, None,
-                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
-                     id="api-no-results_exception"),
-        pytest.param('multiple', None, None,
-                     pytest.raises(VectraException, match='Multiple Detections found'),
-                     id="api-multiple-results_exception"),
-        pytest.param('1', None, 'Cannot find Detection with ID "1".',
-                     does_not_raise(),
-                     id="not-found_no-exception"),
-        pytest.param('14', load_test_data('single_detection_extracted.json').get('detection_extract'), None,
-                     does_not_raise(),
-                     id="valid-id_no-exception"),
-    ]
+        pytest.param(None, None, None, pytest.raises(VectraException, match='"id" not specified'), id="no-id_exception"),
+        pytest.param(
+            "no-count",
+            None,
+            None,
+            pytest.raises(VectraException, match="API issue - Response is empty or invalid"),
+            id="api-no-count_exception",
+        ),
+        pytest.param(
+            "no-results",
+            None,
+            None,
+            pytest.raises(VectraException, match="API issue - Response is empty or invalid"),
+            id="api-no-results_exception",
+        ),
+        pytest.param(
+            "multiple",
+            None,
+            None,
+            pytest.raises(VectraException, match="Multiple Detections found"),
+            id="api-multiple-results_exception",
+        ),
+        pytest.param("1", None, 'Cannot find Detection with ID "1".', does_not_raise(), id="not-found_no-exception"),
+        pytest.param(
+            "14",
+            load_test_data("single_detection_extracted.json").get("detection_extract"),
+            None,
+            does_not_raise(),
+            id="valid-id_no-exception",
+        ),
+    ],
 )
-def test_vectra_get_detection_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+def test_vectra_get_detection_by_id_command(requests_mock, client, id, expected_outputs, expected_readable, exception):
     """
     Tests vectra_get_detection_by_id_command command function.
     """
@@ -1034,37 +1322,39 @@ def test_vectra_get_detection_by_id_command(requests_mock, id, expected_outputs,
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
-    from VectraDetect import Client, vectra_get_detection_by_id_command
+    from VectraDetect import vectra_get_detection_by_id_command
 
     # Default answer
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}',
-                      json={'count': 0, 'results': []})
+    requests_mock.get(f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}", json={"count": 0, "results": []})
     # Specific answers
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
-                      f'?page=1&order_field=last_timestamp&page_size=200'
-                      f'&query_string=detection.id:no-count',
-                      complete_qs=True,
-                      json={'results': []})
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
-                      f'?page=1&order_field=last_timestamp&page_size=200'
-                      f'&query_string=detection.id:no-results',
-                      complete_qs=True,
-                      json={'count': 1})
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
-                      f'?page=1&order_field=last_timestamp&page_size=200'
-                      f'&query_string=detection.id:multiple',
-                      complete_qs=True,
-                      json={'count': 2, 'results': []})
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}'
-                      f'?page=1&order_field=last_timestamp&page_size=200'
-                      f'&query_string=detection.id:14',
-                      complete_qs=True,
-                      json={'count': 1, 'results': [load_test_data('single_detection.json')]})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}"
+        f"?page=1&order_field=last_timestamp&page_size=200"
+        f"&query_string=detection.id:no-count",
+        complete_qs=True,
+        json={"results": []},
+    )
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}"
+        f"?page=1&order_field=last_timestamp&page_size=200"
+        f"&query_string=detection.id:no-results",
+        complete_qs=True,
+        json={"count": 1},
+    )
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}"
+        f"?page=1&order_field=last_timestamp&page_size=200"
+        f"&query_string=detection.id:multiple",
+        complete_qs=True,
+        json={"count": 2, "results": []},
+    )
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}?page=1&order_field=last_timestamp&page_size=200&query_string=detection.id:14",
+        complete_qs=True,
+        json={"count": 1, "results": [load_test_data("single_detection.json")]},
     )
 
     with exception:
@@ -1077,27 +1367,39 @@ def test_vectra_get_detection_by_id_command(requests_mock, id, expected_outputs,
 @pytest.mark.parametrize(
     "id,expected_outputs,expected_readable,exception",
     [
-        pytest.param(None, None, None,
-                     pytest.raises(VectraException, match='"id" not specified'),
-                     id="no-id_exception"),
-        pytest.param('no-count', None, None,
-                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
-                     id="api-no-count_exception"),
-        pytest.param('no-results', None, None,
-                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
-                     id="api-no-results_exception"),
-        pytest.param('multiple', None, None,
-                     pytest.raises(VectraException, match='Multiple Hosts found'),
-                     id="api-multiple-results_exception"),
-        pytest.param('1', None, 'Cannot find Host with ID "1".',
-                     does_not_raise(),
-                     id="not-found_no-exception"),
-        pytest.param('472', load_test_data('single_host_extracted.json').get('host_extract'), None,
-                     does_not_raise(),
-                     id="valid-id_no-exception"),
-    ]
+        pytest.param(None, None, None, pytest.raises(VectraException, match='"id" not specified'), id="no-id_exception"),
+        pytest.param(
+            "no-count",
+            None,
+            None,
+            pytest.raises(VectraException, match="API issue - Response is empty or invalid"),
+            id="api-no-count_exception",
+        ),
+        pytest.param(
+            "no-results",
+            None,
+            None,
+            pytest.raises(VectraException, match="API issue - Response is empty or invalid"),
+            id="api-no-results_exception",
+        ),
+        pytest.param(
+            "multiple",
+            None,
+            None,
+            pytest.raises(VectraException, match="Multiple Hosts found"),
+            id="api-multiple-results_exception",
+        ),
+        pytest.param("1", None, 'Cannot find Host with ID "1".', does_not_raise(), id="not-found_no-exception"),
+        pytest.param(
+            "472",
+            load_test_data("single_host_extracted.json").get("host_extract"),
+            None,
+            does_not_raise(),
+            id="valid-id_no-exception",
+        ),
+    ],
 )
-def test_vectra_get_host_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+def test_vectra_get_host_by_id_command(requests_mock, client, id, expected_outputs, expected_readable, exception):
     """
     Tests vectra_get_host_by_id_command command function.
     """
@@ -1105,37 +1407,41 @@ def test_vectra_get_host_by_id_command(requests_mock, id, expected_outputs, expe
     # It's used inside the forge_entity_url function
     # Need to import all module due to global variable
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
-    from VectraDetect import Client, vectra_get_host_by_id_command
+    from VectraDetect import vectra_get_host_by_id_command
 
     # Default answer
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}',
-                      json={'count': 0, 'results': []})
+    requests_mock.get(f"{API_URL}{API_SEARCH_ENDPOINT_HOSTS}", json={"count": 0, "results": []})
     # Specific answers
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}'
-                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
-                      f'&query_string=host.id:no-count',
-                      complete_qs=True,
-                      json={'results': []})
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}'
-                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
-                      f'&query_string=host.id:no-results',
-                      complete_qs=True,
-                      json={'count': 1})
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}'
-                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
-                      f'&query_string=host.id:multiple',
-                      complete_qs=True,
-                      json={'count': 2, 'results': []})
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}'
-                      f'?page=1&order_field=last_detection_timestamp&page_size=200'
-                      f'&query_string=host.id:472',
-                      complete_qs=True,
-                      json={'count': 1, 'results': [load_test_data('single_host.json')]})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_HOSTS}"
+        f"?page=1&order_field=last_detection_timestamp&page_size=200"
+        f"&query_string=host.id:no-count",
+        complete_qs=True,
+        json={"results": []},
+    )
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_HOSTS}"
+        f"?page=1&order_field=last_detection_timestamp&page_size=200"
+        f"&query_string=host.id:no-results",
+        complete_qs=True,
+        json={"count": 1},
+    )
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_HOSTS}"
+        f"?page=1&order_field=last_detection_timestamp&page_size=200"
+        f"&query_string=host.id:multiple",
+        complete_qs=True,
+        json={"count": 2, "results": []},
+    )
+    requests_mock.get(
+        f"{API_URL}{API_SEARCH_ENDPOINT_HOSTS}"
+        f"?page=1&order_field=last_detection_timestamp&page_size=200"
+        f"&query_string=host.id:472",
+        complete_qs=True,
+        json={"count": 1, "results": [load_test_data("single_host.json")]},
     )
 
     with exception:
@@ -1149,30 +1455,22 @@ def test_vectra_get_host_by_id_command(requests_mock, id, expected_outputs, expe
 @pytest.mark.parametrize(
     "id,expected,exception",
     [
-        pytest.param(None, None,
-                     pytest.raises(VectraException, match='"id" not specified'),
-                     id="no-id_exception"),
-        pytest.param('15', None,
-                     pytest.raises(DemistoException, match='Error in API call'),
-                     id="no-pcap_exception"),
-    ]
+        pytest.param(None, None, pytest.raises(VectraException, match='"id" not specified'), id="no-id_exception"),
+        pytest.param("15", None, pytest.raises(DemistoException, match="Error in API call"), id="no-pcap_exception"),
+    ],
 )
-def test_get_detection_pcap_file_command(requests_mock, id, expected, exception):
+def test_get_detection_pcap_file_command(requests_mock, client, id, expected, exception):
     """
     Tests get_detection_pcap_file_command command function.
     """
-    from VectraDetect import Client, get_detection_pcap_file_command
+    from VectraDetect import get_detection_pcap_file_command
 
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_DETECTIONS}/10/pcap',
-                      complete_qs=True,
-                      content=b"0000")
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_DETECTIONS}/15/pcap',
-                      complete_qs=True,
-                      status_code=404,
-                      json={"status": 404, "reason": "File Not Found"})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_DETECTIONS}/10/pcap", complete_qs=True, content=b"0000")
+    requests_mock.get(
+        f"{API_URL}{API_ENDPOINT_DETECTIONS}/15/pcap",
+        complete_qs=True,
+        status_code=404,
+        json={"status": 404, "reason": "File Not Found"},
     )
 
     with exception:
@@ -1182,35 +1480,31 @@ def test_get_detection_pcap_file_command(requests_mock, id, expected, exception)
 @pytest.mark.parametrize(
     "id,fixed,expected_outputs,expected_readable,exception",
     [
-        pytest.param(None, None, None, None,
-                     pytest.raises(VectraException, match='"id" not specified'),
-                     id="no-id_exception"),
-        pytest.param('12', None, None, None,
-                     pytest.raises(VectraException, match='"fixed" not specified'),
-                     id="no-fixed_exception"),
-        pytest.param('12', 'vectra', None, None,
-                     pytest.raises(VectraException, match='"fixed" not specified'),
-                     id="no-fixed_exception"),
-        pytest.param('12', 'true', None, 'Detection "12" successfully marked as fixed.',
-                     does_not_raise(),
-                     id="fixed_no-exception"),
-        pytest.param('12', 'no', None, 'Detection "12" successfully unmarked as fixed.',
-                     does_not_raise(),
-                     id="unfixed_no-exception"),
-    ]
+        pytest.param(None, None, None, None, pytest.raises(VectraException, match='"id" not specified'), id="no-id_exception"),
+        pytest.param(
+            "12", None, None, None, pytest.raises(VectraException, match='"fixed" not specified'), id="no-fixed_exception"
+        ),
+        pytest.param(
+            "12", "vectra", None, None, pytest.raises(VectraException, match='"fixed" not specified'), id="no-fixed_exception"
+        ),
+        pytest.param(
+            "12", "true", None, 'Detection "12" successfully marked as fixed.', does_not_raise(), id="fixed_no-exception"
+        ),
+        pytest.param(
+            "12", "no", None, 'Detection "12" successfully unmarked as fixed.', does_not_raise(), id="unfixed_no-exception"
+        ),
+    ],
 )
-def test_mark_detection_as_fixed_command(requests_mock, id, fixed, expected_outputs, expected_readable, exception):
+def test_mark_detection_as_fixed_command(requests_mock, client, id, fixed, expected_outputs, expected_readable, exception):
     """
     Tests mark_detection_as_fixed_command command function.
     """
-    from VectraDetect import Client, mark_detection_as_fixed_command
+    from VectraDetect import mark_detection_as_fixed_command
 
-    requests_mock.patch(f'{API_URL}{API_ENDPOINT_DETECTIONS}',
-                        complete_qs=True,
-                        json={"_meta": {"level": "Success", "message": "Successfully marked detections"}})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.patch(
+        f"{API_URL}{API_ENDPOINT_DETECTIONS}",
+        complete_qs=True,
+        json={"_meta": {"level": "Success", "message": "Successfully marked detections"}},
     )
 
     with exception:
@@ -1223,31 +1517,25 @@ def test_mark_detection_as_fixed_command(requests_mock, id, fixed, expected_outp
 @pytest.mark.parametrize(
     "id,expected_outputs,expected_readable,exception",
     [
-        pytest.param(None, None, None,
-                     pytest.raises(VectraException, match='"id" not specified'),
-                     id="none-id_exception"),
-        pytest.param('25', load_test_data('single_assignment_extracted.json'), None,
-                     does_not_raise(),
-                     id="valid-id_no-exception"),
-    ]
+        pytest.param(None, None, None, pytest.raises(VectraException, match='"id" not specified'), id="none-id_exception"),
+        pytest.param(
+            "25", load_test_data("single_assignment_extracted.json"), None, does_not_raise(), id="valid-id_no-exception"
+        ),
+    ],
 )
-def test_vectra_get_assignment_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+def test_vectra_get_assignment_by_id_command(requests_mock, client, id, expected_outputs, expected_readable, exception):
     """
     Tests vectra_get_assignment_by_id_command command function.
     """
-    from VectraDetect import Client, vectra_get_assignment_by_id_command
+    from VectraDetect import vectra_get_assignment_by_id_command
 
     # Default answer
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}',
-                      json={})
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}", json={})
     # Specific answers
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}'
-                      f'/25',
-                      complete_qs=True,
-                      json={'assignment': load_test_data('single_assignment.json')})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(
+        f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}/25",
+        complete_qs=True,
+        json={"assignment": load_test_data("single_assignment.json")},
     )
 
     with exception:
@@ -1261,69 +1549,131 @@ def test_vectra_get_assignment_by_id_command(requests_mock, id, expected_outputs
 @pytest.mark.parametrize(
     "assignee_id,account_id,host_id,assignment_id,expected_outputs,expected_readable,exception",
     [
-        pytest.param(None, None, None, None, None, None,
-                     pytest.raises(VectraException, match='"assignee_id" not specified'),
-                     id="none-assignee-id_exception"),
-        pytest.param('1', None, None, None, None, None,
-                     pytest.raises(VectraException,
-                                   match='You must specify one of "assignment_id", "account_id" or "host_id"'),
-                     id="none-entity-ids_exception"),
-        pytest.param('1', '2', '3', None, None, None,
-                     pytest.raises(VectraException,
-                                   match='You must specify one of "assignment_id", "account_id" or "host_id"'),
-                     id="account-and-host-ids_exception"),
-        pytest.param('1', '2', None, '4', None, None,
-                     pytest.raises(VectraException,
-                                   match='You must specify one of "assignment_id", "account_id" or "host_id"'),
-                     id="account-and-assignment-ids_exception"),
-        pytest.param('1', None, '3', '4', None, None,
-                     pytest.raises(VectraException,
-                                   match='You must specify one of "assignment_id", "account_id" or "host_id"'),
-                     id="host-and-assignment-ids_exception"),
-        pytest.param('1', '2', '3', '4', None, None,
-                     pytest.raises(VectraException,
-                                   match='You must specify one of "assignment_id", "account_id" or "host_id"'),
-                     id="all-ids_exception"),
-        pytest.param('text-id', None, None, '4', None, None,
-                     pytest.raises(ValueError, match='"assignee_id" value is invalid'),
-                     id="text-assignee-id_exception"),
-        pytest.param('1', 'text-id', None, None, None, None,
-                     pytest.raises(ValueError, match='"account_id" value is invalid'),
-                     id="text-account-id_exception"),
-        pytest.param('1', None, 'text-id', None, None, None,
-                     pytest.raises(ValueError, match='"host_id" value is invalid'),
-                     id="text-host-id_exception"),
-        pytest.param('1', None, None, 'text-id', None, None,
-                     pytest.raises(ValueError, match='"assignment_id" value is invalid'),
-                     id="text-assignment-id_exception"),
-        pytest.param('1', None, None, '25', load_test_data('single_assignment_extracted.json'), None,
-                     does_not_raise(),
-                     id="assignment_ok"),
-    ]
+        pytest.param(
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            pytest.raises(VectraException, match='"assignee_id" not specified'),
+            id="none-assignee-id_exception",
+        ),
+        pytest.param(
+            "1",
+            None,
+            None,
+            None,
+            None,
+            None,
+            pytest.raises(VectraException, match='You must specify one of "assignment_id", "account_id" or "host_id"'),
+            id="none-entity-ids_exception",
+        ),
+        pytest.param(
+            "1",
+            "2",
+            "3",
+            None,
+            None,
+            None,
+            pytest.raises(VectraException, match='You must specify one of "assignment_id", "account_id" or "host_id"'),
+            id="account-and-host-ids_exception",
+        ),
+        pytest.param(
+            "1",
+            "2",
+            None,
+            "4",
+            None,
+            None,
+            pytest.raises(VectraException, match='You must specify one of "assignment_id", "account_id" or "host_id"'),
+            id="account-and-assignment-ids_exception",
+        ),
+        pytest.param(
+            "1",
+            None,
+            "3",
+            "4",
+            None,
+            None,
+            pytest.raises(VectraException, match='You must specify one of "assignment_id", "account_id" or "host_id"'),
+            id="host-and-assignment-ids_exception",
+        ),
+        pytest.param(
+            "1",
+            "2",
+            "3",
+            "4",
+            None,
+            None,
+            pytest.raises(VectraException, match='You must specify one of "assignment_id", "account_id" or "host_id"'),
+            id="all-ids_exception",
+        ),
+        pytest.param(
+            "text-id",
+            None,
+            None,
+            "4",
+            None,
+            None,
+            pytest.raises(ValueError, match='"assignee_id" value is invalid'),
+            id="text-assignee-id_exception",
+        ),
+        pytest.param(
+            "1",
+            "text-id",
+            None,
+            None,
+            None,
+            None,
+            pytest.raises(ValueError, match='"account_id" value is invalid'),
+            id="text-account-id_exception",
+        ),
+        pytest.param(
+            "1",
+            None,
+            "text-id",
+            None,
+            None,
+            None,
+            pytest.raises(ValueError, match='"host_id" value is invalid'),
+            id="text-host-id_exception",
+        ),
+        pytest.param(
+            "1",
+            None,
+            None,
+            "text-id",
+            None,
+            None,
+            pytest.raises(ValueError, match='"assignment_id" value is invalid'),
+            id="text-assignment-id_exception",
+        ),
+        pytest.param(
+            "1", None, None, "25", load_test_data("single_assignment_extracted.json"), None, does_not_raise(), id="assignment_ok"
+        ),
+    ],
 )
-def test_vectra_assignment_assign_command(requests_mock,
-                                          assignee_id, account_id, host_id, assignment_id,
-                                          expected_outputs, expected_readable, exception):
+def test_vectra_assignment_assign_command(
+    requests_mock, client, assignee_id, account_id, host_id, assignment_id, expected_outputs, expected_readable, exception
+):
     """
     Tests vectra_assignment_assign_command command function.
     """
-    from VectraDetect import Client, vectra_assignment_assign_command
+    from VectraDetect import vectra_assignment_assign_command
 
     # Test answer, useless to check XSOAR inner exceptions (none API call raised)
     # Need to create inner checks based on post query body to have a better coverage
-    requests_mock.put(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}'
-                      '/25',
-                      complete_qs=True,
-                      json={'assignment': load_test_data('single_assignment.json')})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.put(
+        f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}/25",
+        complete_qs=True,
+        json={"assignment": load_test_data("single_assignment.json")},
     )
 
     with exception:
-        result = vectra_assignment_assign_command(client=client, assignee_id=assignee_id,
-                                                  account_id=account_id, host_id=host_id,
-                                                  assignment_id=assignment_id)
+        result = vectra_assignment_assign_command(
+            client=client, assignee_id=assignee_id, account_id=account_id, host_id=host_id, assignment_id=assignment_id
+        )
         assert result.outputs == expected_outputs
         if expected_outputs is None:
             assert result.readable_output == expected_readable
@@ -1334,64 +1684,140 @@ def test_vectra_assignment_assign_command(requests_mock,
     "assignment_id,outcome_id,note,detections_filter,filter_rule_name,detections_list,"
     "expected_outputs,expected_readable,exception",
     [
-        pytest.param(None, None, None, None, None, None,
-                     None, None,
-                     pytest.raises(VectraException, match='"assignment_id" not specified'),
-                     id="none-assignment-id_exception"),
-        pytest.param('1', None, None, None, None, None,
-                     None, None,
-                     pytest.raises(VectraException, match='"outcome_id" not specified'),
-                     id="none-outcome-id_exception"),
-        pytest.param('1', '2', None, 'Filter Rule', None, None,
-                     None, None,
-                     pytest.raises(VectraException, match='"filter_rule_name" not specified'),
-                     id="none-filter-rule-name_exception"),
-        pytest.param('1', '2', None, 'Filter Rule', 'Dummy Name', None,
-                     None, None,
-                     pytest.raises(VectraException, match='"detections_list" not specified'),
-                     id="none-detections-list_exception"),
-        pytest.param('text-id', '2', None, None, None, None,
-                     None, None,
-                     pytest.raises(ValueError, match='"assignment_id" value is invalid'),
-                     id="text-assignment-id_exception"),
-        pytest.param('1', 'text-id', None, None, None, None,
-                     None, None,
-                     pytest.raises(ValueError, match='"outcome_id" value is invalid'),
-                     id="text-outcome-id_exception"),
-        pytest.param('1', '2', None, 'Filter Rule', 'Dummy Name', ',',
-                     None, None,
-                     pytest.raises(ValueError, match='"detections_list" value is invalid'),
-                     id="wrong-detections-list_exception"),
-        pytest.param('25', '4', None, 'Filter Rule', "Test-Triage", "2201, 2202, 2203",
-                     load_test_data('single_assignment_extracted.json'), None,
-                     does_not_raise(),
-                     id="assignment-resolution_ok"),
-    ]
+        pytest.param(
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            pytest.raises(VectraException, match='"assignment_id" not specified'),
+            id="none-assignment-id_exception",
+        ),
+        pytest.param(
+            "1",
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            pytest.raises(VectraException, match='"outcome_id" not specified'),
+            id="none-outcome-id_exception",
+        ),
+        pytest.param(
+            "1",
+            "2",
+            None,
+            "Filter Rule",
+            None,
+            None,
+            None,
+            None,
+            pytest.raises(VectraException, match='"filter_rule_name" not specified'),
+            id="none-filter-rule-name_exception",
+        ),
+        pytest.param(
+            "1",
+            "2",
+            None,
+            "Filter Rule",
+            "Dummy Name",
+            None,
+            None,
+            None,
+            pytest.raises(VectraException, match='"detections_list" not specified'),
+            id="none-detections-list_exception",
+        ),
+        pytest.param(
+            "text-id",
+            "2",
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            pytest.raises(ValueError, match='"assignment_id" value is invalid'),
+            id="text-assignment-id_exception",
+        ),
+        pytest.param(
+            "1",
+            "text-id",
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            pytest.raises(ValueError, match='"outcome_id" value is invalid'),
+            id="text-outcome-id_exception",
+        ),
+        pytest.param(
+            "1",
+            "2",
+            None,
+            "Filter Rule",
+            "Dummy Name",
+            ",",
+            None,
+            None,
+            pytest.raises(ValueError, match='"detections_list" value is invalid'),
+            id="wrong-detections-list_exception",
+        ),
+        pytest.param(
+            "25",
+            "4",
+            None,
+            "Filter Rule",
+            "Test-Triage",
+            "2201, 2202, 2203",
+            load_test_data("single_assignment_extracted.json"),
+            None,
+            does_not_raise(),
+            id="assignment-resolution_ok",
+        ),
+    ],
 )
-def test_vectra_assignment_resolve_command(requests_mock,
-                                           assignment_id, outcome_id, note,
-                                           detections_filter, filter_rule_name, detections_list,
-                                           expected_outputs, expected_readable, exception):
+def test_vectra_assignment_resolve_command(
+    requests_mock,
+    client,
+    assignment_id,
+    outcome_id,
+    note,
+    detections_filter,
+    filter_rule_name,
+    detections_list,
+    expected_outputs,
+    expected_readable,
+    exception,
+):
     """
     Tests vectra_assignment_resolve_command command function.
     """
-    from VectraDetect import Client, vectra_assignment_resolve_command
+    from VectraDetect import vectra_assignment_resolve_command
 
     # Default answer, useless to check XSOAR inner exceptions (none API call raised)
     # Need to create inner checks based on post query body to have a better coverage
-    requests_mock.put(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}'
-                      '/25/resolve',
-                      complete_qs=True,
-                      json={'assignment': load_test_data('single_assignment.json')})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.put(
+        f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}/25/resolve",
+        complete_qs=True,
+        json={"assignment": load_test_data("single_assignment.json")},
     )
 
     with exception:
-        result = vectra_assignment_resolve_command(client=client, assignment_id=assignment_id, outcome_id=outcome_id, note=note,
-                                                   detections_filter=detections_filter, filter_rule_name=filter_rule_name,
-                                                   detections_list=detections_list)
+        result = vectra_assignment_resolve_command(
+            client=client,
+            assignment_id=assignment_id,
+            outcome_id=outcome_id,
+            note=note,
+            detections_filter=detections_filter,
+            filter_rule_name=filter_rule_name,
+            detections_list=detections_list,
+        )
         assert result.outputs == expected_outputs
         if expected_outputs is None:
             assert result.readable_output == expected_readable
@@ -1400,32 +1826,23 @@ def test_vectra_assignment_resolve_command(requests_mock,
 @pytest.mark.parametrize(
     "id,expected_outputs,expected_readable,exception",
     [
-        pytest.param(None, None, None,
-                     pytest.raises(VectraException, match='"id" not specified'),
-                     id="no-id_exception"),
-        pytest.param('4', load_test_data('single_outcome_extracted.json'), None,
-                     does_not_raise(),
-                     id="valid-id_no-exception"),
-    ]
+        pytest.param(None, None, None, pytest.raises(VectraException, match='"id" not specified'), id="no-id_exception"),
+        pytest.param("4", load_test_data("single_outcome_extracted.json"), None, does_not_raise(), id="valid-id_no-exception"),
+    ],
 )
-def test_vectra_get_outcome_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+def test_vectra_get_outcome_by_id_command(requests_mock, client, id, expected_outputs, expected_readable, exception):
     """
     Tests vectra_get_outcome_by_id_command command function.
     """
-    from VectraDetect import Client, vectra_get_outcome_by_id_command
+    from VectraDetect import vectra_get_outcome_by_id_command
 
     # Default answer
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_OUTCOMES}',
-                      json={})
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_OUTCOMES}", json={})
     # Specific answers
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_OUTCOMES}'
-                      f'/4'
-                      f'?page=1&page_size=200',
-                      complete_qs=True,
-                      json=load_test_data('single_outcome.json'))
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
+    requests_mock.get(
+        f"{API_URL}{API_ENDPOINT_OUTCOMES}/4?page=1&page_size=200",
+        complete_qs=True,
+        json=load_test_data("single_outcome.json"),
     )
 
     with exception:
@@ -1438,40 +1855,64 @@ def test_vectra_get_outcome_by_id_command(requests_mock, id, expected_outputs, e
 @pytest.mark.parametrize(
     "category,title,expected_outputs,expected_readable,exception",
     [
-        pytest.param(None, "Dummy-Title", None, None,
-                     pytest.raises(VectraException, match='"category" not specified'),
-                     id="none-category_exception"),
-        pytest.param('', "Dummy-Title", None, None,
-                     pytest.raises(VectraException, match='"category" not specified'),
-                     id="empty-category_exception"),
-        pytest.param("False Positive", None, None, None,
-                     pytest.raises(VectraException, match='"title" not specified'),
-                     id="none-title_exception"),
-        pytest.param("Wrong Category", "Dummy-Title", None, None,
-                     pytest.raises(ValueError, match='"category" value is invalid'),
-                     id="wrong-category_exception"),
-        pytest.param("False Positive", '', None, None,
-                     pytest.raises(VectraException, match='"title" not specified'),
-                     id="empty-title_exception"),
-        pytest.param('Benign True Positive', 'Vectra Outcome Test True Positive',
-                     load_test_data('single_outcome_extracted.json'), None,
-                     does_not_raise(),
-                     id="valid_no-exception"),
-    ]
+        pytest.param(
+            None,
+            "Dummy-Title",
+            None,
+            None,
+            pytest.raises(VectraException, match='"category" not specified'),
+            id="none-category_exception",
+        ),
+        pytest.param(
+            "",
+            "Dummy-Title",
+            None,
+            None,
+            pytest.raises(VectraException, match='"category" not specified'),
+            id="empty-category_exception",
+        ),
+        pytest.param(
+            "False Positive",
+            None,
+            None,
+            None,
+            pytest.raises(VectraException, match='"title" not specified'),
+            id="none-title_exception",
+        ),
+        pytest.param(
+            "Wrong Category",
+            "Dummy-Title",
+            None,
+            None,
+            pytest.raises(ValueError, match='"category" value is invalid'),
+            id="wrong-category_exception",
+        ),
+        pytest.param(
+            "False Positive",
+            "",
+            None,
+            None,
+            pytest.raises(VectraException, match='"title" not specified'),
+            id="empty-title_exception",
+        ),
+        pytest.param(
+            "Benign True Positive",
+            "Vectra Outcome Test True Positive",
+            load_test_data("single_outcome_extracted.json"),
+            None,
+            does_not_raise(),
+            id="valid_no-exception",
+        ),
+    ],
 )
-def test_vectra_outcome_create_command(requests_mock, category, title, expected_outputs, expected_readable, exception):
+def test_vectra_outcome_create_command(requests_mock, client, category, title, expected_outputs, expected_readable, exception):
     """
     Tests vectra_outcome_create_command command function.
     """
-    from VectraDetect import Client, vectra_outcome_create_command
+    from VectraDetect import vectra_outcome_create_command
 
     # Test post
-    requests_mock.post(f'{API_URL}{API_ENDPOINT_OUTCOMES}',
-                       json=load_test_data('single_outcome.json'))
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
-    )
+    requests_mock.post(f"{API_URL}{API_ENDPOINT_OUTCOMES}", json=load_test_data("single_outcome.json"))
 
     with exception:
         result = vectra_outcome_create_command(client=client, category=category, title=title)
@@ -1483,32 +1924,20 @@ def test_vectra_outcome_create_command(requests_mock, category, title, expected_
 @pytest.mark.parametrize(
     "id,expected_outputs,expected_readable,exception",
     [
-        pytest.param(None, None, None,
-                     pytest.raises(VectraException, match='"id" not specified'),
-                     id="no-id_exception"),
-        pytest.param('123', load_test_data('single_user_extracted.json'), None,
-                     does_not_raise(),
-                     id="valid-id_no-exception"),
-    ]
+        pytest.param(None, None, None, pytest.raises(VectraException, match='"id" not specified'), id="no-id_exception"),
+        pytest.param("123", load_test_data("single_user_extracted.json"), None, does_not_raise(), id="valid-id_no-exception"),
+    ],
 )
-def test_vectra_get_user_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+def test_vectra_get_user_by_id_command(requests_mock, client, id, expected_outputs, expected_readable, exception):
     """
     Tests vectra_get_user_by_id_command command function.
     """
-    from VectraDetect import Client, vectra_get_user_by_id_command
+    from VectraDetect import vectra_get_user_by_id_command
 
     # Default answer
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_USERS}',
-                      json={})
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_USERS}", json={})
     # Specific answers
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_USERS}'
-                      f'/123',
-                      complete_qs=True,
-                      json=load_test_data('single_user.json'))
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
-    )
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_USERS}/123", complete_qs=True, json=load_test_data("single_user.json"))
 
     with exception:
         result = vectra_get_user_by_id_command(client=client, id=id)
@@ -1520,39 +1949,49 @@ def test_vectra_get_user_by_id_command(requests_mock, id, expected_outputs, expe
 @pytest.mark.parametrize(
     "type,id,tags,expected_outputs,expected_readable,exception",
     [
-        pytest.param(None, None, None, None, None,
-                     pytest.raises(VectraException, match='"type" not specified'),
-                     id="no-type_exception"),
-        pytest.param('accounts', None, None, None, None,
-                     pytest.raises(VectraException, match='"id" not specified'),
-                     id="no-id_exception"),
-        pytest.param('accounts', '12', None, None, None,
-                     pytest.raises(VectraException, match='"tags" not specified'),
-                     id="no-tags_exception"),
-        pytest.param('accounts', '12', 'vectra', None, 'Tags "vectra" successfully added.',
-                     does_not_raise(),
-                     id="del-account-tag_no-exception"),
-        pytest.param('accounts', '12', 'vectra-1,Vectra-2', None, 'Tags "vectra-1,Vectra-2" successfully added.',
-                     does_not_raise(),
-                     id="del-account-tags_no-exception"),
-    ]
+        pytest.param(
+            None, None, None, None, None, pytest.raises(VectraException, match='"type" not specified'), id="no-type_exception"
+        ),
+        pytest.param(
+            "accounts", None, None, None, None, pytest.raises(VectraException, match='"id" not specified'), id="no-id_exception"
+        ),
+        pytest.param(
+            "accounts",
+            "12",
+            None,
+            None,
+            None,
+            pytest.raises(VectraException, match='"tags" not specified'),
+            id="no-tags_exception",
+        ),
+        pytest.param(
+            "accounts",
+            "12",
+            "vectra",
+            None,
+            'Tags "vectra" successfully added.',
+            does_not_raise(),
+            id="del-account-tag_no-exception",
+        ),
+        pytest.param(
+            "accounts",
+            "12",
+            "vectra-1,Vectra-2",
+            None,
+            'Tags "vectra-1,Vectra-2" successfully added.',
+            does_not_raise(),
+            id="del-account-tags_no-exception",
+        ),
+    ],
 )
-def test_add_tags_command(requests_mock, type, id, tags, expected_outputs, expected_readable, exception):
+def test_add_tags_command(requests_mock, client, type, id, tags, expected_outputs, expected_readable, exception):
     """
     Tests add_tags_command command function.
     """
-    from VectraDetect import Client, add_tags_command
+    from VectraDetect import add_tags_command
 
-    requests_mock.get(f'{API_URL}{API_TAGGING}/{type}/{id}',
-                      complete_qs=True,
-                      json={'tags': ['vectra']})
-    requests_mock.patch(f'{API_URL}{API_TAGGING}/{type}/{id}',
-                        complete_qs=True,
-                        json={'tags': ['vectra']})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
-    )
+    requests_mock.get(f"{API_URL}{API_TAGGING}/{type}/{id}", complete_qs=True, json={"tags": ["vectra"]})
+    requests_mock.patch(f"{API_URL}{API_TAGGING}/{type}/{id}", complete_qs=True, json={"tags": ["vectra"]})
 
     with exception:
         result = add_tags_command(client=client, type=type, id=id, tags=tags)
@@ -1564,39 +2003,49 @@ def test_add_tags_command(requests_mock, type, id, tags, expected_outputs, expec
 @pytest.mark.parametrize(
     "type,id,tags,expected_outputs,expected_readable,exception",
     [
-        pytest.param(None, None, None, None, None,
-                     pytest.raises(VectraException, match='"type" not specified'),
-                     id="no-type_exception"),
-        pytest.param('accounts', None, None, None, None,
-                     pytest.raises(VectraException, match='"id" not specified'),
-                     id="no-id_exception"),
-        pytest.param('accounts', '12', None, None, None,
-                     pytest.raises(VectraException, match='"tags" not specified'),
-                     id="no-tags_exception"),
-        pytest.param('accounts', '12', 'vectra', None, 'Tags "vectra" successfully deleted.',
-                     does_not_raise(),
-                     id="del-account-tag_no-exception"),
-        pytest.param('accounts', '12', 'vectra-1,Vectra-2', None, 'Tags "vectra-1,Vectra-2" successfully deleted.',
-                     does_not_raise(),
-                     id="del-account-tags_no-exception"),
-    ]
+        pytest.param(
+            None, None, None, None, None, pytest.raises(VectraException, match='"type" not specified'), id="no-type_exception"
+        ),
+        pytest.param(
+            "accounts", None, None, None, None, pytest.raises(VectraException, match='"id" not specified'), id="no-id_exception"
+        ),
+        pytest.param(
+            "accounts",
+            "12",
+            None,
+            None,
+            None,
+            pytest.raises(VectraException, match='"tags" not specified'),
+            id="no-tags_exception",
+        ),
+        pytest.param(
+            "accounts",
+            "12",
+            "vectra",
+            None,
+            'Tags "vectra" successfully deleted.',
+            does_not_raise(),
+            id="del-account-tag_no-exception",
+        ),
+        pytest.param(
+            "accounts",
+            "12",
+            "vectra-1,Vectra-2",
+            None,
+            'Tags "vectra-1,Vectra-2" successfully deleted.',
+            does_not_raise(),
+            id="del-account-tags_no-exception",
+        ),
+    ],
 )
-def test_del_tags_command(requests_mock, type, id, tags, expected_outputs, expected_readable, exception):
+def test_del_tags_command(requests_mock, client, type, id, tags, expected_outputs, expected_readable, exception):
     """
     Tests del_tags_command command function.
     """
-    from VectraDetect import Client, del_tags_command
+    from VectraDetect import del_tags_command
 
-    requests_mock.get(f'{API_URL}{API_TAGGING}/{type}/{id}',
-                      complete_qs=True,
-                      json={'tags': ['vectra']})
-    requests_mock.patch(f'{API_URL}{API_TAGGING}/{type}/{id}',
-                        complete_qs=True,
-                        json={'tags': ['vectra']})
-
-    client = Client(
-        base_url=f'{API_URL}', headers={}
-    )
+    requests_mock.get(f"{API_URL}{API_TAGGING}/{type}/{id}", complete_qs=True, json={"tags": ["vectra"]})
+    requests_mock.patch(f"{API_URL}{API_TAGGING}/{type}/{id}", complete_qs=True, json={"tags": ["vectra"]})
 
     with exception:
         result = del_tags_command(client=client, type=type, id=id, tags=tags)
@@ -1618,16 +2067,16 @@ def test_get_modified_remote_command_successful_retrieval(client, mocker, reques
     Then:
     - Calling the 'get_modified_remote_data_command' function with the provided client and arguments.
     """
-    mocker.patch.object(demisto, 'args', return_value={"lastUpdate": "2023-09-20T10:00:00+00:00"})
-    mocker.patch.object(Client, 'search_accounts', return_value={"results": [], "next": None})
+    mocker.patch.object(demisto, "args", return_value={"lastUpdate": "2023-09-20T10:00:00+00:00"})
+    mocker.patch.object(Client, "search_accounts", return_value={"results": [], "next": None})
 
-    response = load_test_data('search_hosts_response.json')
-    requests_mock.get(f'{API_URL}{API_SEARCH_ENDPOINT_HOSTS}', json=response, status_code=200)
+    response = load_test_data("search_hosts_response.json")
+    requests_mock.get(f"{API_URL}{API_SEARCH_ENDPOINT_HOSTS}", json=response, status_code=200)
 
     get_modified_remote_return = {
-        'Contents': get_modified_remote_data_command(client=client).to_entry().get('Contents'),
-        'ContentsFormat': 'json',
-        'Type': 1,
+        "Contents": get_modified_remote_data_command(client=client).to_entry().get("Contents"),
+        "ContentsFormat": "json",
+        "Type": 1,
     }
 
     assert get_modified_remote_data_command(client=client).to_entry() == get_modified_remote_return
@@ -1647,16 +2096,16 @@ def test_get_modified_remote_command_max_mirroring_limit_reached(client, mocker)
     Then:
     - Calling the 'get_modified_remote_data_command' function with the provided client and arguments.
     """
-    mocker.patch.object(demisto, 'args', return_value={"lastUpdate": "2023-09-20T10:00:00+00:00"})
-    mocker.patch.object(Client, 'search_accounts', return_value={"results": [], "next": None})
-    mocker.patch.object(client, 'search_hosts',
-                        return_value={"results": [{"id": id, "type": "host"} for id in range(1, 2550)],
-                                      "next": None})
+    mocker.patch.object(demisto, "args", return_value={"lastUpdate": "2023-09-20T10:00:00+00:00"})
+    mocker.patch.object(Client, "search_accounts", return_value={"results": [], "next": None})
+    mocker.patch.object(
+        client, "search_hosts", return_value={"results": [{"id": id, "type": "host"} for id in range(1, 2550)], "next": None}
+    )
 
     get_modified_remote_return = {
-        'Contents': get_modified_remote_data_command(client=client).to_entry().get('Contents'),
-        'ContentsFormat': 'json',
-        'Type': 1,
+        "Contents": get_modified_remote_data_command(client=client).to_entry().get("Contents"),
+        "ContentsFormat": "json",
+        "Type": 1,
     }
 
     assert get_modified_remote_data_command(client=client).to_entry() == get_modified_remote_return
@@ -1676,23 +2125,22 @@ def test_get_remote_data_command_when_detections_found(mocker, client, requests_
     - Assert that the reopening entry exists.
     """
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
-    host_data = {"id": 1, "last_modified": "2023-09-20T19:00:00+00:00",
-                 "certainty": 90,
-                 "notes": []}
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_HOST}/1', json=host_data, status_code=200)
-    mocker.patch.object(client, 'get_account_by_account_id', return_value={})
+    host_data = {"id": 1, "last_modified": "2023-09-20T19:00:00+00:00", "certainty": 90, "notes": []}
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_HOST}/1", json=host_data, status_code=200)
+    mocker.patch.object(client, "get_account_by_account_id", return_value={})
 
-    detection_data = load_test_data('list_detection_by_host_id_response.json')
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_DETECTIONS}?host_id=1', json=detection_data, status_code=200)
+    detection_data = load_test_data("list_detection_by_host_id_response.json")
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_DETECTIONS}?host_id=1", json=detection_data, status_code=200)
 
-    mocker.patch.object(client, 'list_assignments_request', return_value={})
+    mocker.patch.object(client, "list_assignments_request", return_value={})
 
-    args = {'id': '1-host', 'lastUpdate': '2023-06-20T10:00:00+00:00'}
-    mocker.patch.object(demisto, 'args', return_value=args)
+    args = {"id": "1-host", "lastUpdate": "2023-06-20T10:00:00+00:00"}
+    mocker.patch.object(demisto, "args", return_value=args)
 
-    remote_data = load_test_data('get_remote_data_entry.json')
+    remote_data = load_test_data("get_remote_data_entry.json")
     assert get_remote_data_command(client).extract_for_local() == remote_data
 
 
@@ -1710,22 +2158,23 @@ def test_get_remote_data_command_when_assignment_found(mocker, requests_mock, cl
     - Assert that the reopening entry exists.
     """
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
-    account_data = load_test_data('get_account_by_account_id.json')
-    mocker.patch.object(client, 'get_account_by_account_id', return_value=account_data)
+    account_data = load_test_data("get_account_by_account_id.json")
+    mocker.patch.object(client, "get_account_by_account_id", return_value=account_data)
 
-    detection_data = load_test_data('single_detection.json')
-    detection_response = {'count': 1, 'results': [detection_data]}
-    mocker.patch.object(client, 'search_detections', return_value=detection_response)
+    detection_data = load_test_data("single_detection.json")
+    detection_response = {"count": 1, "results": [detection_data]}
+    mocker.patch.object(client, "search_detections", return_value=detection_response)
 
-    group_res = load_test_data('group_list_response.json')
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_GROUPS}', json=group_res)
+    group_res = load_test_data("group_list_response.json")
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_GROUPS}", json=group_res)
 
-    args = {'id': '107-account', 'lastUpdate': '2023-06-20T10:00:00+00:00'}
-    mocker.patch.object(demisto, 'args', return_value=args)
+    args = {"id": "107-account", "lastUpdate": "2023-06-20T10:00:00+00:00"}
+    mocker.patch.object(demisto, "args", return_value=args)
 
-    remote_data = load_test_data('get_remote_data_entry_by_account.json')
+    remote_data = load_test_data("get_remote_data_entry_by_account.json")
     assert get_remote_data_command(client).extract_for_local() == remote_data
 
 
@@ -1743,22 +2192,23 @@ def test_get_remote_data_command_when_past_assignment_found(mocker, requests_moc
     - Assert that the reopening entry exists.
     """
     import VectraDetect
+
     VectraDetect.global_UI_URL = SERVER_URL
 
-    account_data = load_test_data('get_account_by_id_with_past_assignment.json')
-    mocker.patch.object(client, 'get_account_by_account_id', return_value=account_data)
+    account_data = load_test_data("get_account_by_id_with_past_assignment.json")
+    mocker.patch.object(client, "get_account_by_account_id", return_value=account_data)
 
-    detection_data = load_test_data('single_detection.json')
-    detection_response = {'count': 1, 'results': [detection_data]}
-    mocker.patch.object(client, 'search_detections', return_value=detection_response)
+    detection_data = load_test_data("single_detection.json")
+    detection_response = {"count": 1, "results": [detection_data]}
+    mocker.patch.object(client, "search_detections", return_value=detection_response)
 
-    group_res = load_test_data('group_list_response.json')
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_GROUPS}', json=group_res)
+    group_res = load_test_data("group_list_response.json")
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_GROUPS}", json=group_res)
 
-    args = {'id': '107-account', 'lastUpdate': '2023-06-20T10:00:00+00:00'}
-    mocker.patch.object(demisto, 'args', return_value=args)
+    args = {"id": "107-account", "lastUpdate": "2023-06-20T10:00:00+00:00"}
+    mocker.patch.object(demisto, "args", return_value=args)
 
-    remote_data = load_test_data('get_remote_data_entry_by_account_past_assignment.json')
+    remote_data = load_test_data("get_remote_data_entry_by_account_past_assignment.json")
     assert get_remote_data_command(client).extract_for_local() == remote_data
 
 
@@ -1774,14 +2224,11 @@ def test_get_remote_data_command_entity_not_needs_update(client, mocker):
     Then:
     - Calling the 'get_remote_data_command' function with the provided client and arguments.
     """
-    mocker.patch.object(client, 'get_account_by_account_id', return_value={})
-    mocker.patch.object(client, 'get_host_by_host_id', return_value={})
+    mocker.patch.object(client, "get_account_by_account_id", return_value={})
+    mocker.patch.object(client, "get_host_by_host_id", return_value={})
 
-    args = {
-        'id': '1-host',
-        'lastUpdate': '2023-09-20T10:00:00+00:00'
-    }
-    mocker.patch.object(demisto, 'args', return_value=args)
+    args = {"id": "1-host", "lastUpdate": "2023-09-20T10:00:00+00:00"}
+    mocker.patch.object(demisto, "args", return_value=args)
 
     assert get_remote_data_command(client) == "Incident was not found."
 
@@ -1798,18 +2245,10 @@ def test_get_remote_data_command_entity_needs_update_notes(client, mocker, reque
     Then:
     - Calling the 'get_remote_data_command' function with the provided client and arguments.
     """
-    args = {
-        'id': '1-host',
-        'lastUpdate': '2023-09-20T10:00:00+00:00'
-    }
-    mocker.patch.object(demisto, 'args', return_value=args)
+    args = {"id": "1-host", "lastUpdate": "2023-09-20T10:00:00+00:00"}
+    mocker.patch.object(demisto, "args", return_value=args)
 
-    note_response_1 = {
-        "id": 239,
-        "date_created": "2023-09-20T10:33:14Z",
-        "created_by": "dummy_api_client",
-        "note": "test note."
-    }
+    note_response_1 = {"id": 239, "date_created": "2023-09-20T10:33:14Z", "created_by": "dummy_api_client", "note": "test note."}
     note_response_2 = copy.deepcopy(note_response_1)
     note_response_2["date_created"] = "2023-08-20T10:33:14Z"
     note_response_3 = copy.deepcopy(note_response_1)
@@ -1817,16 +2256,19 @@ def test_get_remote_data_command_entity_needs_update_notes(client, mocker, reque
     note_response_4 = copy.deepcopy(note_response_1)
     note_response_4["date_modified"] = "2023-09-20T08:33:14Z"
 
-    response = {"id": 1, "last_modified": "2023-09-20T19:00:00+00:00",
-                "certainty": 90,
-                "notes": [note_response_1, note_response_2, note_response_3, note_response_4]}
+    response = {
+        "id": 1,
+        "last_modified": "2023-09-20T19:00:00+00:00",
+        "certainty": 90,
+        "notes": [note_response_1, note_response_2, note_response_3, note_response_4],
+    }
 
-    mocker.patch.object(client, 'get_account_by_account_id', return_value={})
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_HOST}/1', json=response, status_code=200)
+    mocker.patch.object(client, "get_account_by_account_id", return_value={})
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_HOST}/1", json=response, status_code=200)
 
-    mocker.patch.object(client, 'list_assignments_request', return_value={})
+    mocker.patch.object(client, "list_assignments_request", return_value={})
 
-    remote_data = load_test_data('get_remote_data_note_update_entry.json')
+    remote_data = load_test_data("get_remote_data_note_update_entry.json")
     assert get_remote_data_command(client).extract_for_local() == remote_data
 
 
@@ -1842,17 +2284,17 @@ def test_update_remote_system_command_when_tags_mirror(client, mocker):
     Then:
     - Assert that the ID of the updated remote entity is returned.
     """
-    mocker.patch.object(demisto, 'args', return_value={
-        'remoteId': '1-account',
-        'delta': {'tags': ['tag1', 'tag2']},
-        'data': {'id': '1'}
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"remoteId": "1-account", "delta": {"tags": ["tag1", "tag2", "tags%test"]}, "data": {"id": "1"}},
+    )
 
-    mocker.patch.object(client, 'add_note_request', return_value={})
-    mocker.patch.object(client, 'update_entity_tags_request', return_value={})
-    mocker.patch.object(client, 'list_entity_tags_request', return_value={})
+    mocker.patch.object(client, "add_note_request", return_value={})
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
 
-    assert update_remote_system_command(client) == '1-account'
+    assert update_remote_system_command(client) == "1-account"
 
 
 def test_update_remote_system_command_when_note_mirror(client, mocker):
@@ -1867,18 +2309,22 @@ def test_update_remote_system_command_when_note_mirror(client, mocker):
     Then:
     - Assert that the ID of the updated remote entity is returned.
     """
-    mocker.patch.object(demisto, 'args', return_value={
-        'remoteId': '1-account',
-        'delta': {},
-        'entries': load_test_data('update_remote_system_entry.json'),
-        'data': {'id': '1'}
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "remoteId": "1-account",
+            "delta": {},
+            "entries": load_test_data("update_remote_system_entry.json"),
+            "data": {"id": "1"},
+        },
+    )
 
-    mocker.patch.object(client, 'add_note_request', return_value={})
-    mocker.patch.object(client, 'update_entity_tags_request', return_value={})
-    mocker.patch.object(client, 'list_entity_tags_request', return_value={})
+    mocker.patch.object(client, "add_note_request", return_value={})
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
 
-    assert update_remote_system_command(client) == '1-account'
+    assert update_remote_system_command(client) == "1-account"
 
 
 def test_update_remote_system_command_when_incident_reopened(client, mocker, requests_mock):
@@ -1894,20 +2340,24 @@ def test_update_remote_system_command_when_incident_reopened(client, mocker, req
     Then:
     - Assert that the ID of the updated remote entity is returned.
     """
-    mocker.patch.object(demisto, 'args', return_value={
-        'remoteId': '1-account',
-        'delta': {'closingUserId': '', 'runStatus': 'waiting'},
-        'entries': [],
-        'data': {'id': '1'}
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "remoteId": "1-account",
+            "delta": {"closingUserId": "", "runStatus": "waiting"},
+            "entries": [],
+            "data": {"id": "1"},
+        },
+    )
 
-    mocker.patch.object(client, 'add_note_request', return_value={})
-    mocker.patch.object(client, 'update_entity_tags_request', return_value={})
-    mocker.patch.object(client, 'list_entity_tags_request', return_value={})
-    mocker.patch.object(client, 'list_assignments_request', return_value={'id': 1})
-    requests_mock.delete(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}/1', json={}, status_code=200)
+    mocker.patch.object(client, "add_note_request", return_value={})
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_assignments_request", return_value={"id": 1})
+    requests_mock.delete(f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}/1", json={}, status_code=200)
 
-    assert update_remote_system_command(client) == '1-account'
+    assert update_remote_system_command(client) == "1-account"
 
 
 def test_update_remote_system_command_when_closing_note_mirror(client, mocker):
@@ -1922,19 +2372,23 @@ def test_update_remote_system_command_when_closing_note_mirror(client, mocker):
     Then:
     - Assert that the ID of the updated remote entity is returned.
     """
-    mocker.patch.object(demisto, 'args', return_value={
-        'remoteId': '1-account',
-        'delta': {'closeNotes': 'resolved', 'closeReason': 'Resolved', 'closingUserId': 'admin', 'runStatus': ''},
-        'data': {'closeNotes': 'resolved', 'closeReason': 'Resolved', 'closingUserId': 'admin', 'id': 1},
-        'incidentChanged': True,
-        'status': 2
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "remoteId": "1-account",
+            "delta": {"closeNotes": "resolved", "closeReason": "Resolved", "closingUserId": "admin", "runStatus": ""},
+            "data": {"closeNotes": "resolved", "closeReason": "Resolved", "closingUserId": "admin", "id": 1},
+            "incidentChanged": True,
+            "status": 2,
+        },
+    )
 
-    mocker.patch.object(client, 'add_note_request', return_value={})
-    mocker.patch.object(client, 'update_entity_tags_request', return_value={})
-    mocker.patch.object(client, 'list_entity_tags_request', return_value={})
+    mocker.patch.object(client, "add_note_request", return_value={})
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
 
-    assert update_remote_system_command(client) == '1-account'
+    assert update_remote_system_command(client) == "1-account"
 
 
 def test_update_remote_system_command_when_no_arguments_provided(client, mocker):
@@ -1949,36 +2403,31 @@ def test_update_remote_system_command_when_no_arguments_provided(client, mocker)
     Then:
     - Assert that the ID of the updated remote entity is returned.
     """
-    mocker.patch.object(demisto, 'args', return_value={'remoteId': '1-account'})
+    mocker.patch.object(demisto, "args", return_value={"remoteId": "1-account"})
 
-    mocker.patch.object(client, 'add_note_request', return_value={})
-    mocker.patch.object(client, 'update_entity_tags_request', return_value={})
-    mocker.patch.object(client, 'list_entity_tags_request', return_value={})
+    mocker.patch.object(client, "add_note_request", return_value={})
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
 
-    assert update_remote_system_command(client) == '1-account'
+    assert update_remote_system_command(client) == "1-account"
 
 
 def test_markall_detections_asfixed_command_for_host_when_success(client, requests_mock, mocker):
     """
     Tests markall_detections_asfixed_command command function when success with host.
     """
-    host_id = '472'
+    host_id = "472"
 
-    host_data = load_test_data('single_host.json')
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_HOST}/{host_id}', json=host_data, status_code=200)
+    host_data = load_test_data("single_host.json")
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_HOST}/{host_id}", json=host_data, status_code=200)
 
-    response = {
-        '_meta': {
-            'level': 'Success',
-            'message': 'Successfully marked detections'
-        }
-    }
+    response = {"_meta": {"level": "Success", "message": "Successfully marked detections"}}
 
-    requests_mock.patch(f'{API_URL}{API_ENDPOINT_DETECTIONS}', json=response, status_code=200)
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}", json=response, status_code=200)
 
-    result = markall_detections_asfixed_command(client=client, type='host', host_id=host_id)
+    result = markall_detections_asfixed_command(client=client, type="host", host_id=host_id)
 
-    assert result.readable_output == 'The active detections of the provided host have been successfully marked as fixed.'
+    assert result.readable_output == "The active detections of the provided host have been successfully marked as fixed."
     assert result.raw_response == response
 
 
@@ -1986,23 +2435,18 @@ def test_markall_detections_asfixed_command_for_account_when_success(client, req
     """
     Tests markall_detections_asfixed_command command function when success with account.
     """
-    account_id = '36'
+    account_id = "36"
 
-    host_data = load_test_data('single_account.json')
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_ACCOUNT}/{account_id}', json=host_data, status_code=200)
+    host_data = load_test_data("single_account.json")
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ACCOUNT}/{account_id}", json=host_data, status_code=200)
 
-    response = {
-        '_meta': {
-            'level': 'Success',
-            'message': 'Successfully marked detections'
-        }
-    }
+    response = {"_meta": {"level": "Success", "message": "Successfully marked detections"}}
 
-    requests_mock.patch(f'{API_URL}{API_ENDPOINT_DETECTIONS}', json=response, status_code=200)
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}", json=response, status_code=200)
 
-    result = markall_detections_asfixed_command(client=client, type='account', account_id=account_id)
+    result = markall_detections_asfixed_command(client=client, type="account", account_id=account_id)
 
-    assert result.readable_output == 'The active detections of the provided account have been successfully marked as fixed.'
+    assert result.readable_output == "The active detections of the provided account have been successfully marked as fixed."
     assert result.raw_response == response
 
 
@@ -2010,16 +2454,16 @@ def test_markall_detections_asfixed_command_for_account_when_no_detection(client
     """
     Tests markall_detections_asfixed_command command function when no detection in account.
     """
-    account_id = '36'
+    account_id = "36"
 
-    account_data = load_test_data('single_account.json')
-    account_data['detection_summaries'] = []
+    account_data = load_test_data("single_account.json")
+    account_data["detection_summaries"] = []
 
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_ACCOUNT}/{account_id}', json=account_data, status_code=200)
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ACCOUNT}/{account_id}", json=account_data, status_code=200)
 
-    result = markall_detections_asfixed_command(client=client, type='account', account_id=account_id)
+    result = markall_detections_asfixed_command(client=client, type="account", account_id=account_id)
 
-    assert result.readable_output == 'There are no active detections present.'
+    assert result.readable_output == "There are no active detections present."
     assert result.raw_response == {}
 
 
@@ -2028,21 +2472,21 @@ def test_markall_detections_asfixed_command_for_host_when_host_id_missing(client
     Tests markall_detections_asfixed_command command function when host_id is missing.
     """
     with pytest.raises(ValueError) as err:
-        markall_detections_asfixed_command(client=client, type='host', host_id='')
+        markall_detections_asfixed_command(client=client, type="host", host_id="")
 
-    assert str(err.value) == ERRORS['REQUIRED_ARGUMENT'].format('host_id')
+    assert str(err.value) == ERRORS["REQUIRED_ARGUMENT"].format("host_id")
 
 
 def test_markall_detections_asfixed_command_for_host_when_host_id_wrong(client, mocker):
     """
     Tests markall_detections_asfixed_command command function when host_id is wrong.
     """
-    host_id = 'id'
+    host_id = "id"
 
     with pytest.raises(ValueError) as err:
-        markall_detections_asfixed_command(client=client, type='host', host_id=host_id)
+        markall_detections_asfixed_command(client=client, type="host", host_id=host_id)
 
-    assert str(err.value) == ERRORS['INVALID_INTEGER_VALUE'].format('host_id')
+    assert str(err.value) == ERRORS["INVALID_INTEGER_VALUE"].format("host_id")
 
 
 def test_vectra_account_tag_list_valid_arguments(client, requests_mock):
@@ -2062,24 +2506,25 @@ def test_vectra_account_tag_list_valid_arguments(client, requests_mock):
     - Assert the correctness of the 'outputs_key_field' property.
     """
     from VectraDetect import tag_list_command
-    args = {'id': '2'}
 
-    notes_res = load_test_data('tag_list_response.json')
-    context_data = load_test_data('account_tag_list_context.json')
-    with open('test_data/tag_list_hr.md') as f:
+    args = {"id": "2"}
+
+    notes_res = load_test_data("tag_list_response.json")
+    context_data = load_test_data("account_tag_list_context.json")
+    with open("test_data/tag_list_hr.md") as f:
         result_hr = f.read()
 
-    requests_mock.get(f'{API_URL}{API_TAGGING}/account/2', json=notes_res)
+    requests_mock.get(f"{API_URL}{API_TAGGING}/account/2", json=notes_res)
 
-    result = tag_list_command(client=client, entity_type='account', args=args)
+    result = tag_list_command(client=client, entity_type="account", args=args)
 
     result_context = result.to_context()
 
-    assert result.outputs_prefix == 'Vectra.Account'
-    assert result.outputs_key_field == 'ID'
-    assert result_context.get('Contents') == notes_res
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data
+    assert result.outputs_prefix == "Vectra.Account"
+    assert result.outputs_key_field == "ID"
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data
 
 
 def test_vectra_host_tag_list_valid_arguments(client, requests_mock):
@@ -2099,24 +2544,25 @@ def test_vectra_host_tag_list_valid_arguments(client, requests_mock):
     - Assert the correctness of the 'outputs_key_field' property.
     """
     from VectraDetect import tag_list_command
-    args = {'id': '2'}
 
-    notes_res = load_test_data('tag_list_response.json')
-    context_data = load_test_data('host_tag_list_context.json')
-    with open('test_data/tag_list_hr.md') as f:
+    args = {"id": "2"}
+
+    notes_res = load_test_data("tag_list_response.json")
+    context_data = load_test_data("host_tag_list_context.json")
+    with open("test_data/tag_list_hr.md") as f:
         result_hr = f.read()
 
-    requests_mock.get(f'{API_URL}{API_TAGGING}/host/2', json=notes_res)
+    requests_mock.get(f"{API_URL}{API_TAGGING}/host/2", json=notes_res)
 
-    result = tag_list_command(client=client, entity_type='host', args=args)
+    result = tag_list_command(client=client, entity_type="host", args=args)
 
     result_context = result.to_context()
 
-    assert result.outputs_prefix == 'Vectra.Host'
-    assert result.outputs_key_field == 'ID'
-    assert result_context.get('Contents') == notes_res
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data
+    assert result.outputs_prefix == "Vectra.Host"
+    assert result.outputs_key_field == "ID"
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data
 
 
 def test_vectra_detection_tag_list_valid_arguments(client, requests_mock):
@@ -2136,33 +2582,31 @@ def test_vectra_detection_tag_list_valid_arguments(client, requests_mock):
     - Assert the correctness of the 'outputs_key_field' property.
     """
     from VectraDetect import tag_list_command
-    args = {'id': '2'}
 
-    notes_res = load_test_data('tag_list_response.json')
-    context_data = load_test_data('detection_tag_list_context.json')
-    with open('test_data/tag_list_hr.md') as f:
+    args = {"id": "2"}
+
+    notes_res = load_test_data("tag_list_response.json")
+    context_data = load_test_data("detection_tag_list_context.json")
+    with open("test_data/tag_list_hr.md") as f:
         result_hr = f.read()
 
-    requests_mock.get(f'{API_URL}{API_TAGGING}/detection/2', json=notes_res)
+    requests_mock.get(f"{API_URL}{API_TAGGING}/detection/2", json=notes_res)
 
-    result = tag_list_command(client=client, entity_type='detection', args=args)
+    result = tag_list_command(client=client, entity_type="detection", args=args)
 
     result_context = result.to_context()
 
-    assert result.outputs_prefix == 'Vectra.Detection'
-    assert result.outputs_key_field == 'ID'
-    assert result_context.get('Contents') == notes_res
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data
+    assert result.outputs_prefix == "Vectra.Detection"
+    assert result.outputs_key_field == "ID"
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data
 
 
-@pytest.mark.parametrize('args,error_msg',
-                         [({},
-                           'Missing "id"'),
-                          ({'id': ' '},
-                           'Missing "id"'),
-                          ({'id': '-3'},
-                           ERRORS['INVALID_INTEGER_VALUE'].format('id'))])
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [({}, 'Missing "id"'), ({"id": " "}, 'Missing "id"'), ({"id": "-3"}, ERRORS["INVALID_INTEGER_VALUE"].format("id"))],
+)
 def test_vectra_tag_list_invalid_args(client, args, error_msg):
     """
     Given:
@@ -2180,7 +2624,7 @@ def test_vectra_tag_list_invalid_args(client, args, error_msg):
             args[key] = args[key].strip()
 
     with pytest.raises(ValueError) as exception:
-        tag_list_command(client=client, entity_type='account', args=args)
+        tag_list_command(client=client, entity_type="account", args=args)
 
     assert str(exception.value) == error_msg
 
@@ -2198,22 +2642,22 @@ def test_vectra_account_tag_list_when_tag_response_is_empty(client, requests_moc
     - Assert that the EntryContext is empty.
     """
     from VectraDetect import tag_list_command
-    args = {'id': '5'}
 
-    notes_res = load_test_data('tag_list_empty_response.json')
-    context_data = load_test_data('tag_list_empty_context.json')
+    args = {"id": "5"}
 
-    requests_mock.get(f'{API_URL}{API_TAGGING}/account/5', json=notes_res)
+    notes_res = load_test_data("tag_list_empty_response.json")
+    context_data = load_test_data("tag_list_empty_context.json")
 
-    result = tag_list_command(client=client, entity_type='account', args=args)
+    requests_mock.get(f"{API_URL}{API_TAGGING}/account/5", json=notes_res)
+
+    result = tag_list_command(client=client, entity_type="account", args=args)
     result_context = result.to_context()
 
-    assert result.outputs_prefix == 'Vectra.Account'
-    assert result.outputs_key_field == 'ID'
-    assert result_context.get('Contents') == notes_res
-    assert result_context.get(
-        'HumanReadable') == "##### No tags were found for the given account ID."
-    assert result_context.get('EntryContext') == context_data
+    assert result.outputs_prefix == "Vectra.Account"
+    assert result.outputs_key_field == "ID"
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("HumanReadable") == "##### No tags were found for the given account ID."
+    assert result_context.get("EntryContext") == context_data
 
 
 def test_vectra_tag_list_when_something_went_wrong(client, requests_mock):
@@ -2227,18 +2671,16 @@ def test_vectra_tag_list_when_something_went_wrong(client, requests_mock):
     - Assert that the error message matches the expected error message.
     """
     from VectraDetect import tag_list_command
-    args = {'id': '3'}
-    notes_res = {
-        "status": "failure",
-        "message": "Could not find requested object"
-    }
 
-    requests_mock.get(f'{API_URL}{API_TAGGING}/account/3', json=notes_res)
+    args = {"id": "3"}
+    notes_res = {"status": "failure", "message": "Could not find requested object"}
+
+    requests_mock.get(f"{API_URL}{API_TAGGING}/account/3", json=notes_res)
 
     with pytest.raises(VectraException) as exception:
-        tag_list_command(client=client, entity_type='account', args=args)
+        tag_list_command(client=client, entity_type="account", args=args)
 
-    assert str(exception.value) == 'Something went wrong. Message: Could not find requested object.'
+    assert str(exception.value) == "Something went wrong. Message: Could not find requested object."
 
 
 def test_account_note_add_command_valid_arguments(client, requests_mock):
@@ -2260,22 +2702,23 @@ def test_account_note_add_command_valid_arguments(client, requests_mock):
     - Assert the correctness of the 'outputs_key_field' property.
     """
     from VectraDetect import note_add_command
-    args = {'account_id': '2', 'note': 'test note'}
 
-    notes_res = util_load_json('test_data/account_note_add_response.json')
-    context_data = util_load_json('test_data/account_note_add_context.json')
-    requests_mock.post(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_ACCOUNT_NOTE_ENDPOINT"].format(2)}', json=notes_res)
-    with open('test_data/account_note_add_hr.md') as f:
+    args = {"account_id": "2", "note": "test note"}
+
+    notes_res = util_load_json("test_data/account_note_add_response.json")
+    context_data = util_load_json("test_data/account_note_add_context.json")
+    requests_mock.post(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_ACCOUNT_NOTE_ENDPOINT'].format(2)}", json=notes_res)
+    with open("test_data/account_note_add_hr.md") as f:
         result_hr = f.read()
 
-    result = note_add_command(client=client, entity_type='account', args=args)
+    result = note_add_command(client=client, entity_type="account", args=args)
     result_context = result.to_context()
 
-    assert result.outputs_prefix == OUTPUT_PREFIXES['ACCOUNT_NOTES']
+    assert result.outputs_prefix == OUTPUT_PREFIXES["ACCOUNT_NOTES"]
     assert result.outputs_key_field == NOTE_OUTPUT_KEY_FIELD
-    assert result_context.get('Contents') == notes_res
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data
 
 
 def test_host_note_add_command_valid_arguments(client, requests_mock):
@@ -2298,22 +2741,23 @@ def test_host_note_add_command_valid_arguments(client, requests_mock):
     """
 
     from VectraDetect import note_add_command
-    args = {'host_id': '7', 'note': 'test note'}
 
-    notes_res = util_load_json('test_data/host_note_add_response.json')
-    context_data = util_load_json('test_data/host_note_add_context.json')
-    requests_mock.post(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_HOST_NOTE_ENDPOINT"].format(7)}', json=notes_res)
-    with open('test_data/host_note_add_hr.md') as f:
+    args = {"host_id": "7", "note": "test note"}
+
+    notes_res = util_load_json("test_data/host_note_add_response.json")
+    context_data = util_load_json("test_data/host_note_add_context.json")
+    requests_mock.post(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_HOST_NOTE_ENDPOINT'].format(7)}", json=notes_res)
+    with open("test_data/host_note_add_hr.md") as f:
         result_hr = f.read()
 
-    result = note_add_command(client=client, entity_type='host', args=args)
+    result = note_add_command(client=client, entity_type="host", args=args)
     result_context = result.to_context()
 
-    assert result.outputs_prefix == OUTPUT_PREFIXES['HOST_NOTES']
+    assert result.outputs_prefix == OUTPUT_PREFIXES["HOST_NOTES"]
     assert result.outputs_key_field == NOTE_OUTPUT_KEY_FIELD
-    assert result_context.get('Contents') == notes_res
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data
 
 
 def test_detection_note_add_command_valid_arguments(client, requests_mock):
@@ -2335,35 +2779,35 @@ def test_detection_note_add_command_valid_arguments(client, requests_mock):
     - Assert the correctness of the 'outputs_key_field' property.
     """
     from VectraDetect import note_add_command
-    args = {'detection_id': '9', 'note': 'test note'}
 
-    notes_res = util_load_json('test_data/detection_note_add_response.json')
-    context_data = util_load_json('test_data/detection_note_add_context.json')
-    requests_mock.post(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_DETECTION_NOTE_ENDPOINT"].format(9)}', json=notes_res)
-    with open('test_data/detection_note_add_hr.md') as f:
+    args = {"detection_id": "9", "note": "test note"}
+
+    notes_res = util_load_json("test_data/detection_note_add_response.json")
+    context_data = util_load_json("test_data/detection_note_add_context.json")
+    requests_mock.post(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_DETECTION_NOTE_ENDPOINT'].format(9)}", json=notes_res)
+    with open("test_data/detection_note_add_hr.md") as f:
         result_hr = f.read()
 
-    result = note_add_command(client=client, entity_type='detection', args=args)
+    result = note_add_command(client=client, entity_type="detection", args=args)
     result_context = result.to_context()
 
-    assert result.outputs_prefix == OUTPUT_PREFIXES['DETECTION_NOTES']
+    assert result.outputs_prefix == OUTPUT_PREFIXES["DETECTION_NOTES"]
     assert result.outputs_key_field == NOTE_OUTPUT_KEY_FIELD
-    assert result_context.get('Contents') == notes_res
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data
 
 
-@pytest.mark.parametrize('args,error_msg',
-                         [({'account_id': '1'},
-                           ERRORS['REQUIRED_ARGUMENT'].format('note')),
-                          ({'account_id': '1', 'note': ' '},
-                           ERRORS['REQUIRED_ARGUMENT'].format('note')),
-                          ({'note': 'test note'},
-                           'Missing "account_id"'),
-                          ({'account_id': ' ', 'note': 'test note'},
-                           'Missing "account_id"'),
-                          ({'account_id': '-3', 'note': 'test note'},
-                           ERRORS['INVALID_INTEGER_VALUE'].format('account_id'))])
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"account_id": "1"}, ERRORS["REQUIRED_ARGUMENT"].format("note")),
+        ({"account_id": "1", "note": " "}, ERRORS["REQUIRED_ARGUMENT"].format("note")),
+        ({"note": "test note"}, 'Missing "account_id"'),
+        ({"account_id": " ", "note": "test note"}, 'Missing "account_id"'),
+        ({"account_id": "-3", "note": "test note"}, ERRORS["INVALID_INTEGER_VALUE"].format("account_id")),
+    ],
+)
 def test_note_add_command_invalid_args(client, args, error_msg):
     """
     Given:
@@ -2383,7 +2827,7 @@ def test_note_add_command_invalid_args(client, args, error_msg):
             args[key] = args[key].strip()
 
     with pytest.raises(ValueError) as exception:
-        note_add_command(client=client, entity_type='account', args=args)
+        note_add_command(client=client, entity_type="account", args=args)
 
     assert str(exception.value) == error_msg
 
@@ -2407,23 +2851,23 @@ def test_account_note_update_command_valid_arguments(client, requests_mock):
     - Assert the correctness of the 'outputs_key_field' property.
     """
     from VectraDetect import note_update_command
-    args = {'account_id': '2', 'note_id': '1959', 'note': 'updated test note'}
 
-    notes_res = util_load_json('test_data/account_note_update_response.json')
-    context_data = util_load_json('test_data/account_note_update_context.json')
-    requests_mock.patch(
-        f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_ACCOUNT_NOTE_ENDPOINT"].format(2, 1959)}', json=notes_res)
-    with open('test_data/account_note_update_hr.md') as f:
+    args = {"account_id": "2", "note_id": "1959", "note": "updated test note"}
+
+    notes_res = util_load_json("test_data/account_note_update_response.json")
+    context_data = util_load_json("test_data/account_note_update_context.json")
+    requests_mock.patch(f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_ACCOUNT_NOTE_ENDPOINT'].format(2, 1959)}", json=notes_res)
+    with open("test_data/account_note_update_hr.md") as f:
         result_hr = f.read()
 
-    result = note_update_command(client=client, entity_type='account', args=args)
+    result = note_update_command(client=client, entity_type="account", args=args)
     result_context = result.to_context()
 
-    assert result.outputs_prefix == OUTPUT_PREFIXES['ACCOUNT_NOTES']
+    assert result.outputs_prefix == OUTPUT_PREFIXES["ACCOUNT_NOTES"]
     assert result.outputs_key_field == NOTE_OUTPUT_KEY_FIELD
-    assert result_context.get('Contents') == notes_res  # Replace with the expected output
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data  # Replace with the expected raw response
+    assert result_context.get("Contents") == notes_res  # Replace with the expected output
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data  # Replace with the expected raw response
 
 
 def test_host_note_update_command_valid_arguments(client, requests_mock):
@@ -2445,24 +2889,25 @@ def test_host_note_update_command_valid_arguments(client, requests_mock):
     - Assert the correctness of the 'outputs_key_field' property.
     """
     from VectraDetect import note_update_command
-    args = {'host_id': '7', 'note_id': '1960', 'note': 'updated test note'}
 
-    entity_type = 'host'
+    args = {"host_id": "7", "note_id": "1960", "note": "updated test note"}
 
-    notes_res = util_load_json('test_data/host_note_update_response.json')
-    context_data = util_load_json('test_data/host_note_update_context.json')
-    requests_mock.patch(f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_HOST_NOTE_ENDPOINT"].format(7, 1960)}', json=notes_res)
-    with open('test_data/host_note_update_hr.md') as f:
+    entity_type = "host"
+
+    notes_res = util_load_json("test_data/host_note_update_response.json")
+    context_data = util_load_json("test_data/host_note_update_context.json")
+    requests_mock.patch(f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_HOST_NOTE_ENDPOINT'].format(7, 1960)}", json=notes_res)
+    with open("test_data/host_note_update_hr.md") as f:
         result_hr = f.read()
 
     result = note_update_command(client=client, entity_type=entity_type, args=args)
     result_context = result.to_context()
 
-    assert result.outputs_prefix == OUTPUT_PREFIXES['HOST_NOTES']
+    assert result.outputs_prefix == OUTPUT_PREFIXES["HOST_NOTES"]
     assert result.outputs_key_field == NOTE_OUTPUT_KEY_FIELD
-    assert result_context.get('Contents') == notes_res  # Replace with the expected output
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data  # Replace with the expected raw response
+    assert result_context.get("Contents") == notes_res  # Replace with the expected output
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data  # Replace with the expected raw response
 
 
 def test_detection_note_update_command_valid_arguments(client, requests_mock):
@@ -2484,44 +2929,40 @@ def test_detection_note_update_command_valid_arguments(client, requests_mock):
     - Assert the correctness of the 'outputs_key_field' property.
     """
     from VectraDetect import note_update_command
-    args = {'detection_id': '9', 'note_id': '1961', 'note': 'updated test note'}
 
-    entity_type = 'detection'
+    args = {"detection_id": "9", "note_id": "1961", "note": "updated test note"}
 
-    notes_res = util_load_json('test_data/detection_note_update_response.json')
-    context_data = util_load_json('test_data/detection_note_update_context.json')
-    requests_mock.patch(
-        f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT"].format(9, 1961)}', json=notes_res)
-    with open('test_data/detection_note_update_hr.md') as f:
+    entity_type = "detection"
+
+    notes_res = util_load_json("test_data/detection_note_update_response.json")
+    context_data = util_load_json("test_data/detection_note_update_context.json")
+    requests_mock.patch(f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT'].format(9, 1961)}", json=notes_res)
+    with open("test_data/detection_note_update_hr.md") as f:
         result_hr = f.read()
 
     result = note_update_command(client=client, entity_type=entity_type, args=args)
     result_context = result.to_context()
 
-    assert result.outputs_prefix == OUTPUT_PREFIXES['DETECTION_NOTES']
+    assert result.outputs_prefix == OUTPUT_PREFIXES["DETECTION_NOTES"]
     assert result.outputs_key_field == NOTE_OUTPUT_KEY_FIELD
-    assert result_context.get('Contents') == notes_res  # Replace with the expected output
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data  # Replace with the expected raw response
+    assert result_context.get("Contents") == notes_res  # Replace with the expected output
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data  # Replace with the expected raw response
 
 
-@pytest.mark.parametrize('args,error_msg',
-                         [({'account_id': '1', 'note_id': '5'},
-                           ERRORS['REQUIRED_ARGUMENT'].format('note')),
-                          ({'account_id': '1', 'note_id': '5', 'note': ' '},
-                           ERRORS['REQUIRED_ARGUMENT'].format('note')),
-                          ({'note_id': '5', 'note': 'test note'},
-                           'Missing "account_id"'),
-                          ({'account_id': ' ', 'note_id': '5', 'note': 'test note'},
-                           'Missing "account_id"'),
-                          ({'account_id': '-3', 'note_id': '5', 'note': 'test note'},
-                           ERRORS['INVALID_INTEGER_VALUE'].format('account_id')),
-                          ({'account_id': '1', 'note': 'test note'},
-                           'Missing "note_id"'),
-                          ({'account_id': '1', 'note_id': ' ', 'note': 'test note'},
-                           'Missing "note_id"'),
-                          ({'account_id': '1', 'note_id': '-3', 'note': 'test note'},
-                           ERRORS['INVALID_INTEGER_VALUE'].format('note_id'))])
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"account_id": "1", "note_id": "5"}, ERRORS["REQUIRED_ARGUMENT"].format("note")),
+        ({"account_id": "1", "note_id": "5", "note": " "}, ERRORS["REQUIRED_ARGUMENT"].format("note")),
+        ({"note_id": "5", "note": "test note"}, 'Missing "account_id"'),
+        ({"account_id": " ", "note_id": "5", "note": "test note"}, 'Missing "account_id"'),
+        ({"account_id": "-3", "note_id": "5", "note": "test note"}, ERRORS["INVALID_INTEGER_VALUE"].format("account_id")),
+        ({"account_id": "1", "note": "test note"}, 'Missing "note_id"'),
+        ({"account_id": "1", "note_id": " ", "note": "test note"}, 'Missing "note_id"'),
+        ({"account_id": "1", "note_id": "-3", "note": "test note"}, ERRORS["INVALID_INTEGER_VALUE"].format("note_id")),
+    ],
+)
 def test_note_update_command_invalid_args(client, args, error_msg):
     """
     Given:
@@ -2542,7 +2983,7 @@ def test_note_update_command_invalid_args(client, args, error_msg):
             args[key] = args[key].strip()
 
     with pytest.raises(ValueError) as exception:
-        note_update_command(client, entity_type='account', args=args)
+        note_update_command(client, entity_type="account", args=args)
 
     assert str(exception.value) == error_msg
 
@@ -2560,18 +3001,18 @@ def test_vectra_account_note_remove_valid_arguments(client, requests_mock):
     - Assert that the 'EntryContext' property in the context matches the context data.
     """
     from VectraDetect import note_remove_command
-    args = {'account_id': '2', 'note_id': '1959'}
 
-    requests_mock.delete(
-        f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_ACCOUNT_NOTE_ENDPOINT"].format(2, 1959)}', status_code=204)
+    args = {"account_id": "2", "note_id": "1959"}
+
+    requests_mock.delete(f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_ACCOUNT_NOTE_ENDPOINT'].format(2, 1959)}", status_code=204)
 
     # Call the function
-    result = note_remove_command(client, entity_type='account', args=args)
+    result = note_remove_command(client, entity_type="account", args=args)
 
     # Assert the result
     result_context = result.to_context()
-    assert result_context.get('HumanReadable') == '##### The note has been successfully removed from the account.'
-    assert result_context.get('Contents') == ''
+    assert result_context.get("HumanReadable") == "##### The note has been successfully removed from the account."
+    assert result_context.get("Contents") == ""
 
 
 def test_vectra_host_note_remove_valid_arguments(client, requests_mock):
@@ -2587,18 +3028,18 @@ def test_vectra_host_note_remove_valid_arguments(client, requests_mock):
     - Assert that the 'EntryContext' property in the context matches the context data.
     """
     from VectraDetect import note_remove_command
-    args = {'host_id': '7', 'note_id': '1960'}
 
-    requests_mock.delete(
-        f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_HOST_NOTE_ENDPOINT"].format(7, 1960)}', status_code=204)
+    args = {"host_id": "7", "note_id": "1960"}
+
+    requests_mock.delete(f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_HOST_NOTE_ENDPOINT'].format(7, 1960)}", status_code=204)
 
     # Call the function
-    result = note_remove_command(client, entity_type='host', args=args)
+    result = note_remove_command(client, entity_type="host", args=args)
 
     # Assert the result
     result_context = result.to_context()
-    assert result_context.get('HumanReadable') == '##### The note has been successfully removed from the host.'
-    assert result_context.get('Contents') == ''
+    assert result_context.get("HumanReadable") == "##### The note has been successfully removed from the host."
+    assert result_context.get("Contents") == ""
 
 
 def test_vectra_detection_note_remove_valid_arguments(client, requests_mock):
@@ -2614,15 +3055,16 @@ def test_vectra_detection_note_remove_valid_arguments(client, requests_mock):
     - Assert that the 'EntryContext' property in the context matches the context data.
     """
     from VectraDetect import note_remove_command
-    args = {'detection_id': '9', 'note_id': '1961'}
 
-    requests_mock.delete(f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT"].format(9, 1961)}', status_code=204)
-    result = note_remove_command(client, entity_type='detection', args=args)
+    args = {"detection_id": "9", "note_id": "1961"}
+
+    requests_mock.delete(f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT'].format(9, 1961)}", status_code=204)
+    result = note_remove_command(client, entity_type="detection", args=args)
 
     # Assert the result
     result_context = result.to_context()
-    assert result_context.get('HumanReadable') == '##### The note has been successfully removed from the detection.'
-    assert result_context.get('Contents') == ''
+    assert result_context.get("HumanReadable") == "##### The note has been successfully removed from the detection."
+    assert result_context.get("Contents") == ""
 
 
 def test_vectra_note_remove_invalid_status_code(client, requests_mock):
@@ -2639,32 +3081,31 @@ def test_vectra_note_remove_invalid_status_code(client, requests_mock):
     """
     from VectraDetect import note_remove_command
 
-    args = {'host_id': '7', 'note_id': '1980'}
+    args = {"host_id": "7", "note_id": "1980"}
 
-    requests_mock.delete(f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_HOST_NOTE_ENDPOINT"].format(7, 1980)}',
-                         status_code=200, text='test fail')
+    requests_mock.delete(
+        f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_HOST_NOTE_ENDPOINT'].format(7, 1980)}", status_code=200, text="test fail"
+    )
 
     # Call the function
-    result = note_remove_command(client, entity_type='host', args=args)
+    result = note_remove_command(client, entity_type="host", args=args)
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result_context.get('HumanReadable') == 'Something went wrong. API Response: test fail'
-    assert result_context.get('Contents') == 'test fail'
+    assert result_context.get("HumanReadable") == "Something went wrong. API Response: test fail"
+    assert result_context.get("Contents") == "test fail"
 
 
-@pytest.mark.parametrize('args,error_msg',
-                         [({'note_id': '5'},
-                           'Missing "account_id"'),
-                          ({'account_id': ' ', 'note_id': '5'},
-                           'Missing "account_id"'),
-                          ({'account_id': '-3', 'note_id': '5'},
-                           ERRORS['INVALID_INTEGER_VALUE'].format('account_id')),
-                          ({'account_id': '1'},
-                           'Missing "note_id"'),
-                          ({'account_id': '1', 'note_id': ' '},
-                           'Missing "note_id"'),
-                          ({'account_id': '1', 'note_id': '-3'},
-                           ERRORS['INVALID_INTEGER_VALUE'].format('note_id'))])
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"note_id": "5"}, 'Missing "account_id"'),
+        ({"account_id": " ", "note_id": "5"}, 'Missing "account_id"'),
+        ({"account_id": "-3", "note_id": "5"}, ERRORS["INVALID_INTEGER_VALUE"].format("account_id")),
+        ({"account_id": "1"}, 'Missing "note_id"'),
+        ({"account_id": "1", "note_id": " "}, 'Missing "note_id"'),
+        ({"account_id": "1", "note_id": "-3"}, ERRORS["INVALID_INTEGER_VALUE"].format("note_id")),
+    ],
+)
 def test_note_remove_command_invalid_args(client, args, error_msg):
     """
     Given:
@@ -2684,7 +3125,7 @@ def test_note_remove_command_invalid_args(client, args, error_msg):
             args[key] = args[key].strip()
 
     with pytest.raises(ValueError) as exception:
-        note_remove_command(client, entity_type='account', args=args)
+        note_remove_command(client, entity_type="account", args=args)
 
     assert str(exception.value) == error_msg
 
@@ -2706,24 +3147,25 @@ def test_vectra_account_note_list_valid_arguments(client, requests_mock):
     - Assert the correctness of the 'outputs_key_field' property.
     """
     from VectraDetect import note_list_command
-    args = {'account_id': '2'}
 
-    notes_res = load_test_data('account_note_list_response.json')
-    context_data = load_test_data('account_note_list_context.json')
-    with open('test_data/account_note_list_hr.md') as f:
+    args = {"account_id": "2"}
+
+    notes_res = load_test_data("account_note_list_response.json")
+    context_data = load_test_data("account_note_list_context.json")
+    with open("test_data/account_note_list_hr.md") as f:
         result_hr = f.read()
 
-    requests_mock.get(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_ACCOUNT_NOTE_ENDPOINT"].format(2)}', json=notes_res)
+    requests_mock.get(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_ACCOUNT_NOTE_ENDPOINT'].format(2)}", json=notes_res)
 
-    result = note_list_command(client=client, entity_type='account', args=args)
+    result = note_list_command(client=client, entity_type="account", args=args)
 
     result_context = result.to_context()
 
-    assert result.outputs_prefix == OUTPUT_PREFIXES['ACCOUNT_NOTES']
+    assert result.outputs_prefix == OUTPUT_PREFIXES["ACCOUNT_NOTES"]
     assert result.outputs_key_field == NOTE_OUTPUT_KEY_FIELD
-    assert result_context.get('Contents') == notes_res
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data
 
 
 def test_vectra_host_note_list_valid_arguments(client, requests_mock):
@@ -2743,23 +3185,24 @@ def test_vectra_host_note_list_valid_arguments(client, requests_mock):
     - Assert the correctness of the 'outputs_key_field' property.
     """
     from VectraDetect import note_list_command
-    args = {'host_id': '7'}
 
-    notes_res = load_test_data('host_note_list_response.json')
-    context_data = load_test_data('host_note_list_context.json')
-    with open('test_data/host_note_list_hr.md') as f:
+    args = {"host_id": "7"}
+
+    notes_res = load_test_data("host_note_list_response.json")
+    context_data = load_test_data("host_note_list_context.json")
+    with open("test_data/host_note_list_hr.md") as f:
         result_hr = f.read()
 
-    requests_mock.get(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_HOST_NOTE_ENDPOINT"].format(7)}', json=notes_res)
+    requests_mock.get(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_HOST_NOTE_ENDPOINT'].format(7)}", json=notes_res)
 
-    result = note_list_command(client=client, entity_type='host', args=args)
+    result = note_list_command(client=client, entity_type="host", args=args)
     result_context = result.to_context()
 
-    assert result.outputs_prefix == OUTPUT_PREFIXES['HOST_NOTES']
+    assert result.outputs_prefix == OUTPUT_PREFIXES["HOST_NOTES"]
     assert result.outputs_key_field == NOTE_OUTPUT_KEY_FIELD
-    assert result_context.get('Contents') == notes_res
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data
 
 
 def test_vectra_detection_note_list_valid_arguments(client, requests_mock):
@@ -2779,32 +3222,34 @@ def test_vectra_detection_note_list_valid_arguments(client, requests_mock):
     - Assert the correctness of the 'outputs_key_field' property.
     """
     from VectraDetect import note_list_command
-    args = {'detection_id': '9'}
 
-    notes_res = load_test_data('detection_note_list_response.json')
-    context_data = load_test_data('detection_note_list_context.json')
-    with open('test_data/detection_note_list_hr.md') as f:
+    args = {"detection_id": "9"}
+
+    notes_res = load_test_data("detection_note_list_response.json")
+    context_data = load_test_data("detection_note_list_context.json")
+    with open("test_data/detection_note_list_hr.md") as f:
         result_hr = f.read()
 
-    requests_mock.get(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_DETECTION_NOTE_ENDPOINT"].format(9)}', json=notes_res)
+    requests_mock.get(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_DETECTION_NOTE_ENDPOINT'].format(9)}", json=notes_res)
 
-    result = note_list_command(client=client, entity_type='detection', args=args)
+    result = note_list_command(client=client, entity_type="detection", args=args)
     result_context = result.to_context()
 
-    assert result.outputs_prefix == OUTPUT_PREFIXES['DETECTION_NOTES']
+    assert result.outputs_prefix == OUTPUT_PREFIXES["DETECTION_NOTES"]
     assert result.outputs_key_field == NOTE_OUTPUT_KEY_FIELD
-    assert result_context.get('Contents') == notes_res
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data
 
 
-@pytest.mark.parametrize('args,error_msg',
-                         [({},
-                           'Missing "account_id"'),
-                          ({'account_id': ' '},
-                           'Missing "account_id"'),
-                          ({'account_id': '-3'},
-                           ERRORS['INVALID_INTEGER_VALUE'].format('account_id'))])
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({}, 'Missing "account_id"'),
+        ({"account_id": " "}, 'Missing "account_id"'),
+        ({"account_id": "-3"}, ERRORS["INVALID_INTEGER_VALUE"].format("account_id")),
+    ],
+)
 def test_vectra_note_list_invalid_args(client, args, error_msg):
     """
     Given:
@@ -2822,7 +3267,7 @@ def test_vectra_note_list_invalid_args(client, args, error_msg):
             args[key] = args[key].strip()
 
     with pytest.raises(ValueError) as exception:
-        note_list_command(client=client, entity_type='account', args=args)
+        note_list_command(client=client, entity_type="account", args=args)
 
     assert str(exception.value) == error_msg
 
@@ -2840,17 +3285,17 @@ def test_vectra_account_note_list_when_note_response_is_empty(client, requests_m
     - Assert that the EntryContext is empty.
     """
     from VectraDetect import note_list_command
-    args = {'account_id': '5'}
 
-    requests_mock.get(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_ACCOUNT_NOTE_ENDPOINT"].format(5)}', json=[])
+    args = {"account_id": "5"}
 
-    result = note_list_command(client=client, entity_type='account', args=args)
+    requests_mock.get(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_ACCOUNT_NOTE_ENDPOINT'].format(5)}", json=[])
+
+    result = note_list_command(client=client, entity_type="account", args=args)
     result_context = result.to_context()
 
-    assert result_context.get('Contents') == []
-    assert result_context.get(
-        'HumanReadable') == "Couldn't find any notes for provided account."
-    assert result_context.get('EntryContext') == {}
+    assert result_context.get("Contents") == []
+    assert result_context.get("HumanReadable") == "Couldn't find any notes for provided account."
+    assert result_context.get("EntryContext") == {}
 
 
 def test_vectra_group_list_valid_arguments(requests_mock, client):
@@ -2868,23 +3313,20 @@ def test_vectra_group_list_valid_arguments(requests_mock, client):
     - Assert that the human-readable output indicates that no results were found.
     - Assert that the 'EntryContext' property in the context is an empty dictionary.
     """
-    group_res = load_test_data('group_list_response.json')
-    context_data = load_test_data('group_list_context.json')
-    with open('./test_data/group_list_hr.md') as f:
+    group_res = load_test_data("group_list_response.json")
+    context_data = load_test_data("group_list_context.json")
+    with open("./test_data/group_list_hr.md") as f:
         result_hr = f.read()
-    requests_mock.get(f'{API_URL}{API_ENDPOINT_GROUPS}', json=group_res)
-    args = {
-        'group_type': 'account',
-        'importance': 'high'
-    }
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_GROUPS}", json=group_res)
+    args = {"group_type": "account", "importance": "high"}
     # Call the function
     result = vectra_group_list_command(client, args)
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result.outputs_prefix == 'Vectra.Group'
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data
-    assert result.outputs_key_field == 'group_id'
+    assert result.outputs_prefix == "Vectra.Group"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data
+    assert result.outputs_key_field == "group_id"
 
 
 def test_vectra_group_list_when_response_is_empty(mocker, client):
@@ -2902,42 +3344,40 @@ def test_vectra_group_list_when_response_is_empty(mocker, client):
     - Assert that the human-readable output indicates that no results were found.
     - Assert that the 'EntryContext' property in the context is an empty dictionary.
     """
-    empty_response: dict = {
-        "count": 0,
-        "next": None,
-        "previous": None,
-        "results": []
-    }
-    mocker.patch.object(client, 'list_group_request', return_value=empty_response)
+    empty_response: dict = {"count": 0, "next": None, "previous": None, "results": []}
+    mocker.patch.object(client, "list_group_request", return_value=empty_response)
 
     # Call the function
     result = vectra_group_list_command(client, {})
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result_context.get('HumanReadable') == "##### Couldn't find any matching groups for provided filters."
-    assert result_context.get('EntryContext') == {}
+    assert result_context.get("HumanReadable") == "##### Couldn't find any matching groups for provided filters."
+    assert result_context.get("EntryContext") == {}
 
 
-@pytest.mark.parametrize('args,error_msg',
-                         [({'group_type': 'invalid'},
-                           ERRORS['INVALID_COMMAND_ARG_VALUE'].format('group_type', ', '.join(VALID_GROUP_TYPE))),
-                          ({'group_type': 'host', 'account_names': 'account_name'},
-                           ERRORS['INVALID_SUPPORT_FOR_ARG'].format('group_type', 'account', 'account_names')),
-                          ({'group_type': 'host', 'domains': 'domain'},
-                           ERRORS['INVALID_SUPPORT_FOR_ARG'].format('group_type', 'domain', 'domains')),
-                          ({'group_type': 'account', 'host_ids': '1'},
-                           ERRORS['INVALID_SUPPORT_FOR_ARG'].format('group_type', 'host', 'host_ids')),
-                          ({'group_type': 'host', 'host_ids': 'abc'},
-                           'Invalid number: "{}"="{}"'.format('host_ids', 'abc')),
-                          ({'group_type': 'host', 'host_ids': '-1'},
-                           ERRORS['INVALID_INTEGER_VALUE'].format('host_ids')),
-                          ({'group_type': 'account', 'host_names': 'host_name'},
-                           ERRORS['INVALID_SUPPORT_FOR_ARG'].format('group_type', 'host', 'host_names')),
-                          ({'group_type': 'host', 'ips': '0.0.0.0'},
-                           ERRORS['INVALID_SUPPORT_FOR_ARG'].format('group_type', 'ip', 'ips')),
-                          ({'importance': 'invalid'},
-                           ERRORS['INVALID_COMMAND_ARG_VALUE'].format('importance', ', '.join(VALID_IMPORTANCE_VALUE))),
-                          ])
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"group_type": "invalid"}, ERRORS["INVALID_COMMAND_ARG_VALUE"].format("group_type", ", ".join(VALID_GROUP_TYPE))),
+        (
+            {"group_type": "host", "account_names": "account_name"},
+            ERRORS["INVALID_SUPPORT_FOR_ARG"].format("group_type", "account", "account_names"),
+        ),
+        (
+            {"group_type": "host", "domains": "domain"},
+            ERRORS["INVALID_SUPPORT_FOR_ARG"].format("group_type", "domain", "domains"),
+        ),
+        ({"group_type": "account", "host_ids": "1"}, ERRORS["INVALID_SUPPORT_FOR_ARG"].format("group_type", "host", "host_ids")),
+        ({"group_type": "host", "host_ids": "abc"}, 'Invalid number: "{}"="{}"'.format("host_ids", "abc")),
+        ({"group_type": "host", "host_ids": "-1"}, ERRORS["INVALID_INTEGER_VALUE"].format("host_ids")),
+        (
+            {"group_type": "account", "host_names": "host_name"},
+            ERRORS["INVALID_SUPPORT_FOR_ARG"].format("group_type", "host", "host_names"),
+        ),
+        ({"group_type": "host", "ips": "0.0.0.0"}, ERRORS["INVALID_SUPPORT_FOR_ARG"].format("group_type", "ip", "ips")),
+        ({"importance": "invalid"}, ERRORS["INVALID_COMMAND_ARG_VALUE"].format("importance", ", ".join(VALID_IMPORTANCE_VALUE))),
+    ],
+)
 def test_vectra_group_list_invalid_args(client, args, error_msg):
     """
     Given:
@@ -2971,24 +3411,23 @@ def test_vectra_assign_domain_group_valid_arguments(requests_mock, client):
     Then: - Assert that the result's human-readable output, context data, and key field match the expected values for
     domain type.
     """
-    assign_group_res = load_test_data('assign_group_response.json')
-    groups = load_test_data('get_groups_response.json')
-    context_data = load_test_data('assign_group_context.json')
+    assign_group_res = load_test_data("assign_group_response.json")
+    groups = load_test_data("get_groups_response.json")
+    context_data = load_test_data("assign_group_context.json")
     # For Domain group
-    with open('test_data/assign_domain_group_hr.md') as f:
+    with open("test_data/assign_domain_group_hr.md") as f:
         result_hr = f.read()
-    args = {'group_id': '1', 'members': "*.domain3.com,*.domain2.com"}
-    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')), json=groups[0])
-    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')),
-                        json=assign_group_res[0])
+    args = {"group_id": "1", "members": "*.domain3.com,*.domain2.com"}
+    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=groups[0])
+    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=assign_group_res[0])
     # Call the function
     result = vectra_group_assign_command(client, args)
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result.outputs_prefix == 'Vectra.Group'
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data[0]
-    assert result.outputs_key_field == 'group_id'
+    assert result.outputs_prefix == "Vectra.Group"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data[0]
+    assert result.outputs_key_field == "group_id"
 
 
 def test_vectra_assign_ip_group_valid_arguments(requests_mock, client):
@@ -3004,24 +3443,23 @@ def test_vectra_assign_ip_group_valid_arguments(requests_mock, client):
     Then: - Assert that the result's human-readable output, context data, and key field match the expected values for
     domain type.
     """
-    assign_group_res = load_test_data('assign_group_response.json')
-    groups = load_test_data('get_groups_response.json')
-    context_data = load_test_data('assign_group_context.json')
+    assign_group_res = load_test_data("assign_group_response.json")
+    groups = load_test_data("get_groups_response.json")
+    context_data = load_test_data("assign_group_context.json")
     # For Domain group
-    with open('test_data/assign_ip_group_hr.md') as f:
+    with open("test_data/assign_ip_group_hr.md") as f:
         result_hr = f.read()
-    args = {'group_id': '4', 'members': "8.8.8.8/25"}
-    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')), json=groups[3])
-    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')),
-                        json=assign_group_res[3])
+    args = {"group_id": "4", "members": "8.8.8.8/25"}
+    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=groups[3])
+    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=assign_group_res[3])
     # Call the function
     result = vectra_group_assign_command(client, args)
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result.outputs_prefix == 'Vectra.Group'
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data[3]
-    assert result.outputs_key_field == 'group_id'
+    assert result.outputs_prefix == "Vectra.Group"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data[3]
+    assert result.outputs_key_field == "group_id"
 
 
 def test_vectra_assign_account_group_valid_arguments(requests_mock, client):
@@ -3037,24 +3475,23 @@ def test_vectra_assign_account_group_valid_arguments(requests_mock, client):
     Then: - Assert that the result's human-readable output, context data, and key field match the expected values for
     account type.
     """
-    assign_group_res = load_test_data('assign_group_response.json')
-    groups = load_test_data('get_groups_response.json')
-    context_data = load_test_data('assign_group_context.json')
+    assign_group_res = load_test_data("assign_group_response.json")
+    groups = load_test_data("get_groups_response.json")
+    context_data = load_test_data("assign_group_context.json")
     # For Account group
-    with open('test_data/assign_account_group_hr.md') as f:
+    with open("test_data/assign_account_group_hr.md") as f:
         result_hr = f.read()
-    args = {'group_id': '3', 'members': "account_3,account_4"}
-    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')), json=groups[2])
-    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')),
-                        json=assign_group_res[2])
+    args = {"group_id": "3", "members": "account_3,account_4"}
+    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=groups[2])
+    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=assign_group_res[2])
     # Call the function
     result = vectra_group_assign_command(client, args)
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result.outputs_prefix == 'Vectra.Group'
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data[2]
-    assert result.outputs_key_field == 'group_id'
+    assert result.outputs_prefix == "Vectra.Group"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data[2]
+    assert result.outputs_key_field == "group_id"
 
 
 def test_vectra_assign_host_group_valid_arguments(requests_mock, client):
@@ -3070,24 +3507,23 @@ def test_vectra_assign_host_group_valid_arguments(requests_mock, client):
     Then: - Assert that the result's human-readable output, context data, and key field match the expected values for
     host type.
     """
-    assign_group_res = load_test_data('assign_group_response.json')
-    groups = load_test_data('get_groups_response.json')
-    context_data = load_test_data('assign_group_context.json')
+    assign_group_res = load_test_data("assign_group_response.json")
+    groups = load_test_data("get_groups_response.json")
+    context_data = load_test_data("assign_group_context.json")
     # For Host group
-    with open('test_data/assign_host_group_hr.md') as f:
+    with open("test_data/assign_host_group_hr.md") as f:
         result_hr = f.read()
-    args = {'group_id': '2', 'members': "1,2"}
-    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')), json=groups[1])
-    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')),
-                        json=assign_group_res[1])
+    args = {"group_id": "2", "members": "1,2"}
+    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=groups[1])
+    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=assign_group_res[1])
     # Call the function
     result = vectra_group_assign_command(client, args)
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result.outputs_prefix == 'Vectra.Group'
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data[1]
-    assert result.outputs_key_field == 'group_id'
+    assert result.outputs_prefix == "Vectra.Group"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data[1]
+    assert result.outputs_key_field == "group_id"
 
 
 def test_vectra_assign_member_already_exist(requests_mock, client):
@@ -3103,30 +3539,28 @@ def test_vectra_assign_member_already_exist(requests_mock, client):
     Then:
     - Assert that the result's human-readable output indicates that the members are already in the group.
     """
-    groups = load_test_data('assign_group_response.json')
+    groups = load_test_data("assign_group_response.json")
 
-    args = {'group_id': '2', 'members': "1,2"}
-    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')), json=groups[1])
+    args = {"group_id": "2", "members": "1,2"}
+    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=groups[1])
 
     # Call the function
     result = vectra_group_assign_command(client, args)
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result_context.get('HumanReadable') == "##### Member(s) 1, 2 are already in the group."
+    assert result_context.get("HumanReadable") == "##### Member(s) 1, 2 are already in the group."
 
 
-@pytest.mark.parametrize('args,error_msg',
-                         [
-                             ({'members': 'account1'},
-                              ERRORS['REQUIRED_ARGUMENT'].format('group_id')),
-                             ({'group_id': '0', 'members': 'account1'},
-                              ERRORS['INVALID_INTEGER_VALUE'].format('group_id')),
-                             ({'group_id': '-1', 'members': 'account1'},
-                              ERRORS['INVALID_INTEGER_VALUE'].format('group_id')),
-                             ({'group_id': '1.5', 'members': 'account1'},
-                              ERRORS['INVALID_INTEGER_VALUE'].format('group_id')),
-                             ({'group_id': '1'}, ERRORS['REQUIRED_ARGUMENT'].format('members'))
-                         ])
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"members": "account1"}, ERRORS["REQUIRED_ARGUMENT"].format("group_id")),
+        ({"group_id": "0", "members": "account1"}, ERRORS["INVALID_INTEGER_VALUE"].format("group_id")),
+        ({"group_id": "-1", "members": "account1"}, ERRORS["INVALID_INTEGER_VALUE"].format("group_id")),
+        ({"group_id": "1.5", "members": "account1"}, ERRORS["INVALID_INTEGER_VALUE"].format("group_id")),
+        ({"group_id": "1"}, ERRORS["REQUIRED_ARGUMENT"].format("members")),
+    ],
+)
 def test_vectra_group_assign_invalid_args(client, args, error_msg):
     """
     Given:
@@ -3159,13 +3593,12 @@ def test_vectra_assign_account_group_invalid_group_name(requests_mock, mocker, c
     Then:
     - Assert that the function raises a return_warning.
     """
-    assign_group_res = load_test_data('assign_group_response.json')
-    groups = load_test_data('get_groups_response.json')
+    assign_group_res = load_test_data("assign_group_response.json")
+    groups = load_test_data("get_groups_response.json")
 
-    args = {'group_id': '3', 'members': "account_5"}
-    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')), json=groups[2])
-    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')),
-                        json=assign_group_res[2])
+    args = {"group_id": "3", "members": "account_5"}
+    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=groups[2])
+    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=assign_group_res[2])
 
     return_warning = mocker.patch.object(VectraDetect, "return_warning")
     vectra_group_assign_command(client, args)
@@ -3186,24 +3619,23 @@ def test_vectra_unassign_domain_group_valid_arguments(requests_mock, client):
     Then: - Assert that the result's human-readable output, context data, and key field match the expected values for
     domain type.
     """
-    unassign_group_res = load_test_data('unassign_group_response.json')
-    groups = load_test_data('get_groups_response.json')
-    context_data = load_test_data('unassign_group_context.json')
+    unassign_group_res = load_test_data("unassign_group_response.json")
+    groups = load_test_data("get_groups_response.json")
+    context_data = load_test_data("unassign_group_context.json")
     # For Domain group
-    with open('test_data/unassign_domain_group_hr.md') as f:
+    with open("test_data/unassign_domain_group_hr.md") as f:
         result_hr = f.read()
-    args = {'group_id': '1', 'members': "*.domain1.net"}
-    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')), json=groups[0])
-    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')),
-                        json=unassign_group_res[0])
+    args = {"group_id": "1", "members": "*.domain1.net"}
+    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=groups[0])
+    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=unassign_group_res[0])
     # Call the function
     result = vectra_group_unassign_command(client, args)
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result.outputs_prefix == 'Vectra.Group'
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data[0]
-    assert result.outputs_key_field == 'group_id'
+    assert result.outputs_prefix == "Vectra.Group"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data[0]
+    assert result.outputs_key_field == "group_id"
 
 
 def test_vectra_unassign_ip_group_valid_arguments(requests_mock, client):
@@ -3219,24 +3651,23 @@ def test_vectra_unassign_ip_group_valid_arguments(requests_mock, client):
     Then: - Assert that the result's human-readable output, context data, and key field match the expected values for
     domain type.
     """
-    unassign_group_res = load_test_data('unassign_group_response.json')
-    groups = load_test_data('get_groups_response.json')
-    context_data = load_test_data('unassign_group_context.json')
+    unassign_group_res = load_test_data("unassign_group_response.json")
+    groups = load_test_data("get_groups_response.json")
+    context_data = load_test_data("unassign_group_context.json")
     # For Domain group
-    with open('test_data/unassign_ip_group_hr.md') as f:
+    with open("test_data/unassign_ip_group_hr.md") as f:
         result_hr = f.read()
-    args = {'group_id': '4', 'members': "0.0.0.17/8"}
-    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')), json=groups[3])
-    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')),
-                        json=unassign_group_res[3])
+    args = {"group_id": "4", "members": "0.0.0.17/8"}
+    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=groups[3])
+    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=unassign_group_res[3])
     # Call the function
     result = vectra_group_unassign_command(client, args)
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result.outputs_prefix == 'Vectra.Group'
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data[3]
-    assert result.outputs_key_field == 'group_id'
+    assert result.outputs_prefix == "Vectra.Group"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data[3]
+    assert result.outputs_key_field == "group_id"
 
 
 def test_vectra_unassign_host_group_valid_arguments(requests_mock, client):
@@ -3252,24 +3683,23 @@ def test_vectra_unassign_host_group_valid_arguments(requests_mock, client):
     Then: - Assert that the result's human-readable output, context data, and key field match the expected values for
     host type.
     """
-    unassign_group_res = load_test_data('unassign_group_response.json')
-    groups = load_test_data('get_groups_response.json')
-    context_data = load_test_data('unassign_group_context.json')
+    unassign_group_res = load_test_data("unassign_group_response.json")
+    groups = load_test_data("get_groups_response.json")
+    context_data = load_test_data("unassign_group_context.json")
 
-    with open('test_data/unassign_host_group_hr.md') as f:
+    with open("test_data/unassign_host_group_hr.md") as f:
         result_hr = f.read()
-    args = {'group_id': '2', 'members': "3"}
-    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')), json=groups[1])
-    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')),
-                        json=unassign_group_res[1])
+    args = {"group_id": "2", "members": "3"}
+    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=groups[1])
+    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=unassign_group_res[1])
     # Call the function
     result = vectra_group_unassign_command(client, args)
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result.outputs_prefix == 'Vectra.Group'
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data[1]
-    assert result.outputs_key_field == 'group_id'
+    assert result.outputs_prefix == "Vectra.Group"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data[1]
+    assert result.outputs_key_field == "group_id"
 
 
 def test_vectra_unassign_account_group_valid_arguments(requests_mock, client):
@@ -3285,24 +3715,23 @@ def test_vectra_unassign_account_group_valid_arguments(requests_mock, client):
     Then: - Assert that the result's human-readable output, context data, and key field match the expected values for
     account type.
     """
-    unassign_group_res = load_test_data('unassign_group_response.json')
-    groups = load_test_data('get_groups_response.json')
-    context_data = load_test_data('unassign_group_context.json')
+    unassign_group_res = load_test_data("unassign_group_response.json")
+    groups = load_test_data("get_groups_response.json")
+    context_data = load_test_data("unassign_group_context.json")
 
-    with open('test_data/unassign_account_group_hr.md') as f:
+    with open("test_data/unassign_account_group_hr.md") as f:
         result_hr = f.read()
-    args = {'group_id': '3', 'members': "account_1"}
-    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')), json=groups[2])
-    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')),
-                        json=unassign_group_res[2])
+    args = {"group_id": "3", "members": "account_1"}
+    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=groups[2])
+    requests_mock.patch(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=unassign_group_res[2])
     # Call the function
     result = vectra_group_unassign_command(client, args)
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result.outputs_prefix == 'Vectra.Group'
-    assert result_context.get('HumanReadable') == result_hr
-    assert result_context.get('EntryContext') == context_data[2]
-    assert result.outputs_key_field == 'group_id'
+    assert result.outputs_prefix == "Vectra.Group"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == context_data[2]
+    assert result.outputs_key_field == "group_id"
 
 
 def test_vectra_unassign_member_already_exist(requests_mock, client):
@@ -3318,31 +3747,28 @@ def test_vectra_unassign_member_already_exist(requests_mock, client):
     Then:
     - Assert that the result's human-readable output indicates that the members are already in the group.
     """
-    groups = load_test_data('assign_group_response.json')
+    groups = load_test_data("assign_group_response.json")
 
-    args = {'group_id': '2', 'members': "6,7"}
-    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get('group_id')), json=groups[1])
+    args = {"group_id": "2", "members": "6,7"}
+    requests_mock.get(API_URL + "{}/{}".format(API_ENDPOINT_GROUPS, args.get("group_id")), json=groups[1])
 
     # Call the function
     result = vectra_group_unassign_command(client, args)
     result_context = result.to_context()
     # Assert the CommandResults
-    assert result_context.get(
-        'HumanReadable') == "##### Member(s) 6, 7 do not exist in the group."
+    assert result_context.get("HumanReadable") == "##### Member(s) 6, 7 do not exist in the group."
 
 
-@pytest.mark.parametrize('args,error_msg',
-                         [
-                             ({'members': 'account1'},
-                              ERRORS['REQUIRED_ARGUMENT'].format('group_id')),
-                             ({'group_id': '0', 'members': 'account1'},
-                              ERRORS['INVALID_INTEGER_VALUE'].format('group_id')),
-                             ({'group_id': '-1', 'members': 'account1'},
-                              ERRORS['INVALID_INTEGER_VALUE'].format('group_id')),
-                             ({'group_id': '1.5', 'members': 'account1'},
-                              ERRORS['INVALID_INTEGER_VALUE'].format('group_id')),
-                             ({'group_id': '1'}, ERRORS['REQUIRED_ARGUMENT'].format('members'))
-                         ])
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"members": "account1"}, ERRORS["REQUIRED_ARGUMENT"].format("group_id")),
+        ({"group_id": "0", "members": "account1"}, ERRORS["INVALID_INTEGER_VALUE"].format("group_id")),
+        ({"group_id": "-1", "members": "account1"}, ERRORS["INVALID_INTEGER_VALUE"].format("group_id")),
+        ({"group_id": "1.5", "members": "account1"}, ERRORS["INVALID_INTEGER_VALUE"].format("group_id")),
+        ({"group_id": "1"}, ERRORS["REQUIRED_ARGUMENT"].format("members")),
+    ],
+)
 def test_vectra_group_unassign_invalid_args(client, args, error_msg):
     """
     Given:
@@ -3361,3 +3787,419 @@ def test_vectra_group_unassign_invalid_args(client, args, error_msg):
         vectra_group_unassign_command(client, args)
 
     assert str(exception.value) == error_msg
+
+
+@pytest.mark.parametrize(
+    "integration_context, expected_incidents",
+    [
+        ({"Accounts": {"refetch_ids": ["Accounts_36", "Accounts_1017"]}, "Hosts": {"refetch_ids": ["Hosts_472"]}}, 2),
+        ({"Accounts": {"refetch_ids": []}, "Hosts": {"refetch_ids": []}}, 0),
+        ({}, 0),
+    ],
+)
+def test_fetch_incidents_with_refetch_ids_scenarios(mocker, client, integration_context, expected_incidents):
+    """
+    Test fetch_incidents with different integration context scenarios.
+    Given:
+    - A client object.
+    - A mocked 'getLastRun' method that returns a dictionary with already_fetched IDs.
+    - Different integration context scenarios (with refetch_ids, empty refetch_ids, no refetch_ids).
+    When:
+    - Fetching incidents with different integration context states.
+    Then:
+    - Assert that the integration context is updated correctly.
+    - Assert that already_fetched is handled correctly based on the scenario.
+    - Assert that incidents are processed correctly.
+    """
+    # Setup test data
+    last_run = {
+        "Accounts": {"last_timestamp": "2023-05-15T09:39:09Z", "id": "", "last_created_events": ["Accounts_36"]},
+        "Hosts": {"last_timestamp": "2023-05-15T09:39:09Z", "id": "", "last_created_events": ["Hosts_472"]},
+    }
+
+    # Mock the API responses
+    account_data = load_test_data("single_account.json")
+    account_response = {"count": 1, "results": [account_data]}
+    mocker.patch.object(client, "search_accounts", return_value=account_response)
+    host_data = load_test_data("single_host.json")
+    host_response = {"count": 1, "results": [host_data]}
+    mocker.patch.object(client, "search_hosts", return_value=host_response)
+
+    mocker.patch.object(client, "search_detections", return_value={"count": 0, "results": []})
+    mocker.patch.object(client, "list_detections_by_host_id", return_value={"count": 0, "results": []})
+    mocker.patch.object(client, "list_group_request", return_value={"count": 0, "results": []})
+    mocker.patch.object(client, "list_assignments_request", return_value={"count": 0, "results": []})
+
+    # Setup mocks
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "debug")
+
+    # Mock the integration context functions
+    mocker.patch.object(VectraDetect, "get_integration_context", return_value=integration_context)
+    set_integration_context_mock = mocker.patch.object(VectraDetect, "set_integration_context")
+
+    params = {"isFetch": True, "first_fetch": "1 hour", "max_fetch": "200", "fetch_entity_types": ["Accounts", "Hosts"]}
+
+    # Call the function
+    new_last_run, incidents = fetch_incidents(client, params)
+    if set_integration_context_mock.called:
+        updated_context = set_integration_context_mock.call_args[0][0]
+        # Each entity type should have refetch_ids set to empty list
+        for entity_type in ["Accounts", "Hosts"]:
+            assert entity_type in updated_context
+            assert updated_context[entity_type]["refetch_ids"] == []
+
+    # Verify incidents were processed
+    assert len(incidents) == expected_incidents
+    assert isinstance(incidents, list)
+    assert isinstance(new_last_run, dict)
+
+
+def test_update_remote_system_closing_notes_refetch(client, mocker):
+    """
+    Given:
+    - A client object.
+    - A mocker for patching client functions.
+    - Mocked arguments with JSON data from a test file, including closing notes and related data.
+    - refetch_closed_incidents is True
+    When:
+    - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
+    Then:
+    - Assert that the remote incident ID returned matches the expected value.
+    - Assert that the {entity ID}-{entity Type} is added to refetch_ids in integration context.
+    """
+    mock_args = util_load_json("test_data/update_remote_system_args.json")
+
+    mock_args["data"]["closeNotes"] = "Closing notes"
+    mock_args["data"]["closeReason"] = "Closed due to testing"
+    mock_args["delta"]["closingUserId"] = "user2"
+    mock_args["data"]["vectraxdrentityid"] = "123"
+    mock_args["data"]["vectraxdrentitytype"] = "host"
+
+    # Mock integration context
+    mocker.patch.object(VectraDetect, "get_integration_context", return_value={"Hosts": {"refetch_ids": []}})
+    set_integration_context = mocker.patch.object(VectraDetect, "set_integration_context")
+
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
+    mocker.patch.object(client, "add_note_request", return_value={})
+
+    params = {"refetch_closed_incidents": "true"}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+    remote_incident_id = update_remote_system_command(client)
+    assert remote_incident_id == "123-host"
+
+    # Verify entity ID was added to refetch_ids
+    expected_refetch_id = f"Hosts_{mock_args['data']['vectraxdrentityid']}"
+    set_integration_context.assert_called_once_with({"Hosts": {"refetch_ids": [expected_refetch_id]}})
+
+
+def test_update_remote_system_closing_notes_refetch_invalid_id(client, mocker):
+    """
+    Given:
+    - A client object.
+    - A mocker for patching client functions.
+    - Mocked arguments with JSON data from a test file, including closing notes and related data.
+    - refetch_closed_incidents is True
+    When:
+    - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
+    Then:
+    - Assert that the function raises a ValueError.
+    - Assert that the raised error message matches the expected error message.
+    """
+    mock_args = util_load_json("test_data/update_remote_system_args.json")
+
+    mock_args["remoteId"] = "123-"
+    mock_args["data"]["closeNotes"] = "Closing notes"
+    mock_args["data"]["closeReason"] = "Closed due to testing"
+    mock_args["delta"]["closingUserId"] = "user2"
+
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
+    mocker.patch.object(client, "add_note_request", return_value={})
+
+    params = {"refetch_closed_incidents": "true"}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+
+    with pytest.raises(ValueError) as exception:
+        update_remote_system_command(client)
+
+    assert str(exception.value) == "Both 'entity_id' and 'entity_type' arguments are required."
+
+
+@pytest.mark.parametrize("refetch_closed_incidents", ["invalid", ""])
+def test_update_remote_system_closing_notes_refetch_invalid(client, mocker, refetch_closed_incidents):
+    """
+    Given:
+    - A client object.
+    - A mocker for patching client functions.
+    - Mocked arguments with JSON data from a test file, including closing notes and related data.
+    - refetch_closed_incidents is invalid or empty
+    When:
+    - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
+    Then:
+    - Assert that the function raises a ValueError.
+    - Assert that the raised error message matches the expected error message.
+    """
+    mock_args = util_load_json("test_data/update_remote_system_args.json")
+
+    mock_args["data"]["closeNotes"] = "Closing notes"
+    mock_args["data"]["closeReason"] = "Closed due to testing"
+    mock_args["delta"]["closingUserId"] = "user2"
+
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
+    mocker.patch.object(client, "add_note_request", return_value={})
+
+    params = {"refetch_closed_incidents": refetch_closed_incidents}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+
+    with pytest.raises(ValueError) as exception:
+        update_remote_system_command(client)
+
+    assert str(exception.value) == "Argument does not contain a valid boolean-like value"
+
+
+@pytest.mark.parametrize("close_reason", ["benign", "remediated"])
+def test_markall_detections_asclosed_command_for_account_when_success(client, requests_mock, close_reason):
+    """
+    Tests markall_detections_asclosed_command command function when success with host.
+    """
+    account_id = "36"
+    args = {"account_id": account_id, "close_reason": close_reason}
+
+    account_data = load_test_data("single_account.json")
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ACCOUNT}/{account_id}", json=account_data, status_code=200)
+
+    response = {"_meta": {"level": "Success", "message": f"Successfully closed detections as {close_reason}"}}
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}/close", json=response, status_code=200)
+
+    result = markall_detections_asclosed_command(client=client, entity_type="account", args=args)
+
+    assert (
+        result.readable_output
+        == f"##### The active detections of the provided account have been successfully closed as {close_reason}."
+    )
+    assert result.raw_response == response
+
+
+def test_markall_detections_asclosed_command_for_account_when_no_detection(client, requests_mock):
+    """
+    Tests markall_detections_asclosed_command command function when no detection in account.
+    """
+    account_id = "36"
+    close_reason = "benign"
+    args = {"account_id": account_id, "close_reason": close_reason}
+
+    account_data = load_test_data("single_account.json")
+    account_data["detection_summaries"] = []
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ACCOUNT}/{account_id}", json=account_data, status_code=200)
+
+    result = markall_detections_asclosed_command(client=client, entity_type="account", args=args)
+
+    assert result.readable_output == "##### There are no active detections present."
+    assert result.raw_response == {}
+
+
+@pytest.mark.parametrize("close_reason", ["benign", "remediated"])
+def test_markall_detections_asclosed_command_for_host_when_success(client, requests_mock, close_reason):
+    """
+    Tests markall_detections_asclosed_command command function when success with host.
+    """
+    host_id = "472"
+    args = {"host_id": host_id, "close_reason": close_reason}
+
+    host_data = load_test_data("single_host.json")
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_HOST}/{host_id}", json=host_data, status_code=200)
+
+    response = {"_meta": {"level": "Success", "message": f"Successfully closed detections as {close_reason}"}}
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}/close", json=response, status_code=200)
+
+    result = markall_detections_asclosed_command(client=client, entity_type="host", args=args)
+
+    assert (
+        result.readable_output
+        == f"##### The active detections of the provided host have been successfully closed as {close_reason}."
+    )
+    assert result.raw_response == response
+
+
+def test_markall_detections_asclosed_command_for_host_when_no_detection(client, requests_mock):
+    """
+    Tests markall_detections_asclosed_command command function when no detection in host.
+    """
+    host_id = "472"
+    close_reason = "benign"
+    args = {"host_id": host_id, "close_reason": close_reason}
+
+    host_data = load_test_data("single_host.json")
+    host_data["detection_summaries"] = []
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_HOST}/{host_id}", json=host_data, status_code=200)
+
+    result = markall_detections_asclosed_command(client=client, entity_type="host", args=args)
+
+    assert result.readable_output == "##### There are no active detections present."
+    assert result.raw_response == {}
+
+
+@pytest.mark.parametrize(
+    "args,type,expected_error",
+    [
+        pytest.param(
+            {"close_reason": "benign", "account_id": ""},
+            "account",
+            ERRORS["REQUIRED_ARGUMENT"].format("account_id"),
+        ),
+        pytest.param(
+            {"account_id": "-1", "close_reason": "benign"},
+            "account",
+            ERRORS["INVALID_INTEGER_VALUE"].format("account_id"),
+        ),
+        pytest.param(
+            {"account_id": "36"},
+            "account",
+            ERRORS["REQUIRED_ARGUMENT"].format("close_reason"),
+        ),
+        pytest.param(
+            {"host_id": "-1", "close_reason": "benign"},
+            "host",
+            ERRORS["INVALID_INTEGER_VALUE"].format("host_id"),
+        ),
+        pytest.param(
+            {"host_id": "36"},
+            "host",
+            ERRORS["REQUIRED_ARGUMENT"].format("close_reason"),
+        ),
+        pytest.param(
+            {"host_id": "36", "close_reason": "invalid"},
+            "host",
+            'Invalid close_reason. Must be "benign" or "remediated".',
+        ),
+        pytest.param(
+            {"host_id": "36", "close_reason": ""},
+            "host",
+            ERRORS["REQUIRED_ARGUMENT"].format("close_reason"),
+        ),
+    ],
+)
+def test_markall_detections_asclosed_command_invalid_args(client, args, type, expected_error):
+    """
+    Tests markall_detections_asclosed_command command function error validation cases.
+    """
+    with pytest.raises(ValueError) as err:
+        markall_detections_asclosed_command(client=client, entity_type=type, args=args)
+
+    assert str(err.value) == expected_error
+
+
+@pytest.mark.parametrize("close_reason", ["benign", "remediated"])
+def test_mark_detections_asclosed_command_valid_close(requests_mock, client, close_reason):
+    """
+    Tests mark_detection_as_closed_command with valid close reason.
+    """
+
+    response = {"_meta": {"level": "success", "message": f"Successfully closed detection as {close_reason}"}}
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}/close", json=response)
+
+    args = {"detection_ids": "123,234", "close_reason": close_reason}
+    result = mark_detections_asclosed_command(client=client, args=args)
+
+    assert result.outputs is None
+    assert result.readable_output == f"##### The provided detection IDs have been successfully closed as {close_reason}."
+    assert result.raw_response == response
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        pytest.param({}, ERRORS["REQUIRED_ARGUMENT"].format("detection_ids")),
+        pytest.param({"detection_ids": "abc"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "0"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "-5"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "123,abc,456"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "123"}, ERRORS["REQUIRED_ARGUMENT"].format("close_reason")),
+        pytest.param(
+            {"detection_ids": "123", "close_reason": "invalid"},
+            "Invalid close_reason. Must be 'benign' or 'remediated'.",
+        ),
+    ],
+)
+def test_mark_detections_asclosed_command_invalid_args(args, client, error_msg):
+    """
+    Tests mark_detections_asclosed_command with invalid arguments.
+    """
+
+    with pytest.raises(ValueError) as err:
+        mark_detections_asclosed_command(client=client, args=args)
+
+    assert str(err.value) == error_msg
+
+
+def test_mark_detections_asopen_command_valid(requests_mock, client):
+    """
+    Tests mark_detections_asopen_command with valid open detection.
+    """
+    response = {"_meta": {"level": "success", "message": "Successfully re-opened detections."}}
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}/open", json=response)
+
+    args = {"detection_ids": "123,234"}
+    result = mark_detections_asopen_command(client=client, args=args)
+
+    assert result.outputs is None
+    assert result.readable_output == "##### The provided detection IDs have been successfully re-opened."
+    assert result.raw_response == response
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        pytest.param({}, ERRORS["REQUIRED_ARGUMENT"].format("detection_ids")),
+        pytest.param({"detection_ids": "abc"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "0"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "-5"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "123,abc,456"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+    ],
+)
+def test_mark_detections_asopen_command_invalid_args(args, client, error_msg):
+    """
+    Tests mark_detections_asopen_command with invalid arguments.
+    """
+    with pytest.raises(ValueError) as err:
+        mark_detections_asopen_command(client=client, args=args)
+
+    assert str(err.value) == error_msg
+
+
+def test_mark_detections_asopen_command_api_error(requests_mock, client):
+    """
+    Tests mark_detections_asopen_command when API returns error.
+    """
+    response = {"_meta": {"level": "error", "message": "Failed to open detections"}}
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}/open", json=response)
+
+    args = {"detection_ids": "123"}
+
+    with pytest.raises(DemistoException) as err:
+        mark_detections_asopen_command(client=client, args=args)
+
+    assert str(err.value) == "Something went wrong. Message: Failed to open detections."
+
+
+def test_mark_detections_asclosed_command_api_error(requests_mock, client):
+    """
+    Tests mark_detections_asclosed_commandwhen API returns error.
+    """
+
+    response = {"_meta": {"level": "error", "message": "Failed to close detections"}}
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}/close", json=response)
+
+    args = {"detection_ids": "123", "close_reason": "benign"}
+
+    with pytest.raises(DemistoException) as err:
+        mark_detections_asclosed_command(client=client, args=args)
+
+    assert str(err.value) == "Something went wrong. Message: Failed to close detections."

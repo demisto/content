@@ -5,7 +5,7 @@ description: |-
   The `Identity Analytics - Alert Handling` playbook is designed to handle Identity Analytics alerts and executes the following:
 
   Analysis:
-  - Enriches the IP and the account, providing additional context and information about these indicators.
+  - Enriches the Indicators and the account, providing additional context and information about these indicators.
 
   Verdict:
   - Determines the appropriate verdict based on the data collected from the enrichment phase.
@@ -33,14 +33,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "57"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 250,
-          "y": -510
+          "y": -660
         }
       }
     note: false
@@ -108,53 +108,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": -230
+          "x": -90,
+          "y": -70
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: d44bd7f6-7d7d-4b0e-8746-110754f73f1e
-    type: regular
-    task:
-      id: d44bd7f6-7d7d-4b0e-8746-110754f73f1e
-      version: -1
-      name: IP Enrichment
-      description: Checks the reputation of an IP address.
-      script: '|||ip'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      ip:
-        complex:
-          root: IP
-          accessor: Address
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": -230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -174,14 +135,13 @@ tasks:
       '#none#':
       - "56"
       - "1"
-      - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 250,
-          "y": -380
+          "y": -230
         }
       }
     note: false
@@ -334,7 +294,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
+          "x": 620,
           "y": 110
         }
       }
@@ -991,7 +951,7 @@ tasks:
     task:
       id: 27faebca-18f3-4660-8e72-910b4ff288f6
       version: -1
-      name: Fetch cloud alert extra data
+      name: Fetch alert extra data
       description: Returns information about each alert ID.
       script: '|||core-get-cloud-original-alerts'
       type: regular
@@ -999,7 +959,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "4"
     scriptarguments:
       alert_ids:
         complex:
@@ -1015,7 +975,7 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": -50
+          "y": -380
         }
       }
     note: false
@@ -1492,7 +1452,7 @@ tasks:
       '#default#':
       - "16"
       "yes":
-      - "47"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1510,8 +1470,44 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 620,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 2957a278-54d6-4502-b8ba-bf73ba3a1d73
+    type: regular
+    task:
+      id: 2957a278-54d6-4502-b8ba-bf73ba3a1d73
+      version: -1
+      name: Extract and enrich the alert indicators
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      text:
+        simple: ${alert}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
           "x": 250,
-          "y": -230
+          "y": -530
         }
       }
     note: false
@@ -1532,15 +1528,14 @@ view: |-
       "53_30_#default#": 0.43,
       "53_46_yes": 0.41,
       "56_16_#default#": 0.2,
-      "56_47_yes": 0.47,
       "5_50_yes": 0.19
     },
     "paper": {
       "dimensions": {
-        "height": 3305,
+        "height": 3450,
         "width": 2240,
         "x": -540,
-        "y": -510
+        "y": -660
       }
     }
   }
@@ -1646,8 +1641,21 @@ outputSections:
 outputs: []
 tests:
 - Test Playbook - Identity Analytics - Alert Handling
-marketplaces: 
+marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.10.0
-
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
+- xsiam

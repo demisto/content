@@ -1,0 +1,35 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"CybelAngel"
+	],
+	"caseInsensitive": true,
+	"cliName": "cybelangelusersession",
+	"closeForm": false,
+	"content": true,
+	"description": "Session pertaining to Darkweb alerts",
+	"editForm": true,
+	"hidden": false,
+	"id": "incident_cybelangelusersession",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "CybelAngel User Session",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"ownerOnly": false,
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"threshold": 72,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": false,
+	"version": -1,
+	"group": 0,
+	"fromVersion": "6.2.0"
+}

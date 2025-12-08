@@ -1,14 +1,14 @@
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
 
-import dateparser
 import secrets
+
+import dateparser
 import jwt
 from cryptography import exceptions
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from pydantic import ConfigDict, Field, parse_obj_as
-
 from SiemApiModule import *  # noqa: E402
 
 
@@ -61,8 +61,7 @@ class BoxEventsParams(BaseModel):
     stream_type: str = "admin_logs"
     created_after: Optional[str]
     # validators
-    _normalize_after = validator("created_after", pre=True, allow_reuse=True)(
-        get_box_events_timestamp_format)  # type: ignore[type-var]
+    _normalize_after = validator("created_after", pre=True, allow_reuse=True)(get_box_events_timestamp_format)  # type: ignore[type-var]
     model_config = ConfigDict(validate_assignment=True)
 
 

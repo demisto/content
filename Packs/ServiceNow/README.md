@@ -1,8 +1,9 @@
-Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. 
+Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations.
 
-The data in ServiceNow tickets can be mirrored to Cortex XSOAR so that you can track the status and information in the task. 
-You can also provide comments or attachments in Cortex XSOAR which will appear in ServiceNow. 
-
+<~XSOAR>
+The data in ServiceNow tickets can be mirrored to Cortex XSOAR so that you can track the status and information in the task.
+You can also provide comments or attachments in Cortex XSOAR which will appear in ServiceNow.
+</~XSOAR>
 
 # What does this pack do?
 
@@ -15,17 +16,16 @@ You can also provide comments or attachments in Cortex XSOAR which will appear i
 <~XSOAR>
 As part of this pack, you will also get two out-of-the-box layouts so that you can visualize ServiceNow ticket information in Cortex XSOAR.
 
-
 The Create ServiceNow Ticket playbook provides an example for how to use the Mirror ServiceNow Ticket playbook to mirror data and the ServiceNow Ticket State Polling sub-playbook to track when the ticket closes.
 </~XSOAR>
 
 <~XSIAM>
 
-### Supported Event Types:
+### Supported Event Types
 
-* Audit
-* Syslog Transactions
-
+- Audit
+- Syslog Transactions
+- Case
 
 ### Configure ServiceNow Event Collector on XSIAM Tenant
 
@@ -37,6 +37,14 @@ The Create ServiceNow Ticket playbook provides an example for how to use the Mir
 6. Scroll down to the **Collect** section.
 7. Mark **Fetch Events** and select the desire event types to fetch (Audit and Syslog Transactions)
 
+#### Important
+
+To use ServiceNow on Cortex XSIAM, ensure your user account has the **rest_api_explorer** and **web_service_admin** roles.
+These roles are required to make API calls. To use the **Case** API endpoint, users must have one of the following roles:  
+
+- csm_ws_integration
+- sn_customerservice.customer
+- sn_customerservice.consumer
 
 ### For more information on ServiceNow platform
 

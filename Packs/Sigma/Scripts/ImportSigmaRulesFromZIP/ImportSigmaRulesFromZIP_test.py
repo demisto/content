@@ -1,17 +1,16 @@
-from unittest.mock import patch, MagicMock
-import tempfile
 import os
+import tempfile
 import zipfile
-
-from ImportSigmaRulesFromZIP import main
-import ImportSigmaRulesFromZIP
+from unittest.mock import MagicMock, patch
 
 import demistomock as demisto  # noqa: F401
+import ImportSigmaRulesFromZIP
 from CommonServerPython import *  # noqa: F401
+from ImportSigmaRulesFromZIP import main
 
 
 @patch.object(ImportSigmaRulesFromZIP, "return_results")
-@patch('ImportSigmaRulesFromZIP.demisto')
+@patch("ImportSigmaRulesFromZIP.demisto")
 def test_main(mock_demisto, mock_return_results):
     # Create a temporary directory to hold the test files
     temp_dir = tempfile.mkdtemp()

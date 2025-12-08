@@ -19,7 +19,7 @@ def prevent_duplication(current_incident):
     if "sla" in current_incident:
         del current_incident["sla"]
     current_incident.update(custom_fields)
-    gibid = custom_fields.get('gibid')
+    gibid = custom_fields.get("gibid")
     search_incident = demisto.executeCommand("getIncidents", {"query": f"gibid: {gibid}"})
     if search_incident:
         total = int(search_incident[0].get("Contents", {}).get("total", 0))
@@ -27,7 +27,7 @@ def prevent_duplication(current_incident):
             result = False
             incident_id = search_incident[0].get("Contents", {}).get("data", {})[total - 1].get("id")
             for key, value in current_incident.items():
-                demisto.executeCommand('setIncident', {"id": incident_id, key: value})
+                demisto.executeCommand("setIncident", {"id": incident_id, key: value})
 
     return result
 
@@ -36,7 +36,7 @@ def main():
     try:
         return_results(prevent_duplication(demisto.incident()))
     except Exception as e:
-        return_error(f"Error: {str(e)}")
+        return_error(f"Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

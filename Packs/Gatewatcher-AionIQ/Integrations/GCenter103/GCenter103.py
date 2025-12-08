@@ -1,11 +1,11 @@
+import json
+from datetime import datetime
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401, F403
-import urllib3
-import json
 import requests
-from datetime import datetime
+import urllib3
+from CommonServerPython import *  # noqa: F401, F403
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -444,9 +444,10 @@ def gcenter103_alerts_tags_add_command(client: GwClient, args: dict[str, Any]) -
     for tag in list(ids_present.union(ids_to_add)):
         data["tags"].append({"id": tag})
 
-    req = client._put(endpoint="/api/v1/alerts/" + uuid + "/tags",
-                      json_data=data,
-                      )
+    req = client._put(
+        endpoint="/api/v1/alerts/" + uuid + "/tags",
+        json_data=data,
+    )
 
     res = req.json()
     res_keys: dict[Any, Any] = {
@@ -758,9 +759,10 @@ def gcenter103_assets_tags_add_command(client: GwClient, args: dict[str, Any]) -
     for tag in list(ids_present.union(ids_to_add)):
         data["tags"].append({"id": tag})
 
-    req = client._put(endpoint="/api/v1/assets/" + asset_name + "/tags",
-                      json_data=data,
-                      )
+    req = client._put(
+        endpoint="/api/v1/assets/" + asset_name + "/tags",
+        json_data=data,
+    )
     res = req.json()
 
     return CommandResults(
@@ -961,9 +963,7 @@ def gcenter103_users_tags_add_command(client: GwClient, args: dict[str, Any]) ->
     for tag in list(ids_present.union(ids_to_add)):
         data["tags"].append({"id": tag})
 
-    req = client._put(endpoint="/api/v1/kusers/" + kuser_name + "/tags",
-                      json_data=data
-                      )
+    req = client._put(endpoint="/api/v1/kusers/" + kuser_name + "/tags", json_data=data)
     res = req.json()
 
     return CommandResults(
@@ -1235,9 +1235,7 @@ def handle_little_fetch_metadata(client: GwClient, fetch_type: str, query: dict[
     return []
 
 
-def index_alerts_incidents(
-    to_index: list[dict[Any, Any]] | None, params: dict[str, Any]
-) -> list[dict[Any, Any]]:
+def index_alerts_incidents(to_index: list[dict[Any, Any]] | None, params: dict[str, Any]) -> list[dict[Any, Any]]:
     webui_link: str = "https://" + str(params.get("ip", "")) + "/ui/alerts?drawer=alert&drawer_uuid="
     incidents = []
     for new_incident in to_index or []:
@@ -1265,8 +1263,8 @@ def index_alerts_incidents(
                 "sourcemacaddress": new_incident.get("_source", {}).get("source", {}).get("mac", ""),
                 "destinationip": new_incident.get("_source", {}).get("destination", {}).get("ip", ""),
                 "destinationport": new_incident.get("_source", {}).get("destination", {}).get("port", ""),
-                "destinationmacaddress": new_incident.get("_source", {}).get("destination", {}).get("mac", "")
-            }
+                "destinationmacaddress": new_incident.get("_source", {}).get("destination", {}).get("mac", ""),
+            },
         }
 
         webui_link = webui_link.rstrip(new_incident.get("_source", {}).get("event", {}).get("id", ""))
@@ -1315,8 +1313,8 @@ def index_metadata_incidents(to_index: list[dict[Any, Any]] | None) -> list[dict
                 "sourcemacaddress": new_incident.get("_source", {}).get("source", {}).get("mac", ""),
                 "destinationip": new_incident.get("_source", {}).get("destination", {}).get("ip", ""),
                 "destinationport": new_incident.get("_source", {}).get("destination", {}).get("port", ""),
-                "destinationmacaddress": new_incident.get("_source", {}).get("destination", {}).get("mac", "")
-            }
+                "destinationmacaddress": new_incident.get("_source", {}).get("destination", {}).get("mac", ""),
+            },
         }
 
         # XSOAR Severity
@@ -1393,7 +1391,7 @@ def fetch_selected_engines(
             client=client, query=query, engine_selection=engine_selection, fetch_type=fetch_type
         )
         if len(gw_alerts) > 0:
-            for i in range(0, len(gw_alerts)):
+            for i in range(len(gw_alerts)):
                 incidents_a += index_alerts_incidents(to_index=gw_alerts[i], params=params)
 
         query = query_empty_selected_engines_builder(from_to=from_to, max_fetch=max_fetch)
@@ -1488,13 +1486,11 @@ def fetch_incidents(client: GwClient) -> Any:
         )
 
     else:
-        incidents = fetch_empty_selected_engines(
-            client=client, max_fetch=max_fetch, fetch_type=fetch_type, params=params
-        )
+        incidents = fetch_empty_selected_engines(client=client, max_fetch=max_fetch, fetch_type=fetch_type, params=params)
 
     if len(incidents) > 0:
         incidents_s = sorted(incidents, key=lambda d: d.get("occurred", ""))
-        last_incident = incidents_s[- 1]
+        last_incident = incidents_s[-1]
         demisto.setLastRun({"start_time": last_incident.get("occurred", "")})
 
     return demisto.incidents(incidents=incidents)
@@ -1590,7 +1586,7 @@ def main() -> None:
             return_results(gcenter103_malcore_fingerprints_remove_command(client=client, args=args))
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError: {str(e)}")
+        return_error(f"Failed to execute {command} command.\nError: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

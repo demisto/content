@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -23,6 +23,16 @@ configuration:
   name: environment
   required: true
   type: 0
+  section: Connect
+- display: Data residency
+  name: region
+  type: 15
+  required: true
+  additionalinfo: Select the data region for GDPR compliance (US or EU).
+  options:
+  - US
+  - EU
+  defaultvalue: US
   section: Connect
 - display: Create an incident per CSV record
   additionalinfo: An incident will be created with the originated Alert details per CSV file record.
@@ -133,13 +143,16 @@ configuration:
   - exposed_web_interfaces
   - hijackable_subdomains
   - website_vulnerabilities
+  - vulnerabilities
   - exposed_cloud_storage
   - exploitable_ports
   - mail_servers_in_blacklist
   - server_connected_to_botnet
   - email_security_issues
   - certificate_authority_issues
+  - user_defined_saved_query
   - other
+  - ssl_tls
   section: Collect
 - display: Fetch Limit
   name: max_fetch
@@ -253,13 +266,16 @@ script:
       - exposed_web_interfaces
       - hijackable_subdomains
       - website_vulnerabilities
+      - vulnerabilities
       - exposed_cloud_storage
       - exploitable_ports
       - mail_servers_in_blacklist
       - server_connected_to_botnet
       - email_security_issues
       - certificate_authority_issues
+      - user_defined_saved_query
       - other
+      - ssl_tls
     description: List alerts according to parameters.
     name: cyberint-alerts-fetch
     outputs:
@@ -581,7 +597,7 @@ script:
       name: lastUpdate
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.11.11.1940698
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   script: '-'
@@ -595,4 +611,7 @@ script:
   longRunningPort: false
 tests:
 - No tests
+defaultclassifier: Cyberint - Classifier
+defaultmapperin: abcd-5678
+defaultmapperout: CyberInt Outgoing (mapper)
 fromversion: 5.0.0

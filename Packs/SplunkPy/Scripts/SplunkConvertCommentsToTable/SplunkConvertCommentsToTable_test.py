@@ -1,8 +1,6 @@
 import SplunkConvertCommentsToTable
 
-EXPECTED_TABLE = ('|Comment|\n'
-                  '|---|\n'
-                  '| new comment |\n')
+EXPECTED_TABLE = "|Comment|\n|---|\n| new comment |\n"
 
 
 def test_convert_to_table(mocker):
@@ -14,9 +12,8 @@ def test_convert_to_table(mocker):
     Then:
         - Validate the table is created correctly
     """
-    incident = {'CustomFields': {'splunkcomments': [
-        '{"Comment":"new comment"}']}}
-    mocker.patch('demistomock.incident', return_value=incident)
+    incident = {"CustomFields": {"splunkcomments": ['{"Comment":"new comment"}']}}
+    mocker.patch("demistomock.incident", return_value=incident)
     result = SplunkConvertCommentsToTable.main()
 
     assert result.readable_output == EXPECTED_TABLE

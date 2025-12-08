@@ -1,6 +1,7 @@
 Get PCAP of a Forescout EyeInspect incident
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ Get PCAP of a Forescout EyeInspect incident
 | Cortex XSOAR Version | 6.1.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

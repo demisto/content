@@ -1,5 +1,5 @@
 category: Endpoint
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -12,6 +12,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  hidden: true
   additionalinfo: "Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.'"
 - display: Server URL (e.g., https://api.crowdstrike.com)
   name: url
@@ -61,6 +62,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
@@ -71,89 +73,108 @@ configuration:
   additionalinfo: Input a value between 1-500.
   hidden:
   - marketplacev2
-- display: Endpoint Detections fetch query
+  - platform
+- display: Endpoint Detections filter query
   name: fetch_query
   type: 0
   section: Collect
   advanced: true
   required: false
-  hidden:
-  - marketplacev2
-  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
-- display: Endpoint Incidents fetch query
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: Endpoint Incidents filter query
   name: incidents_fetch_query
   required: false
   type: 0
   section: Collect
   advanced: true
-  hidden:
-  - marketplacev2
-  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
-- display: IDP Detections fetch query
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: IDP Detections filter query
   name: idp_detections_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  hidden:
-  - marketplacev2
-  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
-- display: Mobile Detections fetch query
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: Mobile Detections filter query
   name: mobile_detections_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  hidden:
-  - marketplacev2
-  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
-- display: IOM fetch query
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: IOM filter query
   name: iom_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
   hidden:
   - marketplacev2
-  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
-- display: IOA fetch query
+  - platform
+- display: IOA filter query
   name: ioa_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
+  additionalinfo: "In the query parameter format: 'cloud_provider=aws&amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13"
   hidden:
   - marketplacev2
-  additionalinfo: "In the query parameter format: 'cloud_provider=aws&amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13"
-- display: Detections from On-Demand Scans fetch query
+  - platform
+- display: Detections from On-Demand Scans filter query
   name: on_demand_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  hidden:
-  - marketplacev2
-  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
-- display: OFP Detections fetch query
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: OFP Detections filter query
   name: ofp_detection_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  hidden:
-  - marketplacev2
-  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: Third Party Detection fetch query
+  name: third_party_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM Detection fetch query
+  name: ngsiem_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
   required: false
   defaultvalue: 'true'
+  hidden:
+  - marketplacev2
+  - platform
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: 'true'
+  hidden:
+  - xsoar
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
   required: false
+  hidden:
+  - marketplacev2
+  - platform
 - display: 'Mirroring Direction'
   name: mirror_direction
   type: 15
@@ -168,6 +189,7 @@ configuration:
   - Incoming And Outgoing
   hidden:
   - marketplacev2
+  - platform
 - display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8
@@ -180,8 +202,8 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- defaultvalue: 'false'
-  display: 'Close Mirrored XSOAR Incident'
+- display: 'Close Mirrored XSOAR Incident'
+  defaultvalue: 'false'
   name: close_incident
   type: 8
   section: Collect
@@ -190,8 +212,9 @@ configuration:
   additionalinfo: When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex XSOAR.
   hidden:
   - marketplacev2
-- defaultvalue: 'false'
-  display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
+  - platform
+- display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
+  defaultvalue: 'false'
   name: close_in_cs_falcon
   type: 8
   section: Collect
@@ -200,16 +223,17 @@ configuration:
   additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored.
   hidden:
   - marketplacev2
-- defaultvalue: 'Endpoint Detection'
-  display: 'Fetch types'
+  - platform
+- display: 'Fetch types'
+  defaultvalue: 'Endpoint Detection'
   name: fetch_incidents_or_detections
   type: 16
   section: Collect
   advanced: true
   required: false
   additionalinfo: |-
-   Choose what to fetch -  You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version.
-   2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+    Choose what to fetch -  You can choose any combination. Note:
+    Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
   - Endpoint Incident
@@ -219,11 +243,32 @@ configuration:
   - Mobile Detection
   - On-Demand Scans Detection
   - OFP Detection
+  - Third Party Detection
+  - NGSIEM Detection
   hidden:
   - marketplacev2
-- additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
+  - platform
+- display: 'Fetch types'
+  defaultvalue: 'IDP Detection,Endpoint Detection,Mobile Detection,On-Demand Scans Detection,OFP Detection'
+  name: fetch_events_or_detections
+  type: 16
+  section: Collect
+  required: false
+  additionalinfo: |-
+    Choose what to fetch -  You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+  options:
+  - IDP Detection
+  - Endpoint Incident
+  - Endpoint Detection
+  - Mobile Detection
+  - On-Demand Scans Detection
+  - OFP Detection
+  hidden:
+  - xsoar
+  - xpanse
+- display: 'Reopen Statuses'
+  additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
-  display: 'Reopen Statuses'
   name: reopen_statuses
   type: 16
   section: Collect
@@ -238,8 +283,9 @@ configuration:
   - Ignored
   hidden:
   - marketplacev2
-- defaultvalue: '1'
-  display: 'Incidents Fetch Interval'
+  - platform
+- display: 'Incidents Fetch Interval'
+  defaultvalue: '1'
   name: incidentFetchInterval
   type: 19
   section: Collect
@@ -247,9 +293,20 @@ configuration:
   required: false
   hidden:
   - marketplacev2
-- additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
+  - platform
+- display: 'Events Fetch Interval'
+  defaultvalue: '1'
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+- display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
+  additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 2
-  display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   name: look_back
   type: 0
   section: Collect
@@ -257,6 +314,18 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
+- display: 'Advanced: Time in minutes to look back when fetching events and detections'
+  additionalinfo: Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created.
+  defaultvalue: 2
+  name: look_back_xsiam
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -413,6 +482,7 @@ script:
         For example, filter="device.hostname:'CS-SE-TG-W7-01'"
         For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch
       name: filter
+      defaultValue: "product:'epp'+type:'ldt'"
     - auto: PREDEFINED
       description: Whether to get additional data such as device and behaviors processed.
       name: extended_data
@@ -478,16 +548,13 @@ script:
       name: ids
       required: true
     - auto: PREDEFINED
-      description: "The status to transition a detection to. Note: The following statuses—true_positive, false_positive, and ignored—are only available in the legacy version of the API."
+      description: "The status to transition a detection to."
       name: status
       predefined:
       - new
       - in_progress
-      - true_positive
-      - false_positive
       - closed
       - reopened
-      - ignored
     - description: 'A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive.'
       name: assigned_to_uuid
     - description: Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users.
@@ -511,6 +578,8 @@ script:
       required: true
     description: Contains containment for a specified host. When contained, a host can only communicate with the CrowdStrike cloud and any IPs specified in your containment policy.
     name: cs-falcon-contain-host
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: A comma-separated list of host agent IDs (AIDs) of the hosts to contain. Get an agent ID from a detection.
       isArray: true
@@ -518,6 +587,8 @@ script:
       required: true
     description: Lifts containment on the host, which returns its network communications to normal.
     name: cs-falcon-lift-host-containment
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
@@ -609,10 +680,11 @@ script:
     description: Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command).
     name: cs-falcon-upload-file
   - arguments:
-    - description: The ID of the file to delete. The ID of the file can be retrieved by running the 'cs-falcon-list-files' command.
+    - description: The ID of the file to delete. Either this argument or file_name is required. When both are specified, file_id takes precedence.
       name: file_id
-      required: true
-    description: Deletes a file based on the provided ID. Can delete only one file at a time.
+    - description: The name of the file to delete. Either this argument or file_id is required. When both are specified, file_id takes precedence.
+      name: file_name
+    description: Deletes a file based on the provided ID or name. Can delete only one file at a time.
     name: cs-falcon-delete-file
   - arguments:
     - description: A comma-separated list of file IDs to get. The list of file IDs can be retrieved by running the 'cs-falcon-list-files' command.
@@ -1574,6 +1646,9 @@ script:
     - contextPath: CrowdStrike.IOC.Filename
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       type: string
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
   - arguments:
     - description: The ID of the IOC to update. The ID of the IOC can be retrieved by running the 'cs-falcon-search-custom-iocs' command.
       name: ioc_id
@@ -1916,9 +1991,6 @@ script:
     - contextPath: CrowdStrike.Detections.behaviors.timestamp
       description: 'The datetime the behavior detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
-    - contextPath: CrowdStrike.Detections.behaviors.behavior_id
-      description: 'The ID of the behavior. Note: This output exists only in the legacy version.'
-      type: String
     - contextPath: CrowdStrike.Detections.behaviors.filename
       description: The filename of the triggering process.
       type: String
@@ -1951,12 +2023,6 @@ script:
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_value
       description: The IOC value.
-      type: String
-    - contextPath: CrowdStrike.Detections.behaviors.ioc_source
-      description: 'The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write". Note: This output exist only in the legacy version.'
-      type: String
-    - contextPath: CrowdStrike.Detections.behaviors.ioc_description
-      description: "The IOC description. Note: This output exists only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.user_name
       description: The user name.
@@ -2036,32 +2102,11 @@ script:
     - contextPath: CrowdStrike.Detections.email_sent
       description: Whether an email is sent about this detection.
       type: Boolean
-    - contextPath: CrowdStrike.Detections.first_behavior
-      description: 'The datetime of the first behavior. Note: This output exists only in the legacy version.'
-      type: Date
-    - contextPath: CrowdStrike.Detections.last_behavior
-      description: 'The datetime of the last behavior. Note: This output exists only in the legacy version.'
-      type: Date
-    - contextPath: CrowdStrike.Detections.max_confidence
-      description: 'The highest confidence value of all behaviors. The value can be any integer between 1-100. Note: This output exists only in the legacy version.'
-      type: Number
-    - contextPath: CrowdStrike.Detections.max_severity
-      description: 'The highest severity value of all behaviors. Value can be any integer between 1-100. Note: This output exists only in the legacy version.'
-      type: Number
-    - contextPath: CrowdStrike.Detections.max_severity_displayname
-      description: 'The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low". Note: This output exists only in the legacy version.'
-      type: String
     - contextPath: CrowdStrike.Detections.show_in_ui
       description: Whether the detection displays in the UI.
       type: Boolean
     - contextPath: CrowdStrike.Detections.status
       description: The status of the detection.
-      type: String
-    - contextPath: CrowdStrike.Detections.assigned_to_uid
-      description: "The UID of the user for whom the detection is assigned. Note: This output exists only in the legacy version."
-      type: String
-    - contextPath: CrowdStrike.Detections.assigned_to_name
-      description: "The human-readable name of the user to whom the detection is currently assigned. Note: This output exists only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.hostinfo.domain
       description: The domain of the Active Directory.
@@ -4486,34 +4531,34 @@ script:
     description: List identity entities.
     name: cs-falcon-list-identity-entities
     outputs:
-    - contextPath: CrowdStrike.IDPEntity.IsHuman
+    - contextPath: CrowdStrike.IDPEntity.Ishuman
       description: Whether the identity entity is human made.
       type: Boolean
-    - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
+    - contextPath: CrowdStrike.IDPEntity.Isprogrammatic
       description: Whether the identity entity is programmatic made.
       type: Boolean
-    - contextPath: CrowdStrike.IDPEntity.IsAdmin
+    - contextPath: CrowdStrike.IDPEntity.Isadmin
       description: Whether the identity entity is admin made.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
+    - contextPath: CrowdStrike.IDPEntity.Primarydisplayname
       description: The identity entity primary display name.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
+    - contextPath: CrowdStrike.IDPEntity.Riskfactors.Type
       description: The identity entity risk factor type.
       type: Unknown
-    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
+    - contextPath: CrowdStrike.IDPEntity.Riskfactors.Severity
       description: The identity entity risk factor severity.
       type: Unknown
-    - contextPath: CrowdStrike.IDPEntity.RiskScore
+    - contextPath: CrowdStrike.IDPEntity.Riskscore
       description: The identity entity risk score.
       type: Number
-    - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
+    - contextPath: CrowdStrike.IDPEntity.Riskscoreseverity
       description: The identity entity risk score severity.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
+    - contextPath: CrowdStrike.IDPEntity.Secondarydisplayname
       description: The identity entity secondary display name.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.EmailAddresses
+    - contextPath: CrowdStrike.IDPEntity.Emailaddresses
       description: The identity entity email address.
       type: String
   - arguments:
@@ -4780,6 +4825,8 @@ script:
       required: true
     - description: Assign the specified detections to a user based on their username.
       name: assign_to_name
+    - description: Assign the specified detections to a user based on their user ID (Email).
+      name: assign_to_user_id
     - description: Assign the specified detections to a user based on their UUID.
       name: assign_to_uuid
     - description: Appends a new comment to any existing comments for the specified detections.
@@ -4817,6 +4864,8 @@ script:
       required: true
     - description: Assign the specified detections to a user based on their username.
       name: assign_to_name
+    - description: Assign the specified detections to a user based on their user ID (Email).
+      name: assign_to_user_id
     - description: Assign the specified detections to a user based on their UUID.
       name: assign_to_uuid
     - description: Appends a new comment to any existing comments for the specified detections.
@@ -5097,9 +5146,11 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.2072021
+  dockerimage: demisto/py3-tools:1.0.0.5475267
   isfetch: true
   isfetch:marketplacev2: false
+  isfetch:platform: false
+  isfetchevents: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
@@ -5109,6 +5160,7 @@ script:
 fromversion: 5.0.0
 tests:
 - Test - CrowdStrike Falcon
+- CrowdStrike Falcon Basic Test
 defaultclassifier: CrowdStrike Falcon
 defaultmapperin: CrowdStrike Falcon-Mapper
 defaultmapperout: CrowdStrike Falcon - Outgoing Mapper

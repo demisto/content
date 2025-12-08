@@ -3,6 +3,13 @@ args:
   description: HTML to convert to Markdown.
   name: html
   required: true
+- auto: PREDEFINED
+  description: 'When set to False, will skip escaping of miscellaneous punctuation characters such as &, +, -.'
+  name: escape_misc
+  predefined:
+  - 'true'
+  - 'false'
+  default: true
 comment: Converts HTML to Markdown.
 commonfields:
   id: HTMLtoMD
@@ -20,7 +27,7 @@ script: '-'
 timeout: '0'
 type: python
 tags: []
-dockerimage: demisto/btfl-soup:1.0.1.115405
+dockerimage: demisto/btfl-soup:1.0.1.3150379
 runas: DBotWeakRole
 subtype: python3
 tests:

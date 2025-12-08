@@ -1,18 +1,18 @@
 import datetime
-import pytest
 import json
-import io
+
+import pytest
 from CommonServerPython import parse_date_string
 from KnowBe4KMSATEventCollector import Client
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
-MOCK_ENTRY = util_load_json('test_data/mock_event.json')
-BASE_URL = 'https://api.events.knowbe4.com'
+MOCK_ENTRY = util_load_json("test_data/mock_event.json")
+BASE_URL = "https://api.events.knowbe4.com"
 
 
 def test_test_module(requests_mock):
@@ -26,18 +26,27 @@ def test_test_module(requests_mock):
     """
     from KnowBe4KMSATEventCollector import test_module
 
-    requests_mock.get(
-        f'{BASE_URL}/events',
-        json=MOCK_ENTRY
-    )
-    assert test_module(Client(base_url=BASE_URL)) == 'ok'
+    requests_mock.get(f"{BASE_URL}/events", json=MOCK_ENTRY)
+    assert test_module(Client(base_url=BASE_URL)) == "ok"
 
 
-@pytest.mark.parametrize('last_run, mock_item, expected_last_run, expected_fetched_events', [
-    ({'latest_event_time': "2022-08-05T10:05:03.000Z"}, MOCK_ENTRY,
-     {'latest_event_time': "2022-08-09T10:05:13.890Z"}, MOCK_ENTRY.get('data', [])[0:-1]),
-    ({'latest_event_time': parse_date_string("2022-08-05T10:05:03.000Z")}, MOCK_ENTRY,
-     {'latest_event_time': "2022-08-09T10:05:13.890Z"}, MOCK_ENTRY.get('data', [])[0:-1])])
+@pytest.mark.parametrize(
+    "last_run, mock_item, expected_last_run, expected_fetched_events",
+    [
+        (
+            {"latest_event_time": "2022-08-05T10:05:03.000Z"},
+            MOCK_ENTRY,
+            {"latest_event_time": "2022-08-09T10:05:13.890Z"},
+            MOCK_ENTRY.get("data", [])[0:-1],
+        ),
+        (
+            {"latest_event_time": parse_date_string("2022-08-05T10:05:03.000Z")},
+            MOCK_ENTRY,
+            {"latest_event_time": "2022-08-09T10:05:13.890Z"},
+            MOCK_ENTRY.get("data", [])[0:-1],
+        ),
+    ],
+)
 def test_fetch_events(requests_mock, last_run, mock_item, expected_last_run, expected_fetched_events):
     """
     Given:
@@ -54,24 +63,31 @@ def test_fetch_events(requests_mock, last_run, mock_item, expected_last_run, exp
     """
     from KnowBe4KMSATEventCollector import fetch_events
 
-    requests_mock.get(
-        f'{BASE_URL}/events',
-        json=mock_item
-    )
+    requests_mock.get(f"{BASE_URL}/events", json=mock_item)
     events, new_last_run = fetch_events(Client(base_url=BASE_URL), last_run=last_run)
-    expected_last_run == new_last_run
+    assert expected_last_run == new_last_run
     assert events == expected_fetched_events
     assert len(events) == len(expected_fetched_events)
 
 
-@pytest.mark.parametrize('last_run, fetched_events, expected_filtered_list_size, expected_filtered_list_elements', [
-    ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)},
-     [{'occurred_date': "2022-08-09T10:05:13.890Z"}], 1, [{'occurred_date': "2022-08-09T10:05:13.890Z"}]),
-    ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)},
-     [{'occurred_date': "2022-03-09T10:05:13.890Z"}], 0, []),
-    ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)}, [{'occurred_date': "2022-08-09T10:05:13.890Z"},
-     {'occurred_date': "2022-03-09T10:05:13.890Z"}], 1, [{'occurred_date': "2022-08-09T10:05:13.890Z"}]),
-])
+@pytest.mark.parametrize(
+    "last_run, fetched_events, expected_filtered_list_size, expected_filtered_list_elements",
+    [
+        (
+            {"latest_event_time": datetime.datetime(2022, 5, 17, 10, 5, 3)},
+            [{"occurred_date": "2022-08-09T10:05:13.890Z"}],
+            1,
+            [{"occurred_date": "2022-08-09T10:05:13.890Z"}],
+        ),
+        ({"latest_event_time": datetime.datetime(2022, 5, 17, 10, 5, 3)}, [{"occurred_date": "2022-03-09T10:05:13.890Z"}], 0, []),
+        (
+            {"latest_event_time": datetime.datetime(2022, 5, 17, 10, 5, 3)},
+            [{"occurred_date": "2022-08-09T10:05:13.890Z"}, {"occurred_date": "2022-03-09T10:05:13.890Z"}],
+            1,
+            [{"occurred_date": "2022-08-09T10:05:13.890Z"}],
+        ),
+    ],
+)
 def test_eliminate_duplicated_events(last_run, fetched_events, expected_filtered_list_size, expected_filtered_list_elements):
     """
     Given
@@ -91,17 +107,20 @@ def test_eliminate_duplicated_events(last_run, fetched_events, expected_filtered
               and that the event that occurred before the last run was filtered.
     """
     from KnowBe4KMSATEventCollector import eliminate_duplicated_events
+
     filtered_events_list = eliminate_duplicated_events(fetched_events, last_run)
     assert len(filtered_events_list) == expected_filtered_list_size
     for event in filtered_events_list:
         assert event in expected_filtered_list_elements
 
 
-@pytest.mark.parametrize('last_run, events, expected_results', [
-    ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)},
-     [{'occurred_date': "2022-08-09T10:05:13.890Z"}], False),
-    ({'latest_event_time': datetime.datetime(2022, 5, 17, 10, 5, 3)},
-     [{'occurred_date': "2022-03-09T10:05:13.890Z"}], True)])
+@pytest.mark.parametrize(
+    "last_run, events, expected_results",
+    [
+        ({"latest_event_time": datetime.datetime(2022, 5, 17, 10, 5, 3)}, [{"occurred_date": "2022-08-09T10:05:13.890Z"}], False),
+        ({"latest_event_time": datetime.datetime(2022, 5, 17, 10, 5, 3)}, [{"occurred_date": "2022-03-09T10:05:13.890Z"}], True),
+    ],
+)
 def test_check_if_last_run_reached(last_run, events, expected_results):
     """
     Given
@@ -118,12 +137,14 @@ def test_check_if_last_run_reached(last_run, events, expected_results):
     - Case 2: Ensure that the function returend True.
     """
     from KnowBe4KMSATEventCollector import check_if_last_run_reached
+
     assert check_if_last_run_reached(last_run, events[0]) == expected_results
 
 
-@pytest.mark.parametrize('mock_item, expected_results, expected_length', [
-    (MOCK_ENTRY, MOCK_ENTRY.get('data', []), 3),
-    ({}, 'No events were found.', 21)])
+@pytest.mark.parametrize(
+    "mock_item, expected_results, expected_length",
+    [(MOCK_ENTRY, MOCK_ENTRY.get("data", []), 3), ({}, "No events were found.", 21)],
+)
 def test_get_events(requests_mock, mock_item, expected_results, expected_length):
     """
     Given:
@@ -139,15 +160,10 @@ def test_get_events(requests_mock, mock_item, expected_results, expected_length)
     """
     from KnowBe4KMSATEventCollector import get_events_command
 
-    requests_mock.get(
-        f'{BASE_URL}/events',
-        json=mock_item
-    )
-    args = {
-        'should_push_events': False
-    }
+    requests_mock.get(f"{BASE_URL}/events", json=mock_item)
+    args = {"should_push_events": False}
 
-    results = get_events_command(Client(base_url=BASE_URL), args=args, vendor='', product='')
+    results = get_events_command(Client(base_url=BASE_URL), args=args, vendor="", product="")
 
     if mock_item:
         assert results.outputs == expected_results

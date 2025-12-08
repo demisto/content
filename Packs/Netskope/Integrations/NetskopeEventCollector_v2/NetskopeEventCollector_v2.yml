@@ -1,0 +1,89 @@
+category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: NetskopeEventCollector_v2
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API token
+  hiddenusername: true
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- additionalinfo: 'The maximum amount of events to retrieve PER EACH EVENT TYPE type. For more information about event types see the help section.'
+  defaultvalue: '50000'
+  display: Max events per fetch
+  name: max_fetch
+  section: Collect
+  type: 0
+  required: false
+- section: Collect
+  advanced: true
+  display: Events Fetch Interval
+  additionalinfo: default fetch interval (This collector has an optimization feature that enables it to bring events as soon as possible if they exist).
+  name: eventFetchInterval
+  defaultvalue: "5"
+  type: 19
+  required: false
+- display: Event Types To Fetch
+  section: Collect
+  name: event_types_to_fetch
+  type: 16
+  required: false
+  additionalinfo: 'Event types to fetch. Default is all available types: Application, Alert, Page, Audit, Network, Incident.'
+  defaultvalue: Application,Alert,Page,Audit,Network,Incident
+  options:
+  - Application
+  - Alert
+  - Page
+  - Audit
+  - Network
+  - Incident
+- display: Trust any certificate (not secure)
+  section: Connect
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  section: Connect
+  name: proxy
+  type: 8
+  required: false
+description: Netskope Event Collector v2 integration.
+display: Netskope Event Collector v2
+name: NetskopeEventCollector_v2
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display the events.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: The maximum number of alerts to return.
+      name: limit
+      defaultValue: 10
+    description: Returns events extracted from SaaS traffic and or logs.
+    name: netskope-get-events
+  dockerimage: demisto/auth-utils:1.0.0.4578605
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+  isfetchevents: true
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 6.8.0

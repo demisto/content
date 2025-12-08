@@ -1,7 +1,6 @@
-import pytest
-
-from CommonServerPython import DemistoException
 import demistomock as demisto
+import pytest
+from CommonServerPython import DemistoException
 
 
 def test_update_remote_trusted_images(mocker):
@@ -15,32 +14,67 @@ def test_update_remote_trusted_images(mocker):
     """
     from PrismaCloudRemoteTrustedImagesListUpdate import update_remote_trusted_images
 
-    mocker.patch.object(demisto, 'executeCommand', side_effect=[
-        [{'Contents': '{"img1":"2023-10-01T12:02:07Z"}', 'Type': 'LIST'}],
-        [{'HumanReadable': 'Updated successfully the trusted repository, image, and registry.', 'Type': 'NOTE'}]])
+    mocker.patch.object(
+        demisto,
+        "executeCommand",
+        side_effect=[
+            [{"Contents": '{"img1":"2023-10-01T12:02:07Z"}', "Type": "LIST"}],
+            [{"HumanReadable": "Updated successfully the trusted repository, image, and registry.", "Type": "NOTE"}],
+        ],
+    )
 
-    list_name = 'List Name'
+    list_name = "List Name"
     current_trusted_images = {
-        'groups': [{'_id': 'Deny All', 'images': ['img1'], 'modified': '2022-04-27T17:30:02.803Z', 'name': '', 'owner': 'admin',
-                    'previousName': ''},
-                   {'_id': 'TRUSTED IMAGES', 'images': ['img1', 'img2', 'img3'], 'modified': '2023-02-27T21:35:49.697Z',
-                    'name': '', 'owner': 'test user', 'previousName': ''},
-                   {'_id': 'test', 'images': ['img2', 'img3'], 'modified': '2023-02-28T19:53:44.491Z', 'name': '',
-                    'owner': 'test user', 'previousName': ''},
-                   {'_id': 'demo', 'images': ['img3'], 'modified': '2023-10-01T12:02:07.293Z', 'name': '', 'owner': 'me',
-                    'previousName': ''}],
-        'policy': {'_id': 'trust', 'enabled': True, 'rules': [{}]}}
-    trusted_group_id = 'demo'
-    args = {'list_name': list_name, 'current_trusted_images': current_trusted_images, 'trusted_group_id': trusted_group_id}
+        "groups": [
+            {
+                "_id": "Deny All",
+                "images": ["img1"],
+                "modified": "2022-04-27T17:30:02.803Z",
+                "name": "",
+                "owner": "admin",
+                "previousName": "",
+            },
+            {
+                "_id": "TRUSTED IMAGES",
+                "images": ["img1", "img2", "img3"],
+                "modified": "2023-02-27T21:35:49.697Z",
+                "name": "",
+                "owner": "test user",
+                "previousName": "",
+            },
+            {
+                "_id": "test",
+                "images": ["img2", "img3"],
+                "modified": "2023-02-28T19:53:44.491Z",
+                "name": "",
+                "owner": "test user",
+                "previousName": "",
+            },
+            {
+                "_id": "demo",
+                "images": ["img3"],
+                "modified": "2023-10-01T12:02:07.293Z",
+                "name": "",
+                "owner": "me",
+                "previousName": "",
+            },
+        ],
+        "policy": {"_id": "trust", "enabled": True, "rules": [{}]},
+    }
+    trusted_group_id = "demo"
+    args = {"list_name": list_name, "current_trusted_images": current_trusted_images, "trusted_group_id": trusted_group_id}
 
     response = update_remote_trusted_images(args)
-    assert response.readable_output == 'Updated successfully the trusted repository, image, and registry.'
+    assert response.readable_output == "Updated successfully the trusted repository, image, and registry."
 
 
-@pytest.mark.parametrize('list_name, get_list_response, expected', [
-    ('test_list', [{'Type': 1, 'Contents': '{"key":"value"}'}], {'key': 'value'}),
-    ('bad_list', [{'Type': 4, 'Contents': 'Item not found'}], DemistoException)
-])
+@pytest.mark.parametrize(
+    "list_name, get_list_response, expected",
+    [
+        ("test_list", [{"Type": 1, "Contents": '{"key":"value"}'}], {"key": "value"}),
+        ("bad_list", [{"Type": 4, "Contents": "Item not found"}], DemistoException),
+    ],
+)
 def test_get_xsoar_list(mocker, list_name, get_list_response, expected):
     """
     Given:
@@ -52,7 +86,7 @@ def test_get_xsoar_list(mocker, list_name, get_list_response, expected):
     """
     from PrismaCloudRemoteTrustedImagesListUpdate import get_xsoar_list
 
-    mocker.patch.object(demisto, 'executeCommand', return_value=get_list_response)
+    mocker.patch.object(demisto, "executeCommand", return_value=get_list_response)
 
     if isinstance(expected, dict):
         assert get_xsoar_list(list_name) == expected
@@ -61,12 +95,15 @@ def test_get_xsoar_list(mocker, list_name, get_list_response, expected):
             get_xsoar_list(list_name)
 
 
-@pytest.mark.parametrize('remote_images, local_images, expected', [
-    ({'img1': 'hash1'}, {'img1': 'hash1'}, True),
-    ({'img1': 'hash1'}, {'img2': 'hash2'}, False),
-    ({'img1': 'hash1', 'img2': 'hash2'}, {'img1': 'hash1'}, False),
-    ({}, {}, True)
-])
+@pytest.mark.parametrize(
+    "remote_images, local_images, expected",
+    [
+        ({"img1": "hash1"}, {"img1": "hash1"}, True),
+        ({"img1": "hash1"}, {"img2": "hash2"}, False),
+        ({"img1": "hash1", "img2": "hash2"}, {"img1": "hash1"}, False),
+        ({}, {}, True),
+    ],
+)
 def test_current_remote_images_same_as_local(remote_images, local_images, expected):
     """
     Given:
@@ -81,29 +118,26 @@ def test_current_remote_images_same_as_local(remote_images, local_images, expect
     assert current_remote_images_same_as_local(remote_images, local_images) == expected
 
 
-@pytest.mark.parametrize('remote_images, local_images, group_id, expected_updated_remote_images, expected_message', [
-    (
-        {'groups': [{'_id': '1', 'images': ['img1']}]},
-        ['img1'],
-        '1',
-        False,
-        'Local and remote lists were equal, not updating list.'
-    ),
-    (
-        {'groups': [{'_id': '1', 'images': ['img1']}]},
-        ['img2'],
-        '1',
-        {'groups': [{'_id': '1', 'images': ['img2']}]},
-        ''
-    ),
-    (
-        {'groups': [{'_id': '2', 'images': ['img1']}]},
-        ['img1'],
-        '1',
-        False,
-        'Group 1 was not found in the given trusted images groups list.'
-    )
-])
+@pytest.mark.parametrize(
+    "remote_images, local_images, group_id, expected_updated_remote_images, expected_message",
+    [
+        (
+            {"groups": [{"_id": "1", "images": ["img1"]}]},
+            ["img1"],
+            "1",
+            False,
+            "Local and remote lists were equal, not updating list.",
+        ),
+        ({"groups": [{"_id": "1", "images": ["img1"]}]}, ["img2"], "1", {"groups": [{"_id": "1", "images": ["img2"]}]}, ""),
+        (
+            {"groups": [{"_id": "2", "images": ["img1"]}]},
+            ["img1"],
+            "1",
+            False,
+            "Group 1 was not found in the given trusted images groups list.",
+        ),
+    ],
+)
 def test_update_group_from_images(remote_images, local_images, group_id, expected_updated_remote_images, expected_message):
     """
     Given:
@@ -135,8 +169,13 @@ def test_update_remote_list(mocker):
     """
     from PrismaCloudRemoteTrustedImagesListUpdate import update_remote_list
 
-    mocker.patch.object(demisto, 'executeCommand', return_value=[
-        {'HumanReadable': 'Updated successfully the trusted repository, image, and registry.', 'Type': 'NOTE'}])
+    mocker.patch.object(
+        demisto,
+        "executeCommand",
+        return_value=[{"HumanReadable": "Updated successfully the trusted repository, image, and registry.", "Type": "NOTE"}],
+    )
 
-    assert update_remote_list([{'_id': '1', 'images': ['img1']}]) == \
-        'Updated successfully the trusted repository, image, and registry.'
+    assert (
+        update_remote_list([{"_id": "1", "images": ["img1"]}])
+        == "Updated successfully the trusted repository, image, and registry."
+    )

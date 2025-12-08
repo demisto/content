@@ -1,5 +1,7 @@
 This automation extracts all possible files from a PCAP file.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +11,7 @@ This automation extracts all possible files from a PCAP file.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,6 +19,7 @@ This automation extracts all possible files from a PCAP file.
 | entry_id | The EntryID of the PCAP file to extract the files from. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

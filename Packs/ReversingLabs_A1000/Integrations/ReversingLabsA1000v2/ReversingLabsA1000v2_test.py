@@ -1,24 +1,50 @@
 import json
-from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_output, get_classification_output, \
-    classification_to_score, url_report_output, domain_report_output, ip_report_output, format_proxy, \
-    file_analysis_status_output, pdf_report_output, static_analysis_report_output, dynamic_analysis_report_output, \
-    sample_classification_output, yara_output, yara_retro_output, list_containers_output, upload_from_url_output, \
-    delete_sample_output, reanalyze_output, advanced_search_output, VERSION, USER_AGENT, RELIABILITY, upload_sample_output, \
-    HTTP_PROXY, HTTP_PROXY_USERNAME, HTTP_PROXY_PASSWORD, HOST, TOKEN
+
 import demistomock as demisto
 import pytest
+from ReversingLabsA1000v2 import (
+    HOST,
+    HTTP_PROXY,
+    HTTP_PROXY_PASSWORD,
+    HTTP_PROXY_USERNAME,
+    RELIABILITY,
+    TOKEN,
+    USER_AGENT,
+    VERSION,
+    a1000_report_output,
+    advanced_search_output,
+    classification_to_score,
+    delete_sample_output,
+    domain_report_output,
+    dynamic_analysis_report_output,
+    file_analysis_status_output,
+    format_proxy,
+    get_classification_output,
+    ip_report_output,
+    list_containers_output,
+    list_extracted_files_output,
+    pdf_report_output,
+    reanalyze_output,
+    sample_classification_output,
+    static_analysis_report_output,
+    upload_from_url_output,
+    upload_sample_output,
+    url_report_output,
+    yara_output,
+    yara_retro_output,
+)
 
-INTEGRATION_NAME = 'ReversingLabs A1000'
+INTEGRATION_NAME = "ReversingLabs A1000"
 
 
 @pytest.fixture(autouse=True)
 def handle_calling_context(mocker):
-    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
+    mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationBrand": INTEGRATION_NAME}})
 
 
 def test_a1000_report_output():
-    test_response = util_load_json('test_data/a1000_response.json')
-    test_context = util_load_json('test_data/a1000_context.json')
+    test_response = util_load_json("test_data/a1000_response.json")
+    test_context = util_load_json("test_data/a1000_context.json")
 
     result = a1000_report_output(test_response)
 
@@ -26,8 +52,8 @@ def test_a1000_report_output():
 
 
 def test_a1000_list_extracted_output():
-    test_response = util_load_json('test_data/a1000_list_extracted_response.json')
-    test_context = util_load_json('test_data/a1000_list_extracted_context.json')
+    test_response = util_load_json("test_data/a1000_list_extracted_response.json")
+    test_context = util_load_json("test_data/a1000_list_extracted_context.json")
 
     result = list_extracted_files_output(test_response)
 
@@ -35,8 +61,8 @@ def test_a1000_list_extracted_output():
 
 
 def test_a1000_get_classification_output():
-    test_response = util_load_json('test_data/a1000_get_classification_response.json')
-    test_context = util_load_json('test_data/a1000_get_classification_context.json')
+    test_response = util_load_json("test_data/a1000_get_classification_response.json")
+    test_context = util_load_json("test_data/a1000_get_classification_context.json")
 
     result = get_classification_output(test_response)
 
@@ -103,8 +129,9 @@ def test_static_analysis_report_output():
 def test_dynamic_analysis_report_output():
     test_response = util_load_json("test_data/a1000_dynamic_analysis.json")
 
-    result = dynamic_analysis_report_output(resp=test_response, action="CHECK STATUS", report_format="pdf",
-                                            sample_hash="d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5")
+    result = dynamic_analysis_report_output(
+        resp=test_response, action="CHECK STATUS", report_format="pdf", sample_hash="d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5"
+    )
 
     for k, v in result[0].to_context().items():
         if k == "status":
@@ -114,8 +141,12 @@ def test_dynamic_analysis_report_output():
 def test_sample_classification_output():
     test_response = util_load_json("test_data/a1000_sample_classification.json")
 
-    result = sample_classification_output(resp_json=test_response, action="GET CLASSIFICATION", av_scanners=False,
-                                          sample_hash="d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5")
+    result = sample_classification_output(
+        resp_json=test_response,
+        action="GET CLASSIFICATION",
+        av_scanners=False,
+        sample_hash="d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5",
+    )
 
     for k, v in result.to_context().items():
         if k == "Contents":
@@ -176,8 +207,10 @@ def test_reanalyze_output():
     report = util_load_json("test_data/a1000_reanalyze.json")
     result = reanalyze_output(response_json=report)
 
-    assert (result[0].to_context().get("Contents").get("a1000_reanalyze_report").get("results")[0].get("detail").get("sha1")
-            == "d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5")
+    assert (
+        result[0].to_context().get("Contents").get("a1000_reanalyze_report").get("results")[0].get("detail").get("sha1")
+        == "d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5"
+    )
 
 
 def test_advanced_search_output():
@@ -192,17 +225,9 @@ def test_classification_to_score():
 
 
 def test_format_proxy():
-    formatted_correctly = format_proxy(
-        addr="https://proxy-address.com",
-        username="user1",
-        password="pass1"
-    )
+    formatted_correctly = format_proxy(addr="https://proxy-address.com", username="user1", password="pass1")
 
-    formatted_http = format_proxy(
-        addr="http://proxy-address.com",
-        username="user1",
-        password="pass1"
-    )
+    formatted_http = format_proxy(addr="http://proxy-address.com", username="user1", password="pass1")
 
     correct_expected = "https://user1:pass1@proxy-address.com"
 

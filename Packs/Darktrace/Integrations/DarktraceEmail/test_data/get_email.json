@@ -1,0 +1,55 @@
+{
+    "uuid": "BA13B274-03F3-46D6-8698-244DFF1037A0.1",
+    "direction": "inbound",
+    "dtime": "2025-04-10T13:02:48.021Z",
+    "dtime_unix": 1744290168021,
+    "header_from": "\"gov.uk email\" <gov.uk.email@notifications.service.gov.uk>",
+    "header_from_personal": "gov.uk email",
+    "header_from_email": "gov.uk.email@notifications.service.gov.uk",
+    "header_subject": "Update from GOV.UK for: UK sanctions Georgian officials responsible for allowing brutal police violence",
+    "in_progress": false,
+    "n_links": 6,
+    "n_attachments": 0,
+    "model_score": 100,
+    "campaign_id": null,
+    "rcpts": [
+      {
+        "rcpt_to": "leeroy.jenkins@example.com",
+        "rcpt_status": "held",
+        "tags": [
+          "Forged Address",
+          "Internal IT Impersonation",
+          "Phishing Attachment",
+          "VIP Impersonation",
+          "Document Anomalies",
+          "Mailer",
+          "Email Account Takeover",
+          "Credential Harvesting",
+          "Phishing Link",
+          "VIP",
+          "High Mailing History",
+          "Cloud Platform Abuse",
+          "Spam",
+          "No Association",
+          "Solicitation"
+        ],
+        "is_read": false,
+        "summary": [
+          "The recipient Leeroy Jenkins has previously moved emails from gov.uk.email@notifications.service.gov.uk into their junk folder.",
+          "The sender appears to be impersonating an internal service by referencing the company domain in the headers. This tactic allows attacks to avoid any validation checks which apply to this domain.",
+          "There were text patterns in the email which suggest an attempt to solicit the user into responding directly to the email.",
+          "The sender gov.uk.email@notifications.service.gov.uk has previously sent emails to 1 user over 296 separate days. Today they have sent 32 other emails to 1 user.",
+          "There has been no outbound email communication with the organization notifications.service.gov.uk previously. Its overall rarity score based on references in internal traffic is 100%.",
+          "The email was sent from an authentic source for notifications.service.gov.uk. This was verified via DKIM.",
+          "The connection source for the email is United States."
+        ],
+        "rcpt_actions_taken": [
+          "Hold message"
+        ],
+        "action_status": true,
+        "is_group_email": false,
+        "requestedRelease": null
+      }
+    ],
+    "restricted_recipients": []
+  }

@@ -1,4 +1,7 @@
 category: Email
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Proofpoint Threat Protection
   version: -1
@@ -31,6 +34,7 @@ configuration:
   name: cluster_id
   required: true
   type: 0
+  section: Connect
 description: Threat Protection APIs are REST APIs that allow Proofpoint On Demand customers to retrieve, add, update or delete certain PoD configurations.
 display: Proofpoint Threat Protection
 name: Proofpoint Threat Protection
@@ -112,6 +116,9 @@ script:
     outputs:
     - contextPath: ProofpointThreatProtection.Blocklist
       description: Standard HTTP response with status code 200.
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
   - arguments:
     - auto: PREDEFINED
       predefined:
@@ -157,6 +164,9 @@ script:
     outputs:
     - contextPath: ProofpointThreatProtection.Safelist
       description: Standard HTTP response with status code 200.
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
   - arguments:
     - auto: PREDEFINED
       name: attribute
@@ -186,7 +196,7 @@ script:
     outputs:
     - contextPath: ProofpointThreatProtection.Safelist
       description: Standard HTTP response with status code 200.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   alt_dockerimages: ["demisto/fastapi:0.111.0.100929"]
   runonce: false
   script: ''

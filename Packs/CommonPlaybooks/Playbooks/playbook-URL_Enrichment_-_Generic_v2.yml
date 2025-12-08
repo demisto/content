@@ -197,6 +197,8 @@ tasks:
           root: inputs.URL
           transformers:
           - operator: uniq
+      execution-timeout:
+        simple: "600"
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -629,16 +631,16 @@ outputs:
 - contextPath: URL.Malicious.Description
   description: For malicious URLs, the reason that the vendor made the decision.
 - contextPath: DBotScore.Indicator
-  description: The indicator
+  description: The indicator.
   type: string
 - contextPath: DBotScore.Type
-  description: The indicator's type
+  description: The indicator's type.
   type: string
 - contextPath: DBotScore.Vendor
-  description: The reputation vendor
+  description: The reputation vendor.
   type: string
 - contextPath: DBotScore.Score
-  description: The reputation score
+  description: The reputation score.
   type: number
 - contextPath: DBotScore.Reliability
   description: Reliability of the source providing the intelligence data.
@@ -668,6 +670,6 @@ tests:
 - URL Enrichment - Generic v2 - Test
 system: true
 marketplaces:
-  - xsoar
-  - marketplacev2
-  - platform
+- xsoar
+- marketplacev2
+- platform

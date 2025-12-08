@@ -1,9 +1,8 @@
 Automate your AppID Adoption by using the PAN-OS Policy Optimizer (beta) integration and playbooks together with your Palo Alto Networks Next-Generation Firewall or Panorama.
 This integration was integrated and tested with Panorama version 10.1.10.
- 
-
 
 ## What Does This Pack Do?
+
 The Policy Optimizer integration in this content pack enables you to gain visibility into and control usage of security policy rules.
 
 The playbooks in this pack also help you automate the following procedures to reduce the attack surface and safely enable applications on your network.

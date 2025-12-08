@@ -21,7 +21,8 @@ args:
   description: Array or comma-separated list of IPv4 ranges, in CIDR notation, against which to match the IPv4 addresses.
   isArray: true
 scripttarget: 0
-dockerimage: demisto/netutils:1.0.0.118055
+isllm: false
+dockerimage: demisto/netutils:1.0.0.3562043
 runas: DBotWeakRole
 tests:
 - No test - unit test

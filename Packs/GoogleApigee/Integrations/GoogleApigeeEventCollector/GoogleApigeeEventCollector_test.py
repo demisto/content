@@ -11,6 +11,8 @@ def mock_client(mocker):
     client = Client(base_url='https://test.com', verify=False, proxy=False, org_name='org', username='user',
                     password='password', zone='zone')
     mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
+    mocker.patch.object(Client, '_http_request', return_value={'access_token': 'access_token', 'expires_in': 3600,
+                                                               'refresh_token': 'refresh_token'})
     return client
 
 
@@ -187,3 +189,92 @@ def test_test_module(requests_mock, mocker):
 def test_is_token_valid(mocker, scenario, token_initiate_time, token_expiration_seconds, current_time, result):
     is_token_valid = Client.is_token_valid(token_initiate_time, token_expiration_seconds, current_time)
     assert is_token_valid == result, f'{scenario} - does not match expected value'
+
+def test_get_token_with_username(mocker):
+    """
+    Given:
+        - A mock client configured with username and password credentials.
+    When:
+        - Calling `get_token_request` to retrieve an access token.
+    Then:
+        - Ensure the HTTP request is made with the correct method, URL, headers, and body.
+        - Verify the returned access_token, expires_in, and refresh_token values.
+    """
+    client = mock_client(mocker)
+    spy_http = mocker.spy(Client, '_http_request')
+    access_token, expires_in, refresh_token = client.get_token_request()
+    assert access_token == 'access_token'
+    assert expires_in == 3600
+    assert refresh_token == 'refresh_token'
+    args = spy_http.call_args
+    assert args[0] == ('POST',)
+    assert args[1] == {'full_url': 'https://zone.login.apigee.com/oauth/token',
+                       'url_suffix': '/oauth/token',
+                       'data': {'grant_type': 'password', 'username': 'user', 'password': 'password'},
+                       'headers': {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                                   'Accept': 'application/json;charset=utf-8',
+                                   'Authorization': 'Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0'}}
+    
+def test_get_token_with_valid_refresh_token(mocker):
+    """
+    Given:
+        - A mock client configured to use a refresh token.
+    When:
+        - Calling `get_token_request` with a valid refresh token.
+    Then:
+        - Ensure the HTTP request is sent as a POST to the correct URL.
+        - Confirm the payload includes the proper grant type and refresh token.
+        - Verify the expected access_token, expires_in, and refresh_token are returned.
+    """
+    client = mock_client(mocker)
+    spy_http = mocker.spy(Client, '_http_request')
+    access_token, expires_in, refresh_token = client.get_token_request(refresh_token = 'refresh_token')
+    assert access_token == 'access_token'
+    assert expires_in == 3600
+    assert refresh_token == 'refresh_token'
+    
+    args = spy_http.call_args
+    assert args[0] == ('POST',)
+    assert args[1] == {'full_url': 'https://zone.login.apigee.com/oauth/token',
+                       'url_suffix': '/oauth/token',
+                       'data': {'grant_type': 'refresh_token', 'refresh_token': 'refresh_token'},
+                       'headers': {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                                   'Accept': 'application/json;charset=utf-8',
+                                   'Authorization': 'Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0'}}
+
+def test_get_token_with_invalid_refresh_token(mocker):
+    """
+    Given:
+        - A mock client configured to use a refresh token.
+    When:
+        - Calling `get_token_request` with an invalid refresh token that triggers an exception.
+    Then:
+        - The client should retry the request using the password grant type.
+        - Ensure the first HTTP request uses the refresh token grant type with the correct payload.
+        - Ensure the second HTTP request uses the password grant type with the correct credentials.
+        - Verify that the final response includes the expected access_token, expires_in, and refresh_token.
+    """
+    client = mock_client(mocker)
+    http_mock = mocker.patch.object(Client, '_http_request', side_effect=[Exception('Invalid refresh token'),
+                                                                          {'access_token': 'access_token', 'expires_in': 3600,
+                                                                           'refresh_token': 'refresh_token'}])
+    access_token, expires_in, refresh_token = client.get_token_request(refresh_token='refresh_token')
+    
+    assert http_mock.call_count == 2
+    first_call = http_mock.call_args_list[0]
+    second_call = http_mock.call_args_list[1]
+    
+    # Inspecting the first call
+    assert first_call[0] == ('POST',)
+    assert first_call[1]['data']['grant_type'] == 'refresh_token'
+    assert first_call[1]['data']['refresh_token'] == 'refresh_token'
+
+    # Inspecting the second call
+    assert second_call[0] == ('POST',)
+    assert second_call[1]['data']['grant_type'] == 'password'
+    assert second_call[1]['data']['username'] == 'user'
+    assert second_call[1]['data']['password'] == 'password'
+    
+    assert access_token == 'access_token'
+    assert expires_in == 3600
+    assert refresh_token == 'refresh_token'

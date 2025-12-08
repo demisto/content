@@ -3,6 +3,7 @@ The playbook facilitates threat hunting and detection of IOCs within Strata Logg
 Note that multiple search values should be separated by commas only (without spaces or any special characters).
 
 Supported IOCs for this playbook:
+
 - SHA256
 - IP Addresses
 - Geolocation
@@ -16,24 +17,30 @@ Supported IOCs for this playbook:
 Separate searches are conducted for each type of indicator in the playbook.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Strata Logging Service - File Indicators Hunting
-* Strata Logging Service - Traffic Indicators Hunting
+
+- Strata Logging Service - File Indicators Hunting
+- Strata Logging Service - Traffic Indicators Hunting
 
 ### Integrations
-* Strata Logging Service
+
+- Strata Logging Service
 
 ### Scripts
-* IsIntegrationAvailable
-* SetAndHandleEmpty
+
+- IsIntegrationAvailable
+- SetAndHandleEmpty
 
 ### Commands
-* cdl-query-url-logs
-* cdl-query-file-data
+
+- cdl-query-url-logs
+- cdl-query-file-data
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -56,6 +63,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | rule_matched | Filter network traffic logs to be retrieved from Strata Logging Service based on security policy rule names that the network traffic matches.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -107,5 +115,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | CDL.HuntingResults.HTTPMethod | The HTTP Method used<br/>in the web request | string |
 
 ## Playbook Image
+
 ---
 ![Strata Logging Service - Indicators Hunting](../doc_files/Cortex_Data_Lake_-_Indicators_Hunting.png)

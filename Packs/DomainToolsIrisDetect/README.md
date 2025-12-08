@@ -3,13 +3,13 @@
 Threat Actors Move Fast. Detect Helps You Move Faster.
 Iris Detect is an Internet infrastructure detection, monitoring, and enforcement tool (UI and API) built on the industry’s fastest and broadest domain discovery engine and the largest databases of domain data. Capturing key data on new domains and risk-scoring them within minutes of discovery, Detect is a game-changer for brand managers, digital risk and fraud prevention teams, and network defenders.
 
-Key Benefits: 
+Key Benefits:
 
 - Rapid Discovery of Infringing Domains
 - Continuous Monitoring of Evolving Infrastructure
 - Enforcement Actions for Dangerous Domains
 
-The DomainTools Iris Detect content pack works independently or alongside the DomainTools Iris content pack. It works with the Iris Detect APIs to 
+The DomainTools Iris Detect content pack works independently or alongside the DomainTools Iris content pack. It works with the Iris Detect APIs to
 help you discover, track, and act against lookalike domains. A DomainTools key provisioned for Iris Detect is required.
 
 Configure the pack to ingest and optionally create incidents off of new, watched, or escalated domains on a scheduled basis, as frequently as hourly. Indicator mappings and layouts help you act on the domains.
@@ -25,4 +25,3 @@ Configure the pack to ingest and optionally create incidents off of new, watched
 7. domaintools-iris-detect-blocklist-domains
 8. domaintools-iris-detect-escalate-domains
 9. domaintools-iris-detect-ignore-domains
-

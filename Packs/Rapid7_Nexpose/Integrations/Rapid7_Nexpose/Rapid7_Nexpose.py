@@ -1,12 +1,12 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import json
-import urllib3
 from copy import deepcopy
 from enum import Enum, EnumMeta
 from time import strptime, struct_time
 from typing import overload
 
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
 
 VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
 API_DEFAULT_PAGE_SIZE = 10  # Default page size that's set on the API. Used for calculations.
@@ -25,6 +25,7 @@ urllib3.disable_warnings()  # Disable insecure warnings
 
 class ScanStatus(Enum):
     """An Enum of possible scan status values."""
+
     PAUSE = "pause"
     RESUME = "resume"
     STOP = "stop"
@@ -38,11 +39,12 @@ class FlexibleEnum(EnumMeta):
             return super().__getitem__(item)
 
         except KeyError:
-            return super().__getitem__(item.upper().replace(' ', '_').replace('-', '_'))
+            return super().__getitem__(item.upper().replace(" ", "_").replace("-", "_"))
 
 
 class CredentialService(Enum, metaclass=FlexibleEnum):
     """An Enum of possible service values for credentials."""
+
     AS400 = "as400"
     CIFS = "cifs"
     CIFSHASH = "cifshash"
@@ -67,6 +69,7 @@ class CredentialService(Enum, metaclass=FlexibleEnum):
 
 class RepeatFrequencyType(Enum, metaclass=FlexibleEnum):
     """An Enum of possible repeat frequency for scheduled scans."""
+
     HOUR = "hour"
     DAY = "day"
     WEEK = "week"
@@ -76,12 +79,14 @@ class RepeatFrequencyType(Enum, metaclass=FlexibleEnum):
 
 class SharedCredentialSiteAssignment(Enum, metaclass=FlexibleEnum):
     """An Enum of possible site assignment values for shared credentials."""
+
     ALL_SITES = "all-sites"
     SPECIFIC_SITES = "specific-sites"
 
 
 class SNMPv3AuthenticationType(Enum, metaclass=FlexibleEnum):
     """An Enum of possible authentication type values for shared credentials."""
+
     NO_AUTHENTICATION = "no-authentication"
     MD5 = "md5"
     SHA = "sha"
@@ -89,6 +94,7 @@ class SNMPv3AuthenticationType(Enum, metaclass=FlexibleEnum):
 
 class SNMPv3PrivacyType(Enum, metaclass=FlexibleEnum):
     """An Enum of possible privacy type values for SNMPv3P credentials."""
+
     NO_PRIVACY = "no-privacy"
     DES = "des"
     AES_128 = "aes-128"
@@ -100,6 +106,7 @@ class SNMPv3PrivacyType(Enum, metaclass=FlexibleEnum):
 
 class SSHElevationType(Enum, metaclass=FlexibleEnum):
     """An Enum of possible permission elevation values for SSH credentials."""
+
     NONE = "none"
     SUDO = "sudo"
     SUDOSU = "sudosu"
@@ -110,6 +117,7 @@ class SSHElevationType(Enum, metaclass=FlexibleEnum):
 
 class VulnerabilityExceptionScopeType(Enum, metaclass=FlexibleEnum):
     """An Enum of possible vulnerability exception scope type values."""
+
     GLOBAL = "Global"
     SITE = "Site"
     ASSET = "Asset"
@@ -126,7 +134,7 @@ class Client(BaseClient):
         password: str,
         token: str | None = None,
         verify: bool = True,
-        connection_error_retries: int = CONNECTION_ERRORS_RETRIES
+        connection_error_retries: int = CONNECTION_ERRORS_RETRIES,
     ):
         """
         Initialize the client.
@@ -169,12 +177,10 @@ class Client(BaseClient):
                     return remove_dict_key(response, "links")
                 return response
             except (DemistoException, requests.ReadTimeout) as error:
-                demisto.error(f'Error {error} running _http_request in time {_time}')
+                demisto.error(f"Error {error} running _http_request in time {_time}")
                 if (
-                    isinstance(error, DemistoException) and not isinstance(
-                        error.exception, requests.ConnectionError
-                    ) or _time == self.connection_error_retries
-                ):
+                    isinstance(error, DemistoException) and not isinstance(error.exception, requests.ConnectionError)
+                ) or _time == self.connection_error_retries:
                     raise
                 else:
                     time.sleep(1)  # pylint: disable=sleep-exists
@@ -206,8 +212,9 @@ class Client(BaseClient):
             ok_codes=(200,),
         ).get("sessionID")
 
-    def _paged_http_request(self, page_size: int | None = None, page: int | None = None, sort: str | None = None,
-                            limit: int | None = None, **kwargs) -> list:
+    def _paged_http_request(
+        self, page_size: int | None = None, page: int | None = None, sort: str | None = None, limit: int | None = None, **kwargs
+    ) -> list:
         """
         Run _http_request with pagination handling.
 
@@ -232,10 +239,12 @@ class Client(BaseClient):
         if page:
             kwargs["params"]["page"] = str(page)
 
-        kwargs["params"].update(find_valid_params(
-            page=page,
-            size=page_size,
-        ))
+        kwargs["params"].update(
+            find_valid_params(
+                page=page,
+                size=page_size,
+            )
+        )
 
         # If sort is not None, split it into a list and add to kwargs
         if sort:
@@ -249,7 +258,7 @@ class Client(BaseClient):
 
         if not page:
             total_pages = response.get("page", {}).get("totalPages", 1)
-            demisto.debug(f'Total pages = {total_pages}')
+            demisto.debug(f"Total pages = {total_pages}")
             page_count = 0
 
             # Note: page indexing on Nexpose's API starts at 0
@@ -258,7 +267,7 @@ class Client(BaseClient):
                 kwargs["params"]["page"] = str(page_count)
                 response = self._http_request(**kwargs)
                 resources = response["resources"]
-                demisto.debug(f'Received {len(resources)} resources with page {page_count=}, {page_size=}')
+                demisto.debug(f"Received {len(resources)} resources with page {page_count=}, {page_size=}")
                 result.extend(resources)
 
         if limit and limit < len(result):
@@ -266,8 +275,14 @@ class Client(BaseClient):
 
         return result
 
-    def create_asset(self, site_id: str, date: str, ip_address: str | None = None, hostname: str | None = None,
-                     hostname_source: str | None = None) -> dict:
+    def create_asset(
+        self,
+        site_id: str,
+        date: str,
+        ip_address: str | None = None,
+        hostname: str | None = None,
+        hostname_source: str | None = None,
+    ) -> dict:
         """
         | Create a new asset on a site.
         |
@@ -288,7 +303,7 @@ class Client(BaseClient):
             dict: API response with information about the newly generated asset.
         """
         if ip_address is None and hostname is None:
-            raise ValueError("At least one of \"ip\" and \"host_name\" arguments must be passed.")
+            raise ValueError('At least one of "ip" and "host_name" arguments must be passed.')
 
         post_data: dict = {"date": date}
 
@@ -326,8 +341,7 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def create_report_config(self, scope: dict[str, Any], template_id: str,
-                             report_name: str, report_format: str) -> dict:
+    def create_report_config(self, scope: dict[str, Any], template_id: str, report_name: str, report_format: str) -> dict:
         """
         | Create a new report configuration.
         |
@@ -356,23 +370,36 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def create_shared_credential(self, name: str, site_assignment: SharedCredentialSiteAssignment,
-                                 service: CredentialService, database_name: str | None = None,
-                                 description: str | None = None, domain: str | None = None,
-                                 host_restriction: str | None = None, http_realm: str | None = None,
-                                 notes_id_password: str | None = None, ntlm_hash: str | None = None,
-                                 oracle_enumerate_sids: bool | None = None, oracle_listener_password: str | None = None,
-                                 oracle_sid: str | None = None, password: str | None = None,
-                                 port_restriction: str | None = None, sites: list[int] | None = None,
-                                 snmp_community_name: str | None = None,
-                                 snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
-                                 snmpv3_privacy_password: str | None = None,
-                                 snmpv3_privacy_type: SNMPv3PrivacyType | None = None, ssh_key_pem: str | None = None,
-                                 ssh_permission_elevation: SSHElevationType | None = None,
-                                 ssh_permission_elevation_password: str | None = None,
-                                 ssh_permission_elevation_username: str | None = None,
-                                 ssh_private_key_password: str | None = None,
-                                 use_windows_authentication: bool | None = None, username: str | None = None) -> dict:
+    def create_shared_credential(
+        self,
+        name: str,
+        site_assignment: SharedCredentialSiteAssignment,
+        service: CredentialService,
+        database_name: str | None = None,
+        description: str | None = None,
+        domain: str | None = None,
+        host_restriction: str | None = None,
+        http_realm: str | None = None,
+        notes_id_password: str | None = None,
+        ntlm_hash: str | None = None,
+        oracle_enumerate_sids: bool | None = None,
+        oracle_listener_password: str | None = None,
+        oracle_sid: str | None = None,
+        password: str | None = None,
+        port_restriction: str | None = None,
+        sites: list[int] | None = None,
+        snmp_community_name: str | None = None,
+        snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
+        snmpv3_privacy_password: str | None = None,
+        snmpv3_privacy_type: SNMPv3PrivacyType | None = None,
+        ssh_key_pem: str | None = None,
+        ssh_permission_elevation: SSHElevationType | None = None,
+        ssh_permission_elevation_password: str | None = None,
+        ssh_permission_elevation_username: str | None = None,
+        ssh_private_key_password: str | None = None,
+        use_windows_authentication: bool | None = None,
+        username: str | None = None,
+    ) -> dict:
         """
         | Create a new shared credential.
         |
@@ -462,8 +489,14 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def create_site(self, name: str, description: str | None = None, assets: list[str] | None = None,
-                    site_importance: str | None = None, template_id: str | None = None) -> dict:
+    def create_site(
+        self,
+        name: str,
+        description: str | None = None,
+        assets: list[str] | None = None,
+        site_importance: str | None = None,
+        template_id: str | None = None,
+    ) -> dict:
         """
         | Create a new site.
         |
@@ -489,11 +522,7 @@ class Client(BaseClient):
         )
 
         if assets:
-            post_data["scan"] = {
-                "assets": {
-                    "includedTargets": {
-                        "addresses": assets
-                    }}}
+            post_data["scan"] = {"assets": {"includedTargets": {"addresses": assets}}}
 
         return self._http_request(
             url_suffix="/sites",
@@ -502,24 +531,35 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def create_site_scan_credential(self, site_id: str, name: str, service: CredentialService,
-                                    database_name: str | None = None, description: str | None = None,
-                                    domain: str | None = None, host_restriction: str | None = None,
-                                    http_realm: str | None = None, notes_id_password: str | None = None,
-                                    ntlm_hash: str | None = None, oracle_enumerate_sids: bool | None = None,
-                                    oracle_listener_password: str | None = None, oracle_sid: str | None = None,
-                                    password: str | None = None, port_restriction: str | None = None,
-                                    snmp_community_name: str | None = None,
-                                    snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
-                                    snmpv3_privacy_password: str | None = None,
-                                    snmpv3_privacy_type: SNMPv3PrivacyType | None = None,
-                                    ssh_key_pem: str | None = None,
-                                    ssh_permission_elevation: SSHElevationType | None = None,
-                                    ssh_permission_elevation_password: str | None = None,
-                                    ssh_permission_elevation_username: str | None = None,
-                                    ssh_private_key_password: str | None = None,
-                                    use_windows_authentication: bool | None = None,
-                                    username: str | None = None) -> dict:
+    def create_site_scan_credential(
+        self,
+        site_id: str,
+        name: str,
+        service: CredentialService,
+        database_name: str | None = None,
+        description: str | None = None,
+        domain: str | None = None,
+        host_restriction: str | None = None,
+        http_realm: str | None = None,
+        notes_id_password: str | None = None,
+        ntlm_hash: str | None = None,
+        oracle_enumerate_sids: bool | None = None,
+        oracle_listener_password: str | None = None,
+        oracle_sid: str | None = None,
+        password: str | None = None,
+        port_restriction: str | None = None,
+        snmp_community_name: str | None = None,
+        snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
+        snmpv3_privacy_password: str | None = None,
+        snmpv3_privacy_type: SNMPv3PrivacyType | None = None,
+        ssh_key_pem: str | None = None,
+        ssh_permission_elevation: SSHElevationType | None = None,
+        ssh_permission_elevation_password: str | None = None,
+        ssh_permission_elevation_username: str | None = None,
+        ssh_private_key_password: str | None = None,
+        use_windows_authentication: bool | None = None,
+        username: str | None = None,
+    ) -> dict:
         """
         | Create a new site scan credential.
         |
@@ -604,15 +644,23 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def create_site_scan_schedule(self, site_id: str, start_date: str, enabled: bool,
-                                  excluded_asset_groups: list[int] | None = None,
-                                  excluded_targets: list[str] | None = None,
-                                  included_asset_groups: list[int] | None = None,
-                                  included_targets: list[str] | None = None, duration: str | None = None,
-                                  repeat_behaviour: str | None = None,
-                                  frequency: RepeatFrequencyType | None = None,
-                                  interval: int | None = None, date_of_month: int | None = None,
-                                  scan_name: str | None = None, scan_template_id: str | None = None) -> dict:
+    def create_site_scan_schedule(
+        self,
+        site_id: str,
+        start_date: str,
+        enabled: bool,
+        excluded_asset_groups: list[int] | None = None,
+        excluded_targets: list[str] | None = None,
+        included_asset_groups: list[int] | None = None,
+        included_targets: list[str] | None = None,
+        duration: str | None = None,
+        repeat_behaviour: str | None = None,
+        frequency: RepeatFrequencyType | None = None,
+        interval: int | None = None,
+        date_of_month: int | None = None,
+        scan_name: str | None = None,
+        scan_template_id: str | None = None,
+    ) -> dict:
         """
         | Create a new site scan schedule.
         |
@@ -672,10 +720,12 @@ class Client(BaseClient):
 
             repeat["every"] = frequency.value
 
-        repeat.update(find_valid_params(
-            interval=interval,
-            dateOfMonth=date_of_month,
-        ))
+        repeat.update(
+            find_valid_params(
+                interval=interval,
+                dateOfMonth=date_of_month,
+            )
+        )
 
         post_data = find_valid_params(
             duration=duration,
@@ -686,11 +736,13 @@ class Client(BaseClient):
             start=start_date,
         )
 
-        post_data.update(find_valid_params(
-            strict_mode=True,
-            assets=assets,
-            repeat=repeat,
-        ))
+        post_data.update(
+            find_valid_params(
+                strict_mode=True,
+                assets=assets,
+                repeat=repeat,
+            )
+        )
 
         return self._http_request(
             url_suffix=f"/sites/{site_id}/scan_schedules",
@@ -699,9 +751,16 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def create_vulnerability_exception(self, vulnerability_id: str, scope_type: VulnerabilityExceptionScopeType,
-                                       state: str, reason: str, scope_id: int | None = None,
-                                       expires: str | None = None, comment: str | None = None) -> dict:
+    def create_vulnerability_exception(
+        self,
+        vulnerability_id: str,
+        scope_type: VulnerabilityExceptionScopeType,
+        state: str,
+        reason: str,
+        scope_id: int | None = None,
+        expires: str | None = None,
+        comment: str | None = None,
+    ) -> dict:
         """
         | Create a new vulnerability exception.
         |
@@ -902,9 +961,14 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_asset_vulnerabilities(self, asset_id: str, page_size: int | None = DEFAULT_PAGE_SIZE,
-                                  page: int | None = None, sort: str | None = None,
-                                  limit: int | None = None) -> list[dict]:
+    def get_asset_vulnerabilities(
+        self,
+        asset_id: str,
+        page_size: int | None = DEFAULT_PAGE_SIZE,
+        page: int | None = None,
+        sort: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict]:
         """
         | Retrieves a list of all vulnerability findings on an asset.
         |
@@ -991,8 +1055,13 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_assets(self, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None, sort: str | None = None,
-                   limit: int | None = None) -> list[dict]:
+    def get_assets(
+        self,
+        page_size: int | None = DEFAULT_PAGE_SIZE,
+        page: int | None = None,
+        sort: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict]:
         """
         | Retrieve a list of all assets.
         |
@@ -1091,8 +1160,14 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_scans(self, active: bool | None = False, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None,
-                  sort: str | None = None, limit: int | None = None) -> list[dict]:
+    def get_scans(
+        self,
+        active: bool | None = False,
+        page_size: int | None = DEFAULT_PAGE_SIZE,
+        page: int | None = None,
+        sort: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict]:
         """
         | Retrieve a list of all scans.
         |
@@ -1196,8 +1271,14 @@ class Client(BaseClient):
             resp_type="json",
         ).get("resources")
 
-    def get_site_assets(self, site_id: str, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None,
-                        sort: str | None = None, limit: int | None = None) -> list[dict]:
+    def get_site_assets(
+        self,
+        site_id: str,
+        page_size: int | None = DEFAULT_PAGE_SIZE,
+        page: int | None = None,
+        sort: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict]:
         """
         | Retrieve a list of all assets that are linked with a specific site.
         |
@@ -1263,8 +1344,14 @@ class Client(BaseClient):
             resp_type="json",
         ).get("resources")
 
-    def get_site_scans(self, site_id: str, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None,
-                       sort: str | None = None, limit: int | None = None) -> list[dict]:
+    def get_site_scans(
+        self,
+        site_id: str,
+        page_size: int | None = DEFAULT_PAGE_SIZE,
+        page: int | None = None,
+        sort: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict]:
         """
         | Retrieve a list of scans from a specific site.
         |
@@ -1293,8 +1380,13 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_sites(self, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None, sort: str | None = None,
-                  limit: int | None = None) -> list[dict]:
+    def get_sites(
+        self,
+        page_size: int | None = DEFAULT_PAGE_SIZE,
+        page: int | None = None,
+        sort: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict]:
         """
         | Retrieve a list of sites.
         |
@@ -1322,8 +1414,13 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_vulnerabilities(self, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None,
-                            sort: str | None = None, limit: int | None = None) -> list[dict]:
+    def get_vulnerabilities(
+        self,
+        page_size: int | None = DEFAULT_PAGE_SIZE,
+        page: int | None = None,
+        sort: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict]:
         """
         | Retrieve information about all existing vulnerabilities.
         |
@@ -1388,8 +1485,13 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_vulnerability_exceptions(self, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None,
-                                     sort: str | None = None, limit: int | None = None) -> list[dict]:
+    def get_vulnerability_exceptions(
+        self,
+        page_size: int | None = DEFAULT_PAGE_SIZE,
+        page: int | None = None,
+        sort: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict]:
         """
         | Retrieve exceptions defined on vulnerabilities.
         |
@@ -1414,9 +1516,15 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def search_assets(self, filters: list[dict] | None = None, match: str = MATCH_DEFAULT_VALUE,
-                      page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None, sort: str | None = None,
-                      limit: int | None = None) -> list[dict]:
+    def search_assets(
+        self,
+        filters: list[dict] | None = None,
+        match: str = MATCH_DEFAULT_VALUE,
+        page_size: int | None = DEFAULT_PAGE_SIZE,
+        page: int | None = None,
+        sort: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict]:
         """
         | Retrieve a list of all assets with access permissions that match the provided search filters.
         |
@@ -1475,13 +1583,24 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def update_scan_schedule(self, site_id: str, scan_schedule_id: int, repeat_behaviour: str, start_date: str,
-                             enabled: bool, excluded_asset_groups: list[int] | None = None,
-                             excluded_targets: list[str] | None = None, included_asset_groups: list[int] | None = None,
-                             included_targets: list[str] | None = None, duration: str | None = None,
-                             frequency: RepeatFrequencyType | None = None,
-                             interval: int | None = None, date_of_month: int | None = None,
-                             scan_name: str | None = None, scan_template_id: str | None = None) -> dict:
+    def update_scan_schedule(
+        self,
+        site_id: str,
+        scan_schedule_id: int,
+        repeat_behaviour: str,
+        start_date: str,
+        enabled: bool,
+        excluded_asset_groups: list[int] | None = None,
+        excluded_targets: list[str] | None = None,
+        included_asset_groups: list[int] | None = None,
+        included_targets: list[str] | None = None,
+        duration: str | None = None,
+        frequency: RepeatFrequencyType | None = None,
+        interval: int | None = None,
+        date_of_month: int | None = None,
+        scan_name: str | None = None,
+        scan_template_id: str | None = None,
+    ) -> dict:
         """
         | Update a site scan schedule.
         |
@@ -1542,10 +1661,12 @@ class Client(BaseClient):
 
             repeat["every"] = frequency.value
 
-        repeat.update(find_valid_params(
-            interval=interval,
-            dateOfMonth=date_of_month,
-        ))
+        repeat.update(
+            find_valid_params(
+                interval=interval,
+                dateOfMonth=date_of_month,
+            )
+        )
 
         post_data = find_valid_params(
             duration=duration,
@@ -1556,11 +1677,13 @@ class Client(BaseClient):
             start=start_date,
         )
 
-        post_data.update(find_valid_params(
-            strict_mode=True,
-            assets=assets,
-            repeat=repeat,
-        ))
+        post_data.update(
+            find_valid_params(
+                strict_mode=True,
+                assets=assets,
+                repeat=repeat,
+            )
+        )
 
         return self._http_request(
             url_suffix=f"/sites/{site_id}/scan_schedules/{scan_schedule_id}",
@@ -1613,23 +1736,37 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def update_shared_credential(self, shared_credential_id: str, name: str,
-                                 site_assignment: SharedCredentialSiteAssignment, service: CredentialService,
-                                 database_name: str | None = None, description: str | None = None,
-                                 domain: str | None = None, host_restriction: str | None = None,
-                                 http_realm: str | None = None, notes_id_password: str | None = None,
-                                 ntlm_hash: str | None = None, oracle_enumerate_sids: bool | None = None,
-                                 oracle_listener_password: str | None = None, oracle_sid: str | None = None,
-                                 password: str | None = None, port_restriction: str | None = None,
-                                 sites: list[int] | None = None, snmp_community_name: str | None = None,
-                                 snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
-                                 snmpv3_privacy_password: str | None = None,
-                                 snmpv3_privacy_type: SNMPv3PrivacyType | None = None, ssh_key_pem: str | None = None,
-                                 ssh_permission_elevation: SSHElevationType | None = None,
-                                 ssh_permission_elevation_password: str | None = None,
-                                 ssh_permission_elevation_username: str | None = None,
-                                 ssh_private_key_password: str | None = None,
-                                 use_windows_authentication: bool | None = None, username: str | None = None) -> dict:
+    def update_shared_credential(
+        self,
+        shared_credential_id: str,
+        name: str,
+        site_assignment: SharedCredentialSiteAssignment,
+        service: CredentialService,
+        database_name: str | None = None,
+        description: str | None = None,
+        domain: str | None = None,
+        host_restriction: str | None = None,
+        http_realm: str | None = None,
+        notes_id_password: str | None = None,
+        ntlm_hash: str | None = None,
+        oracle_enumerate_sids: bool | None = None,
+        oracle_listener_password: str | None = None,
+        oracle_sid: str | None = None,
+        password: str | None = None,
+        port_restriction: str | None = None,
+        sites: list[int] | None = None,
+        snmp_community_name: str | None = None,
+        snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
+        snmpv3_privacy_password: str | None = None,
+        snmpv3_privacy_type: SNMPv3PrivacyType | None = None,
+        ssh_key_pem: str | None = None,
+        ssh_permission_elevation: SSHElevationType | None = None,
+        ssh_permission_elevation_password: str | None = None,
+        ssh_permission_elevation_username: str | None = None,
+        ssh_private_key_password: str | None = None,
+        use_windows_authentication: bool | None = None,
+        username: str | None = None,
+    ) -> dict:
         """
         | Update an existing new shared credential.
         |
@@ -1720,24 +1857,36 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def update_site_scan_credential(self, site_id: str, credential_id: str, name: str, service: CredentialService,
-                                    database_name: str | None = None, description: str | None = None,
-                                    domain: str | None = None, host_restriction: str | None = None,
-                                    http_realm: str | None = None, notes_id_password: str | None = None,
-                                    ntlm_hash: str | None = None, oracle_enumerate_sids: bool | None = None,
-                                    oracle_listener_password: str | None = None, oracle_sid: str | None = None,
-                                    password: str | None = None, port_restriction: str | None = None,
-                                    snmp_community_name: str | None = None,
-                                    snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
-                                    snmpv3_privacy_password: str | None = None,
-                                    snmpv3_privacy_type: SNMPv3PrivacyType | None = None,
-                                    ssh_key_pem: str | None = None,
-                                    ssh_permission_elevation: SSHElevationType | None = None,
-                                    ssh_permission_elevation_password: str | None = None,
-                                    ssh_permission_elevation_username: str | None = None,
-                                    ssh_private_key_password: str | None = None,
-                                    use_windows_authentication: bool | None = None,
-                                    username: str | None = None) -> dict:
+    def update_site_scan_credential(
+        self,
+        site_id: str,
+        credential_id: str,
+        name: str,
+        service: CredentialService,
+        database_name: str | None = None,
+        description: str | None = None,
+        domain: str | None = None,
+        host_restriction: str | None = None,
+        http_realm: str | None = None,
+        notes_id_password: str | None = None,
+        ntlm_hash: str | None = None,
+        oracle_enumerate_sids: bool | None = None,
+        oracle_listener_password: str | None = None,
+        oracle_sid: str | None = None,
+        password: str | None = None,
+        port_restriction: str | None = None,
+        snmp_community_name: str | None = None,
+        snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
+        snmpv3_privacy_password: str | None = None,
+        snmpv3_privacy_type: SNMPv3PrivacyType | None = None,
+        ssh_key_pem: str | None = None,
+        ssh_permission_elevation: SSHElevationType | None = None,
+        ssh_permission_elevation_password: str | None = None,
+        ssh_permission_elevation_username: str | None = None,
+        ssh_private_key_password: str | None = None,
+        use_windows_authentication: bool | None = None,
+        username: str | None = None,
+    ) -> dict:
         """
         | Update an existing site scan credential.
         |
@@ -1924,8 +2073,9 @@ class Client(BaseClient):
 
         return None
 
-    def create_tag(self, name: str, type: str, color: str, filters: list[dict] | None = None,
-                   match: str | None = MATCH_DEFAULT_VALUE) -> dict:
+    def create_tag(
+        self, name: str, type: str, color: str, filters: list[dict] | None = None, match: str | None = MATCH_DEFAULT_VALUE
+    ) -> dict:
         """
         | Create a new tag.
         |
@@ -1941,11 +2091,7 @@ class Client(BaseClient):
         Returns:
             dict: API response.
         """
-        json_data: dict[str, str | dict] = {
-            "type": type,
-            "name": name,
-            "color": color
-        }
+        json_data: dict[str, str | dict] = {"type": type, "name": name, "color": color}
         if filters:
             json_data["searchCriteria"] = find_valid_params(filters=filters, match=match)
 
@@ -1968,11 +2114,7 @@ class Client(BaseClient):
         Returns:
             dict: API response.
         """
-        return self._http_request(
-            method="DELETE",
-            url_suffix=f"/tags/{id}",
-            resp_type="json"
-        )
+        return self._http_request(method="DELETE", url_suffix=f"/tags/{id}", resp_type="json")
 
     def get_tag_by_id(self, id: int) -> dict:
         """
@@ -1986,14 +2128,16 @@ class Client(BaseClient):
         Returns:
             dict: API response.
         """
-        return self._http_request(
-            url_suffix=f"/tags/{id}",
-            method="GET",
-            resp_type="json"
-        )
+        return self._http_request(url_suffix=f"/tags/{id}", method="GET", resp_type="json")
 
-    def get_tags_list(self, name: str | None = None, type: str | None = None, page_size: int | None = DEFAULT_PAGE_SIZE,
-                      page: int | None = None, limit: int | None = None):
+    def get_tags_list(
+        self,
+        name: str | None = None,
+        type: str | None = None,
+        page_size: int | None = DEFAULT_PAGE_SIZE,
+        page: int | None = None,
+        limit: int | None = None,
+    ):
         """
         | Get a list of tags.
         |
@@ -2056,30 +2200,30 @@ class Client(BaseClient):
         Returns:
             dict: API response.
         """
-        request_data: dict[str, Any] = {
-            "method": method,
-            "url_suffix": url,
-            "resp_type": "json"
-        }
+        request_data: dict[str, Any] = {"method": method, "url_suffix": url, "resp_type": "json"}
         if body is not None:
             request_data["json_data"] = body
 
         return self._http_request(**request_data)
 
-    def create_asset_group(self, name: str, type: str, description: str, filters: list[dict] | None = None,
-                           match: str | None = MATCH_DEFAULT_VALUE) -> dict:
-        json_data = assign_params(name=name, type=type, description=description,
-                                  searchCriteria=find_valid_params(filters=filters, match=match))
-
-        return self._http_request(
-            method="POST",
-            url_suffix="/asset_groups",
-            json_data=json_data,
-            resp_type="json"
+    def create_asset_group(
+        self, name: str, type: str, description: str, filters: list[dict] | None = None, match: str | None = MATCH_DEFAULT_VALUE
+    ) -> dict:
+        json_data = assign_params(
+            name=name, type=type, description=description, searchCriteria=find_valid_params(filters=filters, match=match)
         )
 
-    def get_asset_groups(self, name: str | None = None, type: str | None = None, page_size: int | None = DEFAULT_PAGE_SIZE,
-                         page: int | None = None, sort: str | None = None, limit: int | None = None) -> list[dict]:
+        return self._http_request(method="POST", url_suffix="/asset_groups", json_data=json_data, resp_type="json")
+
+    def get_asset_groups(
+        self,
+        name: str | None = None,
+        type: str | None = None,
+        page_size: int | None = DEFAULT_PAGE_SIZE,
+        page: int | None = None,
+        sort: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict]:
         params = assign_params(name=name, type=type)
 
         return self._paged_http_request(
@@ -2131,7 +2275,7 @@ class Site:
                 site_id = client.find_site_id(site_name)
 
                 if not site_id:
-                    raise DemistoException(f"No site with name \"{site_name}\" was found.")
+                    raise DemistoException(f'No site with name "{site_name}" was found.')
 
                 self.id = site_id
 
@@ -2216,23 +2360,29 @@ def convert_datetime_str(time_str: str) -> struct_time:
         return strptime(time_str, "%Y-%m-%dT%H:%M:%SZ")
 
 
-def create_credential_creation_body(service: CredentialService, database_name: str | None = None,
-                                    domain: str | None = None, http_realm: str | None = None,
-                                    notes_id_password: str | None = None, ntlm_hash: str | None = None,
-                                    oracle_enumerate_sids: bool | None = None,
-                                    oracle_listener_password: str | None = None,
-                                    oracle_sid: str | None = None, password: str | None = None,
-                                    snmp_community_name: str | None = None,
-                                    snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
-                                    snmpv3_privacy_password: str | None = None,
-                                    snmpv3_privacy_type: SNMPv3PrivacyType | None = None,
-                                    ssh_key_pem: str | None = None,
-                                    ssh_permission_elevation: SSHElevationType | None = None,
-                                    ssh_permission_elevation_password: str | None = None,
-                                    ssh_permission_elevation_username: str | None = None,
-                                    ssh_private_key_password: str | None = None,
-                                    use_windows_authentication: bool | None = None,
-                                    username: str | None = None) -> dict:
+def create_credential_creation_body(
+    service: CredentialService,
+    database_name: str | None = None,
+    domain: str | None = None,
+    http_realm: str | None = None,
+    notes_id_password: str | None = None,
+    ntlm_hash: str | None = None,
+    oracle_enumerate_sids: bool | None = None,
+    oracle_listener_password: str | None = None,
+    oracle_sid: str | None = None,
+    password: str | None = None,
+    snmp_community_name: str | None = None,
+    snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
+    snmpv3_privacy_password: str | None = None,
+    snmpv3_privacy_type: SNMPv3PrivacyType | None = None,
+    ssh_key_pem: str | None = None,
+    ssh_permission_elevation: SSHElevationType | None = None,
+    ssh_permission_elevation_password: str | None = None,
+    ssh_permission_elevation_username: str | None = None,
+    ssh_private_key_password: str | None = None,
+    use_windows_authentication: bool | None = None,
+    username: str | None = None,
+) -> dict:
     """
     Create `account` body for credential-creation API requests.
 
@@ -2273,8 +2423,26 @@ def create_credential_creation_body(service: CredentialService, database_name: s
     s = CredentialService  # Simplify object name for shorter lines
 
     # Services where "username" field is required
-    if service in (s.AS400, s.CIFS, s.CIFSHASH, s.CVS, s.DB2, s.FTP, s.HTTP, s.MS_SQL, s.MYSQL, s.ORACLE,
-                   s.POP, s.POSTGRESQL, s.REMOTE_EXEC, s.SNMPV3, s.SSH, s.SSH_KEY, s.SYBASE, s.TELNET):
+    if service in (
+        s.AS400,
+        s.CIFS,
+        s.CIFSHASH,
+        s.CVS,
+        s.DB2,
+        s.FTP,
+        s.HTTP,
+        s.MS_SQL,
+        s.MYSQL,
+        s.ORACLE,
+        s.POP,
+        s.POSTGRESQL,
+        s.REMOTE_EXEC,
+        s.SNMPV3,
+        s.SSH,
+        s.SSH_KEY,
+        s.SYBASE,
+        s.TELNET,
+    ):
         if username is None:
             missing_params.append("Username")
 
@@ -2282,8 +2450,24 @@ def create_credential_creation_body(service: CredentialService, database_name: s
             account_data["username"] = username
 
     # Services where "password" field is required
-    if service in (s.AS400, s.CIFS, s.CIFSHASH, s.CVS, s.DB2, s.FTP, s.HTTP, s.MS_SQL, s.MYSQL,
-                   s.ORACLE, s.POP, s.POSTGRESQL, s.REMOTE_EXEC, s.SSH, s.SYBASE, s.TELNET):
+    if service in (
+        s.AS400,
+        s.CIFS,
+        s.CIFSHASH,
+        s.CVS,
+        s.DB2,
+        s.FTP,
+        s.HTTP,
+        s.MS_SQL,
+        s.MYSQL,
+        s.ORACLE,
+        s.POP,
+        s.POSTGRESQL,
+        s.REMOTE_EXEC,
+        s.SSH,
+        s.SYBASE,
+        s.TELNET,
+    ):
         if password is None:
             missing_params.append("Password")
 
@@ -2349,9 +2533,11 @@ def create_credential_creation_body(service: CredentialService, database_name: s
 
         if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
             if password is None:
-                special_validation_errors.append(f"Password is required for {service.value} services "
-                                                 "when authentication type is set to anything other "
-                                                 "than \"no-authentication\".")
+                special_validation_errors.append(
+                    f"Password is required for {service.value} services "
+                    "when authentication type is set to anything other "
+                    'than "no-authentication".'
+                )
 
             else:
                 account_data["password"] = password
@@ -2360,10 +2546,12 @@ def create_credential_creation_body(service: CredentialService, database_name: s
             account_data["privacyType"] = snmpv3_privacy_type.value
 
             if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                special_validation_errors.append(f"Privacy password is required for {service.value} services when the "
-                                                 f"authentication type is set to any value other than "
-                                                 f"\"no-authentication\", and privacy type is set to any value other "
-                                                 f"than \"no-privacy\".")
+                special_validation_errors.append(
+                    f"Privacy password is required for {service.value} services when the "
+                    f"authentication type is set to any value other than "
+                    f'"no-authentication", and privacy type is set to any value other '
+                    f'than "no-privacy".'
+                )
 
             else:
                 account_data["privacyPassword"] = snmpv3_privacy_password
@@ -2388,9 +2576,11 @@ def create_credential_creation_body(service: CredentialService, database_name: s
                 account_data["permissionElevationPassword"] = ssh_permission_elevation_password
 
             if len(missing_elevation_params) > 0:
-                special_validation_errors.append(f"{', '.join(missing_elevation_params)} are required for "
-                                                 f"\"{service.value}\" services when \"ssh_permission_elevation\" "
-                                                 f"is not set to \"none\" or \"pbrun\".")
+                special_validation_errors.append(
+                    f"{', '.join(missing_elevation_params)} are required for "
+                    f"\"{service.value}\" services when \"ssh_permission_elevation\" "
+                    f"is not set to \"none\" or \"pbrun\"."
+                )
 
     if service == s.SSH_KEY:
         if ssh_key_pem is None:
@@ -2416,9 +2606,14 @@ def create_credential_creation_body(service: CredentialService, database_name: s
     return account_data
 
 
-def create_report(client: Client, scope: dict[str, Any], template_id: str | None = None,
-                  report_name: str | None = None, report_format: str | None = None,
-                  download_immediately: bool | None = None) -> dict | CommandResults:
+def create_report(
+    client: Client,
+    scope: dict[str, Any],
+    template_id: str | None = None,
+    report_name: str | None = None,
+    report_format: str | None = None,
+    download_immediately: bool | None = None,
+) -> dict | CommandResults:
     """
     Create a report and optionally download it.
 
@@ -2510,8 +2705,8 @@ def find_asset_last_scan_data(asset_data: dict) -> tuple[str, str]:
     Returns:
         tuple[str, str]: A tuple containing the date (first value) and ID (seconds value) of the last scan of the asset.
     """
-    scan_date = '-'
-    scan_id = '-'
+    scan_date = "-"
+    scan_id = "-"
 
     if asset_data.get("history"):
         sorted_scans = sorted(asset_data["history"], key=lambda x: convert_datetime_str(x.get("date")), reverse=True)
@@ -2577,7 +2772,7 @@ def get_scan_entry(scan: dict) -> CommandResults:
     )
 
     scan_hr = tableToMarkdown(
-        name=f"Nexpose Scan ID {str(scan['id'])}",
+        name=f"Nexpose Scan ID {scan['id']!s}",
         t=scan_output,
         headers=[
             "Id",
@@ -2590,7 +2785,8 @@ def get_scan_entry(scan: dict) -> CommandResults:
             "Status",
             "Message",
         ],
-        removeNull=True)
+        removeNull=True,
+    )
 
     scan_hr += tableToMarkdown("Vulnerabilities", vulnerability_output, vulnerability_headers, removeNull=True)
     scan_output["Vulnerabilities"] = vulnerability_output
@@ -2604,9 +2800,15 @@ def get_scan_entry(scan: dict) -> CommandResults:
     )
 
 
-def generate_duration_time(years: int | None = None, months: int | None = None, weeks: int | None = None,
-                           days: int | None = None, hours: int | None = None, minutes: int | None = None,
-                           seconds: float | None = None) -> str | None:
+def generate_duration_time(
+    years: int | None = None,
+    months: int | None = None,
+    weeks: int | None = None,
+    days: int | None = None,
+    hours: int | None = None,
+    minutes: int | None = None,
+    seconds: float | None = None,
+) -> str | None:
     """
     | Generate an ISO 8601 duration string.
     | More info about format's specification can be found on:
@@ -2707,7 +2909,7 @@ def readable_duration_time(duration: str) -> str:
     """
     # Assure duration is in a valid format
     if not re.fullmatch(r"P(?:[\d.]+[YMWD]){0,4}T(?:[\d.]+[HMS]){0,3}", duration):
-        raise ValueError(f"\"{duration}\" is not a valid ISO 8601 duration string.")
+        raise ValueError(f'"{duration}" is not a valid ISO 8601 duration string.')
 
     p_duration, t_duration = duration.replace("T", ",T").split(",")
     p_duration = re.findall(r"([\d.]+[A-Z])", p_duration)
@@ -2819,8 +3021,7 @@ def generate_new_dict(data: list, name_mapping: dict[str, str], include_none: bo
     pass
 
 
-def generate_new_dict(data: dict | list, name_mapping: dict[str, str],
-                      include_none: bool = False) -> dict | list | tuple:
+def generate_new_dict(data: dict | list, name_mapping: dict[str, str], include_none: bool = False) -> dict | list | tuple:
     """
     Generate a new dictionary from an existing dictionary, with the keys renamed according to `name_mapping`.
 
@@ -2868,7 +3069,7 @@ def find_dict_item(data: dict | list | tuple, key_path: str) -> Any:
         Any: The value of the key path if found, None otherwise.
     """
     if isinstance(data, dict):
-        key_path_list = key_path.split('.')
+        key_path_list = key_path.split(".")
 
         if key_path_list[0] in data:
             if len(key_path_list) == 1:
@@ -2884,10 +3085,13 @@ def find_dict_item(data: dict | list | tuple, key_path: str) -> Any:
             return None
 
     elif isinstance(data, list | tuple):
-        result = [find_dict_item(
-            data=item,
-            key_path=key_path,
-        ) for item in data]
+        result = [
+            find_dict_item(
+                data=item,
+                key_path=key_path,
+            )
+            for item in data
+        ]
 
         return [item for item in result if item is not None]
 
@@ -2976,9 +3180,15 @@ def validate_input(input_value: str | None, valid_options: list[str], arg_name: 
 
 
 # --- Command Functions --- #
-def create_asset_command(client: Client, date: str, site_id: str | None = None, site_name: str | None = None,
-                         ip: str | None = None, host_name: str | None = None,
-                         host_name_source: str | None = None) -> CommandResults:
+def create_asset_command(
+    client: Client,
+    date: str,
+    site_id: str | None = None,
+    site_name: str | None = None,
+    ip: str | None = None,
+    host_name: str | None = None,
+    host_name_source: str | None = None,
+) -> CommandResults:
     """
     Create a new asset.
 
@@ -3009,14 +3219,19 @@ def create_asset_command(client: Client, date: str, site_id: str | None = None, 
         readable_output=f"New asset has been created with ID {response_data['id']}.",
         outputs_prefix="Nexpose.Asset",
         outputs_key_field="id",
-        outputs={"id": response_data['id']},
+        outputs={"id": response_data["id"]},
         raw_response=response_data,
     )
 
 
-def create_assets_report_command(client: Client, assets: str, template: str | None = None, name: str | None = None,
-                                 report_format: str | None = None,
-                                 download_immediately: str | None = None) -> dict | CommandResults:
+def create_assets_report_command(
+    client: Client,
+    assets: str,
+    template: str | None = None,
+    name: str | None = None,
+    report_format: str | None = None,
+    download_immediately: str | None = None,
+) -> dict | CommandResults:
     """
     Create a report about specific assets.
 
@@ -3049,9 +3264,14 @@ def create_assets_report_command(client: Client, assets: str, template: str | No
     )
 
 
-def create_scan_report_command(client: Client, scan: str, template: str | None = None, name: str | None = None,
-                               report_format: str | None = None,
-                               download_immediately: str | None = None) -> dict | CommandResults:
+def create_scan_report_command(
+    client: Client,
+    scan: str,
+    template: str | None = None,
+    name: str | None = None,
+    report_format: str | None = None,
+    download_immediately: str | None = None,
+) -> dict | CommandResults:
     """
     Create a report about specific sites.
 
@@ -3082,15 +3302,26 @@ def create_scan_report_command(client: Client, scan: str, template: str | None =
     )
 
 
-def create_scan_schedule_command(client: Client, on_scan_repeat: str, start: str, site_id: str | None = None,
-                                 site_name: str | None = None, excluded_asset_groups: str | None = None,
-                                 excluded_targets: str | None = None, included_asset_groups: str | None = None,
-                                 included_targets: str | None = None, duration_days: str | None = None,
-                                 duration_hours: str | None = None, duration_minutes: str | None = None,
-                                 enabled: str | None = None, frequency: str | None = None,
-                                 interval_time: str | None = None, scan_name: str | None = None,
-                                 date_of_month: int | None = None,
-                                 scan_template_id: str | None = None) -> CommandResults:
+def create_scan_schedule_command(
+    client: Client,
+    on_scan_repeat: str,
+    start: str,
+    site_id: str | None = None,
+    site_name: str | None = None,
+    excluded_asset_groups: str | None = None,
+    excluded_targets: str | None = None,
+    included_asset_groups: str | None = None,
+    included_targets: str | None = None,
+    duration_days: str | None = None,
+    duration_hours: str | None = None,
+    duration_minutes: str | None = None,
+    enabled: str | None = None,
+    frequency: str | None = None,
+    interval_time: str | None = None,
+    scan_name: str | None = None,
+    date_of_month: int | None = None,
+    scan_template_id: str | None = None,
+) -> CommandResults:
     """
     Create a new site scan schedule.
 
@@ -3192,27 +3423,41 @@ def create_scan_schedule_command(client: Client, on_scan_repeat: str, start: str
         readable_output=f"New scheduled scan has been created with ID {response_data['id']}.",
         outputs_prefix="Nexpose.ScanSchedule",
         outputs_key_field="id",
-        outputs={"id": response_data['id']},
+        outputs={"id": response_data["id"]},
         raw_response=response_data,
     )
 
 
-def create_shared_credential_command(client: Client, name: str, site_assignment: str, service: str,
-                                     database: str | None = None, description: str | None = None,
-                                     domain: str | None = None, host_restriction: str | None = None,
-                                     http_realm: str | None = None, notes_id_password: str | None = None,
-                                     ntlm_hash: str | None = None, oracle_enumerate_sids: str | None = None,
-                                     oracle_listener_password: str | None = None, oracle_sid: str | None = None,
-                                     password: str | None = None, port_restriction: str | None = None,
-                                     sites: str | None = None, authentication_type: str | None = None,
-                                     community_name: str | None = None, privacy_password: str | None = None,
-                                     privacy_type: str | None = None, ssh_key_pem: str | None = None,
-                                     ssh_permission_elevation: str | None = None,
-                                     ssh_permission_elevation_password: str | None = None,
-                                     ssh_permission_elevation_username: str | None = None,
-                                     ssh_private_key_password: str | None = None,
-                                     use_windows_authentication: str | None = None,
-                                     username: str | None = None) -> CommandResults:
+def create_shared_credential_command(
+    client: Client,
+    name: str,
+    site_assignment: str,
+    service: str,
+    database: str | None = None,
+    description: str | None = None,
+    domain: str | None = None,
+    host_restriction: str | None = None,
+    http_realm: str | None = None,
+    notes_id_password: str | None = None,
+    ntlm_hash: str | None = None,
+    oracle_enumerate_sids: str | None = None,
+    oracle_listener_password: str | None = None,
+    oracle_sid: str | None = None,
+    password: str | None = None,
+    port_restriction: str | None = None,
+    sites: str | None = None,
+    authentication_type: str | None = None,
+    community_name: str | None = None,
+    privacy_password: str | None = None,
+    privacy_type: str | None = None,
+    ssh_key_pem: str | None = None,
+    ssh_permission_elevation: str | None = None,
+    ssh_permission_elevation_password: str | None = None,
+    ssh_permission_elevation_username: str | None = None,
+    ssh_private_key_password: str | None = None,
+    use_windows_authentication: str | None = None,
+    username: str | None = None,
+) -> CommandResults:
     """
     Create a new shared credential.
 
@@ -3309,13 +3554,19 @@ def create_shared_credential_command(client: Client, name: str, site_assignment:
         readable_output=f"New shared credential has been created with ID {response_data['id']}.",
         outputs_prefix="Nexpose.SharedCredential",
         outputs_key_field="id",
-        outputs={"id": response_data['id']},
+        outputs={"id": response_data["id"]},
         raw_response=response_data,
     )
 
 
-def create_site_command(client: Client, name: str, description: str | None = None, assets: str | None = None,
-                        importance: str | None = None, template_id: str | None = None) -> CommandResults:
+def create_site_command(
+    client: Client,
+    name: str,
+    description: str | None = None,
+    assets: str | None = None,
+    importance: str | None = None,
+    template_id: str | None = None,
+) -> CommandResults:
     """
     Create a new site.
 
@@ -3335,25 +3586,27 @@ def create_site_command(client: Client, name: str, description: str | None = Non
         assets_list = argToList(assets)
 
     response_data = client.create_site(
-        name=name,
-        description=description,
-        assets=assets_list,
-        site_importance=importance,
-        template_id=template_id
+        name=name, description=description, assets=assets_list, site_importance=importance, template_id=template_id
     )
 
     return CommandResults(
         readable_output=f"New site has been created with ID {response_data['id']}.",
         outputs_prefix="Nexpose.Site",
         outputs_key_field="Id",
-        outputs={"Id": response_data['id']},
+        outputs={"Id": response_data["id"]},
         raw_response=response_data,
     )
 
 
-def create_sites_report_command(client: Client, sites: str | None = None, site_names: str | None = None,
-                                template: str | None = None, name: str | None = None, report_format: str | None = None,
-                                download_immediately: str | None = None) -> dict | CommandResults:
+def create_sites_report_command(
+    client: Client,
+    sites: str | None = None,
+    site_names: str | None = None,
+    template: str | None = None,
+    name: str | None = None,
+    report_format: str | None = None,
+    download_immediately: str | None = None,
+) -> dict | CommandResults:
     """
     Create a report about specific sites.
 
@@ -3369,9 +3622,7 @@ def create_sites_report_command(client: Client, sites: str | None = None, site_n
             Defaults to True.
     """
     sites_list = [Site(site_id=site_id, client=client) for site_id in argToList(sites)]
-    sites_list.extend(
-        [Site(site_name=site_name, client=client) for site_name in argToList(site_names)]
-    )
+    sites_list.extend([Site(site_name=site_name, client=client) for site_name in argToList(site_names)])
 
     if len(sites_list) == 0:
         raise Exception("At least one site ID or site name must be provided.")
@@ -3393,22 +3644,36 @@ def create_sites_report_command(client: Client, sites: str | None = None, site_n
     )
 
 
-def create_site_scan_credential_command(client: Client, name: str, service: str, site_id: str | None = None,
-                                        site_name: str | None = None, authentication_type: str | None = None,
-                                        community_name: str | None = None, database: str | None = None,
-                                        description: str | None = None, domain: str | None = None,
-                                        host_restriction: str | None = None, http_realm: str | None = None,
-                                        notes_id_password: str | None = None, ntlm_hash: str | None = None,
-                                        oracle_enumerate_sids: str | None = None,
-                                        oracle_listener_password: str | None = None, oracle_sid: str | None = None,
-                                        password: str | None = None, port_restriction: str | None = None,
-                                        privacy_password: str | None = None, privacy_type: str | None = None,
-                                        ssh_key_pem: str | None = None, ssh_permission_elevation: str | None = None,
-                                        ssh_permission_elevation_password: str | None = None,
-                                        ssh_permission_elevation_username: str | None = None,
-                                        ssh_private_key_password: str | None = None,
-                                        use_windows_authentication: str | None = None,
-                                        username: str | None = None) -> CommandResults:
+def create_site_scan_credential_command(
+    client: Client,
+    name: str,
+    service: str,
+    site_id: str | None = None,
+    site_name: str | None = None,
+    authentication_type: str | None = None,
+    community_name: str | None = None,
+    database: str | None = None,
+    description: str | None = None,
+    domain: str | None = None,
+    host_restriction: str | None = None,
+    http_realm: str | None = None,
+    notes_id_password: str | None = None,
+    ntlm_hash: str | None = None,
+    oracle_enumerate_sids: str | None = None,
+    oracle_listener_password: str | None = None,
+    oracle_sid: str | None = None,
+    password: str | None = None,
+    port_restriction: str | None = None,
+    privacy_password: str | None = None,
+    privacy_type: str | None = None,
+    ssh_key_pem: str | None = None,
+    ssh_permission_elevation: str | None = None,
+    ssh_permission_elevation_password: str | None = None,
+    ssh_permission_elevation_username: str | None = None,
+    ssh_private_key_password: str | None = None,
+    use_windows_authentication: str | None = None,
+    username: str | None = None,
+) -> CommandResults:
     """
     Create a new site scan credential.
 
@@ -3505,14 +3770,21 @@ def create_site_scan_credential_command(client: Client, name: str, service: str,
         readable_output=f"New site scan credential has been created with ID {response_data['id']}.",
         outputs_prefix="Nexpose.SiteScanCredential",
         outputs_key_field="id",
-        outputs={"id": response_data['id']},
+        outputs={"id": response_data["id"]},
         raw_response=response_data,
     )
 
 
-def create_vulnerability_exception_command(client: Client, vulnerability_id: str,
-                                           scope_type: str, state: str, reason: str, scope_id: str | None = None,
-                                           expires: str | None = None, comment: str | None = None) -> CommandResults:
+def create_vulnerability_exception_command(
+    client: Client,
+    vulnerability_id: str,
+    scope_type: str,
+    state: str,
+    reason: str,
+    scope_id: str | None = None,
+    expires: str | None = None,
+    comment: str | None = None,
+) -> CommandResults:
     """
     Create a vulnerability exception.
 
@@ -3530,8 +3802,9 @@ def create_vulnerability_exception_command(client: Client, vulnerability_id: str
     scope_type_enum = VulnerabilityExceptionScopeType[scope_type]
 
     if scope_type_enum != VulnerabilityExceptionScopeType.GLOBAL and scope_id is None:
-        raise ValueError(f"\"scope_id\" must be set when using scopes different than "
-                         f"\"{VulnerabilityExceptionScopeType.GLOBAL.value}\".")
+        raise ValueError(
+            f'"scope_id" must be set when using scopes different than "{VulnerabilityExceptionScopeType.GLOBAL.value}".'
+        )
 
     response_data = client.create_vulnerability_exception(
         vulnerability_id=vulnerability_id,
@@ -3544,7 +3817,7 @@ def create_vulnerability_exception_command(client: Client, vulnerability_id: str
     )
 
     return CommandResults(
-        readable_output=f"New vulnerability exception has been created with ID {str(response_data['id'])}.",
+        readable_output=f"New vulnerability exception has been created with ID {response_data['id']!s}.",
         outputs_prefix="Nexpose.VulnerabilityException",
         outputs_key_field="id",
         outputs={"id": response_data["id"]},
@@ -3568,8 +3841,9 @@ def delete_asset_command(client: Client, asset_id: str) -> CommandResults:
     )
 
 
-def delete_scan_schedule_command(client: Client, schedule_id: str, site_id: str | None = None,
-                                 site_name: str | None = None) -> CommandResults:
+def delete_scan_schedule_command(
+    client: Client, schedule_id: str, site_id: str | None = None, site_name: str | None = None
+) -> CommandResults:
     """
     Delete a scheduled scan.
 
@@ -3637,8 +3911,9 @@ def delete_shared_credential_command(client: Client, shared_credential_id: str) 
     )
 
 
-def delete_site_scan_credential_command(client: Client, credential_id: str, site_id: str | None = None,
-                                        site_name: str | None = None) -> CommandResults:
+def delete_site_scan_credential_command(
+    client: Client, credential_id: str, site_id: str | None = None, site_name: str | None = None
+) -> CommandResults:
     """
     Delete a site scan credential.
 
@@ -3682,8 +3957,9 @@ def delete_vulnerability_exception_command(client: Client, vulnerability_excepti
     )
 
 
-def download_report_command(client: Client, report_id: str, instance_id: str, name: str | None = None,
-                            report_format: str | None = None) -> dict:
+def download_report_command(
+    client: Client, report_id: str, instance_id: str, name: str | None = None, report_format: str | None = None
+) -> dict:
     """
     Download a report file.
 
@@ -3706,15 +3982,12 @@ def download_report_command(client: Client, report_id: str, instance_id: str, na
         dict: A dict generated by `CommonServerPython.fileResult` representing a War Room entry.
     """
     if name is None:
-        name = f"report {str(datetime.now())}"
+        name = f"report {datetime.now()!s}"
 
     if not report_format:
         report_format = "pdf"
 
-    report_data = client.download_report(
-        report_id=report_id,
-        instance_id=instance_id
-    )
+    report_data = client.download_report(report_id=report_id, instance_id=instance_id)
 
     return fileResult(
         filename=f"{name}.{report_format.lower()}",
@@ -3788,7 +4061,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
         "CPE",
         "LastScanDate",
         "LastScanId",
-        "RiskScore"
+        "RiskScore",
     ]
 
     hr_service_headers = [
@@ -3923,58 +4196,43 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
                     cvss_info = extra_info["cvss"]["v2"]
                     cvss_version = "2"
 
-                cve_indicators.append(CommandResults(
-                    readable_output=tableToMarkdown(cve, vulnerability_output,
-                                                    hr_vulnerability_headers, removeNull=True),
-                    indicator=Common.CVE(
-                        id=cve,
-                        cvss=None,  # type: ignore
-                        cvss_score=cvss_info.get("score"),
-                        cvss_vector=cvss_info.get("vector"),
-                        cvss_version=cvss_version,
-                        description=extra_info["description"]["text"],
-                        modified=extra_info["modified"],
-                        published=extra_info["published"],
-                    )))
+                cve_indicators.append(
+                    CommandResults(
+                        readable_output=tableToMarkdown(cve, vulnerability_output, hr_vulnerability_headers, removeNull=True),
+                        indicator=Common.CVE(
+                            id=cve,
+                            cvss=None,  # type: ignore
+                            cvss_score=cvss_info.get("score"),
+                            cvss_vector=cvss_info.get("vector"),
+                            cvss_version=cvss_version,
+                            description=extra_info["description"]["text"],
+                            modified=extra_info["modified"],
+                            published=extra_info["published"],
+                        ),
+                    )
+                )
 
     readable_output = tableToMarkdown(
-        name=f"Nexpose Asset {str(asset_data['id'])}",
-        t=asset_output,
-        headers=hr_asset_headers,
-        removeNull=True
+        name=f"Nexpose Asset {asset_data['id']!s}", t=asset_output, headers=hr_asset_headers, removeNull=True
     )
 
     if asset_output.get("Vulnerability"):
         readable_output += tableToMarkdown(
-            name="Vulnerabilities",
-            t=asset_output["Vulnerability"],
-            headers=hr_vulnerability_headers,
-            removeNull=True
+            name="Vulnerabilities", t=asset_output["Vulnerability"], headers=hr_vulnerability_headers, removeNull=True
         )
 
     if asset_output.get("Software"):
         readable_output += tableToMarkdown(
-            name="Software",
-            t=asset_output["Software"],
-            headers=hr_software_headers,
-            removeNull=True
+            name="Software", t=asset_output["Software"], headers=hr_software_headers, removeNull=True
         )
 
     if asset_output.get("Service"):
         readable_output += tableToMarkdown(
-            name="Services",
-            t=asset_output["Service"],
-            headers=hr_service_headers,
-            removeNull=True
+            name="Services", t=asset_output["Service"], headers=hr_service_headers, removeNull=True
         )
 
     if asset_output.get("User"):
-        readable_output += tableToMarkdown(
-            name="Users",
-            t=asset_output["User"],
-            headers=hr_users_headers,
-            removeNull=True
-        )
+        readable_output += tableToMarkdown(name="Users", t=asset_output["User"], headers=hr_users_headers, removeNull=True)
 
     result = CommandResults(
         readable_output=readable_output,
@@ -3986,7 +4244,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
             hostname=asset_output.get("Aliases"),
             ip_address=asset_output.get("Addresses"),
             os=asset_output.get("OperatingSystem"),
-            vendor=VENDOR_NAME
+            vendor=VENDOR_NAME,
         ),
         raw_response=asset_data,
     )
@@ -3997,8 +4255,9 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
     return result
 
 
-def get_assets_command(client: Client, page_size: str | None = None, page: str | None = None, sort: str | None = None,
-                       limit: str | None = None) -> CommandResults | list[CommandResults]:
+def get_assets_command(
+    client: Client, page_size: str | None = None, page: str | None = None, sort: str | None = None, limit: str | None = None
+) -> CommandResults | list[CommandResults]:
     """
     Retrieve a list of all assets.
 
@@ -4028,21 +4287,13 @@ def get_assets_command(client: Client, page_size: str | None = None, page: str |
         "RiskScore",
         "Assessed",
         "LastScanDate",
-        "LastScanId"
+        "LastScanId",
     ]
 
-    assets_data = client.get_assets(
-        page_size=page_size_int,
-        page=page_int,
-        sort=sort,
-        limit=limit_int
-    )
+    assets_data = client.get_assets(page_size=page_size_int, page=page_int, sort=sort, limit=limit_int)
 
     if not assets_data:
-        return CommandResults(
-            readable_output="No assets found",
-            raw_response=assets_data
-        )
+        return CommandResults(readable_output="No assets found", raw_response=assets_data)
 
     results = []
 
@@ -4077,8 +4328,7 @@ def get_assets_command(client: Client, page_size: str | None = None, page: str |
                 outputs_prefix="Nexpose.Asset",
                 outputs_key_field="Id",
                 outputs=asset_output,
-                readable_output=tableToMarkdown(f"Nexpose Asset {str(asset_data['id'])}", asset_output,
-                                                hr_headers, removeNull=True),
+                readable_output=tableToMarkdown(f"Nexpose Asset {asset_data['id']!s}", asset_output, hr_headers, removeNull=True),
                 raw_response=asset_data,
                 indicator=Common.Endpoint(
                     id=asset_data["id"],
@@ -4086,15 +4336,17 @@ def get_assets_command(client: Client, page_size: str | None = None, page: str |
                     ip_address=asset_data.get("ip"),
                     mac_address=asset_data.get("mac"),
                     os=asset_data.get("os"),
-                    vendor=VENDOR_NAME
-                )
-            ))
+                    vendor=VENDOR_NAME,
+                ),
+            )
+        )
 
     return results
 
 
-def get_asset_vulnerability_command(client: Client, asset_id: str,
-                                    vulnerability_id: str) -> CommandResults | list[CommandResults]:
+def get_asset_vulnerability_command(
+    client: Client, asset_id: str, vulnerability_id: str
+) -> CommandResults | list[CommandResults]:
     """
     Retrieve information about vulnerability findings on an asset.
 
@@ -4160,7 +4412,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
                 if e2.res is not None and e2.res.status_code is not None and e2.res.status_code == 404:  # type: ignore
                     raise ValueError("Vulnerability not found.")
 
-            return CommandResults(readable_output=f"Asset {asset_id} is not vulnerable to \"{vulnerability_id}\".")
+            return CommandResults(readable_output=f'Asset {asset_id} is not vulnerable to "{vulnerability_id}".')
 
         raise e
 
@@ -4231,12 +4483,15 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
     vulnerability_outputs["Check"] = results_output
     vulnerability_outputs["Solution"] = solutions_output
 
-    vulnerabilities_md = tableToMarkdown(f"Vulnerability {str(vulnerability_id)}", vulnerability_outputs,
-                                         hr_vulnerability_headers, removeNull=True)
-    results_md = tableToMarkdown("Checks", results_output, hr_results_headers, removeNull=True) if len(
-        results_output) > 0 else ""
-    solutions_md = tableToMarkdown("Solutions", solutions_output, hr_solutions_headers,
-                                   removeNull=True) if solutions_output is not None else ""
+    vulnerabilities_md = tableToMarkdown(
+        f"Vulnerability {vulnerability_id!s}", vulnerability_outputs, hr_vulnerability_headers, removeNull=True
+    )
+    results_md = tableToMarkdown("Checks", results_output, hr_results_headers, removeNull=True) if len(results_output) > 0 else ""
+    solutions_md = (
+        tableToMarkdown("Solutions", solutions_output, hr_solutions_headers, removeNull=True)
+        if solutions_output is not None
+        else ""
+    )
 
     indicators: list = []
 
@@ -4269,16 +4524,18 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
     results = []
 
     for indicator in indicators:
-        results.append(CommandResults(
-            outputs_prefix="Nexpose.Asset",
-            outputs_key_field="AssetId",
-            outputs={
-                "AssetId": asset_id,
-                "Vulnerability": [vulnerability_outputs],
-            },
-            readable_output=vulnerabilities_md + results_md + solutions_md,
-            indicator=indicator,
-        ))
+        results.append(
+            CommandResults(
+                outputs_prefix="Nexpose.Asset",
+                outputs_key_field="AssetId",
+                outputs={
+                    "AssetId": asset_id,
+                    "Vulnerability": [vulnerability_outputs],
+                },
+                readable_output=vulnerabilities_md + results_md + solutions_md,
+                indicator=indicator,
+            )
+        )
 
     return results
 
@@ -4318,12 +4575,7 @@ def get_report_templates_command(client: Client) -> CommandResults:
     Args:
         client (Client): Client to use for API requests.
     """
-    hr_headers = [
-        "Id",
-        "Name",
-        "Description",
-        "Type"
-    ]
+    hr_headers = ["Id", "Name", "Description", "Type"]
 
     report_templates_data = client.get_report_templates()
 
@@ -4384,8 +4636,14 @@ def get_scan_command(client: Client, scan_ids: str) -> list[CommandResults]:
     return results
 
 
-def get_scans_command(client: Client, active: str | None = None, page_size: str | None = None,
-                      page: str | None = None, sort: str | None = None, limit: str | None = None) -> CommandResults:
+def get_scans_command(
+    client: Client,
+    active: str | None = None,
+    page_size: str | None = None,
+    page: str | None = None,
+    sort: str | None = None,
+    limit: str | None = None,
+) -> CommandResults:
     """
     Retrieve a list of all scans.
 
@@ -4434,7 +4692,8 @@ def get_scans_command(client: Client, active: str | None = None, page_size: str 
             "Status",
             "Message",
         ],
-        removeNull=True)
+        removeNull=True,
+    )
 
     return CommandResults(
         outputs_prefix="Nexpose.Scan",
@@ -4445,8 +4704,9 @@ def get_scans_command(client: Client, active: str | None = None, page_size: str 
     )
 
 
-def get_sites_command(client: Client, page_size: str | None = None, page: str | None = None,
-                      sort: str | None = None, limit: str | None = None) -> CommandResults:
+def get_sites_command(
+    client: Client, page_size: str | None = None, page: str | None = None, sort: str | None = None, limit: str | None = None
+) -> CommandResults:
     """
     Retrieve a list of sites.
 
@@ -4460,15 +4720,7 @@ def get_sites_command(client: Client, page_size: str | None = None, page: str | 
         limit (str | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
-    hr_headers = [
-        "Id",
-        "Name",
-        "Assets",
-        "Vulnerabilities",
-        "Risk",
-        "Type",
-        "LastScan"
-    ]
+    hr_headers = ["Id", "Name", "Assets", "Vulnerabilities", "Risk", "Type", "LastScan"]
 
     page_size_int = arg_to_number(page_size, required=False)
     page_int = arg_to_number(page, required=False)
@@ -4510,8 +4762,13 @@ def get_sites_command(client: Client, page_size: str | None = None, page: str | 
     )
 
 
-def list_scan_schedule_command(client: Client, site_id: str | None = None, site_name: str | None = None,
-                               schedule_id: str | None = None, limit: str | None = None) -> CommandResults:
+def list_scan_schedule_command(
+    client: Client,
+    site_id: str | None = None,
+    site_name: str | None = None,
+    schedule_id: str | None = None,
+    limit: str | None = None,
+) -> CommandResults:
     """
     Retrieve information about scan schedules for a specific site or a specific scan schedule.
 
@@ -4549,10 +4806,12 @@ def list_scan_schedule_command(client: Client, site_id: str | None = None, site_
             scan_schedules_data = scan_schedules_data[:limit_int]
 
     else:
-        scan_schedules_data = [client.get_scan_schedule(
-            site_id=site.id,
-            schedule_id=schedule_id,
-        )]
+        scan_schedules_data = [
+            client.get_scan_schedule(
+                site_id=site.id,
+                schedule_id=schedule_id,
+            )
+        ]
 
     if not scan_schedules_data:
         return CommandResults(
@@ -4588,8 +4847,7 @@ def list_scan_schedule_command(client: Client, site_id: str | None = None, site_
     )
 
 
-def list_shared_credential_command(client: Client, credential_id: str | None = None,
-                                   limit: str | None = None) -> CommandResults:
+def list_shared_credential_command(client: Client, credential_id: str | None = None, limit: str | None = None) -> CommandResults:
     """
     Retrieve information about all or a specific vulnerability.
 
@@ -4645,14 +4903,14 @@ def list_shared_credential_command(client: Client, credential_id: str | None = N
         outputs_prefix="Nexpose.SharedCredential",
         outputs_key_field="id",
         outputs=shared_credentials_data,
-        readable_output=tableToMarkdown("Nexpose Shared Credentials", shared_credentials_hr,
-                                        hr_headers, removeNull=True),
+        readable_output=tableToMarkdown("Nexpose Shared Credentials", shared_credentials_hr, hr_headers, removeNull=True),
         raw_response=shared_credentials_data,
     )
 
 
-def list_assigned_shared_credential_command(client: Client, site_id: str | None = None, site_name: str | None = None,
-                                            limit: str | None = None) -> CommandResults:
+def list_assigned_shared_credential_command(
+    client: Client, site_id: str | None = None, site_name: str | None = None, limit: str | None = None
+) -> CommandResults:
     """
     Retrieve information about shared credentials for a specific site.
 
@@ -4684,7 +4942,7 @@ def list_assigned_shared_credential_command(client: Client, site_id: str | None 
         site_id = site.name if site.name else site.id
 
         return CommandResults(
-            readable_output=f"No assigned shared credentials were found for site \"{site_id}\".",
+            readable_output=f'No assigned shared credentials were found for site "{site_id}".',
             raw_response=response_data,
         )
 
@@ -4705,14 +4963,20 @@ def list_assigned_shared_credential_command(client: Client, site_id: str | None 
         outputs_prefix="Nexpose.AssignedSharedCredential",
         outputs_key_field="id",
         outputs=response_data,
-        readable_output=tableToMarkdown("Nexpose Assigned Shared Credentials",
-                                        assigned_shared_credentials_hr, hr_headers, removeNull=True),
+        readable_output=tableToMarkdown(
+            "Nexpose Assigned Shared Credentials", assigned_shared_credentials_hr, hr_headers, removeNull=True
+        ),
         raw_response=response_data,
     )
 
 
-def list_site_scan_credential_command(client: Client, site_id: str | None = None, site_name: str | None = None,
-                                      credential_id: str | None = None, limit: str | None = None) -> CommandResults:
+def list_site_scan_credential_command(
+    client: Client,
+    site_id: str | None = None,
+    site_name: str | None = None,
+    credential_id: str | None = None,
+    limit: str | None = None,
+) -> CommandResults:
     """
     Retrieve information about all or a specific scan credential.
 
@@ -4753,7 +5017,7 @@ def list_site_scan_credential_command(client: Client, site_id: str | None = None
     if not site_scan_credentials_data:
         site_id = site.name if site.name else site.id
         return CommandResults(
-            readable_output=f"No site scan credentials were found for site \"{site_id}\".",
+            readable_output=f'No site scan credentials were found for site "{site_id}".',
             raw_response=site_scan_credentials_data,
         )
 
@@ -4777,15 +5041,19 @@ def list_site_scan_credential_command(client: Client, site_id: str | None = None
         outputs_prefix="Nexpose.SiteScanCredential",
         outputs_key_field="id",
         outputs=site_scan_credentials_data,
-        readable_output=tableToMarkdown(
-            "Nexpose Site Scan Credentials", site_scan_credentials_hr, hr_headers, removeNull=True),
+        readable_output=tableToMarkdown("Nexpose Site Scan Credentials", site_scan_credentials_hr, hr_headers, removeNull=True),
         raw_response=site_scan_credentials_data,
     )
 
 
-def list_vulnerability_command(client: Client, vulnerability_id: str | None = None, page_size: str | None = None,
-                               page: str | None = None, sort: str | None = None,
-                               limit: str | None = None) -> CommandResults:
+def list_vulnerability_command(
+    client: Client,
+    vulnerability_id: str | None = None,
+    page_size: str | None = None,
+    page: str | None = None,
+    sort: str | None = None,
+    limit: str | None = None,
+) -> CommandResults:
     """
     Retrieve information about all or a specific vulnerability.
 
@@ -4853,15 +5121,19 @@ def list_vulnerability_command(client: Client, vulnerability_id: str | None = No
         outputs_prefix="Nexpose.Vulnerability",
         outputs_key_field="id",
         outputs=vulnerabilities_data,
-        readable_output=tableToMarkdown(
-            "Nexpose Vulnerabilities", vulnerabilities_hr, hr_headers, removeNull=True),
+        readable_output=tableToMarkdown("Nexpose Vulnerabilities", vulnerabilities_hr, hr_headers, removeNull=True),
         raw_response=vulnerabilities_data,
     )
 
 
-def list_vulnerability_exceptions_command(client: Client, vulnerability_exception_id: str | None = None,
-                                          page_size: str | None = None, page: str | None = None,
-                                          sort: str | None = None, limit: str | None = None) -> CommandResults:
+def list_vulnerability_exceptions_command(
+    client: Client,
+    vulnerability_exception_id: str | None = None,
+    page_size: str | None = None,
+    page: str | None = None,
+    sort: str | None = None,
+    limit: str | None = None,
+) -> CommandResults:
     """
     Retrieve information about all or a specific vulnerability exception.
 
@@ -4929,17 +5201,27 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
         outputs_key_field="id",
         outputs=vulnerability_exceptions_data,
         readable_output=tableToMarkdown(
-            "Nexpose Vulnerability Exceptions", hr_vulnerability_exceptions_data, hr_headers, removeNull=True),
+            "Nexpose Vulnerability Exceptions", hr_vulnerability_exceptions_data, hr_headers, removeNull=True
+        ),
         raw_response=vulnerability_exceptions_data,
     )
 
 
-def search_assets_command(client: Client, query: str | None = None, ip_address_is: str | None = None,
-                          host_name_is: str | None = None, risk_score_higher_than: str | None = None,
-                          vulnerability_title_contains: str | None = None, site_id_in: str | None = None,
-                          site_name_in: str | None = None, match: str | None = None, page_size: str | None = None,
-                          page: str | None = None, sort: str | None = None,
-                          limit: str | None = None) -> CommandResults | list[CommandResults]:
+def search_assets_command(
+    client: Client,
+    query: str | None = None,
+    ip_address_is: str | None = None,
+    host_name_is: str | None = None,
+    risk_score_higher_than: str | None = None,
+    vulnerability_title_contains: str | None = None,
+    site_id_in: str | None = None,
+    site_name_in: str | None = None,
+    match: str | None = None,
+    page_size: str | None = None,
+    page: str | None = None,
+    sort: str | None = None,
+    limit: str | None = None,
+) -> CommandResults | list[CommandResults]:
     """
     Retrieve a list of all assets with access permissions that match the provided search filters.
 
@@ -4979,7 +5261,7 @@ def search_assets_command(client: Client, query: str | None = None, ip_address_i
         "RiskScore",
         "Assessed",
         "LastScanDate",
-        "LastScanId"
+        "LastScanId",
     ]
 
     page_size_int = arg_to_number(page_size, required=False)
@@ -4997,7 +5279,8 @@ def search_assets_command(client: Client, query: str | None = None, ip_address_i
         vulnerability_title_contains=vulnerability_title_contains,
         site_id_in=site_id_in,
         site_name_in=site_name_in,
-        query=query)
+        query=query,
+    )
 
     assets = client.search_assets(
         filters=convert_asset_search_filters(filters_data),
@@ -5044,8 +5327,7 @@ def search_assets_command(client: Client, query: str | None = None, ip_address_i
                 outputs_prefix="Nexpose.Asset",
                 outputs_key_field="Id",
                 outputs=asset_output,
-                readable_output=tableToMarkdown(f"Nexpose Asset {str(asset['id'])}", asset_output,
-                                                hr_headers, removeNull=True),
+                readable_output=tableToMarkdown(f"Nexpose Asset {asset['id']!s}", asset_output, hr_headers, removeNull=True),
                 raw_response=asset,
                 indicator=Common.Endpoint(
                     id=asset["id"],
@@ -5053,16 +5335,17 @@ def search_assets_command(client: Client, query: str | None = None, ip_address_i
                     ip_address=asset.get("ip"),
                     mac_address=asset.get("mac"),
                     os=asset.get("os"),
-                    vendor=VENDOR_NAME
-                )
-            ))
+                    vendor=VENDOR_NAME,
+                ),
+            )
+        )
 
     return results
 
 
-def set_assigned_shared_credential_status_command(client: Client, credential_id: str, enabled: bool,
-                                                  site_id: str | None = None,
-                                                  site_name: str | None = None) -> CommandResults:
+def set_assigned_shared_credential_status_command(
+    client: Client, credential_id: str, enabled: bool, site_id: str | None = None, site_name: str | None = None
+) -> CommandResults:
     """
     Enable or disable a shared credential.
 
@@ -5087,13 +5370,14 @@ def set_assigned_shared_credential_status_command(client: Client, credential_id:
     )
 
     return CommandResults(
-        readable_output=f"Shared credential \"{credential_id}\" enablement has been set to \"{str(enabled).lower()}\".",
+        readable_output=f'Shared credential "{credential_id}" enablement has been set to "{str(enabled).lower()}".',
         raw_response=response_data,
     )
 
 
-def start_assets_scan_command(client: Client, ip_addresses: str | None = None,
-                              hostnames: str | None = None, name: str | None = None) -> CommandResults:
+def start_assets_scan_command(
+    client: Client, ip_addresses: str | None = None, hostnames: str | None = None, name: str | None = None
+) -> CommandResults:
     """
     Start a scan on the provided assets.
 
@@ -5108,7 +5392,7 @@ def start_assets_scan_command(client: Client, ip_addresses: str | None = None,
             Defaults to None (Results in using a "scan <date>" format).
     """
     if ip_addresses is None and hostnames is None:
-        raise ValueError("At least one of \"ips\" and \"hostnames\" must be provided.")
+        raise ValueError('At least one of "ips" and "hostnames" must be provided.')
 
     ip_addresses_list = None
     hostnames_list = None
@@ -5149,11 +5433,7 @@ def start_assets_scan_command(client: Client, ip_addresses: str | None = None,
     if hostnames_list:
         hosts.extend(hostnames_list)
 
-    scan_response = client.start_site_scan(
-        site_id=site.id,
-        scan_name=name,
-        hosts=hosts
-    )
+    scan_response = client.start_site_scan(site_id=site.id, scan_name=name, hosts=hosts)
 
     if "id" not in scan_response:
         return CommandResults(
@@ -5164,8 +5444,9 @@ def start_assets_scan_command(client: Client, ip_addresses: str | None = None,
     return get_scan_entry(client.get_scan(scan_response["id"]))
 
 
-def start_site_scan_command(client: Client, site_id: str | None = None, site_name: str | None = None,
-                            hosts: str | None = None, name: str | None = None) -> CommandResults:
+def start_site_scan_command(
+    client: Client, site_id: str | None = None, site_name: str | None = None, hosts: str | None = None, name: str | None = None
+) -> CommandResults:
     """
     Start a scan for a specific site.
 
@@ -5211,28 +5492,42 @@ def update_scan_command(client: Client, scan_id: str, scan_status: ScanStatus) -
     response = client.update_scan_status(scan_id, scan_status)
 
     return CommandResults(
-        readable_output=f"Successfully updated scan status to \"{scan_status.value}\"",
+        readable_output=f'Successfully updated scan status to "{scan_status.value}"',
         raw_response=response,
     )
 
 
-def update_shared_credential_command(client: Client, shared_credential_id: str, name: str, site_assignment: str,
-                                     service: str, authentication_type: str | None = None,
-                                     community_name: str | None = None, database: str | None = None,
-                                     description: str | None = None, domain: str | None = None,
-                                     host_restriction: str | None = None, http_realm: str | None = None,
-                                     notes_id_password: str | None = None, ntlm_hash: str | None = None,
-                                     oracle_enumerate_sids: str | None = None,
-                                     oracle_listener_password: str | None = None,
-                                     oracle_sid: str | None = None, password: str | None = None,
-                                     port_restriction: str | None = None, sites: str | None = None,
-                                     privacy_password: str | None = None, privacy_type: str | None = None,
-                                     ssh_key_pem: str | None = None, ssh_permission_elevation: str | None = None,
-                                     ssh_permission_elevation_password: str | None = None,
-                                     ssh_permission_elevation_username: str | None = None,
-                                     ssh_private_key_password: str | None = None,
-                                     use_windows_authentication: str | None = None,
-                                     username: str | None = None) -> CommandResults:
+def update_shared_credential_command(
+    client: Client,
+    shared_credential_id: str,
+    name: str,
+    site_assignment: str,
+    service: str,
+    authentication_type: str | None = None,
+    community_name: str | None = None,
+    database: str | None = None,
+    description: str | None = None,
+    domain: str | None = None,
+    host_restriction: str | None = None,
+    http_realm: str | None = None,
+    notes_id_password: str | None = None,
+    ntlm_hash: str | None = None,
+    oracle_enumerate_sids: str | None = None,
+    oracle_listener_password: str | None = None,
+    oracle_sid: str | None = None,
+    password: str | None = None,
+    port_restriction: str | None = None,
+    sites: str | None = None,
+    privacy_password: str | None = None,
+    privacy_type: str | None = None,
+    ssh_key_pem: str | None = None,
+    ssh_permission_elevation: str | None = None,
+    ssh_permission_elevation_password: str | None = None,
+    ssh_permission_elevation_username: str | None = None,
+    ssh_private_key_password: str | None = None,
+    use_windows_authentication: str | None = None,
+    username: str | None = None,
+) -> CommandResults:
     """
     Update an existing shared credential.
 
@@ -5328,28 +5623,41 @@ def update_shared_credential_command(client: Client, shared_credential_id: str, 
     )
 
     return CommandResults(
-        readable_output=f"Shared credential with ID {shared_credential_id} has been updated.",
-        raw_response=response_data
+        readable_output=f"Shared credential with ID {shared_credential_id} has been updated.", raw_response=response_data
     )
 
 
-def update_site_scan_credential_command(client: Client, credential_id: str, name: str, service: str,
-                                        site_id: str | None = None, site_name: str | None = None,
-                                        authentication_type: str | None = None, community_name: str | None = None,
-                                        database: str | None = None, description: str | None = None,
-                                        domain: str | None = None, host_restriction: str | None = None,
-                                        http_realm: str | None = None, notes_id_password: str | None = None,
-                                        ntlm_hash: str | None = None, oracle_enumerate_sids: str | None = None,
-                                        oracle_listener_password: str | None = None,
-                                        oracle_sid: str | None = None, password: str | None = None,
-                                        port_restriction: str | None = None, privacy_password: str | None = None,
-                                        privacy_type: str | None = None, ssh_key_pem: str | None = None,
-                                        ssh_permission_elevation: str | None = None,
-                                        ssh_permission_elevation_password: str | None = None,
-                                        ssh_permission_elevation_username: str | None = None,
-                                        ssh_private_key_password: str | None = None,
-                                        use_windows_authentication: str | None = None,
-                                        username: str | None = None) -> CommandResults:
+def update_site_scan_credential_command(
+    client: Client,
+    credential_id: str,
+    name: str,
+    service: str,
+    site_id: str | None = None,
+    site_name: str | None = None,
+    authentication_type: str | None = None,
+    community_name: str | None = None,
+    database: str | None = None,
+    description: str | None = None,
+    domain: str | None = None,
+    host_restriction: str | None = None,
+    http_realm: str | None = None,
+    notes_id_password: str | None = None,
+    ntlm_hash: str | None = None,
+    oracle_enumerate_sids: str | None = None,
+    oracle_listener_password: str | None = None,
+    oracle_sid: str | None = None,
+    password: str | None = None,
+    port_restriction: str | None = None,
+    privacy_password: str | None = None,
+    privacy_type: str | None = None,
+    ssh_key_pem: str | None = None,
+    ssh_permission_elevation: str | None = None,
+    ssh_permission_elevation_password: str | None = None,
+    ssh_permission_elevation_username: str | None = None,
+    ssh_private_key_password: str | None = None,
+    use_windows_authentication: str | None = None,
+    username: str | None = None,
+) -> CommandResults:
     """
     Update an existing site scan credential.
 
@@ -5451,15 +5759,27 @@ def update_site_scan_credential_command(client: Client, credential_id: str, name
     )
 
 
-def update_scan_schedule_command(client: Client, schedule_id: int, on_scan_repeat: str, start: str,
-                                 site_id: str | None = None, site_name: str | None = None,
-                                 excluded_asset_groups: str | None = None, excluded_targets: str | None = None,
-                                 included_asset_groups: str | None = None, included_targets: str | None = None,
-                                 duration_days: str | None = None, duration_hours: str | None = None,
-                                 duration_minutes: str | None = None, enabled: str | None = None,
-                                 frequency: str | None = None, interval: str | None = None,
-                                 scan_name: str | None = None, date_of_month: str | None = None,
-                                 scan_template_id: str | None = None) -> CommandResults:
+def update_scan_schedule_command(
+    client: Client,
+    schedule_id: int,
+    on_scan_repeat: str,
+    start: str,
+    site_id: str | None = None,
+    site_name: str | None = None,
+    excluded_asset_groups: str | None = None,
+    excluded_targets: str | None = None,
+    included_asset_groups: str | None = None,
+    included_targets: str | None = None,
+    duration_days: str | None = None,
+    duration_hours: str | None = None,
+    duration_minutes: str | None = None,
+    enabled: str | None = None,
+    frequency: str | None = None,
+    interval: str | None = None,
+    scan_name: str | None = None,
+    date_of_month: str | None = None,
+    scan_template_id: str | None = None,
+) -> CommandResults:
     """
     Update a site scan schedule.
 
@@ -5564,8 +5884,9 @@ def update_scan_schedule_command(client: Client, schedule_id: int, on_scan_repea
     )
 
 
-def update_vulnerability_exception_expiration_command(client: Client, vulnerability_exception_id: str,
-                                                      expiration: str) -> CommandResults:
+def update_vulnerability_exception_expiration_command(
+    client: Client, vulnerability_exception_id: str, expiration: str
+) -> CommandResults:
     """
     Update the expiration date of a vulnerability exception.
 
@@ -5581,14 +5902,12 @@ def update_vulnerability_exception_expiration_command(client: Client, vulnerabil
     )
 
     return CommandResults(
-        readable_output=f"Successfully updated expiration date "
-                        f"of vulnerability exception {vulnerability_exception_id}.",
+        readable_output=f"Successfully updated expiration date of vulnerability exception {vulnerability_exception_id}.",
         raw_response=response,
     )
 
 
-def update_vulnerability_exception_status_command(client: Client, vulnerability_exception_id: str,
-                                                  status: str) -> CommandResults:
+def update_vulnerability_exception_status_command(client: Client, vulnerability_exception_id: str, status: str) -> CommandResults:
     """
     Update the status of a vulnerability exception.
 
@@ -5608,10 +5927,20 @@ def update_vulnerability_exception_status_command(client: Client, vulnerability_
     )
 
 
-def create_tag_command(client: Client, name: str, type: str, color: str, ip_address_is: str | None = None,
-                       host_name_is: str | None = None, risk_score_higher_than: str | None = None,
-                       vulnerability_title_contains: str | None = None, site_id_in: str | None = None,
-                       site_name_in: str | None = None, query: str | None = None, match: str | None = None):
+def create_tag_command(
+    client: Client,
+    name: str,
+    type: str,
+    color: str,
+    ip_address_is: str | None = None,
+    host_name_is: str | None = None,
+    risk_score_higher_than: str | None = None,
+    vulnerability_title_contains: str | None = None,
+    site_id_in: str | None = None,
+    site_name_in: str | None = None,
+    query: str | None = None,
+    match: str | None = None,
+):
     """
     Create a tag.
 
@@ -5648,7 +5977,8 @@ def create_tag_command(client: Client, name: str, type: str, color: str, ip_addr
         site_id_in=site_id_in,
         site_name_in=site_name_in,
         vulnerability_title_contains=vulnerability_title_contains,
-        query=query)
+        query=query,
+    )
 
     filters = convert_asset_search_filters(filters_data)
     res = client.create_tag(name=name, type=type, color=color, filters=filters, match=match)
@@ -5678,8 +6008,15 @@ def delete_tag_command(client: Client, id: str):
     return CommandResults(readable_output=f"Tag: {id_int} was deleted successfully")
 
 
-def get_list_tag_command(client: Client, id: str | None = None, name: str | None = None, type: str | None = None,
-                         page_size: str | None = None, page: str | None = None, limit: str | None = None):
+def get_list_tag_command(
+    client: Client,
+    id: str | None = None,
+    name: str | None = None,
+    type: str | None = None,
+    page_size: str | None = None,
+    page: str | None = None,
+    limit: str | None = None,
+):
     """
     Get a list of tags or a tag by ID.
 
@@ -5705,21 +6042,34 @@ def get_list_tag_command(client: Client, id: str | None = None, name: str | None
         limit_int = arg_to_number(limit, required=False)
         tags = client.get_tags_list(name=name, type=type, page_size=page_size_int, page=page_int, limit=limit_int)
 
-    headers = ['id', 'color', 'created', 'name', 'riskmodifier', 'source', 'type']
+    headers = ["id", "color", "created", "name", "riskmodifier", "source", "type"]
     return CommandResults(
         outputs_prefix="Nexpose.Tag",
         outputs_key_field="id",
         outputs=tags,
-        readable_output=tableToMarkdown("Tags list", remove_dict_key(deepcopy(tags), "searchCriteria"), headers=headers,
-                                        headerTransform=string_to_table_header),
-        raw_response=tags
+        readable_output=tableToMarkdown(
+            "Tags list",
+            remove_dict_key(deepcopy(tags), "searchCriteria"),
+            headers=headers,
+            headerTransform=string_to_table_header,
+        ),
+        raw_response=tags,
     )
 
 
-def update_tag_search_criteria_command(client: Client, tag_id: str, overwrite: str, ip_address_is: str | None = None,
-                                       host_name_is: str | None = None, risk_score_higher_than: str | None = None,
-                                       vulnerability_title_contains: str | None = None, site_id_in: str | None = None,
-                                       site_name_in: str | None = None, query: str | None = None, match: str | None = None):
+def update_tag_search_criteria_command(
+    client: Client,
+    tag_id: str,
+    overwrite: str,
+    ip_address_is: str | None = None,
+    host_name_is: str | None = None,
+    risk_score_higher_than: str | None = None,
+    vulnerability_title_contains: str | None = None,
+    site_id_in: str | None = None,
+    site_name_in: str | None = None,
+    query: str | None = None,
+    match: str | None = None,
+):
     """
     Update the search criteria of a tag.
 
@@ -5750,7 +6100,8 @@ def update_tag_search_criteria_command(client: Client, tag_id: str, overwrite: s
         site_name_in=site_name_in,
         site_id_in=site_id_in,
         vulnerability_title_contains=vulnerability_title_contains,
-        query=query)
+        query=query,
+    )
 
     filters = convert_asset_search_filters(filters_data)
 
@@ -5781,8 +6132,8 @@ def get_list_tag_asset_group_command(client: Client, tag_id: str):
     return CommandResults(
         outputs_prefix="Nexpose.TagAssetGroup",
         outputs=asset_groups_ids,
-        readable_output=tableToMarkdown(f"Tag {tag_id_int} asset groups.", asset_groups_ids, headers=['Asset groups IDs']),
-        raw_response=res
+        readable_output=tableToMarkdown(f"Tag {tag_id_int} asset groups.", asset_groups_ids, headers=["Asset groups IDs"]),
+        raw_response=res,
     )
 
 
@@ -5847,7 +6198,7 @@ def get_list_tag_asset_command(client: Client, tag_id: str):
         outputs_key_field="id",
         outputs=resources,
         readable_output=tableToMarkdown(f"Tag {tag_id_int} assets", resources, headerTransform=string_to_table_header),
-        raw_response=res
+        raw_response=res,
     )
 
 
@@ -5889,8 +6240,9 @@ def remove_tag_asset_command(client: Client, tag_id: str, asset_id: str):
     return CommandResults(readable_output=f"Asset {asset_id_int} was removed from tag {tag_id_int} successfully")
 
 
-def add_site_asset_command(client: Client, target_type: str, site_id: str, assets: str | None = None,
-                           asset_group_ids: str | None = None):
+def add_site_asset_command(
+    client: Client, target_type: str, site_id: str, assets: str | None = None, asset_group_ids: str | None = None
+):
     """
     Add assets or asset groups to a site's included/excluded assets.
 
@@ -5920,8 +6272,9 @@ def add_site_asset_command(client: Client, target_type: str, site_id: str, asset
     return CommandResults(readable_output=f"Added assets- {added_assets} to site ID - {site_id_int}.")
 
 
-def remove_site_asset_command(client: Client, target_type: str, site_id: str, assets: str | None = None,
-                              asset_group_ids: str | None = None):
+def remove_site_asset_command(
+    client: Client, target_type: str, site_id: str, assets: str | None = None, asset_group_ids: str | None = None
+):
     """
     Remove assets or asset groups from a site's included/excluded assets.
 
@@ -5978,22 +6331,33 @@ def list_site_assets_command(client: Client, site_id: str, asset_type: str, targ
         raise ValueError("Invalid asset_type. Expected 'assets' or 'asset_groups'.")
 
     outputs = dict(**res, site_id=site_id_int)
-    readable_results = res.get("resources") if asset_type == 'asset_groups' else res
+    readable_results = res.get("resources") if asset_type == "asset_groups" else res
 
     return CommandResults(
         outputs_prefix=output_prefix,
         outputs_key_field="id",
         outputs=outputs,
-        readable_output=tableToMarkdown(readable_title, readable_results,
-                                        headerTransform=string_to_table_header, removeNull=True),
-        raw_response=outputs
+        readable_output=tableToMarkdown(
+            readable_title, readable_results, headerTransform=string_to_table_header, removeNull=True
+        ),
+        raw_response=outputs,
     )
 
 
-def create_asset_group_command(client: Client, name: str, description: str, type: str, match: str | None = None,
-                               ip_address_is: str | None = None, host_name_is: str | None = None,
-                               risk_score_higher_than: str | None = None, vulnerability_title_contains: str | None = None,
-                               site_id_in: str | None = None, site_name_in: str | None = None, query: str | None = None, ):
+def create_asset_group_command(
+    client: Client,
+    name: str,
+    description: str,
+    type: str,
+    match: str | None = None,
+    ip_address_is: str | None = None,
+    host_name_is: str | None = None,
+    risk_score_higher_than: str | None = None,
+    vulnerability_title_contains: str | None = None,
+    site_id_in: str | None = None,
+    site_name_in: str | None = None,
+    query: str | None = None,
+):
     """
     Creates a new asset group in Nexpose.
 
@@ -6023,7 +6387,8 @@ def create_asset_group_command(client: Client, name: str, description: str, type
         site_id_in=site_id_in,
         site_name_in=site_name_in,
         vulnerability_title_contains=vulnerability_title_contains,
-        query=query)
+        query=query,
+    )
 
     validate_input(type, VALID_ASSET_GROUP_TYPES, "type", False)
 
@@ -6039,13 +6404,20 @@ def create_asset_group_command(client: Client, name: str, description: str, type
         outputs_key_field="id",
         outputs=res,
         readable_output=f"A new asset group {name} created successfully with ID: {res['id']}",
-        raw_response=res
+        raw_response=res,
     )
 
 
-def get_list_asset_group_command(client: Client, group_id: str | None = None, group_name: str | None = None,
-                                 type: str | None = None, page_size: str | None = None, page: str | None = None,
-                                 limit: str | None = None, sort: str | None = None):
+def get_list_asset_group_command(
+    client: Client,
+    group_id: str | None = None,
+    group_name: str | None = None,
+    type: str | None = None,
+    page_size: str | None = None,
+    page: str | None = None,
+    limit: str | None = None,
+    sort: str | None = None,
+):
     """
     Get a list of asset groups or a asset group by ID.
 
@@ -6072,21 +6444,17 @@ def get_list_asset_group_command(client: Client, group_id: str | None = None, gr
         limit_int = arg_to_number(limit, required=False)
 
         asset_groups = client.get_asset_groups(
-            name=group_name,
-            type=type,
-            page_size=page_size_int,
-            page=page_int,
-            limit=limit_int,
-            sort=sort
+            name=group_name, type=type, page_size=page_size_int, page=page_int, limit=limit_int, sort=sort
         )
 
     return CommandResults(
         outputs_prefix="Nexpose.AssetGroup",
         outputs_key_field="id",
         outputs=asset_groups,
-        readable_output=tableToMarkdown("Asset groups list", remove_dict_key(deepcopy(asset_groups), "searchCriteria"),
-                                        headerTransform=string_to_table_header),
-        raw_response=asset_groups
+        readable_output=tableToMarkdown(
+            "Asset groups list", remove_dict_key(deepcopy(asset_groups), "searchCriteria"), headerTransform=string_to_table_header
+        ),
+        raw_response=asset_groups,
     )
 
 
@@ -6114,7 +6482,7 @@ def main():  # pragma: no cover
             password=params["credentials"].get("password"),
             token=token,
             verify=not params.get("unsecure"),
-            connection_error_retries=arg_to_number(params.get("connection_error_retries")) or CONNECTION_ERRORS_RETRIES
+            connection_error_retries=arg_to_number(params.get("connection_error_retries")) or CONNECTION_ERRORS_RETRIES,
         )
 
         results: CommandResults | list[CommandResults] | dict | str
@@ -6163,8 +6531,9 @@ def main():  # pragma: no cover
         elif command == "nexpose-get-asset-tags":
             results = get_asset_tags_command(client=client, asset_id=args.pop("asset_id"))
         elif command == "nexpose-get-asset-vulnerability":
-            results = get_asset_vulnerability_command(client=client, asset_id=args.pop("id"),
-                                                      vulnerability_id=args.pop("vulnerabilityId"))
+            results = get_asset_vulnerability_command(
+                client=client, asset_id=args.pop("id"), vulnerability_id=args.pop("vulnerabilityId")
+            )
         elif command == "nexpose-get-assets":
             results = get_assets_command(client=client, **args)
         elif command == "nexpose-get-report-templates":
@@ -6184,8 +6553,9 @@ def main():  # pragma: no cover
         elif command == "nexpose-list-vulnerability":
             results = list_vulnerability_command(client=client, vulnerability_id=args.pop("id", None), **args)
         elif command == "nexpose-list-vulnerability-exceptions":
-            results = list_vulnerability_exceptions_command(client=client,
-                                                            vulnerability_exception_id=args.pop("id", None), **args)
+            results = list_vulnerability_exceptions_command(
+                client=client, vulnerability_exception_id=args.pop("id", None), **args
+            )
         elif command == "nexpose-list-scan-schedule":
             results = list_scan_schedule_command(client=client, **args)
         elif command == "nexpose-list-shared-credential":
@@ -6201,12 +6571,13 @@ def main():  # pragma: no cover
         elif command == "nexpose-update-scan-schedule":
             results = update_scan_schedule_command(client=client, **args)
         elif command == "nexpose-update-vulnerability-exception-expiration":
-            results = update_vulnerability_exception_expiration_command(client=client,
-                                                                        vulnerability_exception_id=args.pop("id"),
-                                                                        **args)
+            results = update_vulnerability_exception_expiration_command(
+                client=client, vulnerability_exception_id=args.pop("id"), **args
+            )
         elif command == "nexpose-update-vulnerability-exception-status":
-            results = update_vulnerability_exception_status_command(client=client,
-                                                                    vulnerability_exception_id=args.pop("id"), **args)
+            results = update_vulnerability_exception_status_command(
+                client=client, vulnerability_exception_id=args.pop("id"), **args
+            )
         elif command == "nexpose-search-assets":
             results = search_assets_command(
                 client=client,
@@ -6217,11 +6588,12 @@ def main():  # pragma: no cover
                 vulnerability_title_contains=args.pop("vulnerabilityTitleContains", None),
                 site_id_in=args.pop("siteIdIn", None),
                 site_name_in=args.pop("siteNameIn", None),
-                **args
+                **args,
             )
         elif command == "nexpose-start-assets-scan":
-            results = start_assets_scan_command(client=client, ip_addresses=args.pop("IPs", None),
-                                                hostnames=args.pop("hostNames", None), **args)
+            results = start_assets_scan_command(
+                client=client, ip_addresses=args.pop("IPs", None), hostnames=args.pop("hostNames", None), **args
+            )
         elif command == "nexpose-start-site-scan":
             results = start_site_scan_command(client=client, site_id=args.pop("site", None), **args)
         elif command == "nexpose-stop-scan":
@@ -6279,5 +6651,5 @@ def main():  # pragma: no cover
         return_error(str(e))
 
 
-if __name__ in ("__main__", "builtin", "builtins"):   # pragma: no cover
+if __name__ in ("__main__", "builtin", "builtins"):  # pragma: no cover
     main()

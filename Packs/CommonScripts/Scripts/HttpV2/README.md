@@ -1,6 +1,7 @@
 Sends a HTTP request with advanced capabilities
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Sends a HTTP request with advanced capabilities
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -34,6 +36,7 @@ Sends a HTTP request with advanced capabilities
 | proxy | Use system proxy settings |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -45,11 +48,14 @@ Sends a HTTP request with advanced capabilities
 | HttpRequest.Response.Headers | The response headers. | String |
 | HttpRequest.Response.Body | The response data. | Unknown |
 
-
 ## Script Examples
+
 ### Example command
+
 ```!HttpV2 method=GET url="https://test.jamfcloud.com/JSSResource/computers/id/1/subset/General" response_content_type=json request_content_type=json auth_credentials=myUser,myPass parse_response_as=json```
+
 ### Context Example
+
 ```json
 {
     "HttpRequest": {

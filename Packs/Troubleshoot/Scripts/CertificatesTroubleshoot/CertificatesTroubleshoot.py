@@ -193,8 +193,7 @@ def get_certificates(endpoint: str, port: str) -> str:
     else:
         hostname = endpoint
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS)
-        context.minimum_version = ssl.TLSVersion.TLSv1_2
+        context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
         sock = context.wrap_socket(conn, server_hostname=hostname)
         sock.settimeout(60)  # make sure we don't get stuck
         sock.connect((hostname, int(port)))

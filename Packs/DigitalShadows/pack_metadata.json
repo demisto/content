@@ -1,8 +1,8 @@
 {
-    "name": "ReliaQuest GreyMatter DRP Incidents",
-    "description": "ReliaQuest GreyMatter DRP monitors and manages an organization's digital risk across the open, deep, and dark web.",
+    "name": "ReliaQuest Digital Risk Protection",
+    "description": "GreyMatter Digital Risk Protection minimize digital risk by identifying unwanted exposure and protecting against external threats. The award-winning solution provides ongoing monitoring of a customer's unique assets and exposure across the open, deep, and dark web. This enables clients to detect data loss, brand impersonation, infrastructure risks, cyber threats, and much more.",
     "support": "partner",
-    "currentVersion": "2.0.5",
+    "currentVersion": "3.0.5",
     "author": "ReliaQuest",
     "url": "https:// www.reliaquest.com/",
     "email": "drpsupport@reliaquest.com",
@@ -73,11 +73,13 @@
         "Digital Shadows",
         "SearchLight"
     ],
-    "defaultDataSource": "ReliaQuest GreyMatter DRP Incidents",
+    "defaultDataSource": "ReliaquestTakedown",
     "supportedModules": [
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

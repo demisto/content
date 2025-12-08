@@ -4,7 +4,6 @@ Documentation for the integration was provided by FTK Connect.
 
 ## Configure Exterro in Cortex
 
-
 | **Parameter** | **Description** | **Example** |
 | --------- | ----------- | ------- |
 | Name | A meaningful name for the integration instance. | FTKC Instance |
@@ -13,13 +12,12 @@ Documentation for the integration was provided by FTK Connect.
 | Service Listening Port | The Port to the FTKC server. | 4443 |
 | The API authentication key | A piece of data that servers use to verify for authenticity | eea810f5-a6f6 |
 | The path to the public certificate required to authenticate | When selected, certificates are not checked. | N/A |
-    
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-
-### Trigger Automation Workflow in FTK Connect 
+### Trigger Automation Workflow in FTK Connect
 
 * * *
 
@@ -41,26 +39,30 @@ Triggers the automation job and returns a string.
 | search_tag_path | The filepath of the search and tag. | Optional |
 | export_path | The path to export files. | Optional |
 
-
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ExterroFTK.Workflow.Status | string | The Status of the automation workflow trigger. |
 
-
 ##### Command Example
+
 If automation workflow Id 232 is designed for Agent Memory collection in FTK Connect, then below command can be used to trigger the automation job from cortex xsoar.
+
 ```
 exterro-ftk-trigger-workflow automation_id=232 target_ips=X.X.X.X
 ```
+
 ##### Command Example
+
 If automation workflow Id 233 is designed to create new case, add and process the evidence from provided path in FTK Connect, then below command can be used to trigger the automation job from cortex xsoar.
+
 ```
 exterro-ftk-trigger-workflow automation_id=233 case_name="Test case_name" evidence_path="\\X.X.X.X\ProjectData\Evidences\AR"
 ```
 
 ##### Context Example
+
 ```
 {
     ExterroFTK.Workflow

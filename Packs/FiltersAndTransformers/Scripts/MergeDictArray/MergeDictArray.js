@@ -145,7 +145,7 @@ function merge_array(dst, src, kmap, out_key, appendable, conflict_strategy, ove
     return dst;
 }
 
-let dst_value = args.value;
+let dst_value = Array.isArray(args.value) ? args.value : [];
 const src_array = Array.isArray(args.merge_with) ? args.merge_with : [args.merge_with];
 const key_map = make_keymap(args.mapping);
 const appendable = args.appendable.toLowerCase() == 'true';

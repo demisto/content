@@ -1,10 +1,16 @@
+import json
 from pathlib import Path
 from typing import Any, cast
+from urllib.parse import quote
+
+import demistomock as demisto
 import pytest
+from CommonServerPython import DemistoException, assign_params
 from Infoblox import (
     INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY,
     INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY,
     INTEGRATION_COMMON_NAME_CONTEXT_KEY,
+    INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY,
     INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY,
     INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY,
     INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY,
@@ -12,13 +18,12 @@ from Infoblox import (
     INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY,
     INTEGRATION_HOST_RECORDS_CONTEXT_NAME,
     INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY,
-    INTEGRATION_IPV4_CONTEXT_NAME,
+    INTEGRATION_IP_CONTEXT_NAME,
     INTEGRATION_MAX_RESULTS_DEFAULT,
     INTEGRATION_NETWORK_INFO_CONTEXT_KEY,
-    INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY,
     IP_MAPPING,
-    IPv4AddressStatus,
     InfoBloxNIOSClient,
+    IPv4AddressStatus,
     get_extended_attributes_context,
     get_host_records_command,
     get_ip_command,
@@ -27,14 +32,10 @@ from Infoblox import (
     transform_host_records_context,
     transform_ip_context,
     transform_ipv4_range,
-    transform_network_info_context
+    transform_network_info_context,
 )
-import demistomock as demisto
-import json
 
-from CommonServerPython import DemistoException, assign_params
-
-BASE_URL = 'https://example.com/v1/'
+BASE_URL = "https://example.com/v1/"
 
 POST_NEW_ZONE_RESPONSE = {
     "result": {
@@ -44,70 +45,88 @@ POST_NEW_ZONE_RESPONSE = {
         "rpz_policy": "GIVEN",
         "rpz_severity": "WARNING",
         "rpz_type": "LOCAL",
-        "view": "default"
+        "view": "default",
     }
 }
 
 API_ERROR_OBJ = {
     "Error": "AdmConDataError: None (IBDataConflictError: IB.Data.Conflict:Duplicate object 'test123.com' of type zone "
-             "exists in the database.)",
+    "exists in the database.)",
     "code": "Client.Ibap.Data.Conflict",
-    "text": "Duplicate object 'test123.com' of type zone exists in the database."
+    "text": "Duplicate object 'test123.com' of type zone exists in the database.",
 }
 
 # disable-secrets-detection-start
-SSL_ERROR = "Failed to parse json object from response: b'<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" " \
-            "content=\"text/html; charset=utf-8\">\r\n<META HTTP-EQUIV=\"PRAGMA\" CONTENT=\"NO-CACHE\">\r\n<meta " \
-            "name=\"viewport\" content=\"initial-scale=1.0\">\r\n<title>Certificate Error</title>\r\n<style>\r\n  " \
-            "#content {\r\n    border:3px solid#aaa;\r\n    background-color:#fff;\r\n    margin:1.5em;\r\n    " \
-            "padding:1.5em;\r\n    font-family:Tahoma,Helvetica,Arial,sans-serif;\r\n    font-size:1em;\r\n  }\r\n  " \
-            "h1 {\r\n    font-size:1.3em;\r\n    font-weight:bold;\r\n    color:#196390;\r\n  }\r\n  b {\r\n    " \
-            "color:#196390;\r\n  }\r\n</style>\r\n</head>\r\n<body " \
-            "\">\r\n<div id=\"content\">\r\n<h1>Certificate Error</h1>\r\n<p>There is an issue with " \
-            "the SSL certificate of the server you are trying to contact.</p>\r\n<p><b>Certificate Name:</b> " \
-            "www.infoblox.com </p>\r\n<p><b>IP:</b> </p>\r\n<p><b>Category:</b> any </p>\r\n<p><b>Issuer:</b> " \
-            "www.infoblox.com </p>\r\n<p><b>Status:</b> expired </p>\r\n<p><b>Reason:</b>  </p>\r\n<p><b>User:</b> " \
-            "</p>\r\n</div>\r\n</body>\r\n</html>\r\n\r\n'"
+SSL_ERROR = (
+    'Failed to parse json object from response: b\'<html>\r\n<head>\r\n<meta http-equiv="Content-Type" '
+    'content="text/html; charset=utf-8">\r\n<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">\r\n<meta '
+    'name="viewport" content="initial-scale=1.0">\r\n<title>Certificate Error</title>\r\n<style>\r\n  '
+    "#content {\r\n    border:3px solid#aaa;\r\n    background-color:#fff;\r\n    margin:1.5em;\r\n    "
+    "padding:1.5em;\r\n    font-family:Tahoma,Helvetica,Arial,sans-serif;\r\n    font-size:1em;\r\n  }\r\n  "
+    "h1 {\r\n    font-size:1.3em;\r\n    font-weight:bold;\r\n    color:#196390;\r\n  }\r\n  b {\r\n    "
+    "color:#196390;\r\n  }\r\n</style>\r\n</head>\r\n<body "
+    '">\r\n<div id="content">\r\n<h1>Certificate Error</h1>\r\n<p>There is an issue with '
+    "the SSL certificate of the server you are trying to contact.</p>\r\n<p><b>Certificate Name:</b> "
+    "www.infoblox.com </p>\r\n<p><b>IP:</b> </p>\r\n<p><b>Category:</b> any </p>\r\n<p><b>Issuer:</b> "
+    "www.infoblox.com </p>\r\n<p><b>Status:</b> expired </p>\r\n<p><b>Reason:</b>  </p>\r\n<p><b>User:</b> "
+    "</p>\r\n</div>\r\n</body>\r\n</html>\r\n\r\n'"
+)
 #  disable-secrets-detection-end
 
 GET_USER_LIST = {
-    'account': [
-        {'username': 'User1', 'name': 'DBot Demisto', 'isLocked': False},
-        {'username': 'User2', 'name': 'Demisto DBot', 'isLocked': True}
+    "account": [
+        {"username": "User1", "name": "DBot Demisto", "isLocked": False},
+        {"username": "User2", "name": "Demisto DBot", "isLocked": True},
     ]
 }
 
-REQUEST_PARAM_ZONE = f'?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&_return_fields%2B=fqdn%2Crpz_policy%2Crpz_severity%2Crpz_type%2C' \
-                     'substitute_name%2Ccomment%2Cdisable'  # noqa: E501
+REQUEST_PARAM_ZONE = (
+    f"?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&_return_fields%2B=fqdn%2Crpz_policy%2Crpz_severity%2Crpz_type%2C"
+    "substitute_name%2Ccomment%2Cdisable"
+)  # noqa: E501
 
-client = InfoBloxNIOSClient('https://example.com/v1/')
+client = InfoBloxNIOSClient("https://example.com/v1/")
+
+TEST_PATH = Path(__file__).parent / "test_data"
+
+
+def util_load_json(file_name: str):
+    """Load file in JSON format."""
+    file_path = TEST_PATH / file_name
+    with open(file_path, encoding="utf-8") as f:
+        return json.loads(f.read())
+
+
+def util_load_text_data(file_name: str) -> str:
+    """Load a text file."""
+    file_path = TEST_PATH / file_name
+    with open(file_path, encoding="utf-8") as f:
+        return f.read()
 
 
 class TestHelperFunctions:
-
     def test_parse_demisto_exception_unauthorized_error(self):
         from Infoblox import parse_demisto_exception
-        json_err = 'Expecting value: line 1 column 1 (char 0)'
-        api_err = 'Error in API call [401] - Authorization Required'
+
+        json_err = "Expecting value: line 1 column 1 (char 0)"
+        api_err = "Error in API call [401] - Authorization Required"
         parsed_err = parse_demisto_exception(DemistoException(api_err, json_err))
-        assert str(parsed_err) == str(
-            DemistoException("Authorization error, check your credentials."))
+        assert str(parsed_err) == str(DemistoException("Authorization error, check your credentials."))
 
     def test_parse_demisto_exception_json_parse_error(self):
         from Infoblox import parse_demisto_exception
-        json_err = 'Expecting value: line 1 column 1 (char 0)'
-        api_err = f'Failed to parse json object from response: {SSL_ERROR}'
+
+        json_err = "Expecting value: line 1 column 1 (char 0)"
+        api_err = f"Failed to parse json object from response: {SSL_ERROR}"
         parsed_err = parse_demisto_exception(DemistoException(api_err, json_err))
-        assert str(parsed_err) == str(
-            DemistoException("Cannot connect to Infoblox server, check your proxy and connection."))
+        assert str(parsed_err) == str(DemistoException("Cannot connect to Infoblox server, check your proxy and connection."))
 
     def test_parse_demisto_exception_api_error(self):
         from Infoblox import parse_demisto_exception
 
-        api_err = f'Error in API call [400] - Bad Request\n {json.dumps(API_ERROR_OBJ)}'
+        api_err = f"Error in API call [400] - Bad Request\n {json.dumps(API_ERROR_OBJ)}"
         parsed_err = parse_demisto_exception(DemistoException(api_err))
-        assert str(parsed_err) == str(
-            DemistoException("Duplicate object 'test123.com' of type zone exists in the database."))
+        assert str(parsed_err) == str(DemistoException("Duplicate object 'test123.com' of type zone exists in the database."))
 
     def test_transform_ext_attrs_2_attrs(self):
         """
@@ -126,7 +145,7 @@ class TestHelperFunctions:
         input = "IB Discovery Owned=EMEA,Site=Tel-Aviv"
 
         actual = transform_ext_attrs(input)
-        expected = [{'*IB Discovery Owned': 'EMEA'}, {'*Site': 'Tel-Aviv'}]
+        expected = [{"*IB Discovery Owned": "EMEA"}, {"*Site": "Tel-Aviv"}]
         assert actual == expected
 
     def test_transform_ext_attrs_2_attrs_whitespace(self):
@@ -148,7 +167,7 @@ class TestHelperFunctions:
 
         input = " IB Discovery Owned=EMEA,Site= Tel-Aviv"
         actual = transform_ext_attrs(input)
-        expected = [{'*IB Discovery Owned': 'EMEA'}, {'*Site': 'Tel-Aviv'}]
+        expected = [{"*IB Discovery Owned": "EMEA"}, {"*Site": "Tel-Aviv"}]
         assert actual == expected
 
     def test_transform_ext_attrs_2_attrs_comma_attr_end(self):
@@ -171,7 +190,7 @@ class TestHelperFunctions:
 
         with pytest.raises(
             DemistoException,
-            match=f"Unable to parse provided ext_attrs='{input}'. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'"
+            match=f"Unable to parse provided ext_attrs='{input}'. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'",
         ):
             transform_ext_attrs(input)
 
@@ -195,7 +214,7 @@ class TestHelperFunctions:
 
         with pytest.raises(
             DemistoException,
-            match=f"Unable to parse provided ext_attrs='{input}'. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'"
+            match=f"Unable to parse provided ext_attrs='{input}'. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'",
         ):
             transform_ext_attrs(input)
 
@@ -215,7 +234,7 @@ class TestHelperFunctions:
 
         input = "Site=Tel-Aviv"
         actual = transform_ext_attrs(input)
-        expected = [{'*Site': 'Tel-Aviv'}]
+        expected = [{"*Site": "Tel-Aviv"}]
         assert actual == expected
 
     def test_transform_ext_attrs_no_delimiter_no_equal_sign(self):
@@ -238,12 +257,11 @@ class TestHelperFunctions:
         assert not actual
 
     def test_transform_ipv4_range(self):
-
         from_address = "192.168.1.0"
         to_address = "192.168.1.254"
 
         actual = transform_ipv4_range(from_address, to_address)
-        expected = {'ip_address>': '192.168.1.0', 'ip_address<': '192.168.1.254'}
+        expected = {"ip_address>": "192.168.1.0", "ip_address<": "192.168.1.254"}
 
         assert actual == expected
 
@@ -255,8 +273,14 @@ class TestHelperFunctions:
         when provided with only extattr
         """
 
-        input = json.loads((Path(__file__).parent.resolve() / "test_data"
-                            / "TestNetworkInfoOperations" / "get_network_return_fields_extattrs.json").read_text()).get("result")
+        input = json.loads(
+            (
+                Path(__file__).parent.resolve()
+                / "test_data"
+                / "TestNetworkInfoOperations"
+                / "get_network_return_fields_extattrs.json"
+            ).read_text()
+        ).get("result")
 
         actual = transform_network_info_context(input)
 
@@ -273,8 +297,14 @@ class TestHelperFunctions:
         when provided with additional fields specified
         """
 
-        input = json.loads((Path(__file__).parent.resolve() / "test_data"
-                            / "TestNetworkInfoOperations" / "get_networks_return_fields_options_extattrs.json").read_text()).get("result")  # noqa: E501
+        input = json.loads(
+            (
+                Path(__file__).parent.resolve()
+                / "test_data"
+                / "TestNetworkInfoOperations"
+                / "get_networks_return_fields_options_extattrs.json"
+            ).read_text()
+        ).get("result")  # noqa: E501
 
         actual = transform_network_info_context(input)
 
@@ -291,8 +321,9 @@ class TestHelperFunctions:
         when provided with additional fields specified
         """
 
-        input = json.loads((Path(__file__).parent.resolve() / "test_data"
-                            / "TestHostRecordsOperations" / "get_records.json").read_text()).get("result")  # noqa: E501
+        input = json.loads(
+            (Path(__file__).parent.resolve() / "test_data" / "TestHostRecordsOperations" / "get_records.json").read_text()
+        ).get("result")  # noqa: E501
 
         actual = transform_host_records_context(input)
 
@@ -305,8 +336,15 @@ class TestHelperFunctions:
     def test_get_extended_attributes_context_valid_extattrs(self):
         """Test get_extended_attributes_context with valid extattrs"""
 
-        input = json.loads((Path(__file__).parent.resolve() / "test_data"
-                            / "TestHostRecordsOperations" / "get_record_extattrs.json").read_text()).get("result")[0].get("extattrs")  # noqa: E501
+        input = (
+            json.loads(
+                (
+                    Path(__file__).parent.resolve() / "test_data" / "TestHostRecordsOperations" / "get_record_extattrs.json"
+                ).read_text()
+            )
+            .get("result")[0]
+            .get("extattrs")
+        )  # noqa: E501
 
         actual = get_extended_attributes_context(input)
         expected = {"IB Discovery Owned": "EMEA", "Site": "Tel-Aviv"}
@@ -332,50 +370,51 @@ class TestHelperFunctions:
 
 
 class TestZonesOperations:
-
     def test_create_response_policy_zone_command(self, mocker, requests_mock):
         from Infoblox import create_response_policy_zone_command
-        mocker.patch.object(demisto, 'params', return_value={})
-        requests_mock.post(
-            f'{BASE_URL}zone_rp{REQUEST_PARAM_ZONE}',
-            json=POST_NEW_ZONE_RESPONSE)
-        args = {
-            "FQDN": "test.com", "rpz_policy": "GIVEN", "rpz_severity": "WARNING", "substitute_name": "", "rpz_type": ""
-        }
+
+        mocker.patch.object(demisto, "params", return_value={})
+        requests_mock.post(f"{BASE_URL}zone_rp{REQUEST_PARAM_ZONE}", json=POST_NEW_ZONE_RESPONSE)
+        args = {"FQDN": "test.com", "rpz_policy": "GIVEN", "rpz_severity": "WARNING", "substitute_name": "", "rpz_type": ""}
         human_readable, context, raw_response = create_response_policy_zone_command(client, args)
-        assert human_readable == "### Infoblox Integration - Response Policy Zone: test.com has been created\n" \
-                                 "|Disable|FQDN|Reference ID|Rpz Policy|Rpz Severity|Rpz Type|View|\n" \
-                                 "|---|---|---|---|---|---|---|\n" \
-                                 "| false | test.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default " \
-                                 "| GIVEN | WARNING | LOCAL | default |\n"
+        assert (
+            human_readable == "### Infoblox Integration - Response Policy Zone: test.com has been created\n"
+            "|Disable|FQDN|Reference ID|Rpz Policy|Rpz Severity|Rpz Type|View|\n"
+            "|---|---|---|---|---|---|---|\n"
+            "| false | test.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default "
+            "| GIVEN | WARNING | LOCAL | default |\n"
+        )
         assert context == {
-            'Infoblox.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': {
-                'ReferenceID': 'zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default',
-                'Disable': False,
-                'FQDN': 'test.com',
-                'RpzPolicy': 'GIVEN',
-                'RpzSeverity': 'WARNING',
-                'RpzType': 'LOCAL',
-                'View': 'default'
-            }}
+            "Infoblox.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)": {
+                "ReferenceID": "zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default",
+                "Disable": False,
+                "FQDN": "test.com",
+                "RpzPolicy": "GIVEN",
+                "RpzSeverity": "WARNING",
+                "RpzType": "LOCAL",
+                "View": "default",
+            }
+        }
         assert raw_response == {
-            'result': {
-                '_ref': 'zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default',
-                'disable': False,
-                'fqdn': 'test.com',
-                'rpz_policy': 'GIVEN',
-                'rpz_severity': 'WARNING',
-                'rpz_type': 'LOCAL',
-                'view': 'default'
-            }}
+            "result": {
+                "_ref": "zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default",
+                "disable": False,
+                "fqdn": "test.com",
+                "rpz_policy": "GIVEN",
+                "rpz_severity": "WARNING",
+                "rpz_type": "LOCAL",
+                "view": "default",
+            }
+        }
 
 
 class TestIPOperations:
-
-    CONTEXT_PATH = f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}'  # noqa: E501
+    CONTEXT_PATH = f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IP_CONTEXT_NAME}"  # noqa: E501
     VALID_IP_ADDRESS = "192.168.1.1"
     VALID_NETMASK = "192.168.1.0/24"
+    VALID_IPV6_ADDRESS = "2001:db8::1"
     BASE_URL = f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"  # noqa: E501
+    BASE_URL_IPV6 = f"{client._base_url}ipv6address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"  # noqa: E501
 
     def test_get_ip_command_too_many_arguments(self):
         """
@@ -396,8 +435,8 @@ class TestIPOperations:
                     "ip": self.VALID_IP_ADDRESS,
                     "network": self.VALID_NETMASK,
                     "from_ip": self.VALID_IP_ADDRESS,
-                    "to_ip": self.VALID_IP_ADDRESS
-                }
+                    "to_ip": self.VALID_IP_ADDRESS,
+                },
             )
 
     def test_get_ip_command_no_valid_argument_specified(self):
@@ -470,12 +509,13 @@ class TestIPOperations:
         """
 
         ip = self.VALID_IP_ADDRESS
-        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_address_from_ip_address.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv4_address_from_ip_address.json"
+        ).read_text()
 
         requests_mock.get(
             f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}",  # noqa: E501
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"ip": ip})
@@ -509,16 +549,18 @@ class TestIPOperations:
         """
 
         ip = self.VALID_IP_ADDRESS
-        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_address_from_ip_address.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv4_address_from_ip_address.json"
+        ).read_text()
 
         requests_mock.get(
             f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}&status={IPv4AddressStatus.USED.value}",  # noqa: E501
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         actual_hr, actual_context, actual_raw_response = get_ip_command(
-            client, {"ip": ip, "status": IPv4AddressStatus.USED.value})
+            client, {"ip": ip, "status": IPv4AddressStatus.USED.value}
+        )
 
         actual_hr_lines = actual_hr.splitlines()
         assert "Infoblox Integration" in actual_hr_lines[0]
@@ -549,16 +591,16 @@ class TestIPOperations:
         from_ip = self.VALID_IP_ADDRESS
         to_ip = self.VALID_IP_ADDRESS[:-1] + "9"
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_addresses_from_network.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv4_addresses_from_network.json"
+        ).read_text()
 
         requests_mock.get(
             f"{self.BASE_URL}&ip_address>={from_ip}&ip_address<={to_ip}&_max_results={INTEGRATION_MAX_RESULTS_DEFAULT}",
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
-        actual_hr, actual_context, actual_raw_response = get_ip_command(
-            client, {"from_ip": from_ip, "to_ip": to_ip})
+        actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"from_ip": from_ip, "to_ip": to_ip})
 
         assert "Infoblox Integration" in actual_hr.splitlines()[0]
 
@@ -629,12 +671,13 @@ class TestIPOperations:
 
         network = self.VALID_NETMASK
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_addresses_from_network.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv4_addresses_from_network.json"
+        ).read_text()
 
         requests_mock.get(
             f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&network={self.VALID_NETMASK}&status={IPv4AddressStatus.USED.value}",  # noqa: E501
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"network": network})
@@ -661,8 +704,9 @@ class TestIPOperations:
         - The transformation keys are as expected.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_address_from_ip_address.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv4_address_from_ip_address.json"
+        ).read_text()
 
         res: dict[str, list] = json.loads(mock_response)
         ip: list[dict[str, Any]] = res.get("result")
@@ -688,8 +732,9 @@ class TestIPOperations:
         - The context output includes the transformed unknown key "LeaseState".
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_address_from_ip_address.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv4_address_from_ip_address.json"
+        ).read_text()
 
         unknown_key = "lease_state"
         unknown_key_value = "active"
@@ -704,9 +749,47 @@ class TestIPOperations:
             assert actual_transformation[0].get(v) == ip[0].get(k)
         assert actual_transformation[0]["LeaseState"] == unknown_key_value
 
+    def test_get_ip_command_from_ipv6(self, requests_mock):
+        """
+        Test retrieval of an IP address in case it's provided
+        alongside the status and extended attributes.
+
+        Given:
+        - A mock response.
+
+        When:
+        - The IP address is provided.
+        - The status is specified.
+        - Extended attributes are specified.
+
+        Then:
+        - The human readable includes the input IP address.
+        - The context includes the IP address object with the input IP address and specified status and extended attributes.
+        """
+        ip = self.VALID_IPV6_ADDRESS
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv6_address_from_ip_address.json"
+        ).read_text()
+
+        requests_mock.get(
+            f"{client._base_url}ipv6address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IPV6_ADDRESS}",  # noqa: E501
+            json=json.loads(mock_response),
+        )
+
+        actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"ip": ip})
+
+        actual_hr_lines = actual_hr.splitlines()
+        assert "Infoblox Integration" in actual_hr_lines[0]
+        assert self.VALID_IPV6_ADDRESS in actual_hr_lines[3]
+
+        actual_output = cast(list, actual_context.get(self.CONTEXT_PATH))
+        assert len(actual_output) == 1
+        assert actual_output[0].get("IpAddress") == self.VALID_IPV6_ADDRESS
+
+        assert actual_raw_response == json.loads(mock_response)
+
 
 class TestHostRecordsOperations:
-
     CONTEXT_KEY = f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_HOST_RECORDS_CONTEXT_NAME}"
     GET_HOST_RECORDS_ENDPOINT = "record:host"
 
@@ -724,12 +807,11 @@ class TestHostRecordsOperations:
         - Ensure records are returned as expected.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_records.json").read_text()
+        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_records.json").read_text()
 
         requests_mock.get(
             f"{client._base_url}{self.GET_HOST_RECORDS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1",
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         hr, records, _ = get_host_records_command(client, {})
@@ -752,14 +834,16 @@ class TestHostRecordsOperations:
         - Ensure only matching record is returned.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_record_by_hostname.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_record_by_hostname.json"
+        ).read_text()
         host_name = "ciac-3607.test"
 
         requests_mock.get(
-            client._base_url + self.GET_HOST_RECORDS_ENDPOINT
+            client._base_url
+            + self.GET_HOST_RECORDS_ENDPOINT
             + f"?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&name={host_name}",
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         hr, records, _ = get_host_records_command(client, {"host_name": host_name})
@@ -782,13 +866,14 @@ class TestHostRecordsOperations:
         - Ensure only matching record is returned.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_record_extattrs.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_record_extattrs.json"
+        ).read_text()
         input = "Site=Tel-Aviv"
 
         requests_mock.get(
             client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B=extattrs&*{input}",
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         hr, records, _ = get_host_records_command(client, {"extattrs": input})
@@ -815,12 +900,12 @@ class TestHostRecordsOperations:
 
         input = "extattrs,aliases"
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_records_extattrs_aliases.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_records_extattrs_aliases.json"
+        ).read_text()
 
         requests_mock.get(
-            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={input}",
-            json=json.loads(mock_response)
+            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={input}", json=json.loads(mock_response)
         )
 
         actual_hr, actual_records, actual_raw_response = get_host_records_command(client, {"additional_return_fields": input})
@@ -883,21 +968,17 @@ class TestHostRecordsOperations:
         """
 
         additional_return_fields = "none"
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "unknown_argument.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "unknown_argument.json"
+        ).read_text()
 
         requests_mock.get(
             client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={additional_return_fields}",
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         with pytest.raises(DemistoException, match="Unknown argument/field: 'none'"):
-            get_host_records_command(
-                client,
-                {
-                    "additional_return_fields": additional_return_fields
-                }
-            )
+            get_host_records_command(client, {"additional_return_fields": additional_return_fields})
 
     def test_get_host_records_command_no_additional_fields(self, requests_mock):
         """
@@ -911,18 +992,18 @@ class TestHostRecordsOperations:
         - The `extattrs` should appended and returned.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_records_extattrs.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_records_extattrs.json"
+        ).read_text()
 
         requests_mock.get(
-            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}",  # noqa: E501
-            json=json.loads(mock_response)
+            client._base_url
+            + self.GET_HOST_RECORDS_ENDPOINT
+            + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}",  # noqa: E501
+            json=json.loads(mock_response),
         )
 
-        actual_hr, actual_context, actual_raw_response = get_host_records_command(
-            client,
-            {}
-        )
+        actual_hr, actual_context, actual_raw_response = get_host_records_command(client, {})
 
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_hr.splitlines()[1]
 
@@ -944,20 +1025,23 @@ class TestHostRecordsOperations:
         - The `extattrs` should appended and returned.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_records_extattrs.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_records_extattrs.json"
+        ).read_text()
 
         requests_mock.get(
-            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}&*Site=ciac-5843",  # noqa: E501
-            json=json.loads(mock_response)
+            client._base_url
+            + self.GET_HOST_RECORDS_ENDPOINT
+            + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}&*Site=ciac-5843",  # noqa: E501
+            json=json.loads(mock_response),
         )
 
         actual_hr, actual_context, actual_raw_response = get_host_records_command(
             client,
             {
                 "additional_return_fields": INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY,
-                INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY: "Site=ciac-5843"
-            }
+                INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY: "Site=ciac-5843",
+            },
         )
 
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_hr.splitlines()[1]
@@ -970,7 +1054,6 @@ class TestHostRecordsOperations:
 
 
 class TestNetworkInfoOperations:
-
     CONTEXT_KEY = f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_NETWORK_INFO_CONTEXT_KEY}"
     BASE_URL = f"{client._base_url}network?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"  # noqa: E501
 
@@ -991,13 +1074,11 @@ class TestNetworkInfoOperations:
         - No additional fields context key is set.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_networks.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_networks.json"
+        ).read_text()
 
-        requests_mock.get(
-            self.BASE_URL,
-            json=json.loads(mock_response)
-        )
+        requests_mock.get(self.BASE_URL, json=json.loads(mock_response))
 
         actual_hr, actual_context, actual_raw_response = get_network_info_command(client, {})
 
@@ -1030,14 +1111,14 @@ class TestNetworkInfoOperations:
         - No additional fields context key is set.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_network_return_fields_extattrs.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_network_return_fields_extattrs.json"
+        ).read_text()
 
         pattern = "192.168."
 
         requests_mock.get(
-            f"{self.BASE_URL}&_max_results=50&_return_fields%2B=extattrs&network~={pattern}",
-            json=json.loads(mock_response)
+            f"{self.BASE_URL}&_max_results=50&_return_fields%2B=extattrs&network~={pattern}", json=json.loads(mock_response)
         )
 
         actual_hr, actual_context, actual_raw_response = get_network_info_command(client, {"pattern": pattern})
@@ -1076,20 +1157,17 @@ class TestNetworkInfoOperations:
 
         limit = 10
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_networks_return_fields_options_extattrs.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve()
+            / "test_data"
+            / self.__class__.__name__
+            / "get_networks_return_fields_options_extattrs.json"
+        ).read_text()
 
-        requests_mock.get(
-            self.BASE_URL,
-            json=json.loads(mock_response)
-        )
+        requests_mock.get(self.BASE_URL, json=json.loads(mock_response))
 
         actual_hr, actual_context, actual_raw_response = get_network_info_command(
-            client,
-            {
-                "additional_return_fields": "extattrs,options",
-                "max_results": limit
-            }
+            client, {"additional_return_fields": "extattrs,options", "max_results": limit}
         )
 
         assert "Network information" in actual_hr
@@ -1109,3 +1187,549 @@ class TestNetworkInfoOperations:
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY in actual_output[1]
 
         assert actual_raw_response == json.loads(mock_response)
+
+
+class TestUpdateRpzRuleCommand:
+    """Test class for update_rpz_rule_command function."""
+
+    def test_update_rpz_rule_passthru_success(self, requests_mock):
+        """
+        Test successful update of a Passthru RPZ rule.
+
+        Given:
+        - Valid arguments for updating a Passthru rule
+        - Mock response from the API
+
+        When:
+        - update_rpz_rule_command is called
+
+        Then:
+        - Rule is updated successfully
+        - Correct context and human readable output are returned
+        """
+        from Infoblox import update_rpz_rule_command
+
+        reference_id = "record:rpz:cname/1234:test.test.com/default"
+        mock_response = util_load_json(f"{self.__class__.__name__}/update_rpz_rule_passthru_success.json")
+
+        requests_mock.put(f"{BASE_URL}{reference_id}", json=mock_response)
+
+        args = {
+            "reference_id": reference_id,
+            "rule_type": "Passthru",
+            "name": "test",
+            "rp_zone": "test.com",
+            "comment": "Updated passthru rule",
+            "view": "default",
+        }
+
+        expected_hr = util_load_text_data(f"{self.__class__.__name__}/update_rpz_rule_passthru_success_hr.md")
+
+        hr, context, raw_response = update_rpz_rule_command(client, args)
+
+        # Verify human readable output
+        assert hr == expected_hr
+
+        # Verify context
+        expected_context_key = f"{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)"
+        assert expected_context_key in context
+        rule_context = context[expected_context_key]
+        assert rule_context["Name"] == "test.test.com"
+        assert rule_context["Zone"] == "test.com"
+        assert rule_context["Comment"] == "Updated passthru rule"
+        assert rule_context["ReferenceID"] == reference_id
+
+        # Verify raw response
+        assert raw_response == mock_response
+
+    def test_update_rpz_rule_block_no_data_success(self, requests_mock):
+        """
+        Test successful update of a Block (No data) RPZ rule.
+
+        Given:
+        - Valid arguments for updating a Block (No data) rule
+        - Mock response from the API
+
+        When:
+        - update_rpz_rule_command is called
+
+        Then:
+        - Rule is updated successfully with canonical set to "*"
+        """
+        from Infoblox import update_rpz_rule_command
+
+        reference_id = "record:rpz:cname/1234:malicious.test.com/default"
+        mock_response = util_load_json(f"{self.__class__.__name__}/update_rpz_rule_block_no_data_success.json")
+
+        requests_mock.put(f"{BASE_URL}{reference_id}", json=mock_response)
+
+        args = {
+            "reference_id": reference_id,
+            "rule_type": "Block (No data)",
+            "name": "malicious.test.com",
+            "rp_zone": "test.com",
+            "comment": "Block malicious domain",
+        }
+
+        expected_hr = util_load_text_data(f"{self.__class__.__name__}/update_rpz_rule_block_no_data_success_hr.md")
+
+        hr, context, raw_response = update_rpz_rule_command(client, args)
+
+        # Verify the rule was updated correctly
+        assert hr == expected_hr
+        expected_context_key = f"{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)"
+        rule_context = context[expected_context_key]
+        assert rule_context["Name"] == "malicious.test.com"
+        assert rule_context["Comment"] == "Block malicious domain"
+
+        assert mock_response == raw_response
+
+    def test_update_rpz_rule_block_no_domain_success(self, requests_mock):
+        """
+        Test successful update of a Block (No such domain) RPZ rule.
+
+        Given:
+        - Valid arguments for updating a Block (No such domain) rule
+        - Mock response from the API
+
+        When:
+        - update_rpz_rule_command is called
+
+        Then:
+        - Rule is updated successfully with canonical set to empty string
+        """
+        from Infoblox import update_rpz_rule_command
+
+        reference_id = "record:rpz:cname/1234:blocked.test.com/default"
+        mock_response = util_load_json(f"{self.__class__.__name__}/update_rpz_rule_block_no_domain_success.json")
+
+        requests_mock.put(f"{BASE_URL}{reference_id}", json=mock_response)
+
+        args = {
+            "reference_id": reference_id,
+            "rule_type": "Block (No such domain)",
+            "name": "blocked",
+            "rp_zone": "test.com",
+            "comment": "Block domain completely",
+        }
+
+        expected_hr = util_load_text_data(f"{self.__class__.__name__}/update_rpz_rule_block_no_domain_success_hr.md")
+
+        hr, context, raw_response = update_rpz_rule_command(client, args)
+
+        # Verify the rule was updated correctly
+        assert hr == expected_hr
+        expected_context_key = f"{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)"
+        rule_context = context[expected_context_key]
+        assert rule_context["Name"] == "blocked.test.com"
+
+    def test_update_rpz_rule_substitute_success(self, requests_mock):
+        """
+        Test successful update of a Substitute (domain name) RPZ rule.
+
+        Given:
+        - Valid arguments for updating a Substitute rule with substitute_name
+        - Mock response from the API
+
+        When:
+        - update_rpz_rule_command is called
+
+        Then:
+        - Rule is updated successfully with canonical set to substitute_name
+        """
+        from Infoblox import update_rpz_rule_command
+
+        reference_id = "record:rpz:cname/1234:redirect.test.com/default"
+        mock_response = util_load_json(f"{self.__class__.__name__}/update_rpz_rule_substitute_success.json")
+
+        requests_mock.put(f"{BASE_URL}{reference_id}", json=mock_response)
+
+        args = {
+            "reference_id": reference_id,
+            "rule_type": "Substitute (domain name)",
+            "name": "redirect.test.com",
+            "rp_zone": "test.com",
+            "comment": "Redirect to safe domain",
+            "substitute_name": "safe.example.com",
+        }
+
+        hr, context, raw_response = update_rpz_rule_command(client, args)
+
+        # Verify the rule was updated correctly
+        assert "redirect.test.com has been updated" in hr
+        expected_context_key = f"{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)"
+        rule_context = context[expected_context_key]
+        assert rule_context["Name"] == "redirect.test.com"
+        assert rule_context["Comment"] == "Redirect to safe domain"
+
+    def test_update_rpz_rule_substitute_missing_substitute_name_error(self):
+        """
+        Test error when updating Substitute rule without substitute_name.
+
+        Given:
+        - Arguments for Substitute rule without substitute_name
+
+        When:
+        - update_rpz_rule_command is called
+
+        Then:
+        - DemistoException is raised with appropriate error message
+        """
+        from Infoblox import update_rpz_rule_command
+
+        args = {
+            "reference_id": "record:rpz:cname/test",
+            "rule_type": "Substitute (domain name)",
+            "name": "test.test.com",
+            "rp_zone": "test.com",
+            "comment": "Test substitute rule",
+        }
+
+        with pytest.raises(DemistoException) as exc_info:
+            update_rpz_rule_command(client, args)
+
+        assert "Substitute (domain name) rules requires a substitute name argument" in str(exc_info.value)
+
+
+class TestListResponsePolicyZonesCommand:
+    """Test class for list_response_policy_zones_command function."""
+
+    def test_list_zones_with_fqdn_filter(self, requests_mock):
+        """
+        Test listing response policy zones with FQDN filter.
+
+        Given:
+        - FQDN filter argument provided
+        - Mock response with single matching zone
+
+        When:
+        - list_response_policy_zones_command is called
+
+        Then:
+        - Only matching zone is returned
+        """
+        from Infoblox import list_response_policy_zones_command
+
+        mock_response = util_load_json(f"{self.__class__.__name__}/list_zones_with_fqdn_filter.json")
+
+        requests_mock.get(
+            f"{BASE_URL}zone_rp?_return_as_object=1&_return_fields%2B=fqdn%2Crpz_policy%2Crpz_severity%2Crpz_type%2Csubstitute_name%2Ccomment%2Cdisable&_max_results=50&fqdn=test.com",
+            json=mock_response,
+        )
+
+        args = {"fqdn": "test.com"}
+
+        expected_hr = util_load_text_data(f"{self.__class__.__name__}/list_zones_with_fqdn_filter_hr.md")
+
+        hr, context, raw_response = list_response_policy_zones_command(client, args)
+
+        # Verify only one zone is returned
+        expected_context_key = f"{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)"
+        zones_context = context[expected_context_key]
+        assert len(zones_context) == 1
+        assert zones_context[0]["FQDN"] == "test.com"
+        assert hr == expected_hr
+
+    def test_list_zones_with_view_filter(self, requests_mock):
+        """
+        Test listing response policy zones with view filter.
+
+        Given:
+        - View filter argument provided
+        - Mock response with zone in specified view
+
+        When:
+        - list_response_policy_zones_command is called
+
+        Then:
+        - Only zones in specified view are returned
+        """
+        from Infoblox import list_response_policy_zones_command
+
+        mock_response = util_load_json(f"{self.__class__.__name__}/list_zones_with_view_filter.json")
+
+        requests_mock.get(
+            f"{BASE_URL}zone_rp?_return_as_object=1&_return_fields%2B=fqdn%2Crpz_policy%2Crpz_severity%2Crpz_type%2Csubstitute_name%2Ccomment%2Cdisable&_max_results=50&view=external",
+            json=mock_response,
+        )
+
+        args = {"view": "external"}
+
+        expected_hr = util_load_text_data(f"{self.__class__.__name__}/list_zones_with_view_filter_hr.md")
+
+        hr, context, raw_response = list_response_policy_zones_command(client, args)
+
+        # Verify zone with external view is returned
+        expected_context_key = f"{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)"
+        zones_context = context[expected_context_key]
+        assert len(zones_context) == 1
+        assert zones_context[0]["View"] == "external"
+        assert zones_context[0]["RpzPolicy"] == "SUBSTITUTE"
+        assert hr == expected_hr
+
+    def test_list_zones_multiple_filters(self, requests_mock):
+        """
+        Test listing response policy zones with multiple filter arguments.
+
+        Given:
+        - Multiple filter arguments (fqdn, view, comment)
+        - Mock response with matching zone
+
+        When:
+        - list_response_policy_zones_command is called
+
+        Then:
+        - Filters are properly applied and matching zone is returned
+        """
+        from Infoblox import list_response_policy_zones_command
+
+        mock_response = util_load_json(f"{self.__class__.__name__}/list_zones_multiple_filters.json")
+
+        requests_mock.get(
+            f"{BASE_URL}zone_rp?_return_as_object=1&_return_fields%2B=fqdn%2Crpz_policy%2Crpz_severity%2Crpz_type%2Csubstitute_name%2Ccomment%2Cdisable&_max_results=25&view=default",
+            json=mock_response,
+        )
+
+        args = {
+            "max_results": "25",
+            "view": "default",
+        }
+
+        expected_hr = util_load_text_data(f"{self.__class__.__name__}/list_zones_multiple_filters_hr.md")
+
+        hr, context, raw_response = list_response_policy_zones_command(client, args)
+
+        # Verify zone matching all filters is returned
+        expected_context_key = f"{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)"
+        zones_context = context[expected_context_key]
+        assert len(zones_context) == 3
+        assert zones_context[0]["View"] == "default"
+        assert zones_context[0]["Comment"] == "Test response policy zone"
+        assert hr == expected_hr
+
+
+class TestCreateHostRecordCommand:
+    """Test class for create_host_record_command function."""
+
+    def test_create_host_record_success(self, requests_mock):
+        """
+        Test successful creation of a host record with both IPv4 and IPv6 addresses.
+
+        Given:
+        - Valid arguments for creating a host record
+        - Mock response from the API
+
+        When:
+        - create_host_record_command is called
+
+        Then:
+        - Host record is created successfully
+        - Correct context and human readable output are returned
+        """
+        from Infoblox import create_host_record_command
+
+        mock_response = util_load_json(f"{self.__class__.__name__}/create_host_record_success.json")
+
+        # Construct URL with query parameters using quote
+        base_endpoint = "record:host"
+        return_fields = (
+            "aliases,allow_telnet,cli_credentials,cloud_info,comment,configure_for_dns,ddns_protected,"
+            "device_description,device_location,device_type,device_vendor,disable,disable_discovery,"
+            "dns_aliases,dns_name,extattrs,ipv4addrs,ipv6addrs,ms_ad_user_data,name,network_view,"
+            "rrset_order,snmp3_credential,snmp_credential,ttl,use_cli_credentials,use_snmp3_credential,"
+            "use_snmp_credential,use_ttl,view,zone"
+        )
+
+        url = f"{BASE_URL}{base_endpoint}?_return_as_object=1&_return_fields%2B={quote(return_fields)}"
+
+        requests_mock.post(
+            url,
+            json=mock_response,
+        )
+
+        args = {
+            "name": "example",
+            "ipv4_address": '[{"ipv4addr": "0.0.0.1"}]',
+            "ipv6_address": '[{"ipv6addr": "0000:000:0000::0000:000:001", "configure_for_dhcp": false}]',
+            "configure_for_dns": "false",
+        }
+
+        expected_hr = util_load_text_data(f"{self.__class__.__name__}/create_host_record_success_hr.md")
+
+        hr, context, raw_response = create_host_record_command(client, args)
+
+        # Verify human readable output
+        assert hr == expected_hr
+
+        # Verify context
+        expected_context_key = f"{INTEGRATION_CONTEXT_NAME}.Host(val.Name && val.Name === obj.Name)"
+        assert expected_context_key in context
+        host_context = context[expected_context_key]
+        assert host_context["Name"] == "example"
+        assert host_context["ReferenceID"] == "record:host/45678:example/ "
+        assert host_context["Type"] == "record:host"
+        assert not host_context["ConfigureForDNS"]
+        assert host_context["IPV4Addresses"][0]["IPV4Address"] == "0.0.0.1"
+        assert host_context["IPV6Addresses"][0]["IPV6Address"] == "0000:000:0000::0000:000:001"
+
+        # Verify raw response
+        assert raw_response == mock_response
+
+    def test_create_host_record_ipv4_only_success(self, requests_mock):
+        """
+        Test successful creation of a host record with IPv4 address only.
+
+        Given:
+        - Valid arguments for creating a host record with IPv4 only
+        - Mock response from the API
+
+        When:
+        - create_host_record_command is called
+
+        Then:
+        - Host record is created successfully with IPv4 address
+        """
+        from Infoblox import create_host_record_command
+
+        mock_response = util_load_json(f"{self.__class__.__name__}/create_host_record_ipv4_only_success.json")
+
+        # Construct URL with query parameters using quote
+        base_endpoint = "record:host"
+        return_fields = (
+            "aliases,allow_telnet,cli_credentials,cloud_info,comment,configure_for_dns,ddns_protected,"
+            "device_description,device_location,device_type,device_vendor,disable,disable_discovery,"
+            "dns_aliases,dns_name,extattrs,ipv4addrs,ipv6addrs,ms_ad_user_data,name,network_view,"
+            "rrset_order,snmp3_credential,snmp_credential,ttl,use_cli_credentials,use_snmp3_credential,"
+            "use_snmp_credential,use_ttl,view,zone"
+        )
+
+        url = f"{BASE_URL}{base_endpoint}?_return_as_object=1&_return_fields%2B={quote(return_fields)}"
+
+        requests_mock.post(
+            url,
+            json=mock_response,
+        )
+
+        args = {
+            "name": "testhost",
+            "ipv4_address": '[{"ipv4addr": "192.168.1.2", "configure_for_dhcp": true}]',
+            "comment": "Test host record",
+            "configure_for_dns": "true",
+        }
+
+        expected_hr = util_load_text_data(f"{self.__class__.__name__}/create_host_record_ipv4_only_success_hr.md")
+
+        hr, context, raw_response = create_host_record_command(client, args)
+
+        # Verify the host was created correctly
+        assert hr == expected_hr
+        expected_context_key = f"{INTEGRATION_CONTEXT_NAME}.Host(val.Name && val.Name === obj.Name)"
+        host_context = context[expected_context_key]
+        assert host_context["Name"] == "testhost"
+        assert host_context["Comment"] == "Test host record"
+        assert host_context["ConfigureForDNS"]
+        assert host_context["IPV4Addresses"][0]["IPV4Address"] == "192.168.1.2"
+
+        assert raw_response == mock_response
+
+
+class TestDhcpLeaseLookupCommand:
+    """Test class for dhcp_lease_lookup_command function."""
+
+    def test_dhcp_lease_lookup_success(self, requests_mock):
+        """
+        Test successful DHCP lease lookup with limit parameter.
+
+        Given:
+        - Valid arguments for DHCP lease lookup
+        - Mock response from the API with multiple leases
+
+        When:
+        - dhcp_lease_lookup_command is called
+
+        Then:
+        - Multiple DHCP leases are returned successfully
+        - Correct context and human readable output are returned
+        """
+        from Infoblox import dhcp_lease_lookup_command
+
+        mock_response = util_load_json(f"{self.__class__.__name__}/dhcp_lease_lookup_success.json")
+
+        # Construct URL with query parameters using quote
+        base_endpoint = "lease"
+        return_fields = "address,billing_class,binding_state,client_hostname,cltt,discovered_data,ends,hardware,ipv6_duid,ipv6_iaid,ipv6_preferred_lifetime,ipv6_prefix_bits,is_invalid_mac,ms_ad_user_data,network,network_view,never_ends,never_starts,next_binding_state,on_commit,on_expiry,on_release,option,protocol,remote_id,served_by,server_host_name,starts,tsfp,tstp,uid,username,variable,fingerprint"  # noqa: E501
+
+        url = f"{BASE_URL}{base_endpoint}?_return_as_object=1&_return_fields%2B={quote(return_fields)}&_max_results=3"
+
+        requests_mock.get(
+            url,
+            json=mock_response,
+        )
+
+        args = {"limit": "3"}
+
+        expected_hr = util_load_text_data(f"{self.__class__.__name__}/dhcp_lease_lookup_success_hr.md")
+
+        hr, context, raw_response = dhcp_lease_lookup_command(client, args)
+
+        # Verify human readable output
+        assert hr == expected_hr
+
+        # Verify context
+        expected_context_key = f"{INTEGRATION_CONTEXT_NAME}.DHCPLease(val.Address && val.Address === obj.Address)"
+        assert expected_context_key in context
+        leases_context = context[expected_context_key]
+        assert len(leases_context) == 3
+        assert leases_context[0]["Address"] == "0.0.0.5"
+        assert leases_context[0]["BindingState"] == "FREE"
+        assert leases_context[1]["Address"] == "0.0.0.3"
+        assert leases_context[1]["BindingState"] == "ACTIVE"
+
+        # Verify raw response
+        assert raw_response == mock_response
+
+    def test_dhcp_lease_lookup_by_ip_success(self, requests_mock):
+        """
+        Test successful DHCP lease lookup by specific IP address.
+
+        Given:
+        - Valid IP address argument for DHCP lease lookup
+        - Mock response from the API with single lease
+
+        When:
+        - dhcp_lease_lookup_command is called
+
+        Then:
+        - Single DHCP lease is returned successfully
+        """
+        from Infoblox import dhcp_lease_lookup_command
+
+        mock_response = util_load_json(f"{self.__class__.__name__}/dhcp_lease_lookup_by_ip_success.json")
+
+        # Construct URL with query parameters using quote
+        base_endpoint = "lease"
+        return_fields = "address,billing_class,binding_state,client_hostname,cltt,discovered_data,ends,hardware,ipv6_duid,ipv6_iaid,ipv6_preferred_lifetime,ipv6_prefix_bits,is_invalid_mac,ms_ad_user_data,network,network_view,never_ends,never_starts,next_binding_state,on_commit,on_expiry,on_release,option,protocol,remote_id,served_by,server_host_name,starts,tsfp,tstp,uid,username,variable,fingerprint"  # noqa: E501
+
+        url = f"{BASE_URL}{base_endpoint}?_return_as_object=1&_return_fields%2B={quote(return_fields)}&address=0.0.0.3"
+
+        requests_mock.get(
+            url,
+            json=mock_response,
+        )
+
+        args = {"ip_address": "0.0.0.3"}
+
+        expected_hr = util_load_text_data(f"{self.__class__.__name__}/dhcp_lease_lookup_by_ip_success_hr.md")
+
+        hr, context, raw_response = dhcp_lease_lookup_command(client, args)
+
+        # Verify the lease was found correctly
+        assert hr == expected_hr
+        expected_context_key = f"{INTEGRATION_CONTEXT_NAME}.DHCPLease(val.Address && val.Address === obj.Address)"
+        leases_context = context[expected_context_key]
+        assert len(leases_context) == 1
+        assert leases_context[0]["Address"] == "0.0.0.3"
+        assert leases_context[0]["ClientHostname"] == "CE"
+        assert leases_context[0]["Hardware"] == "00:00:00:00:00:03"
+
+        assert raw_response == mock_response

@@ -1,6 +1,7 @@
 Adds/Replaces a key in key/value store backed by an XSOAR list.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Adds/Replaces a key in key/value store backed by an XSOAR list.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,14 +23,16 @@ Adds/Replaces a key in key/value store backed by an XSOAR list.
 | allowDups | Allow duplicates in array keys. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
-
 ## Script Example
+
 ```!AddKeyToList listName="NewList" keyName="SomeKey" value="TestValue"```
 
 ## Context Example
+
 ```json
 {}
 ```

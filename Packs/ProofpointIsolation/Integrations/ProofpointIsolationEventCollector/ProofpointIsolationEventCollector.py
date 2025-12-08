@@ -1,22 +1,23 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *  # noqa
-
-import urllib3
 from datetime import datetime
+
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
+
+from CommonServerUserPython import *  # noqa
 
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-VENDOR = 'Proofpoint'
-PRODUCT = 'Isolation'
+VENDOR = "Proofpoint"
+PRODUCT = "Isolation"
 DEFAULT_FETCH_LIMIT = 50000
 ITEMS_PER_PAGE = 10000
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -42,13 +43,13 @@ class Client(BaseClient):
         results = self._http_request(
             method="GET",
             url_suffix=f"/api/v2/reporting/usage-data?key={self.api_key}&pageSize={ITEMS_PER_PAGE}"
-                       f"&from={start_date}&to={end_date}",
-            retries=3
+            f"&from={start_date}&to={end_date}",
+            retries=3,
         )
         return results
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def get_and_parse_date(event: dict) -> str | None:
@@ -64,12 +65,12 @@ def get_and_parse_date(event: dict) -> str | None:
     Raises:
         ValueError: If the 'date' value in the event dictionary is invalid or cannot be parsed.
     """
-    date_str = event.get('date')
+    date_str = event.get("date")
     try:
         start = parse_date_string(date_str, DATE_FORMAT)
         return start.strftime(DATE_FORMAT)
     except ValueError:
-        raise ValueError('Invalid date format')
+        raise ValueError("Invalid date format")
 
 
 def sort_events_by_date(events: list) -> list:
@@ -82,7 +83,7 @@ def sort_events_by_date(events: list) -> list:
     Returns:
         list: The sorted list of events based on the 'date' field.
     """
-    return sorted(events, key=lambda x: datetime.strptime(x['date'], '%Y-%m-%dT%H:%M:%S.%f%z'))
+    return sorted(events, key=lambda x: datetime.strptime(x["date"], "%Y-%m-%dT%H:%M:%S.%f%z"))
 
 
 def hash_user_name_and_url(event: dict) -> str:
@@ -95,9 +96,9 @@ def hash_user_name_and_url(event: dict) -> str:
     Returns:
         str: A string in the format '<url>&<userName>'.
     """
-    url = event.get('url', "")
-    user_name = event.get('userName', "")
-    return f'{url}&{user_name}'
+    url = event.get("url", "")
+    user_name = event.get("userName", "")
+    return f"{url}&{user_name}"
 
 
 def remove_duplicate_events(start_date, ids: set, events: list) -> None:
@@ -116,7 +117,7 @@ def remove_duplicate_events(start_date, ids: set, events: list) -> None:
             break
         hashed_id = hash_user_name_and_url(event)
         if hashed_id in ids:
-            demisto.debug(f'Removing duplicated event with hash_id {hashed_id}')
+            demisto.debug(f"Removing duplicated event with hash_id {hashed_id}")
             events.remove(event)
 
 
@@ -133,14 +134,14 @@ def get_and_reorganize_events(client: Client, start: str, end: str, ids: set) ->
     Returns:
         list: A list of sorted and deduplicated events.
     """
-    events: list = client.get_events(start, end).get('data', [])
-    demisto.debug(f'Raw events from Proofpoint Isolation api: {events}')
+    events: list = client.get_events(start, end).get("data", [])
+    demisto.debug(f"Raw events from Proofpoint Isolation api: {events}")
     events = sort_events_by_date(events)
     remove_duplicate_events(start, ids, events)
     return events
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -157,8 +158,8 @@ def test_module(client: Client) -> str:
         current_time = get_current_time()
         start_date = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
         end_date = current_time.strftime(DATE_FORMAT)
-        fetch_events(client, 1, {'start_date': start_date, 'end_date': end_date})
-        message = 'ok'
+        fetch_events(client, 1, {"start_date": start_date, "end_date": end_date})
+        message = "ok"
     except DemistoException as e:
         raise e
     return message
@@ -168,28 +169,28 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     output: list = []
 
     if get_events_args:  # handle get_event command
-        event_date = get_events_args.get('start_date', '')
-        end = get_events_args.get('end_date', '')
+        event_date = get_events_args.get("start_date", "")
+        end = get_events_args.get("end_date", "")
         ids: set = set()
     else:  # handle fetch_events case
         last_run = demisto.getLastRun() or {}
-        event_date = last_run.get('start_date', '')
+        event_date = last_run.get("start_date", "")
         if not event_date:
             event_date = get_current_time().strftime(DATE_FORMAT)
         end = get_current_time().strftime(DATE_FORMAT)
-        ids = set(last_run.get('ids', []))
+        ids = set(last_run.get("ids", []))
 
     current_start_date = event_date
-    demisto.debug(f'Fetching events from {current_start_date=} to {end=}')
+    demisto.debug(f"Fetching events from {current_start_date=} to {end=}")
     while True:
         events = get_and_reorganize_events(client, event_date, end, ids)
         if not events:
-            demisto.debug(f'No more events found, breaking with {len(output)} events in total.')
+            demisto.debug(f"No more events found, breaking with {len(output)} events in total.")
             break
 
-        demisto.debug(f'Iterates over {len(events)=} events.')
+        demisto.debug(f"Iterates over {len(events)=} events.")
         for event in events:
-            event['_TIME'] = event.get('date')
+            event["_TIME"] = event.get("date")
             output.append(event)
             event_date = get_and_parse_date(event)
 
@@ -200,11 +201,11 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             ids.add(hashed_id)
 
             if len(output) >= fetch_limit:
-                demisto.debug(f'Reached fetch limit, sending {len(output)} events in total.')
-                new_last_run = {'start_date': event_date, 'ids': list(ids)}
+                demisto.debug(f"Reached fetch limit, sending {len(output)} events in total.")
+                new_last_run = {"start_date": event_date, "ids": list(ids)}
                 return output, new_last_run
 
-    new_last_run = {'start_date': event_date, 'ids': list(ids)}
+    new_last_run = {"start_date": event_date, "ids": list(ids)}
     return output, new_last_run
 
 
@@ -219,31 +220,32 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
     Returns:
         list: A list of events fetched within the specified date range.
     """
-    start_date = args.get('start_date')
-    end_date = args.get('end_date')
-    limit: int = arg_to_number(args.get('limit')) or DEFAULT_FETCH_LIMIT
+    start_date = args.get("start_date")
+    end_date = args.get("end_date")
+    limit: int = arg_to_number(args.get("limit")) or DEFAULT_FETCH_LIMIT
 
     output, _ = fetch_events(client, limit, {"start_date": start_date, "end_date": end_date})
 
     filtered_events = []
     for event in output:
-        filtered_event = {'User ID': event.get('userId'),
-                          'User Name': event.get('userName'),
-                          'URL': event.get('url'),
-                          'Date': event.get('date')
-                          }
+        filtered_event = {
+            "User ID": event.get("userId"),
+            "User Name": event.get("userName"),
+            "URL": event.get("url"),
+            "Date": event.get("date"),
+        }
         filtered_events.append(filtered_event)
 
-    human_readable = tableToMarkdown(name='Proofpoint Isolation Events', t=filtered_events, removeNull=True)
+    human_readable = tableToMarkdown(name="Proofpoint Isolation Events", t=filtered_events, removeNull=True)
     command_results = CommandResults(
         readable_output=human_readable,
         outputs=output,
-        outputs_prefix='ProofpointIsolationEventCollector',
+        outputs_prefix="ProofpointIsolationEventCollector",
     )
     return output, command_results
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
@@ -252,41 +254,37 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        base_url = params.get('base_url')
-        verify = not params.get('insecure', False)
-        api_key = params.get('credentials').get('password')
-        fetch_limit = arg_to_number(params.get('max_events_per_fetch')) or DEFAULT_FETCH_LIMIT
+        base_url = params.get("base_url")
+        verify = not params.get("insecure", False)
+        api_key = params.get("credentials").get("password")
+        fetch_limit = arg_to_number(params.get("max_events_per_fetch")) or DEFAULT_FETCH_LIMIT
 
-        client = Client(
-            base_url=base_url,
-            verify=verify,
-            api_key=api_key
-        )
+        client = Client(base_url=base_url, verify=verify, api_key=api_key)
 
-        if command == 'test-module':
+        if command == "test-module":
             result = test_module(client)
             return_results(result)
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             events, new_last_run_dict = fetch_events(client, fetch_limit)
             if events:
-                demisto.debug(f'Sending {len(events)} events.')
+                demisto.debug(f"Sending {len(events)} events.")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(new_last_run_dict)
-            demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
-        elif command == 'proofpoint-isolation-get-events':
+            demisto.debug(f"Successfully saved last_run= {demisto.getLastRun()}")
+        elif command == "proofpoint-isolation-get-events":
             events, command_results = get_events(client, args)
-            if events and argToBoolean(args.get('should_push_events')):
+            if events and argToBoolean(args.get("should_push_events")):
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

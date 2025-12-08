@@ -35,7 +35,7 @@ def main():  # pragma: no cover
             alert_id=alert_id,
         )
     except Exception as ex:
-        return_error(f"Failed to execute PrintToAlert. Error: {str(ex)}")
+        return_error(f"Failed to execute PrintToAlert. Error: {ex!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

@@ -22,7 +22,10 @@ from ZoomMail import (
     create_email_message,
     attach_files_to_email,
     attach_file,
-    main, safe_bytes_to_string, decode_base64, correct_base64_errors,
+    main,
+    safe_bytes_to_string,
+    decode_base64,
+    correct_base64_errors,
 )
 
 
@@ -191,8 +194,12 @@ class TestZoomMailClientGetEmailThread(unittest.TestCase):
         mock_http_request.assert_called_with(
             method="GET",
             url_suffix=f"/emails/mailboxes/{self.default_email}/threads/{self.thread_id}",
-            params={"format": self.format, "metadata_headers": self.metadata_headers,
-                    "maxResults": self.maxResults, "pageToken": self.pageToken},
+            params={
+                "format": self.format,
+                "metadata_headers": self.metadata_headers,
+                "maxResults": self.maxResults,
+                "pageToken": self.pageToken,
+            },
         )
         assert response == mock_response
 
@@ -276,7 +283,11 @@ class TestZoomMailClientTrashEmail(unittest.TestCase):
           - The method should raise a ValueError due to missing email information.
         """
         client_without_default = ZoomMailClient(
-            self.base_url, self.client_id, self.client_secret, self.account_id, None  # No default email set
+            self.base_url,
+            self.client_id,
+            self.client_secret,
+            self.account_id,
+            None,  # No default email set
         )
 
         with self.assertRaises(ValueError) as context:
@@ -541,9 +552,7 @@ class TestZoomMailClientGetEmailMessage(unittest.TestCase):
         metadata_headers = "From,To"
         mock_http_request.return_value = {"id": message_id, "subject": "Test Email"}
 
-        response = self.client.get_email_message(
-            email, message_id, msg_format, metadata_headers
-        )
+        response = self.client.get_email_message(email, message_id, msg_format, metadata_headers)
 
         mock_http_request.assert_called_once_with(
             method="GET",
@@ -727,16 +736,12 @@ class TestZoomMailClientGetMailboxProfile(unittest.TestCase):
         response = self.client.get_mailbox_profile(email)
 
         # Assert correct HTTP request call
-        mock_http_request.assert_called_once_with(
-            method="GET", url_suffix=f"/emails/mailboxes/{email}/profile"
-        )
+        mock_http_request.assert_called_once_with(method="GET", url_suffix=f"/emails/mailboxes/{email}/profile")
         # Assert response contains the expected keys
         assert response == {"email": email, "status": "active"}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
-    def test_get_mailbox_profile_uses_default_email_when_none_provided(
-        self, mock_http_request
-    ):
+    def test_get_mailbox_profile_uses_default_email_when_none_provided(self, mock_http_request):
         """Test using default email when none is provided."""
         mock_http_request.return_value = {
             "email": self.default_email,
@@ -747,16 +752,12 @@ class TestZoomMailClientGetMailboxProfile(unittest.TestCase):
         response = self.client.get_mailbox_profile(None)
 
         # Assert correct HTTP request call
-        mock_http_request.assert_called_once_with(
-            method="GET", url_suffix=f"/emails/mailboxes/{self.default_email}/profile"
-        )
+        mock_http_request.assert_called_once_with(method="GET", url_suffix=f"/emails/mailboxes/{self.default_email}/profile")
         # Assert response matches the mock
         assert response == {"email": self.default_email, "status": "active"}
 
     @patch("ZoomMail.ZoomMailClient._http_request")
-    def test_get_mailbox_profile_raises_error_if_no_default_email_set(
-        self, mock_http_request
-    ):
+    def test_get_mailbox_profile_raises_error_if_no_default_email_set(self, mock_http_request):
         """Test that method raises an error if no email is provided and no default is set."""
         client_without_default = ZoomMailClient(
             self.base_url,
@@ -1012,15 +1013,9 @@ class TestFetchIncidents(unittest.TestCase):
         }
         mock_list_response = load_test_data("test_data/fetch/fetch_list_response.json")
         self.client.list_emails = MagicMock(return_value=mock_list_response)
-        mock_get_email_message_response_1 = load_test_data(
-            "test_data/fetch/fetch_email_1.json"
-        )
-        mock_get_email_message_response_2 = load_test_data(
-            "test_data/fetch/fetch_email_2.json"
-        )
-        mock_get_email_message_response_3 = load_test_data(
-            "test_data/fetch/fetch_email_3.json"
-        )
+        mock_get_email_message_response_1 = load_test_data("test_data/fetch/fetch_email_1.json")
+        mock_get_email_message_response_2 = load_test_data("test_data/fetch/fetch_email_2.json")
+        mock_get_email_message_response_3 = load_test_data("test_data/fetch/fetch_email_3.json")
         self.client.get_email_message = MagicMock(
             side_effect=[
                 mock_get_email_message_response_1,
@@ -1061,12 +1056,8 @@ class TestFetchIncidents(unittest.TestCase):
                 {"messages": [{"id": "124", "threadId": "124"}]},
             ]
         )
-        mock_get_email_message_response_1 = load_test_data(
-            "test_data/fetch/fetch_email_1.json"
-        )
-        mock_get_email_message_response_2 = load_test_data(
-            "test_data/fetch/fetch_email_2.json"
-        )
+        mock_get_email_message_response_1 = load_test_data("test_data/fetch/fetch_email_1.json")
+        mock_get_email_message_response_2 = load_test_data("test_data/fetch/fetch_email_2.json")
         self.client.get_email_message = MagicMock(
             side_effect=[
                 mock_get_email_message_response_1,
@@ -1102,24 +1093,15 @@ class TestFetchIncidents(unittest.TestCase):
         mock_get_last_run.return_value = {
             "last_fetch_info": {
                 "internalDate": 1622430000,
-                "ids": [
-                    "d9e0967700000000_e8332447bb77d2cc_012",
-                    "d9e0967700000000_e83324610f26fd57_007"
-                ]
+                "ids": ["d9e0967700000000_e8332447bb77d2cc_012", "d9e0967700000000_e83324610f26fd57_007"],
             },
             "next_page_token": "",
         }
         mock_list_response = load_test_data("test_data/fetch/fetch_list_response.json")
         self.client.list_emails = MagicMock(return_value=mock_list_response)
-        mock_get_email_message_response_1 = load_test_data(
-            "test_data/fetch/fetch_email_1.json"
-        )
-        mock_get_email_message_response_2 = load_test_data(
-            "test_data/fetch/fetch_email_2.json"
-        )
-        mock_get_email_message_response_3 = load_test_data(
-            "test_data/fetch/fetch_email_3.json"
-        )
+        mock_get_email_message_response_1 = load_test_data("test_data/fetch/fetch_email_1.json")
+        mock_get_email_message_response_2 = load_test_data("test_data/fetch/fetch_email_2.json")
+        mock_get_email_message_response_3 = load_test_data("test_data/fetch/fetch_email_3.json")
         self.client.get_email_message = MagicMock(
             side_effect=[
                 mock_get_email_message_response_1,
@@ -1291,9 +1273,7 @@ class TestGetEmailThreadCommand(unittest.TestCase):
 
         result = get_email_thread_command(self.client, self.args)
 
-        mock_get_email_thread.assert_called_with(
-            "user@example.com", "1001", "full", "Subject,Date", "10", "abc123"
-        )
+        mock_get_email_thread.assert_called_with("user@example.com", "1001", "full", "Subject,Date", "10", "abc123")
         assert "msg2" in result.readable_output
 
     def test_missing_thread_id_argument(self):
@@ -1606,18 +1586,14 @@ class TestListUsersCommand(unittest.TestCase):
         """
         mock_list_users.return_value = {
             "users": [
+                {"email": "user1@example.com", "first_name": "John", "last_name": "Doe", "type": "admin", "status": "active"},
                 {
-                    "email": "user1@example.com",
-                    "first_name": "John",
-                    "last_name": "Doe",
-                    "type": "admin",
-                    "status": "active"
-                }, {
                     "email": "user2@example.com",
                     "first_name": "Jane",
                     "last_name": "Smith",
                     "type": "member",
-                    "status": "inactive"},
+                    "status": "inactive",
+                },
             ]
         }
 
@@ -1653,13 +1629,7 @@ class TestListUsersCommand(unittest.TestCase):
         """
         mock_list_users.return_value = {
             "users": [
-                {
-                    "email": "user3@example.com",
-                    "first_name": "Alice",
-                    "last_name": "Johnson",
-                    "type": "admin",
-                    "status": "active"
-                }
+                {"email": "user3@example.com", "first_name": "Alice", "last_name": "Johnson", "type": "admin", "status": "active"}
             ],
             "nextPageToken": "abc123",
         }
@@ -1698,9 +1668,7 @@ class TestProcessAttachments(unittest.TestCase):
 
     @patch("ZoomMail.demisto.error")
     @patch("ZoomMail.ZoomMailClient.get_email_attachment")
-    def test_process_attachments_failure(
-        self, mock_get_email_attachment, mock_demisto_error
-    ):
+    def test_process_attachments_failure(self, mock_get_email_attachment, mock_demisto_error):
         """
         Test handling errors while processing attachments.
         When:
@@ -1715,9 +1683,7 @@ class TestProcessAttachments(unittest.TestCase):
 
     @patch("ZoomMail.demisto.error")
     @patch("ZoomMail.ZoomMailClient.get_email_attachment")
-    def test_process_attachments_success(
-        self, mock_get_email_attachment, mock_demisto_error
-    ):
+    def test_process_attachments_success(self, mock_get_email_attachment, mock_demisto_error):
         """
         Test successful processing of email attachments.
         When:
@@ -1756,9 +1722,7 @@ class TestCreateEmailMessage(unittest.TestCase):
         Then:
         - Verify the email object is correctly formed with the appropriate headers and body.
         """
-        email = create_email_message(
-            self.from_email, self.to_email, self.subject, self.body_text, None, []
-        )
+        email = create_email_message(self.from_email, self.to_email, self.subject, self.body_text, None, [])
         assert isinstance(email, MIMEMultipart)
         assert mock_attach_files.called
         assert email["From"] == self.from_email
@@ -1776,9 +1740,7 @@ class TestCreateEmailMessage(unittest.TestCase):
         Then:
         - Verify the email object is correctly formed with HTML content.
         """
-        email = create_email_message(
-            self.from_email, self.to_email, self.subject, None, self.html_text, []
-        )
+        email = create_email_message(self.from_email, self.to_email, self.subject, None, self.html_text, [])
         assert isinstance(email, MIMEMultipart)
         assert mock_attach_files.called
         assert len(email.get_payload()) == 1
@@ -1877,9 +1839,7 @@ class TestAttachFilesToEmail(unittest.TestCase):
 
     @patch("ZoomMail.demisto.getFilePath")
     @patch("ZoomMail.attach_file")
-    def test_attach_files_partial_files_found(
-        self, mock_attach_file, mock_get_file_path
-    ):
+    def test_attach_files_partial_files_found(self, mock_attach_file, mock_get_file_path):
         """
         When:
         - Attempting to attach files, but only some of the files are found.
@@ -1908,9 +1868,7 @@ class TestAttachFile(unittest.TestCase):
         """
         self.message = MIMEMultipart()
 
-    @patch(
-        "builtins.open", new_callable=unittest.mock.mock_open, read_data="file content"
-    )
+    @patch("builtins.open", new_callable=unittest.mock.mock_open, read_data="file content")
     @patch("ZoomMail.MIMEBase")
     @patch("ZoomMail.encoders.encode_base64")
     def test_attach_file(self, mock_encode_base64, mock_mime_base, mock_open):
@@ -1932,9 +1890,7 @@ class TestAttachFile(unittest.TestCase):
         mock_mime_base.assert_called_once_with("application", "octet-stream")
         mock_part.set_payload.assert_called_once_with("file content")
         mock_encode_base64.assert_called_once_with(mock_part)
-        mock_part.add_header.assert_called_once_with(
-            "Content-Disposition", "attachment", filename="file.txt"
-        )
+        mock_part.add_header.assert_called_once_with("Content-Disposition", "attachment", filename="file.txt")
 
         # Confirm the MIME part is correctly attached to the MIMEMultipart message.
         assert len(self.message.get_payload()) == 1
@@ -2005,60 +1961,60 @@ class TestMainFunction(unittest.TestCase):
         mock_demisto.args.return_value = {}
 
         # Simulate an exception in the command function
-        with patch(
-            "ZoomMail.the_testing_module", side_effect=DemistoException("Error")
-        ), patch("ZoomMail.return_error") as mock_return_error:
+        with (
+            patch("ZoomMail.the_testing_module", side_effect=DemistoException("Error")),
+            patch("ZoomMail.return_error") as mock_return_error,
+        ):
             main()
             mock_return_error.assert_called_once()
 
 
 class TestBase64Decoding(unittest.TestCase):
-
     def test_decode_base64_normal(self):
         # Test with a normal base64 encoded string
-        encoded = base64.b64encode(b'hello world').decode('utf-8')
+        encoded = base64.b64encode(b"hello world").decode("utf-8")
         result = decode_base64(encoded)
         assert result == "hello world"
 
     def test_decode_base64_incorrect_padding(self):
         # Test base64 string with incorrect padding
-        encoded = base64.b64encode(b'hello world').decode('utf-8').rstrip('=')
+        encoded = base64.b64encode(b"hello world").decode("utf-8").rstrip("=")
         result = decode_base64(encoded)
         assert result == "hello world"
 
     def test_decode_base64_invalid_characters(self):
         # Test base64 string with invalid characters
-        encoded = 'aGVsbG8gd29ybGQ$'
+        encoded = "aGVsbG8gd29ybGQ$"
         result = decode_base64(encoded)
         assert result == "hello world"
 
     def test_decode_base64_special_characters(self):
         # Test base64 string with special URL characters
-        encoded = base64.urlsafe_b64encode(b'hello?world!').decode('utf-8')
+        encoded = base64.urlsafe_b64encode(b"hello?world!").decode("utf-8")
         result = decode_base64(encoded)
         assert result == "hello?world!"
 
     def test_decode_base64_empty_string(self):
         # Test with an empty string
-        result = decode_base64('')
+        result = decode_base64("")
         assert result == ""
 
     def test_correct_base64_errors(self):
         # Test the correction of non-base64 characters
-        encoded = 'aGVsbG8gd29ybGQ$=='
+        encoded = "aGVsbG8gd29ybGQ$=="
         corrected = correct_base64_errors(encoded)
         assert set(corrected) <= set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=")
         assert len(corrected) % 4 == 0
 
     def test_safe_bytes_to_string(self):
         # Test converting bytes to string safely
-        byte_data = b'hello world'
+        byte_data = b"hello world"
         result = safe_bytes_to_string(byte_data)
         assert result == "hello world"
 
     def test_safe_bytes_to_string_decoding_error(self):
         # Test safe byte to string conversion with non-utf8 encodable bytes
-        byte_data = bytes([0xff, 0xfe, 0xfd])
+        byte_data = bytes([0xFF, 0xFE, 0xFD])
         result = safe_bytes_to_string(byte_data)
         assert result == ""
 

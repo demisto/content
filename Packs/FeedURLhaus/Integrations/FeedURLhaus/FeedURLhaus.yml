@@ -1,11 +1,22 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: FeedURLhaus
   version: -1
 configuration:
+- displaypassword: Auth Key
+  hiddenusername: true
+  name: credentials
+  type: 9
+  section: Connect
+  required: false
+  additionalinfo: Starting June 30th 2025 this parameter is mandatory.
 - name: feedTags
   display: Tags
   type: 0
+  section: Collect
   additionalinfo: Supports CSV values.
   required: false
 - display: ''
@@ -16,9 +27,11 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  section: Collect
   required: false
 - display: Indicator Reputation
   type: 18
+  section: Collect
   options:
   - None
   - Good
@@ -32,6 +45,7 @@ configuration:
   display: Traffic Light Protocol Color
   defaultvalue: WHITE
   type: 15
+  section: Collect
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   options:
   - RED
@@ -43,10 +57,12 @@ configuration:
   defaultvalue: 'true'
   display: Fetch indicators
   type: 8
+  section: Collect
   required: false
 - name: feedReliability
   display: Source Reliability
   type: 15
+  section: Collect
   required: true
   options:
   - A - Completely reliable
@@ -60,26 +76,31 @@ configuration:
 - name: feedExpirationInterval
   display: ''
   type: 1
+  section: Collect
   required: false
 - name: feedFetchInterval
   display: Feed Fetch Interval
   type: 19
+  section: Collect
   defaultvalue: '60'
   required: false
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
+  section: Collect
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
   required: false
 - display: Use system proxy settings
   name: proxy
+  section: Connect
   type: 8
   required: false
-description: Fetch url indicators for URLhaus
+description: Fetch url indicators for URLHaus.
 display: URLhaus Feed
 name: FeedURLhaus
 script:
@@ -90,7 +111,7 @@ script:
     - name: limit
       description: Limit of the api request.
     outputs: []
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.3720084
   feed: true
   runonce: false
   script: "-"

@@ -6,12 +6,12 @@ import urllib3
 
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
-IOC_API_STIX_2_1_PATH_SUFFIX = '/core/api-ua/threatioc/stix/v2.1?key={0}&delta=false&all=false'
-IOC_API_STIX_2_1_SEARCH_PATH_SUFFIX = '/core/api-ua/threatioc/stix/v2.1/search?key={0}&&indicatorType={1}&value={2}'
+""" CONSTANTS """
+IOC_API_STIX_2_1_PATH_SUFFIX = "/core/api-ua/threatioc/stix/v2.1?key={0}&delta=false&all=false"
+IOC_API_STIX_2_1_SEARCH_PATH_SUFFIX = "/core/api-ua/threatioc/stix/v2.1/search?key={0}&&indicatorType={1}&value={2}"
 
-TA_API_STIX_2_1_PATH_SUFFIX = '/core/api-ua/threatactor/ctc/stix/v2.1?key={0}'
-TA_API_STIX_2_1_SEARCH_PATH_SUFFIX = '/core/api-ua/threatactor/stix/v2.1?key={0}&name={1}'
+TA_API_STIX_2_1_PATH_SUFFIX = "/core/api-ua/threatactor/ctc/stix/v2.1?key={0}"
+TA_API_STIX_2_1_SEARCH_PATH_SUFFIX = "/core/api-ua/threatactor/stix/v2.1?key={0}&name={1}"
 
 LABEL_DECYFIR = "DeCYFIR"
 LABEL_INDICATOR = "indicator"
@@ -29,12 +29,17 @@ LABEL_VALUE = "value"
 LABEL_SOURCE_REF = "source_ref"
 LABEL_TARGET_REF = "target_ref"
 
-CVSS_COMMON_METRICS = ['availability_impact', 'integrity_impact', 'impact_score', 'exploitability_score',
-                       'confidentiality_impact']
+CVSS_COMMON_METRICS = [
+    "availability_impact",
+    "integrity_impact",
+    "impact_score",
+    "exploitability_score",
+    "confidentiality_impact",
+]
 
-CVSS_VERSION_METRICS_2 = ['access_vector', 'access_complexity', 'authentication']
+CVSS_VERSION_METRICS_2 = ["access_vector", "access_complexity", "authentication"]
 
-CVSS_VERSION_METRICS_3 = ['attack_vector', 'attack_complexity', 'privileges_required', 'user_interaction', 'scope']
+CVSS_VERSION_METRICS_3 = ["attack_vector", "attack_complexity", "privileges_required", "user_interaction", "scope"]
 
 THREAT_INTEL_SCORES = {
     ThreatIntel.ObjectsNames.CAMPAIGN: ThreatIntel.ObjectsScore.CAMPAIGN,
@@ -44,7 +49,7 @@ THREAT_INTEL_SCORES = {
     ThreatIntel.ObjectsNames.COURSE_OF_ACTION: ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
     ThreatIntel.ObjectsNames.INTRUSION_SET: ThreatIntel.ObjectsScore.INTRUSION_SET,
     ThreatIntel.ObjectsNames.THREAT_ACTOR: ThreatIntel.ObjectsScore.THREAT_ACTOR,
-    ThreatIntel.ObjectsNames.TOOL: ThreatIntel.ObjectsScore.TOOL
+    ThreatIntel.ObjectsNames.TOOL: ThreatIntel.ObjectsScore.TOOL,
 }
 
 INDICATOR_AND_TI_TYPES = {
@@ -66,7 +71,7 @@ INDICATOR_AND_TI_TYPES = {
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
-    "tool": ThreatIntel.ObjectsNames.TOOL
+    "tool": ThreatIntel.ObjectsNames.TOOL,
 }
 
 RELATIONSHIPS_MAPPING_TYPES = {
@@ -75,12 +80,11 @@ RELATIONSHIPS_MAPPING_TYPES = {
     ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
     ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.USES,
     FeedIndicatorType.CVE: EntityRelationship.Relationships.TARGETS,
-    ThreatIntel.ObjectsNames.TOOL: EntityRelationship.Relationships.USES
+    ThreatIntel.ObjectsNames.TOOL: EntityRelationship.Relationships.USES,
 }
 
 
 class Client(BaseClient):
-
     def get_indicator_or_threatintel_type(self, data):
         if data is None:
             return None
@@ -92,7 +96,7 @@ class Client(BaseClient):
         return None
 
     def get_decyfir_api_iocs_ti_data(self, decyfir_api_path: str) -> List[Dict]:
-        response = self._http_request(url_suffix=decyfir_api_path, method='GET', resp_type='response')
+        response = self._http_request(url_suffix=decyfir_api_path, method="GET", resp_type="response")
 
         if response.status_code == 200 and response.content:
             return response.json()
@@ -100,14 +104,11 @@ class Client(BaseClient):
         return []
 
     def build_relationships(self, relation_type, source_value, source_type, target_value, target_type):
-
-        return EntityRelationship(name=relation_type,
-                                  entity_a=source_value, entity_a_type=source_type,
-                                  entity_b=target_value, entity_b_type=target_type
-                                  ).to_indicator()
+        return EntityRelationship(
+            name=relation_type, entity_a=source_value, entity_a_type=source_type, entity_b=target_value, entity_b_type=target_type
+        ).to_indicator()
 
     def build_threat_actor_relationship_obj(self, source_data: Dict[str, str], target_data: Dict[str, str]):
-
         target_type = target_data.get(LABEL_TYPE)
         target_value = target_data.get(LABEL_VALUE)
         source_type = source_data.get(LABEL_TYPE)
@@ -124,10 +125,13 @@ class Client(BaseClient):
         return None
 
     def build_ioc_relationship_obj(self, ioc_data: Dict, target_data: Dict):
-
-        return self.build_relationships(EntityRelationship.Relationships.INDICATOR_OF,
-                                        ioc_data.get(LABEL_VALUE), ioc_data.get(LABEL_TYPE),
-                                        target_data.get(LABEL_VALUE), target_data.get(LABEL_TYPE))
+        return self.build_relationships(
+            EntityRelationship.Relationships.INDICATOR_OF,
+            ioc_data.get(LABEL_VALUE),
+            ioc_data.get(LABEL_TYPE),
+            target_data.get(LABEL_VALUE),
+            target_data.get(LABEL_TYPE),
+        )
 
     def add_tags(self, in_ti: Dict, data: Optional[List | str]):
         if not data:
@@ -136,7 +140,7 @@ class Client(BaseClient):
         if isinstance(data, str):
             data = [data]
 
-        data = [item for item in data if item not in {'unknown', 'Unknown'}]
+        data = [item for item in data if item not in {"unknown", "Unknown"}]
         in_ti["fields"]["tags"].extend(data)
 
     def add_aliases(self, in_ti: Dict, data: Optional[List[str] | str]):
@@ -146,11 +150,10 @@ class Client(BaseClient):
         if isinstance(data, str):
             data = [data]
 
-        data = [item for item in data if item not in {'unknown', 'Unknown'}]
+        data = [item for item in data if item not in {"unknown", "Unknown"}]
         in_ti["fields"]["aliases"].extend(data)
 
     def build_threat_intel_indicator_obj(self, data: Dict, tlp_color: Optional[str], feed_tags: Optional[List]):
-
         intel_type: str = self.get_indicator_or_threatintel_type(data.get(LABEL_TYPE))
 
         ti_data_obj: Dict = {
@@ -163,18 +166,18 @@ class Client(BaseClient):
             "relationships": [],
             "fields": {
                 "stixid": data.get(LABEL_ID),
-                "description": data.get("description", ''),
+                "description": data.get("description", ""),
                 "firstseenbysource": data.get("created"),
                 "modified": data.get("modified"),
                 "trafficlightprotocol": tlp_color if tlp_color else "",
                 "aliases": [],
                 "tags": [],
                 "primary_motivation": "Cyber Crime",
-                "secondary_motivations": data.get('primary_motivation', ''),
+                "secondary_motivations": data.get("primary_motivation", ""),
                 "sophistication": "advanced",
                 "resource_level": "team",
-                "threatactortypes": data.get('threat_actor_types', ''),
-            }
+                "threatactortypes": data.get("threat_actor_types", ""),
+            },
         }
         ti_fields = ti_data_obj["fields"]
 
@@ -188,22 +191,19 @@ class Client(BaseClient):
         if data.get("aliases"):
             self.add_aliases(ti_data_obj, data.get("aliases"))
 
-        if data.get('xMitrePlatforms'):
-            ti_fields["operatingsystemrefs"] = data.get('xMitrePlatforms')
+        if data.get("xMitrePlatforms"):
+            ti_fields["operatingsystemrefs"] = data.get("xMitrePlatforms")
 
         if isinstance(data.get("xMitreDataSources"), List):
             self.add_tags(ti_data_obj, data.get("xMitreDataSources"))
 
-        if isinstance(data.get('external_references'), list):
-            for ex_ref in data['external_references']:
-                if ttps_id := ex_ref.get('external_id'):
+        if isinstance(data.get("external_references"), list):
+            for ex_ref in data["external_references"]:
+                if ttps_id := ex_ref.get("external_id"):
                     self.add_tags(ti_data_obj, ttps_id)
 
         if intel_type is ThreatIntel.ObjectsNames.MALWARE:
-            ti_data_obj['fields'].update({
-                'ismalwarefamily': data.get('is_family'),
-                'malwaretypes': data.get('malware_types')
-            })
+            ti_data_obj["fields"].update({"ismalwarefamily": data.get("is_family"), "malwaretypes": data.get("malware_types")})
 
         kill_chain_phases = [phase.get("phase_name") for phase in data.get("kill_chain_phases", [])]
         ti_fields["killchainphases"] = kill_chain_phases
@@ -255,17 +255,17 @@ class Client(BaseClient):
                             key = str(metric).replace("_", " ").capitalize()
                             metrics.append({"metrics": key, "value": cvss_metrics_data.get(metric)})
 
-                        if cvss_metrics_data.get('vendors'):
-                            vendors = ', '.join(cvss_metrics_data['vendors'])
-                            metrics.append({"metrics": 'Vendors', "value": vendors})
+                        if cvss_metrics_data.get("vendors"):
+                            vendors = ", ".join(cvss_metrics_data["vendors"])
+                            metrics.append({"metrics": "Vendors", "value": vendors})
 
-                        if cvss_metrics_data.get('products'):
-                            products = ', '.join(cvss_metrics_data['products'])
-                            metrics.append({"metrics": 'Products', "value": products})
+                        if cvss_metrics_data.get("products"):
+                            products = ", ".join(cvss_metrics_data["products"])
+                            metrics.append({"metrics": "Products", "value": products})
 
-                        if cvss_metrics_data.get('technologies'):
-                            technologies = ', '.join(cvss_metrics_data['technologies'])
-                            metrics.append({"metrics": 'Technologies', "value": technologies})
+                        if cvss_metrics_data.get("technologies"):
+                            technologies = ", ".join(cvss_metrics_data["technologies"])
+                            metrics.append({"metrics": "Technologies", "value": technologies})
 
                         ti_fields["cvsstable"] = metrics
 
@@ -274,9 +274,9 @@ class Client(BaseClient):
 
         return ti_data_obj
 
-    def build_ta_relationships_data(self, ta_rel_data_coll: list, ta_source_obj: dict, return_data: list,
-                                    tlp_color: Optional[str],
-                                    feed_tags: Optional[List]):
+    def build_ta_relationships_data(
+        self, ta_rel_data_coll: list, ta_source_obj: dict, return_data: list, tlp_color: Optional[str], feed_tags: Optional[List]
+    ):
         src_ti_relationships_data = []
         raw_ta_rels: List = []
         raw_ta_data: Dict = {}
@@ -302,19 +302,18 @@ class Client(BaseClient):
             for raw_ta_rel_ in raw_ta_rels:
                 # Source ref obj from relationship obj
                 if raw_ta_rel_.get(LABEL_SOURCE_REF) in raw_ta_data:
-                    source_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_SOURCE_REF, ''), {})
+                    source_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_SOURCE_REF, ""), {})
                 else:
-                    source_ref_obj = raw_ta_data.get(raw_ta_rel_.get('sourceRef', ''), {})
+                    source_ref_obj = raw_ta_data.get(raw_ta_rel_.get("sourceRef", ""), {})
                 # Target ref obj from relationship obj
                 if raw_ta_rel_.get(LABEL_TARGET_REF) in raw_ta_data:
-                    target_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_TARGET_REF, ''), {})
+                    target_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_TARGET_REF, ""), {})
                 else:
-                    target_ref_obj = raw_ta_data.get(raw_ta_rel_.get('targetRef', ''), {})
+                    target_ref_obj = raw_ta_data.get(raw_ta_rel_.get("targetRef", ""), {})
 
                 if source_ref_obj is not None and target_ref_obj is not None:
                     if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
-                        source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color,
-                                                                                   feed_tags)
+                        source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color, feed_tags)
                         if source_ti_data_obj is not None and source_ti_data_obj:
                             src_exists_in = False
                             for re_data1 in return_data:
@@ -326,13 +325,12 @@ class Client(BaseClient):
                     else:
                         source_ti_data_obj = ta_source_obj
 
-                    src_tar_flag = source_ti_data_obj is not None and source_ti_data_obj.get(
-                        LABEL_ID) != target_ref_obj.get(LABEL_ID)
+                    src_tar_flag = source_ti_data_obj is not None and source_ti_data_obj.get(LABEL_ID) != target_ref_obj.get(
+                        LABEL_ID
+                    )
 
                     if raw_ta_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID) and src_tar_flag:
-
-                        target_ti_data_obj = self.build_threat_intel_indicator_obj(target_ref_obj, tlp_color,
-                                                                                   feed_tags)
+                        target_ti_data_obj = self.build_threat_intel_indicator_obj(target_ref_obj, tlp_color, feed_tags)
                         if target_ti_data_obj is not None and target_ti_data_obj:
                             tar_exists_in = False
                             for re_data2 in return_data:
@@ -345,12 +343,12 @@ class Client(BaseClient):
                         target_ti_data_obj = ta_source_obj
 
                     if source_ti_data_obj and target_ti_data_obj:
-                        ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
-                                                                                          target_ti_data_obj)
+                        ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
 
                         if ti_relationships:
                             is_scr_rel = raw_ta_obj.get(LABEL_ID) == source_ref_obj.get(LABEL_ID) or raw_ta_obj.get(
-                                LABEL_ID) == target_ti_data_obj.get(LABEL_ID)
+                                LABEL_ID
+                            ) == target_ti_data_obj.get(LABEL_ID)
 
                             if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
                                 source_ti_data_obj[LABEL_RELATIONSHIPS].append(ti_relationships)
@@ -363,10 +361,15 @@ class Client(BaseClient):
 
         return ta_source_obj, src_ti_relationships_data, return_data
 
-    def convert_decyfir_ti_to_indicator_format(self, decyfir_api_key: str, data: Dict, tlp_color: Optional[str],
-                                               feed_tags: Optional[List], threat_intel_type: str,
-                                               is_data_save: bool) -> List[Dict]:
-
+    def convert_decyfir_ti_to_indicator_format(
+        self,
+        decyfir_api_key: str,
+        data: Dict,
+        tlp_color: Optional[str],
+        feed_tags: Optional[List],
+        threat_intel_type: str,
+        is_data_save: bool,
+    ) -> List[Dict]:
         return_data: list[dict] = []
         ta_source_obj: dict = {}
         src_ti_relationships_data: list = []
@@ -381,11 +384,9 @@ class Client(BaseClient):
                     if ta_rel_data_coll := self.get_decyfir_api_iocs_ti_data(
                         TA_API_STIX_2_1_SEARCH_PATH_SUFFIX.format(decyfir_api_key, ta_name)
                     ):
-                        ta_source_obj, src_ti_relationships_data, return_data = self.build_ta_relationships_data(ta_rel_data_coll,
-                                                                                                                 ta_source_obj,
-                                                                                                                 return_data,
-                                                                                                                 tlp_color,
-                                                                                                                 feed_tags)
+                        ta_source_obj, src_ti_relationships_data, return_data = self.build_ta_relationships_data(
+                            ta_rel_data_coll, ta_source_obj, return_data, tlp_color, feed_tags
+                        )
                     ta_source_obj[LABEL_RELATIONSHIPS] = src_ti_relationships_data
                     return_data.append(ta_source_obj)
                 else:
@@ -397,22 +398,33 @@ class Client(BaseClient):
 
         return return_data
 
-    def convert_decyfir_ti_to_indicators_formats(self, decyfir_api_key: str, ti_data: List[Dict], tlp_color: Optional[str],
-                                                 feed_tags: Optional[List], threat_intel_type: str,
-                                                 is_data_save: bool) -> List[Dict]:
-
+    def convert_decyfir_ti_to_indicators_formats(
+        self,
+        decyfir_api_key: str,
+        ti_data: List[Dict],
+        tlp_color: Optional[str],
+        feed_tags: Optional[List],
+        threat_intel_type: str,
+        is_data_save: bool,
+    ) -> List[Dict]:
         return_data = []
         for data in ti_data:
-            tis_data = self.convert_decyfir_ti_to_indicator_format(decyfir_api_key, data, tlp_color, feed_tags, threat_intel_type,
-                                                                   is_data_save)
+            tis_data = self.convert_decyfir_ti_to_indicator_format(
+                decyfir_api_key, data, tlp_color, feed_tags, threat_intel_type, is_data_save
+            )
             return_data.extend(tis_data)
 
         return return_data
 
-    def convert_decyfir_ioc_to_indicators_formats(self, decyfir_api_key: str, decyfir_iocs: List[Dict], reputation: Optional[str],
-                                                  tlp_color: Optional[str], feed_tags: Optional[List],
-                                                  is_data_save: bool) -> List[Dict]:
-
+    def convert_decyfir_ioc_to_indicators_formats(
+        self,
+        decyfir_api_key: str,
+        decyfir_iocs: List[Dict],
+        reputation: Optional[str],
+        tlp_color: Optional[str],
+        feed_tags: Optional[List],
+        is_data_save: bool,
+    ) -> List[Dict]:
         return_data = []
 
         for ioc in decyfir_iocs:
@@ -421,11 +433,11 @@ class Client(BaseClient):
             file_hash_values = {}
             decyfir_ioc_type: str = ioc_type
 
-            if 'File SHA-1 hash' in value:
+            if "File SHA-1 hash" in value:
                 decyfir_ioc_type = "SHA"
-            elif 'File SHA-256 hash' in value:
+            elif "File SHA-256 hash" in value:
                 decyfir_ioc_type = "SHA"
-            elif 'File MD5 hash' in value:
+            elif "File MD5 hash" in value:
                 decyfir_ioc_type = "MD5"
 
             pattern_val: str = str(ioc.get("pattern"))
@@ -436,8 +448,8 @@ class Client(BaseClient):
 
                 for p_v in pattern_vals:
                     p = p_v.split(" = ")
-                    key_ = p[0].replace("'", '').replace(" ", '')
-                    val_ = p[1].replace("'", '').replace(" ", '')
+                    key_ = p[0].replace("'", "").replace(" ", "")
+                    val_ = p[1].replace("'", "").replace(" ", "")
                     file_hash_values[key_] = val_
 
             if ioc_type is FeedIndicatorType.IPv6:
@@ -449,21 +461,21 @@ class Client(BaseClient):
                 "value": value,
                 "type": ioc_type,
                 "rawJSON": ioc,
-                'service': LABEL_DECYFIR,
-                'Reputation': reputation,
+                "service": LABEL_DECYFIR,
+                "Reputation": reputation,
                 "fields": {
                     "aliases": [],
                     "tags": [],
-                    "stixid": ioc.get('id'),
-                    "description": ioc.get("description", ''),
+                    "stixid": ioc.get("id"),
+                    "description": ioc.get("description", ""),
                     "firstseenbysource": ioc.get("created"),
-                    "modified": ioc.get('modified'),
+                    "modified": ioc.get("modified"),
                     "trafficlightprotocol": tlp_color if tlp_color else "",
-                }
+                },
             }
             if file_hash_values:
                 for key_ in file_hash_values:
-                    ioc_data['fields'][key_] = file_hash_values.get(key_)
+                    ioc_data["fields"][key_] = file_hash_values.get(key_)
 
             if feed_tags:
                 self.add_tags(ioc_data, feed_tags)
@@ -473,7 +485,7 @@ class Client(BaseClient):
                 for label in ioc_labels:
                     if isinstance(label, dict):
                         if label.get("geographies"):
-                            ioc_data['fields']['geocountry'] = label.get("geographies")
+                            ioc_data["fields"]["geocountry"] = label.get("geographies")
                         if label.get("tags"):
                             self.add_tags(ioc_data, label.get("tags"))
 
@@ -482,7 +494,8 @@ class Client(BaseClient):
 
             if is_data_save:
                 ioc_rel_data: List[Dict] = self.get_decyfir_api_iocs_ti_data(
-                    IOC_API_STIX_2_1_SEARCH_PATH_SUFFIX.format(decyfir_api_key, decyfir_ioc_type, ioc_data.get(LABEL_VALUE)))
+                    IOC_API_STIX_2_1_SEARCH_PATH_SUFFIX.format(decyfir_api_key, decyfir_ioc_type, ioc_data.get(LABEL_VALUE))
+                )
 
                 if ioc_rel_data:
                     relationships_data = []
@@ -490,11 +503,14 @@ class Client(BaseClient):
                         if ioc_rel.get(LABEL_TYPE) != LABEL_INDICATOR and ioc_rel.get(LABEL_TYPE) != LABEL_RELATIONSHIP:
                             in_rel_ti_data_ = self.build_threat_intel_indicator_obj(ioc_rel, tlp_color, feed_tags)
                             if in_rel_ti_data_.get(LABEL_TYPE) == ThreatIntel.ObjectsNames.THREAT_ACTOR:
-                                tis_data = self.convert_decyfir_ti_to_indicator_format(decyfir_api_key, in_rel_ti_data_,
-                                                                                       tlp_color,
-                                                                                       feed_tags,
-                                                                                       ThreatIntel.ObjectsNames.THREAT_ACTOR,
-                                                                                       is_data_save)
+                                tis_data = self.convert_decyfir_ti_to_indicator_format(
+                                    decyfir_api_key,
+                                    in_rel_ti_data_,
+                                    tlp_color,
+                                    feed_tags,
+                                    ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                                    is_data_save,
+                                )
                                 for t_rel_d in tis_data:
                                     return_data.append(t_rel_d)
                                     if t_rel_d.get(LABEL_TYPE) == ThreatIntel.ObjectsNames.THREAT_ACTOR:
@@ -511,8 +527,14 @@ class Client(BaseClient):
             return_data.append(ioc_data)
         return return_data
 
-    def fetch_indicators(self, decyfir_api_key: str, reputation: Optional[str], tlp_color: Optional[str],
-                         feed_tags: Optional[List], is_data_save: bool) -> List[Dict]:
+    def fetch_indicators(
+        self,
+        decyfir_api_key: str,
+        reputation: Optional[str],
+        tlp_color: Optional[str],
+        feed_tags: Optional[List],
+        is_data_save: bool,
+    ) -> List[Dict]:
         return_data = []
         try:
             # Indicators from DeCYFIR
@@ -525,21 +547,23 @@ class Client(BaseClient):
                 iocs_data = iocs_data[:2]
 
             # Converting indicators data to XSOAR indicators format
-            ioc_indicators = self.convert_decyfir_ioc_to_indicators_formats(decyfir_api_key, iocs_data, reputation, tlp_color,
-                                                                            feed_tags, is_data_save)
+            ioc_indicators = self.convert_decyfir_ioc_to_indicators_formats(
+                decyfir_api_key, iocs_data, reputation, tlp_color, feed_tags, is_data_save
+            )
             return_data.extend(ioc_indicators)
 
             if not is_data_save:
                 return return_data
 
             # Converting threat intel data to XSOAR indicators format
-            ta_indicators = self.convert_decyfir_ti_to_indicators_formats(decyfir_api_key, tas_data, tlp_color, feed_tags,
-                                                                          ThreatIntel.ObjectsNames.THREAT_ACTOR, is_data_save)
+            ta_indicators = self.convert_decyfir_ti_to_indicators_formats(
+                decyfir_api_key, tas_data, tlp_color, feed_tags, ThreatIntel.ObjectsNames.THREAT_ACTOR, is_data_save
+            )
             return_data.extend(ta_indicators)
             return return_data
 
         except Exception as e:
-            err = f'Failed to fetch the feed data. DeCYFIR error: {e}'
+            err = f"Failed to fetch the feed data. DeCYFIR error: {e}"
             demisto.debug(err)
 
         return return_data
@@ -547,31 +571,37 @@ class Client(BaseClient):
 
 def test_module_command(client, decyfir_api_key):
     url = IOC_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key)
-    response = client._http_request(url_suffix=url, method='GET', resp_type='response')
+    response = client._http_request(url_suffix=url, method="GET", resp_type="response")
     if response.status_code == 200:
-        return 'ok'
+        return "ok"
     elif response.status_code in [401, 403]:
-        return 'Not Authorized'
+        return "Not Authorized"
     else:
         return f"Error_code: {response.status_code}, Please contact the DeCYFIR team to assist you further on this."
 
 
-def fetch_indicators_command(client: Client, decyfir_api_key: str, tlp_color: Optional[str], reputation: Optional[str],
-                             feed_tags: Optional[List]) -> List[Dict]:
+def fetch_indicators_command(
+    client: Client, decyfir_api_key: str, tlp_color: Optional[str], reputation: Optional[str], feed_tags: Optional[List]
+) -> List[Dict]:
     return client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags, True)
 
 
-def decyfir_get_indicators_command(client: Client, decyfir_api_key: str, tlp_color: Optional[str], reputation: Optional[str],
-                                   feed_tags: Optional[List]):
+def decyfir_get_indicators_command(
+    client: Client, decyfir_api_key: str, tlp_color: Optional[str], reputation: Optional[str], feed_tags: Optional[List]
+):
     indicators = client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags, False)
-    human_readable = tableToMarkdown('Indicators from DeCYFIR Feed:', indicators,
-                                     headers=['value', 'type', 'rawJSON'], headerTransform=string_to_table_header,
-                                     removeNull=True,
-                                     is_auto_json_transform=True)
+    human_readable = tableToMarkdown(
+        "Indicators from DeCYFIR Feed:",
+        indicators,
+        headers=["value", "type", "rawJSON"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+        is_auto_json_transform=True,
+    )
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='',
-        outputs_key_field='',
+        outputs_prefix="",
+        outputs_key_field="",
         raw_response=indicators,
         outputs={},
     )
@@ -580,38 +610,34 @@ def decyfir_get_indicators_command(client: Client, decyfir_api_key: str, tlp_col
 def main():  # pragma: no cover
     try:
         params = demisto.params()
-        decyfir_url = params['url'].rstrip('/')
-        decyfir_api_key = params.get('api_key').get("password")
-        use_ssl = params.get('insecure', False)
-        proxy = params.get('proxy', False)
-        feed_tags = argToList(params.get('feedTags'))
-        tlp_color = params.get('tlp_color')
-        feed_reputation = params.get('feedReputation')
+        decyfir_url = params["url"].rstrip("/")
+        decyfir_api_key = params.get("api_key").get("password")
+        use_ssl = params.get("insecure", False)
+        proxy = params.get("proxy", False)
+        feed_tags = argToList(params.get("feedTags"))
+        tlp_color = params.get("tlp_color")
+        feed_reputation = params.get("feedReputation")
 
-        demisto.info(f'Command being called is {demisto.command()}')
+        demisto.info(f"Command being called is {demisto.command()}")
 
-        client = Client(
-            base_url=decyfir_url,
-            verify=use_ssl,
-            proxy=proxy
-        )
+        client = Client(base_url=decyfir_url, verify=use_ssl, proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             result = test_module_command(client, decyfir_api_key)
             demisto.results(result)
-        elif demisto.command() == 'fetch-indicators':
+        elif demisto.command() == "fetch-indicators":
             indicators = fetch_indicators_command(client, decyfir_api_key, tlp_color, feed_reputation, feed_tags)
             for ioc in batch(indicators, batch_size=2500):
                 demisto.createIndicators(ioc)
         elif demisto.command() == "decyfir-get-indicators":
             return_results(decyfir_get_indicators_command(client, decyfir_api_key, tlp_color, feed_reputation, feed_tags))
         else:
-            raise NotImplementedError('DeCYFIR error: ' + f'command {demisto.command()} is not implemented')
+            raise NotImplementedError("DeCYFIR error: " + f"command {demisto.command()} is not implemented")
 
     except Exception as e:
-        err = f'Failed to execute {demisto.command()} command. DeCYFIR error: {e}'
+        err = f"Failed to execute {demisto.command()} command. DeCYFIR error: {e}"
         return_error(err)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -1,7 +1,9 @@
-# Deprecated - D2 agent is deprecated. No available replacement.
+# Deprecated - D2 agent is deprecated. No available replacement
 
 Runs the Intezer Endpoint Analysis scanner.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,8 +11,8 @@ Runs the Intezer Endpoint Analysis scanner.
 | Script Type | javascript |
 | Tags | agent, forensics |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +21,6 @@ Runs the Intezer Endpoint Analysis scanner.
 | endpoint_analysis_id | The endpoint analysis ID. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

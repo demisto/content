@@ -22,6 +22,7 @@ args:
   - 'false'
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.1983910
+dockerimage: demisto/python3:3.12.12.5490952
 tests:
 - No tests (auto formatted)
+

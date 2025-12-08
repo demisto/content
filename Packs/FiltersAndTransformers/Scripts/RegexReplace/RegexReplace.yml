@@ -47,12 +47,13 @@ comment: |-
 commonfields:
   id: RegexReplace
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.3296088
 enabled: true
 name: RegexReplace
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
+isllm: false
 subtype: python3
 tags:
 - transformer

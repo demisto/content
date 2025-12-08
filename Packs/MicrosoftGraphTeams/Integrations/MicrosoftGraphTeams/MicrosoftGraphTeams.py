@@ -1,11 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 """ IMPORTS """
 
-from MicrosoftApiModule import *
 import urllib3
+from MicrosoftApiModule import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()

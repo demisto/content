@@ -395,5 +395,5 @@ outputs:
   description: File objects - includes the zipped file and any unzipped files.
   type: unknown
 tests:
- - No tests
+- No tests
 fromversion: 6.5.0

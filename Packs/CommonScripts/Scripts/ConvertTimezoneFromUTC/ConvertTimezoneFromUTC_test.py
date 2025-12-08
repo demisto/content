@@ -1,16 +1,16 @@
-from ConvertTimezoneFromUTC import convert_UTC_Timezone_command
-from ConvertTimezoneFromUTC import determine_correct_format
 from datetime import datetime
+
+from ConvertTimezoneFromUTC import convert_UTC_Timezone_command, determine_correct_format
 
 
 def test_convert_UTC_Timezone_command():
     """
-        Given:
-           Specific UTC time, timezone and format to convert
-        When:
-            The time is a datetime obj
-        Then:
-            Validate the result is correct and in local time format.
+    Given:
+       Specific UTC time, timezone and format to convert
+    When:
+        The time is a datetime obj
+    Then:
+        Validate the result is correct and in local time format.
     """
     timezone = "US/Eastern"
     format = "%Y-%m-%d %H:%M:%S"
@@ -23,12 +23,12 @@ def test_convert_UTC_Timezone_command():
 
 def test_determine_correct_format():
     """
-        Given:
-           A time as a string
-        When:
-            Determine the timezone
-        Then:
-            Validate the result is a correct datetime object.
+    Given:
+       A time as a string
+    When:
+        Determine the timezone
+    Then:
+        Validate the result is a correct datetime object.
     """
     value = "2023-01-04 18:14:18"
     format = "%Y-%m-%d %H:%M:%S"

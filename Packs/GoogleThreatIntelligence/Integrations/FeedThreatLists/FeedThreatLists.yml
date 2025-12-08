@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Google Threat Intelligence Threat Lists
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -146,7 +146,7 @@ script:
       description: The maximum number of results to return. If 0 all results will be returned.
     description: Gets the matches from the latest Feed.
     name: gti-threatlists-get-indicators
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: true
   runonce: false
   script: "-"

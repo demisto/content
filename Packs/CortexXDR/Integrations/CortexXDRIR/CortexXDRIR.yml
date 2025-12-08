@@ -653,8 +653,6 @@ script:
       - LOW
     - description: Email address of the user to assign to the incident.
       name: assigned_user_mail
-    - description: Full name of the user assigned to the incident. To supply a new value in this field, you must also provide a value for the 'assigned_user_mail' argument.
-      name: assigned_user_pretty_name
     - auto: PREDEFINED
       description: 'Status of the incident.'
       name: status
@@ -711,7 +709,7 @@ script:
     - auto: PREDEFINED
       defaultValue: Medium
       description: |-
-        The alert severity. 
+        The alert severity.
       name: severity
       predefined:
       - Informational
@@ -764,6 +762,8 @@ script:
       description: The endpoint ID.
       type: String
     polling: true
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: The incident ID. Allows linking the response action to the incident that triggered it.
       name: incident_id
@@ -3864,7 +3864,7 @@ script:
       Update one or more alerts with the provided arguments.
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   isfetch:xpanse: false
   script: ''

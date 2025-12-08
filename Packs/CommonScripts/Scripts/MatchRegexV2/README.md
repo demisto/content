@@ -1,6 +1,7 @@
 Extracts regex data from a given text. This supports groups and looping as well.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Extracts regex data from a given text. This supports groups and looping as well.
 | Script Type | python3 |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +22,7 @@ Extracts regex data from a given text. This supports groups and looping as well.
 | flags | The regex flags to match. The default is "-gim". |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

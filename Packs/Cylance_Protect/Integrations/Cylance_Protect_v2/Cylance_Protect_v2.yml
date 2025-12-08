@@ -1,5 +1,5 @@
 category: Endpoint
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -968,7 +968,7 @@ script:
     - contextPath: InstaQuery.List
       description: The list of InstaQuery.
       type: string
-  dockerimage: demisto/auth-utils:1.0.0.1839651
+  dockerimage: demisto/auth-utils:1.0.0.3562326
   isfetch: true
   script: ''
   subtype: python3

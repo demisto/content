@@ -8,6 +8,7 @@ Threat InDepth's correlated and contextualized intelligence helps enterprises im
 - Improved threat detection for existing security products such as SIEM and SOAR solutions
 
 ##### Feeds included in Cyren Threat InDepth content pack
+
 The Cyren Threat InDepth content pack includes access to these streams of indicators:
 
 - IP Reputation Intelligence
@@ -16,7 +17,6 @@ The Cyren Threat InDepth content pack includes access to these streams of indica
 - Malware File Intelligence
 
 ## Configure Cyren Threat InDepth Threat Intelligence Feed In Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -32,7 +32,6 @@ The Cyren Threat InDepth content pack includes access to these streams of indica
 | feedExpirationInterval | | False |
 | feedFetchInterval | Feed Fetch Interval | False |
 | feedBypassExclusionList | Bypass exclusion list | False |
-
 
 The underlying Cyren Threat InDepth API provides you with an incremental feed, meaning it provides new
 or modified indicators. It also works with an offset value that keeps track of your currently processed
@@ -74,6 +73,7 @@ Fetching Cyren Threat InDepth indicators
 There is no context output for this command.
 
 ##### Command Example
+
 `!cyren-threat-indepth-get-indicators max_indicators=2`
 
 ##### Human Readable Output
@@ -107,6 +107,7 @@ This command allows you to update the stored client offset for the feed API.
 There is no context output for this command.
 
 ##### Command Example
+
 `!cyren-threat-indepth-reset-client-offset`
 `!cyren-threat-indepth-reset-client-offset offset = 34234234`
 
@@ -135,6 +136,7 @@ There is not input for this command.
 There is no context output for this command.
 
 ##### Command Example
+
 `!cyren-threat-indepth-get-client-offset`
 
 ##### Human Readable Output

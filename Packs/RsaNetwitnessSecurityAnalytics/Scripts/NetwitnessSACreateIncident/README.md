@@ -1,6 +1,7 @@
 Creates an incident inside NetWitness SA from a set of NetWitness events.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,13 +9,15 @@ Creates an incident inside NetWitness SA from a set of NetWitness events.
 | Script Type | python |
 | Tags | RSA NetWitness Security Analytics |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * nw-create-incident
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -27,8 +30,9 @@ This script uses the following commands and scripts.
 | deviceId | The ID of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are retrieved. The list of devices can be retrieved by executing the `command nw-get-components`. |
 | priority | The priority of the incident. |
 | summary | The summary of the incident. |
-| incidentManagementId | The ID of NetWitness INCIDENT_MANAGEMENT device/component ID. It can be received by running `nw-get-component` command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server. (optional number) 
+| incidentManagementId | The ID of NetWitness INCIDENT_MANAGEMENT device/component ID. It can be received by running `nw-get-component` command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server. (optional number)
 
 ## Outputs
+
 ---
 There are no outputs for this script.

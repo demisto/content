@@ -3,6 +3,7 @@ Parse an email from an eml or msg file and populate all relevant context data to
 This script is based on the [parse-emails XSOAR python package](https://github.com/demisto/parse-emails), check the script documentation for more info.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ This script is based on the [parse-emails XSOAR python package](https://github.c
 | Tags | email, phishing, enhancement, file |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +23,7 @@ This script is based on the [parse-emails XSOAR python package](https://github.c
 | nesting_level_to_return | In case of nested email files (for instance, an EML file inside an EML file), determines which of the email files to return as an output. "All files" - will return all nested email files as output, "Outer file" - will return only the "outer" email file as output, "Inner file" - will return only the most "inner" email file as output. In case "Inner file" was chosen together with the 'max_depth' argument, the inner email will be considered as the email in the depth of the `max_size` argument. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -50,6 +53,8 @@ This script is based on the [parse-emails XSOAR python package](https://github.c
 | Email.Format | The format of the email if available | string |
 
 #### Notes
-We handle EML and MSG parsing differently when the email contains HTML. 
+
+We handle EML and MSG parsing differently when the email contains HTML.
+
 - If it's an EML and it has the **content-type** of *text/html*, the content of the body will be stored in the html field.
 - If it's an MSG, we store the text inside the HTML in the text field and the HTML in the html field.

@@ -1,0 +1,27 @@
+{
+	"autorun": false,
+	"color": "#7D3D63",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "Specific"
+	},
+	"hours": 0,
+	"hoursR": 0,
+	"id": "RF Third-Party Cyber Playbook Alert",
+	"layout": "RF Playbook Alert Generic Layout",
+	"locked": false,
+	"name": "RF Third-Party Cyber Playbook Alert",
+	"onChangeRepAlg": 1,
+	"readonly": false,
+	"reputationCalc": 1,
+	"system": false,
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0,
+	"fromVersion": "6.0.0"
+}

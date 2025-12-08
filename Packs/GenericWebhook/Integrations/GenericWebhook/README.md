@@ -1,55 +1,70 @@
-The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration. 
+The Generic Webhook integration enables you to push events to Cortex XSOAR or Cortex XSIAM. The Generic Webhook integration can be used when there is no relevant integration, when the integration does not match your organization’s needs, when there are restrictions on pulling information from the third-party solution, or when the triggering source is not an event that can be fetched by Cortex XSOAR or Cortex XSIAM, such as a slack message or a completed form.
 
-The Generic Webhook integration is a long-running integration. For more information about long-running integrations, see the [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations), [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) or [Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) documentation.
+Example: Your organization’s employees fill out a Google form to report security incidents. Employees specify the type of incident in a drop-down field with predefined options, the Generic Webhook integration pushes the event into Cortex XSOAR or Cortex XSIAM, and a playbook runs. The incident type and the specific playbook is determined by the incident type field in the drop-down.
 
-## Configure Generic Webhook on Cortex XSOAR
+The Generic Webhook integration creates incidents in Cortex XSOAR, alerts in Cortex XSIAM 2.x or issues in Cortex XSIAM 3.x. The trigger can be any query posted to the integration.
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Generic Webhook.
-3. Click **Add instance** to create and configure a new integration instance.
+The Generic Webhook integration is a long-running integration. For more information about long-running integrations, see the [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations), [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.9/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) or [Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Premium-Documentation/Forward-Requests-to-Long-Running-Integrations) documentation.
+
+To use the Generic Webhook integration, you need to complete the following steps:
+
+1. Configure Generic Webhook in Cortex XSOAR or Cortex XSIAM.
+2. Set up authentication.
+3. Determine the webhook URL.
+4. Trigger the webhook to generate incidents, alerts, or issues.
+
+## Configure Generic Webhook on Cortex XSOAR or Cortex XSIAM
+
+1. In the Cortex XSOAR or Cortex XSIAM integrations page, search for **Generic Webhook** and click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Listen Port | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.                           | True |
-| username | Username (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory. Using the `_header:` feature without using an engine will not work.  |
-| password | Password (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory. Using the `_header:` feature without using an engine will not work.  |
-| certificate | For use with HTTPS - the certificate that the service should use. <br> Supported for Cortex XSOAR On-prem (6.x or 8) or when using an engine. Cortex XSOAR 8 Cloud tenants and Cortex XSIAM tenants do not support custom certificates.  | False |
-| Private Key | For use with HTTPS - the private key that the service should use.  <br> Supported for Cortex XSOAR On-prem (6.x or 8) or when using an engine. Cortex XSOAR 8 Cloud tenants and Cortex XSIAM tenants do not support private keys.  | False |
-| incidentType | Incident type | False |
+| Listen Port<br><br>Note: This field only appears in Cortex XSOAR 8 and Cortex XSIAM if you are using an engine. It always appears in Cortex 6.x. | Runs the service on this port. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur, mistakenly indicating that the port is already in use.                           | True |
+| username | Username (see [Security](#security) for more details) |  For Cortex XSOAR 6.x - False <br><br> For Cortex XSOAR 8 and Cortex XSIAM if the integration is running on an engine - False <br><br> For Cortex XSOAR 8 and Cortex XSIAM if the integration is not running on an engine - True  |
+| password | Password (see [Security](#security) for more details) |  For Cortex XSOAR 6.x - False <br><br> For Cortex XSOAR 8 and Cortex XSIAM if the integration is running on an engine - False <br><br> For Cortex XSOAR 8 and Cortex XSIAM if the integration is not running on an engine - True  |
+| certificate | For use with HTTPS - the certificate that the service should use. <br> Supported for Cortex XSOAR On-prem (6.x or 8). Supported for Cortex XSOAR 8 Cloud and Cortex XSIAM only when using an engine. <br><br> Cortex XSOAR 8 Cloud tenants and Cortex XSIAM tenants do not support custom certificates.  | False |
+| Private Key | For use with HTTPS - the private key that the service should use.  <br> Supported for Cortex XSOAR On-prem (6.x or 8). Supported for Cortex XSOAR 8 Cloud and Cortex XSIAM only when using an engine. <br><br> Cortex XSOAR 8 Cloud tenants and Cortex XSIAM tenants do not support private keys.  | False |
+| Result | Automatically generated webhook trigger link (based on user configuration). | Auto-populated. <br><br> Note: This field does not appear for Cortex XSOAR 6.x or Cortex XSOAR 8.9 On-prem|
+| incidentType | Incident, issue, or alert type | False |
 | store_samples | Store sample events for mapping (Because this is a push-based integration, it cannot fetch sample events in the mapping wizard). | False |
 
-4. Click **Done**.
-5. For Cortex XSOAR 6.x:
+2. Click **Done**.
+3. For Cortex XSOAR 6.x:
      1. Navigate to  **Settings > About > Troubleshooting**.
      2. In the **Server Configuration** section, verify that the value for the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 
 ## Set up Authentication
-The Generic Webhook integration running on a Cortex XSOAR 8 Cloud tenant or Cortex XSIAM tenant requires basic authentication. Running on an engine does not require basic authentication, but it is recommended.
-For Cortex XSOAR On-prem (6.x or 8) or when running on an engine, you can set up authentication using custom certificates. For more information about setting up custom certificates for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate).  
 
-## Trigger the Webhook URL 
-**Note:**  
-For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
-For example, `ext-xsoar.mycompany.com`.
+Authentication options depend on the product and version.
 
-For Cortex XSOAR 8 On-prem, Cortex XSOAR Cloud, or Cortex XSIAM, trigger the webhook as follows:  
-`<ext-<CORTEX-XSOAR-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`  
-For example, `https://ext-mytenant.crtx.us.paloaltonetworks.com/xsoar/instance/execute/my_instance_01`.  
-Note that the string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.
+| **Product** | **Authentication required** | **Authentication options** |
+| --- | --- | --- |
+| Cortex XSOAR 8 Cloud tenant | Yes                          | - Basic authentication (username and password)  |
+| Cortex XSIAM tenant | Yes  | - Basic authentication (username and password) |
+| Cortex XSOAR 8 On-prem | No | - Basic authentication (username and password) <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.10/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). |
+| Cortex XSOAR 6.x | No| - Basic authentication (username and password) <br><br> - Header-based authentication using `_header:<HEADER-NAME>` syntax <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for Cortex XSOAR 6.x, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.14/Cortex-XSOAR-Administrator-Guide/HTTPS-with-a-Signed-Certificate).  |
+| Engines (Cortex XSOAR 8 Cloud, Cortex XSOAR 8 On-Prem, Cortex XSIAM, Cortex 6.x) | No | - Basic authentication (username and password) <br><br> - Header-based authentication using `_header:<HEADER-NAME>` syntax (Cortex XSOAR 6.x only) <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for engines, see [Configure an engine to use custom certificates](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Configure-an-engine-to-use-custom-certificates). |
 
-For Cortex XSOAR 6.x, trigger the webhook as follows:  
-`<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`  
-For example, `https://my.xsoar.live/instance/execute/webhook`.  
-Note that the string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.  
+## Determine the webhook URL
 
-If you're not invoking the integration via the server HTTPS endpoint, trigger the webhook URL as follows:  
-`<CORTEX-XSOAR-URL>:<LISTEN_PORT>/`  
-For example, `https://my.xsoar.live:8000/`
+For Cortex XSIAM and Cortex XSOAR 8 Cloud, the **Results** section of the integration configuration provides the webhook URL. We recommend you verify the URL using the instructions below. For on-prem Cortex XSOAR 6.x and Cortex XSOAR 8, you must use the URL template below to determine the webhook URL.
 
-The following examples assume you invoke the integration via the server HTTPS endpoint. If you don't, replace the URL in the examples as suggested above.
+Prerequisite:
+For Cortex XSOAR 8 On-prem, you need to add the ext- FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.
+For example, ext-xsoar.mycompany.com.
 
-**Note**:  
-The ***Listen Port*** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations.
+| **Product** | **URL** | **Example** |
+| --- | --- | --- |
+| Cortex XSOAR 8 Cloud and On-prem | `<ext-<CORTEX-TENANT-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`  | `https://ext-mytenant.crtx.us.paloaltonetworks.com/xsoar/instance/execute/my_instance_01`  |
+| Cortex XSIAM  | `<ext-<CORTEX-TENANT-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>` | `https://ext-mytenant.crtx.us.paloaltonetworks.com/xsoar/instance/execute/my_instance_01` |
+| Cortex XSOAR 6.x | `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>` |  `https://my.xsoar.live/instance/execute/webhook`   |
+
+**Notes**:  
+
+* For Cortex XSIAM, you must replace **xdr** in the tenant URL with **crtx**. For example, if your tenant URL is `https://companyname.xdr.eu.paloaltonetworks.com`  the webhook URL is `https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01`.
+* The string **instance** does not refer to the name of your Cortex instance, it is part of the URL.
+* The name of the instance cannot include special characters.
+* For Cortex XSOAR 6.x or if you are using an engine, if you are not invoking the integration via the server HTTPS endpoint, you can trigger the webhook URL as follows: `<CORTEX-XSOAR-URL>:<LISTEN_PORT>/` For example, `https://my.xsoar.live:8000/`.
 
 ## Usage
 
@@ -57,45 +72,55 @@ The Generic Webhook integration accepts POST HTTP queries, with the following op
 
 | **Field** | **Type** | **Description**                                                                                                                                                                   |
 |-----------| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| name      | string | Name of the incident to be created.                                                                                                                                               |
-| type      | string | Type of the incident to be created. If not provided, the value of the integration parameter ***Incident type*** will be used.                                                     |
-| occurred  | string | Date the incident occurred in ISO-8601 format. If not provided, the trigger time will be used.                                                                                    |
-| rawJson   | object | Details of the incident to be created. Headers can be found in a seperate key. For example, `{"field1":"value1","field2":"value2","headers": {"header_field3": "header_value3"}}` |
+| name      | string | Name of the incident, alert, or issue to be created.                                                                                                                                               |
+| type      | string | Type of the incident, alert, or issue to be created. If not provided, the value of the integration parameter ***incidentType*** is used.                                                     |
+| occurred  | string | Date the incident occurred in ISO-8601 format. If not provided, the trigger time is used.                                                                                    |
+| rawJson   | object | Details of the incident, alert, or issue to be created. Headers can be found in a seperate key. For example, `{"field1":"value1","field2":"value2","headers": {"header_field3": "header_value3"}}` |
 
-For example, the following triggers the webhook using cURL:
+**Note**: The cURL examples below are formatted for macOS. For Windows machines, modify as needed.
 
-`curl -POST https://my.xsoar.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
+### Examples
 
-The request payload does not have to contain the fields mentioned above, and may include anything:
+Basic authentication can be used in three ways with the same username/password configured in the integration:
 
-`curl -POST https://my.xsoar.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '{"string_field":"string_field_value","array_field":["item1","item2"]}'`
+Using -u flag:<br>
+`curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -u "<Username:Password>" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
 
-Multiple inicidents can be created in one request by sending an array as the request body:
+Using Authorization header (where the header value is base64 encoded username:password):<br>
+`curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -H "Authorization: Basic MTIzOjEyMw==" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
+**Note**: `MTIzOjEyMw==` is Base64 encoded username:password example.
 
-`curl -POST https://my.xsoar.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '[{"name":"incident1","rawJson":{"some_field":"some_value"}}, {"name":"incident2","rawJson":{"some_field":"some_value"}}]'`
+Or embedding credentials directly in the URL:<br>
+`curl -X POST https://username:password@ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
 
-The payload could then be mapped in the [Mapping wizard (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper) or [Mapping wizard (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-an-incident-mapper) or [Mapping wizard (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-an-incident-mapper):
+The request payload does not have to contain the fields mentioned above, and may include any JSON fields and values:<br>
+`curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -u "<Username:Password>" -H "Content-Type: application/json" -d '{"string_field":"string_field_value","array_field":["item1","item2"]}'`
 
-- Note that the *Store sample events for mapping* parameter needs to be set.
+Multiple incidents, alerts, or issues can be created in one request by sending an array as the request body:<br>
+`curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -u "<Username:Password>" -H "Content-Type: application/json" -d '[{"name":"incident1","rawJson":{"some_field":"some_value"}}, {"name":"incident2","rawJson":{"some_field":"some_value"}}]'`
 
-    <img width="900" src="./../../doc_files/mapping.png" />
+Using custom header authentication (Cortex XSOAR 6.x only). In this example, the username in the integration instance is set to _header:Authorization and the password in the integration instance is set to  `Basic MYIvOkEyMw==` :<br>
+`curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -H "Authorization: Basic MYIvOkEyMw==" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}' -v`
 
 The response is an array containing an object with the created incident metadata, such as the incident ID.
 
-## Security
+The payload can then be mapped. For more information see:
 
-- We recommend using the authorization header, as described below, to validate the requests sent from your app. If you do not use this header it might result in incident creation from unexpected requests.
-- To validate an incident request creation you can use the *Username/Password* integration parameters for one of the following:
-  - Basic authentication
-  - Verification token given in a request header, by setting the username to `_header:<HEADER-NAME>` and the password to be the header value. 
-     
-        For example, if the request included in the `Authorization` header the value `Bearer XXX`, then the username should be set to `_header:Authorization` and the password should be set to `Bearer XXX`.
-    
-- If you are not using server rerouting as described above, you can configure an HTTPS server by providing a certificate and private key.
+* [Create a mapper (Cortex XSOAR 6.x)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.14/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper)
+* [Create a mapper (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-an-incident-mapper)
+* [Create a mapper (Cortex XSOAR 8.9 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.9/Cortex-XSOAR-On-prem-Documentation/Create-an-incident-mapper)
+* [Create a mapper (Cortex XSIAM)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Map-Fields-to-Alert-Types)
 
-## Troubleshooting
+**Note**: To use the mapping wizard, the **Store sample events** for mapping parameter must be set. Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, we recommend turning off the sample events storage to reduce performance overhead.
 
-- Header Size Limit: Each server or framework may impose a limit on the total size of the headers received in a request. For example, servers like Nginx or Apache have their own default values that can be configured. FastAPI itself doesn't specifically limit the header size, but underlying ASGI servers like Uvicorn or Hypercorn that run FastAPI do have default limits (e.g., Uvicorn has a default of 1MB for the total size of request headers).
-- Allowed Characters: Headers should only use ASCII characters. Non-ASCII characters must be encoded.
-- Header Names and Values: Certain characters are restricted in header names and values. Typically, names cannot include characters such as : or newlines, and values are restricted from including newlines to protect against header injection attacks.
-- Case Sensitivity: Header keys are case-insensitive as per HTTP standards, but it is good practice to keep a consistent casing convention for ease of maintenance and readability.
+## Authorization headers
+
+For Cortex XSOAR 6.x users, you can use the special `_header:<HEADER-NAME>` syntax to authenticate requests using custom headers from your third-party service. This helps prevent unauthorized creation of incidents. Set the username field in the integration to `_header:<HEADER-NAME>` and provide the header value in the password field.
+Example: If the request included in the `Authorization` header the value `Bearer XXX`, then the username should be set to `_header:Authorization` and the password should be set to `Bearer XXX`.
+
+### Troubleshooting authorization headers
+
+* Header Size Limit: Each server or framework may impose a limit on the total size of the headers received in a request. For example, servers such as Nginx or Apache have their own default values that can be configured. FastAPI itself doesn't specifically limit the header size, but underlying ASGI servers like Uvicorn or Hypercorn that run FastAPI do have default limits (For example, Uvicorn has a default of 1MB for the total size of request headers).
+* Allowed Characters: Headers should only use ASCII characters. Non-ASCII characters must be encoded.
+* Header Names and Values: Certain characters are restricted in header names and values. Typically, names cannot include characters such as : or newlines, and values are restricted from including newlines to protect against header injection attacks.
+* Case Sensitivity: Header keys are case-insensitive as per HTTP standards, but it is good practice to keep a consistent casing convention for ease of maintenance and readability.

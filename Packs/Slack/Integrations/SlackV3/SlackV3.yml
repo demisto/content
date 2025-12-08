@@ -1,4 +1,4 @@
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 category: Messaging and Conferencing
@@ -52,6 +52,7 @@ configuration:
   section: Collect
   hidden:
   - marketplacev2
+  - platform
   required: false
   options:
   - incidentAssigned
@@ -171,6 +172,7 @@ configuration:
   hidden:
   - marketplacev2
   - xsoar
+  - platform
 - display: Enable DMs to the bot
   name: enable_dm
   type: 8
@@ -448,6 +450,8 @@ script:
       required: true
     description: Reset user session token in Slack.
     name: slack-user-session-reset
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: 'Supply this argument to only return channels with this name.'
       name: name_filter
@@ -481,14 +485,19 @@ script:
       description: The purpose, or description, of the channel.
       type: string
   - arguments:
-    - description: The channel ID associated with the Slack channel.
+    - description: Deprecated. Use *conversation_id* instead.
       name: channel_id
-      required: true
-    - defaultValue: 100
-      description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
-      name: limit
-    - description: The conversation ID.
+      deprecated: true
+    - description: The name of the conversation. For channels, provide the channel name. For direct messages, use the username or display name. Either this or *conversation_id* is required. If both are provided, *conversation_id* takes precedence.
+      name: conversation_name
+    - description: The ID of the conversation. Either this or *conversation_name* is required. If both are provided, *conversation_id* takes precedence.
       name: conversation_id
+    - defaultValue: 100
+      description: Set this argument to specify how many results to return.
+      name: limit
+    - description: |
+        Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with time stamp ≥ this value. Accepts Unix timestamp or ISO strings (e.g., "1727448000.000200", "2025-10-12T09:00:00+03:00"). Results are returned in descending order.
+      name: from_time
     description: Fetches a conversation's history of messages and events.
     name: slack-get-conversation-history
   - arguments:
@@ -519,10 +528,10 @@ script:
     hidden: true
     quickaction: true
     outputs:
-      - contextPath: Slack.Thread.ID
-        description: The Slack thread ID.
-        type: String
-  dockerimage: demisto/slackv3:1.0.0.117556
+    - contextPath: Slack.Thread.ID
+      description: The Slack thread ID.
+      type: String
+  dockerimage: demisto/slackv3:1.0.0.5301537
   longRunning: true
   runonce: false
   script: '-'

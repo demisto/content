@@ -17,7 +17,8 @@ args:
 - name: formatter
   description: Python 'strptime' formatter string.
 scripttarget: 0
-dockerimage: demisto/python3:3.11.10.115186
+isllm: false
+dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 tests:
 - FormattedDateToEpochTest

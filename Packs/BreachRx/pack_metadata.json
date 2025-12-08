@@ -2,14 +2,17 @@
     "name": "BreachRx",
     "description": "Automate your privacy Incident Response workflow through the BreachRx platform.",
     "support": "partner",
-    "currentVersion": "1.0.20",
+    "currentVersion": "1.0.23",
     "author": "BreachRx",
     "url": "https://breachrx.com",
     "email": "support@breachrx.com",
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Incident Handling",
+        "Incident Response"
+    ],
     "useCases": [],
     "keywords": [
         "Breach",
@@ -30,6 +33,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

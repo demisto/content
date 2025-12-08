@@ -1,7 +1,10 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB OSI Public Leak"
+        "GIB OSI Public Leak",
+        "GIB Compromised Mule",
+        "GIB Attacks Phishing Kit",
+        "GIB Attacks Phishing Group"
     ],
     "caseInsensitive": false,
     "cliName": "gibdatahash",
@@ -25,5 +28,13 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "itemVersion": "1.4.2",
+    "openEnded": false,
+    "systemAssociatedTypes": [
+        "GIB OSI Public Leak",
+        "GIB Compromised Mule",
+        "GIB Attacks Phishing Kit",
+        "GIB Attacks Phishing Group"
+    ]
 }

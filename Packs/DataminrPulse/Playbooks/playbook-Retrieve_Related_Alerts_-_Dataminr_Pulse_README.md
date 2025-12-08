@@ -1,4 +1,4 @@
-This playbook is used to run the Default playbook from XSOAR and to fetch related alerts for Dataminr Pulse. The information required to fetch related alerts will be used from the incident s alert ID for which the playbook is going to run. After that, it will store them in the context.
+This playbook is used to fetch related alerts for Dataminr Pulse. The information required to fetch related alerts will be used from the incident s alert ID for which the playbook is going to run. After that, it will store them in the context.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -17,7 +17,10 @@ This playbook does not use any integrations.
 
 ## Playbook Inputs
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| include_related_alerts | Boolean value indicating whether to include related alerts. If set to "true", it includes related alerts; otherwise, it does not. | ${incident.labels.include_related_alerts} | Optional |
 
 ## Playbook Outputs
 ---

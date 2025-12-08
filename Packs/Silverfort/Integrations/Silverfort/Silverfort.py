@@ -1,4 +1,5 @@
 import time
+
 import jwt
 import urllib3
 from CommonServerPython import *
@@ -7,7 +8,7 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 # CONSTANTS
-UPDATE_REQ_RESPONSE = {'result': 'updated successfully!'}
+UPDATE_REQ_RESPONSE = {"result": "updated successfully!"}
 
 
 def get_jwt_token(app_user_id: str, app_user_secret: str, current_time=None, expire_time_sec: int = 60):

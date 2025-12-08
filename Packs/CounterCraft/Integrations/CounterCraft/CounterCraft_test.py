@@ -1,5 +1,5 @@
-import pytest
 import demistomock as demisto
+import pytest
 from CommonServerPython import formatEpochDate
 
 SERVER_URL = "https://1.2.3.4"
@@ -20,13 +20,10 @@ def get_params(requests_mock, mocker):
 
 
 def test_list_dsns_command(requests_mock, mocker):
-
     from CounterCraft import list_dsns_command
     from test_data.api_response import response_dsns as json_response
 
-    requests_mock.get(
-        f"{SERVER_URL}/api/deception_support_nodes", json=json_response, status_code=200
-    )
+    requests_mock.get(f"{SERVER_URL}/api/deception_support_nodes", json=json_response, status_code=200)
 
     mocker.patch.object(demisto, "results")
     list_dsns_command()
@@ -58,14 +55,10 @@ Remote DSN | Remote DSN | 1.2.3.3 | 7080 |\n| 1 | Local network | Local network 
 
 
 def test_list_providers_command(requests_mock, mocker):
-
     from CounterCraft import list_providers_command
-
     from test_data.api_response import response_providers as json_response
 
-    requests_mock.get(
-        f"{SERVER_URL}/api/providers", json=json_response, status_code=200
-    )
+    requests_mock.get(f"{SERVER_URL}/api/providers", json=json_response, status_code=200)
 
     mocker.patch.object(demisto, "results")
     list_providers_command()
@@ -120,13 +113,10 @@ Routers that are manually created | MANUAL_ROUTER | ACTIVE |\n| 5 | MISP Provide
 
 
 def test_list_campaigns_command(requests_mock, mocker):
-
     from CounterCraft import list_campaigns_command
     from test_data.api_response import response_campaigns as json_response
 
-    requests_mock.get(
-        f"{SERVER_URL}/api/campaigns", json=json_response, status_code=200
-    )
+    requests_mock.get(f"{SERVER_URL}/api/campaigns", json=json_response, status_code=200)
 
     mocker.patch.object(demisto, "results")
     list_campaigns_command()
@@ -158,7 +148,6 @@ Campaign just to be used in devel 2 | DESIGN |\n"
 
 
 def test_list_hosts_command(requests_mock, mocker):
-
     from CounterCraft import list_hosts_command
     from test_data.api_response import response_hosts as json_response
 
@@ -184,17 +173,11 @@ Linux in AWS | Linux machine in AWS | DESIGN | MACHINE |\n"
                 "StatusCode": "DESIGN",
             }
         ],
-        'Host(val.IP && val.IP === obj.IP)': [
-            {
-                'ID': '61daa693-11cf-49a6-8fae-5111f630ee39',
-                'IP': '1.4.5.6'
-            }
-        ]
+        "Host(val.IP && val.IP === obj.IP)": [{"ID": "61daa693-11cf-49a6-8fae-5111f630ee39", "IP": "1.4.5.6"}],
     }
 
 
 def test_list_services_command(requests_mock, mocker):
-
     from CounterCraft import list_services_command
     from test_data.api_response import response_services as json_response
 
@@ -231,13 +214,10 @@ Employee web portal | <p>-</p> | ACTIVE | WEB_SERVER |\n| 2 | Test | <p>-</p> | 
 
 
 def test_list_breadcrumbs_command(requests_mock, mocker):
-
     from CounterCraft import list_breadcrumbs_command
     from test_data.api_response import response_breadcrumbs as json_response
 
-    requests_mock.get(
-        f"{SERVER_URL}/api/breadcrumbs", json=json_response, status_code=200
-    )
+    requests_mock.get(f"{SERVER_URL}/api/breadcrumbs", json=json_response, status_code=200)
 
     mocker.patch.object(demisto, "results")
     list_breadcrumbs_command()
@@ -270,13 +250,10 @@ Fake Document | <p>-</p> | DESIGN | DOCUMENT |\n| 2 | Fake Mobile App | <p>-</p>
 
 
 def test_list_incidents_command(requests_mock, mocker):
-
     from CounterCraft import list_incidents_command
     from test_data.api_response import response_incidents as json_response
 
-    requests_mock.get(
-        f"{SERVER_URL}/api/incidents", json=json_response, status_code=200
-    )
+    requests_mock.get(f"{SERVER_URL}/api/incidents", json=json_response, status_code=200)
 
     mocker.patch.object(demisto, "results")
     list_incidents_command()
@@ -302,7 +279,6 @@ Invalid auth | Invalid auth incident. | OPEN | GREEN |  |\n"
 
 
 def test_get_object_command(requests_mock, mocker):
-
     from CounterCraft import get_object_command
     from test_data.api_response import response_objects as json_response
 
@@ -342,7 +318,6 @@ def test_get_object_command(requests_mock, mocker):
 
 
 def test_get_events_command(requests_mock, mocker):
-
     from CounterCraft import get_events_command
     from test_data.api_response import response_events as json_response
 
@@ -394,7 +369,6 @@ attack.T1078 |\n"
 
 
 def test_create_campaign_command(requests_mock, mocker):
-
     from CounterCraft import create_campaign_command
     from test_data.api_response import response_campaigns as json_response
 
@@ -404,9 +378,7 @@ def test_create_campaign_command(requests_mock, mocker):
         return_value={"name": "TestCampaign", "description": "Test Description"},
     )
 
-    requests_mock.post(
-        f"{SERVER_URL}/api/campaigns", json=json_response["data"][0], status_code=201
-    )
+    requests_mock.post(f"{SERVER_URL}/api/campaigns", json=json_response["data"][0], status_code=201)
 
     mocker.patch.object(demisto, "results")
     create_campaign_command()
@@ -430,11 +402,12 @@ Campaign just to be used in devel | DESIGN |\n"
 
 
 def test_manage_campaign_command(requests_mock, mocker):
-
     from CounterCraft import manage_campaign_command
 
     mocker.patch.object(
-        demisto, "args", return_value={"campaign_id": "1", "operation": "activate"},
+        demisto,
+        "args",
+        return_value={"campaign_id": "1", "operation": "activate"},
     )
 
     requests_mock.patch(
@@ -447,21 +420,15 @@ def test_manage_campaign_command(requests_mock, mocker):
     manage_campaign_command()
     results = demisto.results.call_args[0][0]
 
-    assert (
-        results["HumanReadable"]
-        == "### Campaign Management\n|Id|Message|\n|---|---|\n| 1 | Action successful |\n"
-    )
+    assert results["HumanReadable"] == "### Campaign Management\n|Id|Message|\n|---|---|\n| 1 | Action successful |\n"
 
     assert results["Contents"] == {"message": "Action successful"}
     assert results["EntryContext"] == {
-        "CounterCraft.Campaign(val.ID && val.ID === obj.ID)": [
-            {"ID": "1", "Message": "Action successful"}
-        ]
+        "CounterCraft.Campaign(val.ID && val.ID === obj.ID)": [{"ID": "1", "Message": "Action successful"}]
     }
 
 
 def test_create_host_command(requests_mock, mocker):
-
     from CounterCraft import create_host_machine_command
     from test_data.api_response import response_hosts as json_response
 
@@ -481,9 +448,7 @@ def test_create_host_command(requests_mock, mocker):
         },
     )
 
-    requests_mock.post(
-        f"{SERVER_URL}/api/hosts", json=json_response["data"][0], status_code=201
-    )
+    requests_mock.post(f"{SERVER_URL}/api/hosts", json=json_response["data"][0], status_code=201)
 
     mocker.patch.object(demisto, "results")
     create_host_machine_command()
@@ -508,11 +473,12 @@ Linux in AWS | Linux machine in AWS | DESIGN | MACHINE |\n"
 
 
 def test_manage_host_command(requests_mock, mocker):
-
     from CounterCraft import manage_host_command
 
     mocker.patch.object(
-        demisto, "args", return_value={"host_id": "1", "operation": "activate"},
+        demisto,
+        "args",
+        return_value={"host_id": "1", "operation": "activate"},
     )
 
     requests_mock.patch(
@@ -525,10 +491,7 @@ def test_manage_host_command(requests_mock, mocker):
     manage_host_command()
     results = demisto.results.call_args[0][0]
 
-    assert (
-        results["HumanReadable"]
-        == "### Host Management\n|Id|Message|\n|---|---|\n| 1 | Action successful |\n"
-    )
+    assert results["HumanReadable"] == "### Host Management\n|Id|Message|\n|---|---|\n| 1 | Action successful |\n"
 
     assert results["Contents"] == {"message": "Action successful"}
     assert results["EntryContext"] == {
@@ -540,11 +503,12 @@ def test_manage_host_command(requests_mock, mocker):
 
 
 def test_manage_service_command(requests_mock, mocker):
-
     from CounterCraft import manage_service_command
 
     mocker.patch.object(
-        demisto, "args", return_value={"service_id": "1", "operation": "activate"},
+        demisto,
+        "args",
+        return_value={"service_id": "1", "operation": "activate"},
     )
 
     requests_mock.patch(
@@ -557,10 +521,7 @@ def test_manage_service_command(requests_mock, mocker):
     manage_service_command()
     results = demisto.results.call_args[0][0]
 
-    assert (
-        results["HumanReadable"]
-        == "### Service Management\n|Id|Message|\n|---|---|\n| 1 | Action successful |\n"
-    )
+    assert results["HumanReadable"] == "### Service Management\n|Id|Message|\n|---|---|\n| 1 | Action successful |\n"
 
     assert results["Contents"] == {"message": "Action successful"}
     assert results["EntryContext"] == {
@@ -572,11 +533,12 @@ def test_manage_service_command(requests_mock, mocker):
 
 
 def test_manage_breadcrumb_command(requests_mock, mocker):
-
     from CounterCraft import manage_breadcrumb_command
 
     mocker.patch.object(
-        demisto, "args", return_value={"breadcrumb_id": "1", "operation": "activate"},
+        demisto,
+        "args",
+        return_value={"breadcrumb_id": "1", "operation": "activate"},
     )
 
     requests_mock.patch(
@@ -589,10 +551,7 @@ def test_manage_breadcrumb_command(requests_mock, mocker):
     manage_breadcrumb_command()
     results = demisto.results.call_args[0][0]
 
-    assert (
-        results["HumanReadable"]
-        == "### Breadcrumb Management\n|Id|Message|\n|---|---|\n| 1 | Action successful |\n"
-    )
+    assert results["HumanReadable"] == "### Breadcrumb Management\n|Id|Message|\n|---|---|\n| 1 | Action successful |\n"
 
     assert results["Contents"] == {"message": "Action successful"}
     assert results["EntryContext"] == {
@@ -604,12 +563,13 @@ def test_manage_breadcrumb_command(requests_mock, mocker):
 
 
 def test_fetch_incidents_command(requests_mock, mocker):
-
     from CounterCraft import fetch_incidents_command
     from test_data.api_response import response_alerts as json_response
 
     requests_mock.get(
-        f"{SERVER_URL}/api/notifications", json=json_response, status_code=200,
+        f"{SERVER_URL}/api/notifications",
+        json=json_response,
+        status_code=200,
     )
 
     mocker.patch.object(demisto, "incidents")

@@ -1,7 +1,7 @@
 commonfields:
   id: Github Event Collector
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Github Event Collector
@@ -74,12 +74,19 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: github-get-events
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.4027705
   isfetchevents: true
   subtype: python3
 marketplaces:
 - marketplacev2
 - platform
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam
 fromversion: 6.8.0
 tests:
 - No tests

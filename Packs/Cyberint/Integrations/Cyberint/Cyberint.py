@@ -1,9 +1,9 @@
 # pylint: disable=unsubscriptable-object
-""" IMPORTS """
+"""IMPORTS"""
 
 import copy
-from contextlib import closing
 from collections.abc import Iterable
+from contextlib import closing
 
 from CommonServerPython import *
 from requests import Response
@@ -44,24 +44,26 @@ class Client(BaseClient):
     API Client to communicate with Cyberint API endpoints.
     """
 
-    def __init__(self, base_url: str, access_token: str, verify_ssl: bool, proxy: bool):
+    def __init__(self, base_url: str, region: str, access_token: str, verify_ssl: bool, proxy: bool):
         """
         Client for Cyberint RESTful API.
 
         Args:
             base_url (str): URL to access when getting alerts.
+            region (str): Region for the API.
             access_token (str): Access token for authentication.
             verify_ssl (bool): specifies whether to verify the SSL certificate or not.
             proxy (bool): specifies if to use XSOAR proxy settings.
         """
         params = demisto.params()
+        self._region = (region or "us").lower()
         self._cookies = {"access_token": access_token}
         self._headers = {
             "X-Integration-Type": "XSOAR",
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.4"
+            "X-Integration-Version": "1.1.12",
         }
         super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
 
@@ -147,9 +149,7 @@ class Client(BaseClient):
             },
         }
         body = remove_empty_elements(body)
-        response = self._http_request(
-            method="PUT", json_data=body, cookies=self._cookies, url_suffix="api/v1/alerts/status"
-        )
+        response = self._http_request(method="PUT", json_data=body, cookies=self._cookies, url_suffix="api/v1/alerts/status")
         return response
 
     def get_csv_file(self, alert_id: str, attachment_id: str, delimiter: bytes = b"\r\n") -> Iterable[str]:
@@ -234,10 +234,7 @@ def test_module(client: Client):
             return "ok"
     except DemistoException as exception:
         if "Invalid token or token expired" in str(exception):
-            error_message = (
-                "Error verifying access token and / or URL, make sure the "
-                "configuration parameters are correct."
-            )
+            error_message = "Error verifying access token and / or URL, make sure the configuration parameters are correct."
         else:
             error_message = str(exception)
         return error_message
@@ -258,8 +255,9 @@ def verify_input_date_format(date: str | None) -> str | None:
     return date
 
 
-def set_date_pair(start_date_arg: str | None, end_date_arg: str | None, date_range_arg: str | None
-                  ) -> tuple[str | None, str | None]:
+def set_date_pair(
+    start_date_arg: str | None, end_date_arg: str | None, date_range_arg: str | None
+) -> tuple[str | None, str | None]:
     """
     Calculate the date range to send to the API based on the arguments from the user.
 
@@ -285,8 +283,7 @@ def set_date_pair(start_date_arg: str | None, end_date_arg: str | None, date_ran
     return start_date_arg, end_date_arg
 
 
-def extract_data_from_csv_stream(client: Client, alert_id: str, attachment_id: str, delimiter: bytes = b"\r\n"
-                                 ) -> list[dict]:
+def extract_data_from_csv_stream(client: Client, alert_id: str, attachment_id: str, delimiter: bytes = b"\r\n") -> list[dict]:
     """
     Call the attachment download API and parse required fields.
 
@@ -314,8 +311,7 @@ def extract_data_from_csv_stream(client: Client, alert_id: str, attachment_id: s
         else:
             try:
                 extracted_field_data = {
-                    field_name.lower(): csv_line_separated[field_index]
-                    for field_name, field_index in field_indexes.items()
+                    field_name.lower(): csv_line_separated[field_index] for field_name, field_index in field_indexes.items()
                 }
                 if extracted_field_data:
                     information_found.append(extracted_field_data)
@@ -381,7 +377,7 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
         outputs.append(alert)
     total_alerts = result.get("total")
     table_headers = ["id", "ref_id", "title", "status", "severity", "created_date", "update_date", "type", "environment"]
-    readable_output = f'Total alerts: {total_alerts}\nCurrent page: {args.get("page", 1)}\n'
+    readable_output = f"Total alerts: {total_alerts}\nCurrent page: {args.get('page', 1)}\n"
     readable_output += tableToMarkdown(name="Cyberint alerts:", t=outputs, headers=table_headers, removeNull=True)
     return CommandResults(
         outputs_key_field="ref_id",
@@ -444,8 +440,7 @@ def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
     )
 
 
-def cyberint_alerts_get_attachment_command(client: Client, alert_ref_id: str, attachment_id: str, attachment_name: str
-                                           ) -> dict:
+def cyberint_alerts_get_attachment_command(client: Client, alert_ref_id: str, attachment_id: str, attachment_name: str) -> dict:
     """
     Retrieve attachment by alert reference ID and attachment internal ID.
     Attachments includes: CSV files , Screenshots, and alert attachments files.
@@ -628,8 +623,10 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system(client: Client, args: dict[str, Any],
-                         ) -> str:
+def update_remote_system(
+    client: Client,
+    args: dict[str, Any],
+) -> str:
     """
     This command pushes local changes to the remote system.
     Args:
@@ -646,7 +643,7 @@ def update_remote_system(client: Client, args: dict[str, Any],
     incident_id = parsed_args.remote_incident_id
 
     demisto.debug(
-        f"******** Got the following delta keys {str(list(parsed_args.delta.keys()))}"
+        f"******** Got the following delta keys {list(parsed_args.delta.keys())!s}"
         if parsed_args.delta
         else "******** There is no delta fields in Cyberint"
     )
@@ -661,8 +658,9 @@ def update_remote_system(client: Client, args: dict[str, Any],
             updated_arguments = {}
             if updated_status := update_args.get("status"):
                 closure_reason = update_args.get("closure_reason", "other")
-                closure_reason_description = (
-                    update_args.get("closure_reason_description", "user wasn't specified closure reason when closed alert"))
+                closure_reason_description = update_args.get(
+                    "closure_reason_description", "user wasn't specified closure reason when closed alert"
+                )
                 if updated_status != "closed":
                     updated_arguments["status"] = updated_status
                 else:
@@ -684,9 +682,7 @@ def update_remote_system(client: Client, args: dict[str, Any],
         demisto.debug(f"******** Remote data of {incident_id}: {parsed_args.data}")
 
     except Exception as error:
-        demisto.error(
-            f"Error in Cyberint outgoing mirror for incident {incident_id}\nError message: {error}"
-        )
+        demisto.error(f"Error in Cyberint outgoing mirror for incident {incident_id}\nError message: {error}")
 
     finally:
         return incident_id
@@ -841,13 +837,9 @@ def fetch_incidents(
         for attachment_type, attachments_path in attachments_keys.items():
             for path in attachments_path:
                 current_attachments = dict_safe_get(alert, path, default_return_value=[])
-                attachment_list = (
-                    current_attachments if isinstance(current_attachments, list) else [current_attachments]
-                )
+                attachment_list = current_attachments if isinstance(current_attachments, list) else [current_attachments]
                 # Retrieve alert Incident attachments files - Attachments, CSV, Screenshot, and Analysis report.
-                current_incident_attachments = get_alert_attachments(
-                    client, attachment_list, attachment_type, alert_id
-                )  # type: ignore
+                current_incident_attachments = get_alert_attachments(client, attachment_list, attachment_type, alert_id)  # type: ignore
 
                 incident_attachments.extend(current_incident_attachments)
                 for tmp_attachment in attachment_list:
@@ -888,7 +880,7 @@ def fetch_incidents(
                 alert_data.update({"content": incident_csv_record})
                 alert.update({"attachments": alert_data})
 
-                alert_name = f"Cyberint alert {alert_id} ({index+1}): {alert_title}"
+                alert_name = f"Cyberint alert {alert_id} ({index + 1}): {alert_title}"
                 alert.update({"alert_name": alert_name})
 
                 incident.update({"name": alert_name, "rawJSON": json.dumps(alert)})
@@ -921,15 +913,17 @@ def main():
     command = demisto.command()
     access_token = params.get("access_token")
     url = params.get("environment")
+    region = params.get("region", "us")
 
     verify_certificate = not params.get("insecure", False)
     first_fetch_time = params.get("first_fetch", "3 days").strip()
     proxy = params.get("proxy", False)
-    base_url = f"{url}/alert/"
+    base_url = f"{url}/{region}/alert/"
     demisto.info(f"Command being called is {command}")
     try:
         client = Client(
             base_url=base_url,
+            region=region,
             verify_ssl=verify_certificate,
             access_token=access_token,
             proxy=proxy,
@@ -947,9 +941,7 @@ def main():
             max_fetch = int(params.get("max_fetch", "50"))
             duplicate_alert = params.get("duplicate_alert", False)
             mirror_direction = (
-                None
-                if params.get("mirror_direction") == "None"
-                else MIRROR_DIRECTION_MAPPING[params["mirror_direction"]]
+                None if params.get("mirror_direction") == "None" else MIRROR_DIRECTION_MAPPING[params["mirror_direction"]]
             )
             close_alert = params.get("close_alert", False)
             next_run, incidents = fetch_incidents(
@@ -989,10 +981,7 @@ def main():
             return_results(cyberint_alerts_get_analysis_report_command(client, **demisto.args()))
     except Exception as e:
         if "Invalid token or token expired" in str(e):
-            error_message = (
-                "Error verifying access token and / or URL, make sure the "
-                "configuration parameters are correct."
-            )
+            error_message = "Error verifying access token and / or URL, make sure the configuration parameters are correct."
         elif "datetime" in str(e).lower():
             error_message = (
                 "Invalid time specified, "
@@ -1002,7 +991,7 @@ def main():
         elif "Unauthorized alerts requested" in str(e):
             error_message = "Some of the alerts selected to update are either blocked or not found."
         else:
-            error_message = f"Failed to execute {command} command. Error: {str(e)}"
+            error_message = f"Failed to execute {command} command. Error: {e!s}"
         return_error(error_message)
 
 

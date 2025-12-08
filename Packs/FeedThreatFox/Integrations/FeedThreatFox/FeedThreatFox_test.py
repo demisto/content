@@ -1,9 +1,9 @@
-from CommonServerPython import DemistoException, FeedIndicatorType
 import json
-from freezegun import freeze_time
-import pytest
 
 import FeedThreatFox as ftf
+import pytest
+from CommonServerPython import DemistoException, FeedIndicatorType
+from freezegun import freeze_time
 
 CLIENT = ftf.Client(base_url="https://threatfox-api.abuse.ch/")
 
@@ -163,8 +163,8 @@ def test_threatfox_get_indicators_command__bad_args():
     Then:
         - An exception is thrown.
     """
-    from FeedThreatFox import threatfox_get_indicators_command
     from CommonServerPython import DemistoException
+    from FeedThreatFox import threatfox_get_indicators_command
 
     with pytest.raises(DemistoException):
         threatfox_get_indicators_command(CLIENT, {"days": 1, "tag": "bla"})
@@ -181,8 +181,8 @@ def test_threatfox_get_indicators_command__bad_response(mocker):
     Then:
         - An exception is thrown.
     """
-    from FeedThreatFox import threatfox_get_indicators_command
     from CommonServerPython import DemistoException
+    from FeedThreatFox import threatfox_get_indicators_command
 
     mocker.patch.object(CLIENT, "_http_request", return_value={"query_status": "not okay", "data": "details about the problem"})
     with pytest.raises(DemistoException):
@@ -418,6 +418,40 @@ def test_tags(indicator, with_ports, expected_tags):
 
     tags = tags(indicator, with_ports)
     assert set(tags) == set(expected_tags)
+
+
+tags_data = [
+    (
+        {"malware_printable": "Unknown malware"},
+        ["threatFoxTagFromConfiguration"],
+        False,  # case malware_printable in unknown
+        ["threatfoxtagfromconfiguration"],
+    ),
+    (
+        {"malware_printable": "Unknown malware"},
+        ["threatFoxTagFromConfiguration", "threatFoxTagFromConfiguration2"],
+        False,  # case malware_printable in unknown
+        ["threatfoxtagfromconfiguration", "threatfoxtagfromconfiguration2"],
+    ),
+]
+
+
+@pytest.mark.parametrize("indicator, tags_from_conf, with_ports, expected_tags", tags_data)
+def test_tags_from_configuration(indicator, tags_from_conf, with_ports, expected_tags):
+    """
+    Given:
+        - The raw json of an indicator and a with_ports boolean argument.
+
+    When:
+        - Running tags func.
+
+    Then:
+        - The right list of tags to add to the indicator is returned.
+    """
+    from FeedThreatFox import tags
+
+    local_tags = tags(indicator, with_ports, tags_from_conf)
+    assert set(local_tags) == set(expected_tags)
 
 
 value_data = [({"ioc_type": "ip:port", "ioc": "1.1.1.1:80"}, "1.1.1.1"), ({"ioc_type": "url", "ioc": "www..."}, "www...")]

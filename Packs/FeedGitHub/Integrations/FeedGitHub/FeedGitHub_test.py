@@ -1,10 +1,9 @@
 import base64
-
-import pytest
-
 import json
-from freezegun import freeze_time
+
 import demistomock as demisto
+import pytest
+from freezegun import freeze_time
 
 
 def util_load_json(path):
@@ -42,7 +41,8 @@ def test_get_content_files_from_repo(mocker):
     When:
      - Calling get_content_files_from_repo to fetch the content of the relevant files.
     Then:
-     - Returns the content of the relevant files matching the expected results.
+     - Assert one HTTP request is made to get the contents of the file with the relevant extension.
+     - Assert the returned content of the relevant files matches the expected results.
     """
     from FeedGitHub import get_content_files_from_repo
 
@@ -61,13 +61,14 @@ def test_get_content_files_from_repo(mocker):
             b"- GET /\n"
             b"COBALT STRIKE TRAFFIC:\n\n"
             b"- 167.172.154[.]189 port 80 - GET /36.ps1\n"
-        ).decode('utf-8')
+        ).decode("utf-8")
     }
-    mocker.patch.object(client, "_http_request", return_value=return_data)
+    mock_http_request = mocker.patch.object(client, "_http_request", return_value=return_data)
     content_files = get_content_files_from_repo(client, relevant_files, params)
-    assert content_files == util_load_json(
-        "test_data/get_content-files-from-repo-result.json"
-    )
+
+    assert mock_http_request.call_count == 1  # One .txt file in all relevant committed files
+    assert mock_http_request.call_args.kwargs == {"method": "GET", "full_url": relevant_files[1]["contents_url"]}
+    assert content_files == util_load_json("test_data/get_content-files-from-repo-result.json")
 
 
 def test_get_commit_files(mocker):
@@ -93,9 +94,7 @@ def test_get_commit_files(mocker):
         "get_files_between_commits",
         return_value=(all_commits_files, current_repo_head_sha),
     )
-    relevant_files, current_repo_head_sha = get_commits_files(
-        client, base, head, is_first_fetch
-    )
+    relevant_files, current_repo_head_sha = get_commits_files(client, base, head, is_first_fetch)
     assert relevant_files == util_load_json("test_data/relevant-files.json")
 
 
@@ -119,14 +118,12 @@ def test_filter_out_files_by_status():
     ]
 
     expected_output = [
-        "http://example.com/file1",
-        "http://example.com/file2",
-        "http://example.com/file5",
+        {"status": "added", "filename": "http://example.com/file1"},
+        {"status": "modified", "filename": "http://example.com/file2"},
+        {"status": "added", "filename": "http://example.com/file5"},
     ]
     actual_output = filter_out_files_by_status(commits_files)
-    assert (
-        actual_output == expected_output
-    ), f"Expected {expected_output}, but got {actual_output}"
+    assert actual_output == expected_output, f"Expected {expected_output}, but got {actual_output}"
 
 
 @freeze_time("2024-05-12T15:30:49.330015")
@@ -162,6 +159,29 @@ def test_parse_and_map_yara_content(mocker):
     assert list_parsed_rules == util_load_json("test_data/list-parsed-rules-res.json")
 
 
+def test_parse_and_map_yara_content_invalid_rule(mocker):
+    """
+    Given:
+     - An invalid YARA rule file as input.
+    When:
+     - Parsing and mapping the YARA content using the parse_and_map_yara_content function.
+    Then:
+     - Ensure that an empty list is returned and an error is logged.
+    """
+    from FeedGitHub import parse_and_map_yara_content
+
+    demisto_error_mock = mocker.patch.object(demisto, "error")
+
+    yara_rule_file = {"invalid-yara-rule.yar": "invalid yara rule"}
+
+    parsed_rules = parse_and_map_yara_content(yara_rule_file)
+
+    assert parsed_rules == []
+    assert demisto_error_mock.call_args[0][0] == (
+        "File: 'invalid-yara-rule.yar' cannot be processed. Error Message: Unknown text invalid for token of type ID on line 1"
+    )
+
+
 @freeze_time("2024-05-12T15:30:49.330015")
 def test_extract_text_indicators():
     """
@@ -175,9 +195,7 @@ def test_extract_text_indicators():
     """
     from FeedGitHub import extract_text_indicators
 
-    ioc_indicators_input = {
-        "example.com": util_load_txt("test_data/test-ioc-indicators.txt")
-    }
+    ioc_indicators_input = {"example.com": util_load_txt("test_data/test-ioc-indicators.txt")}
     params = {"owner": "example.owner", "repo": "example.repo"}
     res_indicators = extract_text_indicators(ioc_indicators_input, params)
     assert res_indicators == util_load_json("test_data/iocs-res.json")
@@ -194,8 +212,9 @@ def test_get_stix_indicators():
     """
     from FeedGitHub import get_stix_indicators
 
-    stix_indicators_input = util_load_json("test_data/taxii_test.json")
-    res_indicators = get_stix_indicators(stix_indicators_input)
+    with open("test_data/taxii_test.json", encoding="utf-8") as f:
+        file_name_contents = [{"taxii_test.json": f.read()}]
+        res_indicators = get_stix_indicators(file_name_contents)
     assert res_indicators == util_load_json("test_data/taxii_test_res.json")
 
 
@@ -216,10 +235,7 @@ def test_negative_limit(mocker):
 
     with pytest.raises(ValueError) as ve:
         get_indicators_command(client, {}, args)
-    assert (
-        ve.value.args[0]
-        == "get_indicators_command return with error. \n\nError massage: Limit must be a positive number."
-    )
+    assert ve.value.args[0] == "get_indicators_command return with error. \n\nError massage: Limit must be a positive number."
 
 
 def test_fetch_indicators(mocker):
@@ -270,27 +286,26 @@ def test_fetch_indicators_enrichment_excluded(mocker):
     import FeedGitHub
 
     client = mock_client()
-    mocker.patch.object(demisto, 'debug')
-    mocker.patch.object(demisto, 'setLastRun')
-    params = {'fetch_since': '15 days ago',
-              'enrichmentExcluded': True}
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "setLastRun")
+    params = {"fetch_since": "15 days ago", "enrichmentExcluded": True}
     mocker.patch.object(
         client,
-        'get_commits_between_dates',
-        return_value='046a799ebe004e1bff686d6b774387b3bdb3d1ce',
+        "get_commits_between_dates",
+        return_value="046a799ebe004e1bff686d6b774387b3bdb3d1ce",
     )
     mocker.patch.object(
         FeedGitHub,
-        'get_indicators',
+        "get_indicators",
         return_value=(
-            util_load_json('test_data/iterator-test.json'),
-            '9a611449423b9992c126c20e47c5de4f58fc1c0e',
+            util_load_json("test_data/iterator-test.json"),
+            "9a611449423b9992c126c20e47c5de4f58fc1c0e",
         ),
     )
     results = FeedGitHub.fetch_indicators_command(client, params, {})
-    expected: list = util_load_json('test_data/fetch-indicators-res.json')
+    expected: list = util_load_json("test_data/fetch-indicators-res.json")
     for ind in expected:
-        ind['enrichmentExcluded'] = True
+        ind["enrichmentExcluded"] = True
 
     assert results == expected
 
@@ -433,6 +448,7 @@ def test_identify_json_structure():
      - Returns the identified structure based on the provided JSON data.
     """
     from FeedGitHub import identify_json_structure
+
     json_data_bundle = {"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}
     assert identify_json_structure(json_data_bundle) == "Bundle"
 
@@ -459,59 +475,53 @@ def test_filtering_stix_files():
      - Returns a list containing only the STIX files from the input list.
     """
     from FeedGitHub import filtering_stix_files
-    content_files = [
-        [{"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}],  # STIX format
-        [{"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}],  # STIX format
-        [{"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"}],  # Non-STIX format
+
+    file_names = ["fileA.json", "fileB.json", "fileC.json"]
+    file_contents = [
+        '{"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}',  # STIX format
+        '{"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}',  # STIX format
+        '{"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"}',  # Non-STIX format
     ]
     expected_result = [
         {"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"},
         {"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}},
-        {'type': 'non-stix', 'id': 'non-stix--12345678-1234-5678-1234-567812345678'}
+        {"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"},
     ]
-    assert filtering_stix_files(content_files) == expected_result
+    assert filtering_stix_files(file_names=file_names, file_contents=file_contents) == expected_result
 
 
 def test_fetch_indicators_command_with_tlp_color_red(mocker):
     """
-        Given: params with tlp_color set to RED and enrichmentExcluded set to False.
-        When: Calling fetch_indicators_command with the provided parameters.
-        Then: Verify that the fetch_indicators function is called with the expected parameters.
+    Given: params with tlp_color set to RED and enrichmentExcluded set to False.
+    When: Calling fetch_indicators_command with the provided parameters.
+    Then: Verify that the fetch_indicators function is called with the expected parameters.
     """
     from FeedGitHub import fetch_indicators_command
+
     client_mock = mock_client()
-    params = {
-        'feedTags': 'tag1,tag2',
-        'tlp_color': 'RED',
-        'enrichmentExcluded': False,
-        'limit': '50'
-    }
+    params = {"feedTags": "tag1,tag2", "tlp_color": "RED", "enrichmentExcluded": False, "limit": "50"}
     args = {}
-    mocker.patch('FeedGitHub.is_xsiam_or_xsoar_saas', return_value=True)
-    mocker.patch.object(demisto, 'params', return_value=params)
-    fetch_indicators_mock = mocker.patch('FeedGitHub.fetch_indicators')
+    mocker.patch("FeedGitHub.is_xsiam_or_xsoar_saas", return_value=True)
+    mocker.patch.object(demisto, "params", return_value=params)
+    fetch_indicators_mock = mocker.patch("FeedGitHub.fetch_indicators")
 
     # Call the function under test
     fetch_indicators_command(client_mock, params, args)
 
     # Assertion - verify the output
-    assert fetch_indicators_mock.call_args.kwargs.get('enrichment_excluded') is True
+    assert fetch_indicators_mock.call_args.kwargs.get("enrichment_excluded") is True
 
 
 def test_get_indicators_command_with_tlp_color_red(mocker):
     from FeedGitHub import get_indicators_command
+
     client_mock = mock_client()
-    params = {
-        'feedTags': 'tag1,tag2',
-        'tlp_color': 'RED',
-        'enrichmentExcluded': False,
-        'limit': '50'
-    }
+    params = {"feedTags": "tag1,tag2", "tlp_color": "RED", "enrichmentExcluded": False, "limit": "50"}
     args = {}
-    mocker.patch('FeedGitHub.Client.get_commits_between_dates', return_value=['test_hash'])
-    mocker.patch('FeedGitHub.is_xsiam_or_xsoar_saas', return_value=True)
-    mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch('FeedGitHub.get_indicators', return_value=([{"name": "test_ind"}], None))
+    mocker.patch("FeedGitHub.Client.get_commits_between_dates", return_value=["test_hash"])
+    mocker.patch("FeedGitHub.is_xsiam_or_xsoar_saas", return_value=True)
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch("FeedGitHub.get_indicators", return_value=([{"name": "test_ind"}], None))
 
     command_res = get_indicators_command(client_mock, params, args)
-    assert command_res.outputs[0].get('enrichmentExcluded') is True
+    assert command_res.outputs[0].get("enrichmentExcluded") is True

@@ -1,16 +1,10 @@
-from CommonServerPython import *
-
 import json
 
 import FeedMISPThreatActors
-from FeedMISPThreatActors import build_relationships, parse_refs, fetch_indicators_command, main, Client, get_indicators_command
+from CommonServerPython import *
+from FeedMISPThreatActors import Client, build_relationships, fetch_indicators_command, get_indicators_command, main, parse_refs
 
-
-CLIENT = Client(
-    base_url='example.com',
-    verify=False,
-    proxy=False,
-    reliability='B - Usually reliable')
+CLIENT = Client(base_url="example.com", verify=False, proxy=False, reliability="B - Usually reliable")
 
 
 def _open_json_file(path):
@@ -32,12 +26,12 @@ def test_parse_refs():
     Then:
         Ensure the function returns a list of parsed references with the correct structure.
     """
-    refs = ['link1', 'link2']
-    parsed_refs = parse_refs('original_ioc', refs)
+    refs = ["link1", "link2"]
+    parsed_refs = parse_refs("original_ioc", refs)
 
     assert len(parsed_refs) == 2
-    assert parsed_refs[0]['link'] == 'link1'
-    assert parsed_refs[1]['link'] == 'link2'
+    assert parsed_refs[0]["link"] == "link1"
+    assert parsed_refs[1]["link"] == "link2"
 
 
 def test_build_relationship():
@@ -63,15 +57,15 @@ def test_build_relationship():
         original_ioc=original_ioc,
         related_iocs=related_iocs,
         related_iocs_type=related_iocs_type,
-        relationship_name=relationship_name
+        relationship_name=relationship_name,
     )
 
     assert len(relationships) == 2
 
     for index, relationship in enumerate(relationships, start=0):
-        assert relationship['entityA'] == original_ioc
-        assert relationship['name'] == relationship_name
-        assert relationship['entityB'] == related_iocs[index]
+        assert relationship["entityA"] == original_ioc
+        assert relationship["name"] == relationship_name
+        assert relationship["entityB"] == related_iocs[index]
 
 
 def test_fetch_indicators_command(mocker):
@@ -94,9 +88,9 @@ def test_fetch_indicators_command(mocker):
     mocker.patch.object(CLIENT, "get_threat_actors_galaxy_file", return_value=data)
     version, results = fetch_indicators_command(CLIENT, "", "WHITE")
 
-    assert results[0]['value'] == expected[0]['value']
-    assert results[0]['type'] == expected[0]['type']
-    assert results[0]['fields']['description'] == expected[0]['fields']['description']
+    assert results[0]["value"] == expected[0]["value"]
+    assert results[0]["type"] == expected[0]["type"]
+    assert results[0]["fields"]["description"] == expected[0]["fields"]["description"]
 
 
 def test_get_indicators_command(mocker):
@@ -118,7 +112,7 @@ def test_get_indicators_command(mocker):
     mocker.patch.object(CLIENT, "get_threat_actors_galaxy_file", return_value=data)
     results = get_indicators_command(CLIENT, {})
 
-    assert results.to_context()['HumanReadable'] == expected
+    assert results.to_context()["HumanReadable"] == expected
 
 
 def test_feedmispthreatactors_main_command_success(mocker):
@@ -139,17 +133,23 @@ def test_feedmispthreatactors_main_command_success(mocker):
     """
     raw_response = _open_json_file("test_data/misp_threat_actor_galaxy_example.json")
 
-    mocker.patch.object(demisto, "params", return_value={
-        "url": "https://example.com",
-        "proxy": False,
-        "verify_certificate": False,
-        "reliability": "B - Usually reliable"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://example.com",
+            "proxy": False,
+            "verify_certificate": False,
+            "reliability": "B - Usually reliable",
+        },
+    )
     mocker.patch.object(CLIENT, "get_threat_actors_galaxy_file", return_value=raw_response)
     mocker.patch.object(demisto, "command", return_value="fetch-indicators")
-    mocker.patch.object(FeedMISPThreatActors,
-                        "fetch_indicators_command",
-                        return_value=(1, _open_json_file('test_data/fetch_indicator_results.json')))
+    mocker.patch.object(
+        FeedMISPThreatActors,
+        "fetch_indicators_command",
+        return_value=(1, _open_json_file("test_data/fetch_indicator_results.json")),
+    )
     mock_createIndicators = mocker.patch.object(demisto, "createIndicators")
 
     main()

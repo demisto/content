@@ -1,6 +1,7 @@
 Groups all tasks for a specific incident according to the task headers (titles).
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Groups all tasks for a specific incident according to the task headers (titles).
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ Groups all tasks for a specific incident according to the task headers (titles).
 | investigation_id | Incident ID to create the task table. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

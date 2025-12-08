@@ -1,10 +1,10 @@
 # Microsoft EXCHANGE SERVER
 
-This pack includes XSIAM content 
+This pack includes XSIAM content
 
 ## Configuration on Server Side
 
-1. Open the EAC and navigate to Servers > Servers > select the Mailbox server that you want to configure > and click Edit 
+1. Open the EAC and navigate to Servers > Servers > select the Mailbox server that you want to configure > and click Edit
 
 2. On the server properties page, click Transport Logs. In the Message tracking log section, change any of the following settings:
 
@@ -12,13 +12,16 @@ This pack includes XSIAM content
 
    `Message tracking log path`: The value you specify must be on the local Exchange server. If the folder doesn't exist, it's created for you when you click Save.
 
-#### Example log path:
+#### Example log path
+
 `C:\Program Files\Microsoft\Exchange Server\V15\TransportRoles\Logs\MessageTracking\`
 
 *Ensure that the tracking log path here matches the one in the YAML configuration.*
 
 3. When you're finished, click Save.
+
 ## Filebeat Collection
+
 In order to use the collector, you need to use the following option to collect events from the vendor:
 
 - [XDRC (XDR Collector)](#xdrc-xdr-collector)
@@ -35,7 +38,7 @@ When configuring the instance, you should use a YAML that configures the vendor 
 
 Copy and paste the below YAML in the "Filebeat Configuration File" section (inside the relevant profile under the "XDR Collectors Profiles").
 
-#### Filebeat Configuration file:
+#### Filebeat Configuration file
 
 ```commandline
 filebeat.inputs:

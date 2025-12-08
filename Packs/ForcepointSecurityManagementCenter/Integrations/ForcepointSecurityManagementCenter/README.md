@@ -3,7 +3,6 @@ This integration was integrated and tested with version 6.10 of Forcepoint Secur
 
 ## Configure Forcepoint Security Management Center in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -11,7 +10,6 @@ This integration was integrated and tested with version 6.10 of Forcepoint Secur
 | Port |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 
@@ -31,21 +29,24 @@ Creates an IP list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the IP list to create. | Required | 
-| addresses | A comma-separated list of IP addresses. | Optional | 
-| comment | The comment to add to the IP List. | Optional | 
+| name | The name of the IP list to create. | Required |
+| addresses | A comma-separated list of IP addresses. | Optional |
+| comment | The comment to add to the IP List. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.IPList.Name | String | The name of the IP list. | 
-| ForcepointSMC.IPList.Addresses | Unknown | The list of addresses in the IP list. | 
-| ForcepointSMC.IPList.Comment | String | The comment for the IP list. | 
+| ForcepointSMC.IPList.Name | String | The name of the IP list. |
+| ForcepointSMC.IPList.Addresses | Unknown | The list of addresses in the IP list. |
+| ForcepointSMC.IPList.Comment | String | The comment for the IP list. |
 
 #### Command example
+
 ```!forcepoint-smc-ip-list-create name="name" addresses="1.1.1.1" comment="test"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -77,21 +78,24 @@ Updates an IP list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the IP list. | Required | 
-| addresses | A comma-separated list of addresses to update. | Optional | 
-| is_override | If false, the list of addresses will be appended to the existing one. Else, the list will be overwritten. Default is False. Possible values are: False, True. | Optional | 
+| name | The name of the IP list. | Required |
+| addresses | A comma-separated list of addresses to update. | Optional |
+| is_override | If false, the list of addresses will be appended to the existing one. Else, the list will be overwritten. Default is False. Possible values are: False, True. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.IPList.Name | String | The name of the IP list. | 
-| ForcepointSMC.IPList.Addresses | Unknown | The list of addresses in the IPList | 
-| ForcepointSMC.IPList.Comment | String | The comment for the IP list. | 
+| ForcepointSMC.IPList.Name | String | The name of the IP list. |
+| ForcepointSMC.IPList.Addresses | Unknown | The list of addresses in the IPList |
+| ForcepointSMC.IPList.Comment | String | The comment for the IP list. |
 
 #### Command example
+
 ```!forcepoint-smc-ip-list-update name="name" addresses="1.2.3.4" comment="test" is_override=True```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -123,21 +127,24 @@ Lists the IP Lists in the system.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of a specific IP list to fetch. Overrides the other arguments if used. | Optional | 
-| limit | The maximum number of IP lists to return. Default value is 50. | Optional | 
-| all_results | Whether to return all of the results or not. Default value is False. | Optional | 
+| name | The name of a specific IP list to fetch. Overrides the other arguments if used. | Optional |
+| limit | The maximum number of IP lists to return. Default value is 50. | Optional |
+| all_results | Whether to return all of the results or not. Default value is False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.IPList.Name | String | The name of the IP list. | 
-| ForcepointSMC.IPList.Addresses | Unknown | The list of addresses in the IP list. | 
-| ForcepointSMC.IPList.Comment | String | The comment of the IPList | 
+| ForcepointSMC.IPList.Name | String | The name of the IP list. |
+| ForcepointSMC.IPList.Addresses | Unknown | The list of addresses in the IP list. |
+| ForcepointSMC.IPList.Comment | String | The comment of the IPList |
 
 #### Command example
+
 ```!forcepoint-smc-ip-list-list name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -154,11 +161,11 @@ Lists the IP Lists in the system.
 
 #### Human Readable Output
 
->### IP Lists:
+>### IP Lists
+>
 >|Name|Addresses|Comment|
 >|---|---|---|
 >| name | 1.2.3.4 | test |
-
 
 ### forcepoint-smc-ip-list-delete
 
@@ -173,18 +180,21 @@ Deletes an IP list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the IP list to delete. | Required | 
+| name | The name of the IP list to delete. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.IPList.Name | String | The name of the IP list. | 
-| ForcepointSMC.IPList.Deleted | Boolean | Whether the IP list was deleted. | 
+| ForcepointSMC.IPList.Name | String | The name of the IP list. |
+| ForcepointSMC.IPList.Deleted | Boolean | Whether the IP list was deleted. |
 
 #### Command example
+
 ```!forcepoint-smc-ip-list-delete name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -213,23 +223,26 @@ Lists the hosts in the system.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of a specific host to fetch. | Optional | 
-| limit | The maximum number of hosts to return. Default value is 50. | Optional | 
-| all_results | Whether to return all of the results. Overrides the other arguments if used. Default value is False. | Optional | 
+| name | The name of a specific host to fetch. | Optional |
+| limit | The maximum number of hosts to return. Default value is 50. | Optional |
+| all_results | Whether to return all of the results. Overrides the other arguments if used. Default value is False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Host.Name | String | The name of the host. | 
-| ForcepointSMC.Host.Address | String | The address of the host. | 
-| ForcepointSMC.Host.IPv6_address | String | The IPv6 address of the host. | 
-| ForcepointSMC.Host.Secondary_address | String | The secondary address of the host. | 
-| ForcepointSMC.Host.Comment | String | The comment for the host. | 
+| ForcepointSMC.Host.Name | String | The name of the host. |
+| ForcepointSMC.Host.Address | String | The address of the host. |
+| ForcepointSMC.Host.IPv6_address | String | The IPv6 address of the host. |
+| ForcepointSMC.Host.Secondary_address | String | The secondary address of the host. |
+| ForcepointSMC.Host.Comment | String | The comment for the host. |
 
 #### Command example
+
 ```!forcepoint-smc-host-list name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -246,11 +259,11 @@ Lists the hosts in the system.
 
 #### Human Readable Output
 
->### Hosts:
+>### Hosts
+>
 >|Name|Address|
 >|---|---|
 >| name | 1.1.1.1 |
-
 
 ### forcepoint-smc-host-create
 
@@ -265,25 +278,28 @@ Creates a new host.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of a specific host to fetch. | Required | 
-| address | The address of the host. Cannot be combined with the ipv6_address argument. | Optional | 
-| ipv6_address | The IPv6 address of the host. Cannot be combined with the address argument. | Optional | 
-| secondary_address | A comma-separated list of secondary addresses of the host. | Optional | 
-| comment | The comment to add to the host. | Optional | 
+| name | The name of a specific host to fetch. | Required |
+| address | The address of the host. Cannot be combined with the ipv6_address argument. | Optional |
+| ipv6_address | The IPv6 address of the host. Cannot be combined with the address argument. | Optional |
+| secondary_address | A comma-separated list of secondary addresses of the host. | Optional |
+| comment | The comment to add to the host. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Host.Name | String | The name of the host. | 
-| ForcepointSMC.Host.Address | String | The address of the host. | 
-| ForcepointSMC.Host.IPv6_address | String | The IPv6 address of the host. | 
-| ForcepointSMC.Host.Secondary_address | Unknown | The secondary address of the host. | 
-| ForcepointSMC.Host.Comment | String | The comment for the host. | 
+| ForcepointSMC.Host.Name | String | The name of the host. |
+| ForcepointSMC.Host.Address | String | The address of the host. |
+| ForcepointSMC.Host.IPv6_address | String | The IPv6 address of the host. |
+| ForcepointSMC.Host.Secondary_address | Unknown | The secondary address of the host. |
+| ForcepointSMC.Host.Comment | String | The comment for the host. |
 
 #### Command example
+
 ```!forcepoint-smc-host-create name="name" address="1.1.1.1"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -315,25 +331,28 @@ Updates a host.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the host to update. | Required | 
-| address | The address of the host. Cannot be combined with the ipv6_address argument. | Optional | 
-| ipv6_address | The IPv6 address of the host. Cannot be combined with the address argument. | Optional | 
-| secondary_address | comma-separated list of secondary addresses of the host. | Optional | 
-| comment | The comment to add to the host. | Optional | 
+| name | The name of the host to update. | Required |
+| address | The address of the host. Cannot be combined with the ipv6_address argument. | Optional |
+| ipv6_address | The IPv6 address of the host. Cannot be combined with the address argument. | Optional |
+| secondary_address | comma-separated list of secondary addresses of the host. | Optional |
+| comment | The comment to add to the host. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Host.Name | String | The name of the host. | 
-| ForcepointSMC.Host.Address | String | The address of the host. | 
-| ForcepointSMC.Host.IPv6_address | String | The IPv6 address of the host. | 
-| ForcepointSMC.Host.Secondary_address | String | The secondary address of the host. | 
-| ForcepointSMC.Host.Comment | String | The comment for the host. | 
+| ForcepointSMC.Host.Name | String | The name of the host. |
+| ForcepointSMC.Host.Address | String | The address of the host. |
+| ForcepointSMC.Host.IPv6_address | String | The IPv6 address of the host. |
+| ForcepointSMC.Host.Secondary_address | String | The secondary address of the host. |
+| ForcepointSMC.Host.Comment | String | The comment for the host. |
 
 #### Command example
+
 ```!forcepoint-smc-host-update name="name" address="1.2.3.4"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -365,18 +384,21 @@ Deletes a host.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the host to delete. | Required | 
+| name | The name of the host to delete. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Host.Name | String | The name of the host. | 
-| ForcepointSMC.Host.Deleted | Boolean | Whether the host was deleted. | 
+| ForcepointSMC.Host.Name | String | The name of the host. |
+| ForcepointSMC.Host.Deleted | Boolean | Whether the host was deleted. |
 
 #### Command example
+
 ```!forcepoint-smc-host-delete name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -405,19 +427,22 @@ Creates a new domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the domain to create. | Required | 
-| comment | The comment to add to the domain. | Optional | 
+| name | The name of the domain to create. | Required |
+| comment | The comment to add to the domain. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Domain.Name | String | The name of the host. | 
-| ForcepointSMC.Domain.Comment | String | The comment of the host. | 
+| ForcepointSMC.Domain.Name | String | The name of the host. |
+| ForcepointSMC.Domain.Comment | String | The comment of the host. |
 
 #### Command example
+
 ```!forcepoint-smc-domain-create name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -446,20 +471,23 @@ Lists the domains in the system.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of a specific domain to fetch. | Optional | 
-| limit | The maximum number of hosts to return. Default value is 50. | Optional | 
-| all_results | Whether to return all of the results. Overrides the other arguments if used. Default value is False. | Optional | 
+| name | The name of a specific domain to fetch. | Optional |
+| limit | The maximum number of hosts to return. Default value is 50. | Optional |
+| all_results | Whether to return all of the results. Overrides the other arguments if used. Default value is False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Domain.Name | String | The name of the domain. | 
-| ForcepointSMC.Domain.Comment | String | The comment for the domain. | 
+| ForcepointSMC.Domain.Name | String | The name of the domain. |
+| ForcepointSMC.Domain.Comment | String | The comment for the domain. |
 
 #### Command example
+
 ```!forcepoint-smc-domain-list name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -473,11 +501,11 @@ Lists the domains in the system.
 
 #### Human Readable Output
 
->### Domains:
+>### Domains
+>
 >|Name|
 >|---|
 >| name |
-
 
 ### forcepoint-smc-domain-delete
 
@@ -492,18 +520,21 @@ Deletes a domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the domain to delete. | Required | 
+| name | The name of the domain to delete. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Domain.Name | String | The name of the domain. | 
-| ForcepointSMC.Domain.Deleted | Boolean | Whether the domain was deleted. | 
+| ForcepointSMC.Domain.Name | String | The name of the domain. |
+| ForcepointSMC.Domain.Deleted | Boolean | Whether the domain was deleted. |
 
 #### Command example
+
 ```!forcepoint-smc-domain-delete name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -532,19 +563,22 @@ Lists the policy templates in the system.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of policy templates to return. Default value is 50. | Optional | 
-| all_results | Whether to return all of the results. Overrides the other arguments if used. Default value is False. | Optional | 
+| limit | The maximum number of policy templates to return. Default value is 50. | Optional |
+| all_results | Whether to return all of the results. Overrides the other arguments if used. Default value is False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.PolicyTemplate.Name | String | The name of the firewall policy template. | 
-| ForcepointSMC.PolicyTemplate.Comment | String | The comment for the firewall policy. | 
+| ForcepointSMC.PolicyTemplate.Name | String | The name of the firewall policy template. |
+| ForcepointSMC.PolicyTemplate.Comment | String | The comment for the firewall policy. |
 
 #### Command example
+
 ```!forcepoint-smc-policy-template-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -558,11 +592,11 @@ Lists the policy templates in the system.
 
 #### Human Readable Output
 
->### Policy template:
+>### Policy template
+>
 >|Name|Comment|
 >|---|---|
 >| Firewall Template | Firewall Template Policy that uses Inspection rules from the No Inspection Policy. |
-
 
 ### forcepoint-smc-firewall-policy-list
 
@@ -577,19 +611,22 @@ Lists the firewall policies in the system.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of firewall policies to return. Default value is 50. | Optional | 
-| all_results | Whether to return all of the results. Overrides the other arguments if used. Default value is False. | Optional | 
+| limit | The maximum number of firewall policies to return. Default value is 50. | Optional |
+| all_results | Whether to return all of the results. Overrides the other arguments if used. Default value is False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Policy.Name | String | The name of the firewall policy. | 
-| ForcepointSMC.Policy.Comment | String | The comment for the firewall policy. | 
+| ForcepointSMC.Policy.Name | String | The name of the firewall policy. |
+| ForcepointSMC.Policy.Comment | String | The comment for the firewall policy. |
 
 #### Command example
+
 ```!forcepoint-smc-firewall-policy-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -603,11 +640,11 @@ Lists the firewall policies in the system.
 
 #### Human Readable Output
 
->### Firewall policies:
+>### Firewall policies
+>
 >|Name|
 >|---|
 >| Policy For May To Test PC |
-
 
 ### forcepoint-smc-firewall-policy-create
 
@@ -622,19 +659,22 @@ Creates a firewall policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the firewall policy. | Required | 
-| template | The template name to use to create the firewall policy. Run the forcepoint-smc-policy-template-list command to get the list of policy templates. | Required | 
+| name | The name of the firewall policy. | Required |
+| template | The template name to use to create the firewall policy. Run the forcepoint-smc-policy-template-list command to get the list of policy templates. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Policy.Name | String | The name of the firewall policy. | 
-| ForcepointSMC.Policy.Comment | String | The comment for the firewall policy. | 
+| ForcepointSMC.Policy.Name | String | The name of the firewall policy. |
+| ForcepointSMC.Policy.Comment | String | The comment for the firewall policy. |
 
 #### Command example
+
 ```!forcepoint-smc-firewall-policy-create name="name" template="Firewall Template"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -663,18 +703,21 @@ Deletes a firewall policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the policy to delete. | Required | 
+| name | The name of the policy to delete. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Policy.Name | String | The name of the firewall policy. | 
-| ForcepointSMC.Policy.Deleted | Boolean | Whether the policy was deleted. | 
+| ForcepointSMC.Policy.Name | String | The name of the firewall policy. |
+| ForcepointSMC.Policy.Deleted | Boolean | Whether the policy was deleted. |
 
 #### Command example
+
 ```!forcepoint-smc-firewall-policy-delete name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -703,31 +746,34 @@ Creates a rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | The name of the firewall policy. | Required | 
-| rule_name | The name of the rule to create. | Required | 
-| ip_version | The ip_version of the rule. Possible values are: V4, V6. | Required | 
-| source_ip_list | A comma-separated list of source ip-list names to use to create the rule. Run the forcepoint-ip-list-list command to get the list of ip lists. | Optional | 
-| source_host | A comma-separated list of source host names to use to create the rule. Run the forcepoint-host-list command to get the list of hosts. | Optional | 
-| source_domain | A comma-separated list of source domain names to use to create the rule. Run the forcepoint-domain-list command to get the list of domains. | Optional | 
-| destination_ip_list | A comma-separated list of destination ip-list names to use to create the rule. Run the forcepoint-ip-list-list command to get the list of ip lists. | Optional | 
-| destination_host | A comma-separated list of destination host names to use to create the rule. Run the forcepoint-host-list command to get the list of hosts. | Optional | 
-| destination_domain | A comma-separated list of destination domain names to use to create the rule. Run the forcepoint-domain-list command to get the list of domains. | Optional | 
-| action | The action of the rule. Possible values are: allow, continue, discard, refuse, enforce_vpn, apply_vpn, forward_vpn, blacklist, forced_next_hop. | Required | 
-| comment | The comment to add to the rule. | Optional | 
+| policy_name | The name of the firewall policy. | Required |
+| rule_name | The name of the rule to create. | Required |
+| ip_version | The ip_version of the rule. Possible values are: V4, V6. | Required |
+| source_ip_list | A comma-separated list of source ip-list names to use to create the rule. Run the forcepoint-ip-list-list command to get the list of ip lists. | Optional |
+| source_host | A comma-separated list of source host names to use to create the rule. Run the forcepoint-host-list command to get the list of hosts. | Optional |
+| source_domain | A comma-separated list of source domain names to use to create the rule. Run the forcepoint-domain-list command to get the list of domains. | Optional |
+| destination_ip_list | A comma-separated list of destination ip-list names to use to create the rule. Run the forcepoint-ip-list-list command to get the list of ip lists. | Optional |
+| destination_host | A comma-separated list of destination host names to use to create the rule. Run the forcepoint-host-list command to get the list of hosts. | Optional |
+| destination_domain | A comma-separated list of destination domain names to use to create the rule. Run the forcepoint-domain-list command to get the list of domains. | Optional |
+| action | The action of the rule. Possible values are: allow, continue, discard, refuse, enforce_vpn, apply_vpn, forward_vpn, blacklist, forced_next_hop. | Required |
+| comment | The comment to add to the rule. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Rule.Name | String | The name of the rule. | 
-| ForcepointSMC.Rule.ID | String | The ID of the rule. | 
-| ForcepointSMC.Rule.IP_version | String | The IP version of the rule. | 
-| ForcepointSMC.Rule.Action | String | The action of the rule. | 
-| ForcepointSMC.Rule.Comment | String | The comment for the rule. | 
+| ForcepointSMC.Rule.Name | String | The name of the rule. |
+| ForcepointSMC.Rule.ID | String | The ID of the rule. |
+| ForcepointSMC.Rule.IP_version | String | The IP version of the rule. |
+| ForcepointSMC.Rule.Action | String | The action of the rule. |
+| ForcepointSMC.Rule.Comment | String | The comment for the rule. |
 
 #### Command example
+
 ```!forcepoint-smc-rule-create policy_name="name" action=allow rule_name="test" destination_ip_list="test" ip_version="V4"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -766,24 +812,27 @@ Updates a rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | The name of the firewall policy. | Required | 
-| rule_name | The name of the rule to update. | Required | 
-| is_override | Whether to override the existing values. Default value is False. Possible values are: False, True. | Optional | 
-| ip_version | The ip_version of the rule. Possible values are: V4, V6. | Required | 
-| source_ip_list | A comma-separated list of source ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists. | Optional | 
-| source_host | A comma-separated list of source host names to use to update the rule. Run the forcepoint-host-list command to get the list of hosts. | Optional | 
-| source_domain | A comma-separated list of source domain names to use to update the rule. Run the forcepoint-domain-list command to get the list of domains. | Optional | 
-| destination_ip_list | A comma-separated list of destination ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists. | Optional | 
-| destination_host | A comma-separated list of destination host names to use to update the rule. Run the forcepoint-host-list command to get the list of hosts. | Optional | 
-| destination_domain | A comma-separated list of destination domain names to use to update the rule. Run the forcepoint-domain-list command to get the list of domains. | Optional | 
-| action | The action of the rule. Possible values are: allow, continue, discard, refuse, enforce_vpn, apply_vpn, forward_vpn, blacklist, forced_next_hop. | Optional | 
-| comment | The comment to add to the rule. | Optional | 
+| policy_name | The name of the firewall policy. | Required |
+| rule_name | The name of the rule to update. | Required |
+| is_override | Whether to override the existing values. Default value is False. Possible values are: False, True. | Optional |
+| ip_version | The ip_version of the rule. Possible values are: V4, V6. | Required |
+| source_ip_list | A comma-separated list of source ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists. | Optional |
+| source_host | A comma-separated list of source host names to use to update the rule. Run the forcepoint-host-list command to get the list of hosts. | Optional |
+| source_domain | A comma-separated list of source domain names to use to update the rule. Run the forcepoint-domain-list command to get the list of domains. | Optional |
+| destination_ip_list | A comma-separated list of destination ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists. | Optional |
+| destination_host | A comma-separated list of destination host names to use to update the rule. Run the forcepoint-host-list command to get the list of hosts. | Optional |
+| destination_domain | A comma-separated list of destination domain names to use to update the rule. Run the forcepoint-domain-list command to get the list of domains. | Optional |
+| action | The action of the rule. Possible values are: allow, continue, discard, refuse, enforce_vpn, apply_vpn, forward_vpn, blacklist, forced_next_hop. | Optional |
+| comment | The comment to add to the rule. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!forcepoint-smc-rule-update policy_name="name" action=continue rule_name="test" source_ip_list="test" ip_version="V4"```
+
 #### Human Readable Output
 
 >The rule test to the policy name was updated successfully.
@@ -801,24 +850,27 @@ Lists the rules in a specific policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | The name of the firewall policy. | Required | 
+| policy_name | The name of the firewall policy. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Rule.Name | String | The name of the rule. | 
-| ForcepointSMC.Rule.ID | String | The ID of the rule. | 
-| ForcepointSMC.Rule.IP_version | String | The IP version of the rule. | 
-| ForcepointSMC.Rule.Sources | Unknown | The sources of the rule. | 
-| ForcepointSMC.Rule.Destinations | Unknown | The destinations of the rule. | 
-| ForcepointSMC.Rule.Services | Unknown | The services of the rule. | 
-| ForcepointSMC.Rule.Actions | Unknown | The actions of the rule. | 
-| ForcepointSMC.Rule.Comment | String | The comment of the rule. | 
+| ForcepointSMC.Rule.Name | String | The name of the rule. |
+| ForcepointSMC.Rule.ID | String | The ID of the rule. |
+| ForcepointSMC.Rule.IP_version | String | The IP version of the rule. |
+| ForcepointSMC.Rule.Sources | Unknown | The sources of the rule. |
+| ForcepointSMC.Rule.Destinations | Unknown | The destinations of the rule. |
+| ForcepointSMC.Rule.Services | Unknown | The services of the rule. |
+| ForcepointSMC.Rule.Actions | Unknown | The actions of the rule. |
+| ForcepointSMC.Rule.Comment | String | The comment of the rule. |
 
 #### Command example
+
 ```!forcepoint-smc-rule-list policy_name="name"```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -844,11 +896,11 @@ Lists the rules in a specific policy.
 
 #### Human Readable Output
 
->### Rules:
+>### Rules
+>
 >|Name|ID|IP_version|Sources|Destinations|Actions|
 >|---|---|---|---|---|---|
 >| test | 2097186.1 | V4 | test | test | continue |
-
 
 ### forcepoint-smc-rule-delete
 
@@ -863,20 +915,23 @@ Deletes a rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | The name of the firewall policy. | Required | 
-| rule_name | The name of the rule to delete. | Required | 
-| ip_version | The ip_version of the rule. Possible values are: V4, V6. | Required | 
+| policy_name | The name of the firewall policy. | Required |
+| rule_name | The name of the rule to delete. | Required |
+| ip_version | The ip_version of the rule. Possible values are: V4, V6. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Rule.ID | String | The ID of the rule. | 
-| ForcepointSMC.Rule.Deleted | Boolean | Whether the rule was deleted. | 
+| ForcepointSMC.Rule.ID | String | The ID of the rule. |
+| ForcepointSMC.Rule.Deleted | Boolean | Whether the rule was deleted. |
 
 #### Command example
+
 ```!forcepoint-smc-rule-delete policy_name="name" rule_name="test" ip_version=V4```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -905,19 +960,22 @@ Lists the engines in the system.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of engines to return. Default value is 50. | Optional | 
-| all_results | Whether to return all of the results or not, overrides the other arguments if used. Default value is False. | Optional | 
+| limit | The maximum number of engines to return. Default value is 50. | Optional |
+| all_results | Whether to return all of the results or not, overrides the other arguments if used. Default value is False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ForcepointSMC.Engine.Name | String | The name of the engine. | 
-| ForcepointSMC.Engine.Comment | String | The comment for the engine. | 
+| ForcepointSMC.Engine.Name | String | The name of the engine. |
+| ForcepointSMC.Engine.Comment | String | The comment for the engine. |
 
 #### Command example
+
 ```!forcepoint-smc-engine-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForcepointSMC": {
@@ -931,7 +989,8 @@ Lists the engines in the system.
 
 #### Human Readable Output
 
->### Engines:
+>### Engines
+>
 >|Name|Comment|
 >|---|---|
 >| Forcepoint Engine | Forcepoint Engine element pre-populated by installer |

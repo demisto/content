@@ -1038,6 +1038,163 @@
       }
     }
   },
+
+  "######### line - x.sort-by",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "line",
+            "line": {
+              "x": {
+                "by": "endpoint_name",
+                "sort-by": "total_alerts",
+                "order": "desc",
+                "field": "endpoint_name"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "severity",
+                  "data-field": "alert_count",
+                  "colors": "rgb(0, 0, 0)"
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_endpoint_alert_count_by_device.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "line",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "endpoint-d",
+              "groups": [
+                {
+                  "name": "LOW",
+                  "data": [
+                    6
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "MEDIUM",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "HIGH",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "endpoint-a",
+              "groups": [
+                {
+                  "name": "LOW",
+                  "data": [
+                    1
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "MEDIUM",
+                  "data": [
+                    3
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "HIGH",
+                  "data": [
+                    1
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "endpoint-b",
+              "groups": [
+                {
+                  "name": "LOW",
+                  "data": [
+                    1
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "MEDIUM",
+                  "data": [
+                    3
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "HIGH",
+                  "data": [
+                    1
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "endpoint-c",
+              "groups": [
+                {
+                  "name": "LOW",
+                  "data": [
+                    3
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "MEDIUM",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "HIGH",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
   "######### single-bar - records (default-colors)",
   {
     "args": {
@@ -1919,6 +2076,162 @@
                     62
                   ],
                   "color": "rgb(0, 230, 230)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### stacked-bar - x.sort-by",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "stacked-bar",
+            "stacked-bar": {
+              "x": {
+                "by": "endpoint_name",
+                "sort-by": "total_alerts",
+                "order": "desc",
+                "field": "endpoint_name"
+              },
+              "y": {
+                "group": "records",
+                "records": {
+                  "name-field": "severity",
+                  "data-field": "alert_count",
+                  "colors": "rgb(0, 0, 0)"
+                }
+              },
+              "params": {
+                "layout": "horizontal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_endpoint_alert_count_by_device.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "endpoint-d",
+              "groups": [
+                {
+                  "name": "LOW",
+                  "data": [
+                    6
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "MEDIUM",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "HIGH",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "endpoint-a",
+              "groups": [
+                {
+                  "name": "LOW",
+                  "data": [
+                    1
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "MEDIUM",
+                  "data": [
+                    3
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "HIGH",
+                  "data": [
+                    1
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "endpoint-b",
+              "groups": [
+                {
+                  "name": "LOW",
+                  "data": [
+                    1
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "MEDIUM",
+                  "data": [
+                    3
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "HIGH",
+                  "data": [
+                    1
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                }
+              ]
+            },
+            {
+              "name": "endpoint-c",
+              "groups": [
+                {
+                  "name": "LOW",
+                  "data": [
+                    3
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "MEDIUM",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(0, 0, 0)"
+                },
+                {
+                  "name": "HIGH",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(0, 0, 0)"
                 }
               ]
             }

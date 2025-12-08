@@ -61,3 +61,8 @@ ignore=BA124
 [file:ThreeDigitAlphaCountryCodeToCountryName.yml]
 ignore=BA124
 
+[file:CyCognito_image.png]
+ignore=IM111
+
+[known_words]
+dropdown

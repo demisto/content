@@ -1,8 +1,7 @@
 id: Office 365 and Azure Configuration Analysis
 version: -1
 name: Office 365 and Azure Configuration Analysis
-description: This playbook helps you collect, review, and find misconfigurations with
-  the Azure environment.
+description: This playbook helps you collect, review, and find misconfigurations with the Azure environment.
 starttaskid: "0"
 tasks:
   "0":
@@ -127,8 +126,7 @@ tasks:
       id: 323b4ae9-3c22-4578-8102-8ac7de36c169
       version: -1
       name: Review Federation Trust Information
-      description: Use the ews-federation-trust-get command to view the federation
-        trust configured for the Exchange organization.
+      description: Use the ews-federation-trust-get command to view the federation trust configured for the Exchange organization.
       script: '|||ews-federation-trust-get'
       type: regular
       iscommand: true
@@ -205,9 +203,7 @@ tasks:
       id: 95ac373f-62ef-4c40-8cab-248e06b4a23f
       version: -1
       name: Mail Forwarding Rules for Remote Domains
-      description: View the configuration information for the remote domains configured
-        in your organization. This command is available only in the Exchange Online
-        PowerShell V2 module.
+      description: View the configuration information for the remote domains configured in your organization. This command is available only in the Exchange Online PowerShell V2 module.
       script: '|||ews-remote-domain-get'
       type: regular
       iscommand: true
@@ -243,8 +239,7 @@ tasks:
       id: d07d378f-2714-4e25-87ae-74115d0885c0
       version: -1
       name: Mailbox SMTP Forwarding for All Mailboxes
-      description: Displays mailbox objects and attributes, populate property pages,
-        or supplies mailbox information to other tasks.
+      description: Displays mailbox objects and attributes, populate property pages, or supplies mailbox information to other tasks.
       script: '|||ews-mailbox-list'
       type: regular
       iscommand: true
@@ -287,8 +282,7 @@ tasks:
       id: 6d7242da-9c61-47d3-8df7-4d7d3a948634
       version: -1
       name: Users with 'Audit Bypass' Enabled
-      description: Use the Get-User command to view existing user objects in your
-        organization.
+      description: Use the Get-User command to view existing user objects in your organization.
       script: '|||ews-mailbox-audit-bypass-association-list'
       type: regular
       iscommand: true
@@ -472,8 +466,7 @@ tasks:
       id: 73ee02fb-94d1-43aa-8d74-7300617bcbe9
       version: -1
       name: Set service principal with key credentials
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -700,3 +693,5 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam

@@ -1,7 +1,7 @@
 commonfields:
   id: EWS Mail Sender
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: EWS Mail Sender

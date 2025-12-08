@@ -3,7 +3,6 @@ This integration was integrated and tested with version 2.0.1 of GreyNoise SDK.
 
 ## Configure GreyNoise Indicator Feed in Cortex
 
-
 | **Parameter** | **Description**                                                                                                                                                                                        | **Required** |
 | --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | Fetch indicators |                                                                                                                                                                                                        | False |
@@ -20,7 +19,6 @@ This integration was integrated and tested with version 2.0.1 of GreyNoise SDK.
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 | Use system proxy settings |                                                                                                                                                                                                        | False |
 | Trust any certificate (not secure) |                                                                                                                                                                                                        | False |
-
 
 ## Commands
 
@@ -44,6 +42,6 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GreyNoiseFeed.Indicators.Value | String | The value of the indicator. | 
-| GreyNoiseFeed.Indicators.Type | String | The type of the indicator. | 
-| GreyNoiseFeed.Indicators.Tags | String | The GreyNoise tags associated with the indicator. | 
+| GreyNoiseFeed.Indicators.Value | String | The value of the indicator. |
+| GreyNoiseFeed.Indicators.Type | String | The type of the indicator. |
+| GreyNoiseFeed.Indicators.Tags | String | The GreyNoise tags associated with the indicator. |

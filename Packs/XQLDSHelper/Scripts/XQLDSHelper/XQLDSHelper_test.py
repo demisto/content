@@ -56,6 +56,12 @@ class MainTester:
         self.__xql_last_resp = None
         self.__xql_resp_iter = None
 
+        self.__locking_params: dict[str, Any] | None = None
+        args = ent.get("args") or {}
+        templates = args.get("templates")
+        if isinstance(templates, dict) and (template := templates.get(args.get("template_name"))):
+            self.__locking_params = demisto.get(template, "query.locking") or {}
+
         incident = {"id": "1"}
         if is_xsiam := to_bool(demisto.get(ent, "config.is_xsiam", "false")):
             incident.update(ent.get("alert") or {})
@@ -68,6 +74,7 @@ class MainTester:
         mocker.patch.object(demisto, "executeCommand", side_effect=self.__demisto_execute_command)
         mocker.patch.object(XQLDSHelper, "execute_command", side_effect=self.__execute_command)
         mocker.patch.object(XQLDSHelper, "return_error", side_effect=self.__return_error)
+        mocker.patch.object(demisto, "get", side_effect=self.__demisto_get)
         mocker.patch.object(demisto, "dt", side_effect=self.__demisto_dt)
         mocker.patch.object(demisto, "context", return_value=ent.get("context") or {})
         mocker.patch.object(demisto, "results")
@@ -232,6 +239,30 @@ class MainTester:
                 return v["results"]
         raise RuntimeError(f"Unable to get query results - {self.__xql_last_resp}")
 
+    def __demisto_get(
+        self,
+        obj: Any,
+        path: str,
+        default: Any = None,
+    ) -> Any:
+        for part in path.split("."):
+            if isinstance(obj, dict):
+                if part in obj:
+                    obj = obj[part]
+                else:
+                    return default
+            elif isinstance(obj, list):
+                if m := re.fullmatch(r"\[(\d+)\]", part):
+                    idx = int(m[1])
+                    obj = obj[idx] if idx < len(obj) else []
+                else:
+                    obj = [x[part] for x in obj if isinstance(x, dict) and part in x]
+                if not obj:
+                    return default
+            else:
+                return default
+        return obj
+
     def __demisto_dt(
         self,
         obj: dict[str, Any],
@@ -263,6 +294,10 @@ class MainTester:
             )
             if var == "".join(func.strip().split()):
                 return "\n".join(f" - {x[0]+1}: " + x[1].get("text") for x in enumerate(recordset))
+
+        var = ">JSON.stringify(val)"
+        if var == func:
+            return json.dumps(val, sort_keys=True)
 
         var = r"""encodeURIComponent(val).replace('"', '%22')"""
         if var == func:
@@ -321,6 +356,20 @@ class MainTester:
                 else:
                     raise RuntimeError(f"Invalid data type - {data_type}")
             raise RuntimeError("No List - {list_name}")
+        elif command in ("core-lock-get", "demisto-lock-get"):
+            for k in ["name", "info", "timeout", "using"]:
+                av = args.get(k)
+                lv = self.__locking_params.get(k)
+                if av != lv:
+                    raise ValueError(f"Incorrect locking parameter - {k}: {av} is not {lv}")
+            return []
+        elif command in ("core-lock-release", "demisto-lock-release"):
+            for k in ["name", "using"]:
+                av = args.get(k)
+                lv = self.__locking_params.get(k)
+                if av != lv:
+                    raise ValueError(f"Incorrect locking parameter - {k}: {av} is not {lv}")
+            return []
         else:
             raise RuntimeError(f"Not implemented - {command}")
 
@@ -384,6 +433,70 @@ class MainTester:
                 if not ok:
                     print(json.dumps(self.__config, indent=2))
                     print(json.dumps(returned_qparams, indent=2))
+                """
+                assert ok
+
+            # Validate 'RequestURL' - only when results.RequestURL is provided
+            returned_request_url = results.get("Contents").get("RequestURL")
+            expected_request_url = self.__config.get("results").get("RequestURL")
+            if expected_request_url is not None:
+                ok = MainTester.equals_entry(
+                    returned_request_url,
+                    expected_request_url,
+                    skip_keys=False,
+                )
+                """
+                if not ok:
+                    print(json.dumps(self.__config, indent=2))
+                    print(json.dumps(returned_request_url, indent=2))
+                """
+                assert ok
+
+            # Validate 'ResultURL' - only when results.ResultURL is provided
+            returned_result_url = results.get("Contents").get("ResultURL")
+            expected_result_url = self.__config.get("results").get("ResultURL")
+            if expected_result_url is not None:
+                ok = MainTester.equals_entry(
+                    returned_result_url,
+                    expected_result_url,
+                    skip_keys=False,
+                )
+                """
+                if not ok:
+                    print(json.dumps(self.__config, indent=2))
+                    print(json.dumps(returned_result_url, indent=2))
+                """
+                assert ok
+
+            # Validate 'ExecutionID' - only when results.ExecutionID is provided
+            returned_execution_id = results.get("Contents").get("ExecutionID")
+            expected_execution_id = self.__config.get("results").get("ExecutionID")
+            if expected_execution_id is not None:
+                ok = MainTester.equals_entry(
+                    returned_execution_id,
+                    expected_execution_id,
+                    skip_keys=False,
+                )
+                """
+                if not ok:
+                    print(json.dumps(self.__config, indent=2))
+                    print(json.dumps(returned_execution_id, indent=2))
+                """
+                assert ok
+
+            # Validate 'RecordSet' - only when results.RecordSet is provided
+            returned_recordset = results.get("Contents").get("RecordSet")
+            expected_recordset = self.__config.get("results").get("RecordSet")
+            if expected_recordset is not None:
+                ok = MainTester.equals_entry(
+                    returned_recordset,
+                    expected_recordset,
+                    skip_keys=False,
+                )
+                """
+                if not ok:
+                    print(json.dumps(self.__config, indent=2))
+                    print(json.dumps(returned_recordset, indent=2))
                 """
                 assert ok
 

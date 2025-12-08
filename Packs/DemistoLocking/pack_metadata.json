@@ -2,7 +2,7 @@
     "name": "Cortex Lock",
     "description": "Locking mechanism that prevents concurrent execution of different tasks",
     "support": "xsoar",
-    "currentVersion": "1.1.5",
+    "currentVersion": "1.1.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -29,6 +29,12 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "cloud",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr"
     ]
 }

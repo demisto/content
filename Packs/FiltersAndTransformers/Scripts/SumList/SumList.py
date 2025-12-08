@@ -7,26 +7,26 @@ def sum_value(value):
 
     if isinstance(value, str):
         try:
-            value = [float(item) for item in value.split(',')]
+            value = [float(item) for item in value.split(",")]
         except ValueError:
-            return 'error', 'error'
+            return "error", "error"
 
     elif isinstance(value, list):
         try:
             value = [float(item) for item in value]
         except ValueError:
-            return 'error', 'error'
+            return "error", "error"
 
     result = sum(value)
-    return result, 'ok'
+    return result, "ok"
 
 
 def main():
-    value = demisto.args()['value']
+    value = demisto.args()["value"]
     result, return_type = sum_value(value)
 
-    if return_type == 'error':
-        return_error('This transformer applies only to list of numbers.')
+    if return_type == "error":
+        return_error("This transformer applies only to list of numbers.")
     demisto.results(result)
 
 

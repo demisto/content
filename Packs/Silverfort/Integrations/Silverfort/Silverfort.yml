@@ -1,4 +1,6 @@
 category: Authentication & Identity Management
+sectionorder:
+- Connect
 commonfields:
   id: Silverfort
   version: -1
@@ -12,6 +14,7 @@ configuration:
   name: apikey
   required: true
   type: 4
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -127,7 +130,7 @@ script:
       required: true
     description: Update the resource entity risk.
     name: silverfort-update-resource-risk
-  dockerimage: demisto/auth-utils:1.0.0.116752
+  dockerimage: demisto/auth-utils:1.0.0.3562326
   runonce: false
   script: '-'
   subtype: python3

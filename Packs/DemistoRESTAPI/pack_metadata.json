@@ -2,7 +2,7 @@
     "name": "Cortex REST API",
     "description": "Use Demisto REST APIs",
     "support": "xsoar",
-    "currentVersion": "1.3.68",
+    "currentVersion": "1.3.87",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -29,6 +29,12 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "cloud",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr"
     ]
 }

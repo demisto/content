@@ -50,7 +50,7 @@ This playbook does not use any integrations.
 | SensitiveMailboxesList | The name of a list that contains the organization's sensitive users. | lists.sensitiveMailboxesList | Optional |
 | SearchThisWeek | Whether to search for similar emails in a week's time range or for all time. | true | Optional |
 | CheckMicrosoftHeaders | Check Microsoft headers for BCL/PCL/SCL scores and set the "Severity" and "Email Classification" accordingly. | True | Optional |
-| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
+| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to True - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to False - the user will be prompted to select which indicators to block. | True | Optional |
 | UserVerification | Possible values: True/False.<br/>Whether to provide user verification for blocking IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
 
 ## Playbook Outputs

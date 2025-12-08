@@ -1,30 +1,31 @@
+import json
 from collections.abc import Callable
+from pathlib import Path
 from unittest.mock import MagicMock
+
+import demistomock as demisto
 import pytest
+from CommonServerPython import CommandResults, DemistoException
+from MicrosoftGraphFiles import (
+    MsGraphClient,
+    create_new_folder_command,
+    create_site_permissions_command,
+    delete_file_command,
+    delete_site_permission_command,
+    download_file_command,
+    get_site_id_from_site_name,
+    list_drive_content_command,
+    list_drives_in_site_command,
+    list_sharepoint_sites_command,
+    list_site_permissions_command,
+    parse_key_to_context,
+    remove_identity_key,
+    update_site_permissions_command,
+    upload_new_file_command,
+    url_validation,
+)
 from pytest_mock import MockerFixture
 from requests_mock import MockerCore
-from pathlib import Path
-import json
-from CommonServerPython import CommandResults, DemistoException
-import demistomock as demisto
-from MicrosoftGraphFiles import (
-    remove_identity_key,
-    url_validation,
-    parse_key_to_context,
-    delete_file_command,
-    download_file_command,
-    list_sharepoint_sites_command,
-    list_drive_content_command,
-    create_new_folder_command,
-    list_drives_in_site_command,
-    MsGraphClient,
-    upload_new_file_command,
-    list_site_permissions_command,
-    create_site_permissions_command,
-    update_site_permissions_command,
-    delete_site_permission_command,
-    get_site_id_from_site_name,
-)
 
 
 def util_load_json(path: str) -> dict:
@@ -684,8 +685,9 @@ def test_test_module_command_with_managed_identities(mocker: MockerFixture, requ
     Then:
         - Ensure the output are as expected.
     """
-    from MicrosoftGraphFiles import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
     import re
+
+    from MicrosoftGraphFiles import MANAGED_IDENTITIES_TOKEN_URL, Resources, main
 
     mock_token = {"access_token": "test_token", "expires_in": "86400"}
     get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
@@ -706,7 +708,7 @@ def test_test_module_command_with_managed_identities(mocker: MockerFixture, requ
     assert "ok" in demisto.results.call_args[0][0]
     qs = get_mock.last_request.qs
     assert qs["resource"] == [Resources.graph]
-    assert client_id and qs["client_id"] == [client_id] or "client_id" not in qs
+    assert (client_id and qs["client_id"] == [client_id]) or "client_id" not in qs
 
 
 @pytest.mark.parametrize(
@@ -984,7 +986,7 @@ def test_generate_login_url(mocker):
     """
     # prepare
     import demistomock as demisto
-    from MicrosoftGraphFiles import main, Scopes
+    from MicrosoftGraphFiles import Scopes, main
 
     redirect_uri = "redirect_uri"
     tenant_id = "tenant_id"

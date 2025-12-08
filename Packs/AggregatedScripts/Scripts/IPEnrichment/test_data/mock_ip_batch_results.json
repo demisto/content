@@ -1,0 +1,45 @@
+{
+    "batch1_createNewIndicator": [
+      { "Type": 1, "EntryContext": {} },
+      { "Type": 1, "EntryContext": {} }
+    ],
+    "batch2_core_endpoint_data": [
+      {
+        "Type": 1,
+        "EntryContext": {
+          "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)": [
+            { "Brand": "Core", "ID": "ep-1", "Hostname": "host-1" },
+            { "Brand": "Core", "ID": "ep-2", "Hostname": "host-2" }
+          ]
+        }
+      }
+    ],
+    "batch2_core_prevalence": [
+      {
+        "Type": 1,
+        "EntryContext": {
+          "Core.AnalyticsPrevalence.Ip": [
+            { "Ip": "1.1.1.1", "FirstSeen": "2024-01-01" },
+            { "Ip": "8.8.8.8", "FirstSeen": "2024-01-02" }
+          ]
+        }
+      }
+    ],
+    "batch2_enrichIndicators": [
+      {
+        "Type": 1,
+        "Metadata": { "brand": "brand1" },
+        "EntryContext": {
+          "DBotScore(val.Indicator && val.Vendor)": [
+            { "Indicator": "1.1.1.1", "Vendor": "brand1", "Score": 2 }
+          ]
+        }
+      },
+      {
+        "Type": 1,
+        "Metadata": { "brand": "brand2" },
+        "EntryContext": {}
+      }
+    ]
+  }
+  

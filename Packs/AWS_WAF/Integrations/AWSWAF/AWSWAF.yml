@@ -2,7 +2,7 @@ category: Network Security
 commonfields:
   id: AWS-WAF
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -333,6 +333,8 @@ script:
       - 'false'
     description: Update an IP set.
     name: aws-waf-ip-set-update
+    compliantpolicies:
+    - IP Blockage
   - arguments:
     - name: scope
       description: The IP set scope.
@@ -1743,7 +1745,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.1894954
+  dockerimage: demisto/boto3py3:1.0.0.3654321
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

@@ -2,6 +2,9 @@ commonfields:
   id: OPSWAT-Metadefender V2
   version: -1
   sortvalues: []
+sectionorder:
+- Connect
+- Collect
 name: OPSWAT-Metadefender V2
 display: OPSWAT-Metadefender v2
 category: Data Enrichment & Threat Intelligence
@@ -11,41 +14,48 @@ configuration:
   name: url
   type: 0
   required: true
+  section: Connect
 - display: API Key - Needed in cloud based solutions
   name: api_key
   defaultvalue: ""
   type: 4
   hidden: true
   required: false
+  section: Connect
 - name: api_key_creds
   type: 9
   displaypassword: API Key - Needed in cloud based solutions
   hiddenusername: true
   required: false
+  section: Connect
 - display: Cloud based
   name: cloud
   type: 8
   defaultvalue: 'false'
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: The high threshold
   name: highPercnt
   defaultvalue: '66'
   type: 0
   required: false
+  section: Connect
 - defaultvalue: '34'
   display: The low threshold
   name: lowPercnt
   type: 0
-
   required: false
+  section: Connect
 script:
   script: ''
   type: python
@@ -86,7 +96,7 @@ script:
       default: true
       description: OPSWAT scan id.
     description: Get OPSWAT sanitization result (Requires CDR feature).
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.11.4284848
   subtype: python3
 tests:
 - No tests - no instance

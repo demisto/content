@@ -1,16 +1,16 @@
+import traceback
+from typing import Any
+
 from CommonServerPython import *
 
-from typing import Any
-import traceback
-
-SERVER_SYSTEM_CONFIG_PATH = '/system/config'
-''' STANDALONE FUNCTION '''
+SERVER_SYSTEM_CONFIG_PATH = "/system/config"
+""" STANDALONE FUNCTION """
 
 
 def get_current_server_config() -> dict:
     res = execute_command("core-api-get", {"uri": SERVER_SYSTEM_CONFIG_PATH})
-    config_json = res['response']
-    return config_json.get('sysConf', {})
+    config_json = res["response"]
+    return config_json.get("sysConf", {})
 
 
 def set_system_config(server_config: dict):
@@ -18,9 +18,9 @@ def set_system_config(server_config: dict):
         "core-api-post",
         {
             "uri": SERVER_SYSTEM_CONFIG_PATH,
-            "body": {"data": server_config,
-                     "version": -1},
-        })
+            "body": {"data": server_config, "version": -1},
+        },
+    )
 
 
 def remove_key_from_server_config(key: str, server_config: dict):
@@ -31,16 +31,15 @@ def remove_key_from_server_config(key: str, server_config: dict):
 
 def update_server_config(key: str, value: str, server_config: dict):
     if not value:
-        raise DemistoException(
-            "EditServerConfig Error: You must give a value when you want to update a server configuration.")
+        raise DemistoException("EditServerConfig Error: You must give a value when you want to update a server configuration.")
     server_config[key] = value
     set_system_config(server_config)
 
 
 def edit_server_config(args: dict[str, Any]) -> CommandResults:
-    action = args.get('action', "")
-    key = args.get('key', "")
-    value = args.get('value', "")
+    action = args.get("action", "")
+    key = args.get("key", "")
+    value = args.get("value", "")
 
     sys_conf = get_current_server_config()
 
@@ -59,10 +58,10 @@ def main():
         return_results(edit_server_config(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute EditServerConfig. Error: {str(ex)}')
+        return_error(f"Failed to execute EditServerConfig. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

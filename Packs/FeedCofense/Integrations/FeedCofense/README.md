@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1 of Cofense Feed
 
 ## Configure Cofense Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Username |  | False |
@@ -23,35 +22,39 @@ This integration was integrated and tested with version 1 of Cofense Feed
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cofense-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 #### Base Command
 
 `cofense-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of context indicators to return. The default value is 10. Default is 10. | Optional | 
-| from_time | The time period (previous) for which to fetch indicators. For example, a value of 3 days will return indicators from the previous three days. Default is 3 days. | Optional | 
-
+| limit | The maximum number of context indicators to return. The default value is 10. Default is 10. | Optional |
+| from_time | The time period (previous) for which to fetch indicators. For example, a value of 3 days will return indicators from the previous three days. Default is 3 days. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!cofense-get-indicators limit=2```
 
 #### Human Readable Output
+
 Results from Cofense Feed:
 
 | **threat_id** | **type** | **value** | **impact** | **confidence** | **roleDescription** |
 | --- | --- | --- | --- | --- | --- |
-| [218956](https://www.threathq.com/p42/search/default?m=218956) | URL | https://r-gk8.online/main/main.php | Major | 100 |	Credential Phishing|
+| [218956](https://www.threathq.com/p42/search/default?m=218956) | URL | https://r-gk8.online/main/main.php | Major | 100 | Credential Phishing|
 | [218956](https://www.threathq.com/p42/search/default?m=218956) | URL | https://notification.ba.com/LinkTracking?id=17174577&url=https://r-⁠gk8.online?e=| Major | 100 | Credential Phishing |

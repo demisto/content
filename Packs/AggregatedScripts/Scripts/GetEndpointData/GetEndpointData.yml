@@ -1,0 +1,74 @@
+args:
+- description: List of endpoint IDs retrieve.
+  name: endpoint_id
+  isArray: true
+- description: List of endpont IPs to retrieve.
+  name: endpoint_ip
+  isArray: true
+- description: List of endpoint hostnames retrieve.
+  name: endpoint_hostname
+  isArray: true
+- description: |-
+    A comma-seperated list of brands you want to run get-endpoint-data for. If not provided, the get-endpoint-data script will run for the list of supported default brands. Example: 'Active Directory Query v2,FireEyeHX v2'.
+    Default supported brands are:
+    - 'Active Directory Query v2'
+    - 'McAfee ePO v2'
+    - 'CrowdstrikeFalcon'
+    - 'Cortex XDR - IR'
+    - 'Cortex Core - IR'
+    - 'FireEyeHX v2'
+    If you provide a list of brands, only those brands will be executed and not the default list.
+    If you include a brand that is not on the default list, the script will run the !endpoint command on it.
+    If you do not provide any brand, the predefined list of default brands and the !endpoint command will automatically run on all brands.
+  name: brands
+  isArray: true
+- description: Set to true to display human-readable output for each step of the command. Set to false (default) to only display the final result.
+  name: verbose
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- description: When set to true, retrieves additional fields from every brand beyond standard endpoint data. Default is false.
+  name: additional_fields
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+comment: This script gathers endpoint data from multiple integrations and returns an endpoint entity with consolidated information to the context.
+commonfields:
+  id: get-endpoint-data
+  version: -1
+name: get-endpoint-data
+outputs:
+- contextPath: EndpointData.Brand
+  description: The brand/vendor from which the endpoint data was retrieved.
+  type: String
+- contextPath: EndpointData.ID
+  description: The unique identifier of the endpoint.
+  type: String
+- contextPath: EndpointData.Hostname
+  description: The hostname of the endpoint.
+  type: String
+- contextPath: EndpointData.IPAddress
+  description: The IP address of the endpoint.
+  type: String
+- contextPath: EndpointData.Status
+  description: The current operational status of the endpoint.
+  type: String
+- contextPath: EndpointData.isIsolated
+  description: Indicates whether the endpoint is currently isolated from the network.
+  type: String
+- contextPath: EndpointData.Message
+  description: A message containing information about whether the command was successful.
+  type: String
+- contextPath: EndpointData.AdditionalFields
+  description: Additional endpoint-specific fields retrieved from various brands.
+  type: String
+script: '-'
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4417419
+fromversion: 6.10.0
+tests:
+- GetEndpointData-Test

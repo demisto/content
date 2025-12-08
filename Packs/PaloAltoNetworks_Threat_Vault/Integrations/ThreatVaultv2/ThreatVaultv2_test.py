@@ -1,20 +1,19 @@
-from CommonServerPython import *
 import pytest
-
+from CommonServerPython import *
 from ThreatVaultv2 import (
     Client,
-    threat_batch_search_command,
-    release_note_get_command,
-    threat_signature_get_command,
-    threat_search_command,
-    file_command,
     cve_command,
+    file_command,
+    ip_command,
     pagination,
-    parse_resp_by_type,
-    resp_to_hr,
     parse_date,
+    parse_resp_by_type,
+    release_note_get_command,
     reputation_type_to_hr,
-    ip_command
+    resp_to_hr,
+    threat_batch_search_command,
+    threat_search_command,
+    threat_signature_get_command,
 )
 
 
@@ -69,10 +68,7 @@ def _open_json_file(path):
         (
             threat_search_command,
             {"cve": "test", "release-date": "2000-09-09", "release-version": "test"},
-            (
-                "There can only be one argument from the following list in the command: "
-                "release-date, release-version"
-            ),
+            ("There can only be one argument from the following list in the command: release-date, release-version"),
         ),
         (
             threat_search_command,
@@ -101,7 +97,6 @@ def _open_json_file(path):
     ],
 )
 def test_commands_failure(command, demisto_args, expected_results):
-
     client = ""
 
     with pytest.raises(Exception) as e:
@@ -156,10 +151,7 @@ def test_commands_failure(command, demisto_args, expected_results):
         ),
     ],
 )
-def test_commands_with_not_found(
-    mocker, cmd, demisto_args, expected_readable_output, expected_indicator
-):
-
+def test_commands_with_not_found(mocker, cmd, demisto_args, expected_readable_output, expected_indicator):
     client = Client(
         base_url="test",
         api_key="test",
@@ -209,7 +201,6 @@ def test_commands_with_not_found(
     [(5, 100, None, (500, 100)), (None, None, 100, (0, 100))],
 )
 def test_pagination(page, page_size, limit, expected_result):
-
     results = pagination(page, page_size, limit)
 
     assert len(results) == 2
@@ -221,25 +212,15 @@ def test_pagination(page, page_size, limit, expected_result):
     "resp, expanded, expected_results",
     [
         (
-            {
-                "data": {
-                    "vulnerability": [
-                        {"id": "test", "name": "test", "description": "test"}
-                    ]
-                }
-            },
+            {"data": {"vulnerability": [{"id": "test", "name": "test", "description": "test"}]}},
             True,
             ["ThreatVault.Vulnerability"],
         ),
         (
             {
                 "data": {
-                    "antivirus": [
-                        {"id": "test", "name": "test", "description": "test"}
-                    ],
-                    "vulnerability": [
-                        {"id": "test", "name": "test", "description": "test"}
-                    ],
+                    "antivirus": [{"id": "test", "name": "test", "description": "test"}],
+                    "vulnerability": [{"id": "test", "name": "test", "description": "test"}],
                 }
             },
             False,
@@ -248,15 +229,9 @@ def test_pagination(page, page_size, limit, expected_result):
         (
             {
                 "data": {
-                    "antivirus": [
-                        {"id": "test", "name": "test", "description": "test"}
-                    ],
-                    "vulnerability": [
-                        {"id": "test", "name": "test", "description": "test"}
-                    ],
-                    "fileformat": [
-                        {"id": "test", "name": "test", "description": "test"}
-                    ],
+                    "antivirus": [{"id": "test", "name": "test", "description": "test"}],
+                    "vulnerability": [{"id": "test", "name": "test", "description": "test"}],
+                    "fileformat": [{"id": "test", "name": "test", "description": "test"}],
                     "spyware": [{"id": "test", "name": "test", "description": "test"}],
                 }
             },
@@ -271,15 +246,9 @@ def test_pagination(page, page_size, limit, expected_result):
         (
             {
                 "data": {
-                    "dns": [
-                        {"id": "test", "name": "test", "description": "test"}
-                    ],
-                    "rtdns": [
-                        {"id": "test", "name": "test", "description": "test"}
-                    ],
-                    "fileformat": [
-                        {"id": "test", "name": "test", "description": "test"}
-                    ],
+                    "dns": [{"id": "test", "name": "test", "description": "test"}],
+                    "rtdns": [{"id": "test", "name": "test", "description": "test"}],
+                    "fileformat": [{"id": "test", "name": "test", "description": "test"}],
                     "spywarec2": [{"id": "test", "name": "test", "description": "test"}],
                 }
             },
@@ -294,7 +263,6 @@ def test_pagination(page, page_size, limit, expected_result):
     ],
 )
 def test_parse_resp_by_type(mocker, resp, expanded, expected_results):
-
     mocker.patch("ThreatVaultv2.resp_to_hr", return_value={})
 
     results = parse_resp_by_type(response=resp, expanded=expanded)
@@ -441,11 +409,8 @@ RESP_TO_HR_ARGS = [
 ]
 
 
-@pytest.mark.parametrize(
-    "resp, type_, expanded, expected, expected_content", RESP_TO_HR_ARGS
-)
+@pytest.mark.parametrize("resp, type_, expanded, expected, expected_content", RESP_TO_HR_ARGS)
 def test_resp_to_hr(resp, type_, expanded, expected, expected_content):
-
     result = resp_to_hr(resp, type_, expanded)
     assert len(result.keys()) == expected
     for key, value in expected_content:
@@ -509,10 +474,9 @@ def test_resp_to_hr(resp, type_, expanded, expected, expected_content):
             _open_json_file("test_data/ip_batch_results.json"),
             id="IP Batch",
         ),
-    ]
+    ],
 )
 def test_ip_command(mocker, args, response, expected_results):
-
     client = Client(
         base_url="test",
         api_key="test",
@@ -521,13 +485,9 @@ def test_ip_command(mocker, args, response, expected_results):
         reliability="E - Unreliable",
     )
 
-    mocker.patch.object(
-        client, "ip_feed_get_request", return_value=response
-    )
+    mocker.patch.object(client, "ip_feed_get_request", return_value=response)
 
-    mocker.patch.object(
-        client, "ip_feed_batch_post_request", return_value=response
-    )
+    mocker.patch.object(client, "ip_feed_batch_post_request", return_value=response)
 
     results = ip_command(client, args)
     results = [result.to_context() for result in results]
@@ -583,9 +543,7 @@ FILE_COMMAND_ARGS = [
             }
         ],
         {
-            "sha256": [
-                "xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx"
-            ],
+            "sha256": ["xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx"],
             "md5": ["test"],
             "readable_output": [
                 "### Antivirus Reputation for hash: xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx"
@@ -641,15 +599,11 @@ FILE_COMMAND_ARGS = [
         {
             "sha256": ["test"],
             "md5": ["xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"],
-            "readable_output": [
-                "### Antivirus Reputation for hash: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-            ],
+            "readable_output": ["### Antivirus Reputation for hash: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"],
         },
     ),
     (
-        {
-            "file": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx"
-        },
+        {"file": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx"},
         [
             {
                 "data": {
@@ -753,7 +707,6 @@ FILE_COMMAND_ARGS = [
 
 @pytest.mark.parametrize("args, resp, expected_results", FILE_COMMAND_ARGS)
 def test_file_command(mocker, args, resp, expected_results):
-
     client = Client(
         base_url="test",
         api_key="test",
@@ -872,7 +825,6 @@ CVE_COMMAND_ARGS = [
 
 @pytest.mark.parametrize("args, resp, expected_results", CVE_COMMAND_ARGS)
 def test_cve_command(mocker, args, resp, expected_results):
-
     client = Client(
         base_url="test",
         api_key="test",
@@ -935,7 +887,6 @@ def test_cve_command(mocker, args, resp, expected_results):
     ],
 )
 def test_threat_signature_get_command(mocker, args, expected_results):
-
     client = Client(
         base_url="test",
         api_key="test",
@@ -943,12 +894,8 @@ def test_threat_signature_get_command(mocker, args, expected_results):
         proxy=False,
         reliability="E - Unreliable",
     )
-    call_hashes_command = mocker.patch(
-        "ThreatVaultv2.file_command", return_value=["file"]
-    )
-    call_ids_command = mocker.patch.object(
-        client, "antivirus_signature_get_request", return_value="ids"
-    )
+    call_hashes_command = mocker.patch("ThreatVaultv2.file_command", return_value=["file"])
+    call_ids_command = mocker.patch.object(client, "antivirus_signature_get_request", return_value="ids")
     mocker.patch("ThreatVaultv2.parse_resp_by_type", return_value=["ids"])
     results = threat_signature_get_command(client, args)
 
@@ -968,7 +915,6 @@ def test_threat_signature_get_command(mocker, args, expected_results):
     ],
 )
 def test_release_note_get_command(mocker, args, expected_results):
-
     client = Client(
         base_url="test",
         api_key="test",
@@ -977,9 +923,7 @@ def test_release_note_get_command(mocker, args, expected_results):
         reliability="E - Unreliable",
     )
 
-    mocker.patch.object(
-        client, "release_notes_get_request", return_value={"data": [[]]}
-    )
+    mocker.patch.object(client, "release_notes_get_request", return_value={"data": [[]]})
     mocker.patch("ThreatVaultv2.resp_to_hr", return_value={"release_notes": "test"})
     results = release_note_get_command(client, args)
 
@@ -991,10 +935,7 @@ def test_release_note_get_command(mocker, args, expected_results):
     "args, mocking, expected_args, expected_results",
     [({"id": "123"}, ["ids"], {"value": "123", "type": "id"}, "ids")],
 )
-def test_threat_batch_search_command(
-    mocker, args, mocking, expected_args, expected_results
-):
-
+def test_threat_batch_search_command(mocker, args, mocking, expected_args, expected_results):
     client = Client(
         base_url="test",
         api_key="test",
@@ -1003,9 +944,7 @@ def test_threat_batch_search_command(
         reliability="E - Unreliable",
     )
 
-    call_request = mocker.patch.object(
-        client, "threat_batch_search_request", return_value="test"
-    )
+    call_request = mocker.patch.object(client, "threat_batch_search_request", return_value="test")
     mocker.patch("ThreatVaultv2.parse_resp_by_type", return_value=mocking)
     results = threat_batch_search_command(client, args)
 
@@ -1043,7 +982,6 @@ def test_threat_batch_search_command(
     ],
 )
 def test_threat_search_command(mocker, args, expected_results):
-
     client = Client(
         base_url="test",
         api_key="test",
@@ -1052,9 +990,7 @@ def test_threat_search_command(mocker, args, expected_results):
         reliability="E - Unreliable",
     )
 
-    call_request = mocker.patch.object(
-        client, "threat_search_request", return_value={"data": []}
-    )
+    call_request = mocker.patch.object(client, "threat_search_request", return_value={"data": []})
     mocker.patch("ThreatVaultv2.parse_resp_by_type", return_value=["test"])
     threat_search_command(client, args)
 
@@ -1063,44 +999,21 @@ def test_threat_search_command(mocker, args, expected_results):
 
 @pytest.mark.parametrize("date, expected_result", [("2022-09-03", "2022-09-03")])
 def test_parse_date(date, expected_result):
-
     res = parse_date(date)
     assert res == expected_result
 
 
 @pytest.mark.parametrize(
-    'reputation_type, expected_results',
+    "reputation_type, expected_results",
     [
-        (
-            'spyware',
-            'Spyware'
-        ),
-        (
-            'vulnerability',
-            'Vulnerability'
-        ),
-        (
-            'antivirus',
-            'Antivirus'
-        ),
-        (
-            'fileformat',
-            'Fileformat'
-        ),
-        (
-            'spywarec2',
-            'SpywareC2'
-        ),
-        (
-            'dns',
-            'DNS'
-        ),
-        (
-            'rtdns',
-            'RTDNS'
-        )
-    ]
+        ("spyware", "Spyware"),
+        ("vulnerability", "Vulnerability"),
+        ("antivirus", "Antivirus"),
+        ("fileformat", "Fileformat"),
+        ("spywarec2", "SpywareC2"),
+        ("dns", "DNS"),
+        ("rtdns", "RTDNS"),
+    ],
 )
 def test_reputation_type_to_hr(reputation_type, expected_results):
-
     assert reputation_type_to_hr(reputation_type) == expected_results

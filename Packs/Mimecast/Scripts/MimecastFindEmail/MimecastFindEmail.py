@@ -14,32 +14,31 @@ def main() -> None:
         data = demisto.get(resp[0], "Contents.data")
         if data:
             users = set()
-            items = demisto.get(data[0], 'items')
+            items = demisto.get(data[0], "items")
             if isinstance(items, list):
                 for mail in items:
-                    users.add(mail['displayto'])
+                    users.add(mail["displayto"])
 
             users = list(users)  # type: ignore
             if users:
-                markdownString = '### Mailboxes with email(s) matching the query:\n'
-                markdownString += "".join(['* ' + s + '\n' for s in users])
-                res.append(
-                    {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdownString})
+                markdownString = "### Mailboxes with email(s) matching the query:\n"
+                markdownString += "".join(["* " + s + "\n" for s in users])
+                res.append({"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": markdownString})
 
-                users_str = ','.join([str(s) for s in users])
+                users_str = ",".join([str(s) for s in users])
                 demisto.setContext(MAILBOXES_CTXKEY, users_str)
 
-                answer = 'yes'
+                answer = "yes"
             else:
                 demisto.debug("\nNo relevant mails have been found\n")
-                answer = 'no'
+                answer = "no"
         else:
             demisto.debug("\nNo relevant mails have been found\n")
-            answer = 'no'
+            answer = "no"
 
         res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": answer})
         demisto.results(res)
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

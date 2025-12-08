@@ -2,7 +2,7 @@
     "name": "Check Point Firewall",
     "description": "Manage Check Point firewall via API",
     "support": "xsoar",
-    "currentVersion": "2.3.28",
+    "currentVersion": "2.3.35",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,10 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
         "checkpoint",
@@ -26,6 +29,11 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }

@@ -1,5 +1,5 @@
 category: IT Services
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -75,6 +75,7 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
@@ -193,7 +194,7 @@ script:
       description: Email(s) for the user associated with the device.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.AzureADDeviceId
-      description: The unique identifier for the Azure Active Directory device. Read only.
+      description: The unique identifier for the Entra ID device. Read only.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.CategoryDisplayName
       description: Device category display name.
@@ -604,7 +605,7 @@ script:
       description: Email(s) for the user associated with the device.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.AzureADDeviceId
-      description: The unique identifier for the Azure Active Directory device. Read only.
+      description: The unique identifier for the Entra ID device. Read only.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.CategoryDisplayName
       description: Device category display name.
@@ -824,7 +825,7 @@ script:
       description: Email(s) for the user associated with the device.
       type: string
     - contextPath: MSGraphDeviceManagement.Device.AzureADDeviceId
-      description: The unique identifier for the Azure Active Directory device. Read only.
+      description: The unique identifier for the Entra ID device. Read only.
       type: string
     - contextPath: MSGraphDeviceManagement.Device.CategoryDisplayName
       description: Device category display name.
@@ -983,7 +984,7 @@ script:
     execution: false
     name: msgraph-device-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.5490413
   script: ''
   subtype: python3
   type: python

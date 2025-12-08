@@ -1,8 +1,7 @@
 import json
 
-import pytest
-
 import demistomock as demisto
+import pytest
 from BoxEventsCollector import BoxEventsClient, main
 
 

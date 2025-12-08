@@ -1,11 +1,11 @@
-from CommonServerPython import *
-
 import base64
 import hashlib
 import pickle
 import uuid
 
-RANDOM_UUID = str(demisto.args().get('addRandomSalt', ''))
+from CommonServerPython import *
+
+RANDOM_UUID = str(demisto.args().get("addRandomSalt", ""))
 # Memo for key matching
 CACHE = {}  # type: ignore
 
@@ -17,7 +17,7 @@ def hash_value(simple_value):
         return None
     if RANDOM_UUID:
         simple_value += RANDOM_UUID
-    return hashlib.md5(simple_value.encode('utf8')).hexdigest()  # nosec
+    return hashlib.md5(simple_value.encode("utf8")).hexdigest()  # nosec
 
 
 def pattern_match(pattern, s):
@@ -43,10 +43,10 @@ def hash_incident_labels(incident_labels, fields_to_hash):
     labels = []
     if isinstance(incident_labels, list):
         for label in incident_labels:
-            if is_key_match_fields_to_hash(label.get('type'), fields_to_hash):
-                value = label.get('value') or ''
+            if is_key_match_fields_to_hash(label.get("type"), fields_to_hash):
+                value = label.get("value") or ""
                 if value:
-                    label['value'] = hash_value(value)
+                    label["value"] = hash_value(value)
             labels.append(label)
     return labels
 
@@ -74,25 +74,25 @@ def hash_multiple(value, fields_to_hash, to_hash=False):
 
 
 def output_file(data, description, output_format):
-    data_encoded = b''
+    data_encoded = b""
     file_name = str(uuid.uuid4())
-    if output_format == 'pickle':
+    if output_format == "pickle":
         pickled_incidents = []
         for i in data:
             pickled_incident = base64.b64encode(pickle.dumps(i))
             pickled_incidents.append(pickled_incident)
         data_encoded = pickle.dumps(pickled_incidents)
-    elif output_format == 'json':
-        data_encoded = json.dumps(data).encode('utf8')
+    elif output_format == "json":
+        data_encoded = json.dumps(data).encode("utf8")
     else:
-        return_error("Invalid output format: %s" % output_format)
+        return_error(f"Invalid output format: {output_format}")
     entry = fileResult(file_name, data_encoded)
-    entry['Contents'] = data
-    entry['HumanReadable'] = description
-    entry['EntryContext'] = {
-        'HashIncidentsFields': {
-            'Filename': file_name,
-            'FileFormat': output_format,
+    entry["Contents"] = data
+    entry["HumanReadable"] = description
+    entry["EntryContext"] = {
+        "HashIncidentsFields": {
+            "Filename": file_name,
+            "FileFormat": output_format,
         }
     }
     return entry
@@ -108,9 +108,9 @@ def copy_key_from_context(ctx, context_keys):
 
 
 def get_context(incident_id):
-    res = demisto.executeCommand("getContext", {'id': incident_id})
+    res = demisto.executeCommand("getContext", {"id": incident_id})
     try:
-        return res[0]['Contents'].get('context') or {}
+        return res[0]["Contents"].get("context") or {}
     except Exception:
         return {}
 
@@ -118,23 +118,23 @@ def get_context(incident_id):
 def hash_incident(fields_to_hash, un_populate_fields):
     args = demisto.args()
 
-    remove_labels = demisto.args().get('removeLabels', '') == 'true'
-    context_keys = [x for x in argToList(demisto.args().get('contextKeys', '')) if x]
+    remove_labels = demisto.args().get("removeLabels", "") == "true"
+    context_keys = [x for x in argToList(demisto.args().get("contextKeys", "")) if x]
 
     # load incidents
-    res = demisto.executeCommand('GetIncidentsByQuery', args)
+    res = demisto.executeCommand("GetIncidentsByQuery", args)
     if is_error(res):
         return_error(get_error(res))
-    incident_list = json.loads(res[0]['Contents'])
+    incident_list = json.loads(res[0]["Contents"])
 
     # filter incidents
     new_incident_list = []
     for incident in incident_list:
         if context_keys:
-            incident['context'] = copy_key_from_context(get_context(incident['id']), context_keys)
+            incident["context"] = copy_key_from_context(get_context(incident["id"]), context_keys)
 
         # remove CustomFields
-        incident.pop('CustomFields', None)
+        incident.pop("CustomFields", None)
 
         incident = hash_multiple(incident, fields_to_hash)
 
@@ -143,21 +143,21 @@ def hash_incident(fields_to_hash, un_populate_fields):
             incident = {k: v for k, v in incident.items() if k not in un_populate_fields}
 
         # remove or hash incident labels
-        incident_labels = incident.pop('labels')
+        incident_labels = incident.pop("labels")
         if not remove_labels:
-            incident['labels'] = hash_incident_labels(incident_labels, fields_to_hash)
+            incident["labels"] = hash_incident_labels(incident_labels, fields_to_hash)
 
         new_incident_list.append(incident)
 
     # Output
-    desc = "Fetched %d incidents successfully by the query: %s" % (len(new_incident_list), args.get('query'))
-    entry = output_file(new_incident_list, desc, args['outputFormat'])
+    desc = f"Fetched {len(new_incident_list)} incidents successfully by the query: {args.get('query')}"
+    entry = output_file(new_incident_list, desc, args["outputFormat"])
     return entry
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     args = demisto.args()
-    fields_to_hash = frozenset([x for x in argToList(args.get('fieldsToHash', '')) if x])
-    un_populate_fields = frozenset([x for x in argToList(args.get('unPopulateFields', '')) if x])
+    fields_to_hash = frozenset([x for x in argToList(args.get("fieldsToHash", "")) if x])
+    un_populate_fields = frozenset([x for x in argToList(args.get("unPopulateFields", "")) if x])
     entry = hash_incident(fields_to_hash, un_populate_fields)
     demisto.results(entry)

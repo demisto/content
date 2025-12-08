@@ -1,9 +1,8 @@
-
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from xml.sax.saxutils import escape
 
+import demistomock as demisto
 import urllib3
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -182,7 +181,7 @@ class Client(BaseClient):
                     </bsvc:Get_Workday_Account_Signons_Request>
                 </soapenv:Body>
             </soapenv:Envelope>
-        """
+            """  # noqa:E501
 
     def generate_test_payload(self, from_time: str, to_time: str) -> str:
         return f"""
@@ -506,8 +505,7 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f"Command being called is {command}")
     try:
-        client = Client(params=params
-                        )
+        client = Client(params=params)
 
         if command == "test-module":
             return_results(module_of_testing(client))
@@ -545,11 +543,7 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(
-            f"Failed to execute {demisto.command()} command.\n"
-            f"Error:\n{str(e)}\n"
-            f"Traceback:\n{traceback.format_exc()}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}\nTraceback:\n{traceback.format_exc()}")
 
 
 """ ENTRY POINT """

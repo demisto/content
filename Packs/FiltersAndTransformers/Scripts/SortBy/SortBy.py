@@ -1,8 +1,9 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import json
 from collections import OrderedDict
-from typing import Any, List, Tuple
+from typing import Any
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def demisto_get(obj: Any, path: Any) -> Any:
@@ -22,7 +23,8 @@ def demisto_get(obj: Any, path: Any) -> Any:
     :param path: The path to get values in the node.
     :return: The value(s) specified with `path` in the node.
     """
-    def split_context_path(path: str) -> List[str]:
+
+    def split_context_path(path: str) -> list[str]:
         """
         Get keys in order from the path which supports a syntax of path escaped with backslash.
 
@@ -33,17 +35,17 @@ def demisto_get(obj: Any, path: Any) -> Any:
         node = []
         itr = iter(path)
         for c in itr:
-            if c == '\\':
+            if c == "\\":
                 try:
                     node.append(next(itr))
                 except StopIteration:
-                    node.append('\\')
-            elif c == '.':
-                nodes.append(''.join(node))
+                    node.append("\\")
+            elif c == ".":
+                nodes.append("".join(node))
                 node = []
             else:
                 node.append(c)
-        nodes.append(''.join(node))
+        nodes.append("".join(node))
         return nodes
 
     if not isinstance(obj, dict):
@@ -78,7 +80,7 @@ class Key:
             return 0
         elif isinstance(self.__value, bool):
             return 1
-        elif isinstance(self.__value, (int, float)):
+        elif isinstance(self.__value, int | float):
             return 2
         elif isinstance(self.__value, str):
             return 3
@@ -89,7 +91,7 @@ class Key:
         def __get(value: Any) -> Any:
             if value is None:
                 return 0
-            elif isinstance(value, (bool, int, float, str)):
+            elif isinstance(value, bool | int | float | str):
                 return value
             elif isinstance(value, dict):
                 return OrderedDict((k, __get(value[k])) for k in sorted(value.keys()))
@@ -99,12 +101,12 @@ class Key:
                 return value
 
         v = __get(self.__value)
-        if v is None or isinstance(v, (bool, int, float, str)):
+        if v is None or isinstance(v, bool | int | float | str):
             return v
         else:
             return json.dumps(v)
 
-    def get(self) -> Tuple[int, Any]:
+    def get(self) -> tuple[int, Any]:
         """
         Get the key from the value.
 
@@ -116,14 +118,13 @@ class Key:
 def main():
     try:
         args = assign_params(**demisto.args())
-        if value := args.get('value', []):
-            descending_keys = argToList(args.get('descending_keys'))
-            if paths := argToList(args.get('keys')):
+        if value := args.get("value", []):
+            descending_keys = argToList(args.get("descending_keys"))
+            if paths := argToList(args.get("keys")):
                 for path in reversed(paths):
-                    value.sort(key=lambda x: Key(x, path).get(),
-                               reverse=path in descending_keys)
+                    value.sort(key=lambda x: Key(x, path).get(), reverse=path in descending_keys)
             else:
-                descending = len(descending_keys) == 1 and descending_keys[0] == '*'
+                descending = len(descending_keys) == 1 and descending_keys[0] == "*"
                 value.sort(key=lambda x: Key(x, None).get(), reverse=descending)
 
         return_results(value)
@@ -132,5 +133,5 @@ def main():
         raise DemistoException(str(err))
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

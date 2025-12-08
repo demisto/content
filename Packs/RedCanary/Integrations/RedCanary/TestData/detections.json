@@ -1,0 +1,42 @@
+{
+    "unacknowledged_detection": {
+        "data": [
+            {
+                "id": "1",
+                "attributes": {
+                    "headline": "Test Detection 1"
+                }
+            }
+        ]
+    },
+    "acknowledged_detection": {
+        "data": [
+            {
+                "id": "2",
+                "attributes": {
+                    "headline": "Test Detection 2",
+                    "last_acknowledged_at": "2025-07-24T10:00:00Z",
+                    "last_acknowledged_by": "test_user"
+                }
+            }
+        ]
+    },
+    "mixed_detections": {
+        "data": [
+            {
+                "id": "1",
+                "attributes": {
+                    "headline": "Test Detection 1"
+                }
+            },
+            {
+                "id": "2",
+                "attributes": {
+                    "headline": "Test Detection 2",
+                    "last_acknowledged_at": "2025-07-24T10:00:00Z",
+                    "last_acknowledged_by": "test_user"
+                }
+            }
+        ]
+    }
+}

@@ -1,17 +1,22 @@
 from inspect import isclass
-import pytest
 from unittest.mock import MagicMock
-from CyberTriage import CyberTriageClient, IS_2XX
 
+import pytest
+from CyberTriage import IS_2XX, CyberTriageClient
 
-SERVER_URL = 'https://test_url.com'
+SERVER_URL = "https://test_url.com"
 
 
 @pytest.fixture()
 def client():
     client = CyberTriageClient(
-        server=SERVER_URL, rest_port='test', api_key='test', user='test',
-        password='test', verify_server_cert=True, ok_codes=(200,)
+        server=SERVER_URL,
+        rest_port="test",
+        api_key="test",
+        user="test",
+        password="test",
+        verify_server_cert=True,
+        ok_codes=(200,),
     )
     return client
 
@@ -27,6 +32,7 @@ def test_test_connection_command(client: CyberTriageClient):
         - ensure triage_endpoint is called once
     """
     from CyberTriage import test_connection_command
+
     mock1 = MagicMock()
     client.test_connection = mock1
     test_connection_command(client)
@@ -46,16 +52,12 @@ def test_triage_endpoint_command(client: CyberTriageClient):
         - ensure triage_endpoint is called once with the expected arguments
     """
     from CyberTriage import triage_endpoint_command
-    args = {
-        'malware_hash_upload': 'yes',
-        'malware_file_upload': 'no',
-        'endpoint': 'made-up-endpoint',
-        'incident_name': 'MADEUP'
-    }
+
+    args = {"malware_hash_upload": "yes", "malware_file_upload": "no", "endpoint": "made-up-endpoint", "incident_name": "MADEUP"}
     mock2 = MagicMock()
     client.triage_endpoint = mock2
     triage_endpoint_command(client, args)
-    client.triage_endpoint.assert_called_once_with(True, False, 'made-up-endpoint', '', 'MADEUP')
+    client.triage_endpoint.assert_called_once_with(True, False, "made-up-endpoint", "", "MADEUP")
 
 
 is_2xx_test_data = [
@@ -71,12 +73,12 @@ is_2xx_test_data = [
     (606, False),
     (-200, False),
     (-245, False),
-    ('200', TypeError),
-    ('help', TypeError)
+    ("200", TypeError),
+    ("help", TypeError),
 ]
 
 
-@pytest.mark.parametrize('argument,expected', is_2xx_test_data)
+@pytest.mark.parametrize("argument,expected", is_2xx_test_data)
 def test_IS_2XX(argument, expected):
     if isclass(expected) and issubclass(expected, Exception):
         with pytest.raises(expected_exception=expected):

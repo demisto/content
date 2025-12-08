@@ -1,5 +1,5 @@
 category: IT Services
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -38,7 +38,7 @@ configuration:
   - us-gov-east-1
   - us-gov-west-1
   type: 15
-  section: Collect
+  section: Connect
   advanced: true
   required: true
 - display: Role Session Duration
@@ -1280,6 +1280,50 @@ script:
     description: Create/update password policy.
     execution: true
     name: aws-iam-update-account-password-policy
+  - name: aws-iam-account-password-policy-update-quick-action
+    description: Updates the password policy to require a minimum length of 14 characters, at least one lowercase letter, one uppercase letter, one symbol. Allows users to reset password, disallow reuse of the last 24 passwords and set password expiration to 90 days. It runs the aws-iam-update-account-password-policy CLI command in your AWS environment and requires the 'iam:UpdateAccountPasswordPolicy' permission.
+    prettyname: Apply IAM Password Policy
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: minimumPasswordLength
+        description: The minimum number of characters allowed in an IAM user password.
+        defaultValue: '14'
+        hidden: true
+      - name: requireSymbols
+        description: Specifies whether IAM user passwords must contain at least one of the non-alphanumeric characters. Can be "True" or "False".
+        defaultValue: 'true'
+        hidden: true
+      - name: requireNumbers
+        description: Specifies whether IAM user passwords must contain at least one numeric character (0 to 9). Can be "True" or "False".
+        defaultValue: 'true'
+        hidden: true
+      - name: requireUppercaseCharacters
+        description: Specifies whether IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
+        defaultValue: 'true'
+        hidden: true
+      - name: requireLowercaseCharacters
+        description: Specifies whether IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
+        defaultValue: 'true'
+        hidden: true
+      - name: allowUsersToChangePassword
+        description: Allows all IAM users in your account to use the AWS Management Console to change their own passwords. Can be "True" or "False".
+        defaultValue: 'true'
+        hidden: true
+      - name: maxPasswordAge
+        description: The number of days that an IAM user password is valid.
+        defaultValue: '90'
+        hidden: true
+      - name: passwordReusePrevention
+        description: Specifies the number of previous passwords that IAM users are prevented from reusing.
+        defaultValue: '24'
+        hidden: true
   - arguments:
     - description: The name of the role to list policies for.
       name: roleName
@@ -1443,6 +1487,8 @@ script:
       required: true
     description: Adds or updates an inline policy document that is embedded in the specified IAM user.
     name: aws-iam-put-user-policy
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - description: The policy document. You must provide policies in JSON format in IAM.
       name: policyDocument
@@ -1562,20 +1608,20 @@ script:
       name: marker
       required: false
     name: aws-iam-list-mfa-devices
-    description: Lists the MFA devices for an IAM user.  
+    description: Lists the MFA devices for an IAM user.
     outputs:
-      - contextPath: AWS.IAM.MFADevices.Devices.UserName
-        description: The user with whom the MFA device is associated.
-        type: string
-      - contextPath: AWS.IAM.MFADevices.Devices.SerialNumber
-        description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN.
-        type: string
-      - contextPath: AWS.IAM.MFADevices.Devices.EnableDate
-        description: The date when the MFA device was enabled for the user.
-        type: date
-      - contextPath: MFADevices.Devices.Marker
-        description: First element of next page of items.
-        type: string
+    - contextPath: AWS.IAM.MFADevices.Devices.UserName
+      description: The user with whom the MFA device is associated.
+      type: string
+    - contextPath: AWS.IAM.MFADevices.Devices.SerialNumber
+      description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN.
+      type: string
+    - contextPath: AWS.IAM.MFADevices.Devices.EnableDate
+      description: The date when the MFA device was enabled for the user.
+      type: date
+    - contextPath: MFADevices.Devices.Marker
+      description: First element of next page of items.
+      type: string
   - arguments:
     - description: The name of the user whose MFA devices you want to list.
       name: userName
@@ -1609,7 +1655,7 @@ script:
       required: false
     description: Deletes a virtual MFA device.
     name: aws-iam-delete-mfa-devices
-  dockerimage: demisto/boto3py3:1.0.0.1894954
+  dockerimage: demisto/boto3py3:1.0.0.5983318
   runonce: false
   script: '-'
   subtype: python3
@@ -1617,3 +1663,4 @@ script:
 tests:
 - AWS - IAM Test Playbook
 fromversion: 5.0.0
+supportsquickactions: true

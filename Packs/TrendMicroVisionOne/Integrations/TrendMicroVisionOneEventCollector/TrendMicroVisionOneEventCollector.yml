@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: TrendMicroVisionOneEventCollector
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -21,7 +21,7 @@ configuration:
   hiddenusername: true
   section: Connect
 - display: The maximum number of events per fetch.
-  additionalinfo: The maximum number of events to fetch every time fetch is executed for a single log-type (Workbench, Observed Attack Techniques, Search Detections and Audit logs).
+  additionalinfo: The maximum number of events to fetch every time fetch is executed for each specified log type (Workbench, Observed Attack Techniques, Search Detections and Audit logs).
   defaultvalue: 1000
   name: max_fetch
   required: false
@@ -33,6 +33,18 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+  section: Collect
+- display: Log types to fetch
+  additionalinfo: To maximize scalability, it is recommended to configure one type per instance. Setup multiple integration instances to fetch multiple log types.
+  name: log_types
+  defaultvalue: Workbench,Observed Attack Techniques,Search Detections,Audit
+  type: 16
+  options:
+  - Workbench
+  - Observed Attack Techniques
+  - Search Detections
+  - Audit
+  required: false
   section: Collect
 - display: Fetch events
   name: isFetchEvents
@@ -50,7 +62,7 @@ configuration:
   type: 8
   section: Connect
 description: Palo Alto Networks Trend Micro Vision One Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
-display: 'Trend Micro Vision One Event Collector'
+display: Trend Micro Vision One Event Collector
 name: TrendMicroVisionOneEventCollector
 supportlevelheader: xsoar
 script:
@@ -86,7 +98,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.11.4284848
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2

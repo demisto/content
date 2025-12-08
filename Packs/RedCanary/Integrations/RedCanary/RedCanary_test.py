@@ -1,6 +1,8 @@
 import demistomock as demisto
 import json
 import RedCanary
+from freezegun import freeze_time
+from datetime import datetime
 
 last_run_dict = {"time": "2019-12-13T17:23:22Z", "last_event_ids": []}
 latest_time_of_occurrence_of_incidents1 = "2019-12-30T22:00:50Z"
@@ -331,3 +333,202 @@ def test_def_get_full_timeline(mocker):
     assert result1["data"] == result2["data"]
     # make sure the loop ends
     assert activities
+
+
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def test_get_detection_command_includes_domain(mocker):
+    """
+    Given
+    - Raw response of get_full_timeline function
+    - Response from get_detection command.
+    When
+    - Running the get_detection command
+    Then
+    Make sure that the Domain info exists in the context data under the Domain key.
+    """
+    detection_data = util_load_json("TestData/detection.json")
+    timeline_data = util_load_json("TestData/detection_timeline.json")
+    mocker.patch("RedCanary.demisto.args", return_value={"id": "87"})
+
+    def http_get_side_effect(url, params=None):
+        if url == "/detections/87":
+            return {"data": [detection_data]}
+        elif url.startswith(f"/detections/{detection_data['id']}/timeline"):
+            return timeline_data
+        return {}
+
+    mocker.patch("RedCanary.http_get", side_effect=http_get_side_effect)
+
+    # Call the command
+    result = RedCanary.get_detection_command()
+
+    # Validate the Domain context was returned
+    entry_context = result.get("EntryContext", {})
+    assert "Domain(val.Username == obj.Username)" in entry_context
+    assert isinstance(entry_context["Domain(val.Username == obj.Username)"], list)
+    assert any("example.domain" in json.dumps(d) for d in entry_context["Domain(val.Username == obj.Username)"])
+
+
+def test_get_detection_command_includes_process_and_files(mocker):
+    """
+    Given
+    - Raw response of get_full_timeline function
+    - Response from get_detection command.
+    When
+    - Running the get_detection command
+    Then
+    Make sure that the Process and File info exists in the context data under the Domain key.
+    """
+    detection_data = util_load_json("TestData/detection2.json")
+    timeline_data = util_load_json("TestData/detection_timeline2.json")
+    mocker.patch("RedCanary.demisto.args", return_value={"id": "106"})
+
+    def http_get_side_effect(url, params=None):
+        if url == "/detections/106":
+            return {"data": [detection_data]}
+        elif url.startswith(f"/detections/{detection_data['id']}/timeline"):
+            return timeline_data
+        return {}
+
+    mocker.patch("RedCanary.http_get", side_effect=http_get_side_effect)
+
+    # Call the command
+    result = RedCanary.get_detection_command()
+
+    # Validate the Domain context was returned
+    entry_context = result.get("EntryContext", {})
+    # print(entry_context)
+    assert "Process(val.Username == obj.Username)" in entry_context
+    assert "File(val.Name == obj.Name)" in entry_context
+    # Ensure they are lists
+    processes = entry_context["Process(val.Username == obj.Username)"]
+    files = entry_context["File(val.Name == obj.Name)"]
+    assert isinstance(processes, list)
+    assert isinstance(files, list)
+
+    # Ensure they are not empty
+    assert len(processes) > 0, "Expected at least one process in context, got empty list"
+    assert len(files) > 0, "Expected at least one file in context, got empty list"
+
+
+with open("./TestData/detections.json") as f:
+    detections_data = json.load(f)
+
+
+@freeze_time("2023-10-31 10:00:00")
+def test_get_unacknowledged_detections(mocker):
+    """Unit test
+    Given
+    - a list of detections from the list_detections command
+    When
+    - getting unacknowledged detections
+    Then
+    - make sure only the unacknowledged detections are returned
+    """
+    # Test with only unacknowledged detections
+    mocker.patch.object(RedCanary, "list_detections", side_effect=[detections_data["unacknowledged_detection"]["data"], []])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now()))
+    assert len(results) == 1
+    assert results[0]["id"] == "1"
+
+    # Test with only acknowledged detections
+    mocker.patch.object(RedCanary, "list_detections", side_effect=[detections_data["acknowledged_detection"]["data"], []])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now()))
+    assert len(results) == 0
+
+    # Test with a mix of acknowledged and unacknowledged detections
+    mocker.patch.object(RedCanary, "list_detections", side_effect=[detections_data["mixed_detections"]["data"], []])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now()))
+    assert len(results) == 1
+    assert results[0]["id"] == "1"
+
+    # Test with a mix of detections and is_fetch_acknowledged=True
+    mocker.patch.object(RedCanary, "list_detections", side_effect=[detections_data["mixed_detections"]["data"], []])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now(), is_fetch_acknowledged=True))
+    assert len(results) == 2
+
+    # Test with no detections
+    mocker.patch.object(RedCanary, "list_detections", return_value=[])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now()))
+    assert len(results) == 0
+
+
+def test_process_timeline(mocker):
+    """Unit test
+    Given
+    - a detection ID and mock timeline data containing process execution events
+    When
+    - processing the timeline to extract activities, files, and processes
+    Then
+    - verify that the timeline is correctly parsed and structured data is returned
+    - ensure activities contain proper time, type, and notes information
+    - confirm files and processes are extracted with expected attributes
+    """
+    detection_id = "12345"
+
+    mock_timeline_data = [
+        {
+            "type": "activity_timelines.EventActivityOccurred",
+            "attributes": {
+                "occurred_at": "2023-10-31T10:00:00Z",
+                "analyst_notes": "Process execution detected",
+                "type": "process_activity_occurred",
+                "process_execution": {
+                    "attributes": {
+                        "operating_system_process": {
+                            "attributes": {
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {"md5": None, "sha256": None, "path": None, "file_type": None},
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {"command_line": "", "command_line_decoded": "", "identified_encodings": []},
+                                },
+                                "started_at": "2023-10-31T09:59:00Z",
+                            }
+                        }
+                    }
+                },
+            },
+        }
+    ]
+
+    # Mock the get_full_timeline function
+    mocker.patch.object(RedCanary, "get_full_timeline", return_value=mock_timeline_data)
+
+    # Call the function
+    activities, _, files, _, processes = RedCanary.process_timeline(detection_id)
+
+    # Verify that get_full_timeline was called with correct detection_id
+    RedCanary.get_full_timeline.assert_called_once_with(detection_id)
+
+    # Verify activities
+    assert len(activities) == 1
+
+    # Check first activity (process)
+    assert activities[0]["Time"] == "2023-10-31T10:00:00Z"
+    assert activities[0]["Type"] == "process activity occurred"
+    assert activities[0]["Notes"] == "Process execution detected"
+    assert activities[0]["Activity Details"] == {}
+
+    # Verify files
+    assert len(files) == 1
+    expected_file = {"Name": "", "MD5": None, "SHA256": None, "Path": None, "Extension": ""}
+    assert files[0] == expected_file
+
+    # Verify processes
+    assert len(processes) == 1
+    expected_process = {
+        "Name": "",
+        "Path": None,
+        "MD5": None,
+        "SHA256": None,
+        "StartTime": "2023-10-31T09:59:00Z",
+        "CommandLine": "",
+    }
+    assert processes[0] == expected_process

@@ -1,9 +1,8 @@
 from datetime import datetime
-from typing import Dict, List
-
-from greynoise import GreyNoise, exceptions, util  # type: ignore
 
 from CommonServerPython import *
+from greynoise.api import GreyNoise, APIConfig
+from greynoise import exceptions, util  # type: ignore
 
 INTEGRATION_NAME = "GreyNoise Indicator Feed"
 API_SERVER = util.DEFAULT_CONFIG.get("api_server")
@@ -16,7 +15,7 @@ EXCEPTION_MESSAGES = {
     "SERVER_ERROR": "The server encountered an internal error for GreyNoise and was unable to complete your request.",
     "CONNECTION_TIMEOUT": "Connection timed out. Check your network connectivity.",
     "PROXY": "Proxy Error - cannot connect to proxy. Either try clearing the 'Use system proxy' check-box or check "
-             "the host, authentication details and connection details for the proxy.",
+    "the host, authentication details and connection details for the proxy.",
     "INVALID_RESPONSE": "Invalid response from GreyNoise. Response: {}",
     "QUERY_STATS_RESPONSE": "GreyNoise request failed. Reason: {}",
 }
@@ -31,16 +30,10 @@ class Client(GreyNoise):
         """
         Used to authenticate GreyNoise credentials.
         """
-        current_date = datetime.now()
         try:
-            response = self.test_connection()
-            expiration_date = datetime.strptime(response["expiration"], "%Y-%m-%d")
-            if current_date < expiration_date and response["offering"] != "community":
-                return "ok"
-            else:
-                raise DemistoException(
-                    f"Invalid API Offering ({response['offering']})or Expiration Date ({expiration_date})"
-                )
+            self.test_connection()
+
+            return "ok"
 
         except exceptions.RateLimitError:
             raise DemistoException(EXCEPTION_MESSAGES["API_RATE_LIMIT"])
@@ -74,7 +67,7 @@ def get_ip_reputation_score(classification: str) -> int:
     :return: int for score.
     :rtype: ``int``
     """
-    if classification == "unknown":
+    if classification == "suspicious":
         return 2
     elif classification == "benign":
         return 1
@@ -85,33 +78,64 @@ def get_ip_reputation_score(classification: str) -> int:
 
 
 def format_timestamp(date: str) -> str:
-    formatted_timestamp = datetime.strptime(date, "%Y-%m-%d").isoformat() + 'Z'
+    formatted_timestamp = datetime.strptime(date, "%Y-%m-%d").isoformat() + "Z"
 
     return formatted_timestamp
 
 
+def get_ip_tag_names(tags: list) -> list:
+    """Get the tag names from tags list.
+
+    :type tags: ``list``
+    :param tags: list of tags.
+
+    :return: list of tag names.
+    :rtype: ``list``
+    """
+    tag_names = []
+    if tags != []:
+        for tag in tags:
+            tag_name = tag.get("name")
+            tag_names.append(tag_name)
+
+    return tag_names
+
+
 def format_indicator(indicator, tlp_color: str):
-    tags = ",".join(indicator.get("tags", []))
-    if tags == "":
+    tag_names = get_ip_tag_names(indicator.get("internet_scanner_intelligence", {}).get("tags", []))
+    tag_string = ",".join(tag_names)
+    if tag_string == "":
         tags = "INTERNET SCANNER"
     else:
-        tags = "INTERNET SCANNER," + tags
-    if "metadata" in indicator:
-        country_code = indicator['metadata'].get('country_code', '')
+        tags = "INTERNET SCANNER," + tag_string
+    if "metadata" in indicator.get("internet_scanner_intelligence", {}):
+        country_code = indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("source_country", "")
+        if "latitude" in indicator.get("internet_scanner_intelligence", {}).get("metadata", {}) and "longitude" in indicator.get(
+            "internet_scanner_intelligence", {}
+        ).get("metadata", {}):
+            lat_long = (
+                str(indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("latitude", ""))
+                + ","
+                + str(indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("longitude", ""))
+            )
+        else:
+            lat_long = ""
     else:
         country_code = ""
+        lat_long = ""
     formatted_indicator = {
-        'Value': indicator["ip"],
-        'Type': FeedIndicatorType.IP,
-        'rawJSON': indicator,
-        'score': get_ip_reputation_score(indicator.get('classification', '')),
-        'fields': {
-            'firstseenbysource': format_timestamp(indicator.get("first_seen", "")),
-            'lastseenbysource': format_timestamp(indicator.get("last_seen", "")),
-            'geocountry': country_code,
-            'tags': tags,
-            'trafficlightprotocol': tlp_color
-        }
+        "Value": indicator["ip"],
+        "Type": FeedIndicatorType.IP,
+        "rawJSON": indicator,
+        "score": get_ip_reputation_score(indicator.get("internet_scanner_intelligence", {}).get("classification", "")),
+        "fields": {
+            "firstseenbysource": format_timestamp(indicator.get("internet_scanner_intelligence", {}).get("first_seen", "")),
+            "lastseenbysource": format_timestamp(indicator.get("internet_scanner_intelligence", {}).get("last_seen", "")),
+            "geocountry": country_code,
+            "geolocation": lat_long,
+            "tags": tags,
+            "trafficlightprotocol": tlp_color,
+        },
     }
 
     return formatted_indicator
@@ -122,8 +146,14 @@ def build_feed_query(query: str) -> str:
         query_string = "last_seen:1d"
     elif query == "Malicious":
         query_string = "last_seen:1d classification:malicious"
+    elif query == "Suspicious":
+        query_string = "last_seen:1d classification:suspicious"
+    elif query == "Malicious + Suspicious":
+        query_string = "last_seen:1d (classification:malicious OR classification:suspicious)"
     elif query == "Benign + Malicious":
         query_string = "last_seen:1d (classification:benign OR classification:malicious)"
+    elif query == "Benign + Malicious + Suspicious":
+        query_string = "last_seen:1d (-classification:unknown)"
     elif query == "Benign":
         query_string = "last_seen:1d classification:benign"
     else:
@@ -132,30 +162,30 @@ def build_feed_query(query: str) -> str:
     return query_string
 
 
-def fetch_indicators(client: Client, params) -> List[Dict]:
+def fetch_indicators(client: Client, params) -> list[dict]:
     """Retrieves all entries from the feed.
     Returns:
         A list of objects, containing the indicators.
     """
 
-    query = params.get('greynoiseFeedType')
-    tlp_color = params.get('tlp_color')
+    query = params.get("greynoiseFeedType")
+    tlp_color = params.get("tlp_color")
     feed_query = build_feed_query(query)
 
     try:
-        response = client.query(query=feed_query, exclude_raw=True)
-        indicators: List = []
+        response = client.query(query=feed_query, exclude_raw=True, size=10000)
+        indicators: list = []
         complete = False
         while not complete:
             for indicator in response.get("data", []):
                 indicators.append(format_indicator(indicator, tlp_color))
-            complete = response.get('complete', True)
-            scroll = response.get('scroll', "")
-            response = client.query(query=feed_query, exclude_raw=True, scroll=scroll)
+            complete = response["request_metadata"].get("complete", True)
+            scroll = response["request_metadata"].get("scroll", "")
+            response = client.query(query=feed_query, exclude_raw=True, scroll=scroll, size=10000)
 
     except Exception as err:
         demisto.debug(str(err))
-        raise Exception(f'{err}')
+        raise Exception(f"{err}")
 
     return indicators
 
@@ -184,40 +214,39 @@ def get_indicators_command(client: Client, params) -> CommandResults:
         CommandResults object containing the indicators retrieved.
     """
 
-    query = params.get('greynoiseFeedType')
-    tlp_color = params.get('tlp_color')
+    query = params.get("greynoiseFeedType")
+    tlp_color = params.get("tlp_color")
     feed_query = build_feed_query(query)
 
     try:
         response = client.query(query=feed_query, exclude_raw=True, size=25)
-        hr_indicators: List = []
-        output_list: List = []
+        hr_indicators: list = []
+        output_list: list = []
 
         for indicator in response.get("data", []):
             hr = format_indicator(indicator, tlp_color)
             hr_indicators.append(hr)
-            output_list.append({'Type': hr.get('Type'),
-                                'Value': hr.get('Value'),
-                                'Tags': hr.get('fields', {}).get('tags')})
+            output_list.append({"Type": hr.get("Type"), "Value": hr.get("Value"), "Tags": hr.get("fields", {}).get("tags")})
 
     except Exception as err:
         demisto.debug(str(err))
-        raise Exception(f'{err}')
+        raise Exception(f"{err}")
 
-    human_readable = tableToMarkdown("Indicators from GreyNoise:", hr_indicators,
-                                     headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
+    human_readable = tableToMarkdown(
+        "Indicators from GreyNoise:", hr_indicators, headers=["Value", "Type", "rawJSON", "fields"], removeNull=True
+    )
     human_readable += "Note: This display is limited to the first 25 indicators returned by the feed.\n"
 
     return CommandResults(
         outputs=output_list,
         readable_output=human_readable,
-        outputs_prefix='GreyNoiseFeed.Indicators',
-        outputs_key_field='value',
+        outputs_prefix="GreyNoiseFeed.Indicators",
+        outputs_key_field="value",
         raw_response=hr_indicators,
     )
 
 
-def fetch_indicators_command(client: Client, params) -> List[Dict]:
+def fetch_indicators_command(client: Client, params) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request.
@@ -235,9 +264,9 @@ def main():
     params = demisto.params()
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f"Command being called is {command}")
 
-    pack_version = "1.0.0"
+    pack_version = "2.0.0"
 
     # get pack version
     if is_demisto_version_ge("6.1.0"):
@@ -256,12 +285,12 @@ def main():
 
     api_key = params.get("credentials", {}).get("password") or params.get("apikey")
     if not api_key:
-        return_error('Please provide a valid API token')
+        return_error("Please provide a valid API token")
     proxy = params.get("proxy", False)
 
     demisto.debug(f"Command being called is {command}")
     try:
-        client = Client(
+        api_config = APIConfig(
             api_key=api_key,
             api_server=API_SERVER,
             timeout=TIMEOUT,
@@ -269,22 +298,23 @@ def main():
             use_cache=False,
             integration_name=f"xsoar-feed-v{pack_version}",
         )
+        client = Client(api_config)
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
-        elif command == 'greynoise-get-indicators':
+        elif command == "greynoise-get-indicators":
             return_results(get_indicators_command(client, params))
-        elif command == 'fetch-indicators':
+        elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
         else:
-            raise NotImplementedError(f'Command {command} is not implemented.')
+            raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as err:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration. [{err}]'
+        err_msg = f"Error in {INTEGRATION_NAME} Integration. [{err}]"
         return_error(err_msg)
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

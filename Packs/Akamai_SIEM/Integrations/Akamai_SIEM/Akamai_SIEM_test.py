@@ -276,6 +276,15 @@ class TestCommandsFunctions:
         assert total_events_count == 0
         assert last_offset == "318d8"
 
+    def test_attach_offset_param_to_url(self, client):
+        """Test that the execute_get_events_request function doesn't encode the offset's ; into %3B."""
+        params = {"offset": "das2;test", "limit": 100}
+        try:
+            client.execute_get_events_request(params, 50170)
+        except Exception as e:
+            error_str = str(e.args[1])
+        assert "%3B" not in error_str
+
     def test_fetch_events_command_limit_is_smaller_than_page_size(self, client, requests_mock, mocker):
         """
         Given:

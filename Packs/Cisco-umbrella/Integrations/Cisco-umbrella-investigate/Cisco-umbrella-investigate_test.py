@@ -1,10 +1,11 @@
+import importlib
 import json
 import os
 from http import HTTPStatus
 from urllib.parse import urljoin
-import pytest
+
 import CommonServerPython
-import importlib
+import pytest
 
 BASE_URL = "http://example.com"
 module = importlib.import_module("Cisco-umbrella-investigate")
@@ -151,7 +152,7 @@ def test_list_domain_co_occurens_command(
     assert "CoOccurrences" in result.outputs
     assert isinstance(result.outputs["CoOccurrences"], list)
     assert len(result.outputs["CoOccurrences"]) == 2
-    assert ["Name", "Score"] == list(result.outputs["CoOccurrences"][0])
+    assert list(result.outputs["CoOccurrences"][0]) == ["Name", "Score"]
 
 
 def test_list_related_domain_command(
@@ -187,7 +188,7 @@ def test_list_related_domain_command(
     assert "Related" in result.outputs
     assert isinstance(result.outputs["Related"], list)
     assert len(result.outputs["Related"]) == 2
-    assert ["Name", "Score"] == list(result.outputs["Related"][0])
+    assert list(result.outputs["Related"][0]) == ["Name", "Score"]
 
 
 def test_get_domain_security_score_command(
@@ -575,7 +576,7 @@ def test_list_timeline(
             "all_results": "false",
             "limit": "50",
         },
-        "Domain"
+        "Domain",
     )
     assert result.outputs_prefix == "Umbrella.Timeline"
     assert result.outputs_key_field == "Domain"
@@ -778,8 +779,7 @@ def test_get_regex_who_is_command(
     json_response = load_mock_response("regex_whois.json")
     url = urljoin(
         BASE_URL,
-        "investigate/v2/whois/search/Domain/exa%5Ba-z%5Dple.com"
-        + "?start=1711450998000&stop=1711450998000&limit=50&offset=0",
+        "investigate/v2/whois/search/Domain/exa%5Ba-z%5Dple.com" + "?start=1711450998000&stop=1711450998000&limit=50&offset=0",
     )
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = module.get_regex_who_is_command(
@@ -881,7 +881,123 @@ def test_calculate_domain_dbot_score(status, securerank, risk_score, expected_re
      - Ensure that output key field correct.
      - Ensure that outputs fields correct.
     """
-    result = module.calculate_domain_dbot_score(
-        status=status, secure_rank=securerank, risk_score=risk_score
-    )
+    result = module.calculate_domain_dbot_score(status=status, secure_rank=securerank, risk_score=risk_score)
     assert result == expected_result
+
+
+def test_get_request_error_message_no_response():
+    """
+    Scenario: Error has no response object.
+    Given:
+     - Exception without response object.
+    When:
+     - get_request_error_message is called.
+    Then:
+     - Should return string representation of the error.
+    """
+
+    class MockError:
+        def __init__(self):
+            self.res = None
+
+        def __str__(self):
+            return "Test error"
+
+    err = MockError()
+    result = module.get_request_error_message(err)
+
+    assert result == "Test error"
+
+
+def test_get_request_error_message_valid_json():
+    """
+    Scenario: Error response contains valid JSON with error message.
+    Given:
+     - Exception with valid JSON response containing error fields.
+    When:
+     - get_request_error_message is called.
+    Then:
+     - Should return the error message from JSON.
+    """
+
+    class MockResponse:
+        def __init__(self):
+            self.status_code = 401
+
+        def json(self):
+            return {"errorMessage": "Invalid API key"}
+
+    class MockError:
+        def __init__(self):
+            self.res = MockResponse()
+
+        def __str__(self):
+            return "Test error"
+
+    err = MockError()
+    result = module.get_request_error_message(err)
+
+    assert result == "Invalid API key"
+
+
+def test_get_request_error_message_json_decode_error():
+    """
+    Scenario: Response has json method but fails to parse (JSONDecodeError).
+    Given:
+     - Exception with response that has json method but raises JSONDecodeError.
+    When:
+     - get_request_error_message is called.
+    Then:
+     - Should fall back to text response.
+    """
+
+    class MockResponse:
+        def __init__(self):
+            self.status_code = 500
+            self.text = "Internal Server Error"
+            self.reason = "Internal Server Error"
+
+        def json(self):
+            raise json.JSONDecodeError("Expecting value", "", 0)
+
+    class MockError:
+        def __init__(self):
+            self.res = MockResponse()
+
+        def __str__(self):
+            return "Test error"
+
+    err = MockError()
+    result = module.get_request_error_message(err)
+
+    assert result == "HTTP 500: Internal Server Error"
+
+
+def test_get_request_error_message_text_response():
+    """
+    Scenario: Error response has text but no json method.
+    Given:
+     - Exception with text response but no json method.
+    When:
+     - get_request_error_message is called.
+    Then:
+     - Should return the text response.
+    """
+
+    class MockResponse:
+        def __init__(self):
+            self.status_code = 503
+            self.text = "Service Unavailable"
+            self.reason = "Service Unavailable"
+
+    class MockError:
+        def __init__(self):
+            self.res = MockResponse()
+
+        def __str__(self):
+            return "Test error"
+
+    err = MockError()
+    result = module.get_request_error_message(err)
+
+    assert result == "HTTP 503: Service Unavailable"

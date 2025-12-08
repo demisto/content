@@ -37,6 +37,15 @@ def to_float(val: Any) -> float | int:
         return 0
 
 
+def get_target_type():
+    if is_platform():
+        return "issues"
+    elif is_xsiam():
+        return "alerts"
+    else:
+        return "incidents"
+
+
 def to_str(val: Any) -> str:
     """Ensure the value is of type string.
 
@@ -87,7 +96,7 @@ class ContextData:
             key = key[1:]
         else:
             for prefix in self.__specials:
-                k = key[len(prefix):]
+                k = key[len(prefix) :]
                 if key.startswith(prefix) and k[:1] in ("", ".", "(", "="):
                     if prefix == "lists":
                         if list_name := re.split("[.(=]", k[1:], maxsplit=1)[0]:
@@ -128,7 +137,7 @@ class Formatter:
     @staticmethod
     def __is_closure(source: str, ci: int, closure_marker: str) -> bool:
         if closure_marker:
-            return source[ci: ci + len(closure_marker)] == closure_marker
+            return source[ci : ci + len(closure_marker)] == closure_marker
         else:
             c = source[ci]
             if c.isspace():
@@ -185,7 +194,7 @@ class Formatter:
                 else:
                     xval = markers[0] + key + markers[1]
                 return xval, ci + len(markers[1])
-            elif source[ci: ci + len(self.__var_opening)] == self.__var_opening:
+            elif source[ci : ci + len(self.__var_opening)] == self.__var_opening:
                 xval, ei = self.__extract(
                     source=source,
                     dx=dx,
@@ -323,12 +332,11 @@ class QueryParams:
             raise DemistoException("earliest_time and latest_time must be timezone aware.")
 
         if earliest_time > latest_time:
-            raise DemistoException(
-                f"latest_time ({latest_time}) must be equal to or later than earliest_time ({earliest_time})."
-            )
+            raise DemistoException(f"latest_time ({latest_time}) must be equal to or later than earliest_time ({earliest_time}).")
 
         self.__query_name = query_name
-        self.__query_string = "\n".join(x.strip() for x in query_string.splitlines()).strip()
+        self.__query_string = query_string
+        self.__query_string_normalized = "\n".join(x.strip() for x in query_string.splitlines()).strip()
         self.__earliest_time = earliest_time
         self.__latest_time = latest_time
 
@@ -339,20 +347,48 @@ class QueryParams:
         return self.__query_name
 
     @property
+    def normalized_query_string(
+        self,
+    ) -> str:
+        return self.__query_string_normalized
+
+    @property
     def query_string(
         self,
     ) -> str:
         return self.__query_string
 
+    @property
+    def earliest_time(
+        self,
+    ) -> datetime:
+        return self.__earliest_time
+
+    @property
+    def latest_time(
+        self,
+    ) -> datetime:
+        return self.__latest_time
+
     def get_earliest_time_iso(
         self,
+        utc: bool = False,
     ) -> str:
-        return self.__earliest_time.isoformat(timespec="milliseconds")
+        if utc:
+            t = self.__earliest_time.astimezone(pytz.UTC)
+            return t.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+        else:
+            return self.__earliest_time.isoformat(timespec="milliseconds")
 
     def get_latest_time_iso(
         self,
+        utc: bool = False,
     ) -> str:
-        return self.__latest_time.isoformat(timespec="milliseconds")
+        if utc:
+            t = self.__latest_time.astimezone(pytz.UTC)
+            return t.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+        else:
+            return self.__latest_time.isoformat(timespec="milliseconds")
 
     def query_hash(
         self,
@@ -361,7 +397,7 @@ class QueryParams:
         return hashlib.sha256(
             json.dumps(
                 {
-                    "query_string": self.query_string,
+                    "query_string": self.normalized_query_string,
                     "earliest_time": self.get_earliest_time_iso(),
                     "latest_time": self.get_latest_time_iso(),
                 }
@@ -370,6 +406,8 @@ class QueryParams:
 
 
 class Cache:
+    CACHE_ROOT_KEY = "XQLDSHelperCache"
+
     @staticmethod
     def __compress(val: str) -> dict[Hashable, str]:
         return {"type": "gz+b85x", "data": base64.b85encode(gzip.compress(val.encode())).decode().replace("$", ":")}
@@ -390,7 +428,7 @@ class Cache:
         query_hash: str,
         cache_node: str,
     ) -> Any:
-        cache = self.__context.get(self.__key)
+        cache = self.__repo.get(self.__key)
         if not isinstance(cache, dict):
             return None
 
@@ -422,14 +460,14 @@ class Cache:
             cache_node: self.__compress(json.dumps(data)),
         }
         if incident_id := demisto.incident().get("id"):
-            target = "alerts" if is_xsiam() else "incidents"
+            target = get_target_type()
             demisto.executeCommand(
                 "executeCommandAt",
                 {
                     "command": "Set",
                     target: incident_id,
                     "arguments": {
-                        "key": self.__key,
+                        "key": f"{Cache.CACHE_ROOT_KEY}.{self.__key}",
                         "value": cache,
                         "append": "false",
                     },
@@ -439,21 +477,25 @@ class Cache:
     def __init__(
         self,
         name: str,
-        context: ContextData,
+        repo: dict[Hashable, Any] | None,
     ) -> None:
         name = urllib.parse.quote(name).replace(".", "%2E")
-        self.__key = f"XQLDSHelperCache.{name}"
-        self.__context = context
+        self.__key = name
+        self.__repo = repo or {}
 
     def save_recordset(
         self,
         query_params: QueryParams,
+        execution_id: str,
         recordset: list[dict[Hashable, Any]],
     ) -> None:
         self.__save_data(
             query_params=query_params,
             cache_node="CacheDataset",
-            data=recordset,
+            data={
+                "execution_id": execution_id,
+                "recordset": recordset,
+            },
         )
 
     def save_entry(
@@ -470,12 +512,19 @@ class Cache:
     def load_recordset(
         self,
         query_hash: str,
-    ) -> list[dict[Hashable, Any]] | None:
-        recordset = self.__load_data(
+    ) -> tuple[str, list[dict[Hashable, Any]]] | None:
+        data = self.__load_data(
             query_hash=query_hash,
             cache_node="CacheDataset",
         )
-        return recordset if isinstance(recordset, list) else None
+        if isinstance(data, list):
+            return "", data
+        elif isinstance(data, dict):
+            execution_id = data.get("execution_id") or ""
+            recordset = data.get("recordset") or []
+            return execution_id, recordset
+        else:
+            return None
 
     def load_entry(
         self,
@@ -486,6 +535,71 @@ class Cache:
             cache_node="CacheEntry",
         )
         return entry if isinstance(entry, dict) else None
+
+
+class CoreLock:
+    """
+    This class provides locking to prevent the concurrent execution of multiple tasks.
+    """
+
+    def __init__(
+        self,
+        module: str,
+        name: str | None,
+        info: str | None,
+        timeout: int | None,
+        using: str | None,
+    ) -> None:
+        """Initializes a lock instance.
+
+        :param module: The name for the locking functions must be either core-lock or demisto-lock.
+        :param name: The name to identify the lock.
+        :param info: Additional information to provide for the lock.
+        :param timeout: Timeout (seconds) for wait on lock to be freed.
+        :param using: The name of an lock integration instance.
+        """
+        if module == "core-lock":
+            self.__func_lock = "core-lock-get"
+            self.__func_unlock = "core-lock-release"
+        elif module == "demisto-lock":
+            self.__func_lock = "demisto-lock-get"
+            self.__func_unlock = "demisto-lock-release"
+        else:
+            raise DemistoException(f"locking module must be either core-lock or demisto-lock - {module}")
+
+        self.__name = name
+        self.__info = info
+        self.__timeout = timeout
+        self.__using = using
+
+    def lock(
+        self,
+    ) -> None:
+        """Acquire a specific lock via *-lock-get."""
+        args = assign_params(
+            name=self.__name,
+            info=self.__info,
+            timeout=self.__timeout,
+            using=self.__using,
+        )
+        args_str = ", ".join(f"{k}={v}" for k, v in args.items()) or "default"
+
+        demisto.debug(f"Attempting to acquire lock: {self.__func_lock} - {args_str}")
+        execute_command(self.__func_lock, args, extract_contents=False)
+        demisto.debug(f"Lock successfully acquired: {self.__func_lock} - {args_str}")
+
+    def unlock(
+        self,
+    ) -> None:
+        """Release a specific lock via core-lock-release."""
+        args = assign_params(
+            name=self.__name,
+            using=self.__using,
+        )
+        args_str = ", ".join(f"{k}={v}" for k, v in args.items()) or "default"
+
+        execute_command(self.__func_unlock, args, extract_contents=False)
+        demisto.debug(f"Lock released: {self.__func_unlock} - {args_str}")
 
 
 class XQLQuery:
@@ -537,91 +651,100 @@ class XQLQuery:
         retry_interval: int = DEFAULT_RETRY_INTERVAL,
         retry_max: int = DEFAULT_RETRY_MAX,
         query_timeout_duration: int = DEFAULT_QUERY_TIMEOUT_DURATION,
+        core_lock: CoreLock | None = None,
     ) -> None:
         self.__xql_query_instance = xql_query_instance
         self.__polling_interval = polling_interval
         self.__retry_interval = retry_interval
         self.__retry_max = max(retry_max, 0)
         self.__query_timeout_duration = max(query_timeout_duration, 0)
+        self.__core_lock = core_lock
 
     def query(
         self,
         query_params: QueryParams,
-    ) -> list[dict[Hashable, Any]]:
+    ) -> tuple[str, list[dict[Hashable, Any]]]:
         """Execute an XQL query and get results
 
         :param query_params: The query parameters.
-        :return: List of fields retrieved.
+        :return: The execution ID ans list of fields retrieved.
         """
-        # Start the query
-        time_frame = f"between {query_params.get_earliest_time_iso()} and {query_params.get_latest_time_iso()}"
-        demisto.debug(f"Run XQL: {query_params.query_name} {time_frame}: {query_params.query_string}")
+        if self.__core_lock:
+            self.__core_lock.lock()
 
-        for retry_count in range(self.__retry_max + 1):
-            res = demisto.executeCommand(
-                "xdr-xql-generic-query",
-                assign_params(
-                    query_name=query_params.query_name,
-                    query=query_params.query_string,
-                    time_frame=time_frame,
-                    parse_result_file_to_context="true",
-                    using=self.__xql_query_instance,
-                ),
-            )
-            error_message = self.__get_error_message(res)
-            if error_message is None:
-                break
+        try:
+            # Start the query
+            time_frame = f"between {query_params.get_earliest_time_iso()} and {query_params.get_latest_time_iso()}"
+            demisto.debug(f"Run XQL: {query_params.query_name} {time_frame}: {query_params.normalized_query_string}")
 
-            if retry_count >= self.__retry_max or all(
-                x not in error_message
-                for x in [
-                    "reached max allowed amount of parallel running queries",
-                    "maximum allowed number of parallel running queries has been reached",
-                ]
-            ):
-                raise DemistoException(f"Failed to execute xdr-xql-generic-query. Error details:\n{error_message}")
-
-            time.sleep(self.__retry_interval)
-
-        # Poll and retrieve the record set
-        response = self.__get_response(res)
-
-        execution_id = response.get("execution_id")
-        if not execution_id:
-            raise DemistoException("No execution_id in the response.")
-
-        timeout_time = None
-
-        while True:
-            status = response.get("status", "")
-            if status == "SUCCESS":
-                return response.get("results") or []
-            elif status == "PENDING":
-                current_time = time.time()
-                if timeout_time is None:
-                    timeout_time = current_time + self.__query_timeout_duration
-
-                remaining_time = timeout_time - current_time
-                if remaining_time <= 0:
-                    raise DemistoException(f"Unable to get query results within {self.__query_timeout_duration} seconds.")
-
-                time.sleep(min(remaining_time, self.__polling_interval))
-
+            for retry_count in range(self.__retry_max + 1):
                 res = demisto.executeCommand(
-                    "xdr-xql-get-query-results",
+                    "xdr-xql-generic-query",
                     assign_params(
-                        query_id=execution_id,
+                        query_name=query_params.query_name,
+                        query=query_params.normalized_query_string,
+                        time_frame=time_frame,
                         parse_result_file_to_context="true",
                         using=self.__xql_query_instance,
                     ),
                 )
-                if is_error(res):
-                    error_message = get_error(res)
-                    raise DemistoException(f"Failed to execute xdr-xql-get-query-results. Error details:\n{error_message}")
+                error_message = self.__get_error_message(res)
+                if error_message is None:
+                    break
 
-                response = self.__get_response(res)
-            else:
-                raise DemistoException(f"Failed to get query results - {response}")
+                if retry_count >= self.__retry_max or all(
+                    x not in error_message
+                    for x in [
+                        "reached max allowed amount of parallel running queries",
+                        "maximum allowed number of parallel running queries has been reached",
+                    ]
+                ):
+                    raise DemistoException(f"Failed to execute xdr-xql-generic-query. Error details:\n{error_message}")
+
+                time.sleep(self.__retry_interval)
+
+            # Poll and retrieve the record set
+            response = self.__get_response(res)
+
+            execution_id = response.get("execution_id")
+            if not execution_id:
+                raise DemistoException("No execution_id in the response.")
+
+            timeout_time = None
+
+            while True:
+                status = response.get("status", "")
+                if status == "SUCCESS":
+                    return execution_id, (response.get("results") or [])
+                elif status == "PENDING":
+                    current_time = time.time()
+                    if timeout_time is None:
+                        timeout_time = current_time + self.__query_timeout_duration
+
+                    remaining_time = timeout_time - current_time
+                    if remaining_time <= 0:
+                        raise DemistoException(f"Unable to get query results within {self.__query_timeout_duration} seconds.")
+
+                    time.sleep(min(remaining_time, self.__polling_interval))
+
+                    res = demisto.executeCommand(
+                        "xdr-xql-get-query-results",
+                        assign_params(
+                            query_id=execution_id,
+                            parse_result_file_to_context="true",
+                            using=self.__xql_query_instance,
+                        ),
+                    )
+                    if is_error(res):
+                        error_message = get_error(res)
+                        raise DemistoException(f"Failed to execute xdr-xql-get-query-results. Error details:\n{error_message}")
+
+                    response = self.__get_response(res)
+                else:
+                    raise DemistoException(f"Failed to get query results - {response}")
+        finally:
+            if self.__core_lock:
+                self.__core_lock.unlock()
 
 
 class Query:
@@ -639,6 +762,12 @@ class Query:
         self.__xql_query = xql_query
         self.__cache = cache
 
+    @property
+    def query_params(
+        self,
+    ) -> QueryParams:
+        return self.__query_params
+
     def available(
         self,
     ) -> bool:
@@ -646,22 +775,20 @@ class Query:
 
     def query(
         self,
-    ) -> list[dict[Hashable, Any]]:
+    ) -> tuple[str, list[dict[Hashable, Any]]]:
         """Get the record set by running the query. It will return an empty list if the query is not available,
 
-        :return: List of fields retrieved by the query.
+        :return: The quest execution ID and list of fields retrieved by the query.
         """
-        if self.__cache:
-            recordset = self.__cache.load_recordset(self.__query_params.query_hash())
-        else:
-            recordset = None
-
-        if recordset is None and self.__xql_query:
-            recordset = self.__xql_query.query(self.__query_params)
+        if self.__cache and (ret := self.__cache.load_recordset(self.__query_params.query_hash())):
+            return ret
+        elif self.__xql_query:
+            execution_id, recordset = self.__xql_query.query(self.__query_params)
             if self.__cache:
-                self.__cache.save_recordset(self.__query_params, recordset)
-
-        return recordset or []
+                self.__cache.save_recordset(self.__query_params, execution_id, recordset)
+            return execution_id, recordset
+        else:
+            return "", []
 
 
 class EntryBuilder:
@@ -672,26 +799,44 @@ class EntryBuilder:
     @staticmethod
     def __enum_fields_by_group(
         recordset: Iterable[dict[Hashable, Any]],
-        sort_by: str,
         group_by: str,
+        sort_by: str | None,
         asc: bool,
     ) -> Iterable[tuple[Hashable, Iterable[dict[Hashable, Any]]]]:
         """Enumerate fields with a group value by group
 
         :param recordset: The list of fields.
-        :param sort_by: The field name to sort the recordset before grouping.
         :param group_by: The name of the field to make groups.
+        :param sort_by: The field name by which to sort records within each group.
         :param asc: Set to True to sort the recordset in ascent order, Set to False for descent order.
         :return: Each group value with fields.
         """
-        return itertools.groupby(
+        groups = itertools.groupby(
             sorted(
                 recordset,
-                key=lambda v: SortableValue(v.get(sort_by)),
+                key=lambda v: SortableValue(v.get(group_by)),
                 reverse=not asc,
             ),
             key=lambda v: v.get(group_by),
         )
+        if not sort_by:
+            return groups
+        else:
+            return sorted(
+                (
+                    (
+                        k,
+                        sorted(
+                            records,
+                            key=lambda v: SortableValue(v.get(sort_by)),
+                            reverse=not asc,
+                        ),
+                    )
+                    for k, records in groups
+                ),
+                key=lambda v: SortableValue(next(iter(v[1]), {}).get(sort_by)),  # type: ignore
+                reverse=not asc,
+            )
 
     @staticmethod
     def __sum_by(
@@ -964,6 +1109,10 @@ class EntryBuilder:
                     assert isinstance(by, str), f"x.by must be of type str - {type(by)}"
                     self.__by = by
 
+                    sort_by = x.get("sort-by")
+                    assert isinstance(sort_by, str) or sort_by is None, f"x.sort-by must be of type str or null - {type(sort_by)}"
+                    self.__sort_by = sort_by
+
                     self.__asc = EntryBuilder.to_sort_order(x.get("order") or "asc")
                     self.__field = x.get("field")
                     assert (
@@ -975,6 +1124,12 @@ class EntryBuilder:
                     self,
                 ) -> str:
                     return self.__by
+
+                @property
+                def sort_by(
+                    self,
+                ) -> str | None:
+                    return self.__sort_by
 
                 @property
                 def asc(
@@ -1135,7 +1290,10 @@ class EntryBuilder:
             # Build stats
             stats = []
             for x_val, x_records in EntryBuilder.__enum_fields_by_group(
-                recordset=recordset, sort_by=template.x.by, group_by=template.x.by, asc=template.x.asc
+                recordset=recordset,
+                group_by=template.x.by,
+                sort_by=template.x.sort_by,
+                asc=template.x.asc,
             ):
                 groups = {k: None for k in ynames}
                 xlabel = ""
@@ -1181,8 +1339,8 @@ class EntryBuilder:
                 }
                 for x_val, x_records in EntryBuilder.__enum_fields_by_group(
                     recordset=recordset,
-                    sort_by=template.x.by,
                     group_by=template.x.by,
+                    sort_by=template.x.sort_by,
                     asc=template.x.asc,
                 )
                 for y_fields in x_records
@@ -1548,17 +1706,44 @@ class EntryBuilder:
         self,
         query: Query,
         entry_params: dict[Hashable, Any],
-    ) -> dict[Hashable, Any]:
+    ) -> tuple[dict[str, Any], dict[Hashable, Any]]:
+        """Build an entry by querying data.
+
+        :param query: The query instance.
+        :param entry_params: Template parameters for an entry.
+        :return: A pair of extra context and entry.
+        """
+        query_params = query.query_params
+        extra_context: dict[str, Any] = {
+            "query": {
+                "string": query_params.query_string,
+                "timeframe": {
+                    "from": query_params.get_earliest_time_iso(utc=True),
+                    "to": query_params.get_latest_time_iso(utc=True),
+                },
+                "request_url": (
+                    "/xql/xql-search?phrase="
+                    + urllib.parse.quote(query_params.query_string)
+                    + "&timeframe="
+                    + urllib.parse.quote(
+                        json.dumps(
+                            {
+                                "from": int(query_params.earliest_time.timestamp() * 1000),
+                                "to": int(query_params.latest_time.timestamp() * 1000),
+                            }
+                        )
+                    )
+                ),
+            }
+        }
+
         if not query.available() and (
             entry := self.__get_default_entry(
                 scope=DefaultEntryScope.QUERY_SKIPPED,
-                entry_params=self.__formatter.build(
-                    template=entry_params,
-                    context=self.__context,
-                ),
+                entry_params=self.__formatter.build(template=entry_params, context=self.__context.inherit(extra_context)),
             )
         ):
-            return entry
+            return extra_context, entry
 
         entry_type = entry_params.get("type")
         if not entry_type:
@@ -1610,17 +1795,28 @@ class EntryBuilder:
         if not build_entry:
             raise DemistoException(f"Invalid type - {entry_type}")
 
-        recordset = query.query()
+        execution_id, recordset = query.query()
+        extra_context.update(
+            {
+                "recordset": recordset,
+                "query": dict(
+                    extra_context.get("query") or {},
+                    execution_id=execution_id,
+                    result_url=f"/xql/xql-search/{urllib.parse.quote(execution_id)}",
+                ),
+            }
+        )
+
         if not recordset and (
             entry := self.__get_default_entry(
                 scope=DefaultEntryScope.NO_RECORDSET,
-                entry_params=self.__formatter.build(template=entry_params, context=self.__context.inherit({"recordset": []})),
+                entry_params=self.__formatter.build(template=entry_params, context=self.__context.inherit(extra_context)),
             )
         ):
-            return entry
+            return extra_context, entry
         else:
-            return build_entry(
-                self.__formatter.build(template=params, context=self.__context.inherit({"recordset": recordset})), recordset
+            return extra_context, build_entry(
+                self.__formatter.build(template=params, context=self.__context.inherit(extra_context)), recordset
             )
 
 
@@ -1628,6 +1824,170 @@ class EntryBuilder:
 
 
 class Main:
+    @staticmethod
+    def __create_base_context(
+        args: dict[Hashable, Any],
+    ) -> dict[str, Any]:
+        """Create the base context data.
+
+        :param args: The argument parameters.
+        :return: The base context data.
+        """
+        context = args.get("context_data")
+        if isinstance(context, str):
+            context = json.loads(context)
+
+        assert context is None or isinstance(context, dict), f"Context data must be of type str, dict, or null - {type(context)}"
+        return dict(demisto.context(), **(context or {}))
+
+    @staticmethod
+    def __create_context(
+        base_context: dict[str, Any],
+        template: dict[Hashable, Any],
+    ) -> ContextData:
+        """Create the context data.
+
+        :param base_context: The base context data.
+        :param template: The template.
+        :return: The context data.
+        """
+
+        def __child_paths(
+            parent: str,
+            paths: list[str],
+        ) -> list[str]:
+            """Get a list of child node paths.
+
+            :param parent: The name of the parent node.
+            :param paths: A list of node paths.
+            :return: A list of relative paths under the given parent node.
+            """
+            cpaths = []
+            for path in paths:
+                pit = iter(path)
+                nit = (next(pit, "\\") if c == "\\" else "" if c == "." else c for c in pit)
+                if parent == "".join(itertools.takewhile(lambda x: x != "", iter(nit))):
+                    cpaths.append("".join(list(pit)))
+            return cpaths
+
+        def __filter_context(
+            context: Any,
+            filters: list[str],
+        ) -> Any:
+            """Keep specific values in the context based on the given filters.
+
+            :param context: The context node.
+            :param filters: A list of node paths to be removed from the context.
+            :return: The filtered context node.
+            """
+            if any(v == "" for v in filters):
+                return context
+            elif isinstance(context, dict):
+                return {
+                    k: v
+                    for k, cpaths in ((k, __child_paths(k, filters)) for k in context)
+                    if (v := __filter_context(context[k], cpaths)) or any(c == "" for c in cpaths)
+                } or None
+            elif isinstance(context, list):
+                return [v for v in (__filter_context(v, filters) for v in context) if v] or None
+            else:
+                return None
+
+        def __remove_null(
+            context: Any,
+            paths: list[str] | None,
+            entries_only: bool,
+        ) -> Any:
+            """Remove key-value pairs from the context where the value is None.
+
+            :param context: The context node.
+            :param paths: A list of node paths to be removed from the context where the value is None.
+            :param entries_only: Set to True to keep `None` values when they are not associated with keys,
+                                 otherwise set to False to remove them.
+            :return: The updated context node with key-value pairs removed.
+            """
+            if isinstance(context, dict):
+                if paths is None:
+                    return {k: v for k, v in context.items() if v is not None}
+                else:
+                    return {
+                        k: __remove_null(v, cpaths, entries_only)
+                        for k, v in context.items()
+                        if (not (cpaths := __child_paths(k, paths)) or v is not None or all(path != "" for path in cpaths))
+                    }
+            elif isinstance(context, list):
+                return [__remove_null(v, paths, entries_only) for v in context if entries_only or v is not None]
+            else:
+                return context
+
+        def __apply_default(
+            context: Any,
+            default: dict[str, Any],
+        ) -> Any:
+            """Create a context node with default parameters.
+
+            :param context: The context node.
+            :param default: The default parameters to apply.
+            :return: The context node with the applied default parameters.
+            """
+            if isinstance(context, dict):
+                context = dict(context)
+                for k, dv in default.items():
+                    if k in context:
+                        if isinstance(dv, dict):
+                            context[k] = __apply_default(context.get(k), dv)
+                    else:
+                        context[k] = dv
+                return context
+            elif isinstance(context, list):
+                return [__apply_default(x, default) for x in context]
+            else:
+                return context
+
+        fields = demisto.incident()
+        fields = dict(fields, **(fields.get("CustomFields") or {}))
+        fields.pop("CustomFields", None)
+
+        entries = {
+            "context": base_context,
+            "alert": fields if (is_xsiam() or is_platform()) else None,
+            "incident": None if (is_xsiam() or is_platform()) else fields,
+        }
+        for name, context in dict(entries).items():
+            filters = demisto.get(template, f"config.{name}.filters")
+            if filters is not None:
+                assert isinstance(filters, list), f"config.{name}.filters must be of type null or list - {type(filters)}"
+                filters = [f for f in filters if isinstance(f, str)]
+                context = __filter_context(context, filters) or {}
+
+            remove_null = demisto.get(template, f"config.{name}.remove-null")
+            if remove_null is not None:
+                assert isinstance(
+                    remove_null, dict
+                ), f"config.{name}.remove-null must be of type null or dict - {type(remove_null)}"
+                entries_only = argToBoolean(remove_null.get("entries-only", "true"))
+                paths = remove_null.get("paths")
+                if paths is not None:
+                    assert isinstance(
+                        paths, list
+                    ), f"config.{name}.remove-null.paths must be of type null or list - {type(paths)}"
+                    paths = [x for x in paths if isinstance(x, str)]
+
+                context = __remove_null(context, paths, entries_only) or {}
+
+            default = demisto.get(template, f"config.{name}.default")
+            if default is not None:
+                assert isinstance(default, dict), f"config.{name}.default must be of type dict - {type(default)}"
+                context = __apply_default(context, default) or {}
+
+            entries[name] = context
+
+        return ContextData(
+            context=entries.get("context"),
+            alert=entries.get("alert"),
+            incident=entries.get("incident"),
+        )
+
     @staticmethod
     def __get_template(
         args: dict[Hashable, Any],
@@ -1826,33 +2186,28 @@ class Main:
     def __build_query_params(
         args: dict[Hashable, Any],
         query_name: str,
-        template: dict[Hashable, Any],
-        formatter: Formatter,
+        query_node: dict[Hashable, Any],
         context: ContextData,
     ) -> QueryParams:
         """Build query parameters
 
         :param args: The argument parameters.
         :param query_name: The name of the query.
-        :param template: The template.
-        :param formatter: The formatter to process variable substitution.
+        :param query_node: The node of the query information.
         :param context: The context data.
         :return: Query parameters.
         """
-        query_node = formatter.build(
-            template=demisto.get(template, "query"),
-            context=context,
-        )
-
         earliest_time_base, latest_time_base = Main.__get_base_time(
             args=args,
             query_node=query_node,
             context=context,
         )
+        if not (query_string := query_node.get("xql")):
+            raise DemistoException("Query string is required.")
 
         return QueryParams(
             query_name=query_name,
-            query_string=query_node.get("xql"),
+            query_string=query_string,
             earliest_time=Main.__parse_date_time(
                 demisto.get(query_node, "time_range.earliest_time", args.get("earliest_time", "24 hours ago")), earliest_time_base
             ),
@@ -1860,6 +2215,27 @@ class Main:
                 demisto.get(query_node, "time_range.latest_time", args.get("latest_time", "now")), latest_time_base
             ),
         )
+
+    @staticmethod
+    def __create_lock(
+        query_node: dict[Hashable, Any],
+    ) -> CoreLock | None:
+        """Create a locking instance if possible.
+
+        :param query_node: The node of the query information.
+        :return: A lock instance.
+        """
+        if locking := demisto.get(query_node, "locking"):
+            module = locking.get("module") or "core-lock"
+            timeout = locking.get("timeout")
+            return CoreLock(
+                module=module,
+                name=locking.get("name"),
+                info=locking.get("info"),
+                timeout=None if timeout is None else arg_to_number(timeout),
+                using=locking.get("using"),
+            )
+        return None
 
     def __arg_to_int(
         self,
@@ -1934,25 +2310,13 @@ class Main:
         args: dict[Hashable, Any],
     ) -> None:
         self.__args = args
-
-        fields = demisto.incident()
-        fields = dict(fields, **(fields.get("CustomFields") or {}))
-        fields.pop("CustomFields", None)
-
-        context = args.get("context_data")
-        if isinstance(context, str):
-            context = json.loads(context)
-
-        assert context is None or isinstance(context, dict), f"Context data must be of type str, dict, or null - {type(context)}"
-        context = dict(demisto.context(), **(context or {}))
-
-        self.__context: ContextData = ContextData(
-            context=context,
-            alert=fields if is_xsiam() else None,
-            incident=None if is_xsiam() else fields,
-        )
         self.__template_name, self.__template = self.__get_template(args)
         self.__variable_substitution = self.__get_variable_substitution(args, self.__template)
+
+        context = self.__create_base_context(args)
+        self.__context: ContextData = self.__create_context(context, self.__template)
+
+        self.__cache_repo = demisto.get(context, Cache.CACHE_ROOT_KEY)
         self.__cache_type: str = args.get("cache_type") or CacheType.RECORDSET
         if self.__cache_type not in [str(x) for x in list(CacheType)]:
             raise DemistoException(f"Invalid cache_type - {self.__cache_type}")
@@ -1966,6 +2330,7 @@ class Main:
         self.__query_timeout_duration: int = (
             self.__arg_to_int("query_timeout_duration", DEFAULT_QUERY_TIMEOUT_DURATION) or DEFAULT_QUERY_TIMEOUT_DURATION
         )
+        self.__output_recordset = argToBoolean(args.get("output_recordset", "false"))
 
         self.__xql_query_instance: str | None = demisto.get(self.__template, "query.command.using") or args.get(
             "xql_query_instance"
@@ -1982,37 +2347,43 @@ class Main:
             variable_substitution=self.__variable_substitution,
             keep_symbol_to_null=True,
         )
+        query_node = formatter.build(
+            template=demisto.get(self.__template, "query"),
+            context=self.__context,
+        )
         query_params = self.__build_query_params(
             args=self.__args,
             query_name=self.__template_name,
-            template=self.__template,
-            formatter=formatter,
+            query_node=query_node,
             context=self.__context,
         )
-        cache = Cache(name=self.__template_name, context=self.__context)
+        cache = Cache(name=self.__template_name, repo=self.__cache_repo)
         entry = cache.load_entry(query_params.query_hash()) if self.__cache_type == CacheType.ENTRY else None
 
         need_query = not entry and self.__is_query_executable()
 
-        entry = entry or EntryBuilder(
-            formatter=formatter,
-            context=self.__context,
-        ).build(
-            query=Query(
-                query_params=query_params,
-                xql_query=XQLQuery(
-                    xql_query_instance=self.__xql_query_instance,
-                    polling_interval=self.__polling_interval,
-                    retry_interval=self.__retry_interval,
-                    retry_max=self.__max_retries,
-                    query_timeout_duration=self.__query_timeout_duration,
-                )
-                if need_query
-                else None,
-                cache=cache if self.__cache_type != CacheType.NONE else None,
-            ),
-            entry_params=self.__template.get("entry") or {},
-        )
+        extra_context: dict[str, Any] = {}
+        if not entry:
+            extra_context, entry = EntryBuilder(
+                formatter=formatter,
+                context=self.__context,
+            ).build(
+                query=Query(
+                    query_params=query_params,
+                    xql_query=XQLQuery(
+                        xql_query_instance=self.__xql_query_instance,
+                        polling_interval=self.__polling_interval,
+                        retry_interval=self.__retry_interval,
+                        retry_max=self.__max_retries,
+                        query_timeout_duration=self.__query_timeout_duration,
+                        core_lock=self.__create_lock(query_node),
+                    )
+                    if need_query
+                    else None,
+                    cache=cache if self.__cache_type != CacheType.NONE else None,
+                ),
+                entry_params=self.__template.get("entry") or {},
+            )
 
         res = {
             "QueryParams": {
@@ -2022,6 +2393,10 @@ class Main:
                 "latest_time": query_params.get_latest_time_iso(),
             },
             "QueryHash": query_params.query_hash(),
+            "RequestURL": demisto.get(extra_context, "query.request_url"),
+            "ResultURL": demisto.get(extra_context, "query.result_url"),
+            "ExecutionID": demisto.get(extra_context, "query.execution_id"),
+            "RecordSet": demisto.get(extra_context, "recordset") or [] if self.__output_recordset else [],
             "Entry": entry,
         }
         if need_query and self.__cache_type == CacheType.ENTRY:

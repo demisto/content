@@ -1,6 +1,7 @@
 Checks if a list exists in the Cortex XSOAR lists.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Checks if a list exists in the Cortex XSOAR lists.
 | Script Type | python3 |
 | Tags | Condition |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +18,6 @@ Checks if a list exists in the Cortex XSOAR lists.
 | listName | The list name to check.  |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

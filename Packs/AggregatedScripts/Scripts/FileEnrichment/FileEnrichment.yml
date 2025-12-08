@@ -1,0 +1,318 @@
+args:
+- description: 'A comma-separated list of File hashes to enrich. Supported types are: MD5, SHA1, SHA256, and SHA512.'
+  name: file_hash
+  required: true
+  isArray: true
+- name: external_enrichment
+  description: |
+    "Whether to call external integrations for enrichment:
+    - 'true': enrich using all enabled integrations (e.g., VirusTotal (API v3), AlienVault OTX v2).
+    - 'false': Will enrich using only WildFire-v2 if available; skip external integrations.
+    If the 'brands' argument is provided, this flag is ignored and enrichment is run only on the brands provided."
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: verbose
+  description: Retrieve a human-readable entry for each command; if false, only the final result is summarized.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: brands
+  description: |
+    A list of integration brands to run enrichment against.  
+    Example: `"AlienVault OTX v2", "WildFire-v2"`.  
+    - If provided, only the selected brands are used. 
+    - If left empty, the script runs enrichment on all enabled integrations,
+      depending on the `external_enrichment` flag.
+    - In order to run core-get-hash-analytics-prevalence, add Cortex Core - IR to the brands list (will run only on SHA256 values).
+    To see the available brands for the `file` command, run: `!ProvidesCommand command=file`.
+  isArray: true
+  required: false
+- name: additional_fields
+  description: |
+    When set to true, the output includes an `AdditionalFields` object
+    for each of the indicator results.  
+    `AdditionalFields` contains all fields returned by TIM or the integrations
+    that are not part of the standard output keys (see the documentation for the full list of standard keys).
+    When set to false, only the standard keys are returned.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  defaultValue: 'false'
+comment: 'This script gathers for reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information in the context output. Note: The script runs core-get-hash-analytics-prevalence on SHA256 values only.'
+commonfields:
+  id: file-enrichment
+  version: -1
+enabled: false
+name: file-enrichment
+outputs:
+# FileEnrichment
+- contextPath: FileEnrichment.Value
+  description: The File hash from the input Value.
+  type: String
+- contextPath: FileEnrichment.Hashes.MD5
+  description: The file MD5 hash if exists.
+  type: String
+- contextPath: FileEnrichment.Hashes.SHA1
+  description: The file SHA1 hash if exists.
+  type: String
+- contextPath: FileEnrichment.Hashes.SHA256
+  description: The file SHA256 hash if exists.
+  type: String
+- contextPath: FileEnrichment.Hashes.SHA512
+  description: The file SHA512 hash if exists.
+  type: String
+- contextPath: FileEnrichment.Hashes.CRC32
+  description: The file CRC32 hash if exists.
+  type: String
+- contextPath: FileEnrichment.Hashes.CTPH
+  description: The file CTPH hash if exists.
+  type: String
+- contextPath: FileEnrichment.Hashes.SSDeep
+  description: The file SSDeep hash if exists.
+  type: String
+- contextPath: FileEnrichment.Hashes.ImpHash
+  description: The file ImpHash hash if exists.
+  type: String
+- contextPath: FileEnrichment.MaxScore
+  description: The max score of all the indicators found.
+  type: Number
+- contextPath: FileEnrichment.MaxVerdict
+  description: The max verdict of all the indicators found.
+  type: String
+- contextPath: FileEnrichment.Results
+  description: List of all indicators found for the URL.
+  type: Array
+- contextPath: FileEnrichment.TIMScore
+  description: The TIM score of the URL.
+  type: Number
+- contextPath: FileEnrichment.Status
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
+  type: String
+- contextPath: FileEnrichment.ModifiedTime
+  description: The time the indicator was last modified.
+  type: Date
+# URLEnrichment Main Keys
+- contextPath: FileEnrichment.Results.Brand
+  description: The brand of the indicator.
+  type: String
+- contextPath: FileEnrichment.Results.Score
+  description: The score of the indicator.
+  type: Number
+- contextPath: FileEnrichment.Results.Verdict
+  description: The verdict of the indicator.
+  type: String
+- contextPath: FileEnrichment.Results.DetectionEngines
+  description: The detection engines of the indicator.
+  type: Number
+- contextPath: FileEnrichment.Results.PositiveDetections
+  description: The positive detections of the indicator.
+  type: Number
+- contextPath: FileEnrichment.Results.MD5
+  description: The file MD5 hash if exists.
+  type: String
+- contextPath: FileEnrichment.Results.SHA1
+  description: The file SHA1 hash if exists.
+  type: String
+- contextPath: FileEnrichment.Results.SHA256
+  description: The file SHA256 hash if exists.
+  type: String
+- contextPath: FileEnrichment.Results.SHA512
+  description: The file SHA512 hash if exists.
+  type: String
+- contextPath: FileEnrichment.Results.CRC32
+  description: The file CRC32 hash if exists.
+  type: String
+- contextPath: FileEnrichment.Results.CTPH
+  description: The file CTPH hash if exists.
+  type: String
+- contextPath: FileEnrichment.Results.SSDeep
+  description: The file SSDeep hash if exists.
+  type: String
+- contextPath: FileEnrichment.Results.ImpHash
+  description: The file ImpHash hash if exists.
+  type: String
+- contextPath: FileEnrichment.Results.Reliability
+  description: The reliability of the Brand.
+  type: String
+# FileEnrichment Additional Fields
+- contextPath: FileEnrichment.Results.AdditionalFields.Name
+  description: The name of the file including its extension.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.EntryID
+  description: The identifier used to locate the file in the Incident War Room.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Actor
+  description: The threat actor associated with the file, if applicable.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.behavior.details
+  description: A brief description of the behavior exhibited by the file.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.behavior.title
+  description: A brief description of the behavior exhibited by the file.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Campaign
+  description: The identified campaign associated with the file, if applicable.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.CommunityNotes.note
+  description: Community-contributed notes regarding observations or findings related to the file.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.CommunityNotes.timestamp
+  description: The timestamp when the community note was added.
+  type: Date
+- contextPath: FileEnrichment.Results.AdditionalFields.Company
+  description: The name of the company that released a binary.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.DigitalSignature.Publisher
+  description: The entity that issued the digital signature of the file.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Extension
+  description: The file extension, indicating the type of file format, for example, 'exe'.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.FeedRelatedIndicators.value
+  description: Shows other indicators associated with the file.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.FeedRelatedIndicators.type
+  description: Identifies the types of associated indicators.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.FeedRelatedIndicators.description
+  description: Describes the associated indicators providing context or relevance.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.FirstSeenBySource
+  description: The first time seen by the source brand.
+  type: Date
+- contextPath: FileEnrichment.Results.AdditionalFields.GlobalPrevalence
+  description: The global prevalence of the file hash.
+  type: Number
+- contextPath: FileEnrichment.Results.AdditionalFields.Hostname
+  description: The hostname of the device where the file was found.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.LastSeenBySource
+  description: The last time seed by the source brand.
+  type: Date
+- contextPath: FileEnrichment.Results.AdditionalFields.Malicious.Vendor
+  description: Specifies the vendor that identified the file as malicious.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Malicious.Description
+  description: For malicious files, the reason that the vendor made the decision.
+- contextPath: FileEnrichment.Results.AdditionalFields.Malicious.Detections
+  description: For malicious files, the total number of detections.
+- contextPath: FileEnrichment.Results.AdditionalFields.Malicious.TotalEngines
+  description: For malicious files, the total number of engines that checked the file hash.
+- contextPath: FileEnrichment.Results.AdditionalFields.VTVendors.EngineDetections
+  description: Number of VT vendors that flagged the file as malicious.
+- contextPath: FileEnrichment.Results.AdditionalFields.VTVendors.EngineVendors
+  description: VT vendors who flagged the file as malicious.
+- contextPath: FileEnrichment.Results.AdditionalFields.VTVendors.EngineDetectionNames
+  description: VT detection names that flagged the file as malicious.
+- contextPath: FileEnrichment.Results.AdditionalFields.MalwareFamily
+  description: Names the malware family associated with the file, if known.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Organization
+  description: The organization to which the file is attributed.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.OrganizationFirstSeen
+  description: The date and time when the indicator was first seen in the organization.
+  type: Date
+- contextPath: FileEnrichment.Results.AdditionalFields.OrganizationLastSeen
+  description: The date and time when the indicator was last seen in the organization.
+  type: Date
+- contextPath: FileEnrichment.Results.AdditionalFields.OrganizationPrevalence
+  description:  The number of times the indicator is detected in the organization.
+  type: Number
+- contextPath: FileEnrichment.Results.AdditionalFields.ProductName
+  description: The file product name.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Publications.source
+  description: Identifies the publishing source of an article relating to the file.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Publications.title
+  description: Identifies the publishing source of an article relating to the file.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Publications.link
+  description: Provides a hyperlink to the full article or publication for detailed information.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Publications.timestamp
+  description: Publications.timestamp
+  type: Date
+- contextPath: FileEnrichment.Results.AdditionalFields.Quarantined
+  description: Indicates whether the file has been quarantined to prevent potential harm.
+  type: Bool
+- contextPath: FileEnrichment.Results.AdditionalFields.Relationships.EntityA
+  description: The initiating entity in a relationship involving the file.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Relationships.EntityB
+  description: The recipient or target entity in a relationship involving the file.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Relationships.Relationship
+  description: Defines the type or nature of the relationship between entities.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Relationships.EntityAType
+  description: The type or classification of the initiating entity.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Relationships.EntityBType
+  description: The type or classification of the recipient entity.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Signature.Authentihash
+  description: The Authentihash, a cryptographic hash, used for verifying the file's authenticity.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Signature.Description
+  description: Describes the file signature data relevant to identification.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Signature.FileVersion
+  description: Indicates the version number of the file.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Signature.InternalName
+  description: The internal name of the file as designated by the creators.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Signature.OriginalName
+  description: The original name of the file before any changes or renames.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Tags
+  description: Tags assigned to the file for categorization or identification.
+  type: Array
+- contextPath: FileEnrichment.Results.AdditionalFields.ThreatTypes
+  description: Threat types associated with the file.
+  type: Unknown
+- contextPath: FileEnrichment.Results.AdditionalFields.TrafficLightProtocol
+  description: Specifies the TLP color designation suitable for handling the file.
+  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Type
+  description: The file type determined by libmagic.
+  type: String
+# Core
+- contextPath: Core.AnalyticsPrevalence.Hash.value
+  description: Whether the hash is prevalent or not.
+  type: Boolean
+- contextPath: Core.AnalyticsPrevalence.Hash.data.global_prevalence.value
+  description: The global prevalence of the hash.
+  type: Number
+- contextPath: Core.AnalyticsPrevalence.Hash.data.local_prevalence.value
+  description: The local prevalence of the hash.
+  type: Number
+- contextPath: Core.AnalyticsPrevalence.Hash.data.prevalence.value
+  description: The prevalence of the hash.
+  type: Number
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 6.10.0
+tests:
+- FileEnrichment - Test

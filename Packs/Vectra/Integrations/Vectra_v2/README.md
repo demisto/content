@@ -368,7 +368,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
             "SourceIP": "0.0.0.0",
             "State": "active",
             "TargetsKeyAsset": false,
-            "ThreatScore": 60            
+            "ThreatScore": 60
         }
     ]
 }
@@ -1366,7 +1366,6 @@ There are no context output for this command.
 
 Vectra has developed a new XSOAR content pack to replace the legacy Cortex XSOAR content pack. This new content pack includes commands that replace and extend the functionality of existing commands. The following table outlines which commands should be used for updating existing integrations.
 
-
 | Legacy Command               | Replacement Command                               |
 |------------------------------|---------------------------------------------------|
 | `vectra-detections`          | `vectra-search-detections`                        |
@@ -1377,7 +1376,6 @@ Vectra has developed a new XSOAR content pack to replace the legacy Cortex XSOAR
 | `vectra-get-host-by-id`      | `vectra-host-describe`                            |
 | `vectra-get-users`           | `vectra-search-users`                             |
 | `vectra-search`              | `vectra-search-hosts`, `vectra-search-detections` |
-
 
 # New Commands
 

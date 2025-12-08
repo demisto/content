@@ -1,11 +1,16 @@
 import json
 from unittest.mock import patch
 
+from BMCHelixRemedyforceCreateServiceRequest import (
+    ERROR_MESSAGES,
+    get_field_id,
+    get_service_request_definition_id,
+    main,
+    remove_extra_space_from_args,
+)
 from CommonServerPython import *
-from BMCHelixRemedyforceCreateServiceRequest import remove_extra_space_from_args, \
-    main, ERROR_MESSAGES, get_field_id, get_service_request_definition_id
 
-DUMMY_COMMAND_RESPONSE = [{'Contents': {}}]
+DUMMY_COMMAND_RESPONSE = [{"Contents": {}}]
 
 
 def fetch_dummy_service_requests():
@@ -15,7 +20,7 @@ def fetch_dummy_service_requests():
     :rtype: ``Dict``
     :return: data: Fetch service request dummy data.
     """
-    with open('./TestData/ServiceRequest.json', encoding='utf-8') as f:
+    with open("./TestData/ServiceRequest.json", encoding="utf-8") as f:
         data = json.load(f)
     return data
 
@@ -30,7 +35,7 @@ def test_get_service_request_definition_id_with_id():
     assert actual_result == "id"
 
 
-@patch('demistomock.executeCommand')
+@patch("demistomock.executeCommand")
 def test_get_service_request_definition_id_positive_scenario(mocker_execute_command):
     """
     When service_request_definition_id is not passed and service_request_definition_name passed
@@ -44,8 +49,8 @@ def test_get_service_request_definition_id_positive_scenario(mocker_execute_comm
     assert actual_result == "abc"
 
 
-@patch('BMCHelixRemedyforceCreateServiceRequest.return_error')
-@patch('demistomock.executeCommand')
+@patch("BMCHelixRemedyforceCreateServiceRequest.return_error")
+@patch("demistomock.executeCommand")
 def test_get_service_request_definition_id_null_results(mocker_execute_command, mocker_return_error):
     """
     When service_request_definition_id is not passed and service_request_definition_id not found on given name
@@ -63,9 +68,9 @@ def test_get_service_request_definition_id_null_results(mocker_execute_command, 
         assert args[0] == ERROR_MESSAGES + json.dumps(DUMMY_COMMAND_RESPONSE)
 
 
-@patch('demistomock.results')
-@patch('sys.exit')
-@patch('demistomock.executeCommand')
+@patch("demistomock.results")
+@patch("sys.exit")
+@patch("demistomock.executeCommand")
 def test_get_service_request_definition_id_no_records_found(mocker_execute_command, mocker_exit, mocker_results):
     """
     When service_request_definition_id is not passed and no records found on given name
@@ -95,7 +100,7 @@ def test_get_field_id_with_id():
     assert actual_result == "id"
 
 
-@patch('demistomock.executeCommand')
+@patch("demistomock.executeCommand")
 def test_get_field_id_positive_scenario(mocker_execute_command):
     """
     When field_id is not passed and field_name passed as argument
@@ -109,8 +114,8 @@ def test_get_field_id_positive_scenario(mocker_execute_command):
     assert actual_result == "abc"
 
 
-@patch('BMCHelixRemedyforceCreateServiceRequest.return_error')
-@patch('demistomock.executeCommand')
+@patch("BMCHelixRemedyforceCreateServiceRequest.return_error")
+@patch("demistomock.executeCommand")
 def test_get_field_id_null_results(mocker_execute_command, mocker_return_error):
     """
     When field_id is not passed and field_id not found on given name
@@ -128,7 +133,7 @@ def test_get_field_id_null_results(mocker_execute_command, mocker_return_error):
         assert args[0] == ERROR_MESSAGES + json.dumps(DUMMY_COMMAND_RESPONSE)
 
 
-@patch('demistomock.executeCommand')
+@patch("demistomock.executeCommand")
 def test_get_field_id_records_as_list(mocker_execute_command):
     """
     Get field id from name when api response will be a list.
@@ -141,9 +146,9 @@ def test_get_field_id_records_as_list(mocker_execute_command):
     assert actual_result == "abc"
 
 
-@patch('demistomock.results')
-@patch('sys.exit')
-@patch('demistomock.executeCommand')
+@patch("demistomock.results")
+@patch("sys.exit")
+@patch("demistomock.executeCommand")
 def test_get_field_id_no_records_found(mocker_execute_command, mocker_exit, mocker_results):
     """
     When field_id could not be found for mentioned name in args then verfying demisto.results and
@@ -177,9 +182,9 @@ def test_remove_extra_space_from_args():
     assert sanitized_args == remove_extra_space_from_args(sample_args)
 
 
-@patch('BMCHelixRemedyforceCreateServiceRequest.return_error')
-@patch('demistomock.executeCommand')
-@patch('demistomock.args')
+@patch("BMCHelixRemedyforceCreateServiceRequest.return_error")
+@patch("demistomock.executeCommand")
+@patch("demistomock.args")
 def test_main_fail(demisto_args, mocker_execute_command, mocker_return_error):
     """
     Testcase of main method in failure scenarios.
@@ -191,17 +196,17 @@ def test_main_fail(demisto_args, mocker_execute_command, mocker_return_error):
     """
     args = fetch_dummy_service_requests()["args"]
     demisto_args.return_value = args
-    mocker_execute_command.return_value = [{"Contents": "No records found.", "Type": entryTypes['error']}]
+    mocker_execute_command.return_value = [{"Contents": "No records found.", "Type": entryTypes["error"]}]
     main()
     assert mocker_return_error.called
     for call in mocker_return_error.call_args_list:
         args, _ = call
-        assert args[0] == 'No records found.'
+        assert args[0] == "No records found."
 
 
-@patch('BMCHelixRemedyforceCreateServiceRequest.return_error')
-@patch('demistomock.executeCommand')
-@patch('demistomock.args')
+@patch("BMCHelixRemedyforceCreateServiceRequest.return_error")
+@patch("demistomock.executeCommand")
+@patch("demistomock.args")
 def test_main_exception(demisto_args, mocker_execute_command, mocker_return_error):
     """
     Testcase of main method while any exception will be raised.
@@ -213,7 +218,7 @@ def test_main_exception(demisto_args, mocker_execute_command, mocker_return_erro
     """
     args = fetch_dummy_service_requests()["args"]
     demisto_args.return_value = args
-    mocker_execute_command.return_value = [{"Type": entryTypes['error']}]
+    mocker_execute_command.return_value = [{"Type": entryTypes["error"]}]
     main()
     assert mocker_return_error.called
     for call in mocker_return_error.call_args_list:
@@ -221,9 +226,9 @@ def test_main_exception(demisto_args, mocker_execute_command, mocker_return_erro
         assert args[0] == "'Contents'"
 
 
-@patch('BMCHelixRemedyforceCreateServiceRequest.return_error')
-@patch('demistomock.executeCommand')
-@patch('demistomock.args')
+@patch("BMCHelixRemedyforceCreateServiceRequest.return_error")
+@patch("demistomock.executeCommand")
+@patch("demistomock.args")
 def test_main_fail_to_execute_command(demisto_args, mocker_execute_command, mocker_return_error):
     """
     Testcase of main method when command: 'bmc-remedy-service-request-create' will be failed to execute.
@@ -243,9 +248,9 @@ def test_main_fail_to_execute_command(demisto_args, mocker_execute_command, mock
         assert args[0] == ERROR_MESSAGES + '{"Contents": [], "Type": "abc"}'
 
 
-@patch('demistomock.results')
-@patch('demistomock.executeCommand')
-@patch('demistomock.args')
+@patch("demistomock.results")
+@patch("demistomock.executeCommand")
+@patch("demistomock.args")
 def test_main_success(demisto_args, mocker_execute_command, mocker_results):
     """
     Testcase of main method in positive scenario.
@@ -258,14 +263,13 @@ def test_main_success(demisto_args, mocker_execute_command, mocker_results):
     args = fetch_dummy_service_requests()["args"]
     demisto_args.return_value = args
     expected_args = fetch_dummy_service_requests()["expected_args"]
-    command_name = 'bmc-remedy-service-request-create'
-    mocker_execute_command.return_value = [
-        {"Contents": {"Result": {"Number": 123}}, "Type": "abc", "HumanReadable": "abc"}]
+    command_name = "bmc-remedy-service-request-create"
+    mocker_execute_command.return_value = [{"Contents": {"Result": {"Number": 123}}, "Type": "abc", "HumanReadable": "abc"}]
     main()
     assert mocker_results.called
     for call in mocker_results.call_args_list:
         args, _ = call
-        assert args[0]['HumanReadable'] == 'abc'
+        assert args[0]["HumanReadable"] == "abc"
     for call in mocker_execute_command.call_args_list:
         command_args, _ = call
         assert command_args[0] == command_name

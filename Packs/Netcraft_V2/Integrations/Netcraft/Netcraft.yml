@@ -5,7 +5,7 @@ name: Netcraft V2
 display: Netcraft
 category: Utilities
 description: Netcraft takedown, submission and screenshot management.
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -59,7 +59,7 @@ configuration:
   name: first_fetch
   type: 0
   section: Collect
-  required: true
+  required: false
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
@@ -1499,7 +1499,7 @@ script:
       type: string
   script: '-'
   type: python
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.12.5490952
   subtype: python3
   isfetch: true
   runonce: false

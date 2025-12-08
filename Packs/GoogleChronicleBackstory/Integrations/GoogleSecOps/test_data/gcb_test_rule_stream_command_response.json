@@ -1,0 +1,310 @@
+[
+    {
+        "progressPercent": 2.777778
+    },
+    {
+        "detection": {
+            "type": "RULE_DETECTION",
+            "detection": [
+                {
+                    "ruleName": "singleEventRule1",
+                    "description": "single event rule that should generate detections",
+                    "ruleType": "SINGLE_EVENT",
+                    "ruleLabels": [
+                        {
+                            "key": "author",
+                            "value": "securityuser"
+                        },
+                        {
+                            "key": "description",
+                            "value": "single event rule that should generate detections"
+                        }
+                    ]
+                }
+            ],
+            "id": "de_dummy_detection_id_1",
+            "timeWindow": {
+                "startTime": "2025-07-28T19:31:37Z",
+                "endTime": "2025-07-28T19:31:37Z"
+            },
+            "collectionElements": [
+                {
+                    "references": [
+                        {
+                            "event": {
+                                "metadata": {
+                                    "eventTimestamp": "2025-07-28T19:31:37Z",
+                                    "eventType": "dummy_event_type",
+                                    "vendorName": "dummy_vendor_name",
+                                    "productName": "dummy_product_name",
+                                    "ingestedTimestamp": "2025-07-28T08:05:40.391043Z",
+                                    "id": "dummy_event_id",
+                                    "logType": "WINDOWS_DNS",
+                                    "baseLabels": {
+                                        "logTypes": [
+                                            "WINDOWS_DNS"
+                                        ],
+                                        "allowScopedAccess": true
+                                    },
+                                    "enrichmentLabels": {
+                                        "allowScopedAccess": true
+                                    }
+                                },
+                                "additional": {
+                                    "Internal Packet Identifier": "0000000000000001",
+                                    "dns_record_type": "A"
+                                },
+                                "principal": {
+                                    "ip": [
+                                        "0.0.0.1"
+                                    ],
+                                    "location": {
+                                        "state": "state",
+                                        "countryOrRegion": "country",
+                                        "regionLatitude": 0,
+                                        "regionLongitude": 0,
+                                        "regionCoordinates": {
+                                            "latitude": 0,
+                                            "longitude": 0
+                                        }
+                                    },
+                                    "asset": {
+                                        "ip": [
+                                            "0.0.0.1"
+                                        ]
+                                    },
+                                    "ipGeoArtifact": [
+                                        {
+                                            "ip": "0.0.0.1",
+                                            "location": {
+                                                "state": "state",
+                                                "countryOrRegion": "country",
+                                                "regionLatitude": 0,
+                                                "regionLongitude": 0,
+                                                "regionCoordinates": {
+                                                    "latitude": 0,
+                                                    "longitude": 0
+                                                }
+                                            },
+                                            "network": {
+                                                "carrierName": "carrier",
+                                                "organizationName": "organization"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "target": {
+                                    "hostname": "test.com",
+                                    "asset": {
+                                        "hostname": "test.com"
+                                    }
+                                },
+                                "intermediary": [
+                                    {
+                                        "hostname": "AAAA-AA-AA01",
+                                        "asset": {
+                                            "platformSoftware": {
+                                                "platform": "WINDOWS"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "about": [
+                                    {
+                                        "labels": [
+                                            {
+                                                "key": "Internal Packet Identifier",
+                                                "value": "0000000000000001"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "network": {
+                                    "ipProtocol": "UDP",
+                                    "applicationProtocol": "DNS",
+                                    "dns": {
+                                        "questions": [
+                                            {
+                                                "name": "test.com",
+                                                "type": 1
+                                            }
+                                        ],
+                                        "id": 64395,
+                                        "recursionDesired": true
+                                    },
+                                    "direction": "OUTBOUND"
+                                },
+                                "extracted": {
+                                    "resource_attributes.host.name": "AAAA-AA-AA01",
+                                    "resource_attributes.os.type": "windows",
+                                    "attributes.log.file.name": "test.txt",
+                                    "attributes.log_type": "WINDOWS_DNS",
+                                    "body": "body_value"
+                                }
+                            }
+                        }
+                    ],
+                    "label": "e"
+                }
+            ],
+            "detectionTime": "2025-07-28T19:31:37Z"
+        }
+    },
+    {
+        "detection": {
+            "type": "RULE_DETECTION",
+            "detection": [
+                {
+                    "ruleName": "singleEventRule1",
+                    "description": "single event rule that should generate detections",
+                    "ruleType": "SINGLE_EVENT",
+                    "ruleLabels": [
+                        {
+                            "key": "author",
+                            "value": "securityuser"
+                        },
+                        {
+                            "key": "description",
+                            "value": "single event rule that should generate detections"
+                        }
+                    ]
+                }
+            ],
+            "id": "de_dummy_detection_id_2",
+            "timeWindow": {
+                "startTime": "2025-07-28T19:31:37Z",
+                "endTime": "2025-07-28T19:31:37Z"
+            },
+            "collectionElements": [
+                {
+                    "references": [
+                        {
+                            "event": {
+                                "metadata": {
+                                    "eventTimestamp": "2025-07-28T19:31:37Z",
+                                    "eventType": "dummy_event_type",
+                                    "vendorName": "dummy_vendor_name",
+                                    "productName": "dummy_product_name",
+                                    "ingestedTimestamp": "2025-07-28T08:05:40.391043Z",
+                                    "id": "dummy_event_id",
+                                    "logType": "WINDOWS_DNS",
+                                    "baseLabels": {
+                                        "logTypes": [
+                                            "WINDOWS_DNS"
+                                        ],
+                                        "allowScopedAccess": true
+                                    },
+                                    "enrichmentLabels": {
+                                        "allowScopedAccess": true
+                                    }
+                                },
+                                "additional": {
+                                    "Internal Packet Identifier": "0000000000000001",
+                                    "dns_record_type": "A"
+                                },
+                                "principal": {
+                                    "ip": [
+                                        "0.0.0.1"
+                                    ],
+                                    "location": {
+                                        "state": "state",
+                                        "countryOrRegion": "country",
+                                        "regionLatitude": 0,
+                                        "regionLongitude": 0,
+                                        "regionCoordinates": {
+                                            "latitude": 0,
+                                            "longitude": 0
+                                        }
+                                    },
+                                    "asset": {
+                                        "ip": [
+                                            "0.0.0.1"
+                                        ]
+                                    },
+                                    "ipGeoArtifact": [
+                                        {
+                                            "ip": "0.0.0.1",
+                                            "location": {
+                                                "state": "state",
+                                                "countryOrRegion": "country",
+                                                "regionLatitude": 0,
+                                                "regionLongitude": 0,
+                                                "regionCoordinates": {
+                                                    "latitude": 0,
+                                                    "longitude": 0
+                                                }
+                                            },
+                                            "network": {
+                                                "carrierName": "carrier",
+                                                "organizationName": "organization"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "target": {
+                                    "hostname": "test.com",
+                                    "asset": {
+                                        "hostname": "test.com"
+                                    }
+                                },
+                                "intermediary": [
+                                    {
+                                        "hostname": "AAAA-AA-AA01",
+                                        "asset": {
+                                            "platformSoftware": {
+                                                "platform": "WINDOWS"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "about": [
+                                    {
+                                        "labels": [
+                                            {
+                                                "key": "Internal Packet Identifier",
+                                                "value": "0000000000000001"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "network": {
+                                    "ipProtocol": "UDP",
+                                    "applicationProtocol": "DNS",
+                                    "dns": {
+                                        "questions": [
+                                            {
+                                                "name": "test.com",
+                                                "type": 1
+                                            }
+                                        ],
+                                        "id": 64395,
+                                        "recursionDesired": true
+                                    },
+                                    "direction": "OUTBOUND"
+                                },
+                                "extracted": {
+                                    "resource_attributes.host.name": "AAAA-AA-AA01",
+                                    "resource_attributes.os.type": "windows",
+                                    "attributes.log.file.name": "test.txt",
+                                    "attributes.log_type": "WINDOWS_DNS",
+                                    "body": "body_value"
+                                }
+                            }
+                        }
+                    ],
+                    "label": "e"
+                }
+            ],
+            "detectionTime": "2025-07-28T19:31:37Z"
+        }
+    },
+    {
+        "progressPercent": 83.33333
+    },
+    {
+        "progressPercent": 91.66667
+    },
+    {
+        "progressPercent": 100
+    }
+]

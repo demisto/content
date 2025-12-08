@@ -1,7 +1,7 @@
 commonfields:
   id: Jira V3
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Jira V3
@@ -112,6 +112,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
   section: Collect
 - defaultvalue: None
   display: Mirroring Direction
@@ -125,6 +126,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
   section: Collect
 - additionalinfo: Add this tag to an entry to mirror it as an attachment to Jira.
   defaultvalue: attachment tag
@@ -134,6 +136,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
   section: Collect
   advanced: true
 - additionalinfo: Add this tag to an entry to mirror it as an attachment from Jira.
@@ -144,6 +147,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
   section: Collect
   advanced: true
 - additionalinfo: Add this tag to an entry to mirror it as a comment in Jira.
@@ -154,6 +158,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
   section: Collect
   advanced: true
 - additionalinfo: Add this tag to an entry to mirror it as a comment from Jira.
@@ -164,6 +169,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
   section: Collect
   advanced: true
 - additionalinfo: Fetch comments for a Jira ticket.
@@ -317,7 +323,9 @@ script:
       description: The JQL query string.
       name: query
       required: true
-    - description: The index (integer) of the first issue to return (0-based).
+    - description: The token for the next page of the query (if such exists). Not supported for Jira On-prem.
+      name: next_page_token
+    - description: The index (integer) of the first issue to return (0-based). For Jira Cloud - Please use next_page_token.
       name: start_at
     - description: Deprecated. Please use start_at.
       name: startAt
@@ -338,6 +346,9 @@ script:
     description: Queries Jira issues.
     name: jira-issue-query
     outputs:
+    - contextPath: Jira.Query.nextPageToken
+      description: A token for fetching the next page of the query if such exists.
+      type: String
     - contextPath: Ticket.Id
       description: The ticket ID.
       type: String
@@ -408,6 +419,13 @@ script:
       required: true
     - description: 'The roles that can view the comment, for example: Administrators.'
       name: visibility
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to make this an internal comment.
+      name: internal_comment
+      predefined:
+      - "false"
+      - "true"
     description: Adds a new comment to an existing Jira issue.
     name: jira-issue-add-comment
   - arguments:
@@ -1582,6 +1600,12 @@ script:
       name: lastUpdate
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     name: get-remote-data
+  - arguments:
+    - description: The remote incident ID.
+      name: id
+      required: true
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    name: get-remote-data-preview
   - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
     name: get-mapping-fields
     arguments: []
@@ -1765,12 +1789,16 @@ script:
     - description: A CSV list of labels.
       isArray: true
       name: labels
+    - description: Indicates if the ticket should be mirrored.
+      name: mirroring
+      type: mirroring
+      hidden: true
     - name: priority
       description: Priority of the ticket.
       predefined:
-      - 1 - High
-      - 2 - Medium
-      - 3 - Low
+      - High
+      - Medium
+      - Low
     - description: The due date for the issue (in the format yyyy-mm-dd).
       name: due_date
     - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name.
@@ -1798,13 +1826,15 @@ script:
     hidden: true
     quickaction: true
     outputs:
-      - contextPath: Ticket.Id
-        description: The ticket ID.
-        type: String
-      - contextPath: Ticket.Key
-        description: The ticket key.
-        type: String
-  dockerimage: demisto/btfl-soup:1.0.1.2129515
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+  - name: jira-reset-timezone-cache
+    description: Clears the cached Jira user timezone used for fetching incidents and mirroring from the internal cache. Use if the timezone settings tied to the chosen authentication method were changed.
+  dockerimage: demisto/btfl-soup:1.0.1.5185022
   isfetch: true
   ismappable: true
   isremotesyncin: true

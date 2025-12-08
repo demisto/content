@@ -2,7 +2,7 @@
     "name": "Rapid Breach Response",
     "description": "This content Pack helps you collect, investigate, and remediate incidents related to major breaches.",
     "support": "xsoar",
-    "currentVersion": "1.6.40",
+    "currentVersion": "1.6.45",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -117,6 +117,10 @@
         "CVE_2024_47575": {
             "mandatory": false,
             "display_name": "CVE-2024-47575 - FortiManager Authentication Bypass"
+        },
+        "CVE_2025_31324": {
+            "mandatory": false,
+            "display_name": "CVE-2025-31324 - SAP NetWeaver Visual Composer"
         }
     },
     "marketplaces": [
@@ -128,6 +132,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

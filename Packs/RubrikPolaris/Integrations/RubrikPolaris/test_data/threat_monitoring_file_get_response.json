@@ -1,0 +1,52 @@
+{
+    "raw_response": {
+        "data": {
+            "threatMonitoringMatchedFileDetailsV2": {
+                "matchedFileMd5": "00000000000000001",
+                "matchedFileSha1": "0000000000000000000000001",
+                "matchedFileSha256": "0000000000000000000000000000000000000000000000000000000000001",
+                "iocDetails": [
+                    {
+                        "matchType": "IOC_HASH",
+                        "intelFeedName": "Dummy_Feed",
+                        "malwareName": "Dummy_Malware",
+                        "iocRuleAuthor": "Dummy_Author",
+                        "malwareDescription": "Dummy description for testing purposes",
+                        "iocHashHex": "00000000000000001",
+                        "iocStatus": "ACTIVE",
+                        "__typename": "IOCDetails"
+                    }
+                ],
+                "isQuarantinedInFirstObservedSnapshot": false,
+                "detectedSnapshotDate": "2025-01-01T00:00:00.000Z",
+                "firstDetectedSnapshotFid": "00000000-0000-0000-0000-000000000001",
+                "filePath": "/dummy/path/file1.txt",
+                "fileName": "dummyfile.com",
+                "__typename": "ThreatMonitoringFileMatchDetailsV2"
+            }
+        }
+    },
+    "outputs": {
+        "matchedFileMd5": "00000000000000001",
+        "matchedFileSha1": "0000000000000000000000001",
+        "matchedFileSha256": "0000000000000000000000000000000000000000000000000000000000001",
+        "iocDetails": [
+            {
+                "matchType": "IOC_HASH",
+                "intelFeedName": "Dummy_Feed",
+                "malwareName": "Dummy_Malware",
+                "iocRuleAuthor": "Dummy_Author",
+                "malwareDescription": "Dummy description for testing purposes",
+                "iocHashHex": "00000000000000001",
+                "iocStatus": "ACTIVE",
+                "__typename": "IOCDetails"
+            }
+        ],
+        "isQuarantinedInFirstObservedSnapshot": false,
+        "detectedSnapshotDate": "2025-01-01T00:00:00.000Z",
+        "firstDetectedSnapshotFid": "00000000-0000-0000-0000-000000000001",
+        "filePath": "/dummy/path/file1.txt",
+        "fileName": "dummyfile.com",
+        "__typename": "ThreatMonitoringFileMatchDetailsV2"
+    }
+}

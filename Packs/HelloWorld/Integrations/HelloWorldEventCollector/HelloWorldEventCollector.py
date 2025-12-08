@@ -42,6 +42,7 @@ class Client(BaseClient):
         Returns:
             List[Dict]: the next event
         """
+        demisto.debug("Starting to fetch events.")
         # use limit & from date arguments to query the API
         return [
             {
@@ -99,6 +100,17 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
 
 
 def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict], CommandResults]:
+    """Gets events from API
+
+    Args:
+        client (Client): The client
+        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
+        args (dict): Additional arguments
+
+    Returns:
+        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
+        list: List of events that will be created in XSIAM.
+    """
     limit = args.get("limit", 50)
     from_date = args.get("from_date")
     events = client.search_events(
@@ -140,7 +152,6 @@ def fetch_events(
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {"prev_id": prev_id + 1}
-    demisto.debug(f"Setting next run {next_run}.")
     return next_run, events
 
 
@@ -176,7 +187,7 @@ def main() -> None:  # pragma: no cover
     # How much time before the first fetch to retrieve events
     first_fetch_time = datetime.now().isoformat()
     proxy = params.get("proxy", False)
-    alert_status = params.get("alert_status", None)
+    alert_status = params.get("alert_status", '')
     max_events_per_fetch = params.get("max_events_per_fetch", 1000)
 
     demisto.debug(f"Command being called is {command}")
@@ -208,8 +219,11 @@ def main() -> None:  # pragma: no cover
             )
 
             add_time_to_events(events)
+            demisto.debug(f"Sending {len(events)} events to XSIAM.")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.debug("Sent events to XSIAM successfully")
             demisto.setLastRun(next_run)
+            demisto.debug(f"Setting next run to {next_run}.")
 
     # Log exceptions and return errors
     except Exception as e:

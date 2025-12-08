@@ -5,14 +5,16 @@ Search for XSOAR Indicators and returns the id, indicator_type, value, and score
 You can add additional fields from the indicators using the add_field_to_context argument.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python3 |
+| Script Type | javascript |
 | Tags | Utility |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +24,7 @@ You can add additional fields from the indicators using the add_field_to_context
 | add_fields_to_context | A comma seperated list of fields to return to the context, \(default: id,indicator_type,value,score,verdict\)\) |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

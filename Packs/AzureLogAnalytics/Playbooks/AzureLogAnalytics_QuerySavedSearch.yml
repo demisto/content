@@ -158,6 +158,8 @@ outputs:
 tests:
 - No tests
 supportedModules:
+- agentix
+- xsiam
 - X1
 - X3
 - X5

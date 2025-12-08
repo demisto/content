@@ -2,7 +2,7 @@
     "name": "Absolute",
     "description": "Absolute is an adaptive endpoint security solution that delivers device security, data security and asset management of endpoints",
     "support": "xsoar",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -27,6 +27,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

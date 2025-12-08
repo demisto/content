@@ -1,5 +1,5 @@
 category: Network Security
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -903,7 +903,7 @@ script:
       type: String
       isArray: false
       required: true
-  dockerimage: demisto/crypto:1.0.0.2005673
+  dockerimage: demisto/crypto:1.0.0.3539024
   runonce: false
   script: '-'
   subtype: python3

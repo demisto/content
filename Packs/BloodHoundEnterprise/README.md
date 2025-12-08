@@ -1,5 +1,9 @@
+Note: Support for this Pack will be moved to Partner starting October 20, 2025.
+
 # BloodHound Enterprise
+
 ## Overview
+
 BloodHound Enterprise is a comprehensive cyber security tool designed for identifying, analyzing and mitigating attack paths within Active Directory environments.
 It maps out potential attack paths, highlights excessive permissions or misconfigurations and provides actionable recommendations to reduce vulnerabilites.
 
@@ -28,7 +32,8 @@ It maps out potential attack paths, highlights excessive permissions or misconfi
 
 4. Click **Test** to validate the connection using the provided details.
 
-## Note:
+## Note
+
     This API can be run only with ADMIN privileges.
 
 ## Commands

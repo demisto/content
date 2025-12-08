@@ -1,6 +1,7 @@
 Returns integration instances configured in Cortex XSOAR. You can filter by instance status and/or brand name (vendor).
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Returns integration instances configured in Cortex XSOAR. You can filter by inst
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Returns integration instances configured in Cortex XSOAR. You can filter by inst
 | instance_status | Instance status to filter instances by. Can be "active", "disabled", or "both". Default is "active". |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -28,11 +31,12 @@ Returns integration instances configured in Cortex XSOAR. You can filter by inst
 | Modules.state | True if the instance is enabled, otherwise false. | string |
 | Modules.brand | The instance brand. | string |
 
-
 ## Script Example
+
 ```!GetInstances```
 
 ## Context Example
+
 ```json
 {
     "Modules": [
@@ -99,6 +103,7 @@ Returns integration instances configured in Cortex XSOAR. You can filter by inst
 ## Human Readable Output
 
 >### Results
+>
 >|brand|category|defaultIgnored|name|state|
 >|---|---|---|---|---|
 >| EWS v2 | Messaging | false | EWS v2_instance_1 | active |
@@ -109,4 +114,3 @@ Returns integration instances configured in Cortex XSOAR. You can filter by inst
 >| activedir | Data Enrichment & Threat Intelligence | false | ad-query | active |
 >| d2 | Endpoint | false | d2 | active |
 >| splunk | Analytics & SIEM | false | splunk | active |
-

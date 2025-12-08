@@ -1,0 +1,240 @@
+args:
+  - description: The unique ID of the issue.
+    isArray: true
+    name: issue_id
+  - auto: PREDEFINED
+    description: The severity of the issue.
+    isArray: true
+    name: severity
+    predefined:
+      - low
+      - medium
+      - high
+      - critical
+  - auto: PREDEFINED
+    description: Account type.
+    isArray: true
+    name: Identity_type
+    predefined:
+      - ANONYMOUS
+      - APPLICATION
+      - COMPUTE
+      - FEDERATED_IDENTITY
+      - SERVICE
+      - SERVICE_ACCOUNT
+      - TEMPORARY_CREDENTIALS
+      - TOKEN
+      - UNKNOWN
+      - USER
+  - description: The issue name.
+    isArray: true
+    name: issue_name
+  - description: The issue source.
+    isArray: true
+    name: issue_source
+    predefined:
+      - XDR Agent
+      - XDR Analytics
+      - XDR Analytics BIOC
+      - PAN NGFW
+      - XDR BIOC
+      - XDR IOC
+      - Threat Intelligence
+      - XDR Managed Threat Hunting
+      - Correlation
+      - Prisma Cloud
+      - Prisma Cloud Compute
+      - ASM
+      - IoT Security
+      - Custom Alert
+      - Health
+      - SaaS Attachments
+      - Attack Path
+      - Cloud Network Analyzer
+      - IaC Scanner
+      - CAS Secret Scanner
+      - CI/CD Risks
+      - CLI Scanner
+      - CIEM Scanner
+      - API Traffic Monitor
+      - API Posture Scanner
+      - Agentless Disk Scanner
+      - Kubernetes Scanner
+      - Compute Policy
+      - CSPM Scanner
+      - CAS CVE Scanner
+      - CAS License Scanner
+      - Secrets Scanner
+      - SAST Scanner
+      - Data Policy
+      - Attack Surface Test
+      - Package Operational Risk
+      - Vulnerability Policy
+      - AI Security Posture
+  - description: "A comma-seperated list of all relevant SHA256 hash fields for processes and file macros involved in the issue: Initiator SHA256 actor process image, CGO SHA256 hash of causality actor process image, Target process SHA256 of action process image, OS Parent SHA256 hash of the OS actor process image, File Macro SHA256 hash of the action file macro."
+    isArray: true
+    name: sha256
+  - description: Initiator SHA256 actor process image.
+    isArray: true
+    name: actor_process_image_sha256
+    hidden: true
+    deprecated: true
+  - description: CGO SHA256 hash of causality actor process image.
+    isArray: true
+    name: causality_actor_process_image_sha256
+    hidden: true
+    deprecated: true
+  - description: Target process SHA256 of action process image.
+    isArray: true
+    name: action_process_image_sha256
+    hidden: true
+    deprecated: true
+  - defaultValue: source_insert_ts
+    description: The field by which to sort the results.
+    isArray: true
+    name: sort_field
+  - auto: PREDEFINED
+    description: The order in which to sort the results.
+    name: sort_order
+    predefined:
+      - DESC
+      - ASC
+  - defaultValue: "0"
+    description: The first page from which we bring the issues.
+    isArray: true
+    name: offset
+  - defaultValue: "50"
+    description: The last page from which we bring the issues.
+    isArray: true
+    name: limit
+  - description: Additional output fields.
+    isArray: true
+    name: additional_output_fields
+  - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+    name: start_time
+  - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). If start time is provided without end_time it will be from start_time until now.
+    name: end_time
+  - description: The category of the issue.
+    isArray: true
+    name: issue_category
+  - description: The domain of the issue.
+    isArray: true
+    name: issue_domain
+    predefined:
+      - Health
+      - Hunting
+      - IT
+      - Posture
+      - Security
+  - description: The description of the issue.
+    isArray: true
+    name: issue_description
+  - description: OS Parent SHA256 hash of the OS actor process image.
+    isArray: true
+    name: os_actor_process_image_sha256
+    hidden: true
+    deprecated: true
+  - description: File Macro SHA256 hash of the action file macro.
+    isArray: true
+    name: action_file_macro_sha256
+    hidden: true
+    deprecated: true
+  - description: The progress status.
+    isArray: true
+    name: status
+    predefined:
+      - New
+      - In Progress
+      - Resolved
+  - description: Not progress status.
+    isArray: true
+    name: not_status
+    predefined:
+      - New
+      - In Progress
+      - Resolved
+  - description: The assets ids related to the issue.
+    isArray: true
+    name: asset_ids
+  - description: |
+      The assignee of the issue. Accepts a comma-separated list.
+      Use "unassigned" for unassigned issues or "assigned" for all assigned issues.
+    isArray: true
+    name: assignee
+comment: Searches Cortex Issues.
+commonfields:
+  id: SearchIssuesAgentix
+  version: -1
+enabled: true
+name: SearchIssuesAgentix
+outputs:
+  - contextPath: Core.Issue.internal_id
+    description: The internal ID of the issue.
+    type: String
+  - contextPath: Core.Issue.issue_source
+    description: The source of the issue.
+    type: String
+  - contextPath: Core.Issue.status.progress
+    description: The progress status of the issue.
+    type: String
+  - contextPath: Core.Issue.assigned_to_pretty
+    description: The pretty name of the user assigned to the issue.
+    type: String
+  - contextPath: Core.Issue.assigned_to
+    description: The user assigned to the issue.
+    type: String
+  - contextPath: Core.Issue.assetid
+    description: The asset ID related to the issue.
+    type: String
+  - contextPath: Core.Issue.action_file_macro_sha256
+    description: File Macro SHA256 hash of the action file macro.
+    type: String
+  - contextPath: Core.Issue.os_actor_process_image_sha256
+    description: OS Parent SHA256 hash of the OS actor process image.
+    type: String
+  - contextPath: Core.Issue.issue_domain
+    description: The domain of the issue.
+    type: String
+  - contextPath: Core.Issue.action_process_image_sha256
+    description: Action process image SHA256 hash.
+    type: String
+  - contextPath: Core.Issue.causality_actor_process_image_sha256
+    description: Causality actor process image SHA256 hash.
+    type: String
+  - contextPath: Core.Issue.actor_process_image_sha256
+    description: Actor process image SHA256 hash.
+    type: String
+  - contextPath: Core.Issue.source_insert_ts
+    description: The detection timestamp.
+    type: Number
+  - contextPath: Core.Issue.issue_name
+    description: The name of the issue.
+    type: String
+  - contextPath: Core.Issue.severity
+    description: The severity of the issue.
+    type: String
+  - contextPath: Core.Issue.issue_category
+    description: The category of the issue.
+    type: String
+  - contextPath: Core.Issue.issue_name
+    description: The issue name.
+    type: String
+  - contextPath: Core.Issue.issue_description
+    description: The issue description.
+    type: String
+  - contextPath: Core.Issue.Identity_type
+    description: The identity type of the account.
+    type: String
+isInternal: true
+script: "-"
+subtype: python3
+tags:
+  - Utility
+timeout: "0"
+type: python
+dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 5.0.0
+tests:
+  - No tests (auto formatted)
+marketplaces:
+  - platform

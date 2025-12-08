@@ -1,0 +1,276 @@
+sectionorder:
+- Connect
+commonfields:
+  id: Cyberint Takedowns
+  version: -1
+fromversion: 6.9.0
+name: Cyberint Takedowns
+display: Cyberint Takedowns
+category: Data Enrichment & Threat Intelligence
+description: Use the Cyberint Takedowns integration to manage takedowns requests.
+configuration:
+- display: Cyberint API URL
+  additionalinfo: Cyberint API URL on which the services run (i.e https://yourcompany.cyberint.io)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Company Name
+  additionalinfo: Company (client) name associated with Cyberint instance.
+  name: client_name
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API access token
+  name: access_token
+  hiddenusername: true
+  type: 9
+  required: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+script:
+  script: ''
+  type: python
+  commands:
+  - name: cyberint-retrieve-takedowns
+    description: Retrieve takedowns requests.
+    arguments:
+    - name: customer_id
+      type: String
+      description: Customer ID.
+      required: true
+    - name: action
+      type: String
+      description: Action taken.
+    - name: alert_id
+      type: Number
+      description: Alert ID.
+    - name: alert_ref_id
+      type: String
+      description: Alert reference ID.
+    - name: blocked_date
+      type: String
+      description: Blocklist request blocked date.
+    - name: sent_date
+      type: String
+      description: Blocklist request sent date.
+    - name: brand
+      type: String
+      description: Brand.
+    - name: created_date
+      type: String
+      description: Created date.
+    - name: customer
+      type: String
+      description: Customer.
+    - name: domain
+      type: String
+      description: Domain.
+    - name: email_ticket_id
+      type: String
+      description: Email ticket ID.
+    - name: hostname
+      type: String
+      description: Hostname.
+    - name: id
+      type: String
+      description: Takedown request ID.
+    - name: last_action_date
+      type: String
+      description: Last action date.
+    - name: last_email_date
+      type: String
+      description: Last email date.
+    - name: last_monitored_date
+      type: String
+      description: Last monitored date.
+    - name: last_seen_date
+      type: String
+      description: Last seen date.
+    - name: last_submit_date
+      type: String
+      description: Last submit date.
+    - name: metadata_date
+      type: String
+      description: Metadata date.
+    - name: reason
+      type: String
+      description: Reason for the takedown request.
+      predefined:
+        - phishing
+        - brand_abuse
+        - impersonating_application
+        - unofficial_application_distribution
+        - malicious_content
+        - social_media_impersonation
+        - social_media_employee_impersonation
+        - fake_job_post
+        - sensitive_file_on_antivirus_repository
+        - instant_messaging_impersonation
+        - other
+    - name: requested_by
+      type: String
+      description: Requested by.
+    - name: status
+      type: String
+      description: Status.
+    - name: url
+      type: String
+      description: URL for the takedown request.
+    outputs:
+    - contextPath: Cyberint.takedowns_list.reason
+      description: Reason.
+      type: String
+    - contextPath: Cyberint.takedowns_list.url
+      description: URL.
+      type: String
+    - contextPath: Cyberint.takedowns_list.original_url
+      description: Original URL.
+      type: String
+    - contextPath: Cyberint.takedowns_list.customer
+      description: Customer.
+      type: String
+    - contextPath: Cyberint.takedowns_list.status
+      description: Status.
+      type: String
+    - contextPath: Cyberint.takedowns_list.brand
+      description: Brand.
+      type: String
+    - contextPath: Cyberint.takedowns_list.alert_ref_id
+      description: Alert Ref ID.
+      type: String
+    - contextPath: Cyberint.takedowns_list.alert_id
+      description: Alert ID.
+      type: Number
+    - contextPath: Cyberint.takedowns_list.hosting_providers
+      description: Hosting Providers.
+      type: String
+    - contextPath: Cyberint.takedowns_list.name_servers
+      description: Name Servers.
+      type: String
+    - contextPath: Cyberint.takedowns_list.escalation_actions
+      description: Escalation Actions.
+      type: String
+    - contextPath: Cyberint.takedowns_list.last_escalation_date
+      description: Last Escalation Date.
+      type: String
+    - contextPath: Cyberint.takedowns_list.last_status_change_date
+      description: Last Status Change Date.
+      type: String
+    - contextPath: Cyberint.takedowns_list.last_seen_date
+      description: Last Seen Date.
+      type: String
+    - contextPath: Cyberint.takedowns_list.created_date
+      description: Created Date.
+      type: String
+    - contextPath: Cyberint.takedowns_list.status_reason
+      description: Status Reason.
+      type: String
+    - contextPath: Cyberint.takedowns_list.id
+      description: ID.
+      type: String
+  - name: cyberint-takedown-url
+    description: Submit takedown request.
+    arguments:
+    - name: customer
+      type: String
+      description: Customer name (ID of the customer).
+      required: true
+    - name: reason
+      type: String
+      required: true
+      description: Reason for takedown request.
+      predefined:
+        - phishing
+        - brand_abuse
+        - impersonating_application
+        - unofficial_application_distribution
+        - malicious_content
+        - social_media_impersonation
+        - social_media_employee_impersonation
+        - fake_job_post
+        - sensitive_file_on_antivirus_repository
+        - instant_messaging_impersonation
+        - other
+    - name: url
+      type: String
+      description: URL for takedown request.
+      required: true
+    - name: brand
+      type: String
+      description: The brand the offending URL is targeting.
+    - name: original_url
+      type: String
+      description: URL of the original copyrighted content.
+    - name: alert_id
+      type: Number
+      description: Alert ID.
+    - name: note
+      type: String
+      description: Comment.
+    outputs:
+    - contextPath: Cyberint.takedowns_submit.reason
+      description: Reason.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.url
+      description: URL.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.original_url
+      description: Original URL.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.customer
+      description: Customer.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.status
+      description: Status.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.brand
+      description: Brand.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.alert_ref_id
+      description: Alert Ref ID.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.alert_id
+      description: Alert ID.
+      type: Number
+    - contextPath: Cyberint.takedowns_submit.hosting_providers
+      description: Hosting Providers.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.name_servers
+      description: Name Servers.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.escalation_actions
+      description: Escalation Actions.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.last_escalation_date
+      description: Last Escalation Date.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.last_status_change_date
+      description: Last Status Change Date.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.last_seen_date
+      description: Last Seen Date.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.created_date
+      description: Created Date.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.status_reason
+      description: Status Reason.
+      type: String
+    - contextPath: Cyberint.takedowns_submit.id
+      description: ID.
+      type: String
+  dockerimage: demisto/python3:3.12.12.5490952
+  feed: false
+  subtype: python3
+tests:
+- No tests

@@ -1,5 +1,5 @@
-import demistomock as demisto  # noqa: F401
 import dateparser
+import demistomock as demisto  # noqa: F401
 
 
 def date_to_time_stamp(date: str) -> int:
@@ -9,7 +9,7 @@ def date_to_time_stamp(date: str) -> int:
 
 def main():
     args = demisto.args()
-    date_value = str(args['value'])
+    date_value = str(args["value"])
     demisto.results(date_to_time_stamp(date_value))
 
 

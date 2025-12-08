@@ -1,21 +1,21 @@
 import json
-from freezegun import freeze_time
-import pytest
 
+import dill as pickle
+import pytest
 from DBotTrainClustering import (
-    demisto,
-    main,
+    MESSAGE_CLUSTERING_NOT_VALID,
     MESSAGE_INCORRECT_FIELD,
     MESSAGE_INVALID_FIELD,
-    preprocess_incidents_field,
-    MESSAGE_CLUSTERING_NOT_VALID,
-    check_list_of_dict,
-    base64,
-    datetime,
     MESSAGE_NO_FIELD_NAME_OR_CLUSTERING,
-    get_model_if_not_expired
+    base64,
+    check_list_of_dict,
+    datetime,
+    demisto,
+    get_model_if_not_expired,
+    main,
+    preprocess_incidents_field,
 )
-import dill as pickle
+from freezegun import freeze_time
 
 PARAMETERS_DICT = {
     "fromDate": "",
@@ -259,7 +259,6 @@ class PostProcessing:
 
 
 def executeCommand(command, args):
-
     match command:
         case "GetIncidentsByQuery":
             return [{"Contents": json.dumps(FETCHED_INCIDENT), "Type": "note"}]
@@ -303,8 +302,8 @@ def test_main_regular(mocker):
     cluster_0 = output_json["data"][0]
     cluster_1 = output_json["data"][1]
     assert MESSAGE_INCORRECT_FIELD % "wrong_field" in msg
-    assert cluster_0['incidents_ids'] == ['1', '3', '5']
-    assert cluster_1['incidents_ids'] == ['2', '4', '6']
+    assert cluster_0["incidents_ids"] == ["1", "3", "5"]
+    assert cluster_1["incidents_ids"] == ["2", "4", "6"]
     assert all(item in cluster_0.items() for item in sub_dict_0.items())
     assert all(item in cluster_1.items() for item in sub_dict_1.items())
     assert not all(item in cluster_0.items() for item in sub_dict_1.items())
@@ -356,8 +355,8 @@ def test_empty_cluster_name(mocker):
     output_json = json.loads(output_clustering_json)
     cluster_0 = output_json["data"][0]
     cluster_1 = output_json["data"][1]
-    assert cluster_0['incidents_ids'] == ['1', '3', '5']
-    assert cluster_1['incidents_ids'] == ['2', '4', '6']
+    assert cluster_0["incidents_ids"] == ["1", "3", "5"]
+    assert cluster_1["incidents_ids"] == ["2", "4", "6"]
     assert all(item in cluster_0.items() for item in sub_dict_0.items())
     assert all(item in cluster_1.items() for item in sub_dict_1.items())
     assert not all(item in cluster_0.items() for item in sub_dict_1.items())
@@ -375,9 +374,7 @@ def test_all_incorrect_fields(mocker):
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     model, output_clustering_json, msg = main()
-    assert (
-        MESSAGE_INCORRECT_FIELD % " , ".join(["field_1_wrong", "field_2_wrong"]) in msg
-    )
+    assert MESSAGE_INCORRECT_FIELD % " , ".join(["field_1_wrong", "field_2_wrong"]) in msg
     assert MESSAGE_NO_FIELD_NAME_OR_CLUSTERING in msg
 
     assert not output_clustering_json
@@ -388,9 +385,7 @@ def test_all_incorrect_fields(mocker):
 def test_missing_too_many_values(mocker):
     global FETCHED_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY_WITH_NOT_ENOUGH_VALUES
-    args = PARAMETERS_DICT | {
-        "fieldsForClustering": "field_1, field_2", "fieldForClusterName": "entityname"
-    }
+    args = PARAMETERS_DICT | {"fieldsForClustering": "field_1, field_2", "fieldForClusterName": "entityname"}
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
@@ -495,20 +490,23 @@ def test_same_cluster_name(mocker):
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     model, *_ = main()
     cluster_names = [x["clusterName"] for x in model.selected_clusters.values()]
-    assert cluster_names == ['', 'powershell', 'nmap']
+    assert cluster_names == ["", "powershell", "nmap"]
 
 
-@pytest.mark.parametrize("force_retrain, model_expiration, model, expected_result_obj", [
-    (True, 48, PostProcessing(datetime(2023, 1, 1)), type(None)),
-    (False, 48, None, type(None)),
-    (False, 48, PostProcessing(datetime(2023, 1, 1)), type(None)),
-    (False, 48, PostProcessing(datetime(2023, 2, 1)), PostProcessing),
-])
+@pytest.mark.parametrize(
+    "force_retrain, model_expiration, model, expected_result_obj",
+    [
+        (True, 48, PostProcessing(datetime(2023, 1, 1)), type(None)),
+        (False, 48, None, type(None)),
+        (False, 48, PostProcessing(datetime(2023, 1, 1)), type(None)),
+        (False, 48, PostProcessing(datetime(2023, 2, 1)), PostProcessing),
+    ],
+)
 @freeze_time("2023-02-02")
 def test_get_model_if_not_expired(mocker, force_retrain, model_expiration, model, expected_result_obj):
     # Mock get_model function
     mocker.patch("DBotTrainClustering.get_model", return_value=model)
 
-    result = get_model_if_not_expired(force_retrain, model_expiration, 'name')
+    result = get_model_if_not_expired(force_retrain, model_expiration, "name")
 
     assert isinstance(result, expected_result_obj)

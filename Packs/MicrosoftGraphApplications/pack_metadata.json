@@ -2,7 +2,7 @@
     "name": "Microsoft Graph Applications",
     "description": "Use this pack to manage connected applications and services",
     "support": "xsoar",
-    "currentVersion": "1.2.48",
+    "currentVersion": "1.2.56",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -24,6 +24,12 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr",
+        "cloud"
     ]
 }

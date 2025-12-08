@@ -1,11 +1,8 @@
-from CommonServerPython import *
-
-from AWSApiModule import *
-import demistomock as demisto
-
-import pytest
-
 import AwsSecretsManager as AWS_SECRETSMANAGER
+import demistomock as demisto
+import pytest
+from AWSApiModule import *
+from CommonServerPython import *
 
 
 def create_client():

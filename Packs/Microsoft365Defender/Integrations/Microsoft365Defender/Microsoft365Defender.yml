@@ -1,5 +1,5 @@
 category: Network Security
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -179,6 +179,7 @@ configuration:
   section: Collect
   hidden:
   - marketplacev2
+  - platform
   required: false
 - additionalinfo: Incoming Mirroring - when selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
@@ -189,6 +190,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
+  - platform
   required: false
 - additionalinfo: Outgoing Mirroring - when selected, closing the Cortex XSOAR incident is mirrored in Microsoft 365 Defender.
   defaultvalue: 'false'
@@ -199,6 +201,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
+  - platform
   required: false
 - additionalinfo: Choose a tag to add to an entry to mirror it as a comment into Microsoft 365 Defender.
   defaultvalue: CommentToMicrosoft365Defender
@@ -209,6 +212,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
+  - platform
   required: false
 - additionalinfo: Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender.
   defaultvalue: CommentFromMicrosoft365Defender
@@ -219,6 +223,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
+  - platform
   required: false
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
 display: Microsoft 365 Defender
@@ -401,7 +406,7 @@ script:
     - contextPath: Microsoft365Defender.Hunt.query
       description: The query used, also acted as a key.
       type: String
-    - contextPath: Microsoft365Defender.Hunt.results.
+    - contextPath: Microsoft365Defender.Hunt.results
       description: The results of the query.
       type: Unknown
   - arguments:
@@ -490,14 +495,14 @@ script:
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/crypto:1.0.0.2005673
+  dockerimage: demisto/crypto:1.0.0.5490413
   isfetch: true
-  script: ''
-  subtype: python3
-  type: python
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
+  script: ''
+  subtype: python3
+  type: python
 fromversion: 5.5.0
 tests:
 - No tests

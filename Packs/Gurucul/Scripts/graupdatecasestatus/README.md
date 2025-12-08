@@ -1,6 +1,7 @@
 GRA Update Case Status
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ GRA Update Case Status
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ GRA Update Case Status
 | closeReason | Close reason |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

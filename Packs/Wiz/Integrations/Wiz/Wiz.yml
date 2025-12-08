@@ -1,4 +1,7 @@
 category: Utilities
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Wiz
   version: -1
@@ -9,37 +12,87 @@ configuration:
   defaultvalue: Wiz Issue
   type: 13
   required: false
+  section: Collect
 - display: Service Account ID
   name: credentials
   type: 9
   required: true
+  section: Connect
 - display: Authentication Endpoint
   name: auth_endpoint
   type: 0
   required: false
+  section: Connect
 - display: API Endpoint
   name: api_endpoint
   required: true
   type: 0
   defaultvalue: https://api.us1.app.wiz.io/graphql
+  section: Connect
+- name: incidentFetchInterval
+  display: Incidents Fetch Interval
+  defaultvalue: 60
+  type: 19
+  required: false
+  advanced: true
+  section: Collect
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: '200'
   display: Max Issues to Fetch
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
+- name: severity
+  display: Issue severity to fetch
+  additionalinfo: 'Select the severity levels of issues to fetch from Wiz. Multiple selections are allowed. Leave empty to fetch all severities.'
+  options:
+  - INFORMATIONAL
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+  type: 16
+  required: false
+  section: Collect
+- name: status
+  display: Issue status to fetch
+  additionalinfo: 'Select the status of issues to fetch from Wiz. Multiple selections are allowed.'
+  options:
+  - OPEN
+  - IN_PROGRESS
+  - RESOLVED
+  - REJECTED
+  defaultvalue: OPEN,IN_PROGRESS
+  type: 16
+  required: false
+  section: Collect
+- name: issue_type
+  display: Issue type to fetch
+  additionalinfo: 'Select the type of issues to fetch from Wiz. Multiple selections are allowed.'
+  options:
+  - TOXIC_COMBINATION
+  - THREAT_DETECTION
+  - CLOUD_CONFIGURATION
+  defaultvalue: TOXIC_COMBINATION,CLOUD_CONFIGURATION,THREAT_DETECTION
+  type: 16
+  required: false
+  section: Collect
 description: Agentless cloud security.
 display: Wiz
 name: Wiz
@@ -181,12 +234,12 @@ script:
       type: String
   - name: wiz-get-resource
     arguments:
-      - description: resource provider unique id.
-        name: resource_id
-        required: false
-      - description: search by name or external ID.
-        name: resource_name
-        required: false
+    - description: resource provider unique id.
+      name: resource_id
+      required: false
+    - description: search by name or external ID.
+      name: resource_name
+      required: false
     description: Get details of a resource.
     outputs:
     - contextPath: Wiz.Manager.Resource.id
@@ -207,6 +260,109 @@ script:
     - contextPath: Wiz.Manager.Resource.userMetadata
       description: User metadata for the resource.
       type: String
+  - name: wiz-get-resources
+    description: Get details of resources.
+    arguments:
+      - description: Filter by free text search on cloud resource name.
+        name: search
+        required: false
+      - description: Filter cloud resources according to these external subscription IDs (AWS Account, Azure Subscription, GCP Project, and OCI Compartment).
+        name: subscription_external_ids
+        required: false
+      - description: Filter cloud resources according to these cloud service provider unique IDs.
+        name: provider_unique_ids
+        required: false
+      - description: Filter cloud resources by specific entity types.
+        name: entity_type
+        predefined:
+          - ACCESS_ROLE
+          - ACCESS_ROLE_BINDING
+          - ACCESS_ROLE_PERMISSION
+          - API_GATEWAY
+          - APPLICATION
+          - AUTHENTICATION_CONFIGURATION
+          - BACKUP_SERVICE
+          - BUCKET
+          - CDN
+          - CERTIFICATE
+          - CICD_SERVICE
+          - CLOUD_LOG_CONFIGURATION
+          - CLOUD_ORGANIZATION
+          - COMPUTE_INSTANCE_GROUP
+          - CONFIG_MAP
+          - CONTAINER
+          - CONTAINER_GROUP
+          - CONTAINER_IMAGE
+          - CONTAINER_REGISTRY
+          - CONTAINER_SERVICE
+          - DAEMON_SET
+          - DATABASE
+          - DATA_WORKLOAD
+          - DB_SERVER
+          - DEPLOYMENT
+          - DNS_RECORD
+          - DNS_ZONE
+          - DOMAIN
+          - EMAIL_SERVICE
+          - ENCRYPTION_KEY
+          - ENDPOINT
+          - FILE_SYSTEM_SERVICE
+          - FIREWALL
+          - GATEWAY
+          - GOVERNANCE_POLICY
+          - GOVERNANCE_POLICY_GROUP
+          - HOSTED_APPLICATION
+          - IAM_BINDING
+          - IP_RANGE
+          - KUBERNETES_CLUSTER
+          - KUBERNETES_CRON_JOB
+          - KUBERNETES_INGRESS
+          - KUBERNETES_INGRESS_CONTROLLER
+          - KUBERNETES_JOB
+          - KUBERNETES_NETWORK_POLICY
+          - KUBERNETES_NODE
+          - KUBERNETES_PERSISTENT_VOLUME
+          - KUBERNETES_PERSISTENT_VOLUME_CLAIM
+          - KUBERNETES_POD_SECURITY_POLICY
+          - KUBERNETES_SERVICE
+          - KUBERNETES_STORAGE_CLASS
+          - KUBERNETES_VOLUME
+          - LOAD_BALANCER
+          - MANAGED_CERTIFICATE
+          - MANAGEMENT_SERVICE
+          - NETWORK_ADDRESS
+          - NETWORK_INTERFACE
+          - NETWORK_ROUTING_RULE
+          - NETWORK_SECURITY_RULE
+          - PEERING
+          - POD
+          - PORT_RANGE
+          - PRIVATE_ENDPOINT
+          - PROXY
+          - PROXY_RULE
+          - RAW_ACCESS_POLICY
+          - REGISTERED_DOMAIN
+          - REPLICA_SET
+          - RESOURCE_GROUP
+          - SEARCH_INDEX
+          - SECRET
+          - SECRET_CONTAINER
+          - SERVERLESS
+          - SERVERLESS_PACKAGE
+          - SERVICE_ACCOUNT
+          - STORAGE_ACCOUNT
+          - SUBNET
+          - SUBSCRIPTION
+          - SWITCH
+          - USER_ACCOUNT
+          - VIRTUAL_DESKTOP
+          - VIRTUAL_MACHINE
+          - VIRTUAL_MACHINE_IMAGE
+          - VIRTUAL_NETWORK
+          - VOLUME
+          - WEB_SERVICE
+          - DATA_WORKFLOW
+        auto: PREDEFINED
   - name: wiz-reject-issue
     description: Reject a Wiz Issue.
     arguments:
@@ -313,7 +469,7 @@ script:
       description: project name.
       required: true
   - name: wiz-rescan-machine-disk
-    description: DEPRECATED
+    description: DEPRECATED.
     deprecated: true
     arguments:
     - name: vm_id
@@ -322,10 +478,10 @@ script:
   - name: wiz-copy-to-forensics-account
     description: Copy VM's Volumes to a Forensics Account.
     arguments:
-      - name: resource_id
-        description: ID of the resource to copy its Volumes. Can be Wiz ID or provider's ID.
-        required: true
-  dockerimage: demisto/python3:3.11.10.115186
+    - name: resource_id
+      description: ID of the resource to copy its Volumes. Can be Wiz ID or provider's ID.
+      required: true
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'
