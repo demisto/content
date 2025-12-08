@@ -407,20 +407,20 @@ def is_gov_account(connector_id: str, account_id: str) -> bool:
         A boolean representing whether the account is a gov account or not.
     """
     accounts_info = get_accounts_by_connector_id(connector_id, None)  # return all accounts with max_results = None
-    # go over the list of accounts to find the correct one
-    relevant_account = {}
-    for account in accounts_info:
-        if account.get("account_id") == account_id:
-            relevant_account = account
-            demisto.debug("found the account")
-            break
 
-    if not relevant_account:
-        demisto.debug(f"No account found with account_id: {account_id}")
-        return False
+    relevant_account = {}
+    if len(accounts_info) == 1:
+        relevant_account = accounts_info[0]
+    else:  # go over the list of accounts to find the correct one
+        for account in accounts_info:
+            if account.get("account_id") == account_id:
+                relevant_account = account
+                demisto.debug("found the account")
+                break
 
     demisto.debug(f"{relevant_account.get('cloud_partition')=}")
     if account_cloud_partition := relevant_account.get("cloud_partition", ""):
         return account_cloud_partition.upper() == "GOV"
     else:
+        demisto.debug(f"No account found with account_id: {account_id}, or no cloud_partition.")
         return False
