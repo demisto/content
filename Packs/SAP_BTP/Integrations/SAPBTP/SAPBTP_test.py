@@ -571,6 +571,48 @@ def test_http_request(
         assert result == expected_result
 
 
+def test_http_request_auth_error_handling(mocker, capfd, client_non_mtls):
+    """Tests http_request properly handles 401/403 authentication errors."""
+    mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+
+    # Mock _http_request to raise 401 error
+    mocker.patch.object(client_non_mtls, "_http_request", side_effect=DemistoException("Error [401] - Unauthorized"))
+
+    with capfd.disabled(), pytest.raises(DemistoException, match="Authentication error"):
+        client_non_mtls.http_request("GET", "/test")
+
+
+def test_http_request_403_error_handling(mocker, capfd, client_non_mtls):
+    """Tests http_request properly handles 403 Forbidden errors."""
+    mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+
+    # Mock _http_request to raise 403 error
+    mocker.patch.object(client_non_mtls, "_http_request", side_effect=DemistoException("Error [403] - Forbidden"))
+
+    with capfd.disabled(), pytest.raises(DemistoException, match="Authentication error"):
+        client_non_mtls.http_request("GET", "/test")
+
+
+def test_http_request_retries_on_server_errors(mocker, client_non_mtls):
+    """Tests http_request uses retries and backoff for server errors."""
+    mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"data": "success"}
+    mock_response.headers = {}
+
+    # Mock _http_request to verify retry parameters are passed
+    mock_http = mocker.patch.object(client_non_mtls, "_http_request", return_value=mock_response)
+
+    client_non_mtls.http_request("GET", "/test")
+
+    # Verify retries and backoff_factor were passed
+    call_kwargs = mock_http.call_args[1]
+    assert call_kwargs.get("retries") == 3
+    assert call_kwargs.get("backoff_factor") == 2
+
+
 # ========================================
 # Tests: _parse_events_from_response
 # ========================================
@@ -1177,7 +1219,7 @@ def test_fetch_events_command_with_first_fetch_configured(mocker, client_non_mtl
 
 
 def test_fetch_events_command_with_first_fetch_not_configured(mocker, client_non_mtls):
-    """Tests fetch_events_command uses default FIRST_FETCH when first_fetch is not provided."""
+    """Tests fetch_events_command uses default (current time) when first_fetch is not provided."""
     mock_events = [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}]
 
     mocker.patch.object(demisto, "getLastRun", return_value={})
@@ -1191,6 +1233,39 @@ def test_fetch_events_command_with_first_fetch_not_configured(mocker, client_non
     # Verify it was called and last_run was updated
     mock_fetch.assert_called_once()
     demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T00:00:00Z"})  # type: ignore[attr-defined]
+
+
+def test_fetch_events_command_with_empty_first_fetch(mocker, client_non_mtls):
+    """Tests fetch_events_command uses current time when first_fetch is empty string."""
+    mock_events = [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}]
+
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "params", return_value={"first_fetch": ""})
+    mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(SAPBTP, "send_events_to_xsiam")
+
+    fetch_events_command(client_non_mtls)
+
+    # Verify it was called (with current time, not historical)
+    mock_fetch.assert_called_once()
+    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T00:00:00Z"})  # type: ignore[attr-defined]
+
+
+def test_fetch_events_command_state_protection_on_error(mocker, client_non_mtls):
+    """Tests fetch_events_command does not update last_run when fetch fails."""
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00Z"})
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "params", return_value={})
+    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", side_effect=Exception("API Error"))
+    mocker.patch.object(SAPBTP, "send_events_to_xsiam")
+
+    # Should raise the exception
+    with pytest.raises(Exception, match="API Error"):
+        fetch_events_command(client_non_mtls)
+
+    # Verify last_run was NOT updated (state protection)
+    demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
 
 
 # ========================================

@@ -1,6 +1,10 @@
-## SAP BTP (Business Technology Platform) Integration
+## SAP BTP (Business Technology Platform) - Event Collector
 
-This integration collects audit log events from SAP Business Technology Platform.
+This integration collects audit log events from SAP Business Technology Platform (BTP).
+
+### How to Configure the Integration Instance
+
+Follow these steps to configure the SAP BTP Event Collector:
 
 ### Authentication Methods
 
@@ -46,8 +50,14 @@ The service key contains:
 - **Client Secret**: Required only for Non-mTLS authentication (`uaa.clientsecret`)
 - **Certificate**: Required only for mTLS authentication (PEM format)
 - **Private Key**: Required only for mTLS authentication (PEM format)
-- **First Fetch Time**: Determines how far back to fetch events on the first run (e.g., "3 days", "1 week"). Defaults to "3 minute ago" if not specified.
-- **Max Fetch**: Maximum number of events to fetch per cycle (default: 5000)
+- **First Fetch Time**: (Optional) Leave empty to start from current time. Only configure if you need to fetch historical data (e.g., "3 days", "1 week").
+- **Max Fetch**: Maximum number of events to fetch per cycle (default: 5000, advanced setting)
+
+### Important Notes
+
+- **First Run Behavior**: By default, the collector starts from the current time and does not fetch historical data. This prevents overwhelming the system with old events.
+- **get-events Command**: This command is for debugging only and should be used with caution. It can create duplicate events if `should_push_events` is set to true.
+- **XSOAR Compatibility**: The `sap-btp-get-events` command is not supported in XSOAR environments.
 
 ### Troubleshooting
 

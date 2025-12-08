@@ -1,7 +1,10 @@
-category: Cloud Services
 commonfields:
   id: SAPBTP
   version: -1
+name: SAPBTP
+display: SAP BTP (Business Technology Platform)
+category: Cloud Services
+description: SAP Business Technology Platform (BTP) is a cloud platform for building, integrating, and extending enterprise applications with data, analytics, AI, and automation.
 sectionorder:
 - Connect
 - Collect
@@ -42,18 +45,24 @@ configuration:
   section: Connect
   hiddenusername: true
   additionalinfo: For Non-mTLS authentication. SAP Service Key field 'uaa.clientsecret'.
+  hidden:
+  - auth_type: mTLS
 - name: certificate
   display: Certificate
   required: false
   type: 12
   section: Connect
   additionalinfo: For mTLS authentication (recommended). Body of certificate.pem file in PEM format.
+  hidden:
+  - auth_type: Non-mTLS
 - name: private_key
   display: Private Key
   required: false
   type: 14
   section: Connect
   additionalinfo: For mTLS authentication (recommended). Body of key.pem file in PEM format.
+  hidden:
+  - auth_type: Non-mTLS
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
@@ -73,9 +82,10 @@ configuration:
   required: false
   type: 0
   section: Collect
+  defaultvalue: ""
   additionalinfo: >-
-      The time range to fetch events from on the first run (e.g., "3 days", "1 hour").
-      If not specified, defaults to 1 minute ago.
+      Time range to fetch events from on first run. Leave empty to start from current time (recommended).
+      Only use this to fetch historical data if specifically needed (e.g., "3 days", "1 hour").
 - name: incidentType
   display: Incident type
   required: false
@@ -89,13 +99,13 @@ configuration:
   advanced: true
   defaultvalue: "5000"
   additionalinfo: Maximum number of events to fetch per cycle (default 5000).
-description: Collect audit log events from SAP Business Technology Platform (BTP).
-display: SAP BTP (Business Technology Platform)
-name: SAPBTP
 script:
   commands:
   - name: sap-btp-get-events
-    description: Retrieve audit log events from SAP BTP.
+    description: |-
+      Gets events from SAP BTP Audit Log. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication.
+      Note: This command is not supported in XSOAR.
+    deprecated: false
     arguments:
     - name: from_time
       description: >-
@@ -110,9 +120,13 @@ script:
     - name: limit
       description: Maximum number of events to retrieve.
     - name: should_push_events
-      description: Indicates whether or not to push the collected events into XSIAM.
+      description: Set to true to push events to XSIAM (use with caution to avoid duplicates).
       required: false
       defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: SAPBTP.Event.uuid
       description: Unique identifier of the event.

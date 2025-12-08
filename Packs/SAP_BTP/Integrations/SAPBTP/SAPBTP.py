@@ -296,20 +296,35 @@ class Client(BaseClient):
     def http_request(
         self, method: str, url_suffix: str, params: dict[str, Any] | None = None, return_full_response: bool = False
     ) -> Any:
-        """Execute HTTP request with authentication and detailed logging."""
+        """Execute HTTP request with authentication and detailed logging.
+
+        Implements proper error handling:
+        - 401/403: Authentication errors (logged and raised)
+        - 429: Rate limiting (exponential backoff via BaseClient)
+        - 5xx: Server errors (exponential backoff via BaseClient)
+        """
         access_token = self._get_access_token()
         auth_headers = {APIKeys.HEADER_AUTH.value: f"Bearer {access_token}"}
 
         demisto.debug(f"[HTTP Call] {method} {url_suffix} | Params: {params}")
 
-        http_response = self._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            params=params,
-            headers=auth_headers,
-            resp_type="response",
-            ok_codes=(200, 201, 202, 204),
-        )
+        try:
+            http_response = self._http_request(
+                method=method,
+                url_suffix=url_suffix,
+                params=params,
+                headers=auth_headers,
+                resp_type="response",
+                ok_codes=(200, 201, 202, 204),
+                retries=3,
+                backoff_factor=2,
+            )
+        except DemistoException as error:
+            error_msg = str(error)
+            if "401" in error_msg or "403" in error_msg:
+                demisto.error(f"[HTTP Error] Authentication failed: {error_msg}")
+                raise DemistoException(f"Authentication error: {error_msg}")
+            raise
 
         status_code = http_response.status_code
         demisto.debug(f"[HTTP Call] Response Status: {status_code}")
@@ -553,12 +568,16 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults |
 
 
 def fetch_events_command(client: Client) -> None:
-    """Scheduled command to fetch events."""
+    """Scheduled command to fetch events.
+
+    Implements state protection: Only updates set_last_run on successful completion.
+    If an error occurs, the state is not updated, ensuring the failed window is retried.
+    """
     demisto.debug("[Command] fetch-events triggered")
 
     params = demisto.params()
     max_events_to_fetch = int(params.get("max_fetch", DefaultValues.MAX_FETCH.value))
-    first_fetch_param = params.get("first_fetch")
+    first_fetch_param = params.get("first_fetch", "").strip()
 
     last_run = demisto.getLastRun()
     last_fetch_timestamp = last_run.get("last_fetch")
@@ -570,8 +589,8 @@ def fetch_events_command(client: Client) -> None:
         time_input = first_fetch_param
         demisto.debug(f"[Fetch Logic] First Run with configured first_fetch. Fetching from: {time_input}")
     else:
-        time_input = DefaultValues.FIRST_FETCH.value
-        demisto.debug(f"[Fetch Logic] First Run with default. Fetching from: {time_input}")
+        time_input = DefaultValues.FROM_TIME.value
+        demisto.debug("[Fetch Logic] First Run - starting from current time (no historical data)")
 
     created_after = get_formatted_utc_time(time_input)
 
@@ -581,7 +600,7 @@ def fetch_events_command(client: Client) -> None:
     if events:
         send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
 
-        # Update Last Run using the Newest event in our processed batch
+        # State Protection: Only update Last Run after successful send
         last_event = events[-1]
         new_last_run_time = last_event.get("time")
 
