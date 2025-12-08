@@ -1,0 +1,422 @@
+commonfields:
+  id: GoogleThreatIntelligenceASMIssues
+  version: -1
+name: GoogleThreatIntelligenceASMIssues
+display: Google Threat Intelligence - ASM Issues
+fromversion: 6.10.0
+category: Data Enrichment & Threat Intelligence
+defaultmapperin: Google Threat Intelligence ASM Issues - Incoming Mapper
+sectionorder:
+- Connect
+- Collect
+description: This integration allows the creation of incidents based on ASM Issues from Google Threat Intelligence.
+configuration:
+- displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  section: Collect
+- display: Max Fetch
+  name: max_fetch
+  defaultvalue: '100'
+  type: 0
+  required: false
+  additionalinfo: Maximum number of Issues to fetch each time. Maximum value is 200.
+  section: Collect
+- display: First Fetch Time
+  name: first_fetch
+  defaultvalue: '1 days'
+  type: 0
+  required: false
+  additionalinfo: "The date or relative timestamp from which to begin fetching Issues.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z."
+  section: Collect
+- display: Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  type: 15
+  options:
+  - Outgoing
+  required: false
+  additionalinfo: The mirroring direction in which to mirror the details. You can mirror "Outgoing" (from XSOAR to GTI) direction for ASM Issues.
+  section: Collect
+- display: Mirror tag for notes
+  additionalinfo: The tag value should be used to mirror the issue note by adding the same tag in the notes.
+  defaultvalue: note
+  hidden: false
+  name: note_tag
+  required: false
+  type: 0
+  section: Collect
+- display: Project ID
+  name: project_id
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: "Provide the project ID to fetch issues for a specific project.\n\nNote: The specified project ID will be used as a default value for ASM Issue commands."
+- display: Search String
+  name: search_string
+  type: 0
+  section: Collect
+  additionalinfo: "Search String to filter out the ASM Issues.\n\nFor Example: collection:google severity:5 status_new:open scoped:true entity_type:domain\n\nNote: The fields last_seen_after, last_seen_before, and first_seen_after will be ignored from the provided search string."
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Incident type
+  name: incidentType
+  type: 13
+  defaultvalue: Google Threat Intelligence ASM Issue
+  section: Collect
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: gti-asm-issue-list
+    description: Search the ASM Issues with provided filter arguments.
+    arguments:
+    - name: project_id
+      required: false
+      description: "Specify the project ID for the project.\n\nNote:If no value is provided for the project ID, it will be taken from the configuration parameters."
+    - name: search_string
+      required: false
+      description: "Specify search string for listing ASM Issues.\n\nNote: If no value is provided, all issues for the project will be returned."
+    - name: page_size
+      required: false
+      description: Specify the desired page size for the request. Maximum value is 1000.
+      defaultValue: 50
+    outputs:
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.id
+      description: Unique identifier for the issue in Google Threat Intelligence.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.uid
+      description: Internal UID assigned to the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.uuid
+      description: Universally unique identifier (UUID) for the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.description
+      description: Detailed description of the identified issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.dynamic_id
+      description: Dynamic numerical identifier for tracking the issue.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.name
+      description: Human-readable name of the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.pretty_name
+      description: Enhanced, formatted name for display purposes.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.upstream
+      description: Source or upstream system where the issue originated.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.last_seen
+      description: Timestamp when the issue was last observed.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.first_seen
+      description: Timestamp when the issue was first detected.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.entity_uid
+      description: Unique identifier of the affected entity.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.entity_type
+      description: Type of entity affected (e.g., domain, IP, host).
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.entity_name
+      description: Name of the affected entity.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.alias_group
+      description: Group of related entities or aliases associated with the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.collection
+      description: Collection or dataset name where the issue belongs.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.collection_uuid
+      description: Unique UUID of the associated collection.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.collection_type
+      description: Type of collection where the issue is categorized.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.organization_uuid
+      description: UUID of the organization linked to the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.pretty_name
+      description: User-friendly name summarizing the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.severity
+      description: Severity level assigned to the issue.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.scoped
+      description: Indicates if the issue is scoped to a specific context or asset.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.confidence
+      description: Confidence score indicating the reliability of the issue detection.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.status
+      description: Current status of the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.category
+      description: Category of the issue based on threat type.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.identifiers.name
+      description: Name of an identifier associated with the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.identifiers.type
+      description: Type of identifier linked to the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.status_new
+      description: Updated status of the issue based on latest assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.status_new_detailed
+      description: Detailed description of the updated issue status.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.ticket_list
+      description: List of linked tickets associated with the issue.
+      type: List
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.tags
+      description: Tags associated with the issue for classification.
+      type: List
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.cisa_known_exploited
+      description: Indicates whether the issue is part of CISA's Known Exploited Vulnerabilities list.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.epss_v2_score_lte
+      description: EPSS v2 score indicating likelihood of exploitation (less than or equal).
+      type: Number
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.epss_v2_percentile_gte
+      description: EPSS v2 percentile indicating exploitation probability (greater than or equal).
+      type: Number
+  - name: gti-asm-issue-get
+    description: Get a particular ASM Issue by ID.
+    arguments:
+    - name: issue_id
+      required: true
+      description: "Specify the ID of the issue.\n\nNote: Use gti-asm-issue-list to retrive the Issue ID."
+    - name: project_id
+      required: false
+      description: "Specify the project ID for the project.\n\nNote:If no value is provided for the project ID, it will be taken from the configuration parameters."
+    outputs:
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.uuid
+      description: Universally unique identifier (UUID) of the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.dynamic_id
+      description: Dynamic numerical identifier assigned to the issue.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.entity_uid
+      description: Unique identifier of the affected entity.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.alias_group
+      description: Group of related aliases associated with the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.category
+      description: Threat category associated with the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.confidence
+      description: Confidence score indicating the reliability of detection.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.description
+      description: Detailed description of the identified issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.details.name
+      description: Name associated with the issue details.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.details.source
+      description: Data source from which the issue details are derived.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.details.status
+      description: Current status of the issue details.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.details.category
+      description: Category of the issue details.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.details.severity
+      description: Severity level of the issue details.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.details.mx_records.host
+      description: Host name from the MX record.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.details.mx_records.priority
+      description: Priority value from the MX record.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.details.references.uri
+      description: Reference URI linked to the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.details.references.type
+      description: Type of reference for the provided URI.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.details.description
+      description: Description provided in the issue details.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.details.pretty_name
+      description: Readable and formatted name for the issue details.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.first_seen
+      description: Timestamp when the issue was first detected.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.identifiers
+      description: List of identifiers associated with the issue.
+      type: List
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.last_seen
+      description: Timestamp when the issue was last observed.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.name
+      description: Name assigned to the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.pretty_name
+      description: Human-readable formatted name of the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.scoped
+      description: Indicates whether the issue is scoped to a specific asset or context.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.severity
+      description: Severity score assigned to the issue.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.source
+      description: Source from which the issue originates.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.status
+      description: Current status of the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.ticket_list
+      description: List of tickets linked to this issue.
+      type: List
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.type
+      description: Type of issue detected.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.uid
+      description: Internal unique ID of the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.upstream
+      description: Upstream system or source responsible for reporting the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.created_at
+      description: Timestamp when the issue was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.updated_at
+      description: Timestamp when the issue was last updated.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.collection_id
+      description: Numeric ID of the collection associated with the issue.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.elasticsearch_mappings_hash
+      description: Hash value representing Elasticsearch mappings for the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.cisa_known_exploited
+      description: Indicates if the issue is part of CISA's Known Exploited Vulnerabilities list.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.epss_v2_score_lte
+      description: EPSS v2 score showing likelihood of exploitation (less than or equal).
+      type: Number
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.epss_v2_percentile_gte
+      description: EPSS v2 percentile representing exploitation probability (greater than or equal).
+      type: Number
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.entity_id
+      description: Numeric ID of the associated entity.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.collection
+      description: Name of the collection where the issue belongs.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.collection_type
+      description: Type of collection to which the issue is linked.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.collection_uuid
+      description: UUID of the associated collection.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.organization_uuid
+      description: UUID of the organization associated with the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.entity_name
+      description: Name of the affected entity.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.entity_type
+      description: Type of the affected entity (e.g., domain, IP, asset).
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.pretty_name
+      description: User-friendly summary name of the issue.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.severity
+      description: Severity level defined in the issue summary.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.scoped
+      description: Indicates whether the summary is scoped to a specific asset or context.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.confidence
+      description: Confidence score provided in the issue summary.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.status
+      description: Status value specified in the issue summary.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.category
+      description: Category defined in the issue summary.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.identifiers
+      description: Identifiers included in the issue summary.
+      type: List
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.status_new
+      description: Updated status of the issue summary.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.status_new_detailed
+      description: Detailed description of the updated issue summary status.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.ticket_list
+      description: List of tickets associated with the issue summary.
+      type: List
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.tags
+      description: Tags assigned to the issue for categorization.
+      type: List
+  - name: gti-asm-issue-status-update
+    description: Update the status of an ASM Issue.
+    arguments:
+    - name: issue_id
+      required: true
+      description: "Specify the ID of the issue.\n\nNote: Use gti-asm-issue-list to retrive the Issue ID."
+    - name: project_id
+      required: false
+      description: "Specify the project ID for the project.\n\nNote:If no value is provided for the project ID, it will be taken from the configuration parameters."
+    - name: status
+      required: true
+      description: Specify status of the issues to be updated.
+      auto: PREDEFINED
+      predefined:
+      - Open
+      - Triaged
+      - In Progress
+      - Closed
+      - Mitigated
+      - Resolved
+      - Duplicate
+      - Out of Scope
+      - False Positive
+      - Risk Accepted
+      - Benign
+      - Unable to Reproduce
+      - Track Externally
+    outputs:
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.uid
+      description: Unique identifier for the issue in Google Threat Intelligence.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.success
+      description: Indicates whether the API request to fetch issue details was successful.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.message
+      description: Response message returned by the API, providing additional information.
+      type: String
+    - contextPath: GoogleThreatIntelligenceASMIssues.Issues.result
+      description: Result status or outcome returned by the API for the issue request.
+      type: String
+  dockerimage: demisto/python3:3.12.11.4819260
+  isfetch: true
+  isremotesyncout: true
+tests:
+- No tests (auto formatted)
