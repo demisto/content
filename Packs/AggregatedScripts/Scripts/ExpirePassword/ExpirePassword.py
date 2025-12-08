@@ -325,7 +325,8 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
     if error_results := [r for r in res if r["Type"] == EntryType.ERROR]:
         err = next((r for r in error_results if not r["HumanReadable"]), None)
-        demisto.debug(f"Error when calling get-user-data:\n{err['Contents']}")
+        default_error = "Unknown Entry Contents"
+        demisto.debug(f"Error when calling get-user-data:\n{err.get('Contents', default_error) if err else default_error}")
 
     # Check for no available integrations
     if any(r["HumanReadable"] == "### User(s) data\n**No entries.**\n" for r in res):
@@ -342,7 +343,20 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
         raise DemistoException(f"Unexpected response when calling get-user-data:\n{res}")
 
     # Build user list with all required fields, defaulting missing ones to empty string
-    users = [{key: user_data.get(key, "") for key in UserData.__required_keys__} for user_data in user_result["Contents"]]
+    users: list[UserData] = [
+        cast(
+            UserData,
+            {
+                "ID": user_data.get("ID", ""),
+                "Username": user_data.get("Username", ""),
+                "Email": user_data.get("Email", ""),
+                "Status": user_data.get("Status", ""),
+                "Brand": user_data.get("Brand", ""),
+                "Instance": user_data.get("Instance", ""),
+            },
+        )
+        for user_data in user_result["Contents"]
+    ]
     # Remove duplicates by keeping unique users based on (Username, Email, ID, Brand, Instance)
     seen = set()
     deduplicated_users = []
