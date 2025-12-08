@@ -21,8 +21,9 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
 
-    def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, self_hosted: bool = False):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self.self_hosted = self_hosted
         self.token = self.login(client_id, client_secret)
 
     def login(self, client_id: str, client_secret: str) -> str:
@@ -46,8 +47,13 @@ class Client(BaseClient):
         return utc_now > expires_datetime
 
     def create_new_token(self, json_data: dict) -> str:
-        full_url = AUTHENTICATION_FULL_URL.replace(".com", ".eu") if ".eu" in self._base_url else AUTHENTICATION_FULL_URL
-        demisto.debug(f"create_new_token using {full_url} endpoint")
+        if self.self_hosted:
+            # For self-hosted instances, construct URL from base_url
+            full_url = urljoin(self._base_url, "/identity/connect/token")
+        else:
+            # For cloud-hosted instances, use existing logic (supports EU region)
+            full_url = AUTHENTICATION_FULL_URL.replace(".com", ".eu") if ".eu" in self._base_url else AUTHENTICATION_FULL_URL
+        demisto.debug(f"create_new_token using {full_url} endpoint (self_hosted={self.self_hosted})")
         access_token_obj = self._http_request(
             method="POST",
             full_url=full_url,
@@ -227,12 +233,14 @@ def main() -> None:  # pragma: no cover
     max_events_per_fetch = arg_to_number(demisto_params.get("max_fetch_events")) or DEFAULT_MAX_FETCH
     verify_certificate = not demisto_params.get("insecure", False)
     proxy = demisto_params.get("proxy", False)
+    self_hosted = demisto_params.get("self_hosted", False)
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
-            base_url=base_url, verify=verify_certificate, client_id=client_id, client_secret=client_secret, proxy=proxy
+            base_url=base_url, verify=verify_certificate, client_id=client_id, client_secret=client_secret, proxy=proxy,
+            self_hosted=self_hosted
         )
         args = demisto.args()
         if command == "test-module":
