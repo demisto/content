@@ -163,7 +163,7 @@ def prepare_human_readable(
         command = f"!{command_name} {' '.join(formatted_args)}"
         if not is_error:
             result_message = f"#### Result for {command}\n{human_readable}"
-            result.append(CommandResults(readable_output=result_message, mark_as_note=True))
+            result.append(CommandResults(readable_output=result_message, mark_as_note=True, ))
         else:
             result_message = f"#### Error for {command}\n{human_readable}"
             result.append(
@@ -171,6 +171,7 @@ def prepare_human_readable(
                     readable_output=result_message,
                     entry_type=EntryType.ERROR,
                     mark_as_note=True,
+
                 )
             )
     return result
@@ -304,6 +305,7 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
         demisto.debug(f"Using a user sid {sid}, inserting the custom-field-type args")
         command.args["custom-field-type"] = "objectSid"
 
+    demisto.debug(f"Those are the args for the command {command.args}")
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
 
     readable_outputs_list.extend(readable_errors)
@@ -1196,7 +1198,7 @@ def main():
                     name="User(s) data",
                     t=users_outputs,
                     headers=["Source", "Instance", "ID", "Username", "Email", "Status"],
-                    removeNull=False,
+                    removeNull=True,
                 ),
             )
         )
