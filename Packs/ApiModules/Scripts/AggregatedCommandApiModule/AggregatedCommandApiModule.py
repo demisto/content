@@ -486,14 +486,14 @@ class ContextBuilder:
         """
         final_context: ContextResult = {}
         if self.indicator_instances:
-            indicator_list = self.create_indicator()
+            indicator_list = self.build_indicators_context()
             self.enrich_final_indicator(indicator_list)
             final_context[f"{self.final_context_path}(val.Value && val.Value == obj.Value)"] = indicator_list
         final_context.update(self.other_context)
 
         return remove_empty_elements_with_exceptions(final_context, exceptions={"TIMCVSS", "Status", "ModifiedTime"})
 
-    def create_indicator(self) -> list[dict]:
+    def build_indicators_context(self) -> list[dict]:
         """
         Iterates over the stored IndicatorInstances and constructs the standardized dictionary structure.
 
@@ -506,13 +506,13 @@ class ContextBuilder:
         for indicator_instance in self.indicator_instances:
             indicator_instance.compute_status()
             if indicator_instance.final_status == Status.FAILURE:
-                results.append(self._build_failure_indicator(indicator_instance))
+                results.append(self._build_failure_indicator_context(indicator_instance))
             else:
-                results.append(self._build_success_indicator(indicator_instance))
+                results.append(self._build_success_indicator_context(indicator_instance))
 
         return results
 
-    def _build_failure_indicator(self, instance: IndicatorInstance) -> dict[str, Any]:
+    def _build_failure_indicator_context(self, instance: IndicatorInstance) -> dict[str, Any]:
         """
         Builds context entry for an indicator that failed processing.
 
@@ -528,53 +528,7 @@ class ContextBuilder:
             "Message": instance.context_message,
         }
 
-    def _get_tim_entry(self, instance: IndicatorInstance) -> dict | None:
-        """
-        Returns the first TIM result from tim_context with Brand='TIM' (only one should exists per indicatorInstance).
-
-        Args:
-            instance (IndicatorInstance): The instance.
-
-        Return:
-            dict: The TIM results from tim_context.
-        """
-        if not instance.tim_context:
-            return None
-        return next((i for i in instance.tim_context if i.get("Brand") == "TIM"), None)
-
-    def _get_file_hashes(self, instance: IndicatorInstance, tim_obj: dict) -> dict:
-        """
-        Returns file hashes dict from TIM or builds a default hash dict.
-        Extract all hashes values from the tim_obj if exists.
-        Otherwise (Can happen when no enrichment happen so the CustomFields was empty) will create Hash dict
-        from the value itself.
-        Example:
-        1)  tim_obj = {
-                "SHA256":"AAA",
-                "MD5":"BBB",
-                "Other":"CCC"
-            }
-            Returns = {
-                "SHA256":"AAA",
-                "MD5":"BBB"
-            }
-        2) tim_obj = {
-            "Other":"CCC"
-        }
-           instance.extracted_value = "AAA" # Some SHA256 Value
-           Return = {
-               "SHA256": "AAA"
-           }
-
-        Args:
-            instance (IndicatorInstance): The instance.
-
-        Return:
-            dict: The TIM results from tim_context.
-        """
-        return self.indicator_schema.get_all_values_from(tim_obj) or build_hash_dict(instance.extracted_value)
-
-    def _build_success_indicator(self, instance: IndicatorInstance) -> dict[str, Any]:
+    def _build_success_indicator_context(self, instance: IndicatorInstance) -> dict[str, Any]:
         """
         Builds the context entry for a successfully processed indicator.
         Extracts metadata (Status, ModifiedTime, Scores) from the TIM result.
@@ -620,6 +574,52 @@ class ContextBuilder:
 
         current_indicator["Results"] = instance.tim_context
         return current_indicator
+
+    def _get_tim_entry(self, instance: IndicatorInstance) -> dict[str, Any] | None:
+        """
+        Returns the first TIM result from tim_context with Brand='TIM' (only one should exists per indicatorInstance).
+
+        Args:
+            instance (IndicatorInstance): The instance.
+
+        Return:
+            dict: The TIM results from tim_context.
+        """
+        if not instance.tim_context:
+            return None
+        return next((i for i in instance.tim_context if i.get("Brand") == "TIM"), None)
+
+    def _get_file_hashes(self, instance: IndicatorInstance, tim_obj: dict) -> dict:
+        """
+        Returns file hashes dict from TIM or builds a default hash dict.
+        Extract all hashes values from the tim_obj if exists.
+        Otherwise (Can happen when no enrichment happen so the CustomFields was empty) will create Hash dict
+        from the value itself.
+        Example:
+        1)  tim_obj = {
+                "SHA256":"AAA",
+                "MD5":"BBB",
+                "Other":"CCC"
+            }
+            Returns = {
+                "SHA256":"AAA",
+                "MD5":"BBB"
+            }
+        2) tim_obj = {
+            "Other":"CCC"
+        }
+           instance.extracted_value = "AAA" # Some SHA256 Value
+           Return = {
+               "SHA256": "AAA"
+           }
+
+        Args:
+            instance (IndicatorInstance): The instance.
+
+        Returns:
+            dict[str, str]: Mapping of hash type → hash value derived from the TIM object or the indicator value.
+        """
+        return self.indicator_schema.get_all_values_from(tim_obj) or build_hash_dict(instance.extracted_value)
 
     def enrich_final_indicator(self, indicator_list: list[dict]):
         """
@@ -731,7 +731,6 @@ class BrandManager:
         """
         Returns a list of unsupported enrichment brands to run on from the given brands.
         If no brands are given, returns empty list.
-        Caches the result to avoid redundant calculations.
         """
         if not self.requested:
             demisto.debug("No specific brands provided; will run on all available brands.")
@@ -896,12 +895,15 @@ class ReputationAggregatedCommand(AggregatedCommand):
             (e for e in self.entry_results if e.command_name == "CreateNewIndicatorsOnly"),
             None,
         )
-        demisto.debug(f"Create Entry: {create_entry}")
+        if create_entry:
+            demisto.debug(f"Create Entry: Status={create_entry.status.value}, args={create_entry.args}")
+
         enrich_entry = next(
             (e for e in self.entry_results if e.command_name == "enrichIndicators"),
             None,
         )
-        demisto.debug(f"Enrich Entry: {enrich_entry}")
+        if enrich_entry:
+            demisto.debug(f"Create Entry: Status={enrich_entry.status.value}, args={enrich_entry.args}")
         errors: list[str] = []
         # Determine CreateNewIndicatorsOnly status and error message
         is_created = bool(create_entry and create_entry.status == Status.SUCCESS)
@@ -1289,6 +1291,72 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
         return indicators_context
 
+    def _inject_unsupported_brands(self):
+        """
+        If any unsupported enrichment brands are exists will append human readable entry for each of them.
+        """
+        if not self.unsupported_enrichment_brands:
+            return
+
+        # Add Entry with all requested unsupported brands.
+        demisto.debug(f"Missing brands: {self.unsupported_enrichment_brands}")
+        for unsupported_enrichment_brand in self.unsupported_enrichment_brands:
+            self.entry_results.append(
+                EntryResult(
+                    command_name=self.indicator_schema.type,
+                    args="",
+                    brand=unsupported_enrichment_brand,
+                    status=Status.FAILURE,
+                    message="Unsupported Command: Verify you have proper integrations enabled to support it",
+                )
+            )
+
+    def _build_final_human_readable(self, final_entries: list[EntryResult]) -> str:
+        """
+        Builds the final human-readable markdown table and appends verbose outputs if enabled.
+
+        Args:
+            final_entries (list[EntryResult]): The entries to include in the final table.
+
+        Returns:
+            str: The human-readable markdown output.
+        """
+        human_readable = tableToMarkdown(
+            "Final Results",
+            t=[entry.to_entry() for entry in final_entries],
+            headers=["Brand", "Arguments", "Status", "Message"],
+        )
+
+        if self.verbose and self.verbose_outputs:
+            demisto.debug("Adding verbose outputs to human readable.")
+            human_readable += "\n\n".join(self.verbose_outputs)
+        return human_readable
+
+    def _is_final_result_error(self, entries: list[EntryResult]) -> bool:
+        """
+        Determines whether the overall result should be treated as an error.
+
+        Rules:
+            - Return True only if:
+            * there was at least one FAILURE, and
+            * all entries are either FAILURE or "No matching indicators found."
+            - Otherwise, return False (success or partial success).
+
+        Args:
+            entries (list[EntryResult]): The final entries that will appear in the HR table.
+
+        Returns:
+            bool: True if the result should be treated as an error, False otherwise.
+        """
+        if not entries:
+            return False
+
+        all_failed_or_no_match = all(
+            entry.status == Status.FAILURE or entry.message == "No matching indicators found." for entry in entries
+        )
+        any_failure = any(entry.status == Status.FAILURE for entry in entries)
+        return all_failed_or_no_match and any_failure
+
     def summarize_command_results(self, final_context: dict[str, Any]) -> CommandResults:
         """
         Construct the final Command Result with the appropriate readable output and context.
@@ -1300,50 +1368,27 @@ class ReputationAggregatedCommand(AggregatedCommand):
         If at least one command succeeded with indicators found, return a success message.
 
         Args:
-            entries (list[EntryResult]): The entry results of the TIM.
             final_context (ContextResult): The final context.
         Returns:
             CommandResults: The command results.
         """
         demisto.debug(f"Summarizing final results from {len(self.entry_results)} command entries.")
         self.create_indicators_entry_results()
-        if self.unsupported_enrichment_brands:
-            # Add Entry with all requested unsupported brands.
-            demisto.debug(f"Missing brands: {self.unsupported_enrichment_brands}")
-            for unsupported_enrichment_brand in self.unsupported_enrichment_brands:
-                self.entry_results.append(
-                    EntryResult(
-                        command_name=self.indicator_schema.type,
-                        args="",
-                        brand=unsupported_enrichment_brand,
-                        status=Status.FAILURE,
-                        message="Unsupported Command: Verify you have proper integrations enabled to support it",
-                    )
-                )
+        self._inject_unsupported_brands()
         # Remove Entries from non brands command such as CreateNewIndicator and EnrichIndicator
         final_entires = [entry for entry in self.entry_results if entry.brand != ""]
-        human_readable = tableToMarkdown(
-            "Final Results",
-            t=[entry.to_entry() for entry in final_entires],
-            headers=["Brand", "Arguments", "Status", "Message"],
-        )
-        if self.verbose and self.verbose_outputs:
-            demisto.debug("Adding verbose outputs to human readable.")
-            human_readable += "\n\n".join(self.verbose_outputs)
+
+        human_readable = self._build_final_human_readable(final_entires)
 
         # Return an error only if there were no successes AND at least one of those was a hard failure.
-        if all(
-            entry.status == Status.FAILURE or entry.message == "No matching indicators found." for entry in final_entires
-        ) and any(entry.status == Status.FAILURE for entry in final_entires):
-            # Error when all failed, or some failed and the other had no indicators found.
-            # If no indicators found, it is not an error.
+        if self._is_final_result_error(final_entires):
             demisto.debug("All commands failed or no indicators found. Returning an error entry.")
             return CommandResults(
                 readable_output="Error: All commands failed or no indicators found.\n" + human_readable,
                 entry_type=EntryType.ERROR,
             )
 
-        demisto.debug("All commands succeeded. Returning a success entry.")
+        demisto.debug("Returning a success entry (at least one command succeeded or no hard failures).")
         return CommandResults(readable_output=human_readable, outputs=final_context)
 
     def create_indicators_entry_results(self):

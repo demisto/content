@@ -736,7 +736,7 @@ def test_create_indicator_lifts_tim_fields_and_pops_from_tim_result():
         raw_input="indicator1", extracted_value="indicator1", created=True, enriched=True, tim_context=[tim, brand_a, brand_b]
     )
     builder.add_indicator_instances([instance])
-    out = builder.create_indicator()
+    out = builder.build_indicators_context()
     assert len(out) == 1
     item = out[0]
     # Top-level lifted fields
@@ -794,7 +794,7 @@ def test_create_indicator_file_type_adds_hashes_from_tim():
 
     builder.add_indicator_instances([file_instance])
 
-    out = builder.create_indicator()
+    out = builder.build_indicators_context()
     assert len(out) == 1
     item = out[0]
 
@@ -890,7 +890,7 @@ def test_create_indicator_success_happy_path():
     builder.add_indicator_instances([instance])
 
     # 3. Execute
-    results = builder.create_indicator()
+    results = builder.build_indicators_context()
 
     # 4. Assertions
     assert len(results) == 1
@@ -950,7 +950,7 @@ def test_create_indicator_failure_scenarios(valid, created, enriched, found, exp
     builder.add_indicator_instances([instance])
 
     # 3. Execute
-    results = builder.create_indicator()
+    results = builder.build_indicators_context()
 
     # 4. Assertions
     assert len(results) == 1
@@ -1946,10 +1946,16 @@ def test_create_indicators_entry_results(module_factory):
 
 
 @pytest.mark.parametrize(
-    "entries, expect_error",
+    "entries, expected_is_error",
     [
         # 1. All failed -> Error
-        ([make_entry_result("c1", "A", Status.FAILURE, "Error"), make_entry_result("c2", "B", Status.FAILURE, "Error")], True),
+        (
+            [
+                make_entry_result("c1", "A", Status.FAILURE, "Error"),
+                make_entry_result("c2", "B", Status.FAILURE, "Error"),
+            ],
+            True,
+        ),
         # 2. Mix of failures + 'No matching...' (soft failure) -> Error (because no actual success occurred)
         (
             [
@@ -1959,10 +1965,21 @@ def test_create_indicators_entry_results(module_factory):
             True,
         ),
         # 3. At least one real success (Status.SUCCESS + empty/valid message) -> Success
-        ([make_entry_result("c1", "A", Status.SUCCESS, ""), make_entry_result("c2", "B", Status.FAILURE, "Error")], False),
+        (
+            [
+                make_entry_result("c1", "A", Status.SUCCESS, ""),
+                make_entry_result("c2", "B", Status.FAILURE, "Error"),
+            ],
+            False,
+        ),
         # 4. Single real success -> Success
-        ([make_entry_result("c1", "A", Status.SUCCESS, "")], False),
-        # 5. Only 'No matching indicators found' -> Success (This is a valid state, not a system error)
+        (
+            [
+                make_entry_result("c1", "A", Status.SUCCESS, ""),
+            ],
+            False,
+        ),
+        # 5. Only 'No matching indicators found' -> Success (valid state, not system error)
         (
             [
                 make_entry_result("c1", "A", Status.SUCCESS, "No matching indicators found."),
@@ -1972,33 +1989,118 @@ def test_create_indicators_entry_results(module_factory):
         ),
     ],
 )
-def test_summarize_command_results_error_condition(module_factory, mocker, entries, expect_error):
+def test_is_error_result(module_factory, entries, expected_is_error):
     """
     Given:
         - A list of entries with different statuses and messages.
     When:
-        - Calling summarize_command_results.
+        - Calling _is_error_result.
     Then:
-        - Returns an error entry type if all commands failed or no indicators were found (and some failed).
-        - Returns a success entry type if at least one command was successful.
+        - Returns True only when there was at least one FAILURE and
+          all entries are either FAILURE or 'No matching indicators found.'.
     """
-    # 1. Setup
     mod = module_factory()
 
-    # Mock table generation to avoid formatting logic errors
+    assert mod._is_error_result(entries) == expected_is_error
+
+
+def test_summarize_command_results_uses_is_error_result_for_entry_type(module_factory, mocker):
+    """
+    Given:
+        - A module instance with some entry_results.
+    When:
+        - summarize_command_results is called.
+    Then:
+        - The CommandResults.entry_type is ERROR iff _is_error_result returns True.
+    """
+    mod = module_factory()
+    # Don't let these mutate entry_results, we want to control it
+    mocker.patch.object(mod, "create_indicators_entry_results")
+    mocker.patch.object(mod, "_inject_unsupported_brands")
+
+    # Avoid depending on markdown formatting
     mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
 
-    # Mock this internal method to prevent it from modifying 'self.entry_results' or side-loading data
-    # We want to test ONLY the logic applied to the 'entries' argument passed in.
-    mocker.patch.object(mod, "create_indicators_entry_results")
-
-    # 2. Act
-    # REMOVED: verbose_outputs argument (now part of instance state)
-    mod.entry_results = entries
+    # Case 1: _is_error_result -> True => EntryType.ERROR
+    mocker.patch.object(mod, "_is_error_result", return_value=True)
+    mod.entry_results = [make_entry_result("c1", "A", Status.FAILURE, "Error")]
     res = mod.summarize_command_results(final_context={"ctx": 1})
+    assert res.entry_type == entryTypes["error"]
 
-    # 3. Assert
-    assert (res.entry_type == entryTypes["error"]) == expect_error
+    # Case 2: _is_error_result -> False => success (default entry type)
+    mocker.patch.object(mod, "_is_error_result", return_value=False)
+    mod.entry_results = [make_entry_result("c2", "B", Status.SUCCESS, "")]
+    res = mod.summarize_command_results(final_context={"ctx": 1})
+    assert res.entry_type != entryTypes["error"]
+
+
+def test_inject_unsupported_brands_adds_failure_entries(module_factory, mocker):
+    """
+    Given:
+        - Unsupported enrichment brands exist ('X', 'Y').
+    When:
+        - _inject_unsupported_brands is called.
+    Then:
+        - EntryResult objects are added for each unsupported brand as failures
+          with the 'Unsupported Command' message.
+    """
+    mod = module_factory(brands=["X", "Y"])
+
+    # Make BrandManager return our fake unsupported brands when property is evaluated
+    mod.brand_manager.unsupported_external = lambda _commands: ["X", "Y"]
+
+    # Assume we already have one valid entry
+    mod.entry_results = [make_entry_result("c1", "A", Status.SUCCESS, "")]
+
+    # Act
+    mod._inject_unsupported_brands()
+
+    # Assert: we now have 3 entries: original + X + Y
+    assert len(mod.entry_results) == 3
+
+    by_brand = {e.brand: e for e in mod.entry_results}
+    for brand in ("X", "Y"):
+        assert brand in by_brand
+        unsupported = by_brand[brand]
+        assert unsupported.status == Status.FAILURE
+        assert "Unsupported Command" in (unsupported.message or "")
+
+
+def test_build_final_human_readable_includes_unsupported_brands(module_factory, mocker):
+    """
+    Given:
+        - EntryResults including unsupported enrichment brands.
+    When:
+        - _build_final_human_readable is called.
+    Then:
+        - The table rows include one entry per unsupported brand with failure status.
+    """
+    mod = module_factory()
+
+    # We simulate after _inject_unsupported_brands already ran:
+    mod.entry_results = [
+        make_entry_result("c1", "A", Status.SUCCESS, ""),
+        make_entry_result(
+            "c2", "X", Status.FAILURE, "Unsupported Command: Verify you have proper integrations enabled to support it"
+        ),
+        make_entry_result(
+            "c3", "Y", Status.FAILURE, "Unsupported Command: Verify you have proper integrations enabled to support it"
+        ),
+    ]
+
+    tbl = mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
+
+    # Only brandful entries are passed into the table
+    final_entries = [e for e in mod.entry_results if e.brand]
+    _ = mod._build_final_human_readable(final_entries)
+
+    args, kwargs = tbl.call_args
+    table_rows = kwargs.get("t", args[1] if len(args) > 1 else None)
+
+    for brand in ("X", "Y"):
+        row = next(r for r in table_rows if r.get("Brand") == brand)
+        assert row.get("Status") == Status.FAILURE.value
+        assert "Unsupported Command" in (row.get("Message") or "")
 
 
 def test_summarize_command_results_appends_unsupported_enrichment_row(module_factory, mocker):
