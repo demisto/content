@@ -3404,7 +3404,7 @@ List all available appliances for all organizations/tenants, with a limit of max
 ### vd-get-events
 
 ***
-Get audit logs from Versa Director. This command is supported in Cortex XSIAM only and is intended for development and debugging purposes, as it may produce duplicate events.
+Get audit logs from Versa Director. This command is supported in Cortex XSIAM only and is intended for development and debugging purposes, as it may produce duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
 
 #### Base Command
 

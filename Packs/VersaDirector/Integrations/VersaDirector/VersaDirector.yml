@@ -1791,7 +1791,7 @@ script:
   - name: vd-auth-test
     description: Run a connectivity test to verify that the OAuth process worked.
   - name: vd-get-events
-    description: Get audit logs from Versa Director. This command is supported in Cortex XSIAM only and is intended for development and debugging purposes, as it may produce duplicate events.
+    description: Get audit logs from Versa Director. This command is supported in Cortex XSIAM only and is intended for development and debugging purposes, as it may produce duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
     arguments:
     - name: from_date
       description: The start date for the audit logs as a relative time expression (e.g., '3 days ago') or an absolute time in ISO 8601 format (e.g., '2025-09-01T00:00:00Z').
