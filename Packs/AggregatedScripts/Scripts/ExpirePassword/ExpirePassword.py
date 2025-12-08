@@ -30,7 +30,7 @@ class UserData(TypedDict):
 AD_NEVER_EXPIRE_CLEARED = 'AD account {username} has cleared "password never expire" attribute. Value is set to False'
 AD_PASSWORD_EXPIRED = "Expired password successfully"
 MSGRAPH_PASSWORD_RESET = "User {username} will be required to change his password."
-AWS_PASSWORD_CHANGED = "The user {username} Password was changed"
+AWS_PASSWORD_CHANGED = "The user {username} will be required to change his password."
 OKTA_PASSWORD_EXPIRED_MARKER = "PASSWORD_EXPIRED"
 
 # Generic failure messages for different integrations
@@ -232,8 +232,9 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     for res in res_cmd:
         res_msg = get_response_message(res, OKTA_GENERIC_FAILURE)
         success = OKTA_PASSWORD_EXPIRED_MARKER in res_msg
+        failure_msg = res_msg if not res_msg.startswith('###') else OKTA_GENERIC_FAILURE
         func_res.append(
-            build_result(res, success_condition=success, success_msg="Password expired successfully", failure_msg=res_msg)
+            build_result(res, success_condition=success, success_msg="Password expired successfully", failure_msg=failure_msg)
         )
     return func_res, hr
 
@@ -278,7 +279,6 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     """
 
     args = {"userName": user["Username"], "using": using, "passwordResetRequired": "True"}
-
     res_cmd, hr = run_command(
         "aws-iam-update-login-profile",
         args,
@@ -286,7 +286,6 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     func_res = []
     for res in res_cmd:
         res_msg = get_response_message(res, AWS_GENERIC_FAILURE)
-        # The AWS-IAM integration returns "The user {user} password was changed" on success
         expected_msg = AWS_PASSWORD_CHANGED.format(username=user["Username"])
         success = res_msg == expected_msg
         func_res.append(build_result(res, success_condition=success, success_msg=expected_msg, failure_msg=res_msg))
@@ -324,11 +323,9 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
         tuple[list[UserData], str]: A list of user data dictionaries and the human-readable output.
     """
     res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
-
     if error_results := [r for r in res if r["Type"] == EntryType.ERROR]:
-        if err := next((r for r in error_results if not r["HumanReadable"]), None):
-            raise DemistoException(f"Error when calling get-user-data:\n{err['Contents']}")
-        return_results(error_results)
+        err = list((r for r in error_results if not r["HumanReadable"]))
+        demisto.debug(f"Error(s) when calling get-user-data:\n{err}")
 
     # Check for no available integrations
     if any(r["HumanReadable"] == "### User(s) data\n**No entries.**\n" for r in res):
@@ -346,7 +343,6 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
 
     # Build user list with all required fields, defaulting missing ones to empty string
     users = [{key: user_data.get(key, "") for key in UserData.__required_keys__} for user_data in user_result["Contents"]]
-    
     # Remove duplicates by keeping unique users based on (Username, Email, ID, Brand, Instance)
     seen = set()
     deduplicated_users = []
@@ -357,7 +353,6 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
             seen.add(user_key)
             deduplicated_users.append(user)
     users = deduplicated_users
-
     # Check for no users found (Status is not 'found' for any user)
     if not any(user["Status"] == "found" for user in users):
         demisto.debug(f"ExpirePassword: Did not found valid users {users}.")
