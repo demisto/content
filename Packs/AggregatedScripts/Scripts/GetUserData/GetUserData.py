@@ -446,10 +446,7 @@ def msgraph_user_get_manager(command: Command) -> dict[str, Any]:
 
     manager = outputs.get("Manager", {})
 
-    manager_output = {
-        "ManagerDisplayName": manager.get("DisplayName"),
-        "ManagerEmail": manager.get("Mail")
-    }
+    manager_output = {"ManagerDisplayName": manager.get("DisplayName"), "ManagerEmail": manager.get("Mail")}
 
     # Remove keys with None values
     manager_output = {k: v for k, v in manager_output.items() if v is not None}
