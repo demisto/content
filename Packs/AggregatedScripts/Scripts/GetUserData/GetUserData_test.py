@@ -1076,12 +1076,12 @@ class TestGetUserData:
 
         msgraph_user_get(command, additional_fields=False)
 
-        assert command.args.get("properties") == "DisplayName,JobTitle,ID,Mail"
+        assert command.args.get("properties") == "DisplayName,JobTitle"
 
         mocker_run.assert_called_once()
         called_name, called_args = mocker_run.call_args[0]
 
-        assert called_args["properties"] == "DisplayName,JobTitle"
+        assert called_args["properties"] == "DisplayName,JobTitle,ID,Mail"
 
     def test_msgraph_user_get_manager(self, mocker: MockerFixture):
         """
