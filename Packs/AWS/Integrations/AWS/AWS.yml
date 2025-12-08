@@ -7107,7 +7107,7 @@ script:
           - me-central-1
           - sa-east-1
       - name: bucket_name
-        description: The name of the bucket to create.
+        description: The name of the bucket to create. For more information about bucket naming rules see https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html.
         required: true
       - name: acl
         description: The canned ACL to apply to the bucket.
@@ -7119,8 +7119,8 @@ script:
           - public-read-write
           - authenticated-read
       - name: location_constraint
-        description: Specifies the Region where the bucket will be created. You might choose a Region to optimize latency, minimize costs, or address regulatory requirements.
-        required: true
+        description: Specifies the Region where the bucket will be created. You might choose a Region to optimize latency, minimize costs, or address regulatory requirements. The default is the account region.
+        required: false
         auto: PREDEFINED
         predefined:
           - us-east-1
@@ -7233,6 +7233,42 @@ script:
       - name: prefix
         description: Limits the response to bucket names that begin with the specified bucket name prefix.
         required: false
+      - name: filter_by_region
+        description: A comma-separated list of regions that limits the response to buckets that are located in the specified Amazon Web Services Region.
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
     outputs:
       - contextPath: AWS.S3.Buckets.Name
         description: The name of the bucket.

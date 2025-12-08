@@ -1004,22 +1004,29 @@ class S3:
             CommandResults: A success message and information on the newly created bucket.
         """
         bucket_name = args.get("bucket_name")
+        location = args.get("location_constraint") or args.get('region', "")
         kwargs = {
             "Bucket": bucket_name,
-            "CreateBucketConfiguration": {"LocationConstraint": args.get("location_constraint")},
             "GrantFullControl": args.get("grant_full_control"),
             "GrantRead": args.get("grant_read"),
             "GrantReadACP": args.get("grant_read_acp"),
             "GrantWrite": args.get("grant_write"),
             "GrantWriteACP": args.get("grant_write_acp"),
         }
-        remove_empty_elements(kwargs)
+        # Since "us-east-1" id the default value for LocationConstraint, when added to the request the S3 API views that
+        # specific string as an invalid/unsupported value for the constraint.
+        if location != "us-east-1":
+            kwargs["CreateBucketConfiguration"] = {"LocationConstraint": location}
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
+
         response = client.create_bucket(**kwargs)
+        demisto.debug(f"{response=}")
 
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        return CommandResults(f"The bucket {bucket_name}, was created successfully")
+        return CommandResults(readable_output=f"The bucket {bucket_name}, was created successfully")
 
     @staticmethod
     def buckets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1035,13 +1042,15 @@ class S3:
         """
         account_id = args.get("account_id")
         region = args.get("region")
+        filter_by_region = args.get("filter_by_region")
         prefix = args.get("prefix")
         kwargs = {
             "Prefix": prefix,
-            "BucketRegion": region,  # TODO think of using a region filter argument
+            "BucketRegion": filter_by_region
         }
         kwargs.update(build_pagination_kwargs(args, 1, 10000, "ContinuationToken", "MaxBuckets"))
-        remove_empty_elements(kwargs)
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
         response = client.list_buckets(**kwargs)
 
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
@@ -1058,8 +1067,12 @@ class S3:
             metadata = f"{metadata} {limit=}"
         if prefix:
             metadata = f"{metadata} {prefix=}"
+        if filter_by_region:
+            metadata = f"{metadata} {filter_by_region=}"
+
         buckets = response.get("Buckets")
-        # TODO if adding a bucket filter, add it to the title
+        for bucket in buckets:
+            bucket["CreationDate"] = datetime.strftime(bucket["CreationDate"], "%Y-%m-%dT%H:%M:%S")
         readable_output = tableToMarkdown(
             "The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace, metadata=metadata
         )
@@ -1071,7 +1084,7 @@ class S3:
                 "BucketsPrefix": response.get("Prefix"),
             },
         }
-        remove_empty_elements(outputs)
+
         return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=response)
 
 
@@ -2523,7 +2536,7 @@ class EC2:
         if (region_names and all_regions is not None) or (not region_names and all_regions is None):
             raise DemistoException("Exactly one of the arguments 'region_name' and 'all_regions' should be provided.")
 
-        remove_empty_elements(kwargs)
+        remove_nulls_from_dictionary(kwargs)
         demisto.debug(f"{kwargs=}")
         response = client.describe_regions(**kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
@@ -4232,6 +4245,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-file-download": S3.file_download_command,
     "aws-s3-bucket-website-get": S3.get_bucket_website_command,
     "aws-s3-bucket-acl-get": S3.get_bucket_acl_command,
+    "aws-s3-bucket-create": S3.bucket_create_command,
+    "aws-s3-buckets-list": S3.buckets_list_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -4597,7 +4612,9 @@ def main():  # pragma: no cover
             return_results(results)
 
         elif command in COMMANDS_MAPPING:
-            return_results(execute_aws_command(command, args, params))
+            result = execute_aws_command(command, args, params)
+            demisto.debug("before return_results")
+            return_results(result)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
