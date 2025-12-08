@@ -155,6 +155,7 @@ def update_login_profile(args, client):  # pragma: no cover
     if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
         demisto.results(success_message)
 
+
 def create_group(args, client):  # pragma: no cover
     kwargs = {"GroupName": args.get("groupName")}
     if args.get("path") is not None:
