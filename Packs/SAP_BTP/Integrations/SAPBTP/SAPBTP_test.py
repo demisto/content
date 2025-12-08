@@ -889,7 +889,7 @@ def test_get_events_command_success(mocker, client_non_mtls):
 
 
 def test_get_events_command_with_push_events(mocker, client_non_mtls):
-    """Tests get_events_command pushes events to XSIAM when should_push_events=True."""
+    """Tests get_events_command pushes events to Cortex environment when should_push_events=True."""
     mock_events = [{"uuid": "123", "user": "test@example.com", "time": "2024-01-01T00:00:00Z"}]
 
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
@@ -1000,14 +1000,14 @@ def test_fetch_events_command_events_without_time(mocker, client_non_mtls):
     SAPBTP.send_events_to_xsiam.assert_called_once()  # type: ignore[attr-defined]
 
 
-def test_fetch_events_command_with_first_fetch_enabled(mocker, client_non_mtls):
-    """Tests fetch_events_command uses FIRST_FETCH when first_fetch=True."""
+def test_fetch_events_command_with_first_fetch_configured(mocker, client_non_mtls):
+    """Tests fetch_events_command uses configured first_fetch time string."""
 
     mock_events = [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}]
 
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "setLastRun")
-    mocker.patch.object(demisto, "params", return_value={"first_fetch": True})
+    mocker.patch.object(demisto, "params", return_value={"first_fetch": "7 days"})
     mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
@@ -1018,13 +1018,13 @@ def test_fetch_events_command_with_first_fetch_enabled(mocker, client_non_mtls):
     demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T00:00:00Z"})  # type: ignore[attr-defined]
 
 
-def test_fetch_events_command_with_first_fetch_disabled(mocker, client_non_mtls):
-    """Tests fetch_events_command uses FROM_TIME when first_fetch=False."""
+def test_fetch_events_command_with_first_fetch_not_configured(mocker, client_non_mtls):
+    """Tests fetch_events_command uses default FIRST_FETCH when first_fetch is not provided."""
     mock_events = [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}]
 
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "setLastRun")
-    mocker.patch.object(demisto, "params", return_value={"first_fetch": False})
+    mocker.patch.object(demisto, "params", return_value={})
     mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 

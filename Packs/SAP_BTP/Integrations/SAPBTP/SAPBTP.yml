@@ -68,12 +68,6 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- name: isFetchEvents
-  display: Fetch events
-  type: 8
-  defaultvalue: 'true'
-  required: false
-  section: Collect
 - name: first_fetch
   display: First fetch time
   required: false

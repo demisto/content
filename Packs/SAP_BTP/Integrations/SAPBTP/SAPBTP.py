@@ -133,13 +133,17 @@ def create_mtls_cert_files(certificate: str, private_key: str) -> tuple[str, str
     demisto.debug("[Cert Manager] Creating temporary mTLS certificate files")
 
     try:
+        # Replace escaped newlines with actual newlines
+        cert_content = certificate.replace("\\n", "\n")
+        key_content = private_key.replace("\\n", "\n")
+
         with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".pem") as cert_file:
-            cert_file.write(certificate)
+            cert_file.write(cert_content)
             cert_file.flush()
             cert_path = cert_file.name
 
         with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".key") as key_file:
-            key_file.write(private_key)
+            key_file.write(key_content)
             key_file.flush()
             key_path = key_file.name
 
@@ -554,7 +558,7 @@ def fetch_events_command(client: Client) -> None:
 
     params = demisto.params()
     max_events_to_fetch = int(params.get("max_fetch", DefaultValues.MAX_FETCH.value))
-    first_fetch_param = argToBoolean(params.get("first_fetch", False))
+    first_fetch_param = params.get("first_fetch")
 
     last_run = demisto.getLastRun()
     last_fetch_timestamp = last_run.get("last_fetch")
@@ -563,11 +567,11 @@ def fetch_events_command(client: Client) -> None:
         time_input = last_fetch_timestamp
         demisto.debug(f"[Fetch Logic] Continuing from Last Run. Fetching from: {time_input}")
     elif first_fetch_param:
-        time_input = DefaultValues.FIRST_FETCH.value
-        demisto.debug(f"[Fetch Logic] First Run. Fetching from: {time_input}")
+        time_input = first_fetch_param
+        demisto.debug(f"[Fetch Logic] First Run with configured first_fetch. Fetching from: {time_input}")
     else:
-        time_input = DefaultValues.FROM_TIME.value
-        demisto.debug(f"[Fetch Logic] Fallback (no last_run and first_fetch disabled). Fetching from: {time_input}")
+        time_input = DefaultValues.FIRST_FETCH.value
+        demisto.debug(f"[Fetch Logic] First Run with default. Fetching from: {time_input}")
 
     created_after = get_formatted_utc_time(time_input)
 

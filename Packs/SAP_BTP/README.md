@@ -4,7 +4,7 @@
 
 SAP Business Technology Platform (BTP) is SAP's integrated offering of technology and business solutions that helps organizations run better and transform faster. It brings together application development and automation, data and analytics, integration, and AI capabilities into one unified environment.
 
-This pack enables security teams to collect and analyze audit log events from SAP BTP environments within Cortex XSIAM, providing comprehensive visibility into user activities, system changes, and security-relevant events across your SAP BTP landscape.
+This pack enables security teams to collect and analyze audit log events from SAP BTP environments within your Cortex environment, providing comprehensive visibility into user activities, system changes, and security-relevant events across your SAP BTP landscape.
 
 ## What's Included
 
@@ -23,7 +23,7 @@ This pack includes:
 
 To use this pack:
 
-1. Install the SAP BTP pack in your Cortex XSIAM environment.
+1. Install the SAP BTP pack in your Cortex environment.
 2. Configure the SAP BTP integration with your environment credentials.
 3. Enable event collection to start monitoring your SAP BTP audit logs.
 

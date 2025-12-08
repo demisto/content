@@ -4,7 +4,7 @@
 
 SAP Business Technology Platform is a cloud-based platform that enables organizations to build, integrate, and extend applications using data, analytics, AI, and automation tools. It combines database, development, and integration services into a unified environment optimized for enterprise business processes.
 
-This integration collects audit log events from SAP BTP for security monitoring and compliance purposes in Cortex XSIAM.
+This integration collects audit log events from SAP BTP for security monitoring and compliance purposes in your Cortex environment.
 
 ## Authentication
 
@@ -85,7 +85,7 @@ Before configuring the integration, you must complete the following prerequisite
    - For **mTLS**: Certificate and private key files
    - For **Non-mTLS**: `uaa.clientsecret`
 
-## Configure SAP BTP (Business Technology Platform) in Cortex XSIAM
+## Configure SAP BTP (Business Technology Platform) in Cortex
 
 1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**
 2. Search for SAP BTP (Business Technology Platform).
@@ -111,7 +111,7 @@ Before configuring the integration, you must complete the following prerequisite
 
 ## How It Works
 
-This integration automatically collects audit log events from SAP BTP and sends them to Cortex XSIAM for security monitoring and compliance.
+This integration automatically collects audit log events from SAP BTP and sends them to your Cortex environment for security monitoring and compliance.
 
 1. **Initial Collection**: On the first run, the integration begins collecting events from the configured start time (default: 3 days ago).
 2. **Continuous Monitoring**: The integration automatically tracks the last collected event and fetches only new events on subsequent runs.
@@ -138,7 +138,7 @@ Retrieve audit log events from SAP BTP manually. This command allows you to fetc
 | from_time | Time to fetch events from. Supports natural language (e.g., "1 minute ago", "3 days", "2 hours", "1 month") or ISO 8601 format (e.g., "2024-01-01T00:00:00Z"). Default is "1 minute ago". | Optional |
 | end_time | Time to fetch events until. Supports natural language (e.g., "now", "1 hour ago") or ISO 8601 format (e.g., "2024-01-01T00:00:00Z"). If not specified, fetches until now. | Optional |
 | limit | Maximum number of events to retrieve. Default is 5000. | Optional |
-| should_push_events | Whether to push the collected events into XSIAM. Set to true to send events to XSIAM, false to only return them in the War Room. Default is true. | Optional |
+| should_push_events | Whether to push the collected events to your Cortex environment. Set to true to send events for ingestion, false to only return them in the War Room. Default is true. | Optional |
 
 #### Context Output
 
