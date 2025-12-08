@@ -409,9 +409,7 @@ def msgraph_user_get(command: Command, additional_fields: bool) -> tuple[list[Co
     if properties:
         command.args["properties"] = f"{properties},ID,Mail"
 
-    demisto.debug(f"This is the command args = {command.args}")
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
-    demisto.debug(f"This is the results = {entry_context}")
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     user_outputs = []
@@ -420,7 +418,6 @@ def msgraph_user_get(command: Command, additional_fields: bool) -> tuple[list[Co
         output_key_msgraph_user = get_output_key(output_key="MSGraphUser", raw_context=output)
         outputs = get_outputs(output_key_account, output)
         outputs.update(get_outputs(output_key_msgraph_user, output))
-        demisto.debug(f"This is the final outputs {outputs}")
         user_outputs.append(
             create_user(
                 source=command.brand,
