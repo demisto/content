@@ -259,7 +259,7 @@ def test_mismatched_types_marked_invalid_when_flag_true(mocker):
     mocker.patch(
         "AggregatedCommandApiModule._execute_extraction",
         return_value=(
-            {"URL": ["https://a.com"], "IP": ["1.1.1.1"]},
+            {"URL": ["example"], "IP": ["1.1.1.1"]},
             "HR_FRAGMENT",
             None,
         ),
@@ -269,7 +269,7 @@ def test_mismatched_types_marked_invalid_when_flag_true(mocker):
     invalid_set: set[str] = set()
 
     instances, hr = _process_single_input(
-        raw="https://a.com",
+        raw="example",
         expected_type_lower="url",
         mark_mismatched_type_as_invalid=True,
         valid_set=valid_set,
@@ -280,11 +280,11 @@ def test_mismatched_types_marked_invalid_when_flag_true(mocker):
     assert len(instances) == 1
 
     inst = instances[0]
-    assert inst.raw_input == "https://a.com"
+    assert inst.raw_input == "example"
     assert inst.hr_message == "Invalid"
     assert inst.final_status == Status.FAILURE
 
-    assert "https://a.com" in invalid_set
+    assert "examplem" in invalid_set
     assert not valid_set  # no valid indicators were added
 
 
@@ -311,7 +311,7 @@ def test_process_single_input_marks_failure_on_extraction_error(mocker):
     invalid_set: set[str] = set()
 
     instances, hr = _process_single_input(
-        raw="https://a.com",
+        raw="example",
         expected_type_lower="url",
         mark_mismatched_type_as_invalid=False,
         valid_set=valid_set,
@@ -322,12 +322,12 @@ def test_process_single_input_marks_failure_on_extraction_error(mocker):
     assert len(instances) == 1
 
     inst = instances[0]
-    assert inst.raw_input == "https://a.com"
+    assert inst.raw_input == "example"
     assert inst.context_message == "extractIndicators Failed"
     assert inst.error_message == "boom error"
     assert inst.final_status == Status.FAILURE
 
-    assert "https://a.com" in invalid_set
+    assert "example" in invalid_set
     assert not valid_set
 
 
