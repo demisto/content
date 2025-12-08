@@ -284,7 +284,7 @@ def test_mismatched_types_marked_invalid_when_flag_true(mocker):
     assert inst.hr_message == "Invalid"
     assert inst.final_status == Status.FAILURE
 
-    assert "examplem" in invalid_set
+    assert "example" in invalid_set
     assert not valid_set  # no valid indicators were added
 
 
