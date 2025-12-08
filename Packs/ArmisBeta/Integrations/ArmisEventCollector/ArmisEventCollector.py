@@ -228,18 +228,18 @@ class Client(BaseClient):
                 url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
             )
         except Exception as e:
-            error_str = str(e)
+            # Use repr() for JSON errors to avoid issues, str() for others
+            error_str = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
 
             # Detect authentication errors more broadly - including JSON parse errors from HTML responses
             is_auth_error = (
                 "Invalid access token" in error_str
                 or "401" in error_str
                 or "Unauthorized" in error_str
-                or "Expecting value" in error_str  # JSON parse error from HTML error response
             )
 
             if is_auth_error:
-                demisto.debug(f"Thread {threading.current_thread().name}: Authentication error detected: {error_str[:100]}")
+                demisto.debug(f"Thread {threading.current_thread().name}: Authentication error detected: {error_str}")
 
                 # If using context manager, try to get fresh token from context first
                 if self._context_manager:
@@ -673,13 +673,7 @@ def fetch_event_type_worker(
 
     except Exception as e:
         # Use repr() for JSON errors to avoid serialization issues in logging
-        try:
-            error_msg = str(e)
-            # Check if this is a JSON error that might cause issues when logged
-            if "Expecting value" in error_msg or isinstance(e, json.JSONDecodeError):
-                error_msg = repr(e)
-        except Exception:
-            error_msg = repr(e)
+        error_msg = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
         demisto.error(f"[{thread_id}] Error fetching {event_type_name}: {error_msg}")
         raise
 
