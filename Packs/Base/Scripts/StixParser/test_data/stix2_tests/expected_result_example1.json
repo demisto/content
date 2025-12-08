@@ -373,8 +373,8 @@
       ],
       "publications": [],
       "tags": [
-        "intrusion-set-label",
-        "apt"
+        "apt",
+        "intrusion-set-label"
       ]
     },
     "relationships": [

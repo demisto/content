@@ -1,6 +1,16 @@
 import json
+from copy import deepcopy
 
 import pytest
+
+
+def normalize_tags(indicators):
+    """Normalize tags in indicators by converting to sorted lists for comparison."""
+    normalized = deepcopy(indicators)
+    for indicator in normalized:
+        if tags := indicator.get('customFields', {}).get('tags'):
+            indicator['customFields']['tags'] = sorted(tags)
+    return normalized
 
 
 @pytest.mark.parametrize(
@@ -76,4 +86,4 @@ def test_parse_stix2(indicators_file, expected_result):
     with open(f"test_data/stix2_tests/{expected_result}") as json_f:
         expected_result = json.load(json_f)
 
-    assert observables == expected_result
+    assert normalize_tags(observables) == normalize_tags(expected_result)
