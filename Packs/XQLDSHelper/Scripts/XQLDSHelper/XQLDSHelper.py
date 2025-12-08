@@ -72,11 +72,13 @@ class ContextData:
         context: dict[str, Any] | None = None,
         incident: dict[str, Any] | None = None,
         alert: dict[str, Any] | None = None,
+        issue: dict[str, Any] | None = None,
         value: dict[str, Any] | None = None,
     ) -> None:
         self.__context: dict[str, Any] = context or {}
         self.__value: dict[str, Any] = value or {}
         self.__specials: dict[str, Any] = {
+            "issue": issue or {},
             "alert": alert or {},
             "incident": incident or {},
             "lists": None,
@@ -123,6 +125,7 @@ class ContextData:
             context=self.__context,
             incident=self.__specials.get("incident"),
             alert=self.__specials.get("alert"),
+            issue=self.__specials.get("issue"),
             value=value,
         )
 
@@ -1951,6 +1954,7 @@ class Main:
         entries = {
             "context": base_context,
             "alert": fields if (is_xsiam() or is_platform()) else None,
+            "issue": fields if is_platform() else None,
             "incident": None if (is_xsiam() or is_platform()) else fields,
         }
         for name, context in dict(entries).items():
@@ -1985,6 +1989,7 @@ class Main:
         return ContextData(
             context=entries.get("context"),
             alert=entries.get("alert"),
+            issue=entries.get("issue"),
             incident=entries.get("incident"),
         )
 
@@ -2160,7 +2165,10 @@ class Main:
         base_time = args.get("base_time")
         if not base_time:
             # Set default base time
-            for k in ["alert.occurred", "incident.occurred", "alert.created", "incident.created"]:
+            for k in [
+                "issue.occurred", "alert.occurred", "incident.occurred",
+                "issue.created", "alert.created", "incident.created"
+            ]:
                 base_time = context.get(k)
                 if base_time and base_time != "0001-01-01T00:00:00Z":
                     break
