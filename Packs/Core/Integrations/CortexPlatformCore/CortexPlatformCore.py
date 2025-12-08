@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 import dateparser
 from enum import Enum
+import copy
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -42,14 +43,147 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage",
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
+    "core-get-appsec-issues",
+    "core-update-case",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
+XSOAR_COMMANDS = ["core-run-playbook"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
+
+
+class CaseManagement:
+    STATUS_RESOLVED_REASON = {
+        "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
+        "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
+        "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
+        "true_positive": "STATUS_090_RESOLVED_TRUE_POSITIVE",
+        "security_testing": "STATUS_100_RESOLVED_SECURITY_TESTING",
+        "other": "STATUS_070_RESOLVED_OTHER",
+    }
+
+    FIELDS = {
+        "case_id_list": "CASE_ID",
+        "case_domain": "INCIDENT_DOMAIN",
+        "case_name": "NAME",
+        "case_description": "DESCRIPTION",
+        "status": "STATUS_PROGRESS",
+        "severity": "SEVERITY",
+        "creation_time": "CREATION_TIME",
+        "asset_ids": "UAI_ASSET_IDS",
+        "asset_groups": "UAI_ASSET_GROUP_IDS",
+        "assignee": "ASSIGNED_USER_PRETTY",
+        "assignee_email": "ASSIGNED_USER",
+        "name": "CONTAINS",
+        "description": "DESCRIPTION",
+        "last_updated": "LAST_UPDATE_TIME",
+        "hosts": "HOSTS",
+        "starred": "CASE_STARRED",
+    }
+
+    STATUS = {
+        "new": "STATUS_010_NEW",
+        "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
+        "resolved": "STATUS_025_RESOLVED",
+    }
+
+    SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+
+
+class AppsecIssues:
+    class AppsecIssueType:
+        def __init__(self, table_name: str, filters: set[str]):
+            self.table_name: str = table_name
+            self.filters: set = filters or set()
+
+    ISSUE_TYPES = [
+        AppsecIssueType("ISSUES_IAC", {"urgency", "repository", "file_path", "automated_fix_available", "sla"}),
+        AppsecIssueType(
+            "ISSUES_CVES",
+            {
+                "urgency",
+                "repository",
+                "file_path",
+                "automated_fix_available",
+                "sla",
+                "cvss_score_gte",
+                "epss_score_gte",
+                "has_kev",
+            },
+        ),
+        AppsecIssueType("ISSUES_SECRETS", {"urgency", "repository", "file_path", "sla", "validation"}),
+        AppsecIssueType("ISSUES_WEAKNESSES", {"urgency", "repository", "file_path", "sla"}),
+        AppsecIssueType("ISSUES_OPERATIONAL_RISK", {"repository", "file_path", "sla"}),
+        AppsecIssueType("ISSUES_LICENSES", {"repository", "file_path", "sla"}),
+        AppsecIssueType("ISSUES_CI_CD", {"sla"}),
+    ]
+
+    SPECIAL_FILTERS = {
+        # List of filters that aren't a part of every Appsec table
+        "urgency",
+        "repository",
+        "file_path",
+        "automated_fix_available",
+        "sla",
+        "epss_score_gte",
+        "cvss_score_gte",
+        "has_kev",
+        "validation",
+    }
+
+    SEVERITY_MAPPINGS = {
+        "info": "SEV_010_INFO",
+        "low": "SEV_020_LOW",
+        "medium": "SEV_030_MEDIUM",
+        "high": "SEV_040_HIGH",
+        "critical": "SEV_050_CRITICAL",
+        "unknown": "SEV_090_UNKNOWN",
+    }
+
+    SEVERITY_OUTPUT_MAPPINGS = {
+        "SEV_010_INFO": "info",
+        "SEV_020_LOW": "low",
+        "SEV_030_MEDIUM": "medium",
+        "SEV_040_HIGH": "high",
+        "SEV_050_CRITICAL": "critical",
+        "SEV_090_UNKNOWN": "unknown",
+    }
+
+    STATUS_MAPPINGS = {
+        "New": "STATUS_010_NEW",
+        "In Progress": "STATUS_020_UNDER_INVESTIGATION",
+        "Resolved": "STATUS_025_RESOLVED",
+    }
+
+    STATUS_OUTPUT_MAPPINGS = {
+        "STATUS_010_NEW": "New",
+        "STATUS_020_UNDER_INVESTIGATION": "In Progress",
+        "STATUS_025_RESOLVED": "Resolved",
+    }
+
+    SLA_MAPPING = {
+        "Approaching": "APPROACHING",
+        "On Track": "IN_SLA",
+        "Overdue": "OVERDUE",
+    }
+
+    SLA_OUTPUT_MAPPING = {
+        "APPROACHING": "Approaching",
+        "IN_SLA": "On Track",
+        "OVERDUE": "Overdue",
+    }
+
+    URGENCY_OUTPUT_MAPPING = {
+        "NOT_URGENT": "Not Urgent",
+        "N/A": "N/A",
+        "TOP_URGENT": "Top Urgent",
+        "URGENT": "Urgent",
+    }
+
 
 ASSET_GROUP_FIELDS = {
     "asset_group_name": "XDM__ASSET_GROUP__NAME",
@@ -285,6 +419,34 @@ def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     return data
 
 
+def process_case_response(resp):
+    """
+    Process case response by removing unnecessary fields.
+
+    Args:
+        resp (dict): Response dictionary to be processed
+
+    Returns:
+        dict: Cleaned response dictionary
+    """
+    fields_to_remove = ["layoutId", "layoutRuleName", "sourcesList"]
+
+    reply = resp.get("reply", {})
+
+    for field in fields_to_remove:
+        reply.pop(field, None)
+
+    # Remove nested score values
+    if "score" in reply and isinstance(reply["score"], dict):
+        reply["score"].pop("previous_score_source", None)
+        reply["score"].pop("previous_score", None)
+
+    if "incidentDomain" in reply:
+        reply["caseDomain"] = reply.pop("incidentDomain")
+
+    return reply
+
+
 def issue_to_alert(args: dict | str) -> dict | str:
     return replace_substring(args, "issue", "alert")
 
@@ -299,6 +461,28 @@ def incident_to_case(output: dict | str) -> dict | str:
 
 def case_to_incident(args: dict | str) -> dict | str:
     return replace_substring(args, "case", "incident")
+
+
+def arg_to_float(arg: Optional[str]):
+    """
+    Converts an XSOAR argument to a Python float
+    """
+
+    if arg is None or arg == "":
+        return None
+
+    arg = encode_string_results(arg)
+
+    if isinstance(arg, str):
+        try:
+            return float(arg)
+        except Exception:
+            raise ValueError(f'"{arg}" is not a valid number')
+
+    if isinstance(arg, int | float):
+        return arg
+
+    raise ValueError(f'"{arg}" is not a valid number')
 
 
 def preprocess_get_cases_args(args: dict):
@@ -471,6 +655,67 @@ class Client(CoreClient):
             data=policy_payload,
             headers={**self._headers, "content-type": "application/json"},
             url_suffix="/public_api/appsec/v1/policies",
+        )
+
+    def update_case(self, case_update_payload, case_id):
+        """
+        Update a case with the provided data.
+
+        Args:
+            case_update_payload (dict): The data to update in the case.
+            case_id (str): Case ID to update.
+
+        Returns:
+            dict: Response from the API for the case update.
+        """
+        request_data = {"request_data": {"newIncidentInterface": True, "case_id": case_id, **case_update_payload}}
+        return self._http_request(
+            method="POST",
+            url_suffix="/case/set_data",
+            json_data=request_data,
+        )
+
+    def run_playbook(self, issue_ids: list, playbook_id: str) -> dict:
+        """
+        Runs a specific playbook for a given investigation.
+
+        Args:
+            issue_ids: The IDs of the issues.
+            playbook_id: The ID of the playbook to run.
+
+        Returns:
+            dict: The response from running the playbook.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/inv-playbook/new",
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
+            json_data={"alertIds": issue_ids, "playbookId": playbook_id},
+        )
+
+    def unassign_case(self, case_id: str) -> dict:
+        """
+        Unassign a case by updating it with default unassignment data.
+
+        Args:
+            case_id (str): Case ID to unassign.
+
+        Returns:
+            dict: Response from the API for the case update.
+        """
+        request_data = {"request_data": {"newIncidentInterface": True, "case_id": case_id}}
+
+        return self._http_request(
+            method="POST",
+            url_suffix="/case/un_assign_user",
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
+            json_data=request_data,
         )
 
 
@@ -653,7 +898,13 @@ def build_webapp_request_data(
     if on_demand_fields is None:
         on_demand_fields = []
 
-    return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
+    return {
+        "type": "grid",
+        "table_name": table_name,
+        "filter_data": filter_data,
+        "jsons": [],
+        "onDemandFields": on_demand_fields,
+    }
 
 
 def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
@@ -1388,6 +1639,31 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
     return builder.to_dict()
 
 
+def parse_custom_fields(custom_fields: str) -> dict:
+    """
+    Parse and sanitize custom fields from JSON string input.
+
+    Args:
+        custom_fields: JSON string containing array of custom field objects
+
+    Returns:
+        dict: Dictionary with sanitized alphanumeric keys and string values,
+              duplicate keys are ignored (first occurrence wins)
+    """
+    custom_fields = safe_load_json(custom_fields)
+
+    parsed_fields = {}
+
+    for custom_field in custom_fields:
+        for key, value in custom_field.items():
+            # Sanitize key: remove non-alphanumeric characters
+            sanitized_key = "".join(char for char in key if char.isalnum())
+            if sanitized_key and sanitized_key not in parsed_fields:
+                parsed_fields[sanitized_key] = str(value)
+
+    return parsed_fields
+
+
 def create_policy_build_scope(args: dict) -> dict:
     """
     Build scope filters for create-policy.
@@ -1533,6 +1809,271 @@ def create_policy_build_triggers(args: dict) -> dict:
     return triggers
 
 
+def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilder]:
+    """
+    Generate a filter and determine applicable tables for fetching AppSec issues based on input filter arguments.
+
+    Args:
+        args (dict): Command input args for core-appsec-get-issues.
+
+    Returns:
+        tuple[list, FilterBuilder]: A tuple containing:
+            - A list of applicable issue type table names
+            - A FilterBuilder instance with configured filters
+    """
+    special_filter_args = {filter for filter in args if filter in AppsecIssues.SPECIAL_FILTERS}
+    tables_filters = {}
+    filter_builder = FilterBuilder()
+
+    for issue_type in AppsecIssues.ISSUE_TYPES:
+        if special_filter_args.issubset(issue_type.filters):
+            tables_filters[issue_type.table_name] = filter_builder
+
+    if not tables_filters:
+        raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
+
+    filter_builder.add_field("cas_issues_cvss_score", FilterType.GTE, arg_to_float(args.get("cvss_score_gte")))
+    filter_builder.add_field("cas_issues_epss_score", FilterType.GTE, arg_to_float(args.get("epss_score_gte")))
+    filter_builder.add_field("cas_issues_is_kev", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
+    filter_builder.add_field("cas_sla_status", FilterType.EQ, argToList(args.get("sla")), AppsecIssues.SLA_MAPPING)
+    filter_builder.add_field("cas_issues_is_fixable", FilterType.EQ, arg_to_bool_or_none(args.get("automated_fix_available")))
+    filter_builder.add_field("cas_issues_validation", FilterType.EQ, argToList(args.get("validation")))
+    filter_builder.add_field("urgency", FilterType.EQ, argToList(args.get("urgency")))
+    filter_builder.add_field("severity", FilterType.EQ, argToList(args.get("severity")), AppsecIssues.SEVERITY_MAPPINGS)
+    filter_builder.add_field("internal_id", FilterType.CONTAINS, argToList(args.get("issue_id")))
+    filter_builder.add_field("alert_name", FilterType.CONTAINS, argToList(args.get("issue_name")))
+    filter_builder.add_field("cas_issues_asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
+    filter_builder.add_field("cas_issues_repository", FilterType.CONTAINS, argToList(args.get("repository")))
+    filter_builder.add_field("cas_issues_file_path", FilterType.CONTAINS, argToList(args.get("file_path")))
+    filter_builder.add_field("cas_issues_git_user", FilterType.CONTAINS, argToList(args.get("collaborator")))
+    filter_builder.add_field("status_progress", FilterType.EQ, argToList(args.get("status")))
+    filter_builder.add_time_range_field("local_insert_ts", args.get("start_time"), args.get("end_time"))
+    filter_builder.add_field_with_mappings(
+        "assigned_to_pretty",
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },
+    )
+
+    if "backlog_status" in args and "ISSUES_CI_CD" in tables_filters:
+        # backlog filter is different for the CI/CD issue table
+        cicd_filter_builder = copy.deepcopy(filter_builder)
+        cicd_filter_builder.add_field("issue_backlog_status", FilterType.EQ, argToList(args.get("backlog_status")))
+        tables_filters["ISSUES_CI_CD"] = cicd_filter_builder
+
+    filter_builder.add_field("backlog_status", FilterType.EQ, argToList(args.get("backlog_status")))
+
+    return tables_filters
+
+
+def normalize_and_filter_appsec_issue(issue: dict) -> dict:
+    """
+    Transforms raw issue data from the main issue table into the AppSec issues format.
+
+    Args:
+        raw_issue (dict): Raw issue data retrieved from the alerts view table.
+
+    Returns:
+        dict: issue with standard Appsec fields.
+    """
+    issue_all_fields = cast(dict, alert_to_issue(issue))
+
+    filtered_output_keys: dict[str, dict] = {
+        "internal_id": {"path": ["internal_id"]},
+        "severity": {"path": ["severity"], "mapper": AppsecIssues.SEVERITY_OUTPUT_MAPPINGS},
+        "issue_name": {"path": ["issue_name"]},
+        "issue_source": {"path": ["issue_source"]},
+        "issue_category": {"path": ["issue_category"]},
+        "issue_domain": {"path": ["issue_domain"]},
+        "issue_description": {"path": ["issue_description"]},
+        "status": {"path": ["status_progress"], "mapper": AppsecIssues.STATUS_OUTPUT_MAPPINGS},
+        "asset_name": {"path": ["cas_issues_asset_name"]},
+        "assignee": {"path": ["assigned_to_pretty"]},
+        "time_added": {"path": ["source_insert_ts"]},
+        "epss_score": {"path": ["cas_issues_extended_fields", "epss_score"]},
+        "cvss_score": {"path": ["cas_issues_normalized_fields", "xdm.vulnerability.cvss_score"]},
+        "has_kev": {"path": ["cas_issues_is_kev"]},
+        "urgency": {"path": ["urgency"], "mapper": AppsecIssues.URGENCY_OUTPUT_MAPPING},
+        "sla_status": {"path": ["cas_sla_status"], "mapper": AppsecIssues.SLA_OUTPUT_MAPPING},
+        "secret_validation": {"path": ["secret_validation"]},
+        "is_fixable": {"path": ["cas_issues_is_fixable"]},
+        "repository_name": {"path": ["cas_issues_normalized_fields", "xdm.repository.name"]},
+        "repository_organization": {"path": ["cas_issues_normalized_fields", "xdm.repository.organization"]},
+        "file_path": {"path": ["cas_issues_normalized_fields", "xdm.file.path"]},
+        "collaborator": {"path": ["cas_issues_normalized_fields", "xdm.code.git.commit.author.name"]},
+        "is_deployed": {"path": ["cas_issues_extended_fields", "urgency", "metric", "is_deployed"]},
+        "backlog_status": {"path": ["backlog_status"]},
+    }
+    appsec_issue = {}
+    for output_key, output_info in filtered_output_keys.items():
+        current_value = issue_all_fields
+        path = output_info.get("path", {})
+        for key in path:
+            current_value = current_value.get(key, {})
+
+        if current_value:
+            value = current_value if "mapper" not in output_info else output_info.get("mapper", {}).get(current_value)
+            appsec_issue[output_key] = value
+
+    return appsec_issue
+
+
+def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves application security issues based on specified filters across multiple issue types.
+    """
+    limit = arg_to_number(args.get("limit")) or 50
+    sort_field = args.get("sort_field", "severity")
+    sort_order = args.get("sort_order", "DESC")
+
+    tables_filters: dict[str, FilterBuilder] = create_appsec_issues_filter_and_tables(args)
+
+    all_appsec_issues: list[dict] = []
+    for table_name, filter_builder in tables_filters.items():
+        request_data = build_webapp_request_data(
+            table_name=table_name,
+            filter_dict=filter_builder.to_dict(),
+            limit=limit,
+            sort_field=sort_field,
+            sort_order=sort_order,
+        )
+        try:
+            demisto.debug(f"Fetching issues from table {table_name}")
+            response = client.get_webapp_data(request_data)
+            reply = response.get("reply", {})
+            data = reply.get("DATA", [])
+            all_appsec_issues.extend(data)
+        except Exception as e:
+            raise DemistoException(f"Failed to retrieve issues from the {table_name} table: {e}")
+
+    sorted_issues = sorted(all_appsec_issues, key=lambda issue: issue.get(sort_field, ""), reverse=(sort_order == "DESC"))
+    sorted_issues = sorted_issues[:limit]
+    filtered_appsec_issues = [normalize_and_filter_appsec_issue(issue) for issue in sorted_issues]
+
+    readable_output = tableToMarkdown(
+        "Application Security Issues", filtered_appsec_issues, headerTransform=string_to_table_header, sort_headers=False
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AppsecIssue",
+        outputs_key_field="internal_id",
+        outputs=filtered_appsec_issues,
+        raw_response=all_appsec_issues,
+    )
+
+
+def update_case_command(client: Client, args: dict) -> CommandResults:
+    """
+    Updates one or more cases with the specified parameters such as name, description, assignee, status, and custom fields.
+
+    Handles case status changes including resolution with proper validation, and supports bulk updates across multiple cases.
+    Validates input parameters and returns appropriate error messages for invalid values.
+    """
+    case_ids = argToList(args.get("case_id"))
+    case_name = args.get("case_name", "")
+    description = args.get("description", "")
+    assignee = args.get("assignee", "").lower()
+    status = args.get("status", "")
+    notes = args.get("notes", "")
+    starred = args.get("starred", "")
+    user_defined_severity = args.get("user_defined_severity", "")
+    resolve_reason = args.get("resolve_reason", "")
+    resolved_comment = args.get("resolved_comment", "")
+    resolve_all_alerts = args.get("resolve_all_alerts", "")
+    custom_fields = parse_custom_fields(args.get("custom_fields", []))
+    if assignee == "unassigned":
+        for case_id in case_ids:
+            client.unassign_case(case_id)
+        assignee = ""
+
+    if status == "resolved" and (not resolve_reason or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)):
+        raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
+
+    if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
+        raise ValueError(
+            "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to "
+            "'resolved.'"
+        )
+
+    if status and not CaseManagement.STATUS.get(status):
+        raise ValueError(f"Invalid status '{status}'. Valid statuses are: {list(CaseManagement.STATUS.keys())}")
+
+    if user_defined_severity and not CaseManagement.SEVERITY.get(user_defined_severity, False):
+        raise ValueError(
+            f"Invalid user_defined_severity '{user_defined_severity}'. Valid severities are: "
+            f"{list(CaseManagement.SEVERITY.keys())}"
+        )
+
+    # Build request_data with mapped and filtered values
+    case_update_payload = {
+        "caseName": case_name if case_name else None,
+        "description": description if description else None,
+        "assignedUser": assignee if assignee else None,
+        "notes": notes if notes else None,
+        "starred": starred if starred else None,
+        "status": CaseManagement.STATUS.get(status) if status else None,
+        "userSeverity": CaseManagement.SEVERITY.get(user_defined_severity) if user_defined_severity else None,
+        "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
+        "caseResolvedComment": resolved_comment if resolved_comment else None,
+        "resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None,
+        "CustomFields": custom_fields if custom_fields else None,
+    }
+    remove_nulls_from_dictionary(case_update_payload)
+
+    if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
+        raise ValueError("No valid update parameters provided for case update.")
+
+    demisto.info(f"Executing case update for cases {case_ids} with request data: {case_update_payload}")
+    responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
+    replies = []
+    for resp in responses:
+        replies.append(process_case_response(resp))
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+        outputs_key_field="case_id",
+        outputs=replies,
+        raw_response=replies,
+    )
+
+
+def run_playbook_command(client: Client, args: dict) -> CommandResults:
+    """
+    Executes a playbook command with specified arguments.
+
+    Args:
+        client (Client): The client instance for making API requests.
+        args (dict): Arguments for running the playbook.
+
+    Returns:
+        CommandResults: Results of the playbook execution.
+    """
+    playbook_id = args.get("playbook_id", "")
+    issue_ids = argToList(args.get("issue_ids", ""))
+
+    response = client.run_playbook(issue_ids, playbook_id)
+
+    # Process the response to determine success or failure
+    if not response:
+        # Empty response indicates success for all issues
+        return CommandResults(
+            readable_output=f"Playbook '{playbook_id}' executed successfully for all issue IDs: {', '.join(issue_ids)}",
+        )
+
+    error_messages = []
+
+    for issue_id, error_message in response.items():
+        error_messages.append(f"Issue ID {issue_id}: {error_message}")
+
+    demisto.debug(f"Playbook run errors: {error_messages}")
+    raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1542,12 +2083,14 @@ def main():  # pragma: no cover
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
+    remove_nulls_from_dictionary(args)
     headers: dict = {}
 
     webapp_api_url = "/api/webapp"
     public_api_url = f"{webapp_api_url}/public_api/v1"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
     appsec_api_url = f"{webapp_api_url}/public_api/appsec"
+    xsoar_api_url = "/xsoar"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
@@ -1564,6 +2107,8 @@ def main():  # pragma: no cover
         client_url = data_platform_api_url
     elif command in APPSEC_COMMANDS:
         client_url = appsec_api_url
+    elif command in XSOAR_COMMANDS:
+        client_url = xsoar_api_url
 
     client = Client(
         base_url=client_url,
@@ -1589,6 +2134,17 @@ def main():  # pragma: no cover
             args = issue_to_alert(args)
             # Extract output_keys before calling get_alerts_by_filter_command
             output_keys = argToList(args.pop("output_keys", []))
+            assignees = argToList(args.get("assignee", "").lower())
+            if "assigned" in assignees or "unassigned" in assignees:
+                if len(assignees) > 1:
+                    raise DemistoException(
+                        f"The assigned/unassigned options can not be used with additional assignees. Received: {assignees}"
+                    )
+
+                # Swap assignee arg with the requested special operation
+                assignee_filter_option = args.pop("assignee", "")
+                args[assignee_filter_option] = True
+
             issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
             # Convert alert keys to issue keys
             if issues_command_results.outputs:
@@ -1631,6 +2187,12 @@ def main():  # pragma: no cover
             return_results(get_asset_coverage_histogram_command(client, args))
         elif command == "core-create-appsec-policy":
             return_results(create_policy_command(client, args))
+        elif command == "core-get-appsec-issues":
+            return_results(get_appsec_issues_command(client, args))
+        elif command == "core-update-case":
+            return_results(update_case_command(client, args))
+        elif command == "core-run-playbook":
+            return_results(run_playbook_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

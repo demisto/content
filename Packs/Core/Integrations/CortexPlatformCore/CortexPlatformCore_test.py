@@ -4631,3 +4631,402 @@ def test_appsec_remediate_issue_command_empty_issue_ids_list(mocker: MockerFixtu
 
     assert len(result.outputs) == 0
     mock_appsec_remediate.assert_not_called()
+
+
+def test_get_appsec_issues_command_success(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and valid arguments with appsec issue filters.
+    When:
+        The get_appsec_issues_command function is called.
+    Then:
+        The response is parsed, formatted, and returned correctly with expected outputs.
+    """
+    from CortexPlatformCore import Client, get_appsec_issues_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "internal_id": "issue_001",
+                    "severity": "SEV_040_HIGH",
+                    "alert_name": "SQL Injection",
+                    "status_progress": "STATUS_010_NEW",
+                    "cas_issues_normalized_fields": {
+                        "xdm.vulnerability.cvss_score": 8.8,
+                    },
+                }
+            ]
+        }
+    }
+    mock_get_webapp_data = mocker.patch.object(
+        mock_client,
+        "get_webapp_data",
+        side_effect=lambda request_data: mock_response
+        if request_data.get("table_name") == "ISSUES_CVES"
+        else {"reply": {"DATA": []}},
+    )
+
+    args = {"severity": "high", "status": "New", "has_kev": "true"}
+
+    result = get_appsec_issues_command(mock_client, args)
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["internal_id"] == "issue_001"
+    assert result.outputs[0]["severity"] == "high"
+    assert result.outputs[0]["status"] == "New"
+    assert result.outputs[0]["cvss_score"] == 8.8
+    assert "SQL Injection" in result.readable_output
+    assert result.outputs_prefix == "Core.AppsecIssue"
+    assert mock_get_webapp_data.call_count > 0
+
+
+def test_get_appsec_issues_command_no_issues_found(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client that returns an empty list of issues.
+    When:
+        The get_appsec_issues_command function is called.
+    Then:
+        An empty result is returned with the correct structure.
+    """
+    from CortexPlatformCore import Client, get_appsec_issues_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"reply": {"DATA": []}}
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+
+    args = {"severity": "low"}
+
+    result = get_appsec_issues_command(mock_client, args)
+
+    assert result.outputs == []
+    assert "Application Security Issues" in result.readable_output
+
+
+def test_create_appsec_issues_filter_and_tables_simple_filter():
+    """
+    Given:
+        A simple filter argument.
+    When:
+        The create_appsec_issues_filter_and_tables function is called.
+    Then:
+        The function should return the correct list of tables and a FilterBuilder instance.
+    """
+    from CortexPlatformCore import create_appsec_issues_filter_and_tables
+
+    args = {"urgency": "high"}
+    tables_filters = create_appsec_issues_filter_and_tables(args)
+    assert set(tables_filters.keys()) == {
+        "ISSUES_IAC",
+        "ISSUES_CVES",
+        "ISSUES_SECRETS",
+        "ISSUES_WEAKNESSES",
+    }
+    for _, filter_builder in tables_filters.items():
+        filter_dict = filter_builder.to_dict()
+        assert any(
+            field.get("SEARCH_VALUE") == "high" and field.get("SEARCH_FIELD") == "urgency" for field in filter_dict.get("AND", [])
+        )
+
+
+def test_create_appsec_issues_filter_and_tables_cves_specific_filter():
+    """
+    Given:
+        A CVES specific filter argument.
+    When:
+        The create_appsec_issues_filter_and_tables function is called.
+    Then:
+        The function should return only the ISSUES_CVES table.
+    """
+    from CortexPlatformCore import create_appsec_issues_filter_and_tables
+
+    args = {"has_kev": "true"}
+    tables_filters = create_appsec_issues_filter_and_tables(args)
+    assert list(tables_filters.keys()) == ["ISSUES_CVES"]
+
+
+def test_create_appsec_issues_filter_and_tables_all_filters():
+    """
+    Given:
+        Arguments with all possible filters.
+    When:
+        The create_appsec_issues_filter_and_tables function is called.
+    Then:
+        The function should return the correct tables and a comprehensive filter.
+    """
+    from CortexPlatformCore import create_appsec_issues_filter_and_tables
+
+    args = {
+        "cvss_score_gte": "8.0",
+        "epss_score_gte": "0.5",
+        "has_kev": "true",
+        "sla": "breached",
+        "fix_available": "true",
+        "urgency": "critical",
+        "severity": "critical",
+        "issue_id": "ISSUE-123",
+        "issue_name": "XSS",
+        "collaborator": "john.doe",
+        "status": "In Progress",
+        "start_time": "2023-01-01",
+        "end_time": "2023-01-31",
+        "assignee": "assigned",
+    }
+    tables_filters = create_appsec_issues_filter_and_tables(args)
+    assert "ISSUES_CVES" in tables_filters
+    filter_builder = tables_filters["ISSUES_CVES"]
+    filter_dict = filter_builder.to_dict()
+    assert len(filter_dict["AND"]) >= 10
+
+
+def test_normalize_and_filter_appsec_issue():
+    """
+    Given:
+        A raw issue dictionary from the API.
+    When:
+        The normalize_and_filter_appsec_issue function is called.
+    Then:
+        The function should return a normalized and filtered dictionary with standard AppSec fields.
+    """
+    from CortexPlatformCore import normalize_and_filter_appsec_issue
+
+    raw_issue = {
+        "internal_id": "issue_001",
+        "severity": "SEV_050_CRITICAL",
+        "alert_name": "Insecure Configuration",
+        "issue_source": "Prisma Cloud",
+        "issue_category": "Misconfiguration",
+        "status_progress": "STATUS_025_RESOLVED",
+        "cas_issues_is_fixable": True,
+        "cas_issues_normalized_fields": {
+            "xdm.repository.name": "my-app",
+            "xdm.repository.organization": "my-org",
+            "xdm.vulnerability.cvss_score": 9.5,
+        },
+        "cas_sla_status": "IN_SLA",
+        "extra_field": "should be removed",
+    }
+
+    normalized_issue = normalize_and_filter_appsec_issue(raw_issue)
+
+    assert normalized_issue["internal_id"] == "issue_001"
+    assert normalized_issue["severity"] == "critical"
+    assert normalized_issue["issue_name"] == "Insecure Configuration"
+    assert normalized_issue["status"] == "Resolved"
+    assert normalized_issue["repository_name"] == "my-app"
+    assert normalized_issue["repository_organization"] == "my-org"
+    assert normalized_issue["cvss_score"] == 9.5
+    assert normalized_issue["is_fixable"] is True
+    assert normalized_issue["sla_status"] == "On Track"
+    assert "extra_field" not in normalized_issue
+
+
+def test_create_appsec_issues_filter_and_tables_no_matching_table():
+    """
+    Given:
+        Valid filter arguments that, when combined, do not match any single predefined Appsec issue type table.
+    When:
+        The create_appsec_issues_filter_and_tables function is called.
+    Then:
+        A DemistoException should be raised indicating no matching issue type found.
+    """
+    from CortexPlatformCore import create_appsec_issues_filter_and_tables
+    from CommonServerPython import DemistoException
+
+    # This combination of filters (validation and has_kev) does not exist in any single ISSUE_TYPE.filters set.
+    args = {"validation": "true", "has_kev": "true"}
+
+    with pytest.raises(DemistoException, match="No matching issue type found for the given filter combination"):
+        create_appsec_issues_filter_and_tables(args)
+
+
+@pytest.mark.parametrize(
+    "custom_fields_json,expected",
+    [
+        (
+            '[{"field1": "value1"}, {"field2": "value2"}, {"field3": "value3"}]',
+            {"field1": "value1", "field2": "value2", "field3": "value3"},
+        ),
+        (
+            '[{"field-1": "value1", "field_2": "value2", "field@3": "value3"}]',
+            {"field1": "value1", "field2": "value2", "field3": "value3"},
+        ),
+        ('[{"field-1": "first"}, {"field_1": "second"}]', {"field1": "first"}),
+        ("[]", {}),
+        ('[{"---": "value1", "@#$": "value2"}]', {}),
+        ('[{"123": "value1", "456field": "value2"}]', {"123": "value1", "456field": "value2"}),
+        ('[{"": "value1", "field2": "value2"}]', {"field2": "value2"}),
+    ],
+)
+def test_parse_custom_fields(custom_fields_json, expected):
+    """
+    Given:
+        A JSON string containing custom fields and expected parsed result.
+    When:
+        The parse_custom_fields function is called with the JSON string.
+    Then:
+        The function should return a dictionary with normalized field names matching the expected result.
+    """
+    from CortexPlatformCore import parse_custom_fields
+
+    result = parse_custom_fields(custom_fields_json)
+    assert result == expected
+
+
+def test_process_case_response_removes_specified_fields():
+    """
+    Given:
+        A case response containing fields that should be removed (layoutId, layoutRuleName, sourcesList,
+        previous_score, previous_score_source).
+    When:
+        The process_case_response function is called.
+    Then:
+        The specified fields should be removed from the response while preserving other fields.
+    """
+    from CortexPlatformCore import process_case_response
+
+    resp = {
+        "reply": {
+            "layoutId": "layout123",
+            "layoutRuleName": "rule456",
+            "sourcesList": ["source1", "source2"],
+            "caseId": "case789",
+            "status": "open",
+            "score": {"current_score": 85, "previous_score": 70, "previous_score_source": "manual", "max_score": 100},
+        }
+    }
+    result = process_case_response(resp)
+    assert "layoutId" not in result
+    assert "layoutRuleName" not in result
+    assert "sourcesList" not in result
+    assert result["caseId"] == "case789"
+    assert result["status"] == "open"
+    assert "previous_score" not in result["score"]
+    assert "previous_score_source" not in result["score"]
+    assert result["score"]["current_score"] == 85
+    assert result["score"]["max_score"] == 100
+
+
+def test_process_case_response_renames_incident_domain_to_case_domain():
+    """
+    Given:
+        A case response containing an incidentDomain field.
+    When:
+        The process_case_response function is called.
+    Then:
+        The incidentDomain field should be renamed to caseDomain and the original field should be removed.
+    """
+    from CortexPlatformCore import process_case_response
+
+    resp = {"reply": {"incidentDomain": "security", "caseId": "case101"}}
+    result = process_case_response(resp)
+    assert "incidentDomain" not in result
+    assert result["caseDomain"] == "security"
+    assert result["caseId"] == "case101"
+
+
+def test_run_playbook_command_empty_response_success():
+    """
+    Given:
+        A mock client that returns an empty response and valid playbook arguments.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The function should return a successful result with appropriate readable output.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "executed successfully" in result.readable_output
+    assert "test_playbook_123" in result.readable_output
+    assert "issue_1, issue_2" in result.readable_output
+
+
+def test_run_playbook_command_multiple_errors_response():
+    """
+    Given:
+        A mock client that returns error responses for multiple issues.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        A ValueError should be raised containing all error messages for the issues.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {
+        "issue_1": "Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert",
+        "issue_2": "Skipping execution of playbook multi_fail_playbook for alert issue_2, failed creating investigation playbook",
+        "issue_3": "Skipping execution of playbook multi_fail_playbook for alert issue_3, failed creating investigation playbook",
+    }
+
+    args = {"playbook_id": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
+
+    with pytest.raises(ValueError) as exc_info:
+        run_playbook_command(mock_client, args)
+
+    error_message = str(exc_info.value)
+    assert "multi_fail_playbook" in error_message
+    assert (
+        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert"
+        in error_message
+    )
+    assert (
+        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for alert issue_2, "
+        "failed creating investigation playbook" in error_message
+    )
+    assert (
+        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for alert issue_3, "
+        "failed creating investigation playbook" in error_message
+    )
+
+
+def test_run_playbook_command_string_issue_ids():
+    """
+    Given:
+        A mock client and arguments with string issue IDs that need to be converted to a list.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The function should successfully process the string issue IDs and return the expected output.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "issue_1, issue_2, issue_3" in result.readable_output
+    mock_client.run_playbook.assert_called_once()
+
+
+def test_run_playbook_command_client_call_parameters():
+    """
+    Given:
+        A mock client and valid playbook arguments.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The client.run_playbook method should be called with the correct parameters.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
+
+    run_playbook_command(mock_client, args)
+
+    mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
