@@ -10,10 +10,12 @@ The integration supports two authentication methods:
 - **Certificate**: PEM-encoded certificate from your SAP Service Key
 - **Private Key**: PEM-encoded private key from your SAP Service Key
 - **Client ID**: The `uaa.clientid` field from your SAP Service Key
+- **Token URL**: The `uaa.certurl` field from your SAP Service Key (for mTLS authentication)
 
 #### 2. Non-mTLS Authentication
 - **Client ID**: The `uaa.clientid` field from your SAP Service Key
 - **Client Secret**: The `uaa.clientsecret` field from your SAP Service Key
+- **Token URL**: The `uaa.url` field from your SAP Service Key (for Non-mTLS authentication)
 
 ### How to Obtain SAP Service Key Credentials
 
@@ -25,20 +27,42 @@ The integration supports two authentication methods:
 6. Download or copy the service key JSON
 
 The service key contains:
-- `url`: Server URL (use this for the integration's Server URL parameter)
-- `uaa.clientid`: Client ID
-- `uaa.clientsecret`: Client Secret (for Non-mTLS)
-- `certificate`: Certificate content (for mTLS)
-- `key`: Private key content (for mTLS)
+- `url`: API URL for Audit Log Service (use this for the integration's **API URL** parameter)
+- `uaa.url`: Token URL for Non-mTLS authentication (e.g., `https://<subdomain>.authentication.<region>.hana.ondemand.com`)
+- `uaa.certurl`: Token URL for mTLS authentication (e.g., `https://<subdomain>.authentication.cert.<region>.hana.ondemand.com`)
+- `uaa.clientid`: Client ID (required for both authentication methods)
+- `uaa.clientsecret`: Client Secret (required for Non-mTLS only)
+- `certificate`: Certificate content in PEM format (required for mTLS only)
+- `key`: Private key content in PEM format (required for mTLS only)
 
-### Configuration Notes
+### Configuration Parameters
 
-- **Server URL**: Use the `url` field from your service key (e.g., `https://auditlog-management.cfapps.us10.hana.ondemand.com`)
-- **First Fetch Time**: Determines how far back to fetch events on the first run (e.g., "3 days", "1 week")
+- **API URL**: Use the `url` field from your service key (e.g., `https://auditlog-management.cfapps.us10.hana.ondemand.com`)
+- **Token URL**:
+  - For **Non-mTLS**: Use the `uaa.url` field (e.g., `https://<subdomain>.authentication.<region>.hana.ondemand.com`)
+  - For **mTLS**: Use the `uaa.certurl` field (e.g., `https://<subdomain>.authentication.cert.<region>.hana.ondemand.com`)
+- **Authentication Type**: Select either "mTLS" (recommended) or "Non-mTLS"
+- **Client ID**: The `uaa.clientid` field from your service key
+- **Client Secret**: Required only for Non-mTLS authentication (`uaa.clientsecret`)
+- **Certificate**: Required only for mTLS authentication (PEM format)
+- **Private Key**: Required only for mTLS authentication (PEM format)
+- **First Fetch Time**: Determines how far back to fetch events on the first run (e.g., "3 days", "1 week"). Defaults to "3 minute ago" if not specified.
 - **Max Fetch**: Maximum number of events to fetch per cycle (default: 5000)
 
 ### Troubleshooting
 
-- If you receive authentication errors, verify that your Client ID and credentials (Secret or Certificate/Key) are correct
-- For mTLS authentication, ensure both Certificate and Private Key are provided in PEM format
-- Check that the Server URL matches the `url` field in your service key exactly
+- If you receive authentication errors, verify that:
+  - Your **Client ID** is correct
+  - For **Non-mTLS**: The **Client Secret** and **Token URL** (`uaa.url`) are correct
+  - For **mTLS**: The **Certificate**, **Private Key**, and **Token URL** (`uaa.certurl`) are correct and in PEM format
+- Ensure the **API URL** matches the `url` field in your service key exactly
+- Verify the **Token URL** corresponds to your chosen authentication type:
+  - Non-mTLS uses `uaa.url`
+  - mTLS uses `uaa.certurl`
+
+### Additional Resources
+
+For more information about SAP BTP Audit Log configuration and authentication, refer to the official SAP documentation:
+
+- **Create Instance of the auditlog-management Service**: [SAP Help Portal - Create Instance](https://help.sap.com/docs/btp/sap-business-technology-platform/audit-log-retrieval-api-for-global-accounts-in-cloud-foundry-environment#create-instance-of-the-auditlog-management-service)
+- **OAuth Access Token Creation**: [SAP Help Portal - OAuth Access](https://help.sap.com/docs/btp/sap-business-technology-platform/audit-log-retrieval-api-for-global-accounts-in-cloud-foundry-environment#create-an-oauth-access-token)
