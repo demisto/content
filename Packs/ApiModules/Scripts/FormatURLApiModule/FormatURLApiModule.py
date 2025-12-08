@@ -97,11 +97,7 @@ class URLCheck:
         special_chars = ("/", "?", "#")  # Any one of these states the end of the host / authority part in a URL
         # Find the earliest occurrence of any special character
         host_end_position = min(
-            (
-                self.modified_url[self.base:].index(char)
-                for char in special_chars
-                if char in self.modified_url[self.base:]
-            ),
+            (self.modified_url[self.base :].index(char) for char in special_chars if char in self.modified_url[self.base :]),
             default=-1,
         )
 
