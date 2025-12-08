@@ -7,8 +7,8 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: Generate your unique API token from the tower
-  display: APIKEY
+- display: APIKEY
+  additionalinfo: Generate your unique API token from the tower
   name: apikey
   required: true
   type: 4
@@ -16,9 +16,14 @@ configuration:
   name: insecure
   type: 8
   required: false
+- display: Operational API Key
+  name: operationalApiKey
+  type: 4
+  required: false
+  additionalinfo: For Silverfort 5.3 and above, you must include the operational API Key for calls using sam_account/domain instead of UPN. (Format is "Operational User ID:Operational User Secret")
 - display: External API Key
   name: externalApiKey
-  type: 8
+  type: 4
   required: false
   additionalinfo: For Silverfort 5.3 and above, you must include the external API Key for external calls
 description: Use the Silverfort integration to get and update Silverfort risk severity.
