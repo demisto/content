@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Trend Vision One v3
+  id: Trend Micro Vision One V3
   version: -1
 configuration:
 - additionalinfo: The base url for the Trend Vision One API
