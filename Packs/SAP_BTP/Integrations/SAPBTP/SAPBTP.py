@@ -160,7 +160,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
 
     token_url_param = params.get("token_url", "").strip().rstrip("/")
     if not token_url_param:
-        raise DemistoException("Token URL is required. Please provide the Service Key 'uaa.url' field.")
+        raise DemistoException("Token URL is required. For Non-mTLS use 'uaa.url', for mTLS use 'uaa.certurl'.")
 
     token_url = f"{token_url_param}/oauth/token"
 

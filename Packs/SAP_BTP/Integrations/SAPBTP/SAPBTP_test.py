@@ -9,6 +9,8 @@ from CommonServerPython import *
 
 import SAPBTP  # noqa: E402
 from SAPBTP import (  # noqa: E402
+    APIKeys,
+    APIValues,
     AuthType,
     Client,
     Config,
@@ -288,6 +290,46 @@ def test_parse_integration_params_success(params, expected_auth_type, expected_v
     assert result["client_id"] == MOCK_CLIENT_ID
 
 
+def test_parse_integration_params_mtls_with_insecure():
+    """Tests parse_integration_params allows mTLS with insecure=True (verify=False)."""
+    params = {
+        "url": SERVER_URL,
+        "token_url": AUTH_SERVER_URL,
+        "client_id": MOCK_CLIENT_ID,
+        "auth_type": AuthType.MTLS.value,
+        "certificate": MOCK_CERTIFICATE,
+        "private_key": MOCK_PRIVATE_KEY,
+        "insecure": True,
+    }
+
+    result = parse_integration_params(params)
+
+    assert result["auth_type"] == AuthType.MTLS.value
+    assert result["verify"] is False  # insecure=True means verify=False
+    assert result["certificate"] == MOCK_CERTIFICATE
+    assert result["private_key"] == MOCK_PRIVATE_KEY
+
+
+def test_parse_integration_params_mtls_with_secure():
+    """Tests parse_integration_params allows mTLS with insecure=False (verify=True)."""
+    params = {
+        "url": SERVER_URL,
+        "token_url": AUTH_SERVER_URL,
+        "client_id": MOCK_CLIENT_ID,
+        "auth_type": AuthType.MTLS.value,
+        "certificate": MOCK_CERTIFICATE,
+        "private_key": MOCK_PRIVATE_KEY,
+        "insecure": False,
+    }
+
+    result = parse_integration_params(params)
+
+    assert result["auth_type"] == AuthType.MTLS.value
+    assert result["verify"] is True  # insecure=False means verify=True
+    assert result["certificate"] == MOCK_CERTIFICATE
+    assert result["private_key"] == MOCK_PRIVATE_KEY
+
+
 # ========================================
 # Tests: Client Initialization
 # ========================================
@@ -353,7 +395,14 @@ def test_get_access_token_renewal_mtls(mocker, mock_context, client_mtls):
     token = client_mtls._get_access_token()
 
     assert token == MOCK_ACCESS_TOKEN
-    client_mtls._http_request.assert_called_once()
+
+    # Verify the request was made with correct parameters
+    call_args = client_mtls._http_request.call_args
+    assert call_args[1]["method"] == "POST"
+    assert call_args[1]["full_url"] == TOKEN_URL
+    assert call_args[1]["cert"] == ("/tmp/cert.pem", "/tmp/key.pem")
+    assert call_args[1]["data"][APIKeys.GRANT_TYPE.value] == APIValues.GRANT_TYPE_CLIENT_CREDENTIALS.value
+    assert call_args[1]["data"][APIKeys.CLIENT_ID.value] == MOCK_CLIENT_ID
 
 
 def test_get_access_token_mtls_without_cert_data_fail(mock_context):
@@ -393,6 +442,50 @@ def test_get_access_token_invalid_cache_renewal(mocker, mock_context, client_non
 
     token = client_non_mtls._get_access_token()
     assert token == MOCK_ACCESS_TOKEN
+
+
+def test_get_access_token_non_mtls_vs_mtls_request_structure(mocker, mock_context, client_non_mtls, client_mtls):
+    """Tests that Non-mTLS and mTLS use different authentication methods."""
+    # Mock for Non-mTLS
+    mock_non_mtls_request = mocker.patch.object(
+        client_non_mtls,
+        "_http_request",
+        return_value={ContextKeys.ACCESS_TOKEN.value: "non_mtls_token", ContextKeys.EXPIRES_IN.value: 3600},
+    )
+
+    # Mock for mTLS
+    mock_mtls_request = mocker.patch.object(
+        client_mtls,
+        "_http_request",
+        return_value={ContextKeys.ACCESS_TOKEN.value: "mtls_token", ContextKeys.EXPIRES_IN.value: 3600},
+    )
+
+    # Get tokens
+    non_mtls_token = client_non_mtls._get_access_token()
+
+    # Clear the integration context to prevent cache hit for mTLS client
+    set_integration_context({})
+
+    mtls_token = client_mtls._get_access_token()
+
+    # Verify tokens
+    assert non_mtls_token == "non_mtls_token"
+    assert mtls_token == "mtls_token"
+
+    # Verify Non-mTLS uses Basic Auth (auth parameter)
+    non_mtls_call = mock_non_mtls_request.call_args[1]
+    assert "auth" in non_mtls_call
+    assert non_mtls_call["auth"] == (MOCK_CLIENT_ID, MOCK_CLIENT_SECRET)
+    assert "params" in non_mtls_call
+    assert "cert" not in non_mtls_call
+
+    # Verify mTLS uses certificate (cert parameter) and data body
+    mtls_call = mock_mtls_request.call_args[1]
+    assert "cert" in mtls_call
+    assert mtls_call["cert"] == ("/tmp/cert.pem", "/tmp/key.pem")
+    assert "data" in mtls_call
+    assert mtls_call["data"][APIKeys.CLIENT_ID.value] == MOCK_CLIENT_ID
+    assert "auth" not in mtls_call
 
 
 # ========================================
@@ -1109,6 +1202,90 @@ def test_main_with_mtls_cert_creation(mocker):
 
     mock_create_cert.assert_called_once_with(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
     mock_return_results.assert_called_once_with("ok")
+
+
+def test_main_mtls_client_receives_cert_data(mocker):
+    """Tests that Client is initialized with cert_data tuple for mTLS."""
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": SERVER_URL,
+            "token_url": AUTH_SERVER_URL,
+            "client_id": MOCK_CLIENT_ID,
+            "certificate": MOCK_CERTIFICATE,
+            "private_key": MOCK_PRIVATE_KEY,
+            "auth_type": AuthType.MTLS.value,
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
+
+    mock_create_cert = mocker.patch("SAPBTP.create_mtls_cert_files", return_value=("/tmp/test_cert.pem", "/tmp/test_key.pem"))
+
+    # Spy on Client initialization
+    original_client = SAPBTP.Client
+    client_instances = []
+
+    def client_spy(*args, **kwargs):
+        instance = original_client(*args, **kwargs)
+        client_instances.append(instance)
+        return instance
+
+    mocker.patch("SAPBTP.Client", side_effect=client_spy)
+    mocker.patch("SAPBTP.return_results")
+
+    SAPBTP.main()
+
+    # Verify cert files were created
+    mock_create_cert.assert_called_once_with(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
+
+    # Verify Client was initialized with cert_data
+    assert len(client_instances) == 1
+    client = client_instances[0]
+    assert client.cert_data == ("/tmp/test_cert.pem", "/tmp/test_key.pem")
+    assert client.auth_type == AuthType.MTLS.value
+    assert client.client_secret is None
+
+
+def test_main_non_mtls_client_no_cert_data(mocker):
+    """Tests that Client is initialized without cert_data for Non-mTLS."""
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": SERVER_URL,
+            "token_url": AUTH_SERVER_URL,
+            "client_id": MOCK_CLIENT_ID,
+            "client_secret": {"password": MOCK_CLIENT_SECRET},
+            "auth_type": AuthType.NON_MTLS.value,
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
+
+    # Spy on Client initialization
+    original_client = SAPBTP.Client
+    client_instances = []
+
+    def client_spy(*args, **kwargs):
+        instance = original_client(*args, **kwargs)
+        client_instances.append(instance)
+        return instance
+
+    mocker.patch("SAPBTP.Client", side_effect=client_spy)
+    mocker.patch("SAPBTP.return_results")
+
+    SAPBTP.main()
+
+    # Verify Client was initialized without cert_data
+    assert len(client_instances) == 1
+    client = client_instances[0]
+    assert client.cert_data is None
+    assert client.auth_type == AuthType.NON_MTLS.value
+    assert client.client_secret == MOCK_CLIENT_SECRET
 
 
 def test_main_parse_params_error(mocker):

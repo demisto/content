@@ -17,7 +17,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-  additionalinfo: SAP Service Key field 'uaa.url' for OAuth2 authentication (e.g., https://<subdomain>.authentication.<region>.hana.ondemand.com). This is on a different subdomain than the API URL.
+  additionalinfo: For Non-mTLS use 'uaa.url' (e.g., https://<subdomain>.authentication.<region>.hana.ondemand.com). For mTLS use 'uaa.certurl' (e.g., https://<subdomain>.authentication.cert.<region>.hana.ondemand.com).
 - name: client_id
   display: Client ID
   required: true
