@@ -414,12 +414,10 @@ def msgraph_user_get(command: Command, additional_fields: bool) -> tuple[list[Co
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     user_outputs = []
     for output in entry_context:
-        output_key_account = get_output_key("Account", output)
-        output_key_msgraph_user = get_output_key("MSGraphUser", output)
+        output_key_account = get_output_key(output_key="Account", raw_context=output)
+        output_key_msgraph_user = get_output_key(output_key="MSGraphUser", raw_context=output)
         outputs = get_outputs(output_key_account, output)
-        demisto.debug(f"This is the output first = {outputs}")
         outputs.update(get_outputs(output_key_msgraph_user, output))
-        demisto.debug(f"This is the output second = {outputs}")
         user_outputs.append(
             create_user(
                 source=command.brand,
