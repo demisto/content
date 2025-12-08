@@ -3652,9 +3652,9 @@ script:
     - description: A comma-separated list of endpoint IDs to update their tags.
       name: endpoint_ids
       required: true
-    - description: A comma-separated list of tags to add to the endpoints.
+    - description: A comma-separated list of tags to add to the endpoints. Either this arguemnt or tags_to_remove is requierd.
       name: tags_to_add
-    - description: A comma-separated list of tags to remove from the endpoints.
+    - description: A comma-separated list of tags to remove from the endpoints. Either this arguemnt or tags_to_add is requierd.
       name: tags_to_remove
     description: Update tags of one or more endpoints.
     name: core-update-endpoint-tags
