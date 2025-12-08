@@ -902,6 +902,16 @@ def test_extract_pagination_handle_edge_cases(client_non_mtls, paging_header, ex
         assert result == expected_result
 
 
+def test_extract_pagination_handle_index_error_coverage(client_non_mtls):
+    """Tests _extract_pagination_handle IndexError exception path (lines 423-425)."""
+    # This header will cause split to return a list with only one element
+    # When trying to access index [1], it will raise IndexError
+    headers = {"Paging": "handle="}
+    result = client_non_mtls._extract_pagination_handle(headers)
+    # Should return None or empty string when IndexError occurs
+    assert result == "" or result is None
+
+
 @pytest.mark.parametrize(
     "page_data,expected_count,expected_calls",
     [
@@ -927,6 +937,51 @@ def test_fetch_events_with_pagination_stopping_conditions(mocker, client_non_mtl
 
     assert len(events) == expected_count
     assert client_non_mtls.get_audit_log_events.call_count == expected_calls
+
+
+def test_fetch_events_with_pagination_exact_limit_reached(mocker, client_non_mtls):
+    """Tests fetch_events_with_pagination stops when exactly max_events is reached (lines 496-497)."""
+    # Create exactly 10 events in first page
+    page1 = [{"uuid": f"event{i}", "time": f"2024-01-0{i}T00:00:00Z"} for i in range(1, 11)]
+
+    mocker.patch.object(
+        client_non_mtls,
+        "get_audit_log_events",
+        return_value=(page1, "handle_exists_but_should_not_fetch"),
+    )
+
+    # Request exactly 10 events
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 10)
+
+    # Should get exactly 10 events and stop (not fetch next page)
+    assert len(events) == 10
+    # Should only call once since we reached the limit
+    assert client_non_mtls.get_audit_log_events.call_count == 1
+
+
+def test_fetch_events_with_pagination_discards_newer_events(mocker, client_non_mtls):
+    """Tests fetch_events_with_pagination discards newer events when over limit (lines 509-511)."""
+    # Create 15 events across two pages
+    page1 = [{"uuid": f"event{i}", "time": f"2024-01-{i:02d}T00:00:00Z"} for i in range(1, 11)]
+    page2 = [{"uuid": f"event{i}", "time": f"2024-01-{i:02d}T00:00:00Z"} for i in range(11, 16)]
+
+    mocker.patch.object(
+        client_non_mtls,
+        "get_audit_log_events",
+        side_effect=[(page1, "handle1"), (page2, None)],
+    )
+
+    # Request only 12 events (should discard 3 newest)
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 12)
+
+    # Should get exactly 12 events (oldest ones)
+    assert len(events) == 12
+    # First event should be event1
+    assert events[0]["uuid"] == "event1"
+    # Last event should be event12 (not event15)
+    assert events[-1]["uuid"] == "event12"
+    # Verify we fetched both pages
+    assert client_non_mtls.get_audit_log_events.call_count == 2
 
 
 # ========================================
