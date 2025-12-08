@@ -315,7 +315,9 @@ def fetch_events(
 
 
 def get_event_id(event: dict):
-    """Extracts event ID using either the `id`, `guid`, or `filter.qid` field.
+    """
+    Extracts event ID using either the `id`, `guid`, or `filter.qid` field.
+    Used for id-based deduplication and logging.
 
     Args:
         event (dict): The raw event.
