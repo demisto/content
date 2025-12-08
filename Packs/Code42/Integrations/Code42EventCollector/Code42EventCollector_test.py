@@ -1,4 +1,5 @@
 import json
+import pytest
 from unittest.mock import MagicMock
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
@@ -6,7 +7,16 @@ from pytest_mock import MockerFixture
 import requests_toolbelt.sessions
 
 from CommonServerPython import *
-from Code42EventCollector import DATE_FORMAT
+from Code42EventCollector import (
+    DATE_FORMAT,
+    MAX_FETCH_AUDIT_LOGS,
+    MAX_FETCH_FILE_EVENTS,
+    MAX_AUDIT_LOGS_BATCH_SIZE,
+    MAX_FILE_EVENTS_BATCH_SIZE,
+    NEXT_TRIGGER_VALUE,
+    AuditLogLastRun,
+    FileEventLastRun,
+)
 
 TEST_URL = "https://test.com"
 
@@ -637,30 +647,73 @@ def test_get_events_command(mocker):
     assert command_result.readable_output
 
 
-# def test_next_trigger():
-#     """
-#     Given:
-#      - Fetching alerts.
+@pytest.mark.parametrize(
+    "last_run, expected_files_count, expected_files_next_trigger, expected_audits_count, expected_audits_next_trigger",
+    [
+        pytest.param(  # Empty last run (counts incremented and nextTrigger in 3 seconds)
+            {},
+            MAX_FILE_EVENTS_BATCH_SIZE,
+            NEXT_TRIGGER_VALUE,
+            MAX_AUDIT_LOGS_BATCH_SIZE,
+            NEXT_TRIGGER_VALUE,
+            id="First fetch",
+        ),
+        pytest.param(  # Halfway through batching (counts incremented and nextTrigger in 3 seconds)
+            {FileEventLastRun.CUMULATIVE_COUNT.value: 12000, AuditLogLastRun.CUMULATIVE_COUNT.value: 48000},
+            18000,
+            NEXT_TRIGGER_VALUE,
+            54000,
+            NEXT_TRIGGER_VALUE,
+            id="Middle batch",
+        ),
+        pytest.param(  # Last batch before reaching max fetch (counts reset and no nextTrigger)
+            {FileEventLastRun.CUMULATIVE_COUNT.value: 48000, AuditLogLastRun.CUMULATIVE_COUNT.value: 96000},
+            0,
+            None,
+            0,
+            None,
+            id="Last batch",
+        ),
+    ],
+)
+def test_next_trigger(
+    last_run: dict,
+    expected_files_count: int,
+    expected_files_next_trigger: str | None,
+    expected_audits_count: int,
+    expected_audits_next_trigger: str | None,
+):
+    """
+    Given:
+     - last run value and "File" and "Audit" event types to fetch.
 
-#     When:
-#      - The API returns the maximum amount of alerts.
+    When:
+     - Fetching in batches.
 
-#     Then:
-#      - Make sure the LastRun has the "nextTrigger" set to 0.
-#     """
-#     from Code42EventCollector import fetch_file_events, fetch_audit_logs
+    Then:
+     - Assert the cumulative count is correctly incremented and nextTrigger is set in the next run when batching is in progress.
+     - Assert the cumulative count is reset and nextTrigger is None in the next run when batching completes.
+    """
+    from Code42EventCollector import fetch_audit_logs, fetch_file_events
 
-#     LIMIT = 100
+    class MockClient:
+        def get_file_events(*_, **__) -> list[dict]:
+            return [
+                {"event": {"id": f"{i}"}, "_time": datetime(2026, 1, 1, tzinfo=timezone.utc) + timedelta(seconds=i)}
+                for i in range(MAX_FILE_EVENTS_BATCH_SIZE)
+            ]
 
-#     class MockClient:
-#         def get_file_events(*_, **__):
-#             return [{"_time": datetime(2000, 1, 1, tzinfo=timezone.utc)}] * LIMIT
+        def get_audit_logs(*_, **__) -> list[dict]:
+            return [
+                {"event": {"id": f"{j}"}, "_time": datetime(2026, 1, 1, tzinfo=timezone.utc) + timedelta(seconds=j)}
+                for j in range(MAX_AUDIT_LOGS_BATCH_SIZE)
+            ]
 
-#         def get_audit_logs(*_, **__):
-#             return [{"_time": datetime(2000, 1, 1, tzinfo=timezone.utc)}] * LIMIT
+    _, file_event_last_run = fetch_file_events(MockClient, last_run, MAX_FETCH_FILE_EVENTS)  # type: ignore
+    _, audit_logs_last_run = fetch_audit_logs(MockClient, last_run, MAX_FETCH_AUDIT_LOGS)  # type: ignore
 
-#     _, file_event_last_run = fetch_file_events(MockClient, {}, LIMIT)  # type: ignore
-#     _, audit_logs_last_run = fetch_audit_logs(MockClient, {}, LIMIT)  # type: ignore
+    assert file_event_last_run[FileEventLastRun.CUMULATIVE_COUNT.value] == expected_files_count
+    assert file_event_last_run[FileEventLastRun.NEXT_TRIGGER.value] == expected_files_next_trigger
 
-#     assert file_event_last_run["nextTrigger"] == "0"
-#     assert audit_logs_last_run["nextTrigger"] == "0"
+    assert audit_logs_last_run[AuditLogLastRun.CUMULATIVE_COUNT.value] == expected_audits_count
+    assert audit_logs_last_run[AuditLogLastRun.NEXT_TRIGGER.value] == expected_audits_next_trigger

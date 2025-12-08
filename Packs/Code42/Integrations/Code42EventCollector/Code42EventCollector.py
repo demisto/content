@@ -46,6 +46,9 @@ class AuditLogLastRun(str, Enum):
     NEXT_TRIGGER = "audit-log-next-trigger"  # helps determine when to trigger next fetch
 
 
+NEXT_TRIGGER_VALUE = "3"  # seconds to wait before triggering the next fetch iteration when batching is in progress
+
+
 class EventType(str, Enum):
     FILE = "file"
     AUDIT = "audit"
@@ -331,7 +334,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
             )
         # Otherwise, if batched fetching is still ongoing, keep latest cumulative count and trigger near immediate next fetch
         else:
-            next_trigger = "3"  # 3 seconds
+            next_trigger = NEXT_TRIGGER_VALUE
             demisto.debug(
                 f"Batch continues for {EventType.FILE.value} events. "
                 f"New progress={latest_cumulative_count}/{max_fetch_file_events}, {next_trigger=}."
@@ -412,7 +415,7 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
             )
         # Otherwise, if batched fetching is still ongoing, keep latest cumulative count and trigger near immediate next fetch
         else:
-            next_trigger = "3"  # 3 seconds
+            next_trigger = NEXT_TRIGGER_VALUE
             demisto.debug(
                 f"Batch continues for {EventType.AUDIT.value} logs. "
                 f"New progress={latest_cumulative_count}/{max_fetch_audit_events}, {next_trigger=}."
@@ -481,8 +484,8 @@ def fetch_events(
         total_event_count += len(audit_logs)
 
     # If at least one type has not completed batching, trigger next fetch iteration in 3 seconds
-    if last_run.get(FileEventLastRun.NEXT_TRIGGER.value) == "3" or last_run.get(AuditLogLastRun.NEXT_TRIGGER.value) == "3":
-        last_run["nextTrigger"] = "3"
+    if last_run.get(FileEventLastRun.NEXT_TRIGGER.value) or last_run.get(AuditLogLastRun.NEXT_TRIGGER.value):
+        last_run["nextTrigger"] = NEXT_TRIGGER_VALUE
         demisto.debug("At least on event type has batching in progress. Next run will be triggered in 3 seconds.")
     else:
         last_run["nextTrigger"] = None
