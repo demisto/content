@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException, entryTypes
 from AggregatedCommandApiModule import *
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 
 
 # =================================================================================================
@@ -205,6 +205,220 @@ def test_extract_input_raises_on_empty_execute_command_result(mocker):
 
     with pytest.raises(ValueError, match="No valid indicators found in the input data."):
         create_and_extract_indicators(["https://a.com"], "url")
+
+
+def test_mismatched_types_allowed_when_flag_false(mocker):
+    """
+    Given:
+        - extractIndicators returns both the expected type and another type.
+        - mark_mismatched_type_as_invalid = False.
+    When:
+        - Calling create_and_extract_indicators.
+    Then:
+        - The input is treated as valid.
+        - Only the expected type is turned into IndicatorInstance objects.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[
+            {
+                "EntryContext": {
+                    "ExtractedIndicators": {
+                        "URL": ["https://a.com"],
+                        "IP": ["1.1.1.1"],
+                    }
+                }
+            }
+        ],
+    )
+
+    instances, _ = create_and_extract_indicators(
+        ["https://a.com"],
+        "URL",
+        mark_mismatched_type_as_invalid=False,
+    )
+
+    assert len(instances) == 1
+    assert instances[0].extracted_value == "https://a.com"
+    assert getattr(instances[0], "final_status", None) in (None, Status.SUCCESS)
+
+
+def test_mismatched_types_marked_invalid_when_flag_true(mocker):
+    """
+    Given:
+        - extractIndicators returns both the expected type and another type.
+        - mark_mismatched_type_as_invalid = True.
+    When:
+        - Calling _process_single_input.
+    Then:
+        - The input is treated as invalid.
+        - A failure IndicatorInstance with hr_message="Invalid" is created.
+    """
+    from AggregatedCommandApiModule import _process_single_input
+
+    mocker.patch(
+        "AggregatedCommandApiModule._execute_extraction",
+        return_value=(
+            {"URL": ["https://a.com"], "IP": ["1.1.1.1"]},
+            "HR_FRAGMENT",
+            None,
+        ),
+    )
+
+    valid_set: set[str] = set()
+    invalid_set: set[str] = set()
+
+    instances, hr = _process_single_input(
+        raw="https://a.com",
+        expected_type_lower="url",
+        mark_mismatched_type_as_invalid=True,
+        valid_set=valid_set,
+        invalid_set=invalid_set,
+    )
+
+    assert hr == "HR_FRAGMENT"
+    assert len(instances) == 1
+
+    inst = instances[0]
+    assert inst.raw_input == "https://a.com"
+    assert inst.hr_message == "Invalid"
+    assert inst.final_status == Status.FAILURE
+
+    assert "https://a.com" in invalid_set
+    assert not valid_set  # no valid indicators were added
+
+
+def test_process_single_input_marks_failure_on_extraction_error(mocker):
+    """
+    Given:
+        - _execute_extraction returns an error_message for the raw input.
+    When:
+        - Calling _process_single_input.
+    Then:
+        - A failure IndicatorInstance is created with context_message
+          'extractIndicators Failed' and the error_message set.
+        - The raw input is added to invalid_set.
+        - valid_set remains unchanged.
+    """
+    from AggregatedCommandApiModule import _process_single_input
+
+    mocker.patch(
+        "AggregatedCommandApiModule._execute_extraction",
+        return_value=({}, "HR_FRAGMENT", "boom error"),
+    )
+
+    valid_set: set[str] = set()
+    invalid_set: set[str] = set()
+
+    instances, hr = _process_single_input(
+        raw="https://a.com",
+        expected_type_lower="url",
+        mark_mismatched_type_as_invalid=False,
+        valid_set=valid_set,
+        invalid_set=invalid_set,
+    )
+
+    assert hr == "HR_FRAGMENT"
+    assert len(instances) == 1
+
+    inst = instances[0]
+    assert inst.raw_input == "https://a.com"
+    assert inst.context_message == "extractIndicators Failed"
+    assert inst.error_message == "boom error"
+    assert inst.final_status == Status.FAILURE
+
+    assert "https://a.com" in invalid_set
+    assert not valid_set
+
+
+def test_split_expected_and_other_types_only_expected(mocker):
+    """
+    Small sanity test for the helper behavior via the main flow:
+    Given:
+        - extractIndicators returns only the expected type.
+    When:
+        - Calling create_and_extract_indicators.
+    Then:
+        - The indicators are treated as valid and returned as instances.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[
+            {
+                "EntryContext": {
+                    "ExtractedIndicators": {
+                        "URL": ["https://a.com", "https://b.com"],
+                    }
+                }
+            }
+        ],
+    )
+
+    instances, _ = create_and_extract_indicators(
+        ["https://a.com"],
+        "URL",
+        mark_mismatched_type_as_invalid=True,  # should still be fine, no other types
+    )
+
+    values = {inst.extracted_value for inst in instances}
+    assert values == {"https://a.com", "https://b.com"}
+
+
+def test_mixed_valid_and_error_inputs(mocker):
+    """
+    Given:
+        - Two inputs: one 'good' and one 'bad'.
+        - 'good' returns a valid URL.
+        - 'bad' raises an error in extractIndicators.
+    When:
+        - Calling create_and_extract_indicators.
+    Then:
+        - No exception is raised.
+        - We get one successful IndicatorInstance for the valid URL.
+        - We get one failure IndicatorInstance for the error case.
+        - The markdown HR contains both inputs and the error message.
+    """
+
+    def _exec_side_effect(command, args, extract_contents=False):
+        assert command == "extractIndicators"
+        text = args["text"]
+        if text == "google":
+            return [
+                {
+                    "EntryContext": {
+                        "ExtractedIndicators": {
+                            "URL": ["google"],
+                        }
+                    }
+                }
+            ]
+        if text == "bad":
+            raise Exception("extract failed for bad")
+        raise AssertionError(f"Unexpected input: {text}")
+
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        side_effect=_exec_side_effect,
+    )
+
+    instances, hr = create_and_extract_indicators(["google", "bad"], "URL")
+
+    # 1) Valid instances
+    valid_values = {i.extracted_value for i in instances if getattr(i, "extracted_value", None) is not None}
+    assert valid_values == {"google"}
+
+    # 2) Error / failure instance
+    failure_instances = [i for i in instances if getattr(i, "final_status", None) == Status.FAILURE]
+    assert len(failure_instances) == 1
+    failure = failure_instances[0]
+    assert failure.raw_input == "bad"
+    assert failure.context_message == "extractIndicators Failed"
+    assert failure.error_message == "extract failed for bad"
+
+    # 3) HR contains both sections and the error
+    assert "Result for name=extractIndicators args='text': google" in hr
+    assert "Result for name=extractIndicators args='text': bad" in hr
+    assert "Error Message: extract failed for bad" in hr
 
 
 @pytest.mark.parametrize(
@@ -1601,7 +1815,7 @@ def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modif
         - Else STALE (including invalid/no modifiedTime).
     """
     mod = module_factory()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     def iso(dt: datetime) -> str:
         # Code under test accepts 'Z' or '+00:00'; it replaces Z → +00:00, so we emit 'Z' here.
@@ -1635,7 +1849,7 @@ def test_get_indicator_status_from_ioc_boundary_freshness_window(module_factory)
         - Returns FRESH at the boundary (minus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     boundary_time = now - STATUS_FRESHNESS_WINDOW + timedelta(hours=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
@@ -1652,7 +1866,7 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
         - Returns STALE at the boundary (plus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     boundary_time = now - STATUS_FRESHNESS_WINDOW - timedelta(seconds=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}

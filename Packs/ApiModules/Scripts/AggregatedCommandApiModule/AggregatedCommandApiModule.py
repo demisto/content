@@ -3,7 +3,6 @@ from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
 from functools import cached_property
-import traceback
 from typing import Any
 from datetime import datetime, timedelta
 
@@ -172,13 +171,13 @@ class IndicatorInstance:
     context_message: str | None = None
     error_message: str | None = None
     final_status: Status = Status.SUCCESS
-    
+
     def _is_valid(self) -> bool:
         return bool(self.extracted_value)
-    
+
     def _tim_found(self) -> bool:
         return bool(self.tim_context)
-    
+
     def _build_failure_context(self) -> str | None:
         """Builds a consistent failure context message."""
         messages: list[str] = []
@@ -190,7 +189,7 @@ class IndicatorInstance:
 
         if not self._tim_found():
             messages.append("Failed to extract from TIM using findIndicator.")
-        
+
         return " | ".join(messages) if messages else None
 
     def compute_status(self) -> None:
@@ -202,16 +201,15 @@ class IndicatorInstance:
         if not self._is_valid():
             self.final_status = Status.FAILURE
             self.context_message = self.context_message or "Invalid"
-            return
 
         # Case 2 – Valid + Successful enrichment pipeline
         elif self.enriched and self._tim_found():
             self.final_status = Status.SUCCESS
-            return
 
-        # --- Failure Scenarios ---
-        self.final_status = Status.FAILURE
-        self.context_message = self._build_failure_context()
+        # Case 3 – Enrichment Pipeline failed
+        else:
+            self.final_status = Status.FAILURE
+            self.context_message = self._build_failure_context()
 
 
 class CommandType(Enum):
@@ -419,11 +417,11 @@ class ContextBuilder:
     """
     A builder class to handle the aggregation and merging of context data.
     TIM data will be added under final_context_path(val.Value && val.Value == obj.Value) after some enrichments.
-    DBot scores will be added to context under Common.DBotScore.CONTEXT_PATH.
     Other commands results will be added to context as is.
+
     Args:
-        indicator (Indicator): The indicator object.
-        final_context_path (str): The final context path.
+        indicator_schema (IndicatorSchema): The indicator schema definition.
+        final_context_path (str): The final context path where the aggregated data will be stored.
     """
 
     def __init__(self, indicator_schema: IndicatorSchema, final_context_path: str):
@@ -435,13 +433,13 @@ class ContextBuilder:
 
     def add_indicator_instances(self, indicator_instances: list[IndicatorInstance]):
         """
-        Adds TIM context to the final context.
-        TIM context expected format:
-        {"https://example.com": [{}, {}]}.
-        Adds DBot scores to the final context.
+        Registers a list of indicator instances to be included in the final context build.
+
+        These instances hold the lifecycle state (Created, Enriched, TIM Data) of
+        specific indicator values.
+
         Args:
-            tim_ctx (ContextResult): The TIM context.
-            dbot_scores (DBotScoreList): The DBot scores.
+            indicator_instances (list[IndicatorInstance]): The list of indicator instances to add.
         """
         self.indicator_instances.extend(indicator_instances)
 
@@ -449,6 +447,7 @@ class ContextBuilder:
         """
         Adds context from non enrichment commands.
         Will be added to the final context as is.
+
         Args:
             commands_ctx (ContextResult): The commands context.
         """
@@ -456,39 +455,34 @@ class ContextBuilder:
 
     def build(self) -> ContextResult:
         """
-        Builds the final context by merging context and adding fields to indicators.
-        TIM Context will be constructed as follows:
+        Builds the final context by merging 'other' context and constructing the aggregated indicator objects.
+
+        The Context will be constructed as follows:
         {
-            self.final_context_path(val.Value && val.Value == obj.Value):[
+            self.final_context_path(val.Value && val.Value == obj.Value): [
                 {
-                    "Value":"Example",
-                    "MaxScore":1, //Optional
-                    "MaxVerdict":"Malicious", //Optional
-                    "TIMScore":1, //Optional
-                    "TIMCVSS":1, //Optional
-                    "Status": "Stale"/"Fresh"/"Manual",
+                    "Value": "Example",
+                    "MaxScore": 1,              # Enriched
+                    "MaxVerdict": "Malicious",  # Enriched
+                    "TIMScore": 1,              # From TIM
+                    "TIMCVSS": 5.5,             # From TIM
+                    "Status": "Fresh",          # From TIM/Logic
                     "ModifiedTime": "2022-01-01T00:00:00Z",
-                    "Results": [{
-                        "Brand": "Brand1",
-                        "Score": 1,
-                        "DetectionEngines": 1,
-                        "PositiveDetections": 1,
-                        "Data": "Example",
-                        "additionalFields": {}, //Optional
-                        },
+                    "Results": [                # From Enrichment Brands
                         {
-                        "Brand": "Brand2",
-                        "Score": 2,
-                        "DetectionEngines": 2,
-                        "PositiveDetections": 2,
-                        "Data": "Example",
-                        }]
-                },
+                            "Brand": "Brand1",
+                            "Score": 1,
+                            "Data": "Example",
+                            ...
+                        }
+                    ]
+                }
             ],
-            "OtherCommandsResults": ContextResult,
-            }
+            ... (Other keys from add_other_commands_results)
+        }
+
         Returns:
-            ContextResult: The final context.
+            ContextResult: The final cleaned context dictionary.
         """
         final_context: ContextResult = {}
         if self.indicator_instances:
@@ -501,18 +495,12 @@ class ContextBuilder:
 
     def create_indicator(self) -> list[dict]:
         """
-        Constructs the final indicator list from the reputation context as follows:
-        Input:
-        {"https://example.com": [{"Brand": "Brand1","Data": "Example"},{"Brand": "Brand2","Data": "Example"}]}
-        Result:
-        [{
-            "Value": "https://example.com",
-            "Other Fields": ...
-            "Results": [{"Brand": "Brand1","Data": "Example"},
-                        {"Brand": "Brand2","Data": "Example"}]
-        }]
+        Iterates over the stored IndicatorInstances and constructs the standardized dictionary structure.
+
+        It processes both successful (found in TIM) and failed (Error/Invalid) instances.
+
         Returns:
-            list[dict]: The final list structure.
+            list[dict]: A list of dictionaries representing the final state of each indicator.
         """
         results: list[dict] = []
         for indicator_instance in self.indicator_instances:
@@ -523,25 +511,95 @@ class ContextBuilder:
                 results.append(self._build_success_indicator(indicator_instance))
 
         return results
-    
-    def _build_failure_indicator(self, instance: IndicatorInstance) -> dict[str,Any]:
-        return {"Value": instance.extracted_value or instance.raw_input,
-                "Status": IndicatorStatus.ERROR.value,
-                "Message": instance.context_message}
-    
+
+    def _build_failure_indicator(self, instance: IndicatorInstance) -> dict[str, Any]:
+        """
+        Builds context entry for an indicator that failed processing.
+
+        Args:
+            instance (IndicatorInstance): The instance.
+
+        Return:
+            dict: A dict represents failed entry context for the final context.
+        """
+        return {
+            "Value": instance.extracted_value or instance.raw_input,
+            "Status": IndicatorStatus.ERROR.value,
+            "Message": instance.context_message,
+        }
+
     def _get_tim_entry(self, instance: IndicatorInstance) -> dict | None:
-        """Returns the first TIM result from tim_context with Brand='TIM'."""
+        """
+        Returns the first TIM result from tim_context with Brand='TIM' (only one should exists per indicatorInstance).
+
+        Args:
+            instance (IndicatorInstance): The instance.
+
+        Return:
+            dict: The TIM results from tim_context.
+        """
         if not instance.tim_context:
             return None
         return next((i for i in instance.tim_context if i.get("Brand") == "TIM"), None)
-    
+
     def _get_file_hashes(self, instance: IndicatorInstance, tim_obj: dict) -> dict:
-        """Returns file hashes from TIM or builds a default hash dict."""
+        """
+        Returns file hashes dict from TIM or builds a default hash dict.
+        Extract all hashes values from the tim_obj if exists.
+        Otherwise (Can happen when no enrichment happen so the CustomFields was empty) will create Hash dict
+        from the value itself.
+        Example:
+        1)  tim_obj = {
+                "SHA256":"AAA",
+                "MD5":"BBB",
+                "Other":"CCC"
+            }
+            Returns = {
+                "SHA256":"AAA",
+                "MD5":"BBB"
+            }
+        2) tim_obj = {
+            "Other":"CCC"
+        }
+           instance.extracted_value = "AAA" # Some SHA256 Value
+           Return = {
+               "SHA256": "AAA"
+           }
+
+        Args:
+            instance (IndicatorInstance): The instance.
+
+        Return:
+            dict: The TIM results from tim_context.
+        """
         return self.indicator_schema.get_all_values_from(tim_obj) or build_hash_dict(instance.extracted_value)
-        
-    def _build_success_indicator(self, instance: IndicatorInstance) -> dict[str,Any]:
-        # 3. Handle Success Case (Logic extracted from original Case 2)
-        # If we are here, we know it is valid, enriched, and found.
+
+    def _build_success_indicator(self, instance: IndicatorInstance) -> dict[str, Any]:
+        """
+        Builds the context entry for a successfully processed indicator.
+        Extracts metadata (Status, ModifiedTime, Scores) from the TIM result.
+
+        Example:
+            Input Instance:
+                instance.extracted_value = "1.1.1.1"
+                instance.tim_context = [
+                    {"Brand": "TIM", "Status": "Fresh", "ModifiedTime": "2023-01-01T00:00:00Z", "Score": 3},
+                    {"Brand": "VirusTotal", "Score": 2}
+                ]
+
+            Output:
+                {
+                    "Value": "1.1.1.1",
+                    "Status": "Fresh",
+                    "ModifiedTime": "2023-01-01T00:00:00Z",
+                    "TIMScore": 3,
+                    "Results": [
+                        # Note: Status and ModifiedTime are popped from the TIM entry
+                        {"Brand": "TIM", "Score": 3},
+                        {"Brand": "VirusTotal", "Score": 2}
+                    ]
+                }
+        """
         value = instance.extracted_value
         current_indicator: dict[str, Any] = {"Value": value}
 
@@ -549,8 +607,7 @@ class ContextBuilder:
         if tim_obj := self._get_tim_entry(instance):
             # Extract File hashing if file is hash
             if self.indicator_schema.type == "file":
-                
-                current_indicator["Hashes"] = self._get_file_hashes(instance,tim_obj)
+                current_indicator["Hashes"] = self._get_file_hashes(instance, tim_obj)
             # Main Indicator Fields
             current_indicator["Status"] = pop_dict_value(tim_obj, "Status")
             current_indicator["ModifiedTime"] = pop_dict_value(tim_obj, "ModifiedTime")
@@ -566,9 +623,10 @@ class ContextBuilder:
 
     def enrich_final_indicator(self, indicator_list: list[dict]):
         """
-        Adds enrichment fields to the final indicator objects depending on the context output mapping.
+        Calculates aggregate fields (MaxScore, MaxVerdict) for the final indicator list.
+
         Args:
-            indicator_list (list[dict]): The list of indicators to enrich.
+            indicator_list (list[dict]): The list of indicator dictionaries to enrich in-place.
         """
         for indicator in indicator_list:
             if "Score" in self.indicator_schema.context_output_mapping and indicator.get("Status") != IndicatorStatus.ERROR.value:
@@ -947,7 +1005,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
                 return []
             return iocs
         except Exception as e:
-            msg = f"Error searching TIM: {e}\n{traceback.format_exc()}"
+            msg = f"Error searching TIM: {str(e)}"
             demisto.debug(msg)
             for indicator_instance in self.indicator_instances:
                 if indicator_instance.extracted_value:
@@ -1274,10 +1332,9 @@ class ReputationAggregatedCommand(AggregatedCommand):
             human_readable += "\n\n".join(self.verbose_outputs)
 
         # Return an error only if there were no successes AND at least one of those was a hard failure.
-        if all(entry.status == Status.FAILURE or entry.message == "No matching indicators found." for entry in final_entires
-               ) and any(
-            entry.status == Status.FAILURE for entry in final_entires
-        ):
+        if all(
+            entry.status == Status.FAILURE or entry.message == "No matching indicators found." for entry in final_entires
+        ) and any(entry.status == Status.FAILURE for entry in final_entires):
             # Error when all failed, or some failed and the other had no indicators found.
             # If no indicators found, it is not an error.
             demisto.debug("All commands failed or no indicators found. Returning an error entry.")
@@ -1366,93 +1423,148 @@ def create_and_extract_indicators(
     Extract indicators from the provided input list for a specific indicator type,
     using the `extractIndicators` command.
     Create IndicatorInstance foreach of the inputs and if is the right type will update the extracted field.
-
-    Args:
-        data (list[str]): Raw input values to validate/extract.
-        indicator_type (str): Expected indicator type (e.g., "url", "file").
-        mark_mismatched_type_as_invalid (bool): When True, inputs that are also
-            extracted as additional types (e.g., https://1.1.1.1.com is extracted as IP and URL) are treated as
-            invalid for this call.
-
-    Returns:
-        tuple[list[IndicatorInstance], str]:
-            - list[IndicatorInstance]: list of all created indicator instances.
-            - str: Human-readable markdown summary of the extraction per input.
-
-    Raises:
-        ValueError: If no valid indicators of the requested type are found at all.
     """
     if not data:
         raise ValueError("No data provided to enrich")
 
     indicators_instances: list[IndicatorInstance] = []
-    hr: str = ""
+    full_hr: list[str] = []
     valid_set: set[str] = set()
     invalid_set: set[str] = set()
     expected_type_lower = indicator_type.lower()
 
     for raw in data:
-        demisto.debug(f"Validating input '{raw}' using extractIndicators")
-
-        hr += f"\n\n### Result for name=extractIndicators args='text': {raw}\n\n"
-
-        try:
-            results = execute_command("extractIndicators", {"text": raw}, extract_contents=False)
-
-            extracted_ctx = results[0].get("EntryContext", {}).get("ExtractedIndicators", {}) or {}
-            demisto.debug(f"extractIndicators context for '{raw}': {extracted_ctx}")
-            hr += tableToMarkdown(name="Extracted Indicators", t=extracted_ctx)
-
-        except Exception as ex:
-            msg = str(ex)
-            demisto.debug(f"extractIndicators failed for '{raw}': {msg}")
-            hr += f"Error Message: {msg}"
-            if raw not in invalid_set:
-                indicators_instances.append(IndicatorInstance(raw_input=raw,
-                                                              context_message="extractIndicators Failed",
-                                                              error_message=msg,
-                                                              final_status=Status.FAILURE))
-                invalid_set.add(raw)
+        if raw in valid_set or raw in invalid_set:
             continue
-
-        if not extracted_ctx:
-            demisto.debug("Invalid Input (no indicators extracted)")
-            if raw not in invalid_set:
-                indicators_instances.append(IndicatorInstance(raw_input=raw, final_status=Status.FAILURE, hr_message="Invalid"))
-                invalid_set.add(raw)
-
-        else:
-            expected_indicators = []
-            has_other_types = False
-            for key, indicators in extracted_ctx.items():
-                if key.lower() == expected_type_lower:
-                    expected_indicators = indicators
-                else:
-                    has_other_types = True
-            demisto.debug(f"expected for '{raw}': {expected_indicators}, other types exits={has_other_types}")
-
-            if not expected_indicators and raw not in invalid_set:
-                # Extracted something, but not of the expected type -> invalid for this call
-                demisto.debug("Invalid input (no indicators of expected type)")
-                indicators_instances.append(IndicatorInstance(raw_input=raw, hr_message="Invalid", final_status=Status.FAILURE))
-                invalid_set.add(raw)
-            elif mark_mismatched_type_as_invalid and has_other_types and raw not in invalid_set:
-                # We got expected type + other types and we choose to treat that as invalid
-                demisto.debug("Invalid input (mismatched additional types present)")
-                indicators_instances.append(IndicatorInstance(raw_input=raw, hr_message="Invalid", final_status=Status.FAILURE))
-                invalid_set.add(raw)
-            else:
-                demisto.debug("Valid input")
-                for expected_indicator in expected_indicators:
-                    if expected_indicator not in valid_set:
-                        indicators_instances.append(IndicatorInstance(raw_input=raw, extracted_value=expected_indicator))
-                        valid_set.add(expected_indicator)
+        instances_for_raw, hr = _process_single_input(
+            raw=raw,
+            expected_type_lower=expected_type_lower,
+            mark_mismatched_type_as_invalid=mark_mismatched_type_as_invalid,
+            valid_set=valid_set,
+            invalid_set=invalid_set,
+        )
+        indicators_instances.extend(instances_for_raw)
+        full_hr.append(hr)
 
     if not valid_set:
         raise ValueError("No valid indicators found in the input data.")
+
     demisto.debug(f"Valid Inputs: {valid_set}")
     demisto.debug(f"Invalid Inputs: {invalid_set}")
-    return indicators_instances, hr
+
+    return indicators_instances, "".join(full_hr)
+
+
+def _process_single_input(
+    raw: str,
+    expected_type_lower: str,
+    mark_mismatched_type_as_invalid: bool,
+    valid_set: set[str],
+    invalid_set: set[str],
+) -> tuple[list[IndicatorInstance], str]:
+    """
+    Handle extractIndicators + IndicatorInstance creation for a single raw input.
+    Mutates valid_set / invalid_set to keep global bookkeeping.
+    """
+    demisto.debug(f"Validating input '{raw}' using extractIndicators")
+
+    instances: list[IndicatorInstance] = []
+
+    extracted_ctx, hr_fragment, error_message = _execute_extraction(raw)
+
+    # If extraction failed, mark as invalid and return
+    if error_message is not None:
+        if raw not in invalid_set:
+            instances.append(
+                IndicatorInstance(
+                    raw_input=raw,
+                    context_message="extractIndicators Failed",
+                    error_message=error_message,
+                    final_status=Status.FAILURE,
+                )
+            )
+            invalid_set.add(raw)
+        return instances, hr_fragment
+
+    # No indicators at all -> invalid
+    expected_indicators, has_other_types = _split_expected_and_other_types(extracted_ctx, expected_type_lower)
+    demisto.debug(f"expected for '{raw}': {expected_indicators}, other types exits={has_other_types}")
+
+    # Extracted something, but none are of the expected type -> invalid
+    # Or expected type + other types and we treat that as invalid
+    if (not expected_indicators and raw not in invalid_set) or (
+        mark_mismatched_type_as_invalid and has_other_types and raw not in invalid_set
+    ):
+        demisto.debug("Invalid input")
+        instances.append(
+            IndicatorInstance(
+                raw_input=raw,
+                hr_message="Invalid",
+                final_status=Status.FAILURE,
+            )
+        )
+        invalid_set.add(raw)
+        return instances, hr_fragment
+
+    # Valid input – create IndicatorInstance per unique expected indicator
+    demisto.debug("Valid input")
+    for expected_indicator in expected_indicators:
+        if expected_indicator not in valid_set:
+            instances.append(
+                IndicatorInstance(
+                    raw_input=raw,
+                    extracted_value=expected_indicator,
+                )
+            )
+            valid_set.add(expected_indicator)
+
+    return instances, hr_fragment
+
+
+def _execute_extraction(raw: str) -> tuple[dict, str, str | None]:
+    """
+    Execute the extractIndicators command for a single raw input and build the HR fragment.
+
+    Returns:
+        extracted_ctx (dict): ExtractedIndicators context (may be empty).
+        hr_fragment (str): Markdown describing the result for this input.
+        error_message (str | None): Error message if extraction failed, otherwise None.
+    """
+    hr: str = f"\n\n### Result for name=extractIndicators args='text': {raw}\n\n"
+
+    try:
+        results = execute_command("extractIndicators", {"text": raw}, extract_contents=False)
+        extracted_ctx = results[0].get("EntryContext", {}).get("ExtractedIndicators", {}) or {}
+        demisto.debug(f"extractIndicators context for '{raw}': {extracted_ctx}")
+        hr += tableToMarkdown(name="Extracted Indicators", t=extracted_ctx)
+        return extracted_ctx, hr, None
+
+    except Exception as ex:
+        msg = str(ex)
+        demisto.debug(f"extractIndicators failed for '{raw}': {msg}")
+        hr += f"Error Message: {msg}"
+        # Return empty ctx + error message; caller decides how to mark invalid
+        return {}, hr, msg
+
+
+def _split_expected_and_other_types(extracted_ctx: dict, expected_type_lower: str) -> tuple[list[str], bool]:
+    """
+    From the ExtractedIndicators context, separate:
+      - the indicators of the expected type
+      - whether there are any indicators of other types
+    """
+    if not extracted_ctx:
+        return [], False
+    expected_indicators: list[str] = []
+    has_other_types = False
+
+    for key, indicators in extracted_ctx.items():
+        if key.lower() == expected_type_lower:
+            expected_indicators = indicators
+        else:
+            has_other_types = True
+
+    return expected_indicators, has_other_types
 
 
 def deep_merge_in_place(dst: dict, src: dict) -> None:
