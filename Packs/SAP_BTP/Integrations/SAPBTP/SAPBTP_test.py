@@ -167,26 +167,28 @@ def test_parse_date_or_use_current_invalid_returns_current():
     assert before <= result <= after
 
 
-def test_create_mtls_cert_files_success():
-    """Tests create_mtls_cert_files creates temporary files."""
-    cert_path, key_path = create_mtls_cert_files(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
-
-    assert os.path.exists(cert_path)
-    assert os.path.exists(key_path)
-    assert cert_path.endswith(".pem")
-    assert key_path.endswith(".key")
-
-    # Cleanup
-    os.remove(cert_path)
-    os.remove(key_path)
-
-
-def test_create_mtls_cert_files_failure(mocker):
-    """Tests create_mtls_cert_files raises DemistoException on failure."""
-    mocker.patch("tempfile.NamedTemporaryFile", side_effect=Exception("File creation failed"))
-
-    with pytest.raises(DemistoException, match="Failed to create mTLS certificate files"):
-        create_mtls_cert_files(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
+@pytest.mark.parametrize(
+    "should_fail,mock_exception,expected_error",
+    [
+        (False, None, None),  # Success case
+        (True, Exception("File creation failed"), "Failed to create mTLS certificate files"),  # Failure case
+    ],
+)
+def test_create_mtls_cert_files(mocker, should_fail, mock_exception, expected_error):
+    """Tests create_mtls_cert_files creates temporary files or raises DemistoException on failure."""
+    if should_fail:
+        mocker.patch("tempfile.NamedTemporaryFile", side_effect=mock_exception)
+        with pytest.raises(DemistoException, match=expected_error):
+            create_mtls_cert_files(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
+    else:
+        cert_path, key_path = create_mtls_cert_files(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
+        assert os.path.exists(cert_path)
+        assert os.path.exists(key_path)
+        assert cert_path.endswith(".pem")
+        assert key_path.endswith(".key")
+        # Cleanup
+        os.remove(cert_path)
+        os.remove(key_path)
 
 
 # ========================================
@@ -405,29 +407,46 @@ def test_get_access_token_renewal_mtls(mocker, mock_context, client_mtls):
     assert call_args[1]["data"][APIKeys.CLIENT_ID.value] == MOCK_CLIENT_ID
 
 
-def test_get_access_token_mtls_without_cert_data_fail(mock_context):
-    """Tests mTLS token request fails without certificate data."""
-    client = Client(
-        base_url=SERVER_URL,
-        token_url=TOKEN_URL,
-        client_id=MOCK_CLIENT_ID,
-        client_secret=None,
-        verify=True,
-        proxy=False,
-        auth_type=AuthType.MTLS.value,
-        cert_data=None,
-    )
+@pytest.mark.parametrize(
+    "test_case,cert_data,mock_response,expected_error",
+    [
+        ("mtls_without_cert", None, None, "mTLS authentication requires certificate files"),
+        (
+            "no_token_in_response",
+            ("/tmp/cert.pem", "/tmp/key.pem"),
+            {"error": "failed"},
+            "Failed to obtain access token from SAP BTP",
+        ),
+    ],
+)
+def test_get_access_token_failure_cases(mocker, mock_context, test_case, cert_data, mock_response, expected_error):
+    """Tests token request failures for various error conditions."""
+    if test_case == "mtls_without_cert":
+        client = Client(
+            base_url=SERVER_URL,
+            token_url=TOKEN_URL,
+            client_id=MOCK_CLIENT_ID,
+            client_secret=None,
+            verify=True,
+            proxy=False,
+            auth_type=AuthType.MTLS.value,
+            cert_data=cert_data,
+        )
+    else:  # no_token_in_response
+        client = Client(
+            base_url=SERVER_URL,
+            token_url=TOKEN_URL,
+            client_id=MOCK_CLIENT_ID,
+            client_secret=MOCK_CLIENT_SECRET,
+            verify=True,
+            proxy=False,
+            auth_type=AuthType.NON_MTLS.value,
+            cert_data=None,
+        )
+        mocker.patch.object(client, "_http_request", return_value=mock_response)
 
-    with pytest.raises(DemistoException, match="mTLS authentication requires certificate files"):
+    with pytest.raises(DemistoException, match=expected_error):
         client._get_access_token()
-
-
-def test_get_access_token_no_token_in_response_fail(mocker, mock_context, client_non_mtls):
-    """Tests token renewal fails if API doesn't return access_token."""
-    mocker.patch.object(client_non_mtls, "_http_request", return_value={"error": "failed"})
-
-    with pytest.raises(DemistoException, match="Failed to obtain access token from SAP BTP"):
-        client_non_mtls._get_access_token()
 
 
 def test_get_access_token_invalid_cache_renewal(mocker, mock_context, client_non_mtls):
@@ -493,65 +512,63 @@ def test_get_access_token_non_mtls_vs_mtls_request_structure(mocker, mock_contex
 # ========================================
 
 
-def test_http_request_success(mocker, client_non_mtls):
-    """Tests http_request executes successfully."""
+@pytest.mark.parametrize(
+    "status_code,json_data,json_error,return_full_response,expected_result,should_fail,expected_error",
+    [
+        (200, {"data": "success"}, None, False, {"data": "success"}, False, None),  # Success
+        (
+            200,
+            {"data": "success"},
+            None,
+            True,
+            ({"data": "success"}, {"Content-Type": "application/json"}),
+            False,
+            None,
+        ),  # Full response
+        (204, None, None, False, {}, False, None),  # 204 No Content
+        (
+            200,
+            None,
+            ValueError("Invalid JSON"),
+            False,
+            None,
+            True,
+            "API returned non-JSON response with status 200",
+        ),  # JSON parse failure
+    ],
+)
+def test_http_request(
+    mocker,
+    client_non_mtls,
+    status_code,
+    json_data,
+    json_error,
+    return_full_response,
+    expected_result,
+    should_fail,
+    expected_error,
+):
+    """Tests http_request handles various response scenarios."""
     mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
 
-    # http_request now returns JSON by default
     mock_response = mocker.Mock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {"data": "success"}
-    mocker.patch.object(client_non_mtls, "_http_request", return_value=mock_response)
-
-    result = client_non_mtls.http_request("GET", "/test")
-
-    assert result == {"data": "success"}
-
-
-def test_http_request_with_full_response(mocker, client_non_mtls):
-    """Tests http_request returns full response with headers."""
-    mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-
-    mock_response = mocker.Mock()
-    mock_response.json.return_value = {"data": "success"}
+    mock_response.status_code = status_code
     mock_response.headers = {"Content-Type": "application/json"}
 
-    mocker.patch.object(client_non_mtls, "_http_request", return_value=mock_response)
-
-    body, headers = client_non_mtls.http_request("GET", "/test", return_full_response=True)
-
-    assert body == {"data": "success"}
-    assert headers == {"Content-Type": "application/json"}
-
-
-def test_http_request_204_no_content_without_full_response(mocker, client_non_mtls):
-    """Tests http_request returns empty dict for 204 No Content without full response."""
-    mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-
-    mock_response = mocker.Mock()
-    mock_response.status_code = 204
-    mock_response.headers = {"Content-Type": "application/json"}
+    if json_error:
+        mock_response.json.side_effect = json_error
+        mock_response.text = "Not a JSON response"
+    else:
+        mock_response.json.return_value = json_data
 
     mocker.patch.object(client_non_mtls, "_http_request", return_value=mock_response)
 
-    result = client_non_mtls.http_request("DELETE", "/test")
-
-    assert result == {}
-
-
-def test_http_request_json_parse_failure(mocker, client_non_mtls):
-    """Tests http_request raises DemistoException when JSON parsing fails."""
-    mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-
-    mock_response = mocker.Mock()
-    mock_response.status_code = 200
-    mock_response.json.side_effect = ValueError("Invalid JSON")
-    mock_response.text = "Not a JSON response"
-
-    mocker.patch.object(client_non_mtls, "_http_request", return_value=mock_response)
-
-    with pytest.raises(DemistoException, match="API returned non-JSON response with status 200"):
-        client_non_mtls.http_request("GET", "/test")
+    if should_fail:
+        with pytest.raises(DemistoException, match=expected_error):
+            client_non_mtls.http_request("GET", "/test", return_full_response=return_full_response)
+    else:
+        result = client_non_mtls.http_request("GET", "/test", return_full_response=return_full_response)
+        assert result == expected_result
 
 
 # ========================================
@@ -814,56 +831,142 @@ def test_fetch_events_with_pagination_empty_page(mocker, client_non_mtls):
     assert len(events) == 0
 
 
+@pytest.mark.parametrize(
+    "created_before,expected_in_call",
+    [
+        ("2024-01-02T00:00:00Z", True),
+        (None, False),
+    ],
+)
+def test_fetch_events_with_pagination_created_before_parameter(mocker, client_non_mtls, created_before, expected_in_call):
+    """Tests fetch_events_with_pagination handles created_before parameter correctly."""
+    mock_events = [{"uuid": "event1", "time": "2024-01-01T00:00:00Z"}]
+    mock_get_events = mocker.patch.object(client_non_mtls, "get_audit_log_events", return_value=(mock_events, None))
+
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 10, created_before=created_before)
+
+    assert len(events) == 1
+    call_args = mock_get_events.call_args
+    if expected_in_call:
+        assert call_args[1]["created_before"] == created_before
+    else:
+        assert call_args[1]["created_before"] is None
+
+
+@pytest.mark.parametrize(
+    "created_before,should_have_time_to",
+    [
+        ("2024-01-02T00:00:00Z", True),
+        (None, False),
+    ],
+)
+def test_get_audit_log_events_created_before_in_params(mocker, client_non_mtls, created_before, should_have_time_to):
+    """Tests get_audit_log_events includes created_before in request params when provided."""
+    mock_response_body = [{"uuid": "event1"}]
+    mock_response_headers: dict[str, str] = {}
+    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
+
+    events, _ = client_non_mtls.get_audit_log_events(
+        created_after="2024-01-01T00:00:00Z", created_before=created_before, limit=100
+    )
+
+    assert len(events) == 1
+    call_args = client_non_mtls.http_request.call_args
+    params = call_args[1]["params"]
+
+    if should_have_time_to:
+        assert APIKeys.TIME_TO.value in params
+        assert params[APIKeys.TIME_TO.value] == created_before
+    else:
+        assert APIKeys.TIME_TO.value not in params
+
+
+@pytest.mark.parametrize(
+    "paging_header,expected_result",
+    [
+        ("handle=", ""),  # IndexError case - empty after split
+        ("handle=abc123", "abc123"),  # Normal case
+        ("", None),  # No header
+        ("no_handle_here", None),  # Missing handle= prefix
+    ],
+)
+def test_extract_pagination_handle_edge_cases(client_non_mtls, paging_header, expected_result):
+    """Tests _extract_pagination_handle handles various edge cases including IndexError."""
+    headers = {"Paging": paging_header} if paging_header else {}
+    result = client_non_mtls._extract_pagination_handle(headers)
+
+    if expected_result == "":
+        # For empty string case, accept either empty string or None
+        assert result == "" or result is None
+    else:
+        assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "page_data,expected_count,expected_calls",
+    [
+        # Single page with no more pages
+        ([(3, None)], 3, 1),
+        # Multiple pages but stops when no handle
+        ([(5, "handle1"), (3, None)], 8, 2),
+        # Empty first page
+        ([(0, None)], 0, 1),
+    ],
+)
+def test_fetch_events_with_pagination_stopping_conditions(mocker, client_non_mtls, page_data, expected_count, expected_calls):
+    """Tests fetch_events_with_pagination stops correctly under various conditions."""
+    # Create mock events for each page
+    side_effect_data = []
+    for count, handle in page_data:
+        events = [{"uuid": f"event{i}", "time": f"2024-01-0{i}T00:00:00Z"} for i in range(1, count + 1)]
+        side_effect_data.append((events, handle))
+
+    mocker.patch.object(client_non_mtls, "get_audit_log_events", side_effect=side_effect_data)
+
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 100)
+
+    assert len(events) == expected_count
+    assert client_non_mtls.get_audit_log_events.call_count == expected_calls
+
+
 # ========================================
 # Tests: test_module Command
 # ========================================
 
 
-def test_test_module_success(mocker, client_non_mtls):
-    """Tests test_module returns 'ok' on success."""
-    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[{"uuid": "test"}])
-
-    result = test_module(client_non_mtls)
-
-    assert result == "ok"
-
-
-def test_test_module_auth_error_401(mocker, client_non_mtls):
-    """Tests test_module returns auth error message for 401."""
-    mocker.patch.object(
-        SAPBTP,
-        "fetch_events_with_pagination",
-        side_effect=DemistoException("Error [401] - Unauthorized"),
-    )
-
-    result = test_module(client_non_mtls)
-
-    assert result == "Authorization Error: Verify Client ID, Secret, or Certificates."
-
-
-def test_test_module_auth_error_403(mocker, client_non_mtls):
-    """Tests test_module returns auth error message for 403."""
-    mocker.patch.object(
-        SAPBTP,
-        "fetch_events_with_pagination",
-        side_effect=DemistoException("Error [403] - Forbidden"),
-    )
-
-    result = test_module(client_non_mtls)
-
-    assert result == "Authorization Error: Verify Client ID, Secret, or Certificates."
-
-
-def test_test_module_other_error_raises(mocker, client_non_mtls):
-    """Tests test_module raises other errors."""
-    mocker.patch.object(
-        SAPBTP,
-        "fetch_events_with_pagination",
-        side_effect=DemistoException("Error [500] - Internal Server Error"),
-    )
-
-    with pytest.raises(DemistoException, match="Internal Server Error"):
-        test_module(client_non_mtls)
+@pytest.mark.parametrize(
+    "should_succeed,mock_return,mock_exception,expected_result",
+    [
+        (True, [{"uuid": "test"}], None, "ok"),  # Success case
+        (
+            False,
+            None,
+            DemistoException("Error [401] - Unauthorized"),
+            "Authorization Error: Verify Client ID, Secret, or Certificates.",
+        ),  # 401 error
+        (
+            False,
+            None,
+            DemistoException("Error [403] - Forbidden"),
+            "Authorization Error: Verify Client ID, Secret, or Certificates.",
+        ),  # 403 error
+        (False, None, DemistoException("Error [500] - Internal Server Error"), None),  # Other error - should raise
+    ],
+)
+def test_test_module(mocker, client_non_mtls, should_succeed, mock_return, mock_exception, expected_result):
+    """Tests test_module returns 'ok' on success, auth error message for 401/403, or raises other errors."""
+    if should_succeed:
+        mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_return)
+        result = test_module(client_non_mtls)
+        assert result == expected_result
+    elif expected_result:  # Auth errors (401/403)
+        mocker.patch.object(SAPBTP, "fetch_events_with_pagination", side_effect=mock_exception)
+        result = test_module(client_non_mtls)
+        assert result == expected_result
+    else:  # Other errors should raise
+        mocker.patch.object(SAPBTP, "fetch_events_with_pagination", side_effect=mock_exception)
+        with pytest.raises(DemistoException, match="Internal Server Error"):
+            test_module(client_non_mtls)
 
 
 # ========================================
