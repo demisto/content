@@ -452,8 +452,7 @@ def test_fetch_incidents_flow(mocker, requests_mock):
     # We mock the time calculation to force a window that covers the 2020 mock data.
     # This bypasses the "max 7 days lookback" logic in the real function.
     mocker.patch(
-        'MicrosoftManagementActivity.get_fetch_start_and_end_time',
-        return_value=("2020-02-27T00:00:00", "2020-02-27T01:00:00")
+        "MicrosoftManagementActivity.get_fetch_start_and_end_time", return_value=("2020-02-27T00:00:00", "2020-02-27T01:00:00")
     )
 
     last_run = {}
@@ -463,9 +462,7 @@ def test_fetch_incidents_flow(mocker, requests_mock):
 
     incident_names = [incident["name"] for incident in incidents]
 
-    assert incident_names == [
-        "Microsoft Management Activity: 1234"
-    ]
+    assert incident_names == ["Microsoft Management Activity: 1234"]
 
 
 @pytest.mark.parametrize("command", [("start"), ("stop")])
@@ -739,7 +736,7 @@ def test_test_module_with_auth_code(mocker):
 def mock_content_records():
     """Reads the mocked JSON data for all tests."""
     file_path = os.path.join("test_data", "incidents_mocked.json")
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         return json.load(f)
 
 
@@ -756,13 +753,12 @@ def test_fetch_standard_flow(mock_content_records):
         - Dedup list contains ['NEW_EVENT_001'].
     """
     from MicrosoftManagementActivity import content_records_to_incidents
+
     start_time = "2025-12-05T04:05:00"
     end_time = "2025-12-05T04:20:00"
     last_run = {}
 
-    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(
-        mock_content_records, start_time, end_time, last_run
-    )
+    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(mock_content_records, start_time, end_time, last_run)
 
     # 1. Check Incidents Count (Should be 3: Overlap1, Overlap2, New1)
     # Old event (04:00) is < 04:05, so skipped.
@@ -792,25 +788,21 @@ def test_fetch_with_deduplication(mock_content_records):
         - Total incidents: 2.
     """
     from MicrosoftManagementActivity import content_records_to_incidents
+
     start_time = "2025-12-05T04:10:00"
     end_time = "2025-12-05T04:20:00"
 
     # We pretend we just finished a run that ended at 04:10:00
     # and we saw OVERLAP_EVENT_001 there.
-    last_run = {
-        "last_fetch": "2025-12-05T04:10:00",
-        "incidents_id_dedup": ["OVERLAP_EVENT_001"]
-    }
+    last_run = {"last_fetch": "2025-12-05T04:10:00", "incidents_id_dedup": ["OVERLAP_EVENT_001"]}
 
-    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(
-        mock_content_records, start_time, end_time, last_run
-    )
+    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(mock_content_records, start_time, end_time, last_run)
 
     # 1. Check Incidents
     # Expected: OVERLAP_EVENT_002 and NEW_EVENT_001
     assert len(incidents) == 2
 
-    incident_ids = [inc['name'] for inc in incidents]
+    incident_ids = [inc["name"] for inc in incidents]
     assert "Microsoft Management Activity: OVERLAP_EVENT_001" not in incident_ids, "Duplicate should have been skipped"
     assert "Microsoft Management Activity: OVERLAP_EVENT_002" in incident_ids, "Same-time non-duplicate should be kept"
 
@@ -828,13 +820,12 @@ def test_fetch_advance_window_empty_results(mock_content_records):
         - Dedup list cleared.
     """
     from MicrosoftManagementActivity import content_records_to_incidents
+
     start_time = "2025-12-05T04:16:00"
     end_time = "2025-12-05T04:30:00"
     last_run = {}
 
-    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(
-        mock_content_records, start_time, end_time, last_run
-    )
+    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(mock_content_records, start_time, end_time, last_run)
 
     # 1. Check Incidents
     assert len(incidents) == 0

@@ -533,7 +533,9 @@ def fetch_incidents(client, last_run, first_fetch_datetime):
     content_types_to_fetch = get_content_types_to_fetch(client)
     content_records = get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time)
     filtered_content_records = filter_records(content_records, demisto.params())
-    incidents, last_fetch, incidents_id_dedup = content_records_to_incidents(filtered_content_records, start_time, end_time, last_run)
+    incidents, last_fetch, incidents_id_dedup = content_records_to_incidents(
+        filtered_content_records, start_time, end_time, last_run
+    )
     next_run = {"last_fetch": last_fetch, "incidents_id_dedup": incidents_id_dedup}
     demisto.debug(f"fetch_incidents: {next_run=}")
     return next_run, incidents
