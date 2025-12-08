@@ -710,7 +710,12 @@ def get_data(
         demisto.debug(f"calling {command_name} command with brand {brand_name}")
         readable_outputs, outputs = cmd(get_user_command, additional_fields)
         for output in outputs:
-            if set(output) == {"Source", "Brand", "Instance"} or set(output) == {"Source", "Brand", "Instance", "SID"}:  # contains only the source and brand keys
+            if set(output) == {"Source", "Brand", "Instance"} or set(output) == {
+                "Source",
+                "Brand",
+                "Instance",
+                "SID",
+            }:  # contains only the source and brand keys
                 output["Status"] = f"User not found - userId: {arg_value}."
             else:
                 output["Status"] = "found"
