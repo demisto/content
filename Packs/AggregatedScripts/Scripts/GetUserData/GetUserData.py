@@ -103,7 +103,6 @@ def create_user(
     id: Optional[str] = None,
     username: Optional[str] = None,
     email_address: Optional[str] = None,
-    sid: Optional[str] = None,
     risk_level: Optional[int] = None,
     additional_fields=False,
     **kwargs,
@@ -116,7 +115,6 @@ def create_user(
         source (Optional[str]): The source identifier for the user.
         username (Optional[str]): The username associated with the user.
         email_address (Optional[str]): The email address associated with the user.
-        sid (Optional[str]): The sid associated with the user.
         risk_level (Optional[str]): The risk level associated with the user.
         additional_fields (bool): whether to add all the remaining outputs or not.
         kwargs: Additional key-value pairs to include in the user dictionary.
@@ -128,7 +126,6 @@ def create_user(
         "ID": id,
         "Username": username,
         "Email": email_address,
-        "SID": sid,
         "RiskLevel": risk_level,
     }
     if additional_fields:
@@ -337,7 +334,6 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
                 source=command.brand,
                 username=username,
                 email_address=mail,
-                sid=command.args.get("custom-field-data"),
                 additional_fields=additional_fields,
                 instance=output.get("instance"),
                 **outputs,
@@ -710,12 +706,7 @@ def get_data(
         demisto.debug(f"calling {command_name} command with brand {brand_name}")
         readable_outputs, outputs = cmd(get_user_command, additional_fields)
         for output in outputs:
-            if set(output) == {"Source", "Brand", "Instance"} or set(output) == {
-                "Source",
-                "Brand",
-                "Instance",
-                "SID",
-            }:  # contains only the source and brand keys
+            if set(output) == {"Source", "Brand", "Instance"}:  # contains only the source and brand keys
                 output["Status"] = f"User not found - userId: {arg_value}."
             else:
                 output["Status"] = "found"
