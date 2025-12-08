@@ -126,6 +126,9 @@ args:
   predefined:
   - 'true'
   - 'false'
+- description: Use the searchAfter token from the preceding response to indicate the starting point for retrieving the subsequent batch of relationships.
+  name: searchAfter
+  isArray: true
 comment: This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
 commonfields:
   id: SearchIndicatorRelationships

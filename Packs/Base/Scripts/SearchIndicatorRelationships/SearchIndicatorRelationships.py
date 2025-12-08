@@ -62,7 +62,9 @@ def handle_stix_types(entities_types: str) -> str:
 def search_relationships_fromversion_6_6_0(args: dict) -> List[dict]:
     for list_arg in ["entities", "entityTypes", "relationshipNames"]:
         args[list_arg] = argToList(args[list_arg]) if args[list_arg] else None
+    demisto.debug(f"searchRelationships args: {args}")
     res = demisto.searchRelationships(args)
+    demisto.debug(f"searchRelationships response: {res}")
     return res.get("data", [])
 
 
@@ -79,6 +81,7 @@ def search_relationships(
     relationships: Optional[str] = None,
     limit: Optional[int] = None,
     query: Optional[str] = None,
+    searchAfter: Optional[List[str]] = None,
 ) -> List[dict]:
     args = {
         "entities": entities,
@@ -86,6 +89,7 @@ def search_relationships(
         "relationshipNames": relationships,
         "size": limit,
         "query": query,
+        "searchAfter": searchAfter
     }
     if is_demisto_version_ge("6.6.0"):
         return search_relationships_fromversion_6_6_0(args)
@@ -105,9 +109,10 @@ def main():  # pragma: no cover
         verbose = argToBoolean(args.get("verbose", "false"))
         revoked = argToBoolean(args.get("revoked", "false"))
         query = "revoked:T" if revoked else "revoked:F"
+        searchAfter = argToList(args.get("searchAfter", ""))
         handle_stix_types(entities_types)
 
-        if relationships := search_relationships(entities, entities_types, relationships, limit, query):
+        if relationships := search_relationships(entities, entities_types, relationships, limit, query, searchAfter):
             context = to_context(relationships, verbose)
         else:
             context = []
