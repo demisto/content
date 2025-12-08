@@ -39,7 +39,7 @@ configuration:
   additionalinfo: "The number of times to try and re-create connections with rapid7 instance when there are temporary connection errors"
   type: 0
   section: Connect
-- display: fetch assets and vulnerabilities
+- display: Long running integration
   name: longRunning
   additionalinfo: Use this to fetch assets and vulnerabilities snapshots. creates a long-running docker instance.
   type: 8
@@ -2543,7 +2543,6 @@ script:
     - contextPath: Nexpose.AssetGroup.description
       description: 'The description of the asset group.'
       type: String
-
 
   runonce: false
   script: '-'
