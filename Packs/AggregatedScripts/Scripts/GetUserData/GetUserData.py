@@ -166,7 +166,12 @@ def prepare_human_readable(
         command = f"!{command_name} {' '.join(formatted_args)}"
         if not is_error:
             result_message = f"#### Result for {command}\n{human_readable}"
-            result.append(CommandResults(readable_output=result_message, mark_as_note=True, ))
+            result.append(
+                CommandResults(
+                    readable_output=result_message,
+                    mark_as_note=True,
+                )
+            )
         else:
             result_message = f"#### Error for {command}\n{human_readable}"
             result.append(
@@ -174,7 +179,6 @@ def prepare_human_readable(
                     readable_output=result_message,
                     entry_type=EntryType.ERROR,
                     mark_as_note=True,
-
                 )
             )
     return result
@@ -312,8 +316,6 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
     demisto.debug(f"Those are the args for the ad-get-user command {command.args}")
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
 
-    demisto.debug(f"This is the {entry_context=}")
-    demisto.debug(f"This is the {readable_errors=}")
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     user_outputs = []
@@ -708,7 +710,7 @@ def get_data(
         demisto.debug(f"calling {command_name} command with brand {brand_name}")
         readable_outputs, outputs = cmd(get_user_command, additional_fields)
         for output in outputs:
-            if set(output) == {"Source", "Brand", "Instance"}:  # contains only the source and brand keys
+            if set(output) == {"Source", "Brand", "Instance"} or set(output) == {"Source", "Brand", "Instance", "SID"}:  # contains only the source and brand keys
                 output["Status"] = f"User not found - userId: {arg_value}."
             else:
                 output["Status"] = "found"
