@@ -372,7 +372,7 @@ Get extra data fields of a specific case including issues and key artifacts.
 ### core-get-cases
 
 ***
-Get cases information based on the specified filters.
+Get case information based on the specified filters.
 
 #### Base Command
 
@@ -392,9 +392,19 @@ Get cases information based on the specified filters.
 | sort_by_modification_time | Sorts returned cases by the date/time that the case was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional |
 | sort_by_creation_time | Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional |
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional |
-| limit | Maximum number of cases to return per page. The default and maximum is 100. Default is 100. | Optional |
-| status | Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional |
-| starred | Whether the case is starred (Boolean value: true or false). Possible values are: true, false. | Optional |
+| limit | Maximum number of cases to return per page. The default and maximum value is 60. Default is 60. | Optional |
+| case_domain | A comma-separated list of domains to filter cases by. | Optional |
+| status | A comma-separated list of case statuses to filter cases by. Possible values are: new, under_investigation, resolved. | Optional |
+| severity | A comma-separated list of severity levels to filter cases by. Possible values are: low, medium, high, critical. | Optional |
+| asset_ids | A comma-separated list of Asset IDs associated with the case by which to filter the cases. | Optional |
+| asset_groups | A comma-separated list of Asset Group IDs, where the case is filtered by the assets contained within those groups. | Optional |
+| hosts | A comma-separated list of hosts to filter cases by. | Optional |
+| tags | A comma-separated list of tags to filter cases by. | Optional |
+| assignee | A comma-separated list of assignee names or emails to filter cases by. | Optional |
+| starred | Filter cases by whether they are starred or not. Possible values are: true, false. | Optional |
+| case_name | A comma-separated list of names to filter cases by. | Optional |
+| case_description | A comma-separated list of descriptions to filter cases by. | Optional |
+| get_enriched_case_data | Whether to include enriched case data in the response. Recommended for up to 10 cases. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -404,7 +414,6 @@ Get cases information based on the specified filters.
 | Core.Case.case_name | String | Name of the case. |
 | Core.Case.creation_time | Number | Timestamp when the case was created. |
 | Core.Case.modification_time | Number | Timestamp when the case was last modified. |
-| Core.Case.detection_time | Date | Timestamp when the first issue was detected in the case. May be null. |
 | Core.Case.status | String | Current status of the case. |
 | Core.Case.severity | String | Severity level of the case. |
 | Core.Case.description | String | Description of the case. |
@@ -417,14 +426,10 @@ Get cases information based on the specified filters.
 | Core.Case.critical_severity_issue_count | Number | Number of issues with critical severity. |
 | Core.Case.user_count | Number | Number of users involved in the case. |
 | Core.Case.host_count | Number | Number of hosts involved in the case. |
-| Core.Case.notes | String | Notes related to the case. May be null. |
 | Core.Case.resolve_comment | String | Comments added when resolving the case. May be null. |
 | Core.Case.resolved_timestamp | Number | Timestamp when the case was resolved. |
 | Core.Case.manual_severity | Number | Severity manually assigned by the user. May be null. |
-| Core.Case.manual_description | String | Description manually provided by the user. |
-| Core.Case.xdr_url | String | URL to view the case in Cortex XDR. |
 | Core.Case.starred | Boolean | Indicates whether the case is starred. |
-| Core.Case.starred_manually | Boolean | True if the case was starred manually; false if starred by rules. |
 | Core.Case.hosts | Array | List of hosts involved in the case. |
 | Core.Case.users | Array | List of users involved in the case. |
 | Core.Case.case_sources | Array | Sources of the case. |
@@ -439,6 +444,16 @@ Get cases information based on the specified filters.
 | Core.Case.tags | Array | Current tags assigned to the case. |
 | Core.Case.case_domain | String | Domain associated with the case. |
 | Core.Case.custom_fields | Unknown | Custom fields for the case with standardized lowercase, whitespace-free names. |
+| Core.Case.CaseExtraData.issue_ids | Array | List of issue IDs associated with the case. |
+| Core.Case.CaseExtraData.file_artifacts | Array | File artifacts associated with the case. |
+| Core.Case.CaseExtraData.network_artifacts | Array | Network artifacts associated with the case. |
+| Core.Case.CaseExtraData.starred_manually | Boolean | True if the case was starred manually; false if starred by rules. |
+| Core.Case.CaseExtraData.xdr_url | String | URL to view the case in Cortex XDR. |
+| Core.Case.CaseExtraData.manual_description | String | Description manually provided by the user. |
+| Core.Case.CaseExtraData.notes | String | The notes related to the case. |
+| Core.Case.CaseExtraData.detection_time | Date | The timestamp when the first issue was detected in the case. |
+| Core.CasesMetadata.returned_count | String | The actual number of cases that match all filter criteria and returned in this specific response. |
+| Core.CasesMetadata.filtered_count | String | The total number of cases in the system that match all filter criteria. |
 
 ### core-search-asset-groups
 
@@ -592,6 +607,8 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. |
 | Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
 | Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
+| Core.IssueRecommendations.existing_code_block | String | Original vulnerable code. |
+| Core.IssueRecommendations.suggested_code_block | String | Code block fix suggestion. |
 
 ### core-enable-scanners
 
@@ -785,7 +802,95 @@ Updates the properties of an issue. This command does not provide an explicit in
 | phase | Change the phase of an issue. Possible values are: Triage, Investigation, Containment, Response. | Optional |
 | type | Change the type of an issue. | Optional |
 | description | Change the description of an issue. | Optional |
+| status | Change the status of an issue. Possible values are: New, In Progress, Resolved - Known Issue, Resolved - Duplicate Issue, Resolved - False Positive, Resolved - other, Resolved - True Positive, Resolved - Security Testing, Resolved - Dismissed, Resolved - Fixed, Resolved - Risk Accepted. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
+### core-appsec-remediate-issue
+
+***
+Create automated pull requests to fix multiple security issues in a single bulk operation.
+
+#### Base Command
+
+`core-appsec-remediate-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_ids | A comma-separated list of issue IDs to fix (maximum 10 per request). | Required |
+| title | Custom title for the pull request. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.TriggeredPRs.issueId | String | The issue identifier. |
+| Core.TriggeredPRs.status | String | Either "triggered" or "automated_fix_not_available". |
+
+### core-get-appsec-issues
+
+***
+Retrieves application security issues based on specified filters.
+
+#### Base Command
+
+`core-get-appsec-issues`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of issues to return. Default is 50. | Optional |
+| sort_field | The field by which to sort the results. Default is severity. | Optional |
+| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. Default is DESC. | Optional |
+| start_time | The start time for filtering according to issue insert time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
+| end_time | The end time for filtering according to issue insert time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
+| issue_id | The issue ID. Accepts a comma-separated list. | Optional |
+| assignee | The email of the user assigned to the issue. Accepts a comma-separated list. <br/>Use 'unassigned' for all unassigned issues or 'assigned' for all assigned issues.<br/>. | Optional |
+| collaborator | The collaborators of the issue. Accepts a comma-separated list. | Optional |
+| status | The issue status. Accepts a comma-separated list. Possible values are: New, In Progress, Resolved. | Optional |
+| issue_name | The issue name. Accepts a comma-separated list. | Optional |
+| asset_name | The name of the affected asset for the issue. Accepts a comma-separated list. | Optional |
+| repository | The repository of the issue. Accepts a comma-separated list. | Optional |
+| file_path | The path of the relevant file for the issue. Accepts a comma-separated list. | Optional |
+| backlog_status | The backlog status of the issue. Accepts a comma-separated list. Possible values are: BACKLOG, NEW. | Optional |
+| cvss_score_gte | The minimum CVSS score. | Optional |
+| epss_score_gte | The minimum EPSS score. | Optional |
+| has_kev | Filter by vulnerabilities that have a Known Exploited Vulnerability (KEV). Possible values are: true, false. | Optional |
+| severity | The severity of the issue. Accepts a comma-separated list. Possible values are: info, low, medium, high, critical. | Optional |
+| urgency | The urgency of the issue. Accepts a comma-separated list. Possible values are: N/A, NOT_URGENT, URGENT, TOP_URGENT. | Optional |
+| automated_fix_available | Is there an available automated fix. Possible values are: true, false. | Optional |
+| sla | SLA status of the issue. Accepts a comma-separated list. Possible values are: Approaching, On Track, Overdue. | Optional |
+| validation | Validation status of the issue. Accepts a comma-separated list. Possible values are: INVALID, NO_VALIDATION, PRIVILEGED, UNAVAILABLE, VALID. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AppsecIssue.internal_id | String | The unique identifier for the issue. |
+| Core.AppsecIssue.asset_name | String | The names of the assets related to the issue. |
+| Core.AppsecIssue.severity | String | The severity of the issue. |
+| Core.AppsecIssue.epss_score | Number | The Exploit Prediction Scoring System \(EPSS\) score. |
+| Core.AppsecIssue.cvss_score | Number | The Common Vulnerability Scoring System \(CVSS\) score. |
+| Core.AppsecIssue.assignee | String | The full name of the user assigned to the issue. |
+| Core.AppsecIssue.is_fixable | Boolean | Whether a fix is available for the issue. |
+| Core.AppsecIssue.issue_name | String | The name of the issue. |
+| Core.AppsecIssue.issue_source | String | The source of the issue. |
+| Core.AppsecIssue.issue_category | String | The category of the issue. |
+| Core.AppsecIssue.issue_domain | String | The domain of the issue. |
+| Core.AppsecIssue.issue_description | String | The description of the issue. |
+| Core.AppsecIssue.status | String | The status of the issue. |
+| Core.AppsecIssue.time_added | Number | The timestamp when the issue was inserted. |
+| Core.AppsecIssue.urgency | String | The urgency of the issue. |
+| Core.AppsecIssue.sla_status | String | The SLA status of the issue. |
+| Core.AppsecIssue.secret_validation | String | The secret validation status of the issue. |
+| Core.AppsecIssue.repository_name | String | The name of the repository where the issue was found. |
+| Core.AppsecIssue.repository_organization | String | The organization of the repository where the issue was found. |
+| Core.AppsecIssue.file_path | String | The file path related to the issue. |
+| Core.AppsecIssue.collaborator | String | The collaborator associated with the issue. |
+| Core.AppsecIssue.has_kev | Boolean | Whether the issue is part of the Known Exploited Vulnerabilities catalog \(KEV\). |
+| Core.AppsecIssue.backlog_status | String | The backlog status of the issue. |

@@ -22,6 +22,7 @@ outputs:
   description: Parsed url as key/value.
   type: string
 scripttarget: 0
+isllm: false
 dockerimage: demisto/python3:3.12.8.3296088
 tests:
 - URLDecode-Test
