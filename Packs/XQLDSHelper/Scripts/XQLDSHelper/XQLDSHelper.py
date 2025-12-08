@@ -2166,8 +2166,12 @@ class Main:
         if not base_time:
             # Set default base time
             for k in [
-                "issue.occurred", "alert.occurred", "incident.occurred",
-                "issue.created", "alert.created", "incident.created"
+                "issue.occurred",
+                "alert.occurred",
+                "incident.occurred",
+                "issue.created",
+                "alert.created",
+                "incident.created",
             ]:
                 base_time = context.get(k)
                 if base_time and base_time != "0001-01-01T00:00:00Z":
