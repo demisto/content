@@ -1136,10 +1136,10 @@ def main():  # pragma: no cover
 
         elif command == "core-add-endpoint-tag":
             return_results(add_tag_to_endpoints_command(client, args))
-
         elif command == "core-remove-endpoint-tag":
             return_results(remove_tag_from_endpoints_command(client, args))
-
+        elif command == "core-update-endpoint-tags":
+            return_results(update_endpoints_tags_command(client, args))
         elif command == "core-list-users":
             return_results(list_users_command(client, args))
 

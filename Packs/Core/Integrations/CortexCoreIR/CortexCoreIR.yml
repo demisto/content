@@ -3648,6 +3648,16 @@ script:
       - uninstalled
     description: Remove a tag from one or more endpoints.
     name: core-remove-endpoint-tag
+  - arguments:
+    - description: A comma-separated list of endpoint IDs to update their tags.
+      name: endpoint_ids
+      required: true
+    - description: A comma-separated list of tags to add to the endpoints.
+      name: tags_to_add
+    - description: A comma-separated list of tags to remove from the endpoints.
+      name: tags_to_remove
+    description: Update tags of one or more endpoints.
+    name: core-update-endpoint-tags
   - name: core-list-users
     description: Retrieve a list of the current users in your environment.
     arguments: []
@@ -3676,6 +3686,7 @@ script:
     - contextPath: Core.User.scope
       description: Name of scope associated with the user, if applicable.
       type: array
+      
   - arguments:
     - description: |
         Unique ID of a specific user.

@@ -4061,7 +4061,62 @@ def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
         readable_output=f"Successfully removed tag {tag} from endpoint(s) {endpoint_ids}", raw_response=raw_response
     )
 
+def is_valid_tag(tag: str) -> bool:
+    return len(tag) < 64
 
+def filter_invalid_tags(tags: List[str]) -> List[str]:
+    invalid_tags = [tag for tag in tags if not is_valid_tag(tag)]
+    tags[:] = [tag for tag in tags if is_valid_tag(tag)]
+    return invalid_tags
+            
+def update_endpoints_tags_command(client: CoreClient, args: dict) -> List[CommandResults]:
+    """
+    Update endpoint tags for specified endpoints.
+
+    Args:
+        args (dict): Command arguments including:
+            - endpoint_ids (list): List of endpoint IDs to update
+            - tags_to_add (list): List of tags to remove from the endpoints.
+            - tags_to_remove (list): List of tags to add to the endpoints.
+    """
+    
+    endpoint_ids = argToList(args.get('endpoint_ids', []))
+    tags_to_add = argToList(args.get('tags_to_add', []))
+    tags_to_remove = argToList(args.get('tags_to_remove', []))
+    if not tags_to_add and not tags_to_remove:
+        raise DemistoException("At least one tag to add or remove must be specified.")
+    
+    demisto.debug(f"Updating tags for endpoints: {endpoint_ids}, adding: {tags_to_add}, removing: {tags_to_remove}")
+    
+    invalid_tags: List[str] = filter_invalid_tags(tags_to_add)
+    invalid_tags.extend(filter_invalid_tags(tags_to_remove))
+    
+    raw_response = {}
+    
+    for tag in tags_to_remove:
+        for b in batch(endpoint_ids, 1000):
+            raw_response.update(client.add_tag_endpoint(endpoint_ids=b, tag=tag, args=args))
+    
+    for tag in tags_to_add:
+        for b in batch(endpoint_ids, 1000):
+            raw_response.update(client.remove_tag_endpoint(endpoint_ids=b, tag=tag, args=args))
+    
+    command_results = []
+    
+     
+    if tags_to_add or tags_to_remove:
+        command_results.append(CommandResults(
+            readable_output=f"Successfully updated tags for endpoint(s) {endpoint_ids}." + (f" Added tags: {tags_to_add}" if tags_to_add else "") + (f" Removed tags: {tags_to_remove}" if tags_to_remove else "") + ".",
+            raw_response=raw_response,
+        ))
+    if invalid_tags:
+        command_results.append(CommandResults(
+            readable_output=f"Invalid tags detected: {', '.join(invalid_tags)}. Tags must be less than 64 characters long.",
+            entry_type=4,
+        ))
+    
+    return command_results
+    
 def parse_risky_users_or_hosts(
     user_or_host_data: dict[str, Any], id_header: str, score_header: str, description_header: str
 ) -> dict[str, Any]:
