@@ -101,22 +101,12 @@ def client_mtls():
     )
 
 
-@pytest.fixture
-def mock_context():
-    """Fixture to ensure integration context is initialized and cleaned up."""
-    set_integration_context({})
-    yield
-    set_integration_context({})
-
-
-@pytest.fixture
+@pytest.fixture()
 def client():
-    """Default client fixture for test_module function in SAPBTP.py.
+    """Returns a Client instance for testing.
 
-    This fixture is needed because pytest discovers test_module() in SAPBTP.py
-    and tries to run it as a test. We provide this fixture to satisfy the
-    dependency, but the actual test is filtered out by pytest_collection_modifyitems
-    in conftest.py.
+    This fixture provides a default client that can be used by any test,
+    including the test_module function from SAPBTP.py that pytest discovers.
     """
     return Client(
         base_url=SERVER_URL,
@@ -128,6 +118,14 @@ def client():
         auth_type=AuthType.NON_MTLS.value,
         cert_data=None,
     )
+
+
+@pytest.fixture
+def mock_context():
+    """Fixture to ensure integration context is initialized and cleaned up."""
+    set_integration_context({})
+    yield
+    set_integration_context({})
 
 
 # ========================================
@@ -723,7 +721,7 @@ def test_fetch_events_with_pagination_empty_page(mocker, client_non_mtls):
 
 def test_test_module_success(mocker, client_non_mtls):
     """Tests test_module returns 'ok' on success."""
-    mocker.patch.object(client_non_mtls, "get_audit_log_events", return_value=([{"uuid": "test"}], None))
+    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[{"uuid": "test"}])
 
     result = test_module(client_non_mtls)
 
@@ -733,8 +731,8 @@ def test_test_module_success(mocker, client_non_mtls):
 def test_test_module_auth_error_401(mocker, client_non_mtls):
     """Tests test_module returns auth error message for 401."""
     mocker.patch.object(
-        client_non_mtls,
-        "get_audit_log_events",
+        SAPBTP,
+        "fetch_events_with_pagination",
         side_effect=DemistoException("Error [401] - Unauthorized"),
     )
 
@@ -746,8 +744,8 @@ def test_test_module_auth_error_401(mocker, client_non_mtls):
 def test_test_module_auth_error_403(mocker, client_non_mtls):
     """Tests test_module returns auth error message for 403."""
     mocker.patch.object(
-        client_non_mtls,
-        "get_audit_log_events",
+        SAPBTP,
+        "fetch_events_with_pagination",
         side_effect=DemistoException("Error [403] - Forbidden"),
     )
 
@@ -759,8 +757,8 @@ def test_test_module_auth_error_403(mocker, client_non_mtls):
 def test_test_module_other_error_raises(mocker, client_non_mtls):
     """Tests test_module raises other errors."""
     mocker.patch.object(
-        client_non_mtls,
-        "get_audit_log_events",
+        SAPBTP,
+        "fetch_events_with_pagination",
         side_effect=DemistoException("Error [500] - Internal Server Error"),
     )
 
