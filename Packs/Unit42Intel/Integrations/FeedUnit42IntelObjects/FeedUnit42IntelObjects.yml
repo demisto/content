@@ -101,9 +101,10 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Use the Unit 42 Intel Objects Feed integration to fetch indicators from Unit 42 Intel Objects.
-display: Unit 42 Intel Objects Feed
+description: Deprecated. Use the Unit 42 Feed instead.
+display: Unit 42 Intel Objects Feed (Deprecated)
 name: Unit42IntelObjectsFeed
+deprecated: true
 script:
   commands:
   - arguments:

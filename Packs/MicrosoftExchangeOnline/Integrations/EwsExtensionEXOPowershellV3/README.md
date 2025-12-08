@@ -9,10 +9,106 @@ which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Name | The name of the integration | True |
-| Exchange Online URL | https://outlook.office365.com | True |
+| Exchange Online URL | <https://outlook.office365.com> | True |
 | Certificate | A txt certificate encoded in Base64. | True |
 | The organization used in app-only authentication. |  | True |
 | The application ID from the Azure portal |  | True |
+
+### App authentication
+
+To use this integration, you need to connect an application with a certificate.
+
+1. Create the application:
+   1. Access [Azure AD portal](https://portal.azure.com/).
+   2. Navigate to **Home** > **App registrations**.
+   3. Click **New Registration**, give the application a name (for example: **EWS**) and click **Register**.
+   4. In the left menu of the newly created application, click **API permissions**.
+   5. Click **Add a permission**.
+   6. In the Request API permissions page, click **APIs my organization uses**.
+   7. Search for **Office 365 Exchange Online**.
+   8. Click **Application permissions**.
+   9. Under Exchange, click the **ExchangeManageAsApp** checkbox.
+   10. Click **Add permissions**.
+   11. Click **Grant admin consent**.
+
+2. Create the certificate in Cortex XSOAR/XSIAM.
+   1. Run the **CreateCertificate** command in the Playground to acquire the certificate.
+
+      ***!CreateCertificate days=<# of days> password=`password`***
+
+     *Note: Remember your password since you will need it to create your integration instance.*
+
+   2. Download the certificateBase34.txt file.
+   3. Open the downloaded txt file and copy the text.
+   4. In the integration instance configuration, paste the text in the **Certificate** field.
+
+3. Attach the .cer file to your Azure app.
+    1. In the Cortex XSOAR/XSIAM Playground, download the publickey.cer file
+    2. In the Azure application, in the left menu, click **Certificates & secrets**.
+    3. In the Certificates tab, upload the publickey.cer file.
+
+4. Assign Azure AD roles to the application.
+   1. You have two options:
+      - Assign Azure AD roles to the application.
+      - Assign custom role groups to the application using service principals.
+   2. In the [Azure AD portal](https://portal.azure.com/), search for **Microsoft Entra roles and administrators** in the Search box.
+   3. On the Roles and administrators page that opens, find and select one of the supported roles by clicking on the
+      name of the role (not the checkbox) in the results.
+      - The role **Security Administrator** is eligible for this integration.
+   4. On the Assignments page that opens, select **Add assignments**.
+   5. In the Add assignments flyout that opens, find and select the app that you created in Step 1.
+
+Note: The information in the Playground is sensitive information. You should delete the information by running the following command:
+
+   ***!DeleteContext all=yes***
+
+5. In Cortex XSOAR/XSIAM, in the integration instance configuration, enter your saved password in the **Password** field.
+6. In Azure, go to Entra ID (Overview blade) and copy the **Primary domain** field.
+7. In Cortex XSOAR/XSIAM, in the integration instance configuration, paste the Domain name in **The organization used in app-only authentication** field.
+8. In the Azure app, navigate to **Home** > **App registration** > **application name** and copy the Application (client) ID.
+9. In Cortex XSOAR/XSIAM, in the integration instance configuration, paste the application ID in **The application ID from the Azure portal** field.
+
+### Verify that the admin account has sufficient Exchange Online permissions
+
+For the integration to work, the Azure AD application's service principal must have the correct permissions assigned in the Exchange Online role groups.
+
+1. Open the Microsoft Purview Portal: <https://purview.microsoft.com/>
+2. Log in using an admin account that can manage role assignments for the Azure AD application (for example, a Global Administrator or Privileged Role Administrator).
+3. In the top bar, select: **Settings → Roles and scopes**
+4. In the left sidebar, select: **Role Groups**
+5. Search for the following role groups:
+   - **Organization Management** – the most privileged role and fully supported for this integration.
+   - **Security Administrator** – a highly privileged security role that also provides full access.
+6. Open the role and verify that the **service principal of the Azure AD application used by the integration** is listed.
+7. If not listed, click **Edit → Add Users** and assign the required roles.
+
+- Note - for more information go to the official [Microsoft Documentation.](https://learn.microsoft.com/en-us/defender-office-365)
+
+## Troubleshooting and Testing
+
+### Common Issues and Solutions
+
+#### **`The role assigned to application 'app-id' isn't supported in this scenario.`**
+
+**Scenario:**  
+When running 'Test', you receive the error:  
+*“The role assigned to application `app-id` isn't supported in this scenario. Please check online documentation for assigning correct Directory Roles to Azure AD Application for EXO App-Only Authentication.”*
+
+**Solution:**  
+Verify that the application has the correct directory role assigned in the **Entra ID portal**.  
+See the **“App authentication”** section above for detailed guidance.
+
+---
+
+#### **`The term 'cmdlet' is not recognized as a name of a cmdlet…`**
+
+**Scenario:**  
+When running a command, you receive an error similar to:  
+*“The term `cmdlet` is not recognized as a name of a cmdlet, function, script file, or executable program…”*
+
+**Solution:**  
+Make sure the **service principal of the Azure AD application used by the integration** has sufficient **Exchange Online permissions**.  
+Refer to the **“Exchange Online permissions”** section above to confirm the correct roles are assigned and detailed guidance.
 
 ## Commands
 
@@ -483,11 +579,11 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | list_type | List type to retrieve items from. | Required |
-| list_subtype | List subtype to retrieve items from.  | Optional |
+| list_subtype | List subtype to retrieve items from. | Optional |
 | action | Action to filter entries by. | Required |
 | expiration_date | Enter a specific date and time to filter entries by using format "YYYY-MM-DD HH:MM:SSz" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used. | Optional |
 | no_expiration | Filter list items that are set to never expire. | Optional |
-| entry | Specif8ic entry value to retrieve. | Optional |
+| entry | Specific entry value to retrieve. | Optional |
 
 #### Context Output
 
@@ -682,16 +778,16 @@ Export quarantine messages.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required**
+| **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-identities | A comma-separated list of identities of the messages to export. | Optional |
-identity | The identity of a single message to export. | Optional |
-compress_output | Specify whether the output should be compressed. | Optional |
-entity_type | The type of entity being exported. | Optional |
-force_conversion_to_mime | Specify whether to force conversion to MIME format. | Optional |
-password | Password to encrypt the exported file. | Optional |
-reason_for_export | Reason for exporting the message. | Optional |
-recipient_address | Email address to send the exported message to. | Optional |
+| identities | A comma-separated list of identities of the messages to export. | Optional |
+| identity | The identity of a single message to export. | Optional |
+| compress_output | Specify whether the output should be compressed. | Optional |
+| entity_type | The type of entity being exported. | Optional |
+| force_conversion_to_mime | Specify whether to force conversion to MIME format. | Optional |
+| password | Password to encrypt the exported file. | Optional |
+| reason_for_export | Reason for exporting the message. | Optional |
+| recipient_address | Email address to send the exported message to. | Optional |
 
 #### Context Output
 
@@ -933,7 +1029,7 @@ Retrieve quarantine messages.
 >
 >| ApprovalId | ApprovalUPN | CustomData | DeletedForRecipients | Direction | EntityType | Expires | Identity | MessageId | MoveToQuarantineAdminActionTakenBy | MoveToQuarantineApprovalId | Organization | OverrideReason | OverrideReasonIntValue | PermissionToAllowSender | PermissionToBlockSender | PermissionToDelete | PermissionToDownload | PermissionToPreview | PermissionToRelease | PermissionToRequestRelease | PermissionToViewHeader | PolicyName | PolicyType | QuarantineTypes | QuarantinedUser | ReceivedTime | RecipientAddress | RecipientCount | RecipientTag | ReleaseStatus | Released | ReleasedBy | ReleasedCount | ReleasedUser | Reported | SenderAddress | Size | SourceId | Subject | SystemReleased | TagName | TeamsConversationType | Type |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  |  |  |  | Outbound | Email | 2024-07-18T13:20:02.7166413+00:00 | 12345678-beef-dead-beef-0123456789ab\c0ffee13-beef-dead-beef-0123456789ab | \u003c12345678-beef-dead-beef-0123456789ab@123456.789a.bcde.example.com\u003e |  |  | c0ffee13-beef-dead-beef-0123456789ab | None | 0 | true | false | true | true | true | true | false | false | Default | HostedContentFilterPolicy | HighConfPhish | [] | 2024-07-02T13:20:02.7166413+00:00 | ["admin@example.com"] | 1 | [""] | NOTRELEASED | false | [] | 0 | [] | false | alerts@example.com | 31218 |  | Informational-severity alert: Tenant Allow/Block List entry is about to expire | false | AdminOnlyAccessPolicy |  | High Confidence Phish |
+>|  |  |  |  | Outbound | Email | 2024-07-18T13:20:02.7166413+00:00 | 12345678-beef-dead-beef-0123456789ab\\c0ffee13-beef-dead-beef-0123456789ab | \u003c12345678-beef-dead-beef-0123456789ab@123456.789a.bcde.example.com\u003e |  |  | c0ffee13-beef-dead-beef-0123456789ab | None | 0 | true | false | true | true | true | true | false | false | Default | HostedContentFilterPolicy | HighConfPhish | [] | 2024-07-02T13:20:02.7166413+00:00 | ["admin@example.com"] | 1 | [""] | NOTRELEASED | false | [] | 0 | [] | false | alerts@example.com | 31218 |  | Informational-severity alert: Tenant Allow/Block List entry is about to expire | false | AdminOnlyAccessPolicy |  | High Confidence Phish |
 >|  |  |  |  | Inbound | Email | 2024-07-13T10:59:12.7581841+00:00 | 12345678-beef-dead-beef-0123456789ac\\c0ffee13-beef-dead-beef-0123456789ac | \u003c12345678-beef-dead-beef-0123456789ac@123456.789a.bcde.example.com\u003e |  |  | c0ffee13-beef-dead-beef-0123456789ac | None | 0 | true | false | true | true | true | true | false | false | testing_quarantine_release | HostedContentFilterPolicy | HighConfPhish | [] | 2024-06-28T10:59:12.7581841+00:00 | ["user@example.com"] | 1 | [""] | RELEASED | true | ["SystemMailbox{deadbeef-dead-beef-dead-beefdeadbeef}@example.com"] | 1 | [] | false | sender@example.com | 14781 |  | Check the inbox | false | testing_release |  | High Confidence Phish |
 
 ### ews-release-quarantinemessage
@@ -1207,6 +1303,117 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 >| 1/3/2021 6:14:14 AM | 8.8.8.8 | 0 | xxx | xxxx | microsoft.com | 1/3/2021 4:45:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:14:14 AM | Delivered | Test mail |
 >| 1/3/2021 6:15:14 AM | 8.8.8.8 | 1 | xxx | xxxx | microsoft.com | 1/3/2021 4:46:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:15:14 AM | Delivered | Test mail |
 
+### ews-message-trace-list
+
+***
+You can use this command to search message data for the last 90 days. If you run this command without any arguments, only data from the last 48 hours is returned.
+You can only return 10 days worth of data per query.
+This command returns a maximum of 5,000 results. If your data exceeds the result size, consider splitting it up using shorter *start_date* and *end_date* intervals.
+For information on how to use pagination, see the [Pagination](#pagination) section below.
+
+**Pagination Information:**
+Pagination isn't supported in this command due to API limitations. To query subsequent data, use the *starting_recipient_address* and *end_date* parameters with the values from the Recipient address and Received Time properties respectively of the previous result in the next query.
+For more information, Click for the [Microsoft API Documentation](https://learn.microsoft.com/en-us/exchange/monitoring/trace-an-email-message/new-message-trace#using-powershell-cmdlet-get-messagetracev2)
+
+**Best Practices:**
+
+- Use the *limit* argument to adjust the size of your results.
+- Be as precise as possible. Narrow the gap between *start_date* and *end_date* and use additional arguments (for example, *starting_recipient_address*) where possible.
+- Use message_id where possible (required for messages sent to more than 1000 recipients).
+
+#### Base Command
+
+`ews-message-trace-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sender_address | A comma-separated list of sender email addresses by which to filter the results. | Optional |
+| recipient_address | A comma-separated list of recipient email addresses by which to filter the results. | Optional |
+| from_ip | The source IP address used to filter results. For incoming messages, from_ip is the public IP of the SMTP server that sent the message. For outgoing messages from Exchange Online, the value is blank. | Optional |
+| to_ip | The destination IP address used to filter results. For outgoing messages, the to_ip value is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, this value is blank. | Optional |
+| message_id | A comma-separated list of Message-ID header fields used to filter results. This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message and should be unique for each message. However, not all servers generate Message-ID values in the same way. Include the full Message-ID string (which may contain angle brackets) and enclose each value in quotation marks. | Optional |
+| message_trace_id | The message trace ID used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that's processed by the system. | Optional |
+| start_date | The start date of the date range. Use the short date format that's defined in the Regional Options settings on the computer where you're running the command. For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018. You can enter the date only, or you can enter the date and time of day. If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM". Valid input for this parameter is from 90 days ago until now. Default is 48 hours ago. | Optional |
+| end_date | The end date of the date range. Use the short date format that's defined in the Regional Options settings on the computer where you're running the command. For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018. You can enter the date and time of day. If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM". Valid input for this parameter is from the start_date - now. Default is now. | Optional |
+| status | A comma-separated list of message statuses by which to filter the results. Can be one of the following: GettingStatus (The message is waiting for status update), Failed (Message delivery was attempted and it failed or the message was filtered as spam or malware, or by transport rules), Pending (Message delivery is underway or was deferred and is being retried), Delivered (The message was delivered to its destination), Expanded (There was no message delivery because the message was addressed to a distribution group and the membership of the distribution was expanded), Quarantined (The message was quarantined), FilteredAsSpam (The message was marked as spam). Possible values are: GettingStatus, Failed, Pending, Delivered, Expanded, Quarantined, FilteredAsSpam. | Optional |
+| subject | The subject parameter filters the results by the subject of the message. If the value contains spaces, enclose the value in quotation marks ("). | Optional |
+| subject_filter_type | The subject_filter_type parameter specifies how the value of the subject parameter is evaluated. Valid values are: Contains, EndsWith, StartsWith. It is recommended to use StartsWith or EndsWith instead of Contains whenever possible. | Optional |
+| starting_recipient_address | The starting_recipient_address parameter is used with the end_date parameter to query subsequent data while avoiding duplicates. For subsequent queries, use the Recipient address and Received Time from the last record of the previous results as the values for starting_recipient_address and end_date, respectively. | Optional |
+| limit | The maximum number of results to return. A valid value is from 1 to 5000. The default value is 1000. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.MessageTrace.FromIP | String | The public IP address of the SMTP email server that sent the message. |
+| EWS.MessageTrace.ToIP | String | The public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank. |
+| EWS.MessageTrace.MessageId | String | Message-ID header field of the message. |
+| EWS.MessageTrace.MessageTraceId | String | Message trace ID of the message. |
+| EWS.MessageTrace.Received | Date | Message receive time. |
+| EWS.MessageTrace.RecipientAddress | String | Message recipients address. |
+| EWS.MessageTrace.SenderAddress | String | Message sender address. |
+| EWS.MessageTrace.Size | Number | Message size in bytes. |
+| EWS.MessageTrace.Status | String | Message status. |
+| EWS.MessageTrace.Subject | String | Message subject. |
+
+#### Command Example
+
+```!ews-message-trace-list```
+
+#### Context Example
+
+```json
+{
+"EWS": {
+ "MessageTrace": [
+            {
+                "EndDate": "2021-01-03T06:14:14.9596257Z",
+                "FromIP": "8.8.8.8",
+                "Index": 1,
+                "MessageId": "xxx",
+                "MessageTraceId": "xxxx",
+                "Organization": "dev.onmicrosoft.com",
+                "Received": "2021-01-03T04:45:36.4662406",
+                "RecipientAddress": "xsoar@dev.onmicrosoft.com",
+                "SenderAddress": "xsoar@dev.onmicrosoft.com",
+                "Size": 1882,
+                "StartDate": "2021-01-01T06:14:14.9596257Z",
+                "Status": "GettingStatus",
+                "Subject": "Test mail",
+                "ToIP": null
+            },
+            {
+                "EndDate": "2021-01-03T06:15:14.9596257Z",
+                "FromIP": "8.8.8.8",
+                "Index": 2,
+                "MessageId": "xxx",
+                "MessageTraceId": "xxxx",
+                "Organization": "dev.onmicrosoft.com",
+                "Received": "2021-01-03T04:46:36.4662406",
+                "RecipientAddress": "xsoar@dev.onmicrosoft.com",
+                "SenderAddress": "xsoar@dev.onmicrosoft.com",
+                "Size": 1882,
+                "StartDate": "2021-01-01T06:15:14.9596257Z",
+                "Status": "GettingStatus",
+                "Subject": "Test mail",
+                "ToIP": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### EWS extension - Messages trace
+>
+>| EndDate | FromIP | Index | MessageId | MessageTraceId | Organization | Received | RecipientAddress | SenderAddress | Size | StartDate | Status | Subject | ToIP |
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+>| 1/3/2021 6:14:14 AM | 8.8.8.8 | 0 | xxx | xxxx | microsoft.com | 1/3/2021 4:45:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:14:14 AM | Delivered | Test mail |
+>| 1/3/2021 6:15:14 AM | 8.8.8.8 | 1 | xxx | xxxx | microsoft.com | 1/3/2021 4:46:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:15:14 AM | Delivered | Test mail |
+
 ### ews-federation-trust-get
 
 ***
@@ -1262,34 +1469,34 @@ Displays the federation trust configured for the Exchange organization.
 | EWS.FederationTrust.OrgCertificate.HasPrivateKey | Boolean | Whether the organization certificate has a private key. |
 | EWS.FederationTrust.OrgCertificate.Issuer | String | Issuer of the organization certificate. |
 | EWS.FederationTrust.OrgCertificate.IssuerName.Name | String | Name of the issuer of the organization certificate. |
-| EWS.FederationTrust.OrgCertificate.IssuerName.Oid.FriendlyName | Unknown | Friendly Name of the OID of the issuer name of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.IssuerName.Oid.FriendlyName | Unknown | Friendly name of the OID of the issuer name of the organization certificate. |
 | EWS.FederationTrust.OrgCertificate.IssuerName.Oid.Value | Unknown | Value of the OID of the issuer name of the organization certificate. |
-| EWS.FederationTrust.OrgCertificate.IssuerName.RawData | Number | Raw data of the issuer name of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.IssuerName.RawData | Number | Raw Data of the issuer name of the organization certificate. |
 | EWS.FederationTrust.OrgCertificate.NotAfter | Date | The date until when the organization certificate is valid. |
 | EWS.FederationTrust.OrgCertificate.NotBefore | Date | The date the organization certificate became valid. |
 | EWS.FederationTrust.OrgCertificate.PrivateKey | Unknown | Private key of the organization certificate. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName | String | Friendly name of the OID of the encoded key value of the public key. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.Value | String | Value of the OID of the encoded key value of the public key. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.RawData | Number | Raw data of the encoded key value of the public key. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.FriendlyName | String | Friendly name of the OID of the encoded parameters of the public key. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.Value | String | Value of the OID of the encoded parameters of the public key. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.RawData | Number | Raw data of the encoded parameters of the public key. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.Key.KeyExchangeAlgorithm | String | Key exchange algorithm of the public key. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.MaxSize | Number | Maximum size of the public key. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.MinSize | Number | Minimum size of the public key. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.SkipSize | Number | SkipSize of the public key. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.Key.SignatureAlgorithm | String | Signature algorithm of the public key. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.Oid.FriendlyName | String | Friendly name of the OID of the public key. |
-| EWS.FederationTrust.OrgCertificate.PublicKey.Oid.Value | String | Value of the OID of the public key. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName | String | Friendly name of the OID of the encoded key value of the public key of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.Value | String | Value of the OID of the encoded key value of the public key of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.RawData | Number | Raw data of the encoded key value of the public key of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.FriendlyName | String | Friendly name of the OID of the encoded parameters of the public key of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.Value | String | Value of the OID of the encoded parameters of the public key of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.RawData | Number | Raw Data of the encoded parameters of the public key of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.Key.KeyExchangeAlgorithm | String | Key exchange algorithm of the public key of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.MaxSize | Number | Maximum size of the public key of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.MinSize | Number | Minimum size of the public key of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.SkipSize | Number | SkiPSize of the public key of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.Key.SignatureAlgorithm | String | Signature algorithm of the public key of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.Oid.FriendlyName | String | Friendly name of the OID of the public key of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.PublicKey.Oid.Value | String | Value of the OID of the public key of the organization certificate. |
 | EWS.FederationTrust.OrgCertificate.RawData | Number | Raw data of the organization certificate. |
 | EWS.FederationTrust.OrgCertificate.SerialNumber | String | Serial number of the organization certificate. |
-| EWS.FederationTrust.OrgCertificate.SignatureAlgorithm.FriendlyName | String | Friendly name of the signature algorithm. |
-| EWS.FederationTrust.OrgCertificate.SignatureAlgorithm.Value | String | Value of the signature algorithm. |
+| EWS.FederationTrust.OrgCertificate.SignatureAlgorithm.FriendlyName | String | Friendly name of the signature algorithm of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.SignatureAlgorithm.Value | String | Value of the signature algorithm of the organization certificate. |
 | EWS.FederationTrust.OrgCertificate.Subject | String | Subject of the organization certificate. |
 | EWS.FederationTrust.OrgCertificate.SubjectName.Name | String | Name of the subject of the organization certificate. |
-| EWS.FederationTrust.OrgCertificate.SubjectName.Oid.FriendlyName | Unknown | Friendly name of the OID of the subject name. |
-| EWS.FederationTrust.OrgCertificate.SubjectName.Oid.Value | Unknown | Value of the OID of the subject name. |
-| EWS.FederationTrust.OrgCertificate.SubjectName.RawData | Number | Raw Data of the subject name. |
+| EWS.FederationTrust.OrgCertificate.SubjectName.Oid.FriendlyName | Unknown | Friendly name of the OID of the subject of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.SubjectName.Oid.Value | Unknown | Value of the OID of the subject name of the organization certificate. |
+| EWS.FederationTrust.OrgCertificate.SubjectName.RawData | Number | Raw data of the subject name of the organization certificate. |
 | EWS.FederationTrust.OrgCertificate.Thumbprint | String | Thumbprint of the organization certificate. |
 | EWS.FederationTrust.OrgCertificate.Version | Number | Version of the organization certificate. |
 | EWS.FederationTrust.OrgNextCertificate | Unknown | Next organization certificate. |
@@ -1310,22 +1517,22 @@ Displays the federation trust configured for the Exchange organization.
 | EWS.FederationTrust.OrgPrevCertificate.IssuerName.Name | String | Name of the issuer of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.IssuerName.Oid.FriendlyName | Unknown | Friendly name of the OID of the issuer of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.IssuerName.Oid.Value | Unknown | Value of the OID of the issuer of the previous organization certificate. |
-| EWS.FederationTrust.OrgPrevCertificate.IssuerName.RawData | Number | Raw data of the issuer of the previous organization certificate. |
+| EWS.FederationTrust.OrgPrevCertificate.IssuerName.RawData | Number | Raw Data of the issuer of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.NotAfter | Date | The date until when the previous organization certificate is valid. |
 | EWS.FederationTrust.OrgPrevCertificate.NotBefore | Date | The date the previous organization certificate became valid. |
 | EWS.FederationTrust.OrgPrevCertificate.PrivateKey | Unknown | Private Key of the previous organization certificate. |
-| EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName | String | Friendly Name of the OID of the encoded key value of the public key of the previous organization certificate. |
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName | String | Friendly name of the OID of the encoded key value of the public key of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.Value | String | Value of the OID of the encoded key value of the public key of the previous organization certificate. |
-| EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.RawData | Number | Raw Data of the encoded key value of the public key of the previous organization certificate. |
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.RawData | Number | Raw data of the encoded key value of the public key of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.Oid.FriendlyName | String | Friendly name of the OID of the encoded parameters of the public key of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.Oid.Value | String | Value of the OID of the encoded parameters of the public key of the previous organization certificate. |
-| EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.RawData | Number | Raw Data of the encoded parameters of the public key of the previous organization certificate. |
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.RawData | Number | Raw data of the encoded parameters of the public key of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.KeyExchangeAlgorithm | String | Key exchange algorithm of the public key of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.MaxSize | Number | Maximum size of the public key of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.MinSize | Number | Minimum size of the public key of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.SkipSize | Number | SkiPSize of the public key of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.SignatureAlgorithm | String | Signature algorithm of the public key of the previous organization certificate. |
-| EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.FriendlyName | String | Friendly name of the OID of the public key of the previous organization certificate. |
+| EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.FriendlyName | String | Friendly Name of the OID of the public key of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.Value | String | Value of the OID of the public key of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.RawData | Number | Raw Data of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.SerialNumber | String | Serial number of the previous organization certificate. |
@@ -1335,7 +1542,7 @@ Displays the federation trust configured for the Exchange organization.
 | EWS.FederationTrust.OrgPrevCertificate.SubjectName.Name | String | Name of the subject of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.SubjectName.Oid.FriendlyName | Unknown | Friendly name of the OID of the subject of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.SubjectName.Oid.Value | Unknown | Value of the OID of the subject name of the previous organization certificate. |
-| EWS.FederationTrust.OrgPrevCertificate.SubjectName.RawData | Number | Raw Data of the subject name of the previous organization certificate. |
+| EWS.FederationTrust.OrgPrevCertificate.SubjectName.RawData | Number | Raw data of the subject name of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.Thumbprint | String | Thumbprint of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevCertificate.Version | Number | Version of the previous organization certificate. |
 | EWS.FederationTrust.OrgPrevPrivCertificate | String | Organization previous private certificate. |
@@ -1617,8 +1824,8 @@ Displays the existing user objects in your organization.
 | EWS.User.IsInactiveMailbox | Boolean | Whether the mailbox is inactive. |
 | EWS.User.IsLinked | Boolean | Whether the user object is linked. |
 | EWS.User.IsSecurityPrincipal | Boolean | Whether there is a security principal. |
-| EWS.User.IsSoftDeletedByDisable | Boolean | Whether soft delete is disabled and hard \(permanent\) delete occurs. |
-| EWS.User.IsSoftDeletedByRemove | Boolean | When the Exchange Online mailbox is deleted \(soft delete\), this property is set to True. |
+| EWS.User.IsSoftDeletedByDisable | Boolean | Whether soft delete is disabled and hard (permanent) delete occurs. |
+| EWS.User.IsSoftDeletedByRemove | Boolean | When the Exchange Online mailbox is deleted (soft delete), this property is set to True. |
 | EWS.User.IsValid | Boolean | Whether the user object is valid. |
 | EWS.User.LastName | String | Last name of the user object. |
 | EWS.User.LegacyExchangeDN | String | Legacy exchange distinguished name of the user object. |
@@ -1663,11 +1870,11 @@ Displays the existing user objects in your organization.
 | EWS.User.SimpleDisplayName | String | Simple display name of the user object. |
 | EWS.User.StateOrProvince | String | State or province of the user object. |
 | EWS.User.StreetAddress | String | Street address of the user object. |
-| EWS.User.StsRefreshTokensValidFrom | Date | The validation start date for the Security Token Service \(STS\) refresh tokens of the user object. |
+| EWS.User.StsRefreshTokensValidFrom | Date | The validation start date for the Security Token Service (STS) refresh tokens of the user object. |
 | EWS.User.TelephoneAssistant | String | Telephone assistant of the user object. |
 | EWS.User.Title | String | Title of the user object. |
-| EWS.User.UMDialPlan | Unknown | Unified Messaging \(UM\) dial plan of the user object. |
-| EWS.User.UMDtmfMap | String | Unified Messaging \(UM\) dual tone multi-frequency \(DTMF\) map of the user object. |
+| EWS.User.UMDialPlan | Unknown | Unified Messaging (UM) dial plan of the user object. |
+| EWS.User.UMDtmfMap | String | Unified Messaging (UM) dual tone multi-frequency (DTMF) map of the user object. |
 | EWS.User.UpgradeDetails | Unknown | Upgrade details of the user object. |
 | EWS.User.UpgradeMessage | Unknown | Upgrade message of the user object. |
 | EWS.User.UpgradeRequest | String | Upgrade request of the user object. |
@@ -1883,43 +2090,43 @@ List all mail flow rules (transport rules) in the organization.
 
 #### Input
 
-| **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note**        |
-|-------------------|----------------------------------------------------------------|---------------------|--------------| --- |-----------------|
-| extended_output   | Determine whether the output will be in verbose format or not. | Boolean             | No           | No | Default = False |
-| limit             | The amount of mail flow rules to return. | Number             | No           | No | Default is 1000  |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| extended_output | Determine whether the output will be in verbose format or not. | Optional |
+| limit | The amount of mail flow rules to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- |----------| --- |
-| EWS.MailFlowRule.Size | Number   | The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule. |
-| EWS.MailFlowRule.ExpiryDate | Date     | The date and time when the mail flow rule is set to expire and no longer apply. |
-| EWS.MailFlowRule.Mode | String   | The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled. |
-| EWS.MailFlowRule.Quarantine | Boolean  | Specifies whether the rule actions include quarantining messages that match the rule. |
-| EWS.MailFlowRule.Guid | String   | The unique identifier (Globally Unique Identifier) for the mail flow rule. |
-| EWS.MailFlowRule.OrganizationId | String   | The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments. |
-| EWS.MailFlowRule.DistinguishedName | String   | The distinguished name of the mail flow rule in the Exchange directory structure. |
-| EWS.MailFlowRule.IsValid | Boolean  | Indicates whether the mail flow rule is valid and functional. |
-| EWS.MailFlowRule.Conditions | Array    | The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties. |
-| EWS.MailFlowRule.Comments | Unknown  | Free-form text field for adding comments or notes about the rule, typically used for documentation. |
-| EWS.MailFlowRule.WhenChanged | Date     | The date and time when the mail flow rule was last modified. |
-| EWS.MailFlowRule.Description | String   | A brief description of the mail flow rule's purpose or functionality. |
-| EWS.MailFlowRule.Actions |    Array      | The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers. |
-| EWS.MailFlowRule.ImmutableId |   String       |  A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications. |
-| EWS.MailFlowRule.Identity |   String       |The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically.  |
-| EWS.MailFlowRule.Name |   String       |  The user-friendly name of the mail flow rule, typically used for easy identification. |
-| EWS.MailFlowRule.CreatedBy |     String     | The user or process that created the mail flow rule. |
-| EWS.MailFlowRule.RouteMessageOutboundConnector |   Unknown       | Specifies whether messages matching the rule should be routed through a specific outbound connector. |
+| --- | --- | --- |
+| EWS.MailFlowRule.Size | Number | The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule. |
+| EWS.MailFlowRule.ExpiryDate | Date | The date and time when the mail flow rule is set to expire and no longer apply. |
+| EWS.MailFlowRule.Mode | String | The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled. |
+| EWS.MailFlowRule.Quarantine | Boolean | Specifies whether the rule actions include quarantining messages that match the rule. |
+| EWS.MailFlowRule.Guid | String | The unique identifier (Globally Unique Identifier) for the mail flow rule. |
+| EWS.MailFlowRule.OrganizationId | String | The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments. |
+| EWS.MailFlowRule.DistinguishedName | String | The distinguished name of the mail flow rule in the Exchange directory structure. |
+| EWS.MailFlowRule.IsValid | Boolean | Indicates whether the mail flow rule is valid and functional. |
+| EWS.MailFlowRule.Conditions | Array | The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties. |
+| EWS.MailFlowRule.Comments | Unknown | Free-form text field for adding comments or notes about the rule, typically used for documentation. |
+| EWS.MailFlowRule.WhenChanged | Date | The date and time when the mail flow rule was last modified. |
+| EWS.MailFlowRule.Description | String | A brief description of the mail flow rule's purpose or functionality. |
+| EWS.MailFlowRule.Actions | Array | The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers. |
+| EWS.MailFlowRule.ImmutableId | String | A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications. |
+| EWS.MailFlowRule.Identity | String | The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically. |
+| EWS.MailFlowRule.Name | String | The user-friendly name of the mail flow rule, typically used for easy identification. |
+| EWS.MailFlowRule.CreatedBy | String | The user or process that created the mail flow rule. |
+| EWS.MailFlowRule.RouteMessageOutboundConnector | Unknown | Specifies whether messages matching the rule should be routed through a specific outbound connector. |
 
 #### Human Readable Output
 
 >### Results of ews-rule-list
 >
->| Name      | State    | Priority | Comment | WhenChanged                | CreatedBy|
->|-----------|----------|----------|---------|----------------------------| --- |
->| demisto   | Disabled | 1        | comment | 2019-10-14T07:25:04+00:00  | Edwin Becker
->| demisto-2 | Enabled  | 2        | comment | 2019-11-15T010:21:45+00:00 | Kemp Kimmons
->| demisto-3 | Enabled  | 3        | comment | 2019-11-16T016:26:46+00:00 | Barbara Wagner
+>| Name | State | Priority | Comment | WhenChanged | CreatedBy |
+>| --- | --- | --- | --- | --- | --- |
+>| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Edwin Becker |
+>| demisto-2 | Enabled | 2 | comment | 2019-11-15T010:21:45+00:00 | Kemp Kimmons |
+>| demisto-3 | Enabled | 3 | comment | 2019-11-16T016:26:46+00:00 | Barbara Wagner |
 
 ### ews-mail-flow-rule-get
 
@@ -1932,41 +2139,41 @@ Get a mail flow rule (transport rules) in the organization.
 
 #### Input
 
-| **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note** |
-| --- |----------------------------------------------------------------|---------------------| --- | --- | --- |
-| extended_output | Determine whether the output will be in verbose format or not. | Boolean             | No | No | Default = False |
-| identity | Specifies the rule that you want to view.                      | string             | No | No |  |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| extended_output | Determine whether the output will be in verbose format or not. | Optional |
+| identity | Specifies the rule that you want to view. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- |----------| --- |
-| EWS.MailFlowRule.Size | Number   | The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule. |
-| EWS.MailFlowRule.ExpiryDate | Date     | The date and time when the mail flow rule is set to expire and no longer apply. |
-| EWS.MailFlowRule.Mode | String   | The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled. |
-| EWS.MailFlowRule.Quarantine | Boolean  | Specifies whether the rule actions include quarantining messages that match the rule. |
-| EWS.MailFlowRule.Guid | String   | The unique identifier (Globally Unique Identifier) for the mail flow rule. |
-| EWS.MailFlowRule.OrganizationId | String   | The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments. |
-| EWS.MailFlowRule.DistinguishedName | String   | The distinguished name of the mail flow rule in the Exchange directory structure. |
-| EWS.MailFlowRule.IsValid | Boolean  | Indicates whether the mail flow rule is valid and functional. |
-| EWS.MailFlowRule.Conditions | Array    | The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties. |
-| EWS.MailFlowRule.Comments | Unknown  | Free-form text field for adding comments or notes about the rule, typically used for documentation. |
-| EWS.MailFlowRule.WhenChanged | Date     | The date and time when the mail flow rule was last modified. |
-| EWS.MailFlowRule.Description | String   | A brief description of the mail flow rule's purpose or functionality. |
-| EWS.MailFlowRule.Actions |    Array      | The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers. |
-| EWS.MailFlowRule.ImmutableId |   String       |  A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications. |
-| EWS.MailFlowRule.Identity |   String       |The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically.  |
-| EWS.MailFlowRule.Name |   String       |  The user-friendly name of the mail flow rule, typically used for easy identification. |
-| EWS.MailFlowRule.CreatedBy |     String     | The user or process that created the mail flow rule. |
-| EWS.MailFlowRule.RouteMessageOutboundConnector |   Unknown       | Specifies whether messages matching the rule should be routed through a specific outbound connector. |
+| --- | --- | --- |
+| EWS.MailFlowRule.Size | Number | The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule. |
+| EWS.MailFlowRule.ExpiryDate | Date | The date and time when the mail flow rule is set to expire and no longer apply. |
+| EWS.MailFlowRule.Mode | String | The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled. |
+| EWS.MailFlowRule.Quarantine | Boolean | Specifies whether the rule actions include quarantining messages that match the rule. |
+| EWS.MailFlowRule.Guid | String | The unique identifier (Globally Unique Identifier) for the mail flow rule. |
+| EWS.MailFlowRule.OrganizationId | String | The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments. |
+| EWS.MailFlowRule.DistinguishedName | String | The distinguished name of the mail flow rule in the Exchange directory structure. |
+| EWS.MailFlowRule.IsValid | Boolean | Indicates whether the mail flow rule is valid and functional. |
+| EWS.MailFlowRule.Conditions | Array | The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties. |
+| EWS.MailFlowRule.Comments | Unknown | Free-form text field for adding comments or notes about the rule, typically used for documentation. |
+| EWS.MailFlowRule.WhenChanged | Date | The date and time when the mail flow rule was last modified. |
+| EWS.MailFlowRule.Description | String | A brief description of the mail flow rule's purpose or functionality. |
+| EWS.MailFlowRule.Actions | Array | The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers. |
+| EWS.MailFlowRule.ImmutableId | String | A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications. |
+| EWS.MailFlowRule.Identity | String | The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically. |
+| EWS.MailFlowRule.Name | String | The user-friendly name of the mail flow rule, typically used for easy identification. |
+| EWS.MailFlowRule.CreatedBy | String | The user or process that created the mail flow rule. |
+| EWS.MailFlowRule.RouteMessageOutboundConnector | Unknown | Specifies whether messages matching the rule should be routed through a specific outbound connector. |
 
 #### Human Readable Output
 
 >### Results of ews-rule-list
 >
->| Name      | State    | Priority | Comment | WhenChanged                | CreatedBy|
->|-----------|----------|----------|---------|----------------------------| --- |
->| demisto   | Disabled | 1        | comment | 2019-10-14T07:25:04+00:00  | Edwin Becker
+>| Name | State | Priority | Comment | WhenChanged | CreatedBy |
+>| --- | --- | --- | --- | --- | --- |
+>| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Edwin Becker |
 
 ### ews-mail-flow-rule-remove
 
@@ -2059,3 +2266,5 @@ There are no context outputs for this command.
 #### Human Readable Output
 >
 >Mail forwarding for user 1845290268845146113 has been disabled successfully
+
+```

@@ -5,7 +5,7 @@ import dateparser
 import demistomock as demisto
 import pytest
 import requests_mock
-from CommonServerPython import DemistoException, snakify
+from CommonServerPython import DemistoException, snakify, outputPaths
 from freezegun import freeze_time
 from MicrosoftDefenderAdvancedThreatProtection import (
     MICROSOFT_DEFENDER_FOR_ENDPOINT_API,
@@ -29,6 +29,7 @@ from MicrosoftDefenderAdvancedThreatProtection import (
     put_live_response_file_action,
     run_live_response_script_action,
     run_polling_command,
+    stop_and_quarantine_file_command_polling,
 )
 
 ARGS = {"id": "123", "limit": "2", "offset": "0"}
@@ -253,16 +254,6 @@ def test_remove_app_restriction_command(mocker):
     assert res["MicrosoftATP.MachineAction(val.ID === obj.ID)"] == MACHINE_ACTION_DATA
 
 
-def test_stop_and_quarantine_file_command(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    from MicrosoftDefenderAdvancedThreatProtection import stop_and_quarantine_file_command
-
-    mocker.patch.object(client_mocker, "stop_and_quarantine_file", return_value=STOP_AND_QUARANTINE_FILE_RAW_RESPONSE)
-    mocker.patch.object(atp, "get_machine_action_data", return_value=MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_DATA)
-    res = stop_and_quarantine_file_command(client_mocker, {"machine_id": "test", "file_hash": "hash"})
-    assert res[0].outputs == MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_DATA
-
-
 def test_get_investigations_by_id_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
     from MicrosoftDefenderAdvancedThreatProtection import get_investigations_by_id_command
@@ -422,6 +413,26 @@ ALERT_RELATED_USER_API_RESPONSE = {
     "isOnlyNetworkUser": "false",
 }
 
+GET_FILE_API_RESPONSE = {
+    "@odata.context": "https://api.security.microsoft.com/api/$metadata#Files/$entity",
+    "sha1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+    "sha256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+    "globalPrevalence": 180022,
+    "globalFirstObserved": "2017-09-19T03:51:27.6785431Z",
+    "globalLastObserved": "2020-01-06T03:59:21.3229314Z",
+    "size": 22139496,
+    "fileType": "APP",
+    "isPeFile": True,
+    "filePublisher": "CHENGDU YIWO Tech Development Co., Ltd.",
+    "fileProductName": "EaseUS MobiSaver for Android",
+    "signer": "CHENGDU YIWO Tech Development Co., Ltd.",
+    "issuer": "VeriSign Class 3 Code Signing 2010 CA",
+    "signerHash": "6c3245d4a9bc0244d99dff27af259cbbae2e2d16",
+    "isValidCertificate": False,
+    "determinationType": "Pua",
+    "determinationValue": "PUA:Win32/FusionCore",
+}
+
 FILE_STATISTICS_API_RESPONSE = {
     "@odata.context": "https://api.security.microsoft.com/api/$metadata#microsoft.windowsDefenderATP.api.InOrgFileStats",
     "sha1": "0991a395da64e1c5fbe8732ed11e6be064081d9f",
@@ -504,38 +515,7 @@ INVESTIGATION_ACTION_DATA = {
 INVESTIGATION_SAS_URI_API_RES = {
     "value": "https://userrequests-us.securitycenter.windows.com:443/safedownload/WDATP_Investigation_Package.zip?token=test1"
 }
-STOP_AND_QUARANTINE_FILE_RAW_RESPONSE: dict = {
-    "cancellationComment": None,
-    "cancellationDateTimeUtc": None,
-    "cancellationRequestor": None,
-    "commands": [],
-    "computerDnsName": None,
-    "creationDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
-    "errorHResult": 0,
-    "id": "123",
-    "lastUpdateDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
-    "machineId": "12345678",
-    "relatedFileInfo": {"fileIdentifier": "87654321", "fileIdentifierType": "Sha1"},
-    "requestor": "123abc",
-    "requestorComment": "Test",
-    "scope": None,
-    "status": "Pending",
-    "type": "StopAndQuarantineFile",
-}
 
-MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_DATA = {
-    "ID": "123",
-    "Type": "StopAndQuarantineFile",
-    "Scope": None,
-    "Requestor": "123abc",
-    "RequestorComment": "Test",
-    "Status": "Pending",
-    "MachineID": "12345678",
-    "ComputerDNSName": None,
-    "CreationDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
-    "LastUpdateTimeUtc": "2020-02-27T12:21:00.4568741Z",
-    "RelatedFileInfo": {"fileIdentifier": "87654321", "fileIdentifierType": "Sha1"},
-}
 MACHINE_ACTION_API_RESPONSE = {
     "id": "123",
     "type": "test",
@@ -980,22 +960,31 @@ def test_reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_
 @pytest.mark.parametrize(
     "hostnames, ips, ids, expected_filter",
     [
-        # only one list is given
-        (["example.com"], [], [], "computerDnsName eq 'example.com'"),
-        (["example.com", "b.com"], [], [], "computerDnsName eq 'example.com' or computerDnsName eq 'b.com'"),
-        # each list has only one value
-        (["b.com"], ["1.2.3.4"], ["1"], "computerDnsName eq 'b.com' or lastIpAddress eq '1.2.3.4' or id eq '1'"),
-        # each list has more than 1 value
+        # Test case 1: Only one list with one value
+        (["example.com"], [], [], "computerDnsName in ('example.com')"),
+        # Test case 2: Only one list with multiple values
+        (["example.com", "b.com"], [], [], "computerDnsName in ('example.com','b.com')"),
+        # Test case 3: Each list has exactly one value
+        (["b.com"], ["1.2.3.4"], ["1"], "computerDnsName in ('b.com') or lastIpAddress in ('1.2.3.4') or id in ('1')"),
+        # Test case 4: Each list has multiple values
         (
             ["b.com", "a.com"],
             ["1.2.3.4", "1.2.3.5"],
             ["1", "2"],
-            "computerDnsName eq 'b.com' or computerDnsName eq 'a.com' or "
-            "lastIpAddress eq '1.2.3.4' or "
-            "lastIpAddress eq '1.2.3.5' or "
-            "id eq '1' or "
-            "id eq '2'",
+            "computerDnsName in ('b.com','a.com') or " "lastIpAddress in ('1.2.3.4','1.2.3.5') or " "id in ('1','2')",
         ),
+        # Test case 5: Some lists are empty
+        (["host.local"], [], ["12345", "67890"], "computerDnsName in ('host.local') or id in ('12345','67890')"),
+        # Test case 6: Edge case: All lists are empty, should produce an empty string
+        ([], [], [], ""),
+    ],
+    ids=[
+        "single_hostname",
+        "multiple_hostnames",
+        "single_value_for_each_field",
+        "multiple_values_for_each_field",
+        "some_lists_empty",
+        "all_lists_empty",
     ],
 )
 def test_create_filter_for_endpoint_command(hostnames, ips, ids, expected_filter):
@@ -3808,3 +3797,326 @@ def test_list_auth_permissions_command(mocker):
     command_results = list_auth_permissions_command(client_mocker)
 
     assert command_results.readable_output == "### Permissions\nEvent.Write\nUser.Read"
+
+
+class TestStopAndQuarantineFileCommand:
+    def _construct_stop_and_quarantine_raw_response(
+        self, id="123", machine_id="12345678", file_hash="hash", comment="Test", status="Pending"
+    ):
+        return {
+            "cancellationComment": None,
+            "cancellationDateTimeUtc": None,
+            "cancellationRequestor": None,
+            "commands": [],
+            "computerDnsName": None,
+            "creationDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
+            "errorHResult": 0,
+            "id": id,
+            "lastUpdateDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
+            "machineId": machine_id,
+            "relatedFileInfo": {"fileIdentifier": file_hash, "fileIdentifierType": "Sha1"},
+            "requestor": "123abc",
+            "requestorComment": comment,
+            "scope": None,
+            "status": status,
+            "type": "StopAndQuarantineFile",
+        }
+
+    MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_CONTEXT_OUTPUT = {
+        "ID": "123",
+        "Type": "StopAndQuarantineFile",
+        "Scope": None,
+        "Requestor": "123abc",
+        "RequestorComment": "Test",
+        "Status": "Pending",
+        "MachineID": "12345678",
+        "ComputerDNSName": None,
+        "CreationDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
+        "LastUpdateTimeUtc": "2020-03-20T14:21:49.9097785Z",
+        "RelatedFileInfo": {"FileIdentifier": "hash", "FileIdentifierType": "Sha1"},
+        "Commands": [],
+    }
+
+    def test_main_calls_quarantine_with_correct_args(self, mocker):
+        """
+        GIVEN: demisto command 'microsoft-atp-stop-and-quarantine-file' is given.
+        WHEN:  main function is executed.
+        THEN:  Ensure stop_and_quarantine_file_command_polling is called with the correct arguments.
+        """
+        from MicrosoftDefenderAdvancedThreatProtection import main
+
+        # ---- MOCKING ----
+        redirect_uri = "redirect_uri"
+        tenant_id = "tenant_id"
+        client_id = "client_id"
+        mocked_params = {
+            "redirect_uri": redirect_uri,
+            "auth_type": "Authorization Code",
+            "self_deployed": "True",
+            "tenant_id": tenant_id,
+            "auth_id": client_id,
+            "credentials": {"password": "client_secret"},
+            "endpoint_type": "Worldwide",
+        }
+
+        mocked_args = {
+            "timeout_in_seconds": 44,
+            "interval_in_seconds": 12,
+            "machine_id": "12345678",
+            "file_hash": "hash",
+            "comment": "some comment",
+        }
+        mocker.patch.object(demisto, "params", return_value=mocked_params)
+        mocker.patch.object(demisto, "args", return_value=mocked_args)
+        mocker.patch.object(demisto, "command", return_value="microsoft-atp-stop-and-quarantine-file")
+        mocker.patch("MicrosoftDefenderAdvancedThreatProtection.return_results")
+        mock_quarantine_command = mocker.patch(
+            "MicrosoftDefenderAdvancedThreatProtection.stop_and_quarantine_file_command_polling"
+        )
+        mock_client_class = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.MsClient")
+        mock_client_instance = mock_client_class.return_value
+
+        # --- Execute ---
+        main()
+
+        # --- Assert ---
+        mock_quarantine_command.assert_called_once()
+        mock_quarantine_command.assert_called_once_with(mocked_args, mock_client_instance)
+
+    def test_polling_disabled_returns_expected_output(self, mocker):
+        """
+        GIVEN: The command is run for the first time and polling is false.
+        WHEN:  The main command function is executed.
+        THEN:  Ensure it calls 'client.stop_and_quarantine_file' (the effect of 'initial_call')
+               and does NOT call the polling status check command.
+        """
+        # --- MOCKING ---
+        mock_initiate_quarantine = mocker.patch.object(
+            client_mocker, "stop_and_quarantine_file", return_value=self._construct_stop_and_quarantine_raw_response()
+        )
+        # Mock the unique command used ONLY by polling_call
+        mock_get_status = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.get_machine_action_by_id_command")
+
+        # --- EXECUTION ---
+        res = stop_and_quarantine_file_command_polling(
+            {"machine_id": "12345678", "file_hash": "hash", "comment": "comment"}, client_mocker
+        )
+
+        # --- Assertion ---
+        # Verify that the initial flow was called
+        mock_initiate_quarantine.assert_called_once()
+
+        # Verify that the polling status command was NOT called
+        mock_get_status.assert_not_called()
+
+        # verify the non-polling response
+        assert res.outputs == [TestStopAndQuarantineFileCommand.MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_CONTEXT_OUTPUT]
+        assert res.readable_output == (
+            "### Stopping and quarantine\n"
+            "|ID|Type|Requestor|RequestorComment|Status|MachineID|\n"
+            "|---|---|---|---|---|---|\n"
+            "| 123 | StopAndQuarantineFile | 123abc | Test | Pending | 12345678 |\n"
+        )
+
+    def test_multiple_machines_and_files_expected_output_non_polling(self, mocker):
+        """
+        GIVEN: Multiple machines and files.
+        WHEN:  One of the initial 'stop_and_quarantine_file' API calls fails by raising an exception.
+        THEN:  Ensure the script does NOT crash, and the final report correctly shows
+               both the successful and the failed actions.
+        """
+        # --- GIVEN (Setup Mocks and Input Data) ---
+
+        machine_ids = ["machine_1", "machine_2"]
+        file_hashes = ["hash_A", "hash_B"]
+        # Total expected actions = 4. We will make the 3rd one fail.
+
+        # 1. Mock the 'stop_and_quarantine_file' call to fail on the third attempt.
+        #    The 'side_effect' list contains return values and exceptions.
+        initiation_side_effects = [
+            self._construct_stop_and_quarantine_raw_response(id="action_1A"),  # Call 1 (machine_1, hash_A) -> Success
+            self._construct_stop_and_quarantine_raw_response(id="action_1B"),  # Call 2 (machine_1, hash_B) -> Success
+            Exception("Simulated API Error: Invalid hash"),  # Call 3 (machine_2, hash_A) -> FAIL
+            self._construct_stop_and_quarantine_raw_response(id="action_2B"),  # Call 4 (machine_2, hash_B) -> Success
+        ]
+        mocker.patch.object(client_mocker, "stop_and_quarantine_file", side_effect=initiation_side_effects)
+
+        # --- WHEN (Execute the function under test) ---
+        args = {"machine_id": machine_ids, "file_hash": file_hashes, "polling": False, "comment": "comment"}
+        command_result = stop_and_quarantine_file_command_polling(args, client_mocker)
+
+        # --- THEN (Assert the behavior and output) ---
+
+        # 1. The main assertion: The script did NOT crash and returned a result.
+        final_outputs = command_result.outputs
+        assert isinstance(final_outputs, list)
+
+        # 2. The final report should contain one result for each of the 4 attempted actions.
+        assert len(final_outputs) == 4
+
+        # 3. Verify the content of the results by checking their statuses.
+        statuses = [res["Status"] for res in final_outputs]
+        assert statuses.count("Pending") == 3
+        assert statuses.count("Failed") == 1
+
+        failed_result = next(res for res in final_outputs if res["Status"] == "Failed")
+        # Confirms the failure happened on the correct machine
+        assert failed_result["MachineID"] == "machine_2"
+        assert failed_result["RelatedFileInfo"]["FileIdentifier"] == "hash_A"
+
+    def test_polling_enabled_partial_failure_returns_expected_output(self, mocker):
+        """
+        GIVEN: Multiple machines and files, with polling enabled.
+        WHEN:  One of the initial 'stop_and_quarantine_file' API calls fails,
+               and the subsequent polling actions result in various statuses.
+        THEN:  Ensure the script correctly reports all initial failures and final statuses.
+        """
+        # --- GIVEN (Setup Mocks and Input Data) ---
+
+        machine_ids = ["machine_1", "machine_2"]
+        file_hashes = ["hash_A", "hash_B"]
+        # Total expected actions = 4. We will make the 3rd one fail during initiation.
+
+        # 1. Mock the initial 'stop_and_quarantine_file' call to fail on the third attempt.
+        initiation_side_effects = [
+            self._construct_stop_and_quarantine_raw_response("action_1A"),  # Call 1 (machine_1, hash_A) -> Success
+            self._construct_stop_and_quarantine_raw_response("action_1B"),  # Call 2 (machine_1, hash_B) -> Success
+            Exception("Simulated API Error: Invalid hash"),  # Call 3 (machine_2, hash_A) -> FAIL
+            self._construct_stop_and_quarantine_raw_response("action_2B"),  # Call 4 (machine_2, hash_B) -> Success
+        ]
+        mocker.patch.object(client_mocker, "stop_and_quarantine_file", side_effect=initiation_side_effects)
+
+        # --- WHEN (Phase 1: The Initial Run) ---
+
+        args_initial = {"machine_id": machine_ids, "file_hash": file_hashes, "polling": True, "comment": "comment"}
+        # This first call simulates what happens when the user clicks "Run"
+        first_poll_result = stop_and_quarantine_file_command_polling(args_initial, client_mocker)
+
+        # --- THEN (Phase 1: Assert the Initial Run's Behavior) ---
+
+        # The script should have returned a request to continue polling
+        assert first_poll_result.readable_output == "Quarantine operations are still in progress..."
+        assert first_poll_result.scheduled_command is not None
+        final_outputs = first_poll_result.outputs
+        assert isinstance(final_outputs, list)
+
+        # 2. The final report should contain one result for each of the 4 attempted actions.
+        assert len(final_outputs) == 4
+
+        # 3. Verify the content of the results by checking their statuses.
+        statuses = [res["Status"] for res in final_outputs]
+        assert statuses.count("Pending") == 3
+        assert statuses.count("Failed") == 1
+
+        # The args for the next run should contain the 3 successful action IDs
+        args_for_next_poll = first_poll_result.scheduled_command._args
+
+        assert len(args_for_next_poll["action_ids"]) == 3
+        assert set(args_for_next_poll["action_ids"]) == {"action_1A", "action_1B", "action_2B"}
+
+        # --- GIVEN (Phase 2: Setup for the Polling Run) ---
+
+        # Mock the 'get_machine_action_by_id_command' to return different final statuses
+        # for the 3 pending actions. need to return them twice because in get_machine_action_by_id_command it calls the
+        # client.get_machine_action_by_id
+        status_check_side_effects = [
+            self._construct_stop_and_quarantine_raw_response("action_1A", status="Succeeded"),
+            self._construct_stop_and_quarantine_raw_response("action_1A", status="Succeeded"),
+            self._construct_stop_and_quarantine_raw_response("action_1B", status="Failed"),
+            self._construct_stop_and_quarantine_raw_response("action_1B", status="Failed"),
+            self._construct_stop_and_quarantine_raw_response("action_2B", status="TimeOut"),
+            self._construct_stop_and_quarantine_raw_response("action_2B", status="TimeOut"),
+        ]
+        mocker.patch.object(client_mocker, "get_machine_action_by_id", side_effect=status_check_side_effects)
+
+        # --- WHEN (Phase 2: The Polling Run) ---
+
+        # This second call simulates what the XSOAR server does during a poll
+        final_poll_result = stop_and_quarantine_file_command_polling(args_for_next_poll, client_mocker)
+
+        # --- THEN (Phase 2: Assert the Final Outcome) ---
+        # The script should now be finished
+        assert final_poll_result.scheduled_command is None
+
+        final_response = final_poll_result.outputs
+        assert len(final_response) == 3  # The polling call only returns results for the actions it polled
+
+        # Check the statuses of the final results from the polling run
+        final_statuses = {res.get("Status") for res in final_response}
+        assert final_statuses == {"Succeeded", "Failed", "TimeOut"}
+
+        assert final_poll_result.readable_output == (
+            "### Completed Quarantine\n"
+            "|ID|Type|Requestor|RequestorComment|Status|MachineID|\n"
+            "|---|---|---|---|---|---|\n"
+            "| action_1A | StopAndQuarantineFile | 123abc | Test | Succeeded | 12345678 |\n"
+            "| action_1B | StopAndQuarantineFile | 123abc | Test | Failed | 12345678 |\n"
+            "| action_2B | StopAndQuarantineFile | 123abc | Test | TimeOut | 12345678 |\n"
+        )
+
+
+def test_file_command(mocker):
+    """
+    Given:
+    - SHA1 File hash
+
+    When:
+    - Calling the file_command function
+
+    Then:
+    - Assert correct context output and raw response
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import file_command, get_file_data
+
+    # Set
+    response = GET_FILE_API_RESPONSE
+    mocker.patch.object(client_mocker, "get_file_data", return_value=response)
+
+    # Arrange
+    mocker.patch.object(demisto, "args", return_value={"file": "4388963aaa83afe2042a46a3c017ad50bdcdafb3"})
+    results = file_command(client_mocker, args=demisto.args())
+
+    entry_context = results[0].to_context()["EntryContext"]
+
+    assert results[0].raw_response == get_file_data(response)
+    assert entry_context == {
+        f"{outputPaths.get('file')}": [
+            {
+                "Hashes": [
+                    {"type": "SHA1", "value": "4388963aaa83afe2042a46a3c017ad50bdcdafb3"},
+                    {"type": "SHA256", "value": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462"},
+                ],
+                "SHA1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+                "SHA256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+                "Type": "APP",
+                "Malicious": {"Vendor": "Microsoft Defender ATP", "Description": None},
+            }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+            {
+                "Indicator": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+                "Type": "file",
+                "Vendor": "Microsoft Defender ATP",
+                "Score": 3,
+            }
+        ],
+        "MicrosoftATP.File(val.Sha1 && val.Sha1 == obj.Sha1)": {
+            "Sha1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+            "Size": 22139496,
+            "Sha256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+            "GlobalPrevalence": 180022,
+            "GlobalFirstObserved": "2017-09-19T03:51:27.6785431Z",
+            "GlobalLastObserved": "2020-01-06T03:59:21.3229314Z",
+            "SizeInBytes": 22139496,
+            "FileType": "APP",
+            "IsPeFile": True,
+            "FilePublisher": "CHENGDU YIWO Tech Development Co., Ltd.",
+            "FileProductName": "EaseUS MobiSaver for Android",
+            "Signer": "CHENGDU YIWO Tech Development Co., Ltd.",
+            "Issuer": "VeriSign Class 3 Code Signing 2010 CA",
+            "SignerHash": "6c3245d4a9bc0244d99dff27af259cbbae2e2d16",
+            "IsValidCertificate": False,
+            "DeterminationType": "Pua",
+            "DeterminationValue": "PUA:Win32/FusionCore",
+        },
+    }

@@ -2090,8 +2090,7 @@ script:
       name: event_status
     - description: GlobalProtect portal for which to search.
       name: portal
-    - description: Name of the stage in the GlobalProtect connection workflow for
-        which to search.
+    - description: Name of the stage in the GlobalProtect connection workflow for which to search.
       name: stage
     description: Searches the GlobalProtect VPN log table.
     name: cdl-query-gp-logs
@@ -2190,10 +2189,2009 @@ script:
       description: Tunnel type i.e., SSL or VPN.
     - contextPath: CDL.Logging.GlobalProtect.VendorName
       description: The vendor that produced the data.
-  dockerimage: demisto/python_pancloud_v2:1.0.0.4746545
+  - name: sls-query-logs
+    arguments:
+    - name: query
+      description: "A free-text SQL query. For example, query=\"SELECT * FROM `firewall.traffic`\".\nThere are multiple tables in Loggings, for example: threat, traffic, and so on.\nRefer to the Cortex Logging service schema reference for the full list."
+      defaultValue: SELECT * FROM `firewall.traffic`
+    - name: limit
+      description: The maximum number of logs to return. Default is 10.
+      defaultValue: '10'
+    - name: transform_results
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: If set to false, query results are not mapped into the standard command context. Default is "true".
+      defaultValue: 'true'
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+    outputs:
+    - contextPath: SLS.Logging.Action
+      description: Identifies the action that the firewall took for the network traffic.
+      type: String
+    - contextPath: SLS.Logging.App
+      description: Application associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Protocol
+      description: IP protocol associated with the session.
+      type: String
+    - contextPath: SLS.Logging.DestinationIP
+      description: Original destination IP address.
+      type: String
+    - contextPath: SLS.Logging.RuleMatched
+      description: Name of the security policy rule that the network traffic matched.
+      type: String
+    - contextPath: SLS.Logging.CharacteristicOfApp
+      description: Identifies the behavioral characteristic of the application associated with the network traffic.
+      type: Number
+    - contextPath: SLS.Logging.LogSourceName
+      description: Name of the source of the log.
+      type: String
+    - contextPath: SLS.Logging.IsNat
+      description: Indicates if the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1.
+      type: Boolean
+    - contextPath: SLS.Logging.NatDestinationPort
+      description: Post-NAT destination port.
+      type: Number
+    - contextPath: SLS.Logging.NatDestination
+      description: If destination NAT was performed, the post-NAT destination IP address.
+      type: String
+    - contextPath: SLS.Logging.NatSource
+      description: If source NAT was performed, the post-NAT source IP address.
+      type: String
+    - contextPath: SLS.Logging.SourceIP
+      description: Original source IP address.
+      type: String
+    - contextPath: SLS.Logging.AppCategory
+      description: Identifies the high-level family of the application.
+      type: String
+    - contextPath: SLS.Logging.SourceLocation
+      description: Source country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.DestinationLocation
+      description: Destination country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.FileSHA256
+      description: The binary hash (SHA256) of the file sent for virus analysis.
+      type: String
+    - contextPath: SLS.Logging.FileName
+      description: The name of the infected file.
+      type: String
+    - contextPath: SLS.Logging.TimeGenerated
+      description: Time when the log was generated on the firewall's data plane.
+      type: Date
+    description: Runs a query on  any table or field.
+    execution: true
+  - name: sls-get-critical-threat-logs
+    arguments:
+    - name: start_time
+      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      defaultValue: "'1970-01-01 00:00:00'"
+    - name: end_time
+      description: The query end time. For example, end_time="2018-04-26 00:00:00".
+    - name: limit
+      description: The maximum number of logs to return. Default is 10.
+      defaultValue: '10'
+    - name: time_range
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
+    - name: transform_results
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: If set to false, query results are not mapped into the standard command context. Default is "true".
+      defaultValue: 'true'
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+    outputs:
+    - contextPath: SLS.Logging.Threat.SessionID
+      description: Identifies the firewall's internal identifier for a specific network session.
+      type: String
+    - contextPath: SLS.Logging.Threat.Action
+      description: Identifies the action that the firewall took for the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Threat.App
+      description: Application associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Threat.IsNat
+      description: Indicates whether the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1.
+      type: Boolean
+    - contextPath: SLS.Logging.Threat.SubcategoryOfApp
+      description: Identifies the application's subcategory. The subcategory is related to the application's category, which is identified in category_of_app.
+      type: String
+    - contextPath: SLS.Logging.Threat.PcapID
+      description: Packet capture (pcap) ID. This is used to correlate threat pcap files with extended pcaps taken as a part of the session flow. All threat logs will contain either a pcap_id of 0 (no associated pcap), or an ID referencing the extended pcap file.
+      type: String
+    - contextPath: SLS.Logging.Threat.NatDestination
+      description: If destination NAT is performed, the post-NAT destination IP address. The IP address is an IPv4/IPv6 address in hex format.
+      type: String
+    - contextPath: SLS.Logging.Threat.Flags
+      description: Bit field which provides details on the session, such as whether the session use IPv6, whether the session was denied due to a URL filtering rule, and/or whether the log corresponds to a transaction within an HTTP proxy session.
+      type: String
+    - contextPath: SLS.Logging.Threat.DestinationPort
+      description: Network traffic's destination port. If this value is 0, then the app is using its standard port.
+      type: String
+    - contextPath: SLS.Logging.Threat.ThreatID
+      description: Numerical identifier for the threat type. All threats encountered by Palo Alto Networks firewalls are assigned a unique identifier.
+      type: String
+    - contextPath: SLS.Logging.Threat.NatSource
+      description: If source NAT was performed, the post-NAT source IP address. The IP address is an IPv4/IPv6 address in hex format.
+      type: String
+    - contextPath: SLS.Logging.Threat.IsURLDenied
+      description: Indicates whether the session was denied due to a URL filtering rule.
+      type: Boolean
+    - contextPath: SLS.Logging.Threat.Users
+      description: Source/Destination user. If neither is available, source_ip is used.
+      type: String
+    - contextPath: SLS.Logging.Threat.TimeGenerated
+      description: Time when the log was generated on the firewall's data plane.
+      type: Date
+    - contextPath: SLS.Logging.Threat.IsPhishing
+      description: Indicates whether enterprise credentials were submitted by an end user.
+      type: Boolean
+    - contextPath: SLS.Logging.Threat.AppCategory
+      description: Identifies the high-level family of the application.
+      type: String
+    - contextPath: SLS.Logging.Threat.SourceLocation
+      description: Source country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.Threat.DestinationLocation
+      description: Destination country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.Threat.ToZone
+      description: Networking zone to which the traffic was sent.
+      type: String
+    - contextPath: SLS.Logging.Threat.RiskOfApp
+      description: Indicates how risky the application is from a network security perspective.
+      type: Number
+    - contextPath: SLS.Logging.Threat.NatSourcePort
+      description: Post-NAT source port.
+      type: Number
+    - contextPath: SLS.Logging.Threat.CharacteristicOfApp
+      description: Identifies the behavioral characteristic of the application associated with the network traffic.
+      type: Unknown
+    - contextPath: SLS.Logging.Threat.FromZone
+      description: The networking zone from which the traffic originated.
+      type: String
+    - contextPath: SLS.Logging.Threat.Vsys
+      description: String representation of the unique identifier for a virtual system on a Palo Alto Networks firewall.
+      type: String
+    - contextPath: SLS.Logging.Threat.Protocol
+      description: IP protocol associated with the session.
+      type: String
+    - contextPath: SLS.Logging.Threat.NatDestinationPort
+      description: Post-NAT destination port.
+      type: Number
+    - contextPath: SLS.Logging.Threat.DestinationIP
+      description: Original destination IP address.
+      type: String
+    - contextPath: SLS.Logging.Threat.SourceIP
+      description: Original source IP address.
+      type: String
+    - contextPath: SLS.Logging.Threat.RuleMatched
+      description: Name of the security policy rule that the network traffic matched.
+      type: String
+    - contextPath: SLS.Logging.Threat.ThreatCategory
+      description: Threat category of the detected threat.
+      type: String
+    - contextPath: SLS.Logging.Threat.ThreatName
+      description: Threat name of the detected threat.
+      type: String
+    - contextPath: SLS.Logging.Threat.LogSourceName
+      description: Name of the source of the log.
+      type: String
+    - contextPath: SLS.Logging.Threat.Subtype
+      description: Identifies the log subtype.
+      type: String
+    - contextPath: SLS.Logging.Threat.Direction
+      description: Indicates the direction of the attack.
+      type: String
+    - contextPath: SLS.Logging.Threat.FileName
+      description: The name of the file that is blocked.
+      type: String
+    - contextPath: SLS.Logging.Threat.VendorSeverity
+      description: Severity associated with the event.
+      type: String
+    - contextPath: SLS.Logging.Threat.LogTime
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
+      type: String
+    - contextPath: SLS.Logging.Threat.LogSourceID
+      description: ID that uniquely identifies the source of the log. If the source is a firewall, then it is its serial number.
+      type: String
+    - contextPath: SLS.Logging.Threat.VsysID
+      description: A unique identifier for a virtual system on a Palo Alto Networks firewall.
+      type: Number
+    - contextPath: SLS.Logging.Threat.URLDomain
+      description: The name of the internet domain that was visited in this session.
+      type: String
+    - contextPath: SLS.Logging.Threat.URLCategory
+      description: The URL category.
+      type: String
+    - contextPath: SLS.Logging.Threat.SourcePort
+      description: Source port utilized by the session.
+      type: Number
+    description: Runs a query on the threat table according to preset queries.
+  - name: sls-get-social-applications
+    arguments:
+    - name: start_time
+      description: Query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      defaultValue: "'1970-01-01 00:00:00'"
+    - name: end_time
+      description: Query end time. For example, end_time="2018-04-26 00:00:00".
+    - name: limit
+      description: The maximum number of logs to return. Default is 10.
+      defaultValue: '10'
+    - name: time_range
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+    outputs:
+    - contextPath: SLS.Logging.Traffic.Action
+      description: Identifies the action that the firewall took for the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Traffic.RiskOfApp
+      description: Indicates how risky the application is from a network security perspective.
+      type: String
+    - contextPath: SLS.Logging.Traffic.NatSourcePort
+      description: Post-NAT source port.
+      type: Number
+    - contextPath: SLS.Logging.Traffic.SessionID
+      description: Identifies the firewall's internal identifier for a specific network session.
+      type: String
+    - contextPath: SLS.Logging.Traffic.Packets
+      description: Number of total packets (transmit and receive) seen for the session.
+      type: String
+    - contextPath: SLS.Logging.Traffic.CharacteristicOfApp
+      description: Identifies the behavioral characteristic of the application associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Traffic.App
+      description: Application associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Traffic.Vsys
+      description: Virtual system associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Traffic.IsNat
+      description: Indicates whether the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1, otherwise it is 0.
+      type: Boolean
+    - contextPath: SLS.Logging.Traffic.LogTime
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
+      type: date
+    - contextPath: SLS.Logging.Traffic.SubcategoryOfApp
+      description: Identifies the application's subcategory. The subcategory is related to the application's category.
+      type: String
+    - contextPath: SLS.Logging.Traffic.Protocol
+      description: IP protocol associated with the session.
+      type: String
+    - contextPath: SLS.Logging.Traffic.NatDestinationPort
+      description: Post-NAT destination port.
+      type: String
+    - contextPath: SLS.Logging.Traffic.DestinationIP
+      description: Original destination IP address.
+      type: String
+    - contextPath: SLS.Logging.Traffic.NatDestination
+      description: If destination NAT performed, the post-NAT destination IP address.
+      type: String
+    - contextPath: SLS.Logging.Traffic.RuleMatched
+      description: Name of the security policy rule that the network traffic matched.
+      type: String
+    - contextPath: SLS.Logging.Traffic.DestinationPort
+      description: Network traffic's destination port. If this value is 0, then the app is using its standard port.
+      type: String
+    - contextPath: SLS.Logging.Traffic.TotalTimeElapsed
+      description: Total time for the network session to complete.
+      type: String
+    - contextPath: SLS.Logging.Traffic.LogSourceName
+      description: Device name of the source of the log.
+      type: String
+    - contextPath: SLS.Logging.Traffic.Subtype
+      description: The log sub type.
+      type: String
+    - contextPath: SLS.Logging.Traffic.Users
+      description: Source/Destination user. If neither is available, source_ip is used.
+      type: String
+    - contextPath: SLS.Logging.Traffic.TunneledApp
+      description: Whether the app is tunneled.
+      type: String
+    - contextPath: SLS.Logging.Traffic.IsPhishing
+      description: Indicates whether enterprise credentials were submitted by an end user.
+      type: String
+    - contextPath: SLS.Logging.Traffic.SessionEndReason
+      description: The reason a session terminated.
+      type: String
+    - contextPath: SLS.Logging.Traffic.NatSource
+      description: If source NAT was performed, the post-NAT source IP address.
+      type: String
+    - contextPath: SLS.Logging.Traffic.SourceIP
+      description: Original source IP address.
+      type: String
+    - contextPath: SLS.Logging.Traffic.SessionStartIP
+      description: Time when the session was established.
+      type: date
+    - contextPath: SLS.Logging.Traffic.TimeGenerated
+      description: Time when the log was generated on the firewall's data plane.
+      type: date
+    - contextPath: SLS.Logging.Traffic.AppCategory
+      description: Identifies the high-level family of the application.
+      type: String
+    - contextPath: SLS.Logging.Traffic.SourceLocation
+      description: Source country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.Traffic.DestinationLocation
+      description: Destination country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.Traffic.LogSourceID
+      description: ID that uniquely identifies the source of the log. If the source is a firewall, then it is its serial number.
+      type: String
+    - contextPath: SLS.Logging.Traffic.TotalBytes
+      description: Number of total bytes (transmit and receive).
+      type: String
+    - contextPath: SLS.Logging.Traffic.VsysID
+      description: A unique identifier for a virtual system on a Palo Alto Networks firewall.
+      type: String
+    - contextPath: SLS.Logging.Traffic.ToZone
+      description: Networking zone to which the traffic was sent.
+      type: String
+    - contextPath: SLS.Logging.Traffic.URLCategory
+      description: The URL category.
+      type: String
+    - contextPath: SLS.Logging.Traffic.SourcePort
+      description: Source port utilized by the session.
+      type: String
+    - contextPath: SLS.Logging.Traffic.Tunnel
+      description: Type of tunnel.
+      type: String
+    description: Runs a query on traffic table where app_sub_category = "social networking".
+  - name: sls-search-by-file-hash
+    arguments:
+    - name: start_time
+      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      defaultValue: "'1970-01-01 00:00:00'"
+    - name: end_time
+      description: The query end time. For example, end_time="2018-04-26 00:00:00".
+    - name: limit
+      description: The maximum number of logs to return. Default is 10.
+      defaultValue: '10'
+    - name: time_range
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
+    - name: SHA256
+      required: true
+      description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc" would return all logs associated with this file.
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+    outputs:
+    - contextPath: SLS.Logging.Threat.SessionID
+      description: Identifies the firewall's internal identifier for a specific network session.
+      type: String
+    - contextPath: SLS.Logging.Threat.Action
+      description: Identifies the action that the firewall took for the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Threat.App
+      description: Application associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Threat.IsNat
+      description: Indicates whether the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1, otherwise it is 0.
+      type: Boolean
+    - contextPath: SLS.Logging.Threat.SubcategoryOfApp
+      description: Identifies the application's subcategory. The subcategory is related to the application's category, which is identified in category_of_app.
+      type: String
+    - contextPath: SLS.Logging.Threat.PcapID
+      description: Packet capture (pcap) ID. This is used to correlate threat pcap files with extended pcaps taken as a part of the session flow. All threat logs will contain either a pcap_id of 0 (no associated pcap) , or an ID referencing the extended pcap file.
+      type: String
+    - contextPath: SLS.Logging.Threat.NatDestination
+      description: If destination NAT performed, the post-NAT destination IP address. The IP address is an IPv4/IPv6 address in hex format.
+      type: String
+    - contextPath: SLS.Logging.Threat.Flags
+      description: Bit field which provides details on the session, such as whether the session use IPv6, whether the session was denied due to a URL filtering rule, and/or whether the log corresponds to a transaction within an HTTP proxy session.
+      type: String
+    - contextPath: SLS.Logging.Threat.DestinationPort
+      description: Network traffic's destination port. If this value is 0, then the app is using its standard port.
+      type: String
+    - contextPath: SLS.Logging.Threat.ThreatID
+      description: Numerical identifier for the threat type. All threats encountered by Palo Alto Networks firewalls are assigned a unique identifier.
+      type: String
+    - contextPath: SLS.Logging.Threat.NatSource
+      description: If source NAT was performed, the post-NAT source IP address. The IP address is an IPv4/IPv6 address in hex format.
+      type: String
+    - contextPath: SLS.Logging.Threat.IsURLDenied
+      description: Indicates whether the session was denied due to a URL filtering rule.
+      type: Boolean
+    - contextPath: SLS.Logging.Threat.Users
+      description: Source/Destination user. If neither is available, source_ip is used.
+      type: String
+    - contextPath: SLS.Logging.Threat.TimeGenerated
+      description: Time when the log was generated on the firewall's data plane.
+      type: Date
+    - contextPath: SLS.Logging.Threat.IsPhishing
+      description: Indicates whether enterprise credentials were submitted by an end user.
+      type: Boolean
+    - contextPath: SLS.Logging.Threat.AppCategory
+      description: Identifies the high-level family of the application.
+      type: String
+    - contextPath: SLS.Logging.Threat.SourceLocation
+      description: Source country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.Threat.DestinationLocation
+      description: Destination country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.Threat.ToZone
+      description: Networking zone to which the traffic was sent.
+      type: String
+    - contextPath: SLS.Logging.Threat.RiskOfApp
+      description: Indicates how risky the application is from a network security perspective.
+      type: Number
+    - contextPath: SLS.Logging.Threat.NatSourcePort
+      description: Post-NAT source port.
+      type: Number
+    - contextPath: SLS.Logging.Threat.CharacteristicOfApp
+      description: Identifies the behavioral characteristic of the application associated with the network traffic.
+      type: Unknown
+    - contextPath: SLS.Logging.Threat.FromZone
+      description: The networking zone from which the traffic originated.
+      type: String
+    - contextPath: SLS.Logging.Threat.Vsys
+      description: String representation of the unique identifier for a virtual system on a Palo Alto Networks firewall.
+      type: String
+    - contextPath: SLS.Logging.Threat.Protocol
+      description: IP protocol associated with the session.
+      type: String
+    - contextPath: SLS.Logging.Threat.NatDestinationPort
+      description: Post-NAT destination port.
+      type: Number
+    - contextPath: SLS.Logging.Threat.DestinationIP
+      description: Original destination IP address.
+      type: String
+    - contextPath: SLS.Logging.Threat.SourceIP
+      description: Original source IP address.
+      type: String
+    - contextPath: SLS.Logging.Threat.RuleMatched
+      description: Unique identifier for the security policy rule that the network traffic matched.
+      type: String
+    - contextPath: SLS.Logging.Threat.ThreatCategory
+      description: Threat category of the detected threat.
+      type: String
+    - contextPath: SLS.Logging.Threat.LogSourceName
+      description: Name of the source of the log.
+      type: String
+    - contextPath: SLS.Logging.Threat.Subtype
+      description: Identifies the log subtype.
+      type: String
+    - contextPath: SLS.Logging.Threat.Direction
+      description: Indicates the direction of the attack.
+      type: String
+    - contextPath: SLS.Logging.Threat.FileName
+      description: The name of the file that is blocked.
+      type: String
+    - contextPath: SLS.Logging.Threat.VendorSeverity
+      description: Severity associated with the event.
+      type: String
+    - contextPath: SLS.Logging.Threat.LogTime
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
+      type: String
+    - contextPath: SLS.Logging.Threat.LogSourceID
+      description: ID that uniquely identifies the source of the log. If the source is a firewall, then it is its serial number.
+      type: String
+    - contextPath: SLS.Logging.Threat.VsysID
+      description: A unique identifier for a virtual system on a Palo Alto Networks firewall.
+      type: Number
+    - contextPath: SLS.Logging.Threat.URLDomain
+      description: The name of the internet domain that was visited in this session.
+      type: String
+    - contextPath: SLS.Logging.Threat.URLCategory
+      description: The URL category.
+      type: String
+    - contextPath: SLS.Logging.Threat.SourcePort
+      description: Source port utilized by the session.
+      type: Number
+    description: Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat` WHERE file_sha_256 = <file_hash>'.
+  - name: sls-query-traffic-logs
+    arguments:
+    - name: source_ip
+      description: A source IP address or an array of source IPs addresses for which to search, for example 1.1.1.1,2.2.2.2.
+    - name: rule
+      description: A rule name or an array of rule names to search.
+    - name: from_zone
+      description: A source zone name or an array of source zone names to search.
+    - name: to_zone
+      description: A destination zone name or an array of zone names to search.
+    - name: source_port
+      description: Source port utilized by the session. Can be a port number or an array of destination port numbers to search. For example '443' or '443,445'.
+    - name: action
+      description: An action name or an array of action names to search.
+    - name: query
+      description: A free-text query for which to search. This forms the WHERE part of the query, for example, !sls-query-traffic-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value='8.8.8.8' And dest_port=1234".
+    - name: fields
+      auto: PREDEFINED
+      predefined:
+      - all
+      - vendor_name
+      - log_source
+      - log_source_id
+      - log_source_name
+      - customer_id
+      - log_time
+      - log_source_tz_offset
+      - log_type
+      - sub_type
+      - source_ip
+      - source_port
+      - dest_ip
+      - dest_port
+      - protocol
+      - action_source
+      - bytes_total
+      - bytes_received
+      - bytes_sent
+      - ep_assoc_id
+      - chunks_total
+      - chunks_received
+      - chunks_sent
+      - packets_total
+      - packets_received
+      - packets_sent
+      - session_start_time
+      - total_time_elapsed
+      - session_end_reason
+      - traffic_flags
+      - url_category
+      - action
+      - action_flags
+      - app
+      - app_category
+      - characteristics_of_app
+      - container_of_app
+      - dg_hier_level_1
+      - dg_hier_level_2
+      - dg_hier_level_3
+      - dg_hier_level_4
+      - dest_uuid
+      - dest_location
+      - dest_user
+      - dest_user_info
+      - is_exported
+      - is_forwarded
+      - from_zone
+      - http2_connection
+      - inbound_if
+      - inbound_if_details
+      - is_saas_app
+      - is_dup_log
+      - is_prisma_branch
+      - is_prisma_mobile
+      - log_set
+      - monitor_tag_imei
+      - nat_dest_port
+      - nat_dest
+      - nat_source_port
+      - nat_source
+      - non_standard_dest_port
+      - outbound_if
+      - outbound_if_details
+      - parent_session_id
+      - parent_start_time
+      - count_of_repeats
+      - risk_of_app
+      - rule_matched
+      - rule_matched_uuid
+      - sanctioned_state_of_app
+      - sequence_no
+      - session_id
+      - source_uuid
+      - source_location
+      - source_user
+      - source_user_info
+      - app_sub_category
+      - technology_of_app
+      - time_generated
+      - to_zone
+      - tunnel
+      - tunneled_app
+      - tunnelid_imsi
+      - users
+      - vsys_id
+      - vsys
+      - vsys_name
+      - flags
+      - is_decrypt_mirror
+      - is_sym_return
+      - is_container
+      - is_server_to_client
+      - is_client_to_server
+      - is_transaction
+      - is_non_std_dest_port
+      - is_captive_portal
+      - is_nat
+      - is_proxy
+      - is_packet_capture
+      - is_phishing
+      - is_mptcp_on
+      - is_recon_excluded
+      - is_url_denied
+      - is_tunnel_inspected
+      - is_source_x_fwded
+      - is_ipv6
+      - is_decrypted_payload_fwded
+      - is_decryption_log
+      - is_l7_inspection_b4_session
+      - sess_owner_rt_midx
+      - session_tracker
+      - container_id
+      - pod_namespace
+      - pod_name
+      - source_device_class
+      - source_device_vendor
+      - source_device_model
+      - source_device_os
+      - source_device_mac
+      - dest_device_class
+      - dest_device_vendor
+      - dest_device_model
+      - dest_device_os
+      - dest_device_mac
+      - link_change_count
+      - policy_id
+      - link_switches
+      - sdwan_cluster
+      - sdwan_device_type
+      - sdwan_cluster_type
+      - sdwan_site
+      - dynusergroup_name
+      - ingestion_time
+      - record_size
+      - source_device_host
+      - dest_device_host
+      description: The fields selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all".
+      defaultValue: all
+    - name: start_time
+      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      defaultValue: "'1970-01-01 00:00:00'"
+    - name: end_time
+      description: The query end time. For example, end_time="2018-04-26 00:00:00".
+    - name: time_range
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
+    - name: limit
+      description: The maximum number of logs to return. Default is 5.
+      defaultValue: '5'
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+    - name: dest_ip
+      description: A destination IP address or an array of destination IPs addresses for which to search, for example 1.1.1.1,2.2.2.2.
+    - name: dest_port
+      description: Destination port utilized by the session. Can be port number or an array of destination port numbers to search. For example '443' or '443,445'.
+    - name: ip
+      description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
+    - name: port
+      description: A port or array of ports to search. Used instead of the source/destination port.
+    outputs:
+    - contextPath: SLS.Logging.Traffic.Action
+      description: Identifies the action that the firewall took for the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Traffic.RiskOfApp
+      description: Indicates how risky the application is from a network security perspective.
+      type: String
+    - contextPath: SLS.Logging.Traffic.NatSourcePort
+      description: Post-NAT source port.
+      type: Number
+    - contextPath: SLS.Logging.Traffic.SessionID
+      description: Identifies the firewall's internal identifier for a specific network session.
+      type: String
+    - contextPath: SLS.Logging.Traffic.Packets
+      description: Number of total packets (transmit and receive) seen for the session.
+      type: String
+    - contextPath: SLS.Logging.Traffic.CharacteristicOfApp
+      description: Identifies the behavioral characteristic of the application associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Traffic.App
+      description: Application associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Traffic.Vsys
+      description: Virtual system associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Traffic.IsNat
+      description: Indicates whether the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1, otherwise it is 0.
+      type: Boolean
+    - contextPath: SLS.Logging.Traffic.LogTime
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
+      type: date
+    - contextPath: SLS.Logging.Traffic.SubcategoryOfApp
+      description: Identifies the application's subcategory. The subcategory is related to the application's category.
+      type: String
+    - contextPath: SLS.Logging.Traffic.Protocol
+      description: IP protocol associated with the session.
+      type: String
+    - contextPath: SLS.Logging.Traffic.NatDestinationPort
+      description: Post-NAT destination port.
+      type: String
+    - contextPath: SLS.Logging.Traffic.DestinationIP
+      description: Original destination IP address.
+      type: String
+    - contextPath: SLS.Logging.Traffic.NatDestination
+      description: If destination NAT performed, the post-NAT destination IP address.
+      type: String
+    - contextPath: SLS.Logging.Traffic.RuleMatched
+      description: Name of the security policy rule that the network traffic matched.
+      type: String
+    - contextPath: SLS.Logging.Traffic.DestinationPort
+      description: Network traffic's destination port. If this value is 0, then the app is using its standard port.
+      type: String
+    - contextPath: SLS.Logging.Traffic.TotalTimeElapsed
+      description: Total time for the network session to complete.
+      type: String
+    - contextPath: SLS.Logging.Traffic.LogSourceName
+      description: Device name of the source of the log.
+      type: String
+    - contextPath: SLS.Logging.Traffic.Subtype
+      description: The log sub type.
+      type: String
+    - contextPath: SLS.Logging.Traffic.Users
+      description: Source/Destination user. If neither is available, source_ip is used.
+      type: String
+    - contextPath: SLS.Logging.Traffic.TunneledApp
+      description: Whether the app is tunneled.
+      type: String
+    - contextPath: SLS.Logging.Traffic.IsPhishing
+      description: Indicates whether enterprise credentials were submitted by an end user.
+      type: String
+    - contextPath: SLS.Logging.Traffic.SessionEndReason
+      description: The reason a session terminated.
+      type: String
+    - contextPath: SLS.Logging.Traffic.NatSource
+      description: If source NAT was performed, the post-NAT source IP address.
+      type: String
+    - contextPath: SLS.Logging.Traffic.SourceIP
+      description: Original source IP address.
+      type: String
+    - contextPath: SLS.Logging.Traffic.SessionStartIP
+      description: Time when the session was established.
+      type: date
+    - contextPath: SLS.Logging.Traffic.TimeGenerated
+      description: Time when the log was generated on the firewall's data plane.
+      type: date
+    - contextPath: SLS.Logging.Traffic.AppCategory
+      description: Identifies the high-level family of the application.
+      type: String
+    - contextPath: SLS.Logging.Traffic.SourceLocation
+      description: Source country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.Traffic.DestinationLocation
+      description: Destination country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.Traffic.LogSourceID
+      description: ID that uniquely identifies the source of the log. If the source is a firewall, then it is its serial number.
+      type: String
+    - contextPath: SLS.Logging.Traffic.TotalBytes
+      description: Number of total bytes (transmit and receive).
+      type: String
+    - contextPath: SLS.Logging.Traffic.VsysID
+      description: A unique identifier for a virtual system on a Palo Alto Networks firewall.
+      type: String
+    - contextPath: SLS.Logging.Traffic.ToZone
+      description: Networking zone to which the traffic was sent.
+      type: String
+    - contextPath: SLS.Logging.Traffic.URLCategory
+      description: The URL category.
+      type: String
+    - contextPath: SLS.Logging.Traffic.SourcePort
+      description: Source port utilized by the session.
+      type: String
+    - contextPath: SLS.Logging.Traffic.Tunnel
+      description: Type of tunnel.
+      type: String
+    - contextPath: SLS.Logging.Traffic.SourceDeviceHost
+      description: Hostname of the device from which the session originated.
+      type: String
+    - contextPath: SLS.Logging.Traffic.DestDeviceHost
+      description: Hostname of the device session destination.
+      type: String
+    description: Searches the Cortex firewall.traffic table. Traffic logs contain entries for the end of each network session.
+  - name: sls-query-threat-logs
+    arguments:
+    - name: source_ip
+      description: Original source IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
+    - name: dest_ip
+      description: Original destination IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
+    - name: rule_matched
+      description: Name of the security policy rule that the network traffic matched. Enter a rule name or array of rule names to search.
+    - name: from_zone
+      description: The networking zone from which the traffic originated. Enter the zone or array of zones to search.
+    - name: to_zone
+      description: The networking zone to which the traffic was sent. Enter the zone or array of zones to search.
+    - name: source_port
+      description: Source port utilized by the session. Enter a port or array of ports to search.
+    - name: dest_port
+      description: Network traffic's destination port. Enter a port or array of ports to search.
+    - name: action
+      auto: PREDEFINED
+      predefined:
+      - unknown
+      - n-a
+      - aged-out
+      - decoder
+      - tcp-reuse
+      - resources-unavailable
+      - tcp-fin
+      - tcp-rst-from-server
+      - tcp-rst-from-client
+      - policy-deny
+      - threat
+      - decrypt-error
+      - decrypt-unsupport-param
+      - decrypt-cert-validation
+      - request-timeout
+      - shutdown-from-endpoint
+      - abort-from-endpoint
+      - split-tunnel
+      description: The action that the firewall took for the network traffic. Enter an action or array of actions to search.
+    - name: file_sha_256
+      description: The binary hash (SHA256) of the file. Enter a SHA256 hash or array of SHA256 hashes to search.
+    - name: file_name
+      description: The name of the file that is blocked. Enter a file name or array of file names to search.
+    - name: query
+      description: Free input query to search. This is the WHERE part of the query. so an example will be !sls-query-traffic-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value = '192.168.1.12'".
+    - name: fields
+      auto: PREDEFINED
+      predefined:
+      - vendor_name
+      - log_source
+      - log_source_id
+      - log_source_name
+      - customer_id
+      - log_time
+      - log_source_tz_offset
+      - log_type
+      - sub_type
+      - source_ip
+      - source_port
+      - dest_ip
+      - dest_port
+      - protocol
+      - threat_id
+      - threat_name
+      - threat_category
+      - cloud_hostname
+      - direction_of_attack
+      - url_domain
+      - url_idx
+      - file_name
+      - cloud
+      - file_sha_256
+      - file_type
+      - sender_of_virus
+      - recipient_of_virus
+      - subject_of_email
+      - report_id
+      - verdict
+      - vendor_severity
+      - severity
+      - pcap
+      - pcap_id
+      - sig_flags
+      - url_category
+      - action
+      - action_flags
+      - app
+      - app_category
+      - characteristics_of_app
+      - container_of_app
+      - dg_hier_level_1
+      - dg_hier_level_2
+      - dg_hier_level_3
+      - dg_hier_level_4
+      - dest_uuid
+      - dest_location
+      - dest_user
+      - dest_user_info
+      - is_exported
+      - is_forwarded
+      - from_zone
+      - http2_connection
+      - inbound_if
+      - inbound_if_details
+      - is_saas_app
+      - is_dup_log
+      - is_prisma_branch
+      - is_prisma_mobile
+      - log_set
+      - monitor_tag_imei
+      - nat_dest_port
+      - nat_dest
+      - nat_source_port
+      - nat_source
+      - non_standard_dest_port
+      - outbound_if
+      - outbound_if_details
+      - parent_session_id
+      - parent_start_time
+      - count_of_repeats
+      - risk_of_app
+      - rule_matched
+      - rule_matched_uuid
+      - sanctioned_state_of_app
+      - sequence_no
+      - session_id
+      - source_uuid
+      - source_location
+      - source_user
+      - source_user_info
+      - app_sub_category
+      - technology_of_app
+      - time_generated
+      - to_zone
+      - tunnel
+      - tunneled_app
+      - tunnelid_imsi
+      - users
+      - vsys_id
+      - vsys
+      - vsys_name
+      - flags
+      - is_decrypt_mirror
+      - is_sym_return
+      - is_container
+      - is_server_to_client
+      - is_client_to_server
+      - is_transaction
+      - is_non_std_dest_port
+      - is_captive_portal
+      - is_nat
+      - is_proxy
+      - is_packet_capture
+      - is_phishing
+      - is_mptcp_on
+      - is_recon_excluded
+      - is_url_denied
+      - is_tunnel_inspected
+      - is_source_x_fwded
+      - is_ipv6
+      - container_id
+      - pod_namespace
+      - pod_name
+      - source_device_class
+      - source_device_vendor
+      - source_device_model
+      - source_device_os
+      - source_device_mac
+      - dest_device_class
+      - dest_device_vendor
+      - dest_device_model
+      - dest_device_os
+      - dest_device_mac
+      - content_version
+      - dynusergroup_name
+      - ingestion_time
+      - record_size
+      - source_device_host
+      - dest_device_host
+      description: The fields selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all".
+      isArray: true
+      defaultValue: all
+    - name: start_time
+      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      defaultValue: "'1970-01-01 00:00:00'"
+    - name: end_time
+      description: The query end time. For example, end_time="2018-04-26 00:00:00".
+    - name: time_range
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
+    - name: limit
+      description: The maximum number of logs to return. Default is 5.
+      defaultValue: '5'
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+    - name: ip
+      description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
+    - name: port
+      description: The port or array of ports to search. Used instead of the source/destination port.
+    outputs:
+    - contextPath: SLS.Logging.Threat.SessionID
+      description: Identifies the firewall's internal identifier for a specific network session.
+      type: String
+    - contextPath: SLS.Logging.Threat.Action
+      description: Identifies the action that the firewall took for the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Threat.App
+      description: Application associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.Threat.IsNat
+      description: Indicates whether the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1, otherwise it is 0.
+      type: Boolean
+    - contextPath: SLS.Logging.Threat.SubcategoryOfApp
+      description: Identifies the application's subcategory. The subcategory is related to the application's category, which is identified in category_of_app.
+      type: String
+    - contextPath: SLS.Logging.Threat.PcapID
+      description: Packet capture (pcap) ID. This is used to correlate threat pcap files with extended pcaps taken as a part of the session flow. All threat logs will contain either a pcap_id of 0 (no associated pcap) , or an ID referencing the extended pcap file.
+      type: String
+    - contextPath: SLS.Logging.Threat.NatDestination
+      description: If destination NAT performed, the post-NAT destination IP address. The IP address is an IPv4/IPv6 address in hex format.
+      type: String
+    - contextPath: SLS.Logging.Threat.Flags
+      description: Bit field which provides details on the session, such as whether the session use IPv6, whether the session was denied due to a URL filtering rule, and/or whether the log corresponds to a transaction within an HTTP proxy session.
+      type: String
+    - contextPath: SLS.Logging.Threat.DestinationPort
+      description: Network traffic's destination port. If this value is 0, then the app is using its standard port.
+      type: String
+    - contextPath: SLS.Logging.Threat.ThreatID
+      description: Numerical identifier for the threat type. All threats encountered by Palo Alto Networks firewalls are assigned a unique identifier.
+      type: String
+    - contextPath: SLS.Logging.Threat.NatSource
+      description: If source NAT was performed, the post-NAT source IP address. The IP address is an IPv4/IPv6 address in hex format.
+      type: String
+    - contextPath: SLS.Logging.Threat.IsURLDenied
+      description: Indicates whether the session was denied due to a URL filtering rule.
+      type: Boolean
+    - contextPath: SLS.Logging.Threat.Users
+      description: Source/Destination user. If neither is available, source_ip is used.
+      type: String
+    - contextPath: SLS.Logging.Threat.TimeGenerated
+      description: Time when the log was generated on the firewall's data plane.
+      type: Date
+    - contextPath: SLS.Logging.Threat.IsPhishing
+      description: Indicates whether enterprise credentials were submitted by an end user.
+      type: Boolean
+    - contextPath: SLS.Logging.Threat.AppCategory
+      description: Identifies the high-level family of the application.
+      type: String
+    - contextPath: SLS.Logging.Threat.SourceLocation
+      description: Source country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.Threat.DestinationLocation
+      description: Destination country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.Threat.ToZone
+      description: Networking zone to which the traffic was sent.
+      type: String
+    - contextPath: SLS.Logging.Threat.RiskOfApp
+      description: Indicates how risky the application is from a network security perspective.
+      type: Number
+    - contextPath: SLS.Logging.Threat.NatSourcePort
+      description: Post-NAT source port.
+      type: Number
+    - contextPath: SLS.Logging.Threat.CharacteristicOfApp
+      description: Identifies the behavioral characteristic of the application associated with the network traffic.
+      type: Unknown
+    - contextPath: SLS.Logging.Threat.FromZone
+      description: The networking zone from which the traffic originated.
+      type: String
+    - contextPath: SLS.Logging.Threat.Vsys
+      description: String representation of the unique identifier for a virtual system on a Palo Alto Networks firewall.
+      type: String
+    - contextPath: SLS.Logging.Threat.Protocol
+      description: IP protocol associated with the session.
+      type: String
+    - contextPath: SLS.Logging.Threat.NatDestinationPort
+      description: Post-NAT destination port.
+      type: Number
+    - contextPath: SLS.Logging.Threat.DestinationIP
+      description: Original destination IP address.
+      type: String
+    - contextPath: SLS.Logging.Threat.SourceIP
+      description: Original source IP address.
+      type: String
+    - contextPath: SLS.Logging.Threat.RuleMatched
+      description: Unique identifier for the security policy rule that the network traffic matched.
+      type: String
+    - contextPath: SLS.Logging.Threat.ThreatCategory
+      description: Threat category of the detected threat.
+      type: String
+    - contextPath: SLS.Logging.Threat.ThreatName
+      description: Threat name of the detected threat.
+      type: String
+    - contextPath: SLS.Logging.Threat.LogSourceName
+      description: Name of the source of the log.
+      type: String
+    - contextPath: SLS.Logging.Threat.Subtype
+      description: Identifies the log subtype.
+      type: String
+    - contextPath: SLS.Logging.Threat.Direction
+      description: Indicates the direction of the attack.
+      type: String
+    - contextPath: SLS.Logging.Threat.FileName
+      description: The name of the file that is blocked.
+      type: String
+    - contextPath: SLS.Logging.Threat.VendorSeverity
+      description: Severity associated with the event.
+      type: String
+    - contextPath: SLS.Logging.Threat.LogTime
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
+      type: String
+    - contextPath: SLS.Logging.Threat.LogSourceID
+      description: ID that uniquely identifies the source of the log. If the source is a firewall, then it is its serial number.
+      type: String
+    - contextPath: SLS.Logging.Threat.VsysID
+      description: A unique identifier for a virtual system on a Palo Alto Networks firewall.
+      type: Number
+    - contextPath: SLS.Logging.Threat.URLDomain
+      description: The name of the internet domain that was visited in this session.
+      type: String
+    - contextPath: SLS.Logging.Threat.URLCategory
+      description: The URL category.
+      type: String
+    - contextPath: SLS.Logging.Threat.SourcePort
+      description: Source port utilized by the session.
+      type: Number
+    - contextPath: SLS.Logging.Threat.SourceDeviceHost
+      description: Hostname of the device from which the session originated.
+      type: String
+    - contextPath: SLS.Logging.Threat.DestDeviceHost
+      description: Hostname of the device session destination.
+      type: String
+    description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
+  - name: sls-query-url-logs
+    arguments:
+    - name: source_ip
+      description: A source IP address or an array of IP addresses for which to search. For example, 1.1.1.1,2.2.2.2.
+    - name: dest_ip
+      description: A destination IP address or an array of IP addresses for which to search. For example, 1.1.1.1,2.2.2.2.
+    - name: rule_matched
+      description: The name of the security policy rule or an array of rule names to search.
+    - name: from_zone
+      description: The networking zone or array of zones to search.
+    - name: to_zone
+      description: The networking zone or array of zones to search.
+    - name: source_port
+      description: The source port or array of ports to search.
+    - name: dest_port
+      description: The network traffic's destination port or array of ports to search.
+    - name: action
+      auto: PREDEFINED
+      predefined:
+      - unknown
+      - n-a
+      - aged-out
+      - decoder
+      - tcp-reuse
+      - resources-unavailable
+      - tcp-fin
+      - tcp-rst-from-server
+      - tcp-rst-from-client
+      - policy-deny
+      - threat
+      - decrypt-error
+      - decrypt-unsupport-param
+      - decrypt-cert-validation
+      - request-timeout
+      - shutdown-from-endpoint
+      - abort-from-endpoint
+      - split-tunnel
+      description: The action or array of actions that the firewall undertook to search.
+    - name: query
+      description: Free input query to search. This is the WHERE part of the query. For example, !sls-query-url-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value = '192.168.1.12'".
+    - name: fields
+      auto: PREDEFINED
+      predefined:
+      - vendor_name
+      - log_source
+      - log_source_id
+      - log_source_name
+      - customer_id
+      - log_time
+      - log_source_tz_offset
+      - log_type
+      - sub_type
+      - source_ip
+      - source_port
+      - dest_ip
+      - dest_port
+      - protocol
+      - threat_id
+      - threat_name
+      - threat_category
+      - cloud_hostname
+      - direction_of_attack
+      - url_domain
+      - url_idx
+      - file_name
+      - cloud
+      - file_sha_256
+      - file_type
+      - sender_of_virus
+      - recipient_of_virus
+      - subject_of_email
+      - report_id
+      - verdict
+      - vendor_severity
+      - severity
+      - pcap
+      - pcap_id
+      - sig_flags
+      - url_category
+      - action
+      - action_flags
+      - app
+      - app_category
+      - characteristics_of_app
+      - container_of_app
+      - dg_hier_level_1
+      - dg_hier_level_2
+      - dg_hier_level_3
+      - dg_hier_level_4
+      - dest_uuid
+      - dest_location
+      - dest_user
+      - dest_user_info
+      - is_exported
+      - is_forwarded
+      - from_zone
+      - http2_connection
+      - inbound_if
+      - inbound_if_details
+      - is_saas_app
+      - is_dup_log
+      - is_prisma_branch
+      - is_prisma_mobile
+      - log_set
+      - monitor_tag_imei
+      - nat_dest_port
+      - nat_dest
+      - nat_source_port
+      - nat_source
+      - non_standard_dest_port
+      - outbound_if
+      - outbound_if_details
+      - parent_session_id
+      - parent_start_time
+      - count_of_repeats
+      - risk_of_app
+      - rule_matched
+      - rule_matched_uuid
+      - sanctioned_state_of_app
+      - sequence_no
+      - session_id
+      - source_uuid
+      - source_location
+      - source_user
+      - source_user_info
+      - app_sub_category
+      - technology_of_app
+      - time_generated
+      - to_zone
+      - tunnel
+      - tunneled_app
+      - tunnelid_imsi
+      - users
+      - vsys_id
+      - vsys
+      - vsys_name
+      - flags
+      - is_decrypt_mirror
+      - is_sym_return
+      - is_container
+      - is_server_to_client
+      - is_client_to_server
+      - is_transaction
+      - is_non_std_dest_port
+      - is_captive_portal
+      - is_nat
+      - is_proxy
+      - is_packet_capture
+      - is_phishing
+      - is_mptcp_on
+      - is_recon_excluded
+      - is_url_denied
+      - is_tunnel_inspected
+      - is_source_x_fwded
+      - is_ipv6
+      - container_id
+      - pod_namespace
+      - pod_name
+      - source_device_class
+      - source_device_vendor
+      - source_device_model
+      - source_device_os
+      - source_device_mac
+      - dest_device_class
+      - dest_device_vendor
+      - dest_device_model
+      - dest_device_os
+      - dest_device_mac
+      - content_version
+      - dynusergroup_name
+      - ingestion_time
+      - record_size
+      - source_device_host
+      - dest_device_host
+      description: The fields selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all".
+      isArray: true
+      defaultValue: all
+    - name: start_time
+      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      defaultValue: "'1970-01-01 00:00:00'"
+    - name: end_time
+      description: The query end time. For example, end_time="2018-04-26 00:00:00".
+    - name: time_range
+      description: First log time (<number> <time unit>. For example, 12 minutes, 7 days, 3 weeks).
+    - name: limit
+      description: The maximum number of logs to return. Default is 5.
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+    - name: ip
+      description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
+    - name: port
+      description: The port or array of ports to search. Used instead of the source/destination port.
+    - name: url
+      description: "This argument allows to perform a LIKE search of the specified values on the URL and URI fields. \nAn example value will be paloaltonetworks.com, demisto\twhich will provide results like https://apps.paloaltonetworks.com and https://demisto.com."
+    outputs:
+    - contextPath: SLS.Logging.URL.SessionID
+      description: Identifies the firewall's internal identifier for a specific network session.
+      type: String
+    - contextPath: SLS.Logging.URL.Action
+      description: Identifies the action that the firewall took for the network traffic.
+      type: String
+    - contextPath: SLS.Logging.URL.App
+      description: The application associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.URL.PcapID
+      description: Packet capture (pcap) ID. Used to correlate threat pcap files with extended pcaps taken as a part of the session flow. All threat logs contain either a pcap_id of 0 (no associated pcap), or an ID referencing the extended pcap file.
+      type: String
+    - contextPath: SLS.Logging.URL.DestinationPort
+      description: The network traffic's destination port. If this value is 0, then the app is using its standard port.
+      type: String
+    - contextPath: SLS.Logging.URL.AppCategory
+      description: Identifies the high-level family of the application.
+      type: String
+    - contextPath: SLS.Logging.URL.AppSubCategory
+      description: Identifies the application's subcategory. The subcategory is related to the application's category, which is identified in category_of_app.
+      type: String
+    - contextPath: SLS.Logging.URL.SourceLocation
+      description: The source country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.URL.DestinationLocation
+      description: The destination country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.URL.ToZone
+      description: The networking zone to which the traffic was sent.
+      type: String
+    - contextPath: SLS.Logging.URL.FromZone
+      description: The networking zone from which the traffic originated.
+      type: String
+    - contextPath: SLS.Logging.URL.Protocol
+      description: The IP protocol associated with the session.
+      type: String
+    - contextPath: SLS.Logging.URL.DestinationIP
+      description: The original destination IP address.
+      type: String
+    - contextPath: SLS.Logging.URL.SourceIP
+      description: The original source IP address.
+      type: String
+    - contextPath: SLS.Logging.URL.RuleMatched
+      description: The unique identifier for the security policy rule that the network traffic matched.
+      type: String
+    - contextPath: SLS.Logging.URL.ThreatCategory
+      description: The category of the detected threat.
+      type: String
+    - contextPath: SLS.Logging.URL.ThreatName
+      description: The name of the detected threat.
+      type: String
+    - contextPath: SLS.Logging.URL.Subtype
+      description: Identifies the log subtype.
+      type: String
+    - contextPath: SLS.Logging.URL.LogTime
+      description: The time the log was received in Strata Logging Service XSOAR Connector.
+      type: String
+    - contextPath: SLS.Logging.URL.LogSourceName
+      description: The name of the source of the log.
+      type: String
+    - contextPath: SLS.Logging.URL.Denied
+      description: Indicates whether the session was denied due to a URL filtering rule.
+      type: Boolean
+    - contextPath: SLS.Logging.URL.Category
+      description: The category of the URL.
+      type: String
+    - contextPath: SLS.Logging.URL.SourcePort
+      description: The source port utilized by the session.
+      type: Number
+    - contextPath: SLS.Logging.URL.Url
+      description: The name of the internet domain that was visited in this session.
+      type: String
+    - contextPath: SLS.Logging.URL.Uri
+      description: The address of the URI.
+      type: String
+    - contextPath: SLS.Logging.URL.ContentType
+      description: The content type of the HTTP response data.
+      type: String
+    - contextPath: SLS.Logging.URL.HTTPMethod
+      description: "The HTTP Method used\nin the web request."
+      type: String
+    - contextPath: SLS.Logging.URL.Severity
+      description: The severity associated with the event.
+      type: String
+    - contextPath: SLS.Logging.URL.UserAgent
+      description: "The web browser that the user\nused to access the URL."
+      type: String
+    - contextPath: SLS.Logging.URL.RefererProtocol
+      description: The protocol used in the HTTP Referer header field.
+      type: Number
+    - contextPath: SLS.Logging.URL.RefererPort
+      description: The port used in the HTTP Referer header field.
+      type: Number
+    - contextPath: SLS.Logging.URL.RefererFQDN
+      description: "The full domain name used in the HTTP Referer\nheader field."
+      type: String
+    - contextPath: SLS.Logging.URL.RefererURL
+      description: The URL used in the HTTP Referer header field.
+      type: String
+    - contextPath: SLS.Logging.URL.SrcUser
+      description: The username that initiated the network traffic.
+      type: String
+    - contextPath: SLS.Logging.URL.SrcUserInfo
+      description: The information for the initiated user.
+      type: String
+    - contextPath: SLS.Logging.URL.DstUser
+      description: The username to which the network traffic was destined.
+      type: String
+    - contextPath: SLS.Logging.URL.DstUserInfo
+      description: The destination user information.
+      type: String
+    - contextPath: SLS.Logging.URL.TechnologyOfApp
+      description: The networking technology used by the identified application.
+      type: String
+    - contextPath: SLS.Logging.URL.SourceDeviceHost
+      description: Hostname of the device from which the session originated.
+      type: String
+    - contextPath: SLS.Logging.URL.DestDeviceHost
+      description: Hostname of the device session destination.
+      type: String
+    description: Searches the URL log table.
+  - name: sls-query-file-data
+    arguments:
+    - name: action
+      auto: PREDEFINED
+      predefined:
+      - unknown
+      - n-a
+      - aged-out
+      - decoder
+      - tcp-reuse
+      - resources-unavailable
+      - tcp-fin
+      - tcp-rst-from-server
+      - tcp-rst-from-client
+      - policy-deny
+      - threat
+      - decrypt-error
+      - decrypt-unsupport-param
+      - decrypt-cert-validation
+      - request-timeout
+      - shutdown-from-endpoint
+      - abort-from-endpoint
+      - split-tunnel
+      description: Identifies the action that the firewall took for the network traffic.
+    - name: app
+      description: Application associated with the network traffic.
+    - name: app_category
+      description: Identifies the high-level family of the application.
+    - name: dest_device_host
+      description: Hostname of the device to which the session was directed.
+    - name: dest_ip
+      description: Original destination IP address.
+    - name: dest_edl
+      description: The name of the external dynamic list that contains the destination IP address of the traffic.
+    - name: dest_dynamic_address_group
+      description: The dynamic address group that Device-ID identifies as the destination for the traffic.
+    - name: dest_location
+      description: Destination country or internal region for private addresses.
+    - name: dest_port
+      description: "Network traffic's destination port. If this value is 0, then the app is using\nits standard port."
+    - name: dest_user
+      description: The username to which the network traffic was destined.
+    - name: file_name
+      description: The name of the file that is blocked.
+    - name: file_sha_256
+      description: The binary hash (SHA256) of the file. Enter a SHA256 hash or array of SHA256 hashes to search.
+    - name: file_type
+      description: Palo Alto Networks textual identifier for the threat.
+    - name: from_zone
+      description: The networking zone from which the traffic originated.
+    - name: is_server_to_client
+      description: Indicates if the direction of traffic is from server to client.
+    - name: is_url_denied
+      description: Indicates whether the session was denied due to a URL filtering rule.
+    - name: log_type
+      auto: PREDEFINED
+      predefined:
+      - traffic
+      - config
+      - system
+      - threat
+      - appstat
+      - trsum
+      - thsum
+      - event
+      - alarm
+      - hipmatch
+      - userid
+      - iptag
+      - mdm
+      - extpcap
+      - urlsum
+      - gtp
+      - gtpsum
+      - auth
+      - panflex
+      - extflex
+      - sctp
+      - sctpsum
+      - analytics
+      - action
+      - scan
+      - sam
+      description: Identifies the log type.
+    - name: nat_dest
+      description: If destination NAT performed, the post-NAT destination IP address.
+    - name: nat_dest_port
+      description: Post-NAT destination port.
+    - name: nat_source
+      description: If source NAT was performed, the post-NAT source IP address.
+    - name: nat_source_port
+      description: Post-NAT source port.
+    - name: rule_matched
+      description: Name of the security policy rule that the network traffic matched.
+    - name: rule_matched_uuid
+      description: Unique identifier for the security policy rule that the network traffic matched.
+    - name: severity
+      description: Severity as defined by the platform.
+    - name: source_device_host
+      description: Hostname of the device from which the session originated.
+    - name: source_ip
+      description: Original source IP address.
+    - name: source_edl
+      description: The name of the external dynamic list that contains the source IP address of the traffic.
+    - name: source_dynamic_address_group
+      description: The dynamic address group that Device-ID identifies as the source of the traffic.
+    - name: source_location
+      description: Source country or internal region for private addresses.
+    - name: source_port
+      description: Source port utilized by the session.
+    - name: source_user
+      description: The username that initiated the network traffic.
+    - name: sub_type
+      auto: PREDEFINED
+      predefined:
+      - attack
+      - url
+      - virus
+      - spyware
+      - vulnerability
+      - file
+      - scan
+      - flood
+      - packet
+      - resource
+      - data
+      - url-content
+      - wildfire
+      - extpcap
+      - wildfire-virus
+      - http-hdr-insert
+      - http-hdr
+      - email-hdr
+      - spyware-dns
+      - spyware-wildfire-dns
+      - spyware-wpc-dns
+      - spyware-custom-dns
+      - spyware-cloud-dns
+      - spyware-raven
+      - spyware-wildfire-raven
+      - spyware-wpc-raven
+      - wpc-virus
+      - sctp
+      description: Identifies the log subtype.
+    - name: url_category
+      description: The URL category.
+    - name: url_domain
+      description: The name of the internet domain that was visited in this session.
+    - name: start_time
+      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      defaultValue: "'1970-01-01 00:00:00'"
+    - name: end_time
+      description: The query end time. For example, end_time="2018-04-26 00:00:00".
+    - name: time_range
+      description: First log time (<number> <time unit>. For example, 12 minutes, 7 days, 3 weeks).
+    - name: limit
+      description: The maximum number of logs to return. Default is 5.
+      defaultValue: '5'
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+    outputs:
+    - contextPath: SLS.Logging.File.App
+      description: Application associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.File.TimeGenerated
+      description: Time when the log was generated on the firewall's data plane.
+      type: Date
+    - contextPath: SLS.Logging.File.SourceIP
+      description: Original source IP address.
+      type: String
+    - contextPath: SLS.Logging.File.DestinationLocation
+      description: Destination country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.File.FileSHA256
+      description: The binary hash (SHA256) of the file.
+      type: String
+    - contextPath: SLS.Logging.File.FileName
+      description: The name of the file that is blocked.
+      type: String
+    - contextPath: SLS.Logging.File.RuleMatched
+      description: Name of the security policy rule that the network traffic matched.
+      type: String
+    - contextPath: SLS.Logging.File.LogSourceName
+      description: Name of the source of the log. The hostname of the firewall that logged the network traffic.
+      type: String
+    - contextPath: SLS.Logging.File.NatDestination
+      description: If destination NAT performed, the post-NAT destination IP address.
+      type: String
+    - contextPath: SLS.Logging.File.NatDestinationPort
+      description: Post-NAT destination port.
+      type: Number
+    - contextPath: SLS.Logging.File.CharacteristicOfApp
+      description: Identifies the behavioral characteristic of the application associated with the network traffic.
+      type: String
+    - contextPath: SLS.Logging.File.SourceLocation
+      description: Source country or internal region for private addresses.
+      type: String
+    - contextPath: SLS.Logging.File.DestinationIP
+      description: Original destination IP address.
+      type: String
+    - contextPath: SLS.Logging.File.Action
+      description: Identifies the action that the firewall took for the network traffic.
+      type: String
+    - contextPath: SLS.Logging.File.IsNat
+      description: Indicates if the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1, otherwise it is 0.
+      type: Boolean
+    - contextPath: SLS.Logging.File.Protocol
+      description: IP protocol associated with the session.
+      type: String
+    - contextPath: SLS.Logging.File.NatSource
+      description: If source NAT was performed, the post-NAT source IP address.
+      type: String
+    - contextPath: SLS.Logging.File.AppCategory
+      description: Identifies the high-level family of the application.
+      type: String
+    - contextPath: SLS.Logging.File.IsUrlDenied
+      description: Indicates whether the session was denied due to a URL filtering rule.
+      type: Boolean
+    - contextPath: SLS.Logging.File.IsTunnelInspected
+      description: Indicates whether the payload for the outer tunnel was inspected.
+      type: Boolean
+    - contextPath: SLS.Logging.File.SequenceNo
+      description: The log entry identifier, which is incremented sequentially.
+      type: Number
+    - contextPath: SLS.Logging.File.IsDecryptMirror
+      description: Indicates whether decrypted traffic was sent out in clear text through a mirror port.
+      type: Boolean
+    - contextPath: SLS.Logging.File.IsNonStdDestPort
+      description: Indicates if the destination port is non-standard.
+      type: Boolean
+    - contextPath: SLS.Logging.File.RuleMatchedUuid
+      description: Unique identifier for the security policy rule that the network traffic matched.
+      type: String
+    - contextPath: SLS.Logging.File.IsProxy
+      description: Indicates whether the SSL session is decrypted (SSL Proxy).
+      type: Boolean
+    - contextPath: SLS.Logging.File.VendorSeverity
+      description: Severity associated with the event.
+      type: String
+    - contextPath: SLS.Logging.File.IsPhishing
+      description: Indicates whether enterprise credentials were submitted by an end user.
+      type: Boolean
+    - contextPath: SLS.Logging.File.ToZone
+      description: Networking zone to which the traffic was sent.
+      type: String
+    - contextPath: SLS.Logging.File.Flags
+      description: Bit field which provides details on the session, such as whether the session use IPv6.
+      type: Number
+    - contextPath: SLS.Logging.File.Tunnel
+      description: Type of tunnel.
+      type: String
+    - contextPath: SLS.Logging.File.CloudHostname
+      description: The hostname in which the VM-series firewall is running.
+      type: String
+    - contextPath: SLS.Logging.File.Http2Connection
+      description: Parent session ID for an HTTP/2 connection. If the traffic is not using HTTP/2, this field is set to 0.
+      type: Number
+    - contextPath: SLS.Logging.File.IsPrismaBranch
+      description: Internal-use field. If set to 1, the log was generated on a cloud-based firewall. If 0, the firewall was running on-premise.
+      type: Boolean
+    - contextPath: SLS.Logging.File.OutboundIf
+      description: Interface to which the network traffic was destined.
+      type: String
+    - contextPath: SLS.Logging.File.IsSymReturn
+      description: Indicates whether symmetric return was used to forward traffic for this session.
+      type: Boolean
+    - contextPath: SLS.Logging.File.URLCategory
+      description: The URL category.
+      type: String
+    - contextPath: SLS.Logging.File.IsReconExcluded
+      description: Indicates whether the source for the flow is on the firewall allow list and not subject to recon protection.
+      type: Boolean
+    - contextPath: SLS.Logging.File.SanctionedStateOfApp
+      description: Indicates whether the application has been flagged as sanctioned by the firewall administrator.
+      type: Boolean
+    - contextPath: SLS.Logging.File.ReportID
+      description: Identifies the analysis requested from the sandbox (cloud or appliance).
+      type: Number
+    - contextPath: SLS.Logging.File.DestinationPort
+      description: "Network traffic's destination port. If this value is 0, then the app is using\nits standard port."
+      type: Number
+    - contextPath: SLS.Logging.File.IsDupLog
+      description: Indicates whether this log data is available in multiple locations, such as from Strata Logging Service XSOAR Connector as well as from an on-premise log collector.
+      type: Boolean
+    - contextPath: SLS.Logging.File.LogTime
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
+      type: Date
+    - contextPath: SLS.Logging.File.SessionID
+      description: Identifies the firewall's internal identifier for a specific network session.
+      type: Number
+    - contextPath: SLS.Logging.File.RecordSize
+      description: The size of the record.
+      type: Number
+    - contextPath: SLS.Logging.File.IngestionTime
+      description: Ingestion time of the log.
+      type: Date
+    - contextPath: SLS.Logging.File.CountOfRepeats
+      description: Number of sessions with the same source IP, destination IP, application, and content/threat type seen for the summary interval.
+      type: Number
+    - contextPath: SLS.Logging.File.VsysID
+      description: A unique identifier for a virtual system on a Palo Alto Networks firewall.
+      type: Number
+    - contextPath: SLS.Logging.File.VendorName
+      description: Identifies the vendor that produced the data.
+      type: String
+    - contextPath: SLS.Logging.File.IsMptcpOn
+      description: Indicates whether the option is enabled on the next-generation firewall that allows a client to use multiple paths to connect to a destination host.
+      type: Boolean
+    - contextPath: SLS.Logging.File.IsClientToServer
+      description: Indicates if the direction of traffic is from client to server.
+      type: Boolean
+    - contextPath: SLS.Logging.File.IsServerToClient
+      description: Indicates if the direction of traffic is from server to client.
+      type: Boolean
+    - contextPath: SLS.Logging.File.IsPacketCapture
+      description: Indicates whether the session has a packet capture (PCAP).
+      type: Boolean
+    - contextPath: SLS.Logging.File.IsTransaction
+      description: Indicates whether the log corresponds to a transaction within an HTTP proxy session (Proxy Transaction).
+      type: Boolean
+    - contextPath: SLS.Logging.File.InboundIf
+      description: Interface from which the network traffic was sourced.
+      type: String
+    - contextPath: SLS.Logging.File.FromZone
+      description: The networking zone from which the traffic originated.
+      type: String
+    - contextPath: SLS.Logging.File.FileType
+      description: Palo Alto Networks textual identifier for the threat.
+      type: String
+    - contextPath: SLS.Logging.File.IsPrismaMobile
+      description: If set to 1, the log record was generated using a cloud-based GlobalProtect instance. If 0, GlobalProtect was hosted on-premise. (For internal use only.)
+      type: Boolean
+    - contextPath: SLS.Logging.File.IsContainer
+      description: Indicates if the session is a container page access (Container Page).
+      type: Boolean
+    - contextPath: SLS.Logging.File.IsSaasApp
+      description: Indicates whether the application associated with this network traffic is a SAAS application. (For internal use only.)
+      type: Boolean
+    - contextPath: SLS.Logging.File.Vsys
+      description: Unique identifier for a virtual system on a Palo Alto Networks firewall.
+      type: String
+    - contextPath: SLS.Logging.File.FileID
+      description: Numerical identifier for the threat type.
+      type: Number
+    - contextPath: SLS.Logging.File.IsCaptivePortal
+      description: Indicates if user information for the session was captured through Captive Portal.
+      type: Boolean
+    - contextPath: SLS.Logging.File.Protocol
+      description: IP protocol associated with the session.
+      type: String
+    - contextPath: SLS.Logging.File.CustomerID
+      description: The ID that uniquely identifies the Strata Logging Service XSOAR Connector instance which received this log record.
+      type: Number
+    - contextPath: SLS.Logging.File.Subtype
+      description: Identifies the log subtype.
+      type: String
+    - contextPath: SLS.Logging.File.TunneledApp
+      description: Tunneled app (For internal use only).
+      type: String
+    - contextPath: SLS.Logging.File.LogSourceID
+      description: ID that uniquely identifies the source of the log. If the source is a firewall, then it is its serial number.
+      type: String
+    - contextPath: SLS.Logging.File.IsForwarded
+      description: Indicates if the log is being forwarded. (For internal use only.)
+      type: Boolean
+    - contextPath: SLS.Logging.File.RiskOfApp
+      description: Indicates how risky the application is from a network security perspective.
+      type: Number
+    - contextPath: SLS.Logging.File.PcapID
+      description: Packet capture ID.
+      type: Number
+    - contextPath: SLS.Logging.File.AppSubcategory
+      description: Identifies the application's subcategory.
+      type: String
+    - contextPath: SLS.Logging.File.IsExported
+      description: Indicates if this log was exported from the firewall using the firewall's log export function.
+      type: Boolean
+    - contextPath: SLS.Logging.File.Severity
+      description: Severity as defined by the platform.
+      type: String
+    - contextPath: SLS.Logging.File.NatSourcePort
+      description: Post-NAT source port.
+      type: Number
+    - contextPath: SLS.Logging.File.LogType
+      description: Identifies the log type.
+      type: String
+    - contextPath: SLS.Logging.File.LogSet
+      description: Log forwarding profile name that was applied to the session. This name was defined by the firewall's administrator.
+      type: String
+    - contextPath: SLS.Logging.File.TechnologyOfApp
+      description: The networking technology used by the identified application.
+      type: String
+    - contextPath: SLS.Logging.File.DirectionOfAttack
+      description: Indicates the direction of the attack.
+      type: String
+    - contextPath: SLS.Logging.File.LogSource
+      description: Identifies the origin of the data (the system that produced the data.
+      type: String
+    description: Searches the Cortex firewall.file_data table.
+  - name: sls-query-gp-logs
+    arguments:
+    - name: limit
+      description: The maximum number of logs to return.
+      defaultValue: '10'
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+    - name: transform_results
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: If set to false, query results are not mapped into the standard command context.
+      defaultValue: 'true'
+    - name: fields
+      description: The fields selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all".
+      defaultValue: all
+    - name: end_time
+      description: The query end time. For example, end_time="2018-04-26 00:00:00".
+    - name: start_time
+      description: The query start time. For example, start_time="2018-04-26 00:00:00".
+      defaultValue: "'1970-01-01 00:00:00'"
+    - name: time_range
+      description: First log time (<number> <time unit>. For example, 12 minutes, 7 days, 3 weeks).
+    - name: event_name
+      description: Event name for which to search.
+    - name: gateway
+      description: GlobalProtect gateway for which to search.
+    - name: private_ipv4
+      description: Private IP address (v4) of the user that connected for which to search.
+    - name: private_ipv6
+      description: Private IP address (v6) of the user that connected for which to search.
+    - name: public_ipv4
+      description: Public IP address (v4) of the user that connected for which to search.
+    - name: public_ipv6
+      description: Public IP address (v6) of the user that connected for which to search.
+    - name: source_user
+      description: The source username for which to search.
+    - name: event_status
+      description: Event status (success or failure) for which to search.
+    - name: portal
+      description: GlobalProtect portal for which to search.
+    - name: stage
+      description: Name of the stage in the GlobalProtect connection workflow for which to search.
+    outputs:
+    - contextPath: SLS.Logging.GlobalProtect.AttemptedGateways
+      description: All gateways that were available and attempted for the client location.
+    - contextPath: SLS.Logging.GlobalProtect.AuthMethod
+      description: Authentication method used for the GlobalProtect connection.
+    - contextPath: SLS.Logging.GlobalProtect.ConnectionErrorID
+      description: Enumeration integer assigned to the connection_error field value.
+    - contextPath: SLS.Logging.GlobalProtect.ConnectionErrorValue
+      description: Error information for unsuccessful connection.
+    - contextPath: SLS.Logging.GlobalProtect.CountOfRepeats
+      description: Number of sessions with same Source IP, Destination IP, Application, and Content/Threat Type seen for the summary interval.
+    - contextPath: SLS.Logging.GlobalProtect.CustomerID
+      description: The ID that uniquely identifies the Cortex Data Lake instance which received this log record.
+    - contextPath: SLS.Logging.GlobalProtect.EndpointDeviceName
+      description: Name of the device that the user used for the connection.
+    - contextPath: SLS.Logging.GlobalProtect.EndpointGPVersion
+      description: GlobalProtect client version number.
+    - contextPath: SLS.Logging.GlobalProtect.EndpointOSType
+      description: OS type of the endpoint on which the GlobalProtect client is deployed.
+    - contextPath: SLS.Logging.GlobalProtect.EndpointOSVersion
+      description: OS version of the endpoint on which the GlobalProtect client is deployed.
+    - contextPath: SLS.Logging.GlobalProtect.EventID
+      description: The name of the event.
+    - contextPath: SLS.Logging.GlobalProtect.Gateway
+      description: Gateway for the connection.
+    - contextPath: SLS.Logging.GlobalProtect.GatewayPriority
+      description: Priority of the gateway.
+    - contextPath: SLS.Logging.GlobalProtect.GatewaySelectionType
+      description: Gateway selection method,  i.e., automatic, preferred, or manual.
+    - contextPath: SLS.Logging.GlobalProtect.HostID
+      description: Unique identifier GlobalProtect has assigned to the host.
+    - contextPath: SLS.Logging.GlobalProtect.IsDuplicateLog
+      description: Indicates whether this log data is available in multiple locations, such as from Strata Logging Service as well as from an on-premise log collector.
+    - contextPath: SLS.Logging.GlobalProtect.IsExported
+      description: Indicates if this log was exported from the firewall using the firewall's log export function.
+    - contextPath: SLS.Logging.GlobalProtect.IsForwarded
+      description: Internal use field that indicates if the log is being forwarded.
+    - contextPath: SLS.Logging.GlobalProtect.IsPrismaBranch
+      description: Internal use field. If set to 1, the log was generated on a cloud-based firewall. If 0, the firewall was running on-premise.
+    - contextPath: SLS.Logging.GlobalProtect.IsPrismaMobile
+      description: Internal use field. If set to 1, the log record was generated using a cloud-based GlobalProtect instance. If 0, GlobalProtect was hosted on-premise.
+    - contextPath: SLS.Logging.GlobalProtect.LogSource
+      description: Identifies the origin of the data.
+    - contextPath: SLS.Logging.GlobalProtect.LogSourceID
+      description: ID that uniquely identifies the source of the log.
+    - contextPath: SLS.Logging.GlobalProtect.LogSourceName
+      description: Name of the source of the log.
+    - contextPath: SLS.Logging.GlobalProtect.LogTime
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
+    - contextPath: SLS.Logging.GlobalProtect.LogType
+      description: Identifies the log type.
+    - contextPath: SLS.Logging.GlobalProtect.LoginDuration
+      description: Duration for which the connected user was logged on.
+    - contextPath: SLS.Logging.GlobalProtect.Opaque
+      description: Additional information regarding the event.
+    - contextPath: SLS.Logging.GlobalProtect.PlatformType
+      description: The platform type.
+    - contextPath: SLS.Logging.GlobalProtect.Portal
+      description: GlobalProtect portal or gateway that the user connected to.
+    - contextPath: SLS.Logging.GlobalProtect.PrivateIPv4
+      description: Private IP address (v4) of the user that connected.
+    - contextPath: SLS.Logging.GlobalProtect.PrivateIPv6
+      description: Private IP address (v6) of the user that connected.
+    - contextPath: SLS.Logging.GlobalProtect.ProjectName
+      description: Project name.
+    - contextPath: SLS.Logging.GlobalProtect.PublicIPv4
+      description: Public IP address (v4) of the user that connected.
+    - contextPath: SLS.Logging.GlobalProtect.PublicIPv6
+      description: Public IP address (v6) of the user that connected.
+    - contextPath: SLS.Logging.GlobalProtect.QuarantineReason
+      description: Quarantine reason.
+    - contextPath: SLS.Logging.GlobalProtect.SequenceNo
+      description: The log entry identifier, which is incremented sequentially.
+    - contextPath: SLS.Logging.GlobalProtect.SourceRegion
+      description: Region of the gateway (or user) that connected.
+    - contextPath: SLS.Logging.GlobalProtect.SourceUser
+      description: The username that connected.
+    - contextPath: SLS.Logging.GlobalProtect.SourceUserDomain
+      description: Domain to which the source user belongs.
+    - contextPath: SLS.Logging.GlobalProtect.SourceUserName
+      description: The source user username.
+    - contextPath: SLS.Logging.GlobalProtect.SSLResponseTime
+      description: SSL response time in milliseconds.
+    - contextPath: SLS.Logging.GlobalProtect.Stage
+      description: Name of the stage in the GlobalProtect connection workflow.
+    - contextPath: SLS.Logging.GlobalProtect.EventStatus
+      description: The status (success or failure) of the event.
+    - contextPath: SLS.Logging.GlobalProtect.Subtype
+      description: The log subtype.
+    - contextPath: SLS.Logging.GlobalProtect.TimeGenerated
+      description: Time when the log was generated on the firewall's data plane.
+    - contextPath: SLS.Logging.GlobalProtect.TunnelType
+      description: Tunnel type i.e., SSL or VPN.
+    - contextPath: SLS.Logging.GlobalProtect.VendorName
+      description: The vendor that produced the data.
+    description: Searches the GlobalProtect VPN log table.
+  dockerimage: demisto/python_pancloud_v2:1.0.0.4835898
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

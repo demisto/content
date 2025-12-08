@@ -1,7 +1,7 @@
 commonfields:
   id: QRadar v3
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: QRadar v3
@@ -46,7 +46,7 @@ configuration:
   - Fetch Without Events
   - Fetch With All Events
   - Fetch Correlation Events Only
-  required: true
+  required: false
   type: 15
   section: Collect
 - defaultvalue: 'true'
@@ -83,7 +83,7 @@ configuration:
 - defaultvalue: IPs And Assets
   display: 'Incidents Enrichment'
   name: enrichment
-  required: true
+  required: false
   additionalinfo: 'IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses.'
   type: 15
   options:
@@ -1510,7 +1510,7 @@ script:
     - description: ID of a specific WinCollect destination.
       name: id
     description: |-
-      Retrieves a list of WinCollect destinations. 
+      Retrieves a list of WinCollect destinations.
       In order to get wincollect_internal_destination_ids - filter internal=true needs to be used
       In order to get wincollect_external_destination_ids - filter internal=false needs to be used.
     name: qradar-wincollect-destinations-list
@@ -3147,7 +3147,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.5490952
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true

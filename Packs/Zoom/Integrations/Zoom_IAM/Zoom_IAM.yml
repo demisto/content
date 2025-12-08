@@ -1,5 +1,5 @@
 category: Identity and Access Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -74,13 +74,13 @@ configuration:
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
-  required: true
+  required: false
   type: 0
   section: Collect
 - defaultvalue: User Profile - SCIM (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: true
+  required: false
   type: 0
   section: Collect
 description: An Identity and Access Management integration template.
@@ -181,7 +181,7 @@ script:
       required: true
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/auth-utils:1.0.0.3639076
+  dockerimage: demisto/auth-utils:1.0.0.5476008
   ismappable: true
   isremotesyncout: true
   script: '-'

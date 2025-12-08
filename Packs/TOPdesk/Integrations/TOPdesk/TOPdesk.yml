@@ -5943,6 +5943,6 @@ defaultmapperin: TOPdesk-incoming-mapper
 defaultmapperout: TOPdesk Outgoing Mapper
 tests:
 - No tests (auto formatted)
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

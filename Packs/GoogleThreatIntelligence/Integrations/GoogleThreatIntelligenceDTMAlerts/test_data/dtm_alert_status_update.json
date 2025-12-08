@@ -1,0 +1,60 @@
+{
+    "id": "dummy_alert_id",
+    "monitor_id": "dummy_monitor_id",
+    "topic_matches": [
+        {
+            "topic_id": "doc_type:message",
+            "value": "message"
+        }
+    ],
+    "doc_matches": [
+        {
+            "match_path": "body",
+            "locations": [
+                {
+                    "value": "full"
+                },
+                {
+                    "value": "access"
+                },
+                {
+                    "value": "facebook"
+                },
+                {
+                    "value": "facebook"
+                }
+            ]
+        }
+    ],
+    "tags": [
+        "Test"
+    ],
+    "created_at": "2025-08-19T10:14:05.492Z",
+    "updated_at": "2025-08-27T16:30:08.259Z",
+    "labels_url": "https://dummyurl/v4/dtm/docs/message/dummyid0011/labels",
+    "topics_url": "https://dummyurl/v4/dtm/docs/message/dummyid0011/topics",
+    "doc_url": "https://dummyurl/v4/dtm/docs/message/dummyid0011/docs",
+    "status": "read",
+    "alert_type": "Message",
+    "alert_summary": "If you need an ethical hacker to spy into your cheating spouse account with evidence and full access or do you want to hack into the following account such as Whatapp hack Facebook hack Instagram hack Email hack hack school grades Snapchat hack Telegram h…",
+    "title": "Found keyword \"full access facebook\" posted by actor \"test\" on Telegram channel \"testdata\"",
+    "email_sent_at": "",
+    "indicator_mscore": 31,
+    "severity": "low",
+    "confidence": 0.20239817591320391,
+    "aggregated_under_id": "dummy_aggregated_under_id_00",
+    "has_analysis": false,
+    "ai_doc_summary": "This message advertises various hacking services, including social media account compromise, mobile device hacking, and even bank fraud, indicating a potential threat actor soliciting business. The message is also in Spanish, indicating they could be targeting Spanish-speaking users or are a Spanish-speaking actor.\n",
+    "similarity_score": 0.94101125,
+    "severity_reasoning": {
+        "rule": ""
+    },
+    "confidence_reasoning": {
+        "version": "",
+        "response_count": 0,
+        "malicious_count": 0,
+        "benign_count": 0
+    },
+    "ignore": false,
+    "monitor_version": 1
+}

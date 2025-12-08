@@ -2,7 +2,7 @@ category: Email
 commonfields:
   id: MailListener - POP3
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

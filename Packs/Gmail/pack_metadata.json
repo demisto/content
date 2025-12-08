@@ -2,7 +2,7 @@
     "name": "Gmail",
     "description": "Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).",
     "support": "xsoar",
-    "currentVersion": "1.3.37",
+    "currentVersion": "1.3.43",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -28,6 +28,11 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr",
+        "cloud"
     ]
 }

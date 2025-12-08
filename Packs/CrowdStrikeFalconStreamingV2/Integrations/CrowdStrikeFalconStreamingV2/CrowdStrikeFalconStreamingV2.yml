@@ -2,7 +2,7 @@ category: Endpoint
 commonfields:
   id: CrowdStrike Falcon Streaming v2
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

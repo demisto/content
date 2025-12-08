@@ -1,0 +1,64 @@
+{
+    "ip": "0.0.0.1",
+    "Threat": {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "type": "IP",
+        "ip": "0.0.0.1",
+        "profile": "IID",
+        "property": "APT_Malware",
+        "class": "APT",
+        "threat_level": 100,
+        "expiration": "2042-11-01T09:29:18.721Z",
+        "detected": "2025-07-29T09:29:18.721Z",
+        "received": "2025-07-29T09:31:39.329Z",
+        "imported": "2025-07-29T09:31:39.329Z",
+        "up": "true",
+        "confidence": 100,
+        "batch_id": "00000000-0000-0000-0000-000000000000",
+        "threat_score": 10,
+        "threat_score_rating": "Critical",
+        "threat_score_vector": "simple_threat_vector",
+        "risk_score": 9.9,
+        "risk_score_rating": "Critical",
+        "risk_score_vector": "simple_risk_vector",
+        "confidence_score": 0.1,
+        "confidence_score_rating": "Unconfirmed",
+        "confidence_score_vector": "simple_confidence_vector",
+        "extended": {
+            "cyberint_guid": "simple_cyberint_guid",
+            "notes": "Malware Download associated with the APT group"
+        }
+    },
+    "Address": {
+        "address": "0.0.0.1",
+        "comment": "comment",
+        "compartment_id": "00000000-0000-0000-0000-000000000000",
+        "created_at": "2025-06-27T13:07:21.476126Z",
+        "disable_dhcp": false,
+        "external_keys": {
+            "e3": "3e3"
+        },
+        "host": "ipam/host/00000000-0000-0000-0000-000000000000",
+        "hwaddr": "00:00:00:00:00:00",
+        "id": "ipam/address/00000000-0000-0000-0000-000000000000",
+        "interface": "interface",
+        "names": [
+            {
+                "name": "name",
+                "type": "user"
+            }
+        ],
+        "parent": "ipam/subnet/00000000-0000-0000-0000-000000000000",
+        "protocol": "ip4",
+        "range": "ipam/range/00000000-0000-0000-0000-000000000000",
+        "space": "ipam/ip_space/00000000-0000-0000-0000-000000000000",
+        "state": "used",
+        "tags": {
+            "temp": "true"
+        },
+        "updated_at": "2025-06-27T13:07:21.429056Z",
+        "usage": [
+            "IPAM RESERVED"
+        ]
+    }
+}

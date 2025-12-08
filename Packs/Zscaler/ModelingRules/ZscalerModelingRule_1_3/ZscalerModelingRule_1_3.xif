@@ -19,20 +19,21 @@ alter
 	xdm.observer.action = act,
 	xdm.session_context_id = externalId,
 	xdm.source.host.hostname = devicehostname,
-	xdm.source.host.ipv4_addresses = arraycreate(coalesce(src, "")),
-	xdm.source.ipv4 = sourceTranslatedAddress,
+	xdm.source.host.ipv4_addresses = if(is_ipv4(src) = TRUE, arraycreate(src)),
+	xdm.source.ipv4 = if(is_ipv4(sourceTranslatedAddress) = TRUE, sourceTranslatedAddress),
 	xdm.source.user_agent = requestClientApplication,
 	xdm.source.user.username = suser,
 	xdm.source.zone = spriv,
-	xdm.target.host.ipv4_addresses = arraycreate(coalesce(dst, "")),
+	xdm.target.host.ipv4_addresses = if(is_ipv4(dst) = TRUE, arraycreate(dst)),
 	xdm.target.interface = destinationServiceName,
-	xdm.target.ipv4=dst,
+	xdm.target.ipv4 = dst,
 	xdm.target.process.executable.file_type = fileType,
-	xdm.target.sent_bytes = to_integer(out);
+	xdm.target.sent_bytes = to_integer(`in`),
+	xdm.source.sent_bytes = to_integer(out);
 
 [MODEL: dataset="zscaler_nssfwlog_raw"]
 alter cs5=uppercase(cs5)
-| alter 
+| alter
 	xdm.alert.category=cat,
 	xdm.alert.name=cs6,
 	xdm.alert.severity=cefSeverity,
@@ -45,17 +46,17 @@ alter cs5=uppercase(cs5)
 	xdm.network.rule=cs2,
 	xdm.observer.action=act,
 	xdm.observer.content_version=cefVersion,
-	xdm.source.host.ipv4_addresses=arraycreate(sourceTranslatedAddress),
-	xdm.source.ipv4=src,
+	xdm.source.host.ipv4_addresses=if(is_ipv4(sourceTranslatedAddress) = TRUE, arraycreate(sourceTranslatedAddress)),
+	xdm.source.ipv4=if(is_ipv4(src) = TRUE, src),
 	xdm.source.port=to_integer(spt),
-	xdm.source.sent_bytes=to_integer(`in`),
+	xdm.source.sent_bytes=to_integer(out),
 	xdm.source.user.groups=arraycreate(spriv),
 	xdm.source.user.username=suser,
-	xdm.target.host.ipv4_addresses=arraycreate(destinationTranslatedAddress),
-	xdm.target.ipv4=dst,
+	xdm.target.host.ipv4_addresses=if(is_ipv4(destinationTranslatedAddress) = TRUE, arraycreate(destinationTranslatedAddress)),
+	xdm.target.ipv4=if(is_ipv4(dst) = TRUE, dst),
 	xdm.target.location.country=destCountry,
 	xdm.target.port=to_integer(dpt),
-	xdm.target.sent_bytes=to_integer(`out`);
+	xdm.target.sent_bytes=to_integer(`in`);
 
 /* ---------------------------------
    Cloud NSS Modeling (JSON Records)

@@ -2,7 +2,7 @@
     "name": "Bastille Networks",
     "description": "RF monitoring for wireless intrusion detection and policy enforcement. Visit https://www.bastille.net for details.",
     "support": "partner",
-    "currentVersion": "1.0.18",
+    "currentVersion": "1.0.19",
     "author": "Bastille Networks",
     "url": "https://www.bastille.net/support",
     "email": "ask-customer-support@bastille.io",
@@ -27,6 +27,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -70,6 +70,7 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+- xsiam
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

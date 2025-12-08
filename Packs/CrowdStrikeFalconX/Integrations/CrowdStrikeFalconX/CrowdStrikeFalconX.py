@@ -314,7 +314,7 @@ class Client:
         :param command_line: command line script passed to the submitted file at runtime
         :param document_password: auto-filled for Adobe or Office files that prompt for a password
         :param enable_tor: if true, sandbox analysis routes network traffic via TOR
-        :param submit_name: name of the malware sample that’s used for file type detection and analysis
+        :param submit_name: name of the malware sample that's used for file type detection and analysis
         :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
         :param system_time: set a custom time in the format HH:mm for the sandbox environment.
         :return: http response
@@ -357,7 +357,7 @@ class Client:
         :param command_line: command line script passed to the submitted file at runtime
         :param document_password: auto-filled for Adobe or Office files that prompt for a password
         :param enable_tor: if true, sandbox analysis routes network traffic via TOR
-        :param submit_name: name of the malware sample that’s used for file type detection and analysis
+        :param submit_name: name of the malware sample that's used for file type detection and analysis
         :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
         :param system_time: set a custom time in the format HH:mm for the sandbox environment.
         :return: http response
@@ -836,7 +836,7 @@ def upload_file_command(  # type: ignore[return]
     :param command_line: command line script passed to the submitted file at runtime
     :param document_password: auto-filled for Adobe or Office files that prompt for a password
     :param enable_tor: if true, sandbox analysis routes network traffic via TOR
-    :param submit_name: name of the malware sample that’s used for file type detection and analysis
+    :param submit_name: name of the malware sample that's used for file type detection and analysis
     :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
     :param system_time: set a custom time in the format HH:mm for the sandbox environment.
     :return: Demisto outputs when entry_context and responses are lists
@@ -907,7 +907,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
     :param command_line: command line script passed to the submitted file at runtime
     :param document_password: auto-filled for Adobe or Office files that prompt for a password
     :param enable_tor: if true, sandbox analysis routes network traffic via TOR
-    :param submit_name: name of the malware sample that’s used for file type detection and analysis
+    :param submit_name: name of the malware sample that's used for file type detection and analysis
     :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
     :param system_time: set a custom time in the format HH:mm for the sandbox environment.
     :return: Demisto outputs when entry_context and responses are lists
@@ -956,7 +956,7 @@ def send_url_to_sandbox_analysis_command(
     :param command_line: command line script passed to the submitted file at runtime
     :param document_password: auto-filled for Adobe or Office files that prompt for a password
     :param enable_tor: if true, sandbox analysis routes network traffic via TOR
-    :param submit_name: name of the malware sample that’s used for file type detection and analysis
+    :param submit_name: name of the malware sample that's used for file type detection and analysis
     :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
     :param system_time: set a custom time in the format HH:mm for the sandbox environment.
     :return: Demisto outputs when entry_context and responses are lists

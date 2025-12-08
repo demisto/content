@@ -1,6 +1,6 @@
 fromversion: 6.10.0
 category: Vulnerability Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:

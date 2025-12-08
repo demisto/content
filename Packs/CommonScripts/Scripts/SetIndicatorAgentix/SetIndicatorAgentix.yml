@@ -39,7 +39,7 @@ isInternal: true
 subtype: python3
 tests:
 - No tests
-dockerimage: demisto/python3:3.12.11.4508456
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.1.0
 marketplaces:
 - platform

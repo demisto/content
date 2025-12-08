@@ -12,7 +12,8 @@ When using the `Authorization Code flow` for this integration, you should log in
 
 - Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
 For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
-- When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).  When filtering by product, use the serviceSource field. Note that alerts from Microsoft Defender for Cloud are currently returned with serviceSource equals to unknownFutureValue, so this value should be used when filtering for them. See [Microsoft Alert Recource Type Documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=%2C%20dataLossPrevention%2C-,unknownFutureValue,-%2C%20microsoftDefenderForCloud%2C).
+- When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
+- The header *include-unknown-enum-members* is used in the fetch-incidents functionality. It ensures that fields with unknown values are correctly mapped to the appropriate service. [Learn More](https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the).
 - As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration.
 - When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
 - When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
@@ -57,7 +58,8 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 
      | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Host URL | The host URL. | True |
+    | Azure Cloud | When selecting the Custom option, the Host URL parameter must be filled. More information about National clouds can be found [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud). | False |
+    | Host URL | The host URL. When using this parameter, select the Custom option for the Azure Cloud. More information about National clouds can be found [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud). | False |
     | MS graph security version | MS graph security API version. | True |
     | Application ID or Client ID | The app registration ID. | True |
     | Token or Tenant ID | The tenant ID. | True |
@@ -1643,8 +1645,7 @@ Get the list of eDiscoverySearch resources from an eDiscovery case.
 ### msg-purge-ediscovery-data
 
 ***
-Delete Microsoft Teams messages contained in an eDiscovery search.
-Note: This request purges Teams data only. It does not purge other types of data such as mailbox items.
+Deletes mailbox items in Exchange or messages in Microsoft Teams that are included in an eDiscovery search.
 
 You can collect and purge the following categories of Teams content:
 
@@ -1664,20 +1665,12 @@ Shared channels - Message posts, replies, and attachments shared in a shared Tea
 | --- | --- | --- |
 | case_id | The ID of the eDiscovery case. | Required |
 | search_id | The ID of the eDiscovery search. | Required |
-| purge_type | The ID of the eDiscovery search. Possible values are: permanentlyDelete. | Optional |
-| purge_areas | The ID of the eDiscovery search. Possible values are: teamsMessages. | Optional |
+| purge_type | Whether the action is soft delete or hard delete. Possible values are: permanentlyDelete, recoverable. | Optional |
+| purge_areas | Define the locations to be in scope of the purge action. Possible values are: teamsMessages, mailboxes. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command example
-
-```!msg-purge-ediscovery-data case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5 search_id=e7282eff-ba81-43cb-9027-522a343f6692```
-
-#### Human Readable Output
-
->eDiscovery purge status is running.
 
 ### msg-delete-ediscovery-search
 
@@ -2423,3 +2416,58 @@ Update the incident with the given ID.
 >|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Exfiltration incident involving one user | 12345 | medium | active | test5 |  |  | unknown | unknown | 2024-03-17T15:50:31.9033333Z | 2024-03-19T07:24:34.7066667Z |
+>
+### msg-run-estimate-statistics
+
+***
+Starts an eDiscovery estimate statistics operation in Microsoft Purview. The operation calculates the size and number of items matching the search query.
+
+#### Base Command
+
+`msg-run-estimate-statistics`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The ID of the eDiscovery case. | Required |
+| search_id | The ID of the eDiscovery search. | Required |
+| statistics_options | Bitwise options that specify the statistics to generate. The possible values are: includeRefiners, includeQueryStats, includeUnindexedStats, advancedIndexing, locationsWithoutHits. The advancedIndexing and locationsWithoutHits values are only considered if includeUnindexedStats is set. Possible values are: includeRefiners, includeQueryStats, includeUnindexedStats, advancedIndexing, locationsWithoutHits. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msg-get-last-estimate-statistics-operation
+
+***
+Retrieves the most recent eDiscovery estimate statistics operation for a given search in Microsoft Purview. Use this command after running 'msg-run-estimate-statistics' to check the results.
+
+#### Base Command
+
+`msg-get-last-estimate-statistics-operation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The ID of the eDiscovery case. | Required |
+| search_id | The ID of the eDiscovery search. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.eDiscovery.EstimateStatistics.CaseID | String | The ID of the eDiscovery case. |
+| MsGraph.eDiscovery.EstimateStatistics.SearchID | String | The ID of the eDiscovery search. |
+| MsGraph.eDiscovery.EstimateStatistics.OperationID | String | The ID of the last estimate statistics operation. |
+| MsGraph.eDiscovery.EstimateStatistics.Status | String | The current status of the last estimate statistics operation \(e.g., running, succeeded, failed\). |
+| MsGraph.eDiscovery.EstimateStatistics.PercentProgress | Number | The percent progress of the last estimate statistics operation. |
+| MsGraph.eDiscovery.EstimateStatistics.CreatedDateTime | Date | The date and time when the estimate operation was created. |
+| MsGraph.eDiscovery.EstimateStatistics.CompletedDateTime | Date | The date and time when the estimate operation completed. |
+| MsGraph.eDiscovery.EstimateStatistics.IndexedItemsCount | Number | The number of indexed items found in the search. |
+| MsGraph.eDiscovery.EstimateStatistics.IndexedItemsSize | Number | The total size \(in bytes\) of indexed items. |
+| MsGraph.eDiscovery.EstimateStatistics.UnindexedItemsCount | Number | The number of unindexed items found in the search. |
+| MsGraph.eDiscovery.EstimateStatistics.UnindexedItemsSize | Number | The total size \(in bytes\) of unindexed items. |
+| MsGraph.eDiscovery.EstimateStatistics.TotalItemsCount | Number | The total number of items \(indexed \+ unindexed\). |
+| MsGraph.eDiscovery.EstimateStatistics.TotalItemsSize | Number | The total size \(in bytes\) of all items \(indexed \+ unindexed\). |

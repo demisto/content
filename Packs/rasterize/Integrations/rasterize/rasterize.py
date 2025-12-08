@@ -387,12 +387,24 @@ class PychromeEventHandler:
 # endregion
 
 
-def count_running_chromes(port) -> int:
+def get_chrome_processes(port) -> list:
     try:
-        processes = subprocess.check_output(["ps", "auxww"], stderr=subprocess.STDOUT, text=True).splitlines()
+        processes = []
+        # get all the processes running on the machine
+        for pid in os.listdir("/proc"):
+            if pid.isdigit():
+                try:
+                    with open(f"/proc/{pid}/cmdline") as f:
+                        cmd = f.read().replace("\x00", " ").strip()
+                        if cmd:
+                            processes.append(f"{pid} {cmd}")
+                except Exception:
+                    pass
 
+        # identifiers the relevant chrome processes
         chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={port}"]
         chrome_renderer_identifiers = ["--type=renderer"]
+        # filter by the identifiers the relevant processes and get it as list
         chrome_processes = [
             process
             for process in processes
@@ -401,20 +413,16 @@ def count_running_chromes(port) -> int:
         ]
 
         demisto.debug(f"Detected {len(chrome_processes)} Chrome processes running on port {port}")
-        return len(chrome_processes)
-
-    except subprocess.CalledProcessError as e:
-        demisto.info(f"Error fetching process list: {e.output}")
-        return 0
+        return chrome_processes
     except Exception as e:
-        demisto.info(f"Unexpected exception when fetching process list, error: {e}")
-        return 0
+        demisto.info(f"Unexpected exception when fetching chrome process list, error: {e}")
+        return []
 
 
 def get_chrome_browser(port: str) -> pychrome.Browser | None:
     # Verify that the process has started
     for attempt in range(DEFAULT_RETRIES_COUNT):
-        running_chromes_count = count_running_chromes(port)
+        running_chromes_count = len(get_chrome_processes(port))
         if running_chromes_count < 1:
             demisto.debug(f"Attempt {attempt + 1}/{DEFAULT_RETRIES_COUNT}: Process not started yet, sleeping...")
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + attempt * 2)
@@ -619,26 +627,15 @@ def terminate_chrome(chrome_port: str = "", killall: bool = False) -> None:  # p
     Returns:
         None
     """
-    # get all the processes running on the machine
-    processes = subprocess.check_output(["ps", "auxww"], stderr=subprocess.STDOUT, text=True).splitlines()
-    # identifiers the relevant chrome processes
-    chrome_renderer_identifiers = ["--type=renderer"]
-    chrome_identifiers = ["chrome", "headless", f"--remote-debugging-port={chrome_port}"]
-    # filter by the identifiers the relevant processes and get it as list
-    process_in_list = [
-        process
-        for process in processes
-        if all(identifier in process for identifier in chrome_identifiers)
-        and not any(identifier in process for identifier in chrome_renderer_identifiers)
-    ]
+    process_in_list = get_chrome_processes(chrome_port)
 
     if killall:
         # fetch the pids of the processes
-        pids = [int(process.split()[1]) for process in process_in_list]
+        pids = [int(process.split()[0]) for process in process_in_list]
     else:
         # fetch the pid of the process. the list contain just one process with the given chrome_port
         process_string_representation = process_in_list[0]
-        pids = [int(process_string_representation.split()[1])]
+        pids = [int(process_string_representation.split()[0])]
 
     for pid in pids:
         # for each pid, get the process by it PID and terminate it
@@ -756,7 +753,7 @@ def generate_chrome_port() -> str | None:
     random.shuffle(ports_list)
     demisto.debug(f"Searching for Chrome on these ports: {ports_list}")
     for chrome_port in ports_list:
-        len_running_chromes = count_running_chromes(chrome_port)
+        len_running_chromes = len(get_chrome_processes(chrome_port))
         demisto.debug(f"Found {len_running_chromes=} on port {chrome_port}")
 
         if len_running_chromes == 0:
@@ -1253,19 +1250,22 @@ def perform_rasterize(
 
                 # Start a new thread in group of max_tabs
                 rasterization_threads.append(
-                    executor.submit(
-                        rasterize_thread,
-                        browser=browser,
-                        chrome_port=chrome_port,
-                        path=current_path,
-                        rasterize_type=rasterize_type,
-                        wait_time=wait_time,
-                        offline_mode=offline_mode,
-                        navigation_timeout=navigation_timeout,
-                        include_url=include_url,
-                        full_screen=full_screen,
-                        width=width,
-                        height=height,
+                    (
+                        executor.submit(
+                            rasterize_thread,
+                            browser=browser,
+                            chrome_port=chrome_port,
+                            path=current_path,
+                            rasterize_type=rasterize_type,
+                            wait_time=wait_time,
+                            offline_mode=offline_mode,
+                            navigation_timeout=navigation_timeout,
+                            include_url=include_url,
+                            full_screen=full_screen,
+                            width=width,
+                            height=height,
+                        ),
+                        current_path,
                     )
                 )
             # Wait for all tasks to complete
@@ -1294,16 +1294,22 @@ def perform_rasterize(
                 increase_counter_chrome_instances_file(chrome_port=chrome_port)
 
             # Get the results
-            for current_thread in rasterization_threads:
-                ret_value, response_body = current_thread.result()
-                if ret_value:
-                    rasterization_results.append((ret_value, response_body))
-                else:
-                    return_results(
-                        CommandResults(
-                            readable_output=str(response_body), entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING)
+            for current_thread, path in rasterization_threads:
+                try:
+                    ret_value, response_body = current_thread.result()
+                    if ret_value:
+                        rasterization_results.append((ret_value, response_body))
+                    else:
+                        return_results(
+                            CommandResults(
+                                readable_output=str(response_body),
+                                entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING),
+                            )
                         )
-                    )
+                except Exception as ex:
+                    error_msg = f"Failed to rasterize the path {path}, exception: {str(ex)}"
+                    demisto.debug(error_msg)
+                    return_err_or_warn(error_msg)
             return rasterization_results
 
     else:
@@ -1330,7 +1336,7 @@ def perform_rasterize(
         chromedriver = subprocess.check_output(["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
         chrome_version = subprocess.check_output(["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
 
-        count_running_chromes(chrome_port)
+        get_chrome_processes(chrome_port)
         demisto.debug(f"{chrome_instances_contents=}")
         demisto.debug(f"ps aux command result:\n{ps_aux_output}")
         demisto.debug(f"chrome_headless.log:\n{chrome_headless_content}")

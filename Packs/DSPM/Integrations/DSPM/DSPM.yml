@@ -1,7 +1,7 @@
 commonfields:
   id: DSPM
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: DSPM
