@@ -1555,7 +1555,7 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "action_file_macro_sha256": AlertFilterArg("action_file_macro_sha256", EQ, array),
         "status": AlertFilterArg("status.progress", EQ, array, STATUS_PROGRESS),
         "not_status": AlertFilterArg("status.progress", NEQ, array, STATUS_PROGRESS),
-        "asset_ids": AlertFilterArg("asset_ids", CONTAINS, array),
+        "asset_ids": AlertFilterArg("asset_ids", EQ, array),
         "assignee": AlertFilterArg("assigned_to_pretty", CONTAINS, array),
         "unassigned": AlertFilterArg("assigned_to_pretty", IS_EMPTY, constant),
         "assigned": AlertFilterArg("assigned_to_pretty", NIS_EMPTY, constant),
