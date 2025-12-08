@@ -22,7 +22,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### genesis-cloud-get-events
 
 ***
-Gets audit events from Genesys Cloud from the past 14 days. This command is intended for development and debugging purposes, as it may produce duplicate events.
+Gets audit events from Genesys Cloud from the past 14 days. This command is intended for development and debugging purposes, as it may produce duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
 
 #### Base Command
 
@@ -41,3 +41,7 @@ Gets audit events from Genesys Cloud from the past 14 days. This command is inte
 #### Context Output
 
 There is no context output for this command.
+
+## Limitations
+
+* The `genesis-cloud-get-events` is only able to retrieve events from the past 14 days. Ensure both the `from_date` and `to_date` command arguments are within the last 14 days.
