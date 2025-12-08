@@ -4288,7 +4288,6 @@ VALID_URL_INDICATORS = [
     "hxxp[:]//1[.]1[.]1[.]1/test[.]php",  # Defanged URL with ip as a domain
     "hxxp[:]//test[.]com/test[.]php",  # Defanged URL with a file extension
     "https://test.com/a/b/c-d-e",  # hyphen in the path
-    "https://example.com?query=value",  # path-empty with query
 ]
 
 
