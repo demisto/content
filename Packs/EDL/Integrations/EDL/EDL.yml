@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -45,7 +45,7 @@ configuration:
   defaultvalue: '2500'
   display: List Size
   name: edl_size
-  required: true
+  required: false
   type: 0
   section: Collect
 - additionalinfo: How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.
@@ -440,7 +440,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.4147323
+  dockerimage: demisto/flask-nginx:1.0.0.4929432
   longRunning: true
   longRunningPort: true
   script: '-'

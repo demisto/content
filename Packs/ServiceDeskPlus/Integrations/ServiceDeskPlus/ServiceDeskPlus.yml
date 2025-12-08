@@ -194,6 +194,8 @@ script:
       - Incident
       - Request For Information
       - Service Request
+    - description: Description about the impact of the request; must not exceed 250 characters.
+      name: impact_details
     - auto: PREDEFINED
       description: Impact of the request. Choose one of the listed options or provide a dictionary representing an impact object. Can be "Affects Business", "Affects Department", "Affects Group", or "Affects User".
       name: impact
@@ -567,6 +569,6 @@ script:
 tests:
 - Service Desk Plus Test
 fromversion: 5.0.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

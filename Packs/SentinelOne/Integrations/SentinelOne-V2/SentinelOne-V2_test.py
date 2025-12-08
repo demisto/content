@@ -4,6 +4,7 @@ import demistomock as demisto
 from importlib import import_module
 import os
 import sys
+import builtins
 
 sentinelone_v2 = import_module("SentinelOne-V2")
 main = sentinelone_v2.main
@@ -265,6 +266,41 @@ def test_remove_hash_from_blocklist_global(mocker, requests_mock):
     outputs = call[0].args[0].outputs
 
     assert outputs["hash"] == sha1
+    assert outputs["status"] == "Removed 1 entries from blocklist"
+
+
+def test_remove_hash_from_blocklist_global_sha256(mocker, requests_mock):
+    """
+    When:
+        A SHA256 hash is removed from the blocklist globally (no scope)
+    Return:
+        Status that it has been removed from the blocklist
+    """
+    sha256 = "3a7bd3e2360a3d5bca2c7e6f3c4d7b1a2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8"
+    url = (
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        "?tenant=True&skip=0&limit=4&sortBy=updatedAt&sortOrder=asc&value__contains=" + sha256
+    )
+    raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist_sha256.json")
+    requests_mock.get(url, json=raw_blockist_response)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(demisto, "args", return_value={"sha256Value": sha256})
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["hash"] == sha256
     assert outputs["status"] == "Removed 1 entries from blocklist"
 
 
@@ -1285,6 +1321,191 @@ def test_initiate_endpoint_scan(mocker, requests_mock):
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
     assert command_results.outputs == [{"Agent ID": "123456", "Initiated": True}]
+
+
+def test_abort_endpoint_scan(mocker, requests_mock):
+    """
+    Given
+        - required agent_ids argument
+    When
+        - running sentinelone-abort-endpoint-scan command
+    Then
+        - returns a table of result had the details, like agent id and status of the scan
+    """
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/agents/actions/abort-scan", json={"data": {"affected": 1}})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-abort-endpoint-scan")
+    mocker.patch.object(demisto, "args", return_value={"agent_ids": "123456"})
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{"Agent ID": "123456", "Aborted": True}]
+
+
+def test_endpoint_fetch_logs(mocker, requests_mock):
+    """
+    Given
+        - required arguments i.e agent_ids, agents_logs, customer_facing_logs, platform_logs
+    When
+        - running sentinelone-endpoint-fetch-logs command
+    Then
+        - returns a table of result with the number of affected endpoints.
+    """
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/agents/actions/fetch-logs", json={"data": {"affected": 1}})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-endpoint-fetch-logs")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "agent_ids": "123456",
+            "agents_logs": "true",
+            "customer_facing_logs": "false",
+            "platform_logs": "false",
+        },
+    )
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == {"Affected": 1}
+
+
+def test_run_powerquery(mocker, requests_mock):
+    """
+    Given
+        - required arguments i.e singularity_xdr_url, singularity_xdr_api_key, and query
+    When
+        - running sentinelone-run-powerquery command.
+    Then
+        - returns a table of query results with correct columns and data.
+    """
+    mock_response_data = {
+        "cpuUsage": 49,
+        "columns": [{"name": "dataSource.name"}, {"name": "dataSource.vendor"}],
+        "warnings": [],
+        "values": [
+            ["Microsoft O365", "Microsoft"],
+            ["Microsoft O365", "Microsoft"],
+            ["Microsoft O365", "Microsoft"],
+        ],
+        "matchingEvents": 3.0,
+        "status": "success",
+        "omittedEvents": 0.0,
+    }
+    requests_mock.post(
+        "https://example.com/api/powerQuery",
+        json=mock_response_data,
+    )
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-run-powerquery")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "query": 'dataSource.name = "Microsoft O365" | columns dataSource.name, dataSource.vendor| limit 3',
+            "singularity_xdr_url": "https://example.com",
+            "singularity_xdr_api_key": "api_key",
+        },
+    )
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs["status"] == "success"
+    assert command_results.outputs["matchingEvents"] == 3.0
+    assert command_results.outputs["results"][0]["dataSource.name"] == "Microsoft O365"
+    assert command_results.outputs["results"][0]["dataSource.vendor"] == "Microsoft"
+
+
+def test_create_bulk_ioc(mocker, requests_mock):
+    """
+    Given
+        - required arguments i.e entry_id, account_ids
+    When
+        - running sentinelone-create-bulk-ioc command
+    Then
+        - returns a table of result had the list of data from the API response
+    """
+    mock_ioc_payload = util_load_json("test_data/iocs_payload.json")
+    mock_ioc_raw_response = util_load_json("test_data/iocs_raw_response.json")
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/threat-intelligence/iocs", json=mock_ioc_raw_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-create-bulk-ioc")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"entry_id": "fake-entry-id", "account_ids": "123456"},
+    )
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "fake_path", "name": "iocs.json"})
+    mocker.patch.object(builtins, "open", mocker.mock_open(read_data=json.dumps(mock_ioc_payload)))
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+
+    assert command_results.outputs_prefix == "SentinelOne.IOCs"
+    assert len(command_results.outputs) == len(mock_ioc_raw_response["data"])
+    assert command_results.outputs[0]["Creator"] == "mark@test.com"
+
+
+def test_get_threat_analysis_command(mocker, requests_mock):
+    """
+    Given
+        - required argument i.e threat_id
+    When
+        - running sentinelone-threat-analysis command
+    Then
+        - returns CommandResults with Threat Analysis data containing AgentDetectionInfo, AgentRealtimeInfo, and ThreatInfo
+    """
+    threat_analysis_response = util_load_json("test_data/threat_analysis_raw.json")
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/private/threats/12345/analysis", json=threat_analysis_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+
+    mocker.patch.object(demisto, "command", return_value="sentinelone-threat-analysis")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "threat_id": "12345",
+        },
+    )
+
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs_prefix == "SentinelOne.Threat"
+    assert command_results.outputs["ThreatInfo"]["threatId"] == "12345"
+    assert command_results.outputs["AgentDetectionInfo"]["accountName"] == "Test"
 
 
 def test_get_installed_applications(mocker, requests_mock):

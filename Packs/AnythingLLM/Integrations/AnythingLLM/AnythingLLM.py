@@ -96,7 +96,7 @@ class Client(BaseClient):
                     "link": link,
                     "metadata": {"title": title, "docAuthor": author, "description": description, "docSource": source},
                 }
-                response = self._http_request(method="POST", url_suffix="/v1/document/raw-text", json_data=data)
+                response = self._http_request(method="POST", url_suffix="/v1/document/upload-link", json_data=data)
             finally:
                 if exists:  # pylint: disable=E0601
                     raise Exception(f"document already exists [{title}]")
@@ -638,7 +638,7 @@ def document_upload_file_command(client: Client, args: dict) -> CommandResults:
 
 
 def document_upload_link_command(client: Client, args: dict) -> CommandResults:
-    response = client.document_upload_text(args["link"], args["title"], args["description"], args["author"], args["source"])
+    response = client.document_upload_link(args["link"], args["title"], args["description"], args["author"], args["source"])
     return CommandResults(outputs_prefix="AnythingLLM.upload_link", readable_output=DictMarkdown(response, ""), outputs=response)
 
 

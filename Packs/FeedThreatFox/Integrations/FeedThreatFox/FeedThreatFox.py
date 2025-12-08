@@ -149,7 +149,9 @@ def indicator_type(indicator: dict) -> str:
         return FeedIndicatorType.File
 
 
-def parse_indicator_for_fetch(indicator: dict, with_ports: bool, create_relationship: bool, tlp_color: str) -> dict[str, Any]:
+def parse_indicator_for_fetch(
+    indicator: dict, with_ports: bool, create_relationship: bool, tlp_color: str, feed_tags: list = []
+) -> dict[str, Any]:
     """Parses the indicator given from the api to an indicator that can be sent to Threat Intel min XSOAR.
 
     Args:
@@ -178,7 +180,7 @@ def parse_indicator_for_fetch(indicator: dict, with_ports: bool, create_relation
         firstseenbysource=to_date(indicator.get("first_seen")),
         lastseenbysource=to_date(indicator.get("last_seen")),
         reportedby=indicator.get("reporter"),
-        Tags=tags(indicator, with_ports),
+        Tags=tags(indicator, with_ports, feed_tags),
         publications=publications(indicator),
         confidence=indicator.get("confidence_level"),
         trafficlightprotocol=tlp_color,
@@ -219,7 +221,7 @@ def to_date(date) -> Optional[str]:
     return None
 
 
-def tags(indicator: dict, with_ports: bool) -> List[str]:
+def tags(indicator: dict, with_ports: bool, feed_tags: list = []) -> List[str]:
     """Returns a list of tags to add to the indicator given
 
     Args:
@@ -239,6 +241,9 @@ def tags(indicator: dict, with_ports: bool) -> List[str]:
         res.extend(indicator["malware_alias"].split(","))
     if with_ports and indicator.get("ioc_type") == "ip:port":
         res.append("port: " + indicator["ioc"].split(":")[1])
+    if feed_tags:
+        for feed_tag in feed_tags:
+            res.append(feed_tag)
 
     res = [tag.lower() for tag in res if tag]
 
@@ -375,6 +380,7 @@ def fetch_indicators_command(
     interval: int,
     tlp_color: str,
     last_run: dict,
+    feed_tags: list = [],
 ):
     now = datetime.now(timezone.utc)
     days_for_query = int(interval / 1440)  # The interval is validated already in the main
@@ -411,7 +417,7 @@ def fetch_indicators_command(
             demisto.debug(f"{LOG_LINE} got indicator with low confidence level, skipping it")
             continue
 
-        results.append(parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_color))
+        results.append(parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_color, feed_tags))
 
     return now.strftime("%Y-%m-%dT%H:%M:%SZ"), results
 
@@ -429,6 +435,7 @@ def main() -> None:
     create_relationship = argToBoolean(params.get("create_relationship"))
     tlp_color = params.get("tlp_color") or "CLEAR"
     interval = validate_interval(arg_to_number(params.get("feedFetchInterval")) or 1440)
+    feed_tags = argToList(params.get("feedTags"))
 
     auth_key = demisto.params().get("credentials", {}).get("password")
 
@@ -455,6 +462,7 @@ def main() -> None:
                 interval=interval,
                 tlp_color=tlp_color,
                 last_run=demisto.getLastRun(),
+                feed_tags=feed_tags,
             )
             for iter_ in batch(res, batch_size=2000):
                 demisto.debug(f"{LOG_LINE} {iter_=}")

@@ -249,8 +249,7 @@ class Client(BaseClient):
         self, query: str, page_number: Optional[str] = None, page_size: Optional[str] = None
     ) -> tuple[list[dict], list]:
         """
-        This function handles all the querying of Cortex Logging service
-
+        This function handles all the querying of Strata Logging Service
         Args:
             query: The sql string query.
             page_number: The page number to query.
@@ -260,7 +259,7 @@ class Client(BaseClient):
             A list of records according to the query
         """
         query_data = {"query": self.add_instance_id_to_query(query), "language": "csql"}
-        demisto.debug(f"Query being executed in CDL: {str(query_data)}")
+        demisto.debug(f"Query being executed in SLS: {str(query_data)}")
         query_service = self.initial_query_service()
         response = query_service.create_query(query_params=query_data, enforce_json=True)
         query_result = response.json()
@@ -275,7 +274,7 @@ class Client(BaseClient):
             except AttributeError:
                 error_message = query_result
 
-            raise DemistoException(f"Error in query to Cortex Data Lake XSOAR Connector [{status_code}] - {error_message}")
+            raise DemistoException(f"Error in query to Strata Logging Service XSOAR Connector [{status_code}] - {error_message}")
         raw_results = []
         try:
             for r in query_service.iter_job_results(
@@ -1161,6 +1160,36 @@ def query_logs_command(args: dict, client: Client) -> tuple[str, dict[str, list[
     return human_readable, ec, raw_results
 
 
+def query_logs_sls_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+    """
+    Table name is stored in log_type attribute of the records
+    Args:
+        query: Query string, i.e SELECT * FROM firewall.threat LIMIT 1
+
+    Returns:
+        the result of querying the Logging service
+    """
+    query = args.get("query", "")
+    limit = args.get("limit", "")
+    transform_results = argToBoolean(args.get("transform_results", "true"))
+
+    if not args.get("page") and "limit" not in query.lower():
+        query += f" LIMIT {limit}"
+
+    records, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
+
+    table_name = get_table_name(query)
+    output_results = records
+    if transform_results:
+        output_results = [
+            system_log_context_transformer(record) if "log.system" in query else common_context_transformer(record)
+            for record in records
+        ]
+    human_readable = tableToMarkdown("Logs " + table_name + " table", output_results, removeNull=True)
+    ec = {"SLS.Logging": output_results}
+    return human_readable, ec, raw_results
+
+
 def get_table_name(query: str) -> str:
     """
     Table name is stored in log_type attribute of the records
@@ -1198,6 +1227,29 @@ def get_critical_logs_command(args: dict, client: Client) -> tuple[str, dict[str
     return human_readable, ec, raw_results
 
 
+def get_critical_logs_sls_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+    """
+    Queries Cortex Logging according to a pre-set query
+    Returns:
+        The query's threat log critical events
+    """
+    logs_amount = args.get("limit")
+    query_start_time, query_end_time = query_timestamp(args)
+    query = 'SELECT * FROM `firewall.threat` WHERE severity = "Critical" '  # guardrails-disable-line
+    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}")'
+
+    if not args.get("page"):
+        query += f" LIMIT {logs_amount}"
+
+    records, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
+
+    transformed_results = [threat_context_transformer(record) for record in records]
+
+    human_readable = tableToMarkdown("Logs threat table", transformed_results, removeNull=True)
+    ec = {"SLS.Logging.Threat": transformed_results}
+    return human_readable, ec, raw_results
+
+
 def query_timestamp(args: dict) -> tuple[datetime, datetime]:
     start_time = args.get("start_time", "")
     end_time = args.get("end_time", "")
@@ -1231,6 +1283,30 @@ def get_social_applications_command(args: dict, client: Client) -> tuple[str, di
     return human_readable, ec, raw_results
 
 
+def get_social_applications_sls_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+    """
+    Queries Cortex Logging according to a pre-set query
+
+    Returns:
+        The traffic log app category social-networking events
+    """
+    logs_amount = args.get("limit")
+    query_start_time, query_end_time = query_timestamp(args)
+    query = 'SELECT * FROM `firewall.traffic` WHERE app_sub_category = "social-networking" '  # guardrails-disable-line
+    query += f' AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}")'
+
+    if not args.get("page"):
+        query += f" LIMIT {logs_amount}"
+
+    records, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
+
+    transformed_results = [traffic_context_transformer(record) for record in records]
+
+    human_readable = tableToMarkdown("Logs traffic table", transformed_results, removeNull=True)
+    ec = {"SLS.Logging.Traffic": transformed_results}
+    return human_readable, ec, raw_results
+
+
 def search_by_file_hash_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
     """
     Queries Cortex Logging according to a pre-set query
@@ -1254,6 +1330,31 @@ def search_by_file_hash_command(args: dict, client: Client) -> tuple[str, dict[s
     return human_readable, ec, raw_results
 
 
+def search_by_file_hash_sls_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+    """
+    Queries Cortex Logging according to a pre-set query
+    Returns:
+        threat logs where sha256 equals match
+    """
+    logs_amount = args.get("limit")
+    file_hash = args.get("SHA256")
+
+    query_start_time, query_end_time = query_timestamp(args)
+    query = f'SELECT * FROM `firewall.threat` WHERE file_sha_256 = "{file_hash}" '  # guardrails-disable-line  # noqa: S608
+    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}")'
+
+    if not args.get("page"):
+        query += f" LIMIT {logs_amount}"
+
+    records, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
+
+    transformed_results = [threat_context_transformer(record) for record in records]
+
+    human_readable = tableToMarkdown("Logs threat table", transformed_results, removeNull=True)
+    ec = {"SLS.Logging.Threat": transformed_results}
+    return human_readable, ec, raw_results
+
+
 def query_traffic_logs_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
     """
     The function of the command that queries firewall.traffic table
@@ -1263,6 +1364,18 @@ def query_traffic_logs_command(args: dict, client: Client) -> tuple[str, dict, l
     table_name: str = "traffic"
     context_transformer_function = traffic_context_transformer
     table_context_path: str = "CDL.Logging.Traffic"
+    return query_table_logs(args, client, table_name, context_transformer_function, table_context_path)
+
+
+def query_traffic_logs_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.traffic table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    table_name: str = "traffic"
+    context_transformer_function = traffic_context_transformer
+    table_context_path: str = "SLS.Logging.Traffic"
     return query_table_logs(args, client, table_name, context_transformer_function, table_context_path)
 
 
@@ -1278,6 +1391,18 @@ def query_threat_logs_command(args: dict, client: Client) -> tuple[str, dict, li
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
+def query_threat_logs_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.threat table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    query_table_name: str = "threat"
+    context_transformer_function = threat_context_transformer
+    table_context_path: str = "SLS.Logging.Threat"
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
 def query_url_logs_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
     """
     The function of the command that queries firewall.url table
@@ -1290,10 +1415,34 @@ def query_url_logs_command(args: dict, client: Client) -> tuple[str, dict, list[
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
+def query_url_logs_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.url table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    query_table_name: str = "url"
+    context_transformer_function = url_context_transformer
+    table_context_path: str = "SLS.Logging.URL"
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
 def query_file_data_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
     query_table_name: str = "file_data"
     context_transformer_function = files_context_transformer
     table_context_path: str = "CDL.Logging.File"
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
+def query_file_data_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.file_data table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    query_table_name: str = "file_data"
+    context_transformer_function = files_context_transformer
+    table_context_path: str = "SLS.Logging.File"
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
@@ -1306,6 +1455,18 @@ def query_gp_logs_command(args: dict, client: Client):
     table_name: str = "globalprotect"
     context_transformer_function = gp_context_transformer
     table_context_path: str = "CDL.Logging.GlobalProtect"
+    return query_table_logs(args, client, table_name, context_transformer_function, table_context_path, True)
+
+
+def query_gp_logs_sls_command(args: dict, client: Client):
+    """
+    The function of the command that queries firewall.globalprotect table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    table_name: str = "globalprotect"
+    context_transformer_function = gp_context_transformer
+    table_context_path: str = "SLS.Logging.GlobalProtect"
     return query_table_logs(args, client, table_name, context_transformer_function, table_context_path, True)
 
 
@@ -1363,8 +1524,8 @@ def fetch_incidents(
     fetch_filter: str = "",
 ) -> tuple[dict[str, str], list]:
     last_fetched_event_timestamp = last_run.get("lastRun")
-    demisto.debug("CortexDataLake - Start fetching")
-    demisto.debug(f"CortexDataLake - Last run: {json.dumps(last_run)}")
+    demisto.debug("StrataLoggingService - Start fetching")
+    demisto.debug(f"StrataLoggingService - Last run: {json.dumps(last_run)}")
 
     if last_fetched_event_timestamp:
         last_fetched_event_timestamp = parser.parse(last_fetched_event_timestamp)
@@ -1374,7 +1535,7 @@ def fetch_incidents(
     query = prepare_fetch_incidents_query(
         last_fetched_event_timestamp, fetch_severity, fetch_table, fetch_subtype, fetch_fields, fetch_limit, fetch_filter
     )
-    demisto.debug(f"CortexDataLake - Query sent to the server: {query}")
+    demisto.debug(f"StrataLoggingService - Query sent to the server: {query}")
     records, _ = client.query_loggings(query)
     if not records:
         return {"lastRun": str(last_fetched_event_timestamp)}, []
@@ -1384,9 +1545,9 @@ def fetch_incidents(
     max_fetched_event_timestamp = max(records, key=lambda record: record.get(time_filter, 0)).get(time_filter, 0)
 
     next_run = {"lastRun": epoch_to_timestamp_and_add_milli(max_fetched_event_timestamp)}
-    demisto.debug(f"CortexDataLake - Next run after incidents fetching: {json.dumps(next_run)}")
-    demisto.debug(f"CortexDataLake- Number of incidents before filtering: {len(records)}")
-    demisto.debug(f"CortexDataLake - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"StrataLoggingService - Next run after incidents fetching: {json.dumps(next_run)}")
+    demisto.debug(f"StrataLoggingService- Number of incidents before filtering: {len(records)}")
+    demisto.debug(f"StrataLoggingService - Number of incidents after filtering: {len(incidents)}")
     return next_run, incidents
 
 
@@ -1433,22 +1594,40 @@ def main():
             )
         elif command == "cdl-query-logs":
             return_outputs(*query_logs_command(args, client))
+        elif command == "sls-query-logs":
+            return_outputs(*query_logs_sls_command(args, client))
         elif command == "cdl-get-critical-threat-logs":
             return_outputs(*get_critical_logs_command(args, client))
+        elif command == "sls-get-critical-threat-logs":
+            return_outputs(*get_critical_logs_sls_command(args, client))
         elif command == "cdl-get-social-applications":
             return_outputs(*get_social_applications_command(args, client))
+        elif command == "sls-get-social-applications":
+            return_outputs(*get_social_applications_sls_command(args, client))
         elif command == "cdl-search-by-file-hash":
             return_outputs(*search_by_file_hash_command(args, client))
+        elif command == "sls-search-by-file-hash":
+            return_outputs(*search_by_file_hash_sls_command(args, client))
         elif command == "cdl-query-traffic-logs":
             return_outputs(*query_traffic_logs_command(args, client))
+        elif command == "sls-query-traffic-logs":
+            return_outputs(*query_traffic_logs_sls_command(args, client))
         elif command == "cdl-query-threat-logs":
             return_outputs(*query_threat_logs_command(args, client))
+        elif command == "sls-query-threat-logs":
+            return_outputs(*query_threat_logs_sls_command(args, client))
         elif command == "cdl-query-url-logs":
             return_outputs(*query_url_logs_command(args, client))
+        elif command == "sls-query-url-logs":
+            return_outputs(*query_url_logs_sls_command(args, client))
         elif command == "cdl-query-file-data":
             return_outputs(*query_file_data_command(args, client))
+        elif command == "sls-query-file-data":
+            return_outputs(*query_file_data_sls_command(args, client))
         elif command == "cdl-query-gp-logs":
             return_outputs(*query_gp_logs_command(args, client))
+        elif command == "sls-query-gp-logs":
+            return_outputs(*query_gp_logs_sls_command(args, client))
         elif command == "fetch-incidents":
             first_fetch_timestamp = params.get("first_fetch_timestamp", "24 hours").strip()
             fetch_severity = params.get("firewall_severity")

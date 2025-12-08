@@ -545,7 +545,7 @@ def get_cases_in_batches(
     return all_cases, start_time, last_fetched_ids
 
 
-def filter_existing_cases(cases: list[dict], ids_exists: list[str], last_run: str) -> list:
+def filter_existing_cases(cases: list[dict], ids_exists: list[str]) -> list:
     """
     Filters out cases that already exist in the provided list of existing IDs.
 
@@ -556,6 +556,23 @@ def filter_existing_cases(cases: list[dict], ids_exists: list[str], last_run: st
     Returns:
         list[dict]: A list of case dictionaries that do not have IDs present in the `ids_exists` list.
     """
+    if ids_exists:
+        demisto.debug(f"Existing IDs in last_run: {ids_exists}")
+
+        filtered_cases = []
+        for case in cases:
+            case_id = case.get("caseId")
+            if case_id not in ids_exists:
+                filtered_cases.append(case)
+            else:
+                demisto.debug(f"Case with ID {case_id} already exists, skipping.")
+        demisto.debug(f"After filtered cases count: {len(filtered_cases)}")
+    else:
+        filtered_cases = cases
+    return filtered_cases
+
+
+def filter_existing_cases_lr(cases: list[dict], ids_exists: list[str], last_run: str) -> list:
     if ids_exists:
         demisto.debug(f"Existing IDs in last_run: {ids_exists}")
 
@@ -1002,12 +1019,11 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     demisto.debug(f"Response contain {len(cases)} cases")
 
     ids_exists = last_run.get("last_ids", [])
-    cases = filter_existing_cases(cases, ids_exists, start_time)
-
-    last_run = update_last_run(cases, end_time)
+    cases_for_last_run = filter_existing_cases_lr(cases, ids_exists, start_time)
+    cases_for_incidents = filter_existing_cases(cases, ids_exists)
+    last_run = update_last_run(cases_for_last_run, end_time)
     demisto.debug(f"Last run after the fetch run: {last_run}")
-
-    incidents = format_incidents(cases)
+    incidents = format_incidents(cases_for_incidents)
     demisto.debug(f"After the fetch incidents count: {len(incidents)}")
     return incidents, last_run
 

@@ -1,7 +1,7 @@
 commonfields:
   id: Signal Sciences WAF
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Signal Sciences WAF

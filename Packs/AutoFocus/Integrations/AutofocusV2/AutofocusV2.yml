@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -21,7 +21,7 @@ configuration:
   section: Connect
 - display: Source Reliability
   name: integrationReliability
-  required: true
+  required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -63,7 +63,7 @@ configuration:
   required: false
   section: Collect
 deprecated: true
-description: Deprecated. Use the Unit 42 Intelligence integration instead. 
+description: Deprecated. Use the Unit 42 Intelligence integration instead.
 display: Palo Alto Networks AutoFocus v2 (Deprecated)
 name: AutoFocus V2
 script:
@@ -1023,7 +1023,7 @@ script:
       isArray: true
       name: url
       required: true
-    - description: A char to separate between the url's. 
+    - description: A char to separate between the url's.
       isArray: true
       name: separator
       required: false

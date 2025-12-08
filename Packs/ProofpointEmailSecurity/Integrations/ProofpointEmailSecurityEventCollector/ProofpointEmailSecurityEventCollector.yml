@@ -5,7 +5,7 @@ name: Proofpoint Email Security Event Collector
 display: Proofpoint Email Security Event Collector
 category: Analytics & SIEM
 description: Collects events for Proofpoint Email Security using the streaming API.
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -56,21 +56,51 @@ configuration:
   section: Collect
   advanced: true
   defaultvalue: message,maillog,audit
-- display: Fetch events
+- display: Fetch events  # Checkbox should be visible on all supported products/modules to allow any user to disable event fetching before running the "!proofpoint-es-get-events" command
   name: isFetchEvents
   type: 8
   section: Collect
   required: false
-  hidden:
-  - marketplacev2
-  - platform
-  defaultvalue: "false"
+  defaultvalue: "true"
 script:
   script: ""
   type: python
   commands:
   - name: "proofpoint-es-get-last-run-results"
     description: Retrieves the results of a connection attempt to Proofpoint, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt.
+  - name: "proofpoint-es-get-events"
+    description: "Retrieves events from the Proofpoint Email Security PoD archive for a specified time range to backfill gaps in fetched events. This command is intended for development and debugging purposes and is to be used with caution after consulting with engineering, as it may create duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism."
+    arguments:
+    - name: "since_time"
+      description: "The start of the time range to fetch events from. E.g., '3 days ago', '2025-01-01T10:00:00'. Rounds down to the nearest hour."
+      required: true
+    - name: "to_time"
+      description: "The end of the time range to fetch events from. E.g., '2 days ago', '2025-01-01T11:00:00'. Rounds up to the nearest hour."
+      required: true
+    - name: "timezone_offset"
+      description: "The UTC timezone offset in hours to apply to the since_time and to_time arguments. E.g. -5 for UTC-5."
+      required: false
+    - name: "event_types"
+      description: "A comma-separated list of event types to fetch. If not provided, all types will be retrieved."
+      required: false
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - message
+      - maillog
+      - audit
+    - name: "limit"
+      description: "The maximum number of events to fetch per specified event type."
+      required: false
+      defaultValue: "10"
+    - name: "should_push_events"
+      description: If true, the command will push the events to the Cortex XSIAM dataset; otherwise, it will only display them. 
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
   dockerimage: demisto/netutils:1.0.0.4887408
   longRunning: true
   isfetchevents: true

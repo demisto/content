@@ -2,7 +2,7 @@ category: Vulnerability Management
 commonfields:
   id: AzureRiskyUsers
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 configuration:
 - display: Client ID
@@ -96,8 +96,8 @@ script:
       defaultValue: 'riskLastUpdatedDateTime desc'
       auto: PREDEFINED
       predefined:
-        - 'riskLastUpdatedDateTime desc'
-        - 'riskLastUpdatedDateTime asc'
+      - 'riskLastUpdatedDateTime desc'
+      - 'riskLastUpdatedDateTime asc'
     - description: Displays all RiskyUsers before a specific datetime. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
       name: updated_before
     - description: Displays all RiskyUsers after a specific datetime. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
@@ -335,7 +335,47 @@ script:
     - contextPath: AzureRiskyUsers.RiskDetection.tokenIssuerType
       description: 'Indicates the type of token issuer for the detected sign-in risk. Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.3539024
+  - arguments:
+    - description: A comma-separated list of User IDs or UPNs of the user(s) to confirm as compromised. Results may not be immediately visible due to processing delays in Azure.
+      name: user
+      required: true
+      isArray: True
+    description: Confirms user(s) as compromised.
+    name: azure-risky-users-confirm-compromise
+    outputs:
+    - contextPath: AzureRiskyUsers.Remediation.UserID
+      description: The ID of the user.
+      type: String
+    - contextPath: AzureRiskyUsers.Remediation.UserPrincipalName
+      description: The UPN of the user. This key will be populated only if the user's UPN is provided.
+      type: String
+    - contextPath: AzureRiskyUsers.Remediation.Success
+      description: Whether the new state was applied successfully.
+      type: Boolean
+    - contextPath: AzureRiskyUsers.Remediation.RiskState
+      description: The new risk state of the user.
+      type: String
+  - arguments:
+    - description: A comma-separated list of User IDs or UPNs of the user(s) to confirm as safe. Results may not be immediately visible due to processing delays in Azure.
+      name: user
+      required: true
+      isArray: True
+    description: Confirms user(s) as safe (post-investigation).
+    name: azure-risky-users-confirm-safe
+    outputs:
+    - contextPath: AzureRiskyUsers.Remediation.UserID
+      description: The ID of the user.
+      type: String
+    - contextPath: AzureRiskyUsers.Remediation.UserPrincipalName
+      description: The UPN of the user. This key will be populated only if the user's UPN is provided.
+      type: String
+    - contextPath: AzureRiskyUsers.Remediation.Success
+      description: Whether the new state was applied successfully.
+      type: Boolean
+    - contextPath: AzureRiskyUsers.Remediation.RiskState
+      description: The new risk state of the user.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
   subtype: python3

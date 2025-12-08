@@ -1,7 +1,7 @@
 commonfields:
   id: Forcepoint
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 name: Forcepoint
 display: Forcepoint Web Security

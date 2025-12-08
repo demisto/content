@@ -31,7 +31,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.12.11.4417419
+dockerimage: demisto/python3:3.12.12.5490952
 enabled: true
 name: SearchIndicatorAgentix
 outputs:
@@ -45,7 +45,7 @@ outputs:
   description: The numeric score of the indicator (0 = Unknown, 1 = Good, 2 = Suspicious, 3 = Malicious).
 - contextPath: foundIndicators.verdict
   description: The human readable score/verdict of the Indicator.
-- contextPath: foundIndicators.investigationIDs
+- contextPath: foundIndicators.IssueIDs
   description: The investigations related to the indicator.
 - contextPath: foundIndicators.expirationStatus
   description: The expiration status of the indicator.

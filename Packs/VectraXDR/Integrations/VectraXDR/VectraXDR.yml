@@ -1,5 +1,5 @@
 category: Network Security
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -62,7 +62,7 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: "If selected, new incidents will be created. If not selected, it reopens previously closed incidents.\n\nNote: This flow is triggered only when the relevant entity is still active and the previously fetched incident is closed."
+- additionalinfo: "If selected, new incidents will be created (via Outgoing Mirroring). If not selected, it reopens previously closed incidents (via Incoming Mirroring).\n\nNote: This flow is triggered only when the relevant entity is still active and the previously fetched incident is closed."
   defaultvalue: "false"
   display: Re-Fetch closed incidents via mirroring
   name: refetch_closed_incidents
@@ -2198,7 +2198,113 @@ script:
     - contextPath: Vectra.Group.rules.description
       description: Description of the rule.
       type: String
-  dockerimage: demisto/python3:3.12.11.4508456
+  - arguments:
+    - description: Specify the ID of the entity.
+      name: entity_id
+      required: true
+    - auto: PREDEFINED
+      description: Specify the type of the entity.
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: true
+    - auto: PREDEFINED
+      description: Specify the close reason.
+      name: close_reason
+      predefined:
+      - benign
+      - remediated
+      required: true
+    description: Mark the detections of the entity as closed with the provided entity ID in the argument.
+    execution: false
+    name: vectra-entity-detections-mark-asclosed
+  - arguments:
+    - description: Provide a list of detection IDs separated by commas or a single detection ID.
+      isArray: true
+      name: detection_ids
+      required: true
+    - auto: PREDEFINED
+      description: Specify the close reason.
+      name: close_reason
+      predefined:
+      - benign
+      - remediated
+      required: true
+    description: Mark detections as close with provided detection IDs in the argument.
+    execution: false
+    name: vectra-detections-mark-asclosed
+  - arguments:
+    - description: Provide a list of detection IDs separated by commas or a single detection ID.
+      isArray: true
+      name: detection_ids
+      required: true
+    description: Open detections with provided detection IDs in the argument.
+    execution: false
+    name: vectra-detections-mark-asopen
+  - arguments:
+    - description: Specify the ID of the detection.
+      name: detection_id
+      required: true
+    deprecated: false
+    description: Returns a list of tags for a specified detection.
+    execution: false
+    name: vectra-detection-tag-list
+    outputs:
+    - contextPath: Vectra.Detection.Tags.tag_id
+      description: The ID of the tag.
+      type: String
+    - contextPath: Vectra.Detection.Tags.detection_id
+      description: The ID of the Detection associated with the tag.
+      type: String
+    - contextPath: Vectra.Detection.Tags.tags
+      description: A list of tags linked to a detection.
+      type: Unknown
+  - arguments:
+    - description: Specify the ID of the detection.
+      name: detection_id
+      required: true
+    - description: Comma-separated values of tags to be added to the detection.
+      isArray: true
+      name: tags
+      required: true
+    description: Add tags to a detection.
+    execution: false
+    name: vectra-detection-tag-add
+    outputs:
+    - contextPath: Vectra.Detection.Tags.tag_id
+      description: The ID of the tag.
+      type: String
+    - contextPath: Vectra.Detection.Tags.detection_id
+      description: The ID of the detection associated with the tag.
+      type: String
+    - contextPath: Vectra.Detection.Tags.tags
+      description: A list of tags linked to a detection.
+      type: Unknown
+  - arguments:
+    - description: Specify the ID of the detection.
+      name: detection_id
+      required: true
+    - description: Comma-separated values of tags to be removed from the detection.
+      isArray: true
+      name: tags
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove tags from the detection.
+    execution: false
+    name: vectra-detection-tag-remove
+    outputs:
+    - contextPath: Vectra.Detection.Tags.tag_id
+      description: The ID of the tag.
+      type: String
+    - contextPath: Vectra.Detection.Tags.detection_id
+      description: The ID of the detection associated with the tag.
+      type: String
+    - contextPath: Vectra.Detection.Tags.tags
+      description: A list of tags linked to a detection.
+      type: Unknown
+  dockerimage: demisto/python3:3.12.12.5490952
   feed: false
   isfetch: true
   isremotesyncin: true

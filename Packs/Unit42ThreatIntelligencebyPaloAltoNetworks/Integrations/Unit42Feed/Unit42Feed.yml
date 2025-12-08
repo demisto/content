@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Unit 42 Feed
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -19,7 +19,7 @@ configuration:
   options:
   - "Indicators"
   - "Threat Objects"
-  required: true
+  required: false
   defaultvalue: Indicators,Threat Objects
   section: Collect
   advanced: true
@@ -59,7 +59,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   defaultvalue: A++ - Reputation script
-  required: true
+  required: false
   section: Collect
   advanced: true
 - display: Tags
@@ -82,19 +82,6 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- display: Indicator Reputation
-  name: feedReputation
-  additionalinfo: Indicators from this integration instance will be marked with this reputation.
-  type: 18
-  options:
-  - "None"
-  - "Good"
-  - "Suspicious"
-  - "Bad"
-  defaultvalue: "Bad"
-  required: true
-  section: Collect
-  advanced: true
 - display: ''
   name: feedExpirationPolicy
   additionalinfo: The feed's expiration policy.
@@ -104,7 +91,7 @@ configuration:
   - Time Interval
   - Never Expired
   defaultvalue: Indicator Type
-  required: true
+  required: false
   section: Collect
   advanced: true
 - display: Indicator Expiration Interval

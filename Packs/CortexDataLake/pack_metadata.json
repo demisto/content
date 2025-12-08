@@ -2,9 +2,9 @@
     "name": "Strata Logging Service by Palo Alto Networks",
     "description": "Palo Alto Networks Strata Logging Service XSOAR Connector provides cloud-based, centralized log storage and aggregation for your on-premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR",
     "support": "xsoar",
-    "currentVersion": "1.4.21",
+    "currentVersion": "1.5.1",
     "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
+    "url": "https://docs.paloaltonetworks.com/strata-logging-service",
     "email": "",
     "created": "2020-03-24T12:58:02Z",
     "categories": [
