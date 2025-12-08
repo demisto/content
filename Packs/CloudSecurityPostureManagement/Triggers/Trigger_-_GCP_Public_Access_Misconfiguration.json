@@ -1,4 +1,6 @@
 {
+  "id": "4604414a45bf3bdba97decbc840f46d8",
+  "name": "Trigger - GCP Public Access Misconfiguration",
   "trigger_id": "4604414a45bf3bdba97decbc840f46d8",
   "trigger_name": "Trigger - GCP Public Access Misconfiguration",
   "playbook_id": "GCP Public Access Misconfiguration - Auto-remediate",
