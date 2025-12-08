@@ -228,8 +228,18 @@ class Client(BaseClient):
                 url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
             )
         except Exception as e:
-            if "Invalid access token" in str(e):
-                demisto.debug(f"Thread {threading.current_thread().name}: Expired or invalid access token detected")
+            error_str = str(e)
+
+            # Detect authentication errors more broadly - including JSON parse errors from HTML responses
+            is_auth_error = (
+                "Invalid access token" in error_str
+                or "401" in error_str
+                or "Unauthorized" in error_str
+                or "Expecting value" in error_str  # JSON parse error from HTML error response
+            )
+
+            if is_auth_error:
+                demisto.debug(f"Thread {threading.current_thread().name}: Authentication error detected: {error_str[:100]}")
 
                 # If using context manager, try to get fresh token from context first
                 if self._context_manager:
@@ -662,7 +672,15 @@ def fetch_event_type_worker(
         return event_type_name, events, next_run
 
     except Exception as e:
-        demisto.error(f"[{thread_id}] Error fetching {event_type_name}: {str(e)}")
+        # Use repr() for JSON errors to avoid serialization issues in logging
+        try:
+            error_msg = str(e)
+            # Check if this is a JSON error that might cause issues when logged
+            if "Expecting value" in error_msg or isinstance(e, json.JSONDecodeError):
+                error_msg = repr(e)
+        except Exception:
+            error_msg = repr(e)
+        demisto.error(f"[{thread_id}] Error fetching {event_type_name}: {error_msg}")
         raise
 
 
@@ -816,7 +834,9 @@ def fetch_events(
                     )
 
                 except Exception as e:
-                    demisto.error(f"[Worker:{event_type_name}] Failed: {str(e)}")
+                    # Safely log the error without causing JSON parsing issues
+                    error_msg = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
+                    demisto.error(f"[Worker:{event_type_name}] Failed: {error_msg}")
                     demisto.debug(f"Continuing with remaining workers ({completed_count}/{len(submitted_tasks)} completed)")
 
             parallel_duration = (datetime.now() - parallel_start).total_seconds()
