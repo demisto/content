@@ -102,13 +102,14 @@ def client_mtls():
 
 
 @pytest.fixture()
-def client():
-    """Returns a Client instance for testing.
+def client(mocker):
+    """Returns a mocked Client instance for testing.
 
     This fixture provides a default client that can be used by any test,
     including the test_module function from SAPBTP.py that pytest discovers.
+    The client is mocked to prevent actual HTTP requests.
     """
-    return Client(
+    client_instance = Client(
         base_url=SERVER_URL,
         token_url=TOKEN_URL,
         client_id=MOCK_CLIENT_ID,
@@ -118,6 +119,12 @@ def client():
         auth_type=AuthType.NON_MTLS.value,
         cert_data=None,
     )
+
+    # Mock the methods that make HTTP requests to prevent actual network calls
+    mocker.patch.object(client_instance, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    mocker.patch.object(client_instance, "get_audit_log_events", return_value=([], None))
+
+    return client_instance
 
 
 @pytest.fixture
