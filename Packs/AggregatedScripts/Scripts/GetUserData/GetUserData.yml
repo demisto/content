@@ -10,7 +10,7 @@ args:
   isArray: true
 - description: list of AD user's attributes to retrieve, separated by comma.
   name: attributes
-- description: "list of Microsoft user's properties to retrieve, separated by comma. Support for Microsoft Graph User only. Example: displayName,jobTitle,mobilePhone,createdDateTime."
+- description: "list of Microsoft user's properties to retrieve, separated by comma. Relevant only when 'additional_fields' argument is set to True. Support for Microsoft Graph User only. Example: displayName,jobTitle,mobilePhone,createdDateTime."
   name: properties
 - description: The domain to retrieve users from. Available only for the iam-get-user command.
   name: domain
