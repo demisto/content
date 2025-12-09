@@ -842,7 +842,7 @@ def get_group_members_command(client, args):
     limit = args.get("limit")
     group_id = args.get("groupId") or client.get_group_id(args.get("groupName"))
     if group_id is None:
-            raise ValueError("Either the group name was not found or multiple groups contain this name.")
+        raise ValueError("Either the group name was not found or multiple groups contain this name.")
     raw_members = client.get_group_members(group_id, limit)
     users_context = client.get_users_context(raw_members)
     users_readable = client.get_readable_users(raw_members, args.get("verbose"))
