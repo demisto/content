@@ -5,6 +5,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Armis Event Collector in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | URL of the Armis instance the event collector should connect to. | True |
@@ -17,6 +18,8 @@ This is the default integration for this content pack when configured by the Dat
 | Events Fetch Interval | Alerts and activity events. | False |
 | Minutes to delay | Number of minutes to delay when fetching events (to handle events creation delay in the Armis database). Default is 10 minutes but note a higher value might be needed for users with heavier traffic. | False |
 | Device Fetch Interval | Time between fetch of devices \(for example 12 hours, 60 minutes, etc.\). | False |
+| Enable parallel event fetching | Enable parallel fetching of multiple event types in a single integration instance. This option optimizes performance and mitigates potential authentication issues when retrieving events across multiple integration instances that utilize the same credentials. | False |
+
 
 ## Commands
 

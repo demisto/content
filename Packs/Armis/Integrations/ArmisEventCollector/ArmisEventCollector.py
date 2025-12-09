@@ -654,7 +654,7 @@ def fetch_event_type_worker(
     demisto.debug(f"[{thread_id}] Starting fetch for {event_type_name}")
 
     events: dict[str, list[dict]] = {}
-    next_run: dict[str, list | str] = {}
+    next_run: dict[str, list | str | None] = {}
 
     try:
         fetch_by_event_type(client, event_type, events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay)
@@ -709,7 +709,7 @@ def fetch_events(
     demisto.debug(f"Max fetch - Alerts/Activities: {max_fetch}, Devices: {devices_max_fetch}")
 
     events: dict[str, list[dict]] = {}
-    next_run: dict[str, list | str] = {}
+    next_run: dict[str, list | str | None] = {}
 
     # Filter out Devices if not ready
     if "Devices" in event_types_to_fetch and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()):
@@ -876,7 +876,7 @@ def handle_from_date_argument(from_date: str) -> datetime | None:
     return from_date_datetime if from_date_datetime else None
 
 
-def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dict[str, str | list]):
+def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dict[str, str | list | None]):
     """Handle fetched events.
     - Send the fetched events to XSIAM.
     - Set last run values for next fetch cycle.
