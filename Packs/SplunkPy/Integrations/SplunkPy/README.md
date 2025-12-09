@@ -1,8 +1,8 @@
 Use the SplunkPy integration to:
 
-- Fetch events (logs) from within Cortex XSOAR
-- Push events from Cortex XSOAR to SplunkPy
-- Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
+- Fetch events (logs) from within Cortex XSOAR/XSIAM
+- Push events from Cortex XSOAR/XSIAM to SplunkPy
+- Fetch SplunkPy ES notable events as Cortex XSOAR/XSIAM incidents.
 
 This integration was integrated and tested with Splunk Enterprise v9.4.3 and Enterprise Security v8.1.0.
 
@@ -1330,6 +1330,8 @@ Under **Used for communication between Cortex XSOAR and customer resources**. Ch
 
 ### Fetch Issues
 
-If you encounter fetch issues and you have enriching enabled, the issue may be the result of pressing the `Reset the "last run" timestamp` button.  
+- To ensure that drilldown enrichment works correctly, you need to include | expandtoken in your fetch query.
+This command replaces token names (such as $info_min_time$) with their actual field values from the notable, ensuring that the drilldown search queries run in the proper format.
+- If you encounter fetch issues and you have enriching enabled, the issue may be the result of pressing the `Reset the "last run" timestamp` button.  
 Note that the way to reset the mechanism is to run the `splunk-reset-enriching-fetch-mechanism` command.  
 See [here](#resetting-the-enriching-fetch-mechanism).
