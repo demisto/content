@@ -680,6 +680,8 @@ def add_user_to_group_command(client, args):
         user_id = client.get_user_id(args.get("username"))
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
+        if group_id is None:
+            raise ValueError("Either the group name was not found or multiple groups contain this name.")
     raw_response = client.add_user_to_group(user_id, group_id)
     outputs = {
         "Okta.Metadata(true)": client.request_metadata,
@@ -698,6 +700,8 @@ def remove_from_group_command(client, args):
         user_id = client.get_user_id(args.get("username"))
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
+        if group_id is None:
+            raise ValueError("Either the group name was not found or multiple groups contain this name.")
     raw_response = client.remove_user_from_group(user_id, group_id)
     outputs = {
         "Okta.Metadata(true)": client.request_metadata,
@@ -837,6 +841,8 @@ def get_group_members_command(client, args):
         raise Exception("You must supply either 'groupName' or 'groupId")
     limit = args.get("limit")
     group_id = args.get("groupId") or client.get_group_id(args.get("groupName"))
+    if group_id is None:
+            raise ValueError("Either the group name was not found or multiple groups contain this name.")
     raw_members = client.get_group_members(group_id, limit)
     users_context = client.get_users_context(raw_members)
     users_readable = client.get_readable_users(raw_members, args.get("verbose"))
@@ -1132,7 +1138,7 @@ def assign_group_to_app_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
         if group_id is None:
-            raise ValueError("Either group name not found or multiple groups include this name.")
+            raise ValueError("Either the group name was not found or multiple groups contain this name.")
     app_id = client.get_app_id(args.get("appName"))
     raw_response = client.assign_group_to_app(group_id, app_id)
     outputs = {"Okta.Metadata(true)": client.request_metadata}
