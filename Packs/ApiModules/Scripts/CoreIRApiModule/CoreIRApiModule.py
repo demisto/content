@@ -4093,11 +4093,11 @@ def update_endpoints_tags_command(client: CoreClient, args: dict) -> List[Comman
     
     raw_response = {}
     
-    for tag in tags_to_remove:
+    for tag in tags_to_add:
         for b in batch(endpoint_ids, 1000):
             raw_response.update(client.add_tag_endpoint(endpoint_ids=b, tag=tag, args=args))
     
-    for tag in tags_to_add:
+    for tag in tags_to_remove:
         for b in batch(endpoint_ids, 1000):
             raw_response.update(client.remove_tag_endpoint(endpoint_ids=b, tag=tag, args=args))
     
