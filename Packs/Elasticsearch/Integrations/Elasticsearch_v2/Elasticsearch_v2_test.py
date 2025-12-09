@@ -630,7 +630,38 @@ def test_elasticsearch_builder_called_with_no_creds(params, mocker):
     elasticsearch_builder(None)
     assert es_mock.call_args[1].get("http_auth") is None
     assert es_mock.call_args[1].get("api_key") is None
+    assert es_mock.call_args[1].get("bearer_auth") is None
 
+@pytest.mark.parametrize("params", MOCK_PARAMS)
+def test_elasticsearch_builder_called_with_cred(params, mocker):
+    mocker.patch.object(demisto, "params", return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
+    mocker.patch("Elasticsearch_v2.USERNAME", "username")
+    mocker.patch("Elasticsearch_v2.PASSWORD", "password")
+    mocker.patch("Elasticsearch_v2.AUTH_TYPE", Elasticsearch_v2.BASIC_AUTH)
+    from Elasticsearch_v2 import Elasticsearch, elasticsearch_builder
+
+    es_mock = mocker.patch.object(Elasticsearch, "__init__", return_value=None)
+    elasticsearch_builder(None)
+    assert es_mock.call_args[1].get("http_auth")[0] == "username"
+    assert es_mock.call_args[1].get("http_auth")[1] == "password"
+    assert es_mock.call_args[1].get("api_key") is None
+    assert es_mock.call_args[1].get("bearer_auth") is None
+    
+    
+    mocker.patch("Elasticsearch_v2.AUTH_TYPE", Elasticsearch_v2.API_KEY_AUTH)
+    mocker.patch("Elasticsearch_v2.API_KEY", "api_key_id")
+    elasticsearch_builder(None)
+    assert es_mock.call_args[1].get("http_auth") is None
+    assert es_mock.call_args[1].get("api_key") == "api_key_id"
+    assert es_mock.call_args[1].get("bearer_auth") is None
+
+    mocker.patch("Elasticsearch_v2.AUTH_TYPE", Elasticsearch_v2.BEARER_AUTH)
+    mocker.patch("Elasticsearch_v2.get_elastic_token", return_value="elastic_token")
+    elasticsearch_builder(None)
+    assert es_mock.call_args[1].get("http_auth") is None
+    assert es_mock.call_args[1].get("api_key") is None
+    assert es_mock.call_args[1].get("bearer_auth") == "elastic_token"
 
 @pytest.mark.parametrize("params", MOCK_PARAMS)
 def test_elasticsearch_parse_subtree(params, mocker):

@@ -215,7 +215,7 @@ def get_elastic_token():
 
         # 2. Token exists but expired, and refresh token is valid
         if refresh_token and not is_access_token_expired(refresh_token_expires_in):
-            print(
+            demisto.debug(
                 "get_elastic_token - Access token expired, but Refresh token valid. Attempting to get token using refresh token"
             )
 
@@ -253,7 +253,7 @@ def get_elastic_token():
             demisto.debug("get_elastic_token - username or password fields are missing.")
             raise DemistoException("get_elastic_token - username or password fields are missing.")
 
-        print("get_elastic_token - Attempting to get token using grant_type:password")
+        demisto.debug("get_elastic_token - Attempting to get token using grant_type:password")
 
         payload = {"grant_type": "password", "username": USERNAME, "password": PASSWORD}
         response = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), json=payload, verify=INSECURE)
