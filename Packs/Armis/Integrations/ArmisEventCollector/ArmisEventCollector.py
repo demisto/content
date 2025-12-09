@@ -232,11 +232,7 @@ class Client(BaseClient):
             error_str = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
 
             # Detect authentication errors more broadly - including JSON parse errors from HTML responses
-            is_auth_error = (
-                "Invalid access token" in error_str
-                or "401" in error_str
-                or "Unauthorized" in error_str
-            )
+            is_auth_error = "Invalid access token" in error_str or "401" in error_str or "Unauthorized" in error_str
 
             if is_auth_error:
                 demisto.debug(f"Thread {threading.current_thread().name}: Authentication error detected: {error_str}")
