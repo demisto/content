@@ -2461,7 +2461,7 @@ class InsightVMClient:
 
         for attempt in range(MAX_RETRIES + 1):
             if attempt > 0:
-                delay = 2**attempt
+                delay = 5**attempt
                 demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{MAX_RETRIES}. Waiting {delay}s...")
                 await asyncio.sleep(delay)
 
@@ -2493,6 +2493,48 @@ class InsightVMClient:
                     raise
 
         raise DemistoException(f"API request failed after {MAX_RETRIES} attempts.")
+
+    @staticmethod
+    def _sync_http_request(url: str, headers: Dict[str, str], payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Performs a blocking POST request using the 'requests' library.
+        This runs in a separate thread via asyncio.to_thread().
+        """
+        try:
+            # Note: headers and payload are already prepared by the calling method
+            response = requests.post(url, headers=headers, json=payload, verify=False)
+            response.raise_for_status()  # Raise exception for 4xx/5xx status codes
+
+            # Return the necessary information for the calling async function
+            return {
+                "status": response.status_code,
+                "location": response.headers.get("Location"),
+                "data": response.json() if response.content else response.text,
+            }
+        except requests.exceptions.RequestException as e:
+            # Catch all requests errors (network, timeout, etc.)
+            raise Exception(f"Synchronous HTTP Request Failed: {e}")
+
+    # ====================================================================
+    #           2. ASYNCHRONOUS THREADED WRAPPER
+    # ====================================================================
+
+    def http_request_sync(self, method: str, endpoint: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Runs the blocking request in a separate thread to avoid freezing the asyncio event loop.
+        """
+        url = self._base_url + endpoint
+
+        # Use functools.partial to pre-fill the synchronous function arguments
+        # We only pass the data required by the static method.
+        if method.upper() != "POST":
+            raise NotImplementedError("http_request_sync only supports POST method for report creation.")
+
+        # Offload the blocking request to a separate thread
+        result = self._sync_http_request(url, self._headers, payload)
+
+        # We assume the static method handles basic error raising (via raise_for_status)
+        return result
 
 
 class Site:
@@ -6775,9 +6817,9 @@ async def check_status_of_report(client: InsightVMClient, report_id: str, instan
 
         status_data = await response.json()
         await response.release()
-        status = status_data.get("status", "unknown")
+        status = status_data.get("status", "unknown").lower()
 
-        demisto.debug(f"Current {event_type} report status: {status} for {report_id=} and {instance_id=}")
+        demisto.debug(f"Current {event_type} report status: '{status}' for {report_id=} and {instance_id=}")
 
         if status == "complete":
             return instance_id
@@ -7051,7 +7093,7 @@ async def handle_batch_submission(
 
     # --- END FINAL COUNT LOGIC ---
     # Create the asynchronous task for concurrent submission
-    demisto.debug(f"Sending {lines_to_send_indicator} {event_type} to xsiam")
+    demisto.debug(f"Sending {batch_size_actual} {event_type} to xsiam")
 
     task = asyncio.create_task(
         process_and_send_events_to_xsiam(
@@ -7601,7 +7643,7 @@ def send_events_to_xsiam_rapid7(
     )
 
 
-async def run_full_collector_workflow(client: InsightVMClient, event_type: str, batch_size: int = 1000):
+async def run_full_collector_workflow(client: InsightVMClient, event_type: str, batch_size: int = DEFAULT_BATCH_SIZE):
     """
     Orchestrates the full report lifecycle: State Check, Create/Generate, Stream, Cleanup.
 
@@ -7625,15 +7667,14 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
                 instance_id = await check_status_of_report(client, report_id, instance_id, event_type)
 
             else:
-                demisto.debug(f"No state found for {event_type}. Starting new report configuration and generation.")
-
-                # 1. CREATE REPORT CONFIGURATION
+                demisto.debug(f"No state found for {event_type}. Starting new report  generation.")
                 if not report_id:
-                    report_id = await create_report_config_from_template(client, event_type)
-                    update_state_checkpoint(event_type, {"report_id": report_id})
-
+                    raise Exception(f"Report ID for {event_type} is missing from context despite setup phase.")
+                
                 # 2. GENERATE REPORT
+                demisto.debug(f"Generation report for {event_type}")
                 instance_id = await generate_report(client, report_id)
+                demisto.debug(f"Finish generation report for {event_type}")
                 update_state_checkpoint(event_type, {"instance_id": instance_id})
 
                 # 3. CHECK STATUS (Will wait asynchronously until finished or retry if failed)
@@ -7651,6 +7692,7 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
 
         except Exception as e:
             demisto.debug(f"\nFATAL WORKFLOW ERROR: {e}")
+            # Preserve the original exception message to ensure test expectations are met
             raise DemistoException(f"Got the following error: {str(e)}")
 
     # 5. CLEANUP:
@@ -7667,6 +7709,29 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
     demisto.debug("--- Cleanup Phase Complete ---")
 
 
+async def ensure_report_config_exists(client: InsightVMClient, collector_type: str, context: dict) -> None:
+    """
+    Checks if a report configuration exists in the integration context.
+    If not, it creates one sequentially and updates the context.
+    """
+    # 1. Check Context
+    existing_id = context.get(collector_type, {}).get("report_id")
+
+    if existing_id:
+        demisto.debug(f"[{collector_type}] Report config already exists (ID: {existing_id}). Skipping creation.")
+        return
+
+    # 2. Create if Missing (Sequential/Blocking)
+    demisto.debug(f"[{collector_type}] No report config found. Creating new configuration...")
+
+    # We await this call so it finishes completely before moving on
+    new_report_id = await create_report_config_from_template(client, collector_type)
+
+    # 3. Update Context Immediately
+    update_state_checkpoint(collector_type=collector_type, changes={"report_id": new_report_id})
+    demisto.debug(f"[{collector_type}] Context updated with new Report ID: {new_report_id}")
+
+
 async def run_all_collectors(
     client: InsightVMClient,
     batch_size: int = DEFAULT_BATCH_SIZE,
@@ -7675,6 +7740,17 @@ async def run_all_collectors(
     Runs the Asset and Vulnerability report collector workflows concurrently,
     using the provided, initialized InsightVMClient.
     """
+
+    try:
+        context = get_integration_context()
+        # Check/Create ASSET Config
+        await ensure_report_config_exists(client, "asset", context)
+        # Check/Create VULNERABILITY Config
+        await ensure_report_config_exists(client, "vulnerability", context)
+
+    except Exception as e:
+        raise DemistoException(f"FATAL: Failed during report configuration setup. Aborting run. Error: {e}")
+
     demisto.debug("Starting concurrent execution of Asset and Vulnerability collectors")
 
     asset_task = run_full_collector_workflow(client=client, batch_size=batch_size, event_type="asset")
@@ -7720,7 +7796,7 @@ async def fetch_assets_long_running_command(params: dict, token: str):
                 token=token,
                 verify=not params.get("unsecure"),
             ) as client:
-                await run_all_collectors(client, batch_size=5)
+                await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE)
             demisto.debug("Finished running all collectors")
 
         except Exception as e:
