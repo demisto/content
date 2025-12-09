@@ -2538,9 +2538,13 @@ script:
           predefined:
             - ENABLED
             - DISABLED
-        - description: The type of the exception rule (e.g., policy, BIOC). Accepts a comma-separated list.
+        - auto: PREDEFINED
+          description: The type of the disable prevention rule. Accepts a comma-separated list.
           isArray: true
           name: rule_type
+          predefined:
+            - XDR
+            - WAAS
         - description: The type of the exception rule. If not specified, both are returned.
           name: type
           auto: PREDEFINED
@@ -2560,12 +2564,6 @@ script:
           predefined:
             - DESC
             - ASC
-        - defaultValue: "0"
-          description: The page number to retrieve issues from.
-          name: page
-        - defaultValue: "100"
-          description: The page size.
-          name: page_size
         - defaultValue: "50"
           description: Number of exception rules to return.
           name: limit

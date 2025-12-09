@@ -234,6 +234,11 @@ COVERAGE_API_FIELDS_MAPPING = {
     "vendor_name": "asset_provider",
     "asset_provider": "unified_provider",
 }
+
+EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING = {
+    "legacy_agent_exceptions" : LEGACY_AGENT_EXCEPTIONS_TABLE,
+    "disable_prevention_rules" : DISABLE_PREVENTION_RULES_TABLE,
+}
 # Policy finding type mapping
 POLICY_FINDING_TYPE_MAPPING = {
     "CI/CD Risk": "CAS_CI_CD_RISK_SCANNER",
@@ -1888,13 +1893,12 @@ def build_exception_rules_filter(args: dict) -> FilterBuilder:
     filter_builder.add_field("CONDITIONS_PRETTY" , FilterType.CONTAINS, argToList(args.get("conditions")))
     filter_builder.add_field("CREATED_BY" , FilterType.CONTAINS, argToList(args.get("created_by")))
     filter_builder.add_field("USER_EMAIL" , FilterType.CONTAINS, argToList(args.get("user_email")))
-    filter_builder.add_field("MODIFICATION_TIME" , FilterType.CONTAINS, argToList(args.get("id")))
-    filter_builder.add_field("ID" , FilterType.CONTAINS, argToList(args.get("id")))
-    filter_builder.add_field("ID" , FilterType.CONTAINS, argToList(args.get("id")))
-    filter_builder.add_field("ID" , FilterType.CONTAINS, argToList(args.get("id")))
-
-
+    filter_builder.add_time_range_field("MODIFICATION_TIME", args.get("start_modification_time"), args.get("end_modification_time"))
+    filter_builder.add_field("STATUS" , FilterType.EQ, argToList(args.get("status")))
+    filter_builder.add_field("SUBTYPE" , FilterType.EQ, argToList(args.get("rule_type")))
     return filter_builder
+
+
 def get_asset_coverage_command(client: Client, args: dict):
     """
     Retrieves ASPM assets coverage using the generic /api/webapp/get_data endpoint.
@@ -2614,8 +2618,54 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
+def postprocess_exception_rules_response(data, table_name):
+    readable_output = tableToMarkdown(
+            table_name,
+            data,
+            headerTransform=string_to_table_header,
+            sort_headers=False,
+        )
+    return data
+
+
 def get_exception_rules(client, args):
-    pass
+    """
+        Retrieves Disable Prevention Rules and Legacy Agent Exceptions using the generic /api/webapp/get_data endpoint.
+    """
+
+    type = args.get('type')
+    sort_field = args.get('sort_field')
+    sort_order = args.get('sort_order')
+    limit = arg_to_number(args.get("limit")) or 100
+    filter = build_exception_rules_filter(args)
+    table_names = [EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING.get(type)] if type else [LEGACY_AGENT_EXCEPTIONS_TABLE , DISABLE_PREVENTION_RULES_TABLE]
+    readable_output = ""
+    raw_responses = []
+    outputs = []
+    for table_name in table_names:
+        request_data = build_webapp_request_data(
+            table_name=table_name,
+            filter_dict=filter.to_dict(),
+            sort_field=sort_field,
+            sort_order=sort_order,
+            limit=limit
+        )
+        response = client.get_webapp_data(request_data)
+        raw_responses.append(response)
+        reply = response.get("reply", {})
+        data = reply.get("DATA", [])
+        output , hr  = postprocess_exception_rules_response(data, table_name)
+        outputs.append(output)
+        readable_output += hr
+
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ExceptionRules",
+        outputs_key_field="ID",
+        outputs=outputs,
+        raw_response=raw_responses,
+    )
 
 
 def main():  # pragma: no cover
