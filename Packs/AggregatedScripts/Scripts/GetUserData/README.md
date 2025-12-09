@@ -28,7 +28,7 @@ This script is used in the following playbooks and scripts.
 | user_id | List of users IDs of the user to retrieve. |
 | user_name | List of names of the users to retrieve. |
 | user_email | List of emails of the users to retrieve. |
-| attributes | list of AD user's attributes to retrieve, separated by comma. |
+| attributes | list of AD user's attributes to retrieve, separated by comma. Relevant only when 'additional_fields' argument is set to True. Support for Active Directory v2 only. |
 | properties | list of Microsoft user's properties to retrieve, separated by comma. Relevant only when 'additional_fields' argument is set to True. Support for Microsoft Graph User only. |
 | domain | The domain to retrieve users from. Available only for the iam-get-user command. |
 | brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select provide a comma-separated list. For example: "SailPointIdentityNow,Active Directory Query v2,PingOne". |
