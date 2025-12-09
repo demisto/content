@@ -663,6 +663,13 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def get_webapp_view_def(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="GET",
+            url_suffix="/get_view_def",
+            json_data=request_data,
+        )
+
     def get_webapp_histograms(self, request_data: dict) -> dict:
         return self._http_request(
             method="POST",
@@ -2618,9 +2625,15 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
-def postprocess_exception_rules_response(data, table_name):
+def extract_mappings_from_view_def(view_def):
+    pass
+
+
+def postprocess_exception_rules_response(view_def, data):
+    mappings = extract_mappings_from_view_def(view_def)
+
     readable_output = tableToMarkdown(
-            table_name,
+            view_def.get(),
             data,
             headerTransform=string_to_table_header,
             sort_headers=False,
@@ -2654,7 +2667,8 @@ def get_exception_rules(client, args):
         raw_responses.append(response)
         reply = response.get("reply", {})
         data = reply.get("DATA", [])
-        output , hr  = postprocess_exception_rules_response(data, table_name)
+        view_def = client.get_webapp_view_def({"table_name": table_name})
+        output , hr  = postprocess_exception_rules_response(view_def, data)
         outputs.append(output)
         readable_output += hr
 
