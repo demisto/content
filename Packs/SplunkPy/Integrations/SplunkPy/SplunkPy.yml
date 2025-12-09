@@ -23,7 +23,7 @@ configuration:
   type: 0
   section: Connect
   additionalinfo: The port in Splunk server which is open to the REST API calls.
-- additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES finding events. You can edit this query to fetch other types of events. Note, that to fetch ES finding events, make sure to include the \`notable\` macro in your query.
+- additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES notable events. You can edit this query to fetch other types of events. Note, that to fetch ES notable events, make sure to include the \`notable\` macro in your query.
   defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
   display: Fetch events query
   name: fetchQuery
@@ -55,13 +55,13 @@ configuration:
   required: false
   additionalinfo: Whether to use the Splunk clock time from the Splunk server for fetch, or not.
 - defaultvalue: 'false'
-  display: Parse Raw Part of Finding Events
-  name: parseFindingEventsRaw
+  display: Parse Raw Part of Notable Events
+  name: parseNotableEventsRaw
   type: 8
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Whether to parse the raw part of the Findings, or not.
+  additionalinfo: Whether to parse the raw part of the Notables, or not.
 - defaultvalue: 'false'
   display: Replace with Underscore in Incident Fields
   name: replaceKeys
@@ -69,8 +69,8 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Whether to replace special characters to underscore when parsing the raw data of the Findings, or not.
-- display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. When the Splunk server and the integration instance are on the same timezone, set the timezone to 0. This is relevant only for fetching and mirroring finding events. It must be specified when mirroring is enabled.
+  additionalinfo: Whether to replace special characters to underscore when parsing the raw data of the Notables, or not.
+- display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. When the Splunk server and the integration instance are on the same timezone, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled.
   name: timezone
   type: 0
   section: Collect
@@ -83,13 +83,13 @@ configuration:
   type: 0
   section: Collect
   required: false
-- display: Extract Fields - CSV fields that will be parsed out of _raw finding events
+- display: Extract Fields - CSV fields that will be parsed out of _raw notable events
   name: extractFields
   type: 12
   section: Collect
   advanced: true
   required: false
-- additionalinfo: Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for finding events. However, you may choose any custom field.
+- additionalinfo: Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for notable events. However, you may choose any custom field.
   defaultvalue: source
   display: Event Type Field
   name: type_field
@@ -120,7 +120,7 @@ configuration:
   - marketplacev2
   - platform
   required: false
-- additionalinfo: When selected, closing the Splunk finding event with a "Closed" status will close the Cortex XSOAR incident.
+- additionalinfo: When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
   name: close_incident
@@ -137,7 +137,7 @@ configuration:
   section: Collect
   additionalinfo: "A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident (Example: Resolved,False-Positive)."
   required: false
-- additionalinfo: When selected, Splunk Finding Events with a status that is marked as "End Status" will close the Cortex XSOAR incident.
+- additionalinfo: When selected, Splunk Notable Events with a status that is marked as "End Status" will close the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)
   name: close_end_status_statuses
@@ -145,15 +145,15 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- display: Close Mirrored Splunk Finding Events (Outgoing Mirroring)
-  name: close_finding
+- display: Close Mirrored Splunk Notable Events (Outgoing Mirroring)
+  name: close_notable
   type: 8
   section: Collect
   advanced: true
   hidden:
   - marketplacev2
   - platform
-  additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Finding Event in Splunk.
+  additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk.
   defaultvalue: 'false'
   required: false
 - display: Trust any certificate (not secure)
@@ -200,7 +200,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
-  additionalinfo: Enrichment types to enrich each fetched finding. If none are selected, the integration will fetch findings as usual (without enrichment). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see the integration additional info.
+  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see the integration additional info.
   options:
   - Drilldown
   - Asset
@@ -225,7 +225,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-  additionalinfo: When the selected timeout was reached, finding events that were not enriched will be saved without the enrichment.
+  additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
   defaultvalue: '5'
   required: false
 - additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. To retrieve all events, enter "0" (not recommended).
@@ -243,7 +243,7 @@ configuration:
   advanced: true
   required: false
 - display: 'Advanced: Time type to use when fetching events'
-  name: finding_time_source
+  name: notable_time_source
   type: 15
   defaultvalue: "creation time"
   options:
@@ -313,20 +313,20 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- display: Note tag from Splunk
-  name: note_tag_from_splunk
+- display: Comment tag from Splunk
+  name: comment_tag_from_splunk
   defaultvalue: FROM SPLUNK
   type: 0
   section: Collect
   required: false
-  additionalinfo: Add this tag to an entry to mirror it as a note from Splunk.
-- display: Note tag to Splunk
-  name: note_tag_to_splunk
+  additionalinfo: Add this tag to an entry to mirror it as a comment from Splunk.
+- display: Comment tag to Splunk
+  name: comment_tag_to_splunk
   defaultvalue: FROM XSOAR
   type: 0
   section: Collect
   required: false
-  additionalinfo: Add this tag to an entry to mirror it as a note to Splunk.
+  additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk.
 description: Runs queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -419,16 +419,15 @@ script:
     name: splunk-get-indexes
     arguments: []
   - arguments:
-    - description: A comma-separated list of event IDs of finding events.
-      name: event_ids
+    - description: A comma-separated list of event IDs of notable events.
+      name: eventIDs
       required: true
-      isArray: true
-    - description: A Splunk user to assign to the finding events.
+    - description: A Splunk user to assign to the notable events.
       name: owner
-    - description: Note to add to the finding events.
-      name: note
+    - description: Comment to add to the notable events.
+      name: comment
     - auto: PREDEFINED
-      description: 'Finding event urgency. Possible values: "critical", "high", "medium", "low", and "informational".'
+      description: 'Notable event urgency. Possible values: "critical", "high", "medium", "low", and "informational".'
       name: urgency
       predefined:
       - critical
@@ -436,30 +435,21 @@ script:
       - medium
       - low
       - informational
-    - auto: PREDEFINED
-      description: Finding event status.
+    - description: Notable event status. 0 - Unassigned, 1 - Assigned, 2 - In Progress, 3 - Pending, 4 - Resolved, 5 - Closed.
       name: status
-      predefined:
-      - Unassigned
-      - Assigned
-      - In Progress
-      - Pending
-      - Resolved
-      - Closed
     - name: disposition
       auto: PREDEFINED
       predefined:
-      - Unassigned
       - True Positive - Suspicious Activity
       - Benign Positive - Suspicious But Expected
       - False Positive - Incorrect Analytic Logic
       - False Positive - Inaccurate Data
       - Other
       - Undetermined
-      description: Disposition of the finding. If the more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list.
-    description: Updates existing finding events in Splunk ES.
+      description: Disposition of the notable. If the more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list.
+    description: Updates existing notable events in Splunk ES.
     execution: true
-    name: splunk-finding-event-edit
+    name: splunk-notable-event-edit
   - arguments:
     - description: The Splunk search language string to execute. For example :"index=* | head 3".
       name: query
@@ -686,14 +676,14 @@ script:
     - defaultValue: '0'
       description: ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
-    description: Gets data from a finding event. This method does not update the current incident, and should be used for debugging purposes.
+    description: Gets data from a notable event. This method does not update the current incident, and should be used for debugging purposes.
     name: get-remote-data
   - arguments:
     - description: ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
-    description: Gets the list of finding events that were modified since the last update. This command should be used for debugging purposes, and is available from Cortex XSOAR version 6.1.
+    description: Gets the list of notable events that were modified since the last update. This command should be used for debugging purposes, and is available from Cortex XSOAR version 6.1.
     name: get-modified-remote-data
-  - description: Resets the enrichment mechanism of fetched findings.
+  - description: Resets the enrichment mechanism of fetched notables.
     name: splunk-reset-enriching-fetch-mechanism
     arguments: []
   - arguments:
