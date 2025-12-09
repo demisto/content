@@ -542,19 +542,21 @@ class XSOAR2STIXParser:
                     )
                     if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in self.types_for_indicator_sdo:
                         stix_ioc = self.convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
-                    demisto.debug(f"T2API: create_indicators {stix_ioc=}")
                     if self.has_extension and stix_ioc:
                         iocs.append(stix_ioc)
                         if extension_definition:
                             extensions.append(extension_definition)
                     elif stix_ioc:
                         iocs.append(stix_ioc)
+
+        demisto.info(f"T2API: indicators count: {len(iocs)}")
         if (
             not is_manifest
             and iocs
             and is_demisto_version_ge("6.6.0")
             and (relationships := self.create_relationships_objects(iocs, extensions))
         ):
+            demisto.info(f"T2API: indicators count: {len(relationships)}")
             total += len(relationships)
             iocs.extend(relationships)
             iocs = sorted(iocs, key=lambda k: k["modified"])
@@ -663,7 +665,7 @@ class XSOAR2STIXParser:
             xsoar_indicator_to_return = xsoar_indicator
         extension_definition = {}
 
-        if self.has_extension and object_type not in self.types_for_indicator_sdo:
+        if self.has_extension:
             stix_object, extension_definition, extensions_dict = self.create_extension_definition(
                 object_type, extensions_dict, xsoar_type, created_parsed, modified_parsed, stix_object, xsoar_indicator_to_return
             )
@@ -791,7 +793,10 @@ class XSOAR2STIXParser:
             pattern_type="stix",
             labels=labels,
         )
-        return dict({k: v for k, v in stix_object.items() if k in ("spec_version", "created", "modified")}, **stix_domain_object)
+        return dict(
+            {k: v for k, v in stix_object.items() if k in ("spec_version", "created", "modified", "extensions")},
+            **stix_domain_object,
+        )
 
     @staticmethod
     def create_sdo_stix_uuid(
