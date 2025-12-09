@@ -2445,67 +2445,54 @@ class InsightVMClient:
         """Asynchronous context manager exit: closes the aiohttp session."""
         await self._session.close()
 
-    async def http_request(
-            self,
-            method: str,
-            endpoint: str,
-            payload: Optional[Dict[str, Any]] = None
-        ) -> aiohttp.ClientResponse:
-            """
-            Executes an asynchronous HTTP request and returns the raw response object.
-            Includes retry logic for server errors.
-            """
-            url = self._base_url + endpoint
-            
-            # Select the method function (get, post, etc.)
-            request_func = getattr(self._session, method.lower())
-            
-            MAX_RETRIES = 3
-            # Retry on: 500/502/503/504 (Server Errors), 429 (Rate Limit)
-            RETRYABLE_STATUSES = {500, 502, 503, 504, 429}
+    async def http_request(self, method: str, endpoint: str, payload: Optional[Dict[str, Any]] = None) -> aiohttp.ClientResponse:
+        """
+        Executes an asynchronous HTTP request and returns the raw response object.
+        Includes retry logic for server errors.
+        """
+        url = self._base_url + endpoint
 
-            for attempt in range(MAX_RETRIES + 1):
-                if attempt > 0:
-                    delay = 2 ** attempt
-                    demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{MAX_RETRIES}. Waiting {delay}s...")
-                    await asyncio.sleep(delay)
+        # Select the method function (get, post, etc.)
+        request_func = getattr(self._session, method.lower())
 
-                try:
-                    # Execute the request
-                    # NOTE: We do NOT call .json() or .text() here.
-                    response = await request_func(
-                        url,
-                        headers=self._headers,
-                        json=payload,
-                        ssl=False
-                    )
+        MAX_RETRIES = 3
+        # Retry on: 500/502/503/504 (Server Errors), 429 (Rate Limit)
+        RETRYABLE_STATUSES = {400, 500, 502, 503, 504, 429}
 
-                    # 1. Handle Retryable Errors
-                    if response.status in RETRYABLE_STATUSES:
-                        demisto.debug(f"API returned retryable status {response.status}.")
-                        response.close() # Close connection before retrying
-                        continue
-                    
-                    # 2. Handle Fatal Client Errors (4xx)
-                    # We raise an exception here because retrying 400/401/404 usually won't help.
-                    if 400 <= response.status < 500:
-                        try:
-                            error_body = await response.text()
-                        except Exception:
-                            error_body = "Could not read error body."
-                        response.close()
-                        raise Exception(f"Client API Error ({response.status}): {error_body}")
+        for attempt in range(MAX_RETRIES + 1):
+            if attempt > 0:
+                delay = 2**attempt
+                demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{MAX_RETRIES}. Waiting {delay}s...")
+                await asyncio.sleep(delay)
 
-                    # 3. Success (2xx)
-                    # Return the RAW response object so the caller can read headers/json as needed.
-                    return response
+            try:
+                response = await request_func(url, headers=self._headers, json=payload, ssl=False)
 
-                except aiohttp.ClientConnectorError as e:
-                    demisto.debug(f"Connection error: {e}")
-                    if attempt == MAX_RETRIES:
-                        raise
+                # 1. Handle Retryable Errors
+                if response.status in RETRYABLE_STATUSES:
+                    demisto.debug(f"API returned retryable status {response.status}.")
+                    response.close()  # Close connection before retrying
+                    continue
 
-            raise Exception(f"API request failed after {MAX_RETRIES} attempts.")
+                # 2. Handle Fatal Client Errors (4xx)
+                if 400 < response.status < 500:
+                    try:
+                        error_body = await response.text()
+                    except Exception:
+                        error_body = "Could not read error body."
+                    response.close()
+                    raise DemistoException(f"Client API Error ({response.status}): {error_body}")
+
+                # 3. Success (2xx)
+                # Return the RAW response object so the caller can read headers/json as needed.
+                return response
+
+            except aiohttp.ClientConnectorError as e:
+                demisto.debug(f"Connection error: {e}")
+                if attempt == MAX_RETRIES:
+                    raise
+
+        raise DemistoException(f"API request failed after {MAX_RETRIES} attempts.")
 
 
 class Site:
@@ -6867,7 +6854,7 @@ async def stream_and_parse_report(
     total_records_ingested = event_integration_context.get("total_records_ingested", 0)
     header: Optional[List[str]] = None
     start_line_for_batch_raw = last_sent_line_raw + 1
-    pending_tasks = set()
+    pending_tasks: set[asyncio.Task] = set()
 
     demisto.debug(f"--- Starting Data Stream (Resuming from line: {start_line_for_batch_raw}) ---")
     # --- Lookahead Stream Setup ---
@@ -7318,7 +7305,9 @@ def rapid7_send_data_to_xsiam(
         return None
 
     if not data:
-        demisto.debug(f"send_data_to_xsiam function received no {data_type}, skipping the API call to send {data_type} to XSIAM")
+        demisto.debug(
+            f"send_data_to_xsiam function received no {data_type}, skipping the API call to send {data_type} (data_type) to XSIAM"
+        )  # noqa: E501
         demisto.updateModuleHealth({f"{data_type}Pulled": data_size})
         return None
 
@@ -7326,7 +7315,7 @@ def rapid7_send_data_to_xsiam(
     # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
     if isinstance(data, list):
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
-        demisto.debug(f"Sending {len(data)} {data_type} to XSIAM")
+        demisto.debug(f"Sending {len(data)} {data_type} (data type) to XSIAM")
         if isinstance(data[0], dict):
             data = [json.dumps(item) for item in data]
             data_format = "json"
@@ -7628,10 +7617,8 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
     finish_current_report_stream = event_integration_context.get(
         "finish_current_report_stream", False
     )  # if we finished the current report, but the server crashed before removing the instance id and report id from the context
-
     if not finish_current_report_stream:
         try:
-            # --- CONDITIONAL START LOGIC ---
             if report_id and instance_id:
                 demisto.debug(f"State found in context. Resuming check for Report ID: {report_id}, Instance ID: {instance_id}")
                 # If IDs exist, go straight to checking the status of the ongoing report
@@ -7659,16 +7646,14 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
             update_state_checkpoint(
                 event_type,
                 {"last_sent_line": 0, "finish_current_report_stream": True, "snapshot_id": "", "total_records_ingested": 0},
-            ) 
+            )
             demisto.debug("--- Data Streaming Phase Complete ---")
 
         except Exception as e:
             demisto.debug(f"\nFATAL WORKFLOW ERROR: {e}")
-            # The line counter checkpoint ensures that on the next run, processing resumes
-            # from the last successfully sent line.
             raise DemistoException(f"Got the following error: {str(e)}")
 
-    # 5. CLEANUP: Guaranteed to run, ensuring a fresh start for the next 12-hour job.
+    # 5. CLEANUP:
     demisto.debug("\n--- Starting Cleanup Phase ---")
 
     if report_id and instance_id:
@@ -7692,7 +7677,6 @@ async def run_all_collectors(
     """
     demisto.debug("Starting concurrent execution of Asset and Vulnerability collectors")
 
-    # Define the two tasks (coroutines) using the passed client
     asset_task = run_full_collector_workflow(client=client, batch_size=batch_size, event_type="asset")
     vulnerability_task = run_full_collector_workflow(client=client, batch_size=batch_size, event_type="vulnerability")
 
@@ -7701,7 +7685,6 @@ async def run_all_collectors(
     results = await asyncio.gather(asset_task, vulnerability_task, return_exceptions=True)
     demisto.debug("\n--- Concurrent Execution Complete ---")
 
-    # Check results and handle exceptions
     success = True
     exceptions = []
 
@@ -7714,7 +7697,7 @@ async def run_all_collectors(
     if not success:
         # Aggregate all errors into a single failure message
         error_message = "\n".join(exceptions)
-        raise Exception(f"One or more concurrent collector workflows failed:\n{error_message}")
+        raise DemistoException(f"One or more concurrent collector workflows failed:\n{error_message}")
 
     demisto.debug("All collector workflows finished successfully.")
 
@@ -7737,7 +7720,7 @@ async def fetch_assets_long_running_command(params: dict, token: str):
                 token=token,
                 verify=not params.get("unsecure"),
             ) as client:
-                await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE)
+                await run_all_collectors(client, batch_size=5)
             demisto.debug("Finished running all collectors")
 
         except Exception as e:
