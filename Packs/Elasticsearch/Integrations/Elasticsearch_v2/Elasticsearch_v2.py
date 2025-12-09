@@ -21,7 +21,7 @@ warnings.filterwarnings(action="ignore", message=".*using SSL with verify_certs=
 # .ymla values
 BASIC_AUTH = "Basic auth"
 BEARER_AUTH = "Bearer auth"
-API_KEY_AUTH =  "Api key auth"
+API_KEY_AUTH = "Api key auth"
 
 API_KEY_PREFIX = "_api_key_id:"
 
@@ -29,7 +29,7 @@ AUTH_TYPE = demisto.params().get("auth_type", "Basic auth")
 USERNAME: str = demisto.params().get("credentials", {}).get("identifier")
 PASSWORD: str = demisto.params().get("credentials", {}).get("password")
 API_KEY_ID: str = demisto.params().get("api_key_auth_credentials", {}).get("identifier")
-API_KEY_SECRET: str =  demisto.params().get("api_key_auth_credentials", {}).get("password")
+API_KEY_SECRET: str = demisto.params().get("api_key_auth_credentials", {}).get("password")
 
 # Using Api key auth by username and password fields for backward compatibility.
 if AUTH_TYPE == BASIC_AUTH:
@@ -173,13 +173,16 @@ def get_api_key_header_val(api_key):
         return "ApiKey " + base64.b64encode(s).decode("utf-8")
     return "ApiKey " + api_key
 
+
 def is_access_token_expired(expires_in: str) -> bool:
     """Check if access token is expired."""
 
     # Subtract 1 min to refresh slightly early and avoid expiration issues.
     is_not_expired = expires_in > (datetime.now() + timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
     if is_not_expired:
-        demisto.debug(f"is_access_token_expired - using existing Access token from integration context (expires in {expires_in}).")
+        demisto.debug(
+            f"is_access_token_expired - using existing Access token from integration context (expires in {expires_in})."
+        )
         return False
     else:
         demisto.debug("is_access_token_expired - Access token expired.")
@@ -189,7 +192,7 @@ def is_access_token_expired(expires_in: str) -> bool:
 def get_elastic_token():
     """
     Authenticates and retrieves an OAuth 2.0 access token from Elasticsearch.
-    
+
     Returns an access token either by refreshing an existing token or performing a new token request.
         1. Check if existing access token is valid (with 1min buffer).
         2. If not, try to use refresh token if it exists and is valid.
@@ -197,14 +200,14 @@ def get_elastic_token():
     """
     try:
         url = urljoin(SERVER, "_security/oauth2/token")
-        headers={"Content-Type": "application/json"}
-        
+        headers = {"Content-Type": "application/json"}
+
         integration_context = get_integration_context()
         access_token = integration_context.get("access_token", "")
         access_token_expires_in = integration_context.get("access_token_expires_in", "")
         refresh_token = integration_context.get("refresh_token", "")
         refresh_token_expires_in = integration_context.get("refresh_token_expires_in", "")
-        
+
         # 1. Check if token exists and if it is still valid
         if access_token and not is_access_token_expired(access_token_expires_in):
             demisto.debug("get_elastic_token - Using existing access token from integration context.")
@@ -212,7 +215,9 @@ def get_elastic_token():
 
         # 2. Token exists but expired, and refresh token is valid
         if refresh_token and not is_access_token_expired(refresh_token_expires_in):
-            print("get_elastic_token - Access token expired, but Refresh token valid. Attempting to get token using refresh token")
+            print(
+                "get_elastic_token - Access token expired, but Refresh token valid. Attempting to get token using refresh token"
+            )
 
             payload = {"grant_type": "refresh_token", "refresh_token": refresh_token}
             response = requests.post(url, headers=headers, json=payload, verify=INSECURE)
@@ -221,17 +226,24 @@ def get_elastic_token():
                 now = datetime.now()
                 token_data = response.json()
                 access_token_expires_in = (now + timedelta(seconds=token_data.get("expires_in"))).strftime("%Y-%m-%dT%H:%M:%SZ")
-                refresh_token_expires_in = (now + timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ") # refresh token has a lifetime of 24 hours
-                
-                integration_context.update({"access_token": token_data.get("access_token"),
-                                            "refresh_token": token_data.get("refresh_token"),
-                                            "access_token_expires_in": access_token_expires_in,
-                                            "refresh_token_expires_in": refresh_token_expires_in
-                                            })
+                refresh_token_expires_in = (now + timedelta(hours=24)).strftime(
+                    "%Y-%m-%dT%H:%M:%SZ"
+                )  # refresh token has a lifetime of 24 hours
+
+                integration_context.update(
+                    {
+                        "access_token": token_data.get("access_token"),
+                        "refresh_token": token_data.get("refresh_token"),
+                        "access_token_expires_in": access_token_expires_in,
+                        "refresh_token_expires_in": refresh_token_expires_in,
+                    }
+                )
                 set_integration_context(integration_context)
-                demisto.debug("get_elastic_token - Access token received successfully by refresh token and set to integration context.")
+                demisto.debug(
+                    "get_elastic_token - Access token received successfully by refresh token and set to integration context."
+                )
                 return access_token
-            
+
             # If refresh fails, clear the refresh token to force generating of new token
             demisto.debug("get_elastic_token - refresh fails, a new token will be generated via password grant.")
             integration_context.update({"refresh_token": None, "refresh_token_expires_in": None})
@@ -243,23 +255,30 @@ def get_elastic_token():
 
         print("get_elastic_token - Attempting to get token using grant_type:password")
 
-        payload = {"grant_type" : "password", "username": USERNAME, "password": PASSWORD}
+        payload = {"grant_type": "password", "username": USERNAME, "password": PASSWORD}
         response = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), json=payload, verify=INSECURE)
         if response.status_code == 200:
             now = datetime.now()
             token_data = response.json()
             access_token_expires_in = (now + timedelta(seconds=token_data.get("expires_in"))).strftime("%Y-%m-%dT%H:%M:%SZ")
-            refresh_token_expires_in = (now + timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ") # refresh token has a lifetime of 24 hours
-            
-            integration_context.update({"access_token": token_data.get("access_token"),
-                                        "refresh_token": token_data.get("refresh_token"),
-                                        "access_token_expires_in": access_token_expires_in,
-                                        "refresh_token_expires_in": refresh_token_expires_in
-                                        })
+            refresh_token_expires_in = (now + timedelta(hours=24)).strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            )  # refresh token has a lifetime of 24 hours
+
+            integration_context.update(
+                {
+                    "access_token": token_data.get("access_token"),
+                    "refresh_token": token_data.get("refresh_token"),
+                    "access_token_expires_in": access_token_expires_in,
+                    "refresh_token_expires_in": refresh_token_expires_in,
+                }
+            )
             set_integration_context(integration_context)
-            demisto.debug("get_elastic_token - Access token received successfully via password grant and set to integration context.")
+            demisto.debug(
+                "get_elastic_token - Access token received successfully via password grant and set to integration context."
+            )
             return access_token
-        
+
         demisto.debug(f"Failed to authenticate: {response.status_code}\n{response.text}")
         raise DemistoException(f"Failed to authenticate: {response.status_code}\n{response.text}")
 

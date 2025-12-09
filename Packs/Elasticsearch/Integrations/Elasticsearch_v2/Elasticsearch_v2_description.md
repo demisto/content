@@ -50,10 +50,10 @@ Notes:
 ## Additional Configuration Parameters Details
 
 **Username**
-Use for Basic auth username. Optionally you can use this field as an *API key ID* for *API Key auth*. Example: for an *API Key ID* kQme5aOx enter: _api_key_id:kQme5aOx
+Use for Basic auth username. Optionally you can use this field as an *API key ID* for *API Key auth*. Example: for *API Key ID* kQme5aOx enter: _api_key_id:kQme5aOx
 
 **Password**
-Use for Basic auth password. Optionally you can use this field as an *API key* for *API Key auth*. Example: for an *API Key* ui2lp2axT enter: ui2lp2axT
+Use for Basic auth password. Optionally you can use this field as an *API key* for *API Key auth*. Example: for *API Key* ui2lp2axT enter: ui2lp2axT
 
 **Query String**
 for more information about the Lucene syntax see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax)
