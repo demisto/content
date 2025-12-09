@@ -144,6 +144,35 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 8.11.0
+triggers:
+  - conditions:
+      - name: auth_type
+        operator: equal
+        value: Non-mTLS
+    effects:
+      - name: client_secret
+        action:
+          required: true
+      - name: certificate
+        action:
+          hidden: true
+      - name: private_key
+        action:
+          hidden: true
+  - conditions:
+      - name: auth_type
+        operator: equal
+        value: mTLS
+    effects:
+      - name: client_secret
+        action:
+          hidden: true
+      - name: certificate
+        action:
+          required: true
+      - name: private_key
+        action:
+          required: true
 marketplaces:
 - xsoar
 - marketplacev2
