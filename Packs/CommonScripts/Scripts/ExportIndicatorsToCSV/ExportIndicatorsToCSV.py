@@ -38,52 +38,54 @@ def main():
         "columns": indicator_columns,
     }
 
-    # generate the file
-    post_result = demisto.executeCommand("core-api-post", {"uri": "/indicators/batch/exportToCsv", "body": indicator_body})
-    
-    # Check if the command returned an error
-    if not post_result or not isinstance(post_result, list) or not post_result[0]:
-        return_error("Failed to execute core-api-post command. Result is empty or invalid.")
-    
-    first_result = post_result[0]
-    
-    # Check if the result is an error
-    if is_error(first_result):
-        return_error(f"Error in core-api-post: {get_error(first_result)}")
-    
-    # Extract the response
-    if not isinstance(first_result, dict) or "Contents" not in first_result:
-        return_error(f"Unexpected response format from core-api-post: {first_result}")
-    
-    contents = first_result.get("Contents")
-    if not isinstance(contents, dict) or "response" not in contents:
-        return_error(f"Unexpected Contents format from core-api-post: {contents}")
-    
-    res = contents["response"]
+    # Use internalHttpRequest to make the POST to create the indicators CSV file.
+    post_response = demisto.internalHttpRequest(method="POST", uri="/indicators/batch/exportToCsv", body=indicator_body)
 
-    # download the file and return to the war room
-    get_result = demisto.executeCommand("core-api-get", {"uri": f"/indicators/csv/{res}"})
-    
-    # Check if the command returned an error
-    if not get_result or not isinstance(get_result, list) or not get_result[0]:
-        return_error("Failed to execute core-api-get command. Result is empty or invalid.")
-    
-    first_get_result = get_result[0]
-    
-    # Check if the result is an error
-    if is_error(first_get_result):
-        return_error(f"Error in core-api-get: {get_error(first_get_result)}")
-    
-    # Extract the file response
-    if not isinstance(first_get_result, dict) or "Contents" not in first_get_result:
-        return_error(f"Unexpected response format from core-api-get: {first_get_result}")
-    
-    get_contents = first_get_result.get("Contents")
-    if not isinstance(get_contents, dict) or "response" not in get_contents:
-        return_error(f"Unexpected Contents format from core-api-get: {get_contents}")
-    
-    file = get_contents["response"]
-    demisto.results(fileResult(res, file))
+    # Log POST response headers to see Set-Cookie
+    demisto.debug(f"POST Response Status: {post_response.get('statusCode')}")
+    demisto.debug(f"POST Response Headers: {json.dumps(post_response.get('headers', {}), indent=2)}")
+
+    # Extract and log cookies from Set-Cookie header
+    set_cookie_headers = post_response.get("headers", {}).get("Set-Cookie", [])
+    if set_cookie_headers:
+        demisto.debug(f"Cookies received from POST: {set_cookie_headers}")
+    else:
+        demisto.debug("No Set-Cookie headers in POST response")
+
+    # Check if the request was successful
+    if post_response.get("statusCode") not in [200, 201]:
+        return_error(
+            f"Failed to initiate CSV export. Status: {post_response.get('statusCode')}, Body: {post_response.get('body')}"
+        )
+
+    # Parse the response to get the file ID
+    try:
+        file_id = json.loads(post_response.get("body", "{}"))
+    except (json.JSONDecodeError, KeyError) as e:
+        return_error(f"Failed to parse POST response: {e}")
+
+    demisto.debug(f"File ID from POST response: {file_id}")
+
+    # Use internalHttpRequest to download the file
+    get_response = demisto.internalHttpRequest(method="GET", uri=f"/indicators/csv/{file_id}")
+
+    # Log GET request/response to verify cookies are being sent
+    demisto.debug(f"GET Response Status: {get_response.get('statusCode')}")
+    demisto.debug(f"GET Response Headers: {json.dumps(get_response.get('headers', {}), indent=2)}")
+
+    # Note: The Cookie header sent in the GET request is managed internally by demisto.internalHttpRequest
+    # and may not be visible in the response object, but it's automatically included
+    demisto.debug("Cookies are automatically managed by internalHttpRequest between requests in the same execution")
+
+    # Check if the download was successful
+    if get_response.get("statusCode") != 200:
+        return_error(f"Failed to download CSV file. Status: {get_response.get('statusCode')}, Body: {get_response.get('body')}")
+
+    # Get the file content
+    file_content = get_response.get("body", "")
+
+    # Return the file to the war room
+    demisto.results(fileResult(file_id, file_content))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
