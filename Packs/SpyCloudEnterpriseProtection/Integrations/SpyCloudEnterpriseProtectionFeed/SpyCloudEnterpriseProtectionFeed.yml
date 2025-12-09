@@ -39,7 +39,6 @@ configuration:
 - additionalinfo: |-
     This parameter allows you to define the ending point for a date range query on the spycloud_publish_date field.
     Example: -1days, now, YYYY-MM-DD.
-  defaultvalue: -1days
   display: Until
   hidden: false
   name: until

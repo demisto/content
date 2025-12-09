@@ -34,29 +34,24 @@ class MockResponse:
 
 
 def test_spy_cloud_error_handler():
-    # test case for 429 Limit Exceed
+    # --- 429 should NOT raise an exception now ---
     response = MockResponse(
-        status_code=429,
-        headers={"x-amzn-ErrorType": "LimitExceededException"},
+        status_code=429, headers={"x-amzn-ErrorType": "LimitExceededException"}, json_data={"message": "Rate limit exceeded"}
     )
-    err_msg = "You have exceeded your monthly quota. Kindly contact SpyCloud support."
-    with pytest.raises(DemistoException, match=err_msg):
+
+    # Should return None (as retry mechanism will handle it)
+    assert client.spy_cloud_error_handler(response) is None
+
+    # --- 403 should raise DemistoException with safe msg ---
+    response = MockResponse(
+        status_code=403, headers={"SpyCloud-Error": "Invalid IP"}, json_data={"message": "Invalid IP address"}
+    )
+    with pytest.raises(DemistoException, match="Authorization or IP error"):
         client.spy_cloud_error_handler(response)
 
-    # test case for 403 Invalid IP
-    response = MockResponse(status_code=403, headers={"SpyCloud-Error": "Invalid IP"})
-    with pytest.raises(DemistoException):
-        client.spy_cloud_error_handler(response)
-
-    # test case for 403 Invalid API Key
-    response = MockResponse(status_code=403, headers={"SpyCloud-Error": "Invalid API key"})
-    err_msg = "Authorization Error: The provided API Key for SpyCloud is invalid. Please provide a valid API Key."
-    with pytest.raises(DemistoException, match=err_msg):
-        client.spy_cloud_error_handler(response)
-
-    # test case for other errors
+    # --- Non-403, non-429 (e.g., 500) should raise generic SpyCloud API error ---
     response = MockResponse(status_code=500, json_data={"message": "Internal server error"})
-    with pytest.raises(DemistoException, match="Internal server error"):
+    with pytest.raises(DemistoException, match="SpyCloud API error: Internal server error"):
         client.spy_cloud_error_handler(response)
 
 
