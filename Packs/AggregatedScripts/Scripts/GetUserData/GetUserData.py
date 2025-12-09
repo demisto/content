@@ -405,18 +405,24 @@ def prisma_cloud_get_user(command: Command, additional_fields: bool) -> tuple[li
 def msgraph_user_get(command: Command, additional_fields: bool) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
 
+    properties = demisto.args().get("properties")
+    if properties:
+        command.args["properties"] = f"{properties},ID,Mail"
+
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     user_outputs = []
     for output in entry_context:
-        output_key = get_output_key("Account", output)
-        outputs = get_outputs(output_key, output)
+        output_key_account = get_output_key(output_key="Account", raw_context=output)
+        output_key_msgraph_user = get_output_key(output_key="MSGraphUser", raw_context=output)
+        outputs = get_outputs(output_key_account, output)
+        outputs.update(get_outputs(output_key_msgraph_user, output))
         user_outputs.append(
             create_user(
                 source=command.brand,
                 id=outputs.pop("ID", None),
-                username=outputs.pop("Username", None),
+                username=outputs.pop("Username", None) or outputs.pop("Mail", None),
                 email_address=outputs.pop("Email", {}).get("Address", None),
                 additional_fields=additional_fields,
                 instance=output.get("instance"),
@@ -434,10 +440,13 @@ def msgraph_user_get_manager(command: Command) -> dict[str, Any]:
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     output_key = get_output_key("MSGraphUserManager", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
-    manager_output = {
-        "ManagerDisplayName": outputs.get("Manager", {}).get("DisplayName"),
-        "ManagerEmail": outputs.get("Manager", {}).get("Mail"),
-    }
+
+    manager = outputs.get("Manager", {})
+
+    manager_output = {"ManagerDisplayName": manager.get("DisplayName"), "ManagerEmail": manager.get("Mail")}
+
+    # Remove keys with None values
+    manager_output = {k: v for k, v in manager_output.items() if v is not None}
 
     return manager_output
 

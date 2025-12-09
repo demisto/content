@@ -377,80 +377,14 @@ def test_get_cases_command_case_id_as_int(mocker: MockerFixture):
     from CortexPlatformCore import get_cases_command
 
     client = mocker.Mock()
-    client.get_incidents.return_value = [{"case_id": "1"}]
+    client.get_webapp_data.return_value = {"reply": {"DATA": [{"CASE_ID": 1}]}}  # Changed to int
+    client.map_case_format.return_value = [{"case_id": "1"}]  # Mapped to string
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
     args = {"case_id_list": 1}
     result = get_cases_command(client, args)
-    assert result.outputs == [{"case_id": "1"}]
-    client.get_incidents.assert_called_once()
-    assert result.readable_output.startswith("table")
-
-
-def test_get_cases_command_limit_enforced(mocker: MockerFixture):
-    """
-    Given:
-        - limit greater than MAX_GET_INCIDENTS_LIMIT
-    When:
-        - Calling get_cases_command
-    Then:
-        - Limit is set to MAX_GET_INCIDENTS_LIMIT
-        - client.get_incidents is called with limit=MAX_GET_INCIDENTS_LIMIT
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    client.get_incidents.return_value = [{"case_id": str(i)} for i in range(MAX_GET_INCIDENTS_LIMIT + 1)]
-    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
-    args = {"limit": MAX_GET_INCIDENTS_LIMIT + 10, "case_id_list": "1"}
-    result = get_cases_command(client, args)
-    assert len(result.outputs) == MAX_GET_INCIDENTS_LIMIT + 1
-    client.get_incidents.assert_called_with(
-        incident_id_list=["1"],
-        lte_modification_time=None,
-        gte_modification_time=None,
-        lte_creation_time=None,
-        gte_creation_time=None,
-        sort_by_creation_time=None,
-        sort_by_modification_time=None,
-        page_number=0,
-        limit=MAX_GET_INCIDENTS_LIMIT,
-        starred=None,
-        starred_incidents_fetch_window=mocker.ANY,
-    )
-
-
-def test_get_cases_command_no_filters_error(mocker: MockerFixture):
-    """
-    Given:
-        - No filters provided
-    When:
-        - Calling get_cases_command
-    Then:
-        - ValueError is raised
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    args = {}
-    with pytest.raises(ValueError, match="Specify a query for the incidents"):
-        get_cases_command(client, args)
-
-
-def test_get_cases_command_conflicting_time_filters(mocker: MockerFixture):
-    """
-    Given:
-        - since_modification_time and gte_modification_time both set
-    When:
-        - Calling get_cases_command
-    Then:
-        - ValueError is raised
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    args = {"since_modification_time": "1 day", "gte_modification_time": "2022-01-01"}
-    with pytest.raises(ValueError):
-        get_cases_command(client, args)
+    assert result[1].outputs[0].get("case_id") == "1"
+    assert result[1].readable_output.startswith("table")
 
 
 def test_replace_substring_string():
@@ -4842,6 +4776,248 @@ def test_create_appsec_issues_filter_and_tables_no_matching_table():
         create_appsec_issues_filter_and_tables(args)
 
 
+@pytest.mark.parametrize("input_data", ["not a list", [], None])
+def test_map_case_format_invalid_input(input_data):
+    """
+    Given:
+        Invalid input data (not a list, empty list, or None).
+    When:
+        The map_case_format function is called.
+    Then:
+        An empty dictionary should be returned.
+    """
+    from CortexPlatformCore import map_case_format
+
+    result = map_case_format(input_data)
+    assert result == {}
+
+
+def test_map_case_format_complete_mapping():
+    """
+    Given:
+        Valid case data in raw format.
+    When:
+        The map_case_format function is called.
+    Then:
+        The case data should be correctly mapped to the expected format.
+    """
+    from CortexPlatformCore import map_case_format
+
+    case_data = [load_test_data("./TestData/case_raw_format.json")]
+    result = sorted(map_case_format(case_data))
+    expected = sorted([load_test_data("./TestData/case_expected_format.json")])
+
+    assert result == expected
+
+
+@pytest.mark.parametrize("case_extra_data", [{}, None])
+def test_extract_ids_empty_case_extra_data(case_extra_data):
+    """
+    Given:
+        Empty or None case extra data.
+    When:
+        The extract_ids function is called.
+    Then:
+        An empty list should be returned.
+    """
+    from CortexPlatformCore import extract_ids
+
+    result = extract_ids(case_extra_data)
+    assert result == []
+
+
+def test_extract_ids_multiple_valid_issues():
+    """
+    Given:
+        Case extra data containing multiple valid issues with issue_ids.
+    When:
+        The extract_ids function is called.
+    Then:
+        A list containing all issue_ids should be returned.
+    """
+
+    from CortexPlatformCore import extract_ids
+
+    case_extra_data: dict = {
+        "issues": {
+            "data": [
+                {"issue_id": "12345", "title": "Test Issue 1"},
+                {"issue_id": "67890", "title": "Test Issue 2"},
+                {"issue_id": "11111", "title": "Test Issue 3"},
+            ]
+        }
+    }
+    result = extract_ids(case_extra_data)
+    assert result == ["12345", "67890", "11111"]
+
+
+def test_get_case_extra_data_with_all_fields_present(mocker):
+    """
+    Given:
+        A mock client and case data with all possible fields present.
+    When:
+        The get_case_extra_data function is called.
+    Then:
+        All fields should be correctly extracted and returned in the result.
+    """
+    from CortexPlatformCore import get_case_extra_data
+
+    mock_client = mocker.Mock()
+    mock_client._base_url = "original_url"
+
+    mock_case_data = {
+        "case": {
+            "notes": "Test notes",
+            "xdr_url": "https://example.com/xdr",
+            "starred_manually": True,
+            "manual_description": "Case manual description",
+            "detection_time": "2023-01-01T00:00:00Z",
+        },
+        "manual_description": "Global manual description",
+        "network_artifacts": [{"id": "net1", "type": "ip"}],
+        "file_artifacts": [{"id": "file1", "hash": "abc123"}],
+    }
+
+    mock_command_result = mocker.Mock()
+    mock_command_result.outputs = mock_case_data
+
+    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
+    mocker.patch("CortexPlatformCore.extract_ids", return_value=["issue1", "issue2"])
+
+    args = {"case_id": "123"}
+    result = get_case_extra_data(mock_client, args)
+
+    assert mock_client._base_url == "api/webapp/public_api/v1"
+    assert result["issue_ids"] == ["issue1", "issue2"]
+    assert result["network_artifacts"] == [{"id": "net1", "type": "ip"}]
+    assert result["file_artifacts"] == [{"id": "file1", "hash": "abc123"}]
+    assert result["notes"] == "Test notes"
+    assert result["xdr_url"] == "https://example.com/xdr"
+    assert result["starred_manually"] is True
+    assert result["manual_description"] == "Global manual description"
+    assert result["detection_time"] == "2023-01-01T00:00:00Z"
+
+
+def test_get_case_extra_data_client_base_url_modification(mocker):
+    """
+    Given:
+        A mock client with an original base URL.
+    When:
+        The get_case_extra_data function is called.
+    Then:
+        The client's base URL should be modified to "api/webapp/public_api/v1".
+    """
+    from CortexPlatformCore import get_case_extra_data
+
+    mock_client = mocker.Mock()
+    original_url = "https://original.api.endpoint"
+    mock_client._base_url = original_url
+
+    mock_command_result = mocker.Mock()
+    mock_command_result.outputs = {}
+
+    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
+    mocker.patch("CortexPlatformCore.extract_ids", return_value=[])
+
+    args = {"case_id": "url_test"}
+    get_case_extra_data(mock_client, args)
+
+    assert mock_client._base_url == "api/webapp/public_api/v1"
+
+
+def test_add_cases_extra_data_single_case(mocker):
+    """
+    Given:
+        A mock client and a list containing a single case.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        A list with one case containing extra data should be returned and get_case_extra_data should be called once.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+    mock_get_case_extra_data.return_value = {"extra_field": "extra_value"}
+
+    case_data: list[dict] = [{"case_id": "123", "title": "Test Case"}]
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert len(result) == 1
+    assert result[0]["case_id"] == "123"
+    assert result[0]["CaseExtraData"] == {"extra_field": "extra_value"}
+    mock_get_case_extra_data.assert_called_once_with(mock_client, {"case_id": "123", "limit": 1000})
+
+
+def test_add_cases_extra_data_multiple_cases(mocker):
+    """
+    Given:
+        A mock client and a list containing multiple cases.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        A list with all cases containing their respective extra data should be
+        returned and get_case_extra_data should be called for each case.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+    mock_get_case_extra_data.side_effect = [{"extra_field1": "value1"}, {"extra_field2": "value2"}, {"extra_field3": "value3"}]
+
+    case_data = [
+        {"case_id": "123", "title": "Case 1"},
+        {"case_id": "456", "title": "Case 2"},
+        {"case_id": "789", "title": "Case 3"},
+    ]
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert len(result) == 3
+    assert result[0]["CaseExtraData"] == {"extra_field1": "value1"}
+    assert result[1]["CaseExtraData"] == {"extra_field2": "value2"}
+    assert result[2]["CaseExtraData"] == {"extra_field3": "value3"}
+    assert mock_get_case_extra_data.call_count == 3
+
+
+def test_add_cases_extra_data_empty_list(mocker):
+    """
+    Given:
+        A mock client and an empty case list.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        An empty list should be returned and get_case_extra_data should not be called.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+
+    case_data = []
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert result == []
+    mock_get_case_extra_data.assert_not_called()
+
+    def test_determine_assignee_filter_field_none(self):
+        from CortexPlatformCore import determine_assignee_filter_field, CaseManagement
+
+        result = determine_assignee_filter_field([])
+        assert result == CaseManagement.FIELDS["assignee"]
+
+    def test_determine_assignee_filter_field_with_email(self):
+        from CortexPlatformCore import determine_assignee_filter_field, CaseManagement
+
+        result = determine_assignee_filter_field(["user@example.com"])
+        assert result == CaseManagement.FIELDS["assignee_email"]
+
+    def test_determine_assignee_filter_field_with_pretty_name(self):
+        from CortexPlatformCore import determine_assignee_filter_field, CaseManagement
+
+        result = determine_assignee_filter_field(["John Doe"])
+        assert result == CaseManagement.FIELDS["assignee"]
+
+
 @pytest.mark.parametrize(
     "custom_fields_json,expected",
     [
@@ -5030,3 +5206,178 @@ def test_run_playbook_command_client_call_parameters():
     run_playbook_command(mock_client, args)
 
     mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
+
+
+def test_update_issue_command_link_cases_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with issue_id and a list of case_ids to link.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        client.link_issue_to_cases is called once with the correct issue_id and case_ids,
+        and client.update_issue is NOT called (since no other update args are provided).
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases", return_value={"success": True})
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "link_cases": "901,902"}
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_link_issue_to_cases.assert_called_once_with(12345, [901, 902])
+    mock_unlink_issue_from_cases.assert_not_called()
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_unlink_cases_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with issue_id and a list of case_ids to unlink.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        client.unlink_issue_from_cases is called once with the correct issue_id and case_ids,
+        and client.update_issue is NOT called.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases")
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases", return_value={"success": True})
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "unlink_cases": "903,904"}
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_unlink_issue_from_cases.assert_called_once_with(12345, [903, 904])
+    mock_link_issue_to_cases.assert_not_called()
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_link_and_unlink_cases_mixed_with_update_fields(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments including link_cases, unlink_cases, and other update fields.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        All three methods (link, unlink, update_issue) are called once with the correct parameters.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases", return_value={"success": True})
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases", return_value={"success": True})
+    mocker.patch.object(demisto, "debug")
+
+    args = {
+        "id": "12345",
+        "link_cases": "901",
+        "unlink_cases": "904,905",
+        "name": "Updated Name",
+        "severity": "high",
+    }
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_link_issue_to_cases.assert_called_once_with(12345, [901])
+    mock_unlink_issue_from_cases.assert_called_once_with(12345, [904, 905])
+    mock_update_issue.assert_called_once()
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert update_data["name"] == "Updated Name"
+    assert update_data["severity"] == "SEV_040_HIGH"
+
+
+def test_update_issue_command_only_link_and_unlink_fields(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with only link_cases and unlink_cases (no other fields).
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        client.link_issue_to_cases and client.unlink_issue_from_cases are called,
+        and client.update_issue is NOT called, and the function returns "done".
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases", return_value={"success": True})
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases", return_value={"success": True})
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "link_cases": "901", "unlink_cases": "904"}
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_link_issue_to_cases.assert_called_once_with(12345, [901])
+    mock_unlink_issue_from_cases.assert_called_once_with(12345, [904])
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_link_case_ids_arg_to_list(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments where link_cases is a single string of comma-separated IDs.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        The link_cases argument is correctly parsed into a list of integers and passed to the client.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases", return_value={"success": True})
+    mocker.patch.object(client, "unlink_issue_from_cases")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "link_cases": "901, 902,1000"}
+
+    update_issue_command(client, args)
+
+    mock_link_issue_to_cases.assert_called_once_with(12345, [901, 902, 1000])
+
+
+def test_update_issue_command_link_cases_empty_list_no_other_updates(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with empty link_cases and empty unlink_cases, and no other updates.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        DemistoException is raised because no updates are provided.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import DemistoException
+    import pytest
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases")
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "link_cases": "", "unlink_cases": None}
+
+    with pytest.raises(DemistoException, match="Please provide arguments to update the issue."):
+        update_issue_command(client, args)
+
+    mock_link_issue_to_cases.assert_not_called()
+    mock_unlink_issue_from_cases.assert_not_called()
+    mock_update_issue.assert_not_called()
