@@ -126,11 +126,14 @@ class Client(BaseClient):
 
         return self._http_request(method="GET", url_suffix=uri, params=params)
 
-    def get_finding_comments(self, company_guid, rolledup_observation_id):
+    def get_finding_comments(self, company_guid: str, rolledup_observation_id: str):
         """
         Retrieve finding comments based on its Guid.
 
+        :type company_guid: str
         :param company_guid: guid of the company whose comments need to be retrieved
+
+        :type rolledup_observation_id: str
         :param rolledup_observation_id: rolledup_observation_id of the finding
         """
         encoded_company_guid = encode_string_results(company_guid)
@@ -138,21 +141,25 @@ class Client(BaseClient):
         uri = f"ratings/v1/companies/{encoded_company_guid}/findings/{encoded_rolledup_observation_id}/comments"
         return self._http_request(method="GET", url_suffix=uri)
 
-    def get_remediations(self, params=None):
+    def get_remediations(self, params: dict | None = None):
         """
         Retrieve remediations.
 
+        :type params: dict | None
         :param params: params to be passed to the remediations endpoint
         """
         uri = "ratings/v1/remediations"
         remove_nulls_from_dictionary(params)
         return self._http_request(method="GET", url_suffix=uri, params=params)
 
-    def update_external_status(self, company_guid, body):
+    def update_external_status(self, company_guid: str, body: dict):
         """
         Update external status of a finding.
 
+        :type company_guid: str
         :param company_guid: guid of the company whose findings need to be updated
+
+        :type body: dict
         :param body: body to be passed to the findings endpoint
         """
         uri = f"ratings/v1/remediations/{encode_string_results(company_guid)}"
@@ -163,9 +170,16 @@ class Client(BaseClient):
         """
         Create a finding comment based on its Guid.
 
+        :type company_guid: str
         :param company_guid: guid of the company whose comments need to be retrieved
+
+        :type rolledup_observation_id: str
         :param rolledup_observation_id: rolledup_observation_id of the finding
+
+        :type thread_guid: str
         :param thread_guid: thread_guid of the finding
+
+        :type body: dict
         :param body: body to be passed to the findings endpoint
         """
         encoded_company_guid = encode_string_results(company_guid)
@@ -180,11 +194,13 @@ class Client(BaseClient):
             uri = "annotations/v1/threads"
             return self._http_request(method="POST", url_suffix=uri, params=params, json_data=body, ok_codes=[200, 201])
 
-    def get_users(self, params=None):
+    def get_users(self, params: dict | None = None):
         """
         Retrieve user details from BitSight platform.
 
+        :type params: dict | None
         :param params: Optional parameters to be passed to the users endpoint
+
         :return: Response containing user details
         """
         uri = "ratings/v2/users"
@@ -245,7 +261,7 @@ def camelize_dict_recursively(src):
     return destination
 
 
-def get_mirroring():
+def get_mirroring() -> dict:
     """
     Get the mirroring configuration parameters from the Demisto integration parameters.
 
