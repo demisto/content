@@ -91,12 +91,6 @@ ES_V8_RESPONSE = {
     },
 }
 
-# ES_V9_RESPONSE = {
-#     "took": 11,
-#     "is_partial": False,
-#     "columns": [{"name": "alertDetails.alertuser", "type": "text"}],
-#     "values": [["karl@test.io"]],
-# }
 
 MOCK_ES7_SEARCH_CONTEXT = str(
     {
@@ -632,6 +626,7 @@ def test_elasticsearch_builder_called_with_no_creds(params, mocker):
     assert es_mock.call_args[1].get("api_key") is None
     assert es_mock.call_args[1].get("bearer_auth") is None
 
+
 @pytest.mark.parametrize("params", MOCK_PARAMS)
 def test_elasticsearch_builder_called_with_cred(params, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
@@ -647,8 +642,7 @@ def test_elasticsearch_builder_called_with_cred(params, mocker):
     assert es_mock.call_args[1].get("http_auth")[1] == "password"
     assert es_mock.call_args[1].get("api_key") is None
     assert es_mock.call_args[1].get("bearer_auth") is None
-    
-    
+
     mocker.patch("Elasticsearch_v2.AUTH_TYPE", Elasticsearch_v2.API_KEY_AUTH)
     mocker.patch("Elasticsearch_v2.API_KEY", "api_key_id")
     elasticsearch_builder(None)
@@ -662,6 +656,7 @@ def test_elasticsearch_builder_called_with_cred(params, mocker):
     assert es_mock.call_args[1].get("http_auth") is None
     assert es_mock.call_args[1].get("api_key") is None
     assert es_mock.call_args[1].get("bearer_auth") == "elastic_token"
+
 
 @pytest.mark.parametrize("params", MOCK_PARAMS)
 def test_elasticsearch_parse_subtree(params, mocker):

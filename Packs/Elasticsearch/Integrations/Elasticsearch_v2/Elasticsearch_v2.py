@@ -30,6 +30,7 @@ USERNAME: str = demisto.params().get("credentials", {}).get("identifier")
 PASSWORD: str = demisto.params().get("credentials", {}).get("password")
 API_KEY_ID: str = demisto.params().get("api_key_auth_credentials", {}).get("identifier")
 API_KEY_SECRET: str = demisto.params().get("api_key_auth_credentials", {}).get("password")
+API_KEY = None
 
 # Using Api key auth by username and password fields for backward compatibility.
 if AUTH_TYPE == BASIC_AUTH:
@@ -668,6 +669,7 @@ def test_timestamp_format(timestamp):
 def test_connectivity_auth(proxies):
     demisto.debug("test_connectivity_auth started")
     headers = {"Content-Type": "application/json"}
+    res = None
 
     try:
         if AUTH_TYPE == BASIC_AUTH:
@@ -684,7 +686,7 @@ def test_connectivity_auth(proxies):
             headers["Authorization"] = f"Bearer {get_elastic_token()}"
             res = requests.get(SERVER, verify=INSECURE, headers=headers)
 
-        if res.status_code >= 400:
+        if res and res.status_code >= 400:
             try:
                 res.raise_for_status()
 
@@ -697,7 +699,7 @@ def test_connectivity_auth(proxies):
                     # if it is unknown error - get the message from the error itself
                     return_error(f"Failed to connect. The following error occurred: {e}")
 
-        elif res.status_code == 200:
+        elif res and res.status_code == 200:
             demisto.debug("test_connectivity_auth - Connectivity test successful")
             verify_es_server_version(res.json())
 
