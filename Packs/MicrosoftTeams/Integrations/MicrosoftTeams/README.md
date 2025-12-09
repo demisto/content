@@ -428,11 +428,22 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
 
     *To resolve this:*
 
-    1.Navigate to your instance configuration settings.
-    2.Select the *Bot Type Converted to Single-Tenant parameter* in the advanced settings of the Connect section.
-    3.Run the command !microsoft-teams-auth-reset in the War Room.
+    - Navigate to your instance configuration settings.
+
+    - Select the *Bot Type Converted to Single-Tenant parameter* in the advanced settings of the Connect section.
+
+    - Run the command !microsoft-teams-auth-reset in the War Room.
 
     Your bot should now be properly authorized and functional.
+6. If you see the following error message: `Forbidden: Failed to get license information for the user. Ensure user has a valid Office365 license assigned to them.`, it indicates that the user who approved the authentication URL likely does not have a valid Office 365 license assigned.
+
+    To resolve this, please follow these steps:
+
+    - *Re-authorize*: Re-run the command `!microsoft-teams-generate-login-url` and open the URL that is returned. This time, approve the authorization using a different user who has a valid Office 365 license.
+
+    - *Update Instance*: Copy the new Authorization Code that is generated and paste it into the **Authorization code** parameter in the instance settings.
+
+    - *Reset Token*: Run the command `!microsoft-teams-auth-reset` in the Playground.
 
 ## Download Demisto Bot
 
