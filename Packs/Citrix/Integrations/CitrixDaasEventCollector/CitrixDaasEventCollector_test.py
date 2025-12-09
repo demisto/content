@@ -169,7 +169,7 @@ def test_fetch_events_command_first_run(mocker):
         client,
         "get_operations_with_pagination",
         return_value=(
-            [{"_time": "2025-01-01T00:00:00Z", "Id": "id2"}, {"_time": "2024-01-01T00:00:00Z", "Id": "id1"}],
+            [{"_time": "2025-01-01T00:00:00Z", "Id": "id1"}, {"_time": "2024-01-02T00:00:00Z", "Id": "id2"}],
             {},
         ),
     )
@@ -179,7 +179,7 @@ def test_fetch_events_command_first_run(mocker):
 
     assert len(events) == 2
     assert "LastRun" in last_run
-    assert last_run["LastRun"] == "2025-01-01T00:00:00Z"
+    assert last_run["LastRun"] == "2024-01-02T00:00:00Z"
     assert last_run["Id"] == "id2"
     assert get_operations_mocker.call_args.kwargs["days"] == 0
 
