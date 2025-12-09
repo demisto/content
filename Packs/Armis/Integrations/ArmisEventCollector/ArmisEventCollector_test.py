@@ -767,7 +767,18 @@ class TestMultithreading:
     """Tests for multithreading functionality."""
 
     def test_integration_context_manager_thread_safety(self):
-        """Test that IntegrationContextManager provides thread-safe access."""
+        """Test that IntegrationContextManager provides thread-safe access.
+
+        Given:
+            - An IntegrationContextManager instance.
+            - A test access token to be saved and retrieved.
+        When:
+            - Saving an access token to the context.
+            - Retrieving the access token from the context.
+        Then:
+            - The retrieved token should match the saved token.
+            - Operations should be thread-safe.
+        """
         context_manager = IntegrationContextManager()
 
         # Test get and save access token
@@ -779,7 +790,17 @@ class TestMultithreading:
             assert retrieved_token == test_token
 
     def test_integration_context_manager_concurrent_updates(self):
-        """Test that concurrent updates to context are handled safely."""
+        """Test that concurrent updates to context are handled safely.
+
+        Given:
+            - An IntegrationContextManager instance.
+            - Multiple threads attempting to update the access token concurrently.
+        When:
+            - 5 threads simultaneously save different access tokens to the context.
+        Then:
+            - All 5 updates should complete successfully without race conditions.
+            - The context manager's locking mechanism should prevent data corruption.
+        """
         context_manager = IntegrationContextManager()
         results = []
 
@@ -802,7 +823,17 @@ class TestMultithreading:
         assert len(results) == 5
 
     def test_client_with_context_manager(self, mocker):
-        """Test Client initialization with context manager."""
+        """Test Client initialization with context manager.
+
+        Given:
+            - An IntegrationContextManager instance.
+            - Valid client initialization parameters.
+        When:
+            - Initializing a Client with the context manager.
+        Then:
+            - The client should store the context manager reference.
+            - The client should be initialized with the provided access token.
+        """
         context_manager = IntegrationContextManager()
         mocker.patch.object(Client, "is_valid_access_token", return_value=True)
 
@@ -812,7 +843,18 @@ class TestMultithreading:
         assert client._access_token == "test_token"
 
     def test_client_refresh_token_coordination(self, mocker):
-        """Test that token refresh is coordinated across threads."""
+        """Test that token refresh is coordinated across threads.
+
+        Given:
+            - A Client instance with a context manager.
+            - An expired access token that needs refreshing.
+        When:
+            - Calling refresh_access_token() to get a new token.
+        Then:
+            - A new token should be generated via the API.
+            - The new token should be saved to the integration context.
+            - The token refresh should be coordinated to prevent multiple simultaneous refreshes.
+        """
         context_manager = IntegrationContextManager()
         mocker.patch.object(Client, "is_valid_access_token", return_value=True)
         mocker.patch.object(Client, "get_access_token", return_value="new_token")
@@ -829,7 +871,19 @@ class TestMultithreading:
         mock_save.assert_called_once_with("new_token")
 
     def test_fetch_events_with_multithreading_disabled(self, mocker, dummy_client):
-        """Test that fetch_events works correctly with multithreading disabled."""
+        """Test that fetch_events works correctly with multithreading disabled.
+
+        Given:
+            - Multithreading is disabled (use_multithreading=False).
+            - A single event type (Activities) to fetch.
+            - Mock API response with one activity event.
+        When:
+            - Calling fetch_events() with multithreading disabled.
+        Then:
+            - Events should be fetched sequentially.
+            - The activities should be returned in the events dictionary.
+            - One activity event should be fetched successfully.
+        """
         fetch_start_time = arg_to_datetime("2023-01-01T01:00:00")
         response = [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}]
 
@@ -852,7 +906,21 @@ class TestMultithreading:
         assert len(events["activities"]) == 1
 
     def test_fetch_events_with_multithreading_enabled(self, mocker, dummy_client):
-        """Test that fetch_events works correctly with multithreading enabled."""
+        """Test that fetch_events works correctly with multithreading enabled.
+
+        Given:
+            - Multithreading is enabled (use_multithreading=True).
+            - Multiple event types to fetch (Activities and Devices).
+            - A context manager for thread-safe operations.
+            - Mock API responses for both event types.
+        When:
+            - Calling fetch_events() with multithreading enabled.
+        Then:
+            - Events should be fetched in parallel using ThreadPoolExecutor.
+            - Both Activities and Devices should be fetched successfully.
+            - The access token should be included in next_run.
+            - Context updates should be thread-safe.
+        """
         context_manager = IntegrationContextManager()
         fetch_start_time = arg_to_datetime("2023-01-01T01:00:00")
 
@@ -887,7 +955,20 @@ class TestMultithreading:
         assert "access_token" in next_run
 
     def test_perform_fetch_with_token_refresh_coordination(self, mocker, dummy_client):
-        """Test that perform_fetch coordinates token refresh properly."""
+        """Test that perform_fetch coordinates token refresh properly.
+
+        Given:
+            - A Client with a context manager.
+            - An expired access token that causes the first API call to fail.
+            - A fresh token available in the context.
+        When:
+            - Calling perform_fetch() which encounters an authentication error.
+        Then:
+            - The client should detect the invalid token error.
+            - The client should coordinate token refresh using the context manager.
+            - The request should be retried with the refreshed token.
+            - The second request should succeed and return results.
+        """
         context_manager = IntegrationContextManager()
         dummy_client._context_manager = context_manager
 

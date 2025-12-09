@@ -79,9 +79,39 @@ class IntegrationContextManager:
     """
 
     def __init__(self):
-        """Initialize the context manager with thread locks."""
-        self._lock = threading.RLock()  # Reentrant lock for nested acquisitions
-        self._token_refresh_lock = threading.Lock()  # Separate lock for token refresh coordination
+        """Initialize the context manager with thread locks.
+
+        Two distinct locks are used to separate concerns and optimize performance:
+
+        Lock #1 (_lock): General-purpose RLock for protecting integration context operations
+        - Type: threading.RLock() - Reentrant lock (same thread can acquire multiple times)
+        - Purpose: Protects all read/write operations to integration context (last_run)
+        - Used by: get_access_token(), save_access_token_to_context(), update_event_type_state(), get_last_run()
+        - Why RLock: Methods can call each other while holding the lock without deadlocking
+
+        Lock #2 (_token_refresh_lock): Specialized lock for coordinating token refresh
+        - Type: threading.Lock() - Standard lock (only one thread can hold it)
+        - Purpose: Ensures only ONE thread performs the expensive token refresh API call
+        - Used by: refresh_access_token() method exclusively
+        - Why separate: Prevents multiple threads from calling the token refresh API simultaneously
+
+        How they work together (Double-Check Locking Pattern):
+        When multiple threads detect an expired token:
+        1. Thread A acquires _token_refresh_lock (others wait)
+        2. Thread A checks context using _lock, sees no fresh token
+        3. Thread A calls API to get new token (expensive operation)
+        4. Thread A saves token to context using _lock
+        5. Thread A releases _token_refresh_lock
+        6. Thread B acquires _token_refresh_lock
+        7. Thread B checks context using _lock, finds fresh token from Thread A
+        8. Thread B uses existing token, skips API call (optimization!)
+        9. Thread B releases _token_refresh_lock
+
+        Result: Only 1 API call instead of N calls for N threads, preventing rate limiting
+        and improving performance while maintaining thread safety.
+        """
+        self._lock = threading.RLock()  # Lock #1: General context operations
+        self._token_refresh_lock = threading.Lock()  # Lock #2: Token refresh coordination
 
     def get_access_token(self) -> str | None:
         """Thread-safe retrieval of access token from integration context.
