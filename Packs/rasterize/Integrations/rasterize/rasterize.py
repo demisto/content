@@ -1903,8 +1903,6 @@ def rasterize_extract_command():  # pragma: no cover
         url: Single URL or list of URLs to extract content from
         wait_time: Time in seconds to wait before extracting content (default: DEFAULT_WAIT_TIME)
         max_page_load_time: Maximum time to wait for page load (default: DEFAULT_PAGE_LOAD_TIME)
-        width: Browser window width (default: DEFAULT_WIDTH)
-        height: Browser window height (default: DEFAULT_HEIGHT)
 
     Returns:
         None (uses return_results() to output CommandResults)
@@ -1920,19 +1918,13 @@ def rasterize_extract_command():  # pragma: no cover
     args = demisto.args()
     urls = argToList(args.get("url"))
 
-    width, height = get_width_height(args)
     wait_time = int(args.get("wait_time", DEFAULT_WAIT_TIME))
     navigation_timeout = int(args.get("max_page_load_time", DEFAULT_PAGE_LOAD_TIME))
 
     demisto.debug(f"Starting rasterize-extract for URLs: {urls}")
 
     rasterize_output = perform_rasterize(
-        path=urls,
-        rasterize_type=RasterizeType.TEXT,
-        wait_time=wait_time,
-        navigation_timeout=navigation_timeout,
-        width=width,
-        height=height,
+        path=urls, rasterize_type=RasterizeType.TEXT, wait_time=wait_time, navigation_timeout=navigation_timeout
     )
 
     results = []

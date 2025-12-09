@@ -361,12 +361,6 @@ script:
       name: wait_time
     - description: Maximum time to wait for a page to load (in seconds).
       name: max_page_load_time
-    - defaultValue: 600px
-      description: The page width, for example, 600px. Specify with or without the px suffix.
-      name: width
-    - defaultValue: 800px
-      description: The page height, for example, 800px. Specify with or without the px suffix.
-      name: height
     description: Extracts structured text content from web pages in markdown format.
     name: rasterize-extract
     hidden: true
