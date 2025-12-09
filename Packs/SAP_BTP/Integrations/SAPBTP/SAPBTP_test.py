@@ -293,8 +293,15 @@ def test_parse_integration_params_success(params, expected_auth_type, expected_v
     assert result["client_id"] == MOCK_CLIENT_ID
 
 
-def test_parse_integration_params_mtls_with_insecure():
-    """Tests parse_integration_params allows mTLS with insecure=True (verify=False)."""
+@pytest.mark.parametrize(
+    "insecure,expected_verify",
+    [
+        (True, False),  # insecure=True means verify=False
+        (False, True),  # insecure=False means verify=True
+    ],
+)
+def test_parse_integration_params_mtls_verify_settings(insecure, expected_verify):
+    """Tests parse_integration_params handles mTLS verify settings correctly."""
     params = {
         "url": SERVER_URL,
         "token_url": AUTH_SERVER_URL,
@@ -302,33 +309,13 @@ def test_parse_integration_params_mtls_with_insecure():
         "auth_type": AuthType.MTLS.value,
         "certificate": MOCK_CERTIFICATE,
         "private_key": MOCK_PRIVATE_KEY,
-        "insecure": True,
+        "insecure": insecure,
     }
 
     result = parse_integration_params(params)
 
     assert result["auth_type"] == AuthType.MTLS.value
-    assert result["verify"] is False  # insecure=True means verify=False
-    assert result["certificate"] == MOCK_CERTIFICATE
-    assert result["private_key"] == MOCK_PRIVATE_KEY
-
-
-def test_parse_integration_params_mtls_with_secure():
-    """Tests parse_integration_params allows mTLS with insecure=False (verify=True)."""
-    params = {
-        "url": SERVER_URL,
-        "token_url": AUTH_SERVER_URL,
-        "client_id": MOCK_CLIENT_ID,
-        "auth_type": AuthType.MTLS.value,
-        "certificate": MOCK_CERTIFICATE,
-        "private_key": MOCK_PRIVATE_KEY,
-        "insecure": False,
-    }
-
-    result = parse_integration_params(params)
-
-    assert result["auth_type"] == AuthType.MTLS.value
-    assert result["verify"] is True  # insecure=False means verify=True
+    assert result["verify"] is expected_verify
     assert result["certificate"] == MOCK_CERTIFICATE
     assert result["private_key"] == MOCK_PRIVATE_KEY
 
@@ -338,20 +325,21 @@ def test_parse_integration_params_mtls_with_secure():
 # ========================================
 
 
-def test_client_init_non_mtls(client_non_mtls):
-    """Tests Client initialization for Non-mTLS."""
-    assert client_non_mtls.client_id == MOCK_CLIENT_ID
-    assert client_non_mtls.client_secret == MOCK_CLIENT_SECRET
-    assert client_non_mtls.auth_type == AuthType.NON_MTLS.value
-    assert client_non_mtls.cert_data is None
+@pytest.mark.parametrize(
+    "fixture_name,expected_auth_type,expected_secret,expected_cert",
+    [
+        ("client_non_mtls", AuthType.NON_MTLS.value, MOCK_CLIENT_SECRET, None),
+        ("client_mtls", AuthType.MTLS.value, None, ("/tmp/cert.pem", "/tmp/key.pem")),
+    ],
+)
+def test_client_initialization(fixture_name, expected_auth_type, expected_secret, expected_cert, request):
+    """Tests Client initialization for both Non-mTLS and mTLS."""
+    client = request.getfixturevalue(fixture_name)
 
-
-def test_client_init_mtls(client_mtls):
-    """Tests Client initialization for mTLS."""
-    assert client_mtls.client_id == MOCK_CLIENT_ID
-    assert client_mtls.client_secret is None
-    assert client_mtls.auth_type == AuthType.MTLS.value
-    assert client_mtls.cert_data == ("/tmp/cert.pem", "/tmp/key.pem")
+    assert client.client_id == MOCK_CLIENT_ID
+    assert client.client_secret == expected_secret
+    assert client.auth_type == expected_auth_type
+    assert client.cert_data == expected_cert
 
 
 # ========================================
@@ -572,23 +560,17 @@ def test_http_request(
         assert result == expected_result
 
 
-def test_http_request_auth_error_handling(mocker, capfd, client_non_mtls):
+@pytest.mark.parametrize(
+    "error_code,error_message",
+    [
+        ("401", "Error [401] - Unauthorized"),
+        ("403", "Error [403] - Forbidden"),
+    ],
+)
+def test_http_request_auth_error_handling(mocker, capfd, client_non_mtls, error_code, error_message):
     """Tests http_request properly handles 401/403 authentication errors."""
     mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-
-    # Mock _http_request to raise 401 error
-    mocker.patch.object(client_non_mtls, "_http_request", side_effect=DemistoException("Error [401] - Unauthorized"))
-
-    with capfd.disabled(), pytest.raises(DemistoException, match="Authentication error"):
-        client_non_mtls.http_request("GET", "/test")
-
-
-def test_http_request_403_error_handling(mocker, capfd, client_non_mtls):
-    """Tests http_request properly handles 403 Forbidden errors."""
-    mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-
-    # Mock _http_request to raise 403 error
-    mocker.patch.object(client_non_mtls, "_http_request", side_effect=DemistoException("Error [403] - Forbidden"))
+    mocker.patch.object(client_non_mtls, "_http_request", side_effect=DemistoException(error_message))
 
     with capfd.disabled(), pytest.raises(DemistoException, match="Authentication error"):
         client_non_mtls.http_request("GET", "/test")
@@ -692,86 +674,86 @@ def test_get_formatted_utc_time_invalid_date():
 # ========================================
 
 
-def test_get_audit_log_events_first_page(mocker, client_non_mtls):
-    """Tests get_audit_log_events fetches first page correctly."""
-    mock_response_body = [{"uuid": "event1", "time": "2024-01-01T00:00:00Z"}]
-    mock_response_headers = {"Paging": "handle=next_page_handle"}
-
-    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
-
-    events, next_handle = client_non_mtls.get_audit_log_events(created_after="2024-01-01T00:00:00Z", limit=100)
-
-    assert len(events) == 1
-    assert events[0]["uuid"] == "event1"
-    assert next_handle == "next_page_handle"
-
-
-def test_get_audit_log_events_with_pagination_handle(mocker, client_non_mtls):
-    """Tests get_audit_log_events uses pagination handle."""
-    mock_response_body = [{"uuid": "event2"}]
-    mock_response_headers: dict[str, str] = {}
-
-    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
+@pytest.mark.parametrize(
+    "response_body,response_headers,pagination_handle,expected_count,expected_next_handle,expected_first_uuid",
+    [
+        # First page with pagination
+        (
+            [{"uuid": "event1", "time": "2024-01-01T00:00:00Z"}],
+            {"Paging": "handle=next_page_handle"},
+            None,
+            1,
+            "next_page_handle",
+            "event1",
+        ),
+        # Using pagination handle (last page)
+        (
+            [{"uuid": "event2"}],
+            {},
+            "existing_handle",
+            1,
+            None,
+            "event2",
+        ),
+        # Response with 'results' key
+        (
+            {"results": [{"uuid": "event1"}]},
+            {},
+            None,
+            1,
+            None,
+            "event1",
+        ),
+        # Response with nested 'd.results' key
+        (
+            {"d": {"results": [{"uuid": "event1"}, {"uuid": "event2"}]}},
+            {},
+            None,
+            2,
+            None,
+            "event1",
+        ),
+        # Single event with message_uuid
+        (
+            {"message_uuid": "msg123", "uuid": "event1", "data": "test"},
+            {},
+            None,
+            1,
+            None,
+            "event1",
+        ),
+        # Empty response
+        (
+            {"results": []},
+            {},
+            None,
+            0,
+            None,
+            None,
+        ),
+    ],
+)
+def test_get_audit_log_events_scenarios(
+    mocker,
+    client_non_mtls,
+    response_body,
+    response_headers,
+    pagination_handle,
+    expected_count,
+    expected_next_handle,
+    expected_first_uuid,
+):
+    """Tests get_audit_log_events handles various response scenarios."""
+    mocker.patch.object(client_non_mtls, "http_request", return_value=(response_body, response_headers))
 
     events, next_handle = client_non_mtls.get_audit_log_events(
-        created_after="2024-01-01T00:00:00Z", limit=100, pagination_handle="existing_handle"
+        created_after="2024-01-01T00:00:00Z", limit=100, pagination_handle=pagination_handle
     )
 
-    assert len(events) == 1
-    assert next_handle is None
-
-
-def test_get_audit_log_events_response_with_results_key(mocker, client_non_mtls):
-    """Tests get_audit_log_events handles response with 'results' key."""
-    mock_response_body = {"results": [{"uuid": "event1"}]}
-    mock_response_headers: dict[str, str] = {}
-
-    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
-
-    events, _ = client_non_mtls.get_audit_log_events(created_after="2024-01-01T00:00:00Z", limit=100)
-
-    assert len(events) == 1
-    assert events[0]["uuid"] == "event1"
-
-
-def test_get_audit_log_events_response_with_nested_results(mocker, client_non_mtls):
-    """Tests get_audit_log_events handles response with nested 'd.results' key."""
-    mock_response_body = {"d": {"results": [{"uuid": "event1"}, {"uuid": "event2"}]}}
-    mock_response_headers: dict[str, str] = {}
-
-    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
-
-    events, _ = client_non_mtls.get_audit_log_events(created_after="2024-01-01T00:00:00Z", limit=100)
-
-    assert len(events) == 2
-    assert events[0]["uuid"] == "event1"
-    assert events[1]["uuid"] == "event2"
-
-
-def test_get_audit_log_events_single_event_with_message_uuid(mocker, client_non_mtls):
-    """Tests get_audit_log_events handles single event response with message_uuid."""
-    mock_response_body = {"message_uuid": "msg123", "uuid": "event1", "data": "test"}
-    mock_response_headers: dict[str, str] = {}
-
-    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
-
-    events, _ = client_non_mtls.get_audit_log_events(created_after="2024-01-01T00:00:00Z", limit=100)
-
-    assert len(events) == 1
-    assert events[0]["message_uuid"] == "msg123"
-    assert events[0]["uuid"] == "event1"
-
-
-def test_get_audit_log_events_empty_response(mocker, client_non_mtls):
-    """Tests get_audit_log_events handles empty response gracefully."""
-    mock_response_body: dict[str, list] = {"results": []}
-    mock_response_headers: dict[str, str] = {}
-
-    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
-
-    events, _ = client_non_mtls.get_audit_log_events(created_after="2024-01-01T00:00:00Z", limit=100)
-
-    assert len(events) == 0
+    assert len(events) == expected_count
+    assert next_handle == expected_next_handle
+    if expected_count > 0 and expected_first_uuid:
+        assert events[0]["uuid"] == expected_first_uuid
 
 
 @pytest.mark.parametrize(
@@ -791,27 +773,18 @@ def test_extract_pagination_handle(client_non_mtls, paging_header, expected_hand
     assert result == expected_handle
 
 
-def test_extract_pagination_handle_case_insensitive(client_non_mtls):
-    """Tests _extract_pagination_handle handles lowercase header name."""
-    headers = {"paging": "handle=test123"}
+@pytest.mark.parametrize(
+    "headers,expected_result,description",
+    [
+        ({"paging": "handle=test123"}, "test123", "lowercase header name"),
+        ({"Paging": "handle="}, "", "malformed header (empty value)"),
+        ({"Paging": "handle=abc=def=123"}, "abc=def=123", "multiple equals signs"),
+    ],
+)
+def test_extract_pagination_handle_special_cases(client_non_mtls, headers, expected_result, description):
+    """Tests _extract_pagination_handle handles special cases."""
     result = client_non_mtls._extract_pagination_handle(headers)
-    assert result == "test123"
-
-
-def test_extract_pagination_handle_malformed_header(client_non_mtls):
-    """Tests _extract_pagination_handle handles malformed header gracefully."""
-    headers = {"Paging": "handle="}
-    result = client_non_mtls._extract_pagination_handle(headers)
-    # Should return empty string after split, which is stripped
-    assert result == ""
-
-
-def test_extract_pagination_handle_multiple_equals(client_non_mtls):
-    """Tests _extract_pagination_handle handles multiple equals signs."""
-    headers = {"Paging": "handle=abc=def=123"}
-    result = client_non_mtls._extract_pagination_handle(headers)
-    # Should return everything after first 'handle='
-    assert result == "abc=def=123"
+    assert result == expected_result, f"Failed for: {description}"
 
 
 # ========================================
