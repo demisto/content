@@ -8,8 +8,8 @@ def normalize_tags(indicators):
     """Normalize tags in indicators by converting to sorted lists for comparison."""
     normalized = deepcopy(indicators)
     for indicator in normalized:
-        if tags := indicator.get('customFields', {}).get('tags'):
-            indicator['customFields']['tags'] = sorted(tags)
+        if tags := indicator.get("customFields", {}).get("tags"):
+            indicator["customFields"]["tags"] = sorted(tags)
     return normalized
 
 
