@@ -7,15 +7,13 @@ comment: Get the overall score for the indicator as calculated by DBot.
 commonfields:
   id: GetIndicatorDBotScoreFromCache
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: GetIndicatorDBotScoreFromCache
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
-subtype: python3
 tags: []
-type: python
+type: javascript
 fromversion: 6.0.0
 tests:
 - GetIndicatorDBotScoreFromCache-Test

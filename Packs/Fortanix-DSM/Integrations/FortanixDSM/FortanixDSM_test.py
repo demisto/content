@@ -51,40 +51,37 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 import json
-import io
+
 import pytest
 from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 def test_integration(requests_mock):
-    from FortanixDSM import Client, test_module, get_headers
-    url = 'https://fortanix.test'
-    path = 'sys/v1/session/auth'
+    from FortanixDSM import Client, get_headers, test_module
+
+    url = "https://fortanix.test"
+    path = "sys/v1/session/auth"
 
     mock_response = {
-        'token_type': 'Bearer',
-        'expires_in': 120,
-        'entity_id': 'some_account_id',
-        'access_token': 'some_bearer_token'
+        "token_type": "Bearer",
+        "expires_in": 120,
+        "entity_id": "some_account_id",
+        "access_token": "some_bearer_token",
     }
 
-    requests_mock.post(f'{url}/{path}', json=mock_response)
+    requests_mock.post(f"{url}/{path}", json=mock_response)
 
-    client = Client(
-        base_url=url,
-        verify=False,
-        headers=get_headers(None, None, 'some_api_key')
-    )
+    client = Client(base_url=url, verify=False, headers=get_headers(None, None, "some_api_key"))
 
     response = test_module(client)
-    assert response == 'ok'
+    assert response == "ok"
 
-    requests_mock.post(f'{url}/{path}')
+    requests_mock.post(f"{url}/{path}")
     with pytest.raises(DemistoException):
         response = test_module(client)
         assert not response
@@ -107,65 +104,44 @@ def test_list_secrets(requests_mock):
 
     """
     from FortanixDSM import Client, list_secrets_command
-    url = 'https://fortanix.test'
-    path = 'crypto/v1/keys'
-    name = 'secret 101'
-    kid = '7a161a3f-8d53-42de-80cd-92fb017c5a12'
-    gid = '07f85883-adaf-4a6c-a040-ffed46dfd349'
-    params = f'obj_type=SECRET&sort=name%3Aasc&group_id={gid}'
+
+    url = "https://fortanix.test"
+    path = "crypto/v1/keys"
+    name = "secret 101"
+    kid = "7a161a3f-8d53-42de-80cd-92fb017c5a12"
+    gid = "07f85883-adaf-4a6c-a040-ffed46dfd349"
+    params = f"obj_type=SECRET&sort=name%3Aasc&group_id={gid}"
 
     mock_response = [
-        {
-            'name': name,
-            'kid': kid,
-            'group_id': gid,
-            'state': 'Active',
-            'enabled': True
-        },
-        {
-            'name': name,
-            'kid': kid,
-            'group_id': gid,
-            'state': 'Active',
-            'enabled': False
-        }
+        {"name": name, "kid": kid, "group_id": gid, "state": "Active", "enabled": True},
+        {"name": name, "kid": kid, "group_id": gid, "state": "Active", "enabled": False},
     ]
-    requests_mock.get(f'{url}/{path}?{params}', json=mock_response)
+    requests_mock.get(f"{url}/{path}?{params}", json=mock_response)
 
-    client = Client(
-        base_url=url,
-        verify=False,
-        headers={
-            'Authentication': 'Basic some_api_key'
-        }
-    )
+    client = Client(base_url=url, verify=False, headers={"Authentication": "Basic some_api_key"})
 
-    args = {
-        'group_id': gid,
-        'state': 'Active',
-        'page': 0
-    }
+    args = {"group_id": gid, "state": "Active", "page": 0}
 
     response = list_secrets_command(client, args)
 
-    assert response.outputs_prefix == 'Fortanix.Secret'
-    '''
+    assert response.outputs_prefix == "Fortanix.Secret"
+    """
     mocking a single secret response here, but;
     for a list of secrets, the response from the request
     needs to have each secret.state defined and the
     method response differs from the request response.
-    '''
+    """
     mock_response = [
         {
-            'Name': name,
-            'ID': kid,
-            'Group': gid,
+            "Name": name,
+            "ID": kid,
+            "Group": gid,
         },
         {
-            'Name': name,
-            'ID': kid,
-            'Group': gid,
-        }
+            "Name": name,
+            "ID": kid,
+            "Group": gid,
+        },
     ]
     assert response.outputs == mock_response
 
@@ -187,44 +163,32 @@ def test_get_secret_metadata(requests_mock):
 
     """
     from FortanixDSM import Client, list_secrets_command
-    url = 'https://fortanix.test'
-    path = 'crypto/v1/keys'
-    name = 'secret 101'
-    kid = '7a161a3f-8d53-42de-80cd-92fb017c5a12'
-    gid = '07f85883-adaf-4a6c-a040-ffed46dfd349'
-    params = 'obj_type=SECRET&sort=name%3Aasc'
 
-    mock_response = {
-        'name': name,
-        'kid': kid,
-        'group_id': gid,
-        'obj_type': 'SECRET'
-    }
+    url = "https://fortanix.test"
+    path = "crypto/v1/keys"
+    name = "secret 101"
+    kid = "7a161a3f-8d53-42de-80cd-92fb017c5a12"
+    gid = "07f85883-adaf-4a6c-a040-ffed46dfd349"
+    params = "obj_type=SECRET&sort=name%3Aasc"
 
-    requests_mock.get(f'{url}/{path}/{kid}?{params}', json=mock_response)
+    mock_response = {"name": name, "kid": kid, "group_id": gid, "obj_type": "SECRET"}
 
-    client = Client(
-        base_url=url,
-        verify=False,
-        headers={
-            'Authentication': 'Basic some_api_key'
-        }
-    )
+    requests_mock.get(f"{url}/{path}/{kid}?{params}", json=mock_response)
 
-    args = {
-        'kid': kid
-    }
+    client = Client(base_url=url, verify=False, headers={"Authentication": "Basic some_api_key"})
+
+    args = {"kid": kid}
 
     response = list_secrets_command(client, args)
 
-    assert response.outputs_prefix == 'Fortanix.Secret'
+    assert response.outputs_prefix == "Fortanix.Secret"
     assert response.outputs == mock_response
 
-    args['page'] = 2
-    args['state'] = 'deleted'
+    args["page"] = 2
+    args["state"] = "deleted"
     response = list_secrets_command(client, args, gid)
 
-    assert response.outputs_prefix == 'Fortanix.Secret'
+    assert response.outputs_prefix == "Fortanix.Secret"
     assert response.outputs == mock_response
 
 
@@ -245,28 +209,21 @@ def test_no_secrets(requests_mock):
 
     """
     from FortanixDSM import Client, list_secrets_command
-    url = 'https://fortanix.test'
-    path = 'crypto/v1/keys'
-    name = 'secret 101'
-    params = 'obj_type=SECRET&sort=name%3Aasc'
 
-    requests_mock.get(f'{url}/{path}?{params}', json={})
+    url = "https://fortanix.test"
+    path = "crypto/v1/keys"
+    name = "secret 101"
+    params = "obj_type=SECRET&sort=name%3Aasc"
 
-    client = Client(
-        base_url=url,
-        verify=False,
-        headers={
-            'Authentication': 'Basic some_api_key'
-        }
-    )
+    requests_mock.get(f"{url}/{path}?{params}", json={})
 
-    args = {
-        'name': name
-    }
+    client = Client(base_url=url, verify=False, headers={"Authentication": "Basic some_api_key"})
+
+    args = {"name": name}
 
     response = list_secrets_command(client, args)
 
-    assert response.outputs_prefix == 'No secrets found'
+    assert response.outputs_prefix == "No secrets found"
     assert response.outputs == {}
 
 
@@ -287,30 +244,23 @@ def test_fetch_secret(requests_mock):
 
     """
     from FortanixDSM import Client, fetch_secret_command
-    url = 'https://fortanix.test'
-    path = 'crypto/v1/keys/export'
-    kid = '7a161a3f-8d53-42de-80cd-92fb017c5a12'
-    value = 'SGVsbG8gV29ybGQ='
 
-    mock_response = {'value': value}
-    requests_mock.post(f'{url}/{path}', json=mock_response)
+    url = "https://fortanix.test"
+    path = "crypto/v1/keys/export"
+    kid = "7a161a3f-8d53-42de-80cd-92fb017c5a12"
+    value = "SGVsbG8gV29ybGQ="
 
-    client = Client(
-        base_url=url,
-        verify=False,
-        headers={
-            'Authentication': 'Basic some_api_key'
-        }
-    )
+    mock_response = {"value": value}
+    requests_mock.post(f"{url}/{path}", json=mock_response)
 
-    args = {
-        'kid': kid
-    }
+    client = Client(base_url=url, verify=False, headers={"Authentication": "Basic some_api_key"})
+
+    args = {"kid": kid}
 
     response = fetch_secret_command(client, args)
 
-    assert response.outputs_prefix == 'Fortanix.Secret.Value'
-    mock_response = [{'Value': 'Hello World'}]
+    assert response.outputs_prefix == "Fortanix.Secret.Value"
+    mock_response = [{"Value": "Hello World"}]
     assert response.outputs == mock_response
 
     with pytest.raises(DemistoException):
@@ -336,54 +286,40 @@ def test_new_secret(requests_mock):
 
     """
     from FortanixDSM import Client, import_secret_command
-    url = 'https://fortanix.test'
-    path = 'crypto/v1/keys'
-    gid = '07f85883-adaf-4a6c-a040-ffed46dfd349'
-    kid = '7a161a3f-8d53-42de-80cd-92fb017c5a12'
-    aid = '0a9bcbbe-1919-4c57-89e4-b521f4d9ff28'
-    name = 'new secr3t'
 
-    mock_response = {
-        'kid': kid,
-        'name': name,
-        'acct_id': aid,
-        'obj_type': 'SECRET',
-        'never_exportable': False,
-        'state': 'Active'
-    }
+    url = "https://fortanix.test"
+    path = "crypto/v1/keys"
+    gid = "07f85883-adaf-4a6c-a040-ffed46dfd349"
+    kid = "7a161a3f-8d53-42de-80cd-92fb017c5a12"
+    aid = "0a9bcbbe-1919-4c57-89e4-b521f4d9ff28"
+    name = "new secr3t"
 
-    requests_mock.put(f'{url}/{path}', json=mock_response)
+    mock_response = {"kid": kid, "name": name, "acct_id": aid, "obj_type": "SECRET", "never_exportable": False, "state": "Active"}
 
-    client = Client(
-        base_url=url,
-        verify=False,
-        headers={
-            'Authentication': 'Basic some_api_key'
-        }
-    )
+    requests_mock.put(f"{url}/{path}", json=mock_response)
+
+    client = Client(base_url=url, verify=False, headers={"Authentication": "Basic some_api_key"})
 
     args = {
-        'name': name,
-        'value': 'rand0m',
-        'metadata': {
-            'key': 'attribute'
-        },
+        "name": name,
+        "value": "rand0m",
+        "metadata": {"key": "attribute"},
     }
 
     response = import_secret_command(client, args, gid)
 
-    assert response.outputs_prefix == 'Fortanix.Secret'
+    assert response.outputs_prefix == "Fortanix.Secret"
     assert response.outputs == mock_response
 
     with pytest.raises(DemistoException):
-        response = import_secret_command(client, {'name': name})
+        response = import_secret_command(client, {"name": name})
         assert not response
 
-        response = import_secret_command(client, {'value': 'val'})
+        response = import_secret_command(client, {"value": "val"})
         assert not response
 
-        requests_mock.put(f'{url}/{path}')
-        response = import_secret_command(client, {'name': name, 'value': 'val'})
+        requests_mock.put(f"{url}/{path}")
+        response = import_secret_command(client, {"name": name, "value": "val"})
         assert not response
 
 
@@ -405,43 +341,27 @@ def test_rotate_secret(requests_mock):
 
     """
     from FortanixDSM import Client, import_secret_command
-    url = 'https://fortanix.test'
-    path = 'crypto/v1/keys/rekey'
-    kid = '7a161a3f-8d53-42de-80cd-92fb017c5a12'
-    aid = '0a9bcbbe-1919-4c57-89e4-b521f4d9ff28'
-    name = 'new secr3t'
 
-    mock_response = {
-        'kid': kid,
-        'name': name,
-        'acct_id': aid,
-        'obj_type': 'SECRET',
-        'never_exportable': False,
-        'state': 'Active'
-    }
+    url = "https://fortanix.test"
+    path = "crypto/v1/keys/rekey"
+    kid = "7a161a3f-8d53-42de-80cd-92fb017c5a12"
+    aid = "0a9bcbbe-1919-4c57-89e4-b521f4d9ff28"
+    name = "new secr3t"
 
-    requests_mock.post(f'{url}/{path}', json=mock_response)
+    mock_response = {"kid": kid, "name": name, "acct_id": aid, "obj_type": "SECRET", "never_exportable": False, "state": "Active"}
 
-    client = Client(
-        base_url=url,
-        verify=False,
-        headers={
-            'Authentication': 'Basic some_api_key'
-        }
-    )
+    requests_mock.post(f"{url}/{path}", json=mock_response)
 
-    args = {
-        'name': name,
-        'value': 'rand0m',
-        'metadata': 'key1=attr1,key2=attr2'
-    }
+    client = Client(base_url=url, verify=False, headers={"Authentication": "Basic some_api_key"})
+
+    args = {"name": name, "value": "rand0m", "metadata": "key1=attr1,key2=attr2"}
 
     response = import_secret_command(client, args, None, True)
 
-    assert response.outputs_prefix == 'Fortanix.Secret'
+    assert response.outputs_prefix == "Fortanix.Secret"
     assert response.outputs == mock_response
 
-    requests_mock.post(f'{url}/{path}')
+    requests_mock.post(f"{url}/{path}")
     with pytest.raises(DemistoException):
         response = import_secret_command(client, args, None, True)
         assert not response
@@ -464,38 +384,29 @@ def test_delete_secret(requests_mock):
 
     """
     from FortanixDSM import Client, delete_secret_command
-    url = 'https://fortanix.test'
-    path = 'crypto/v1/keys'
-    kid = '7a161a3f-8d53-42de-80cd-92fb017c5a12'
 
-    mock_response = [{
-        'Result': 'OK'
-    }]
+    url = "https://fortanix.test"
+    path = "crypto/v1/keys"
+    kid = "7a161a3f-8d53-42de-80cd-92fb017c5a12"
 
-    requests_mock.delete(f'{url}/{path}/{kid}', json={})
+    mock_response = [{"Result": "OK"}]
 
-    client = Client(
-        base_url=url,
-        verify=False,
-        headers={
-            'Authentication': 'Basic some_api_key'
-        }
-    )
+    requests_mock.delete(f"{url}/{path}/{kid}", json={})
 
-    args = {
-        'kid': kid
-    }
+    client = Client(base_url=url, verify=False, headers={"Authentication": "Basic some_api_key"})
+
+    args = {"kid": kid}
 
     response = delete_secret_command(client, args)
 
-    assert response.outputs_prefix == 'Fortanix.Secret.Result'
+    assert response.outputs_prefix == "Fortanix.Secret.Result"
     assert response.outputs == mock_response
 
     with pytest.raises(DemistoException):
         response = delete_secret_command(client, {})
         assert not response
 
-        requests_mock.delete(f'{url}/{path}/{kid}', json={})
+        requests_mock.delete(f"{url}/{path}/{kid}", json={})
         response = delete_secret_command(client, args)
         assert response.outputs == {}
 
@@ -518,43 +429,33 @@ def test_invoke_plugin(requests_mock):
 
     """
     from FortanixDSM import Client, invoke_plugin_command
-    url = 'https://fortanix.test'
-    path = 'sys/v1/plugins'
-    pid = '3599796b-7b18-49c3-aad8-9758af24fbf9'
 
-    mock_response = {
-        'plugin_output': 'Plugin_value',
-        'another_key': True,
-        'numeric_key': 90210
-    }
+    url = "https://fortanix.test"
+    path = "sys/v1/plugins"
+    pid = "3599796b-7b18-49c3-aad8-9758af24fbf9"
 
-    requests_mock.post(f'{url}/{path}/{pid}', json=mock_response)
+    mock_response = {"plugin_output": "Plugin_value", "another_key": True, "numeric_key": 90210}
 
-    client = Client(
-        base_url=url,
-        verify=False,
-        headers={
-            'Authentication': 'Basic some_api_key'
-        }
-    )
+    requests_mock.post(f"{url}/{path}/{pid}", json=mock_response)
 
-    args = {
-        'pid': pid,
-        'input': 'random'
-    }
+    client = Client(base_url=url, verify=False, headers={"Authentication": "Basic some_api_key"})
+
+    args = {"pid": pid, "input": "random"}
 
     response = invoke_plugin_command(client, args)
 
-    assert response.outputs_prefix == 'Fortanix.Plugin.Output'
+    assert response.outputs_prefix == "Fortanix.Plugin.Output"
     assert response.outputs == [mock_response]
 
-    args['input'] = ("eyJraWQiOiAiN2ExNjFhM2YtOGQ1My00MmRlLTgwY"
-                     "2QtOTJmYjAxN2M1YTEyIiwgImNpcGhlciI6ICJ1Mk"
-                     "tNY0FVRjFqc2lmSmZoOTl1V3F3PT0iLCAiaXYiOiAi"
-                     "cjdIZUhkdUhTWjFJckNDNnM3TUcwdz09IiwgIm1vZG"
-                     "UiOiAiQ0JDIn0=")
+    args["input"] = (
+        "eyJraWQiOiAiN2ExNjFhM2YtOGQ1My00MmRlLTgwY"
+        "2QtOTJmYjAxN2M1YTEyIiwgImNpcGhlciI6ICJ1Mk"
+        "tNY0FVRjFqc2lmSmZoOTl1V3F3PT0iLCAiaXYiOiAi"
+        "cjdIZUhkdUhTWjFJckNDNnM3TUcwdz09IiwgIm1vZG"
+        "UiOiAiQ0JDIn0="
+    )
     response = invoke_plugin_command(client, args)
-    assert response.outputs_prefix == 'Fortanix.Plugin.Output'
+    assert response.outputs_prefix == "Fortanix.Plugin.Output"
     assert response.outputs == [mock_response]
 
     with pytest.raises(DemistoException):
@@ -581,41 +482,28 @@ def test_encrypt(requests_mock):
 
     """
     from FortanixDSM import Client, encrypt_command
-    url = 'https://fortanix.test'
-    path = 'crypto/v1/encrypt'
-    kid = '7a161a3f-8d53-42de-80cd-92fb017c5a12'
 
-    mock_response = {
-        'kid': kid,
-        'cipher': 'u2KMcAUF1jsifJfh99uWqw==',
-        'iv': 'r7HeHduHSZ1IrCC6s7MG0w=='
-    }
+    url = "https://fortanix.test"
+    path = "crypto/v1/encrypt"
+    kid = "7a161a3f-8d53-42de-80cd-92fb017c5a12"
 
-    requests_mock.post(f'{url}/{path}', json=mock_response)
+    mock_response = {"kid": kid, "cipher": "u2KMcAUF1jsifJfh99uWqw==", "iv": "r7HeHduHSZ1IrCC6s7MG0w=="}
 
-    client = Client(
-        base_url=url,
-        verify=False,
-        headers={
-            'Authentication': 'Basic some_api_key'
-        }
-    )
+    requests_mock.post(f"{url}/{path}", json=mock_response)
 
-    args = {
-        'key': 'key_name',
-        'data': 'Hello World',
-        'mode': 'CBC'
-    }
+    client = Client(base_url=url, verify=False, headers={"Authentication": "Basic some_api_key"})
+
+    args = {"key": "key_name", "data": "Hello World", "mode": "CBC"}
 
     response = encrypt_command(client, args)
 
-    cipher = ("eyJraWQiOiAiN2ExNjFhM2YtOGQ1My00MmRlLTgwY2QtOTJmYjAxN2M1YTEyIi"
-              "wgImNpcGhlciI6ICJ1MktNY0FVRjFqc2lmSmZoOTl1V3F3PT0iLCAiaXYiOiAi"
-              "cjdIZUhkdUhTWjFJckNDNnM3TUcwdz09IiwgIm1vZGUiOiAiQ0JDIn0=")
-    assert response.outputs_prefix == 'Fortanix.Data.Cipher'
-    assert response.outputs == [{
-        'Cipher': cipher
-    }]
+    cipher = (
+        "eyJraWQiOiAiN2ExNjFhM2YtOGQ1My00MmRlLTgwY2QtOTJmYjAxN2M1YTEyIi"
+        "wgImNpcGhlciI6ICJ1MktNY0FVRjFqc2lmSmZoOTl1V3F3PT0iLCAiaXYiOiAi"
+        "cjdIZUhkdUhTWjFJckNDNnM3TUcwdz09IiwgIm1vZGUiOiAiQ0JDIn0="
+    )
+    assert response.outputs_prefix == "Fortanix.Data.Cipher"
+    assert response.outputs == [{"Cipher": cipher}]
 
     with pytest.raises(DemistoException):
         response = encrypt_command(client, {})
@@ -639,74 +527,72 @@ def test_decrypt(requests_mock):
 
     """
     from FortanixDSM import Client, decrypt_command
-    url = 'https://fortanix.test'
-    path = 'crypto/v1/decrypt'
-    kid = '7a161a3f-8d53-42de-80cd-92fb017c5a12'
 
-    cipher = ("eyJraWQiOiAiN2ExNjFhM2YtOGQ1My00MmRlLTgwY2QtOTJmYjAxN2M1YTEyIi"
-              "wgImNpcGhlciI6ICJ1MktNY0FVRjFqc2lmSmZoOTl1V3F3PT0iLCAiaXYiOiAi"
-              "cjdIZUhkdUhTWjFJckNDNnM3TUcwdz09IiwgIm1vZGUiOiAiQ0JDIn0=")
-    mock_response = {
-        'kid': kid,
-        'plain': 'u2KMcAUF1jsifJfh99uWqw==',
-    }
+    url = "https://fortanix.test"
+    path = "crypto/v1/decrypt"
+    kid = "7a161a3f-8d53-42de-80cd-92fb017c5a12"
 
-    requests_mock.post(f'{url}/{path}', json=mock_response)
-
-    client = Client(
-        base_url=url,
-        verify=False,
-        headers={
-            'Authentication': 'Basic some_api_key'
-        }
+    cipher = (
+        "eyJraWQiOiAiN2ExNjFhM2YtOGQ1My00MmRlLTgwY2QtOTJmYjAxN2M1YTEyIi"
+        "wgImNpcGhlciI6ICJ1MktNY0FVRjFqc2lmSmZoOTl1V3F3PT0iLCAiaXYiOiAi"
+        "cjdIZUhkdUhTWjFJckNDNnM3TUcwdz09IiwgIm1vZGUiOiAiQ0JDIn0="
     )
-
-    args = {
-        'cipher': cipher
+    mock_response = {
+        "kid": kid,
+        "plain": "u2KMcAUF1jsifJfh99uWqw==",
     }
+
+    requests_mock.post(f"{url}/{path}", json=mock_response)
+
+    client = Client(base_url=url, verify=False, headers={"Authentication": "Basic some_api_key"})
+
+    args = {"cipher": cipher}
 
     response = decrypt_command(client, args)
 
-    assert response.outputs_prefix == 'Fortanix.Data.Plain'
-    assert response.outputs == [{
-        'Plain': 'u2KMcAUF1jsifJfh99uWqw=='
-    }]
+    assert response.outputs_prefix == "Fortanix.Data.Plain"
+    assert response.outputs == [{"Plain": "u2KMcAUF1jsifJfh99uWqw=="}]
 
     with pytest.raises(DemistoException):
         response = decrypt_command(client, {})
         assert not response
 
 
-@pytest.mark.parametrize('method', ['base64', 'json', 'metadata', 'headers'])
+@pytest.mark.parametrize("method", ["base64", "json", "metadata", "headers"])
 def test_helpers(method):
     """
-        Given:
-            - A string represent a method name
+    Given:
+        - A string represent a method name
 
-        When:
-            - Running the helper functions.
+    When:
+        - Running the helper functions.
 
-        Then:
-            - Verify that the exceptions are raised
+    Then:
+        - Verify that the exceptions are raised
     """
-    from FortanixDSM import isBase64, isJSON, getMetadata, get_headers
+    from FortanixDSM import get_headers, getMetadata, isBase64, isJSON
+
     empty = {}
 
-    if method == 'base64':
+    if method == "base64":
         res = isBase64(None)
         assert not res
 
-    elif method == 'json':
+    elif method == "json":
         res = isJSON(empty)
         assert not res
 
-    elif method == 'metadata':
+    elif method == "metadata":
         res = getMetadata(empty)
         assert not res
 
-    elif method == 'headers':
-        res = get_headers('some_user', 'some_passwd')
-        assert res and isinstance(res, dict) and res['Authorization']
+    elif method == "headers":
+        res = get_headers("some_user", "some_passwd")
+        assert res
+        assert isinstance(res, dict)
+        assert res["Authorization"]
 
-        res = get_headers(None, None, None, 'some_bearer')
-        assert res and isinstance(res, dict) and res['Authorization']
+        res = get_headers(None, None, None, "some_bearer")
+        assert res
+        assert isinstance(res, dict)
+        assert res["Authorization"]

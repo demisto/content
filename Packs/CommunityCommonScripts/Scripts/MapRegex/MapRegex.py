@@ -7,12 +7,12 @@ import re
 args = demisto.args()
 
 # Get the input value
-value = args.get('value')
+value = args.get("value")
 results = value
 
 # Get and parse the JSON input
 try:
-    json_regex = json.loads(args.get('json_regex'))
+    json_regex = json.loads(args.get("json_regex"))
 except Exception as err:
     return_error(err)
 

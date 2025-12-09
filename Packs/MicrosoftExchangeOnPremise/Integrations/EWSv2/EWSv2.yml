@@ -16,11 +16,11 @@ configuration:
   required: true
   type: 0
   additionalinfo: Mailbox to run commands on and to fetch incidents from.
-  section: Collect
+  section: Connect
 - defaultvalue: Inbox
   display: Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)
   name: folder
-  required: true
+  required: false
   type: 0
   section: Collect
 - defaultvalue: 'false'
@@ -314,6 +314,8 @@ script:
     - contextPath: EWS.Items.action
       description: The action taken. The value will be "moved".
       type: string
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: The item IDs to delete.
       name: item-ids
@@ -336,6 +338,8 @@ script:
     - contextPath: EWS.Items.action
       description: The deletion action. Can be 'trash-deleted', 'soft-deleted', or 'hard-deleted'.
       type: string
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: 'The search query string. For more information about the query syntax, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/ee693615.aspx'
       name: query
@@ -844,6 +848,8 @@ script:
     - contextPath: EWS.Items.action
       description: The action taken on the item. The value will be "moved".
       type: string
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: The mailbox on which to apply the search.
       name: target-mailbox
@@ -1044,6 +1050,13 @@ script:
       isArray: true
     - description: The email address from which to reply.
       name: from
+    - description: Whether to handle inline images in the HTML body. When set to 'True', inline images are extracted from the HTML body and attached to the email as an inline attachment object.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+      name: handle_inline_image
     description: Replies to an email using EWS.
     name: reply-mail
   dockerimage: demisto/py-ews:5.5.0.118073

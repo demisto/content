@@ -16,23 +16,23 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-AI_ANALYST_ENDPOINT = '/aianalyst/incidentevents'
-AI_ANALYST_COMMENT_ENDPOINT = '/aianalyst/incident/comments'
-AI_ANALYST_POST_COMMENT_ENDPOINT = '/aianalyst/comments'
-AI_ANALYST_ACKNOWLEDGE_ENDPOINT = '/aianalyst/acknowledge'
-AI_ANALYST_UNACKNOWLEDGE_ENDPOINT = '/aianalyst/unacknowledge'
-AI_ANALYST_GROUP_ENDPOINT = '/aianalyst/groups'
+AI_ANALYST_ENDPOINT = "/aianalyst/incidentevents"
+AI_ANALYST_COMMENT_ENDPOINT = "/aianalyst/incident/comments"
+AI_ANALYST_POST_COMMENT_ENDPOINT = "/aianalyst/comments"
+AI_ANALYST_ACKNOWLEDGE_ENDPOINT = "/aianalyst/acknowledge"
+AI_ANALYST_UNACKNOWLEDGE_ENDPOINT = "/aianalyst/unacknowledge"
+AI_ANALYST_GROUP_ENDPOINT = "/aianalyst/groups"
 MIN_SCORE_TO_FETCH = 0
 MAX_INCIDENTS_TO_FETCH = 50
 PLEASE_CONTACT = "Please contact your Darktrace representative."
 
 DARKTRACE_API_ERRORS = {
-    'SIGNATURE_ERROR': 'API Signature Error. You have invalid credentials in your config.',
-    'DATE_ERROR': 'API Date Error. Check that the time on this machine matches that of the Darktrace instance.',
-    'ENDPOINT_ERROR': f'Invalid Endpoint. - {PLEASE_CONTACT}',
-    'PRIVILEGE_ERROR': 'User has insufficient permissions to access the API endpoint.',
-    'UNDETERMINED_ERROR': f'Darktrace was unable to process your request - {PLEASE_CONTACT}',
-    'FAILED_TO_PARSE': 'N/A'
+    "SIGNATURE_ERROR": "API Signature Error. You have invalid credentials in your config.",
+    "DATE_ERROR": "API Date Error. Check that the time on this machine matches that of the Darktrace instance.",
+    "ENDPOINT_ERROR": f"Invalid Endpoint. - {PLEASE_CONTACT}",
+    "PRIVILEGE_ERROR": "User has insufficient permissions to access the API endpoint.",
+    "UNDETERMINED_ERROR": f"Darktrace was unable to process your request - {PLEASE_CONTACT}",
+    "FAILED_TO_PARSE": "N/A",
 }
 
 """*****CLIENT CLASS*****
@@ -77,40 +77,42 @@ class Client(BaseClient):
                 params=params,
                 data=data,
                 json_data=json,
-                resp_type='response',
+                resp_type="response",
                 headers=headers,
                 error_handler=self.error_handler,
             )
 
             if res.status_code not in [200, 204]:
-                raise Exception('Your request failed with the following error: ' + str(res.content)
-                                + '. Response Status code: ' + str(res.status_code))
+                raise Exception(
+                    "Your request failed with the following error: "
+                    + str(res.content)
+                    + ". Response Status code: "
+                    + str(res.status_code)
+                )
         except Exception as e:
             raise Exception(e)
         try:
             return res.json()
         except Exception as e:
-            raise ValueError(
-                f'Failed to process the API response - {str(e)}'
-            )
+            raise ValueError(f"Failed to process the API response - {str(e)}")
 
     def error_handler(self, res: requests.Response):
         """Handles authentication errors"""
         if res.status_code == 400:
             values = res.json().values()
             if "API SIGNATURE ERROR" in values:
-                raise Exception(DARKTRACE_API_ERRORS['SIGNATURE_ERROR'])
+                raise Exception(DARKTRACE_API_ERRORS["SIGNATURE_ERROR"])
             elif "API DATE ERROR" in values:
-                raise Exception(DARKTRACE_API_ERRORS['DATE_ERROR'])
+                raise Exception(DARKTRACE_API_ERRORS["DATE_ERROR"])
         elif res.status_code == 302:
             # Valid hmac but invalid endpoint (should not happen)
             if res.text == "Found. Redirecting to /login":
-                raise Exception(DARKTRACE_API_ERRORS['ENDPOINT_ERROR'])
+                raise Exception(DARKTRACE_API_ERRORS["ENDPOINT_ERROR"])
             # Insufficient permissions but valid hmac
             elif res.text == "Found. Redirecting to /403":
-                raise Exception(DARKTRACE_API_ERRORS['PRIVILEGE_ERROR'])
+                raise Exception(DARKTRACE_API_ERRORS["PRIVILEGE_ERROR"])
         elif res.status_code >= 300:
-            raise Exception(DARKTRACE_API_ERRORS['UNDETERMINED_ERROR'])
+            raise Exception(DARKTRACE_API_ERRORS["UNDETERMINED_ERROR"])
 
     def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> dict[str, str]:
         """Create headers required for successful authentication"""
@@ -138,14 +140,11 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
         """
         query_uri = AI_ANALYST_ENDPOINT
-        params = {
-            'mingroupscore': str(min_score),
-            'starttime': str(start_time)
-        }
+        params = {"mingroupscore": str(min_score), "starttime": str(start_time)}
         return self.get(query_uri, params)
 
     def get_comments_for_ai_analyst_incident_event(self, event_id: str) -> dict[str, Any]:
-        """ Returns all comments for a specified incident event id
+        """Returns all comments for a specified incident event id
         :type event_id: ``str``
         :param event_id:  unique event identifier
         :return: dict with list of comments for an event id
@@ -153,12 +152,12 @@ class Client(BaseClient):
         """
         query_uri = AI_ANALYST_COMMENT_ENDPOINT
         params = {
-            'incident_id': str(event_id),
+            "incident_id": str(event_id),
         }
         return self.get(query_uri, params)
 
     def post_comment_to_ai_analyst_incident_event(self, event_id: str, comment: str) -> dict[str, Any]:
-        """ Posts a message to an incident event id
+        """Posts a message to an incident event id
         :type event_id: ``str``
         :param event_id:  unique event identifier
         :type comment: ``str``
@@ -167,31 +166,28 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
         query_uri = AI_ANALYST_COMMENT_ENDPOINT
-        body = {
-            'incident_id': str(event_id),
-            'message': comment
-        }
+        body = {"incident_id": str(event_id), "message": comment}
         return self.post(query_uri, json=body)
 
     def acknowledge_ai_analyst_incident_event(self, event_id: str) -> dict[str, Any]:
-        """ acknowledges an incident event
+        """acknowledges an incident event
         :type event_id: ``str``
         :param event_id:  unique event identifier
         :return: response from event acknowledgement
         :rtype: ``Dict[str, Any]``
         """
         query_uri = AI_ANALYST_ACKNOWLEDGE_ENDPOINT
-        return self.post(query_uri, data={'uuid': str(event_id)})
+        return self.post(query_uri, data={"uuid": str(event_id)})
 
     def unacknowledge_ai_analyst_incident_event(self, event_id: str) -> dict[str, Any]:
-        """ unacknowledges an incident event
+        """unacknowledges an incident event
         :type event_id: ``str``
         :param event_id:  unique event identifier
         :return: response from event unacknowledgement
         :rtype: ``Dict[str, Any]``
         """
         query_uri = AI_ANALYST_UNACKNOWLEDGE_ENDPOINT
-        return self.post(query_uri, data={'uuid': str(event_id)})
+        return self.post(query_uri, data={"uuid": str(event_id)})
 
     def get_ai_analyst_incident_group_from_eventId(self, event_id: str) -> list[dict[str, Any]]:
         """Searches for a single AI Analyst Group alerts using '/groups?uuid=<event_id>'
@@ -239,10 +235,10 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
         # we use dateparser to handle strings either in ISO8601 format, or
         # relative time stamps.
         # For example: format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        date = dateparser.parse(arg, settings={"TIMEZONE": "UTC"})
         if date is None:
             # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
+            raise ValueError(f"Invalid date: {arg_name}")
 
         return int(date.timestamp())
     if isinstance(arg, int | float):
@@ -279,36 +275,36 @@ def format_JSON_for_ai_analyst_incident(aia_incident: dict[str, Any], details: b
     :rtype: ``Dict[str, Any]``
     """
     relevant_info = {}
-    relevant_info['eventId'] = aia_incident.get('id', DARKTRACE_API_ERRORS['FAILED_TO_PARSE'])
-    time = aia_incident.get('createdAt', 0)
-    relevant_info['createdAt'] = timestamp_to_datestring(time)
-    relevant_info['title'] = aia_incident.get('title', DARKTRACE_API_ERRORS['FAILED_TO_PARSE'])
-    relevant_info['mitreTactics'] = aia_incident.get('mitreTactics', DARKTRACE_API_ERRORS['FAILED_TO_PARSE'])
-    relevant_info['score'] = str(aia_incident.get('aiaScore', 0)) + '%'
-    relevant_info['category'] = aia_incident.get('category', DARKTRACE_API_ERRORS['FAILED_TO_PARSE'])
-    relevant_info['summary'] = aia_incident['summary'].replace('\\n', '')
-    relevant_info['groupId'] = aia_incident['currentGroup']
+    relevant_info["eventId"] = aia_incident.get("id", DARKTRACE_API_ERRORS["FAILED_TO_PARSE"])
+    time = aia_incident.get("createdAt", 0)
+    relevant_info["createdAt"] = timestamp_to_datestring(time)
+    relevant_info["title"] = aia_incident.get("title", DARKTRACE_API_ERRORS["FAILED_TO_PARSE"])
+    relevant_info["mitreTactics"] = aia_incident.get("mitreTactics", DARKTRACE_API_ERRORS["FAILED_TO_PARSE"])
+    relevant_info["score"] = str(aia_incident.get("aiaScore", 0)) + "%"
+    relevant_info["category"] = aia_incident.get("category", DARKTRACE_API_ERRORS["FAILED_TO_PARSE"])
+    relevant_info["summary"] = aia_incident["summary"].replace("\\n", "")
+    relevant_info["groupId"] = aia_incident["currentGroup"]
     if details:
-        relevant_info['details'] = aia_incident['details']
-    relevant_info['devices'] = aia_incident.get('breachDevices', DARKTRACE_API_ERRORS['FAILED_TO_PARSE'])
-    if 'relatedBreaches' in aia_incident:
-        model_breaches = aia_incident['relatedBreaches']
+        relevant_info["details"] = aia_incident["details"]
+    relevant_info["devices"] = aia_incident.get("breachDevices", DARKTRACE_API_ERRORS["FAILED_TO_PARSE"])
+    if "relatedBreaches" in aia_incident:
+        model_breaches = aia_incident["relatedBreaches"]
         model_breach_info = {}
         for i in range(len(model_breaches)):
-            model_breaches[i]['timestamp'] = timestamp_to_datestring(model_breaches[i]['timestamp'])
+            model_breaches[i]["timestamp"] = timestamp_to_datestring(model_breaches[i]["timestamp"])
             model_breach_info[str(i)] = model_breaches[i]
-    relevant_info['modelBreaches'] = model_breach_info
-    relevant_info['link'] = demisto.params().get('url', '') + '/#aiagroup/' + str(relevant_info['groupId'])
+    relevant_info["modelBreaches"] = model_breach_info
+    relevant_info["link"] = demisto.params().get("url", "") + "/#aiagroup/" + str(relevant_info["groupId"])
     return relevant_info
 
 
 def _compute_xsoar_severity(category: str) -> int:
     """Translates Darktrace category into XSOAR Severity"""
-    if category == 'compliance':
+    if category == "compliance":
         return 1
-    if category == 'informational':
+    if category == "informational":
         return 2
-    if category == 'suspicious':
+    if category == "suspicious":
         return 3
     return 4
 
@@ -317,7 +313,7 @@ def check_required_fields(args, *fields):
     """Checks that required fields are found, raises a value error otherwise"""
     for field in fields:
         if field not in args:
-            raise ValueError(f'Argument error could not find {field} in {args}')
+            raise ValueError(f"Argument error could not find {field} in {args}")
 
 
 def test_module(client: Client, first_fetch_time: int | None) -> str:
@@ -338,15 +334,16 @@ def test_module(client: Client, first_fetch_time: int | None) -> str:
         client.search_ai_analyst_incident_events(min_score=0, start_time=first_fetch_time)
 
     except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e):
+            return "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
-    return 'ok'
+    return "ok"
 
 
-def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
-                    first_fetch_time: int | None, min_score: int) -> tuple[dict[str, int], list[dict]]:
+def fetch_incidents(
+    client: Client, max_alerts: int, last_run: dict[str, int], first_fetch_time: int | None, min_score: int
+) -> tuple[dict[str, int], list[dict]]:
     """This function retrieves new ai analyst incident event every minute. It will use last_run
     to save the timestamp of the last incident it processed. If last_run is not provided,
     it should use the integration parameter first_fetch to determine when to start fetching
@@ -376,7 +373,7 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get("last_fetch", None)
     # Handle first fetch time
     if last_fetch is None:
         last_fetch = first_fetch_time
@@ -390,26 +387,26 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
     incidents: list[dict[str, Any]] = []
 
     ai_analyst_alerts = client.search_ai_analyst_incident_events(
-        min_score=min_score,    # Scale the min score from [0,100] to [0 to 1] for API calls
-        start_time=last_fetch       # time of last fetch or initialization time
+        min_score=min_score,  # Scale the min score from [0,100] to [0 to 1] for API calls
+        start_time=last_fetch,  # time of last fetch or initialization time
     )
 
     for alert in ai_analyst_alerts:
-        incident_created_time = int(alert.get('createdAt', 0))
-        alert['time'] = timestamp_to_datestring(incident_created_time)
+        incident_created_time = int(alert.get("createdAt", 0))
+        alert["time"] = timestamp_to_datestring(incident_created_time)
         if last_fetch and incident_created_time <= last_fetch:
             continue
-        id = str(alert['id'])
-        title = str(alert['title'])
-        incident_name = f'DT eventId #{id}: {title}'
+        id = str(alert["id"])
+        title = str(alert["title"])
+        incident_name = f"DT eventId #{id}: {title}"
 
         formatted_JSON = format_JSON_for_ai_analyst_incident(alert, details=True)
-        xsoar_severity = _compute_xsoar_severity(alert['groupCategory'])
+        xsoar_severity = _compute_xsoar_severity(alert["groupCategory"])
         incident = {
-            'name': incident_name,
-            'occurred': timestamp_to_datestring(incident_created_time),
-            'rawJSON': json.dumps(formatted_JSON),
-            'severity': xsoar_severity
+            "name": incident_name,
+            "occurred": timestamp_to_datestring(incident_created_time),
+            "rawJSON": json.dumps(formatted_JSON),
+            "severity": xsoar_severity,
         }
 
         incidents.append(incident)
@@ -422,7 +419,7 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
             break
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': latest_created_time}
+    next_run = {"last_fetch": latest_created_time}
     return next_run, incidents
 
 
@@ -443,24 +440,24 @@ def get_ai_analyst_incident_event_command(client: Client, args: dict[str, Any]) 
 
     :rtype: ``CommandResults``
     """
-    check_required_fields(args, 'eventId')
-    eventId = str(args['eventId'])
+    check_required_fields(args, "eventId")
+    eventId = str(args["eventId"])
     aia_response = client.get_ai_analyst_incident_event(eventId)[0]
 
-    if 'time' in aia_response:
-        created_time = int(aia_response.get('createdAt', '0'))
-        aia_response['time'] = timestamp_to_datestring(created_time)
+    if "time" in aia_response:
+        created_time = int(aia_response.get("createdAt", "0"))
+        aia_response["time"] = timestamp_to_datestring(created_time)
 
     # Format JSON for Context Output
     formatted_output = format_JSON_for_ai_analyst_incident(aia_response)
 
-    readable_output = tableToMarkdown(f'Darktrace AI Analyst Incident {eventId}', formatted_output)
+    readable_output = tableToMarkdown(f"Darktrace AI Analyst Incident {eventId}", formatted_output)
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Darktrace.AIAnalyst',
-        outputs_key_field='Darktrace.AIAnalyst.eventId',
-        outputs=formatted_output
+        outputs_prefix="Darktrace.AIAnalyst",
+        outputs_key_field="Darktrace.AIAnalyst.eventId",
+        outputs=formatted_output,
     )
 
 
@@ -482,23 +479,23 @@ def get_comments_for_ai_analyst_incident_event_command(client: Client, args: dic
 
     :rtype: ``CommandResults``
     """
-    check_required_fields(args, 'eventId')
-    id = str(args['eventId'])
+    check_required_fields(args, "eventId")
+    id = str(args["eventId"])
     aia_comment_response = client.get_comments_for_ai_analyst_incident_event(id)
-    comments = aia_comment_response.get('comments', 'No comments available')
+    comments = aia_comment_response.get("comments", "No comments available")
     if comments:
         for comment in comments:
-            comment['eventId'] = comment.pop('incident_id')
-            comment['time'] = timestamp_to_datestring(comment['time'])
-        readable_output = tableToMarkdown(f'Darktrace AIA Comments for {id}', comments)
+            comment["eventId"] = comment.pop("incident_id")
+            comment["time"] = timestamp_to_datestring(comment["time"])
+        readable_output = tableToMarkdown(f"Darktrace AIA Comments for {id}", comments)
     else:
-        unsuccessful_message = [{'response': 'unable to get comments'}]
-        readable_output = tableToMarkdown(f'Darktrace AIA Comments for {id}', unsuccessful_message)
+        unsuccessful_message = [{"response": "unable to get comments"}]
+        readable_output = tableToMarkdown(f"Darktrace AIA Comments for {id}", unsuccessful_message)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Darktrace.AIAnalyst',
-        outputs_key_field='Darktrace.AIAnalyst.eventId',
-        outputs=aia_comment_response
+        outputs_prefix="Darktrace.AIAnalyst",
+        outputs_key_field="Darktrace.AIAnalyst.eventId",
+        outputs=aia_comment_response,
     )
 
 
@@ -519,25 +516,25 @@ def post_comment_to_ai_analyst_incident_event_command(client: Client, args: dict
 
     :rtype: ``CommandResults``
     """
-    check_required_fields(args, 'eventId', 'comment')
-    eventId = str(args['eventId'])
-    message = str(args['comment'])
+    check_required_fields(args, "eventId", "comment")
+    eventId = str(args["eventId"])
+    message = str(args["comment"])
     aia_comment_response = client.post_comment_to_ai_analyst_incident_event(eventId, message)
     output = {}
-    if aia_comment_response['aianalyst'] == 'SUCCESS':
-        output['commented'] = 'True'
-        output['response'] = 'Successfully Uploaded Comment'
+    if aia_comment_response["aianalyst"] == "SUCCESS":
+        output["commented"] = "True"
+        output["response"] = "Successfully Uploaded Comment"
     else:
-        output['commented'] = 'False'
-        output['response'] = 'Unable to Upload comment'
-    output['eventId'] = eventId
-    output['message'] = message
-    readable_output = tableToMarkdown('Darktrace AIA Post Comment Response', output)
+        output["commented"] = "False"
+        output["response"] = "Unable to Upload comment"
+    output["eventId"] = eventId
+    output["message"] = message
+    readable_output = tableToMarkdown("Darktrace AIA Post Comment Response", output)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Darktrace.AIAnalyst',
-        outputs_key_field='Darktrace.AIAnalyst.eventId',
-        outputs=output
+        outputs_prefix="Darktrace.AIAnalyst",
+        outputs_key_field="Darktrace.AIAnalyst.eventId",
+        outputs=output,
     )
 
 
@@ -558,23 +555,23 @@ def acknowledge_ai_analyst_incident_event_command(client: Client, args: dict[str
 
     :rtype: ``CommandResults``
     """
-    check_required_fields(args, 'eventId')
-    eventId = str(args['eventId'])
+    check_required_fields(args, "eventId")
+    eventId = str(args["eventId"])
     aia_ack_response = client.acknowledge_ai_analyst_incident_event(eventId)
     output = {}
-    if aia_ack_response['aianalyst'] == 'SUCCESS':
-        output['acknowledged'] = 'True'
-        output['response'] = 'Incident Event Successfully Acknowledged'
+    if aia_ack_response["aianalyst"] == "SUCCESS":
+        output["acknowledged"] = "True"
+        output["response"] = "Incident Event Successfully Acknowledged"
     else:
-        output['acknowledged'] = 'False'
-        output['response'] = 'Unable to acknowledge event. '
-    output['eventId'] = eventId
-    readable_output = tableToMarkdown('Darktrace AIA Post Comment Response', output)
+        output["acknowledged"] = "False"
+        output["response"] = "Unable to acknowledge event. "
+    output["eventId"] = eventId
+    readable_output = tableToMarkdown("Darktrace AIA Post Comment Response", output)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Darktrace.AIAnalyst',
-        outputs_key_field='Darktrace.AIAnalyst.eventId',
-        outputs=output
+        outputs_prefix="Darktrace.AIAnalyst",
+        outputs_key_field="Darktrace.AIAnalyst.eventId",
+        outputs=output,
     )
 
 
@@ -595,23 +592,23 @@ def unacknowledge_ai_analyst_incident_event_command(client: Client, args: dict[s
 
     :rtype: ``CommandResults``
     """
-    check_required_fields(args, 'eventId')
-    eventId = args['eventId']
-    aia_ack_response = client.unacknowledge_ai_analyst_incident_event(str(args['eventId']))
+    check_required_fields(args, "eventId")
+    eventId = args["eventId"]
+    aia_ack_response = client.unacknowledge_ai_analyst_incident_event(str(args["eventId"]))
     output = {}
-    if aia_ack_response['aianalyst'] == 'SUCCESS':
-        output['unacknowledged'] = 'True'
-        output['response'] = 'Incident Event Successfully Unacknowledged'
+    if aia_ack_response["aianalyst"] == "SUCCESS":
+        output["unacknowledged"] = "True"
+        output["response"] = "Incident Event Successfully Unacknowledged"
     else:
-        output['unacknowledged'] = 'False'
-        output['response'] = 'Unable to Unacknowledge event. '
-    output['eventId'] = eventId
-    readable_output = tableToMarkdown('Darktrace AIA Unacknowledgement Response', output)
+        output["unacknowledged"] = "False"
+        output["response"] = "Unable to Unacknowledge event. "
+    output["eventId"] = eventId
+    readable_output = tableToMarkdown("Darktrace AIA Unacknowledgement Response", output)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Darktrace.AIAnalyst',
-        outputs_key_field='Darktrace.AIAnalyst.eventId',
-        outputs=output
+        outputs_prefix="Darktrace.AIAnalyst",
+        outputs_key_field="Darktrace.AIAnalyst.eventId",
+        outputs=output,
     )
 
 
@@ -632,28 +629,25 @@ def get__ai_analyst_incident_group_from_eventId_command(client: Client, args: di
 
     :rtype: ``CommandResults``
     """
-    check_required_fields(args, 'eventId')
-    aia_ack_response = client.get_ai_analyst_incident_group_from_eventId(str(args['eventId']))
+    check_required_fields(args, "eventId")
+    aia_ack_response = client.get_ai_analyst_incident_group_from_eventId(str(args["eventId"]))
     output = {}
     if len(aia_ack_response):
         group_response = aia_ack_response[0]
-        output['groupId'] = group_response['id']
-        output['groupScore'] = round(group_response['groupScore'], 1)
-        output['groupCategory'] = group_response['category']
-        output['acknowledged'] = group_response['acknowledged']
-        output['mitreTactics'] = group_response['mitreTactics']
-        for event in group_response['incidentEvents']:
-            event['eventId'] = event.pop('uuid')
-            event['deviceId'] = event.pop('triggerDid')
-            event['start'] = timestamp_to_datestring(event['start'])
-        output['incidentEvents'] = group_response['incidentEvents']
+        output["groupId"] = group_response["id"]
+        output["groupScore"] = round(group_response["groupScore"], 1)
+        output["groupCategory"] = group_response["category"]
+        output["acknowledged"] = group_response["acknowledged"]
+        output["mitreTactics"] = group_response["mitreTactics"]
+        for event in group_response["incidentEvents"]:
+            event["eventId"] = event.pop("uuid")
+            event["deviceId"] = event.pop("triggerDid")
+            event["start"] = timestamp_to_datestring(event["start"])
+        output["incidentEvents"] = group_response["incidentEvents"]
 
-    readable_output = tableToMarkdown('Darktrace AIA Group Information', output)
+    readable_output = tableToMarkdown("Darktrace AIA Group Information", output)
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Darktrace.AIAnalyst',
-        outputs_key_field='groupId',
-        outputs=output
+        readable_output=readable_output, outputs_prefix="Darktrace.AIAnalyst", outputs_key_field="groupId", outputs=output
     )
 
 
@@ -669,68 +663,55 @@ returns an error message via ``return_error()``.
 """
 
 
-def main() -> None:     # pragma: no cover
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
     :return:
     :rtype:
     """
 
     # Collect Darktrace URL
-    base_url = demisto.params().get('url')
+    base_url = demisto.params().get("url")
 
     # Collect API tokens
-    public_api_token = demisto.params().get('publicApiKey', '')
-    private_api_token = demisto.params().get('privateApiKey', '')
+    public_api_token = demisto.params().get("publicApiKey", "")
+    private_api_token = demisto.params().get("privateApiKey", "")
     tokens = (public_api_token, private_api_token)
 
     # Client class inherits from BaseClient, so SSL verification is
     # handled out of the box by it. Pass ``verify_certificate`` to
     # the Client constructor.
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not demisto.params().get("insecure", False)
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = arg_to_timestamp(
-        arg=demisto.params().get('first_fetch', '1 day'),
-        arg_name='First fetch time',
-        required=True
+        arg=demisto.params().get("first_fetch", "1 day"), arg_name="First fetch time", required=True
     )
 
     # Client class inherits from BaseClient, so system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = demisto.params().get("proxy", False)
 
     # ``demisto.debug()``, ``demisto.info()``, prints information in the XSOAR server log.
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
 
     try:
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy,
-            auth=tokens
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, auth=tokens)
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client, first_fetch_time))
 
-        elif demisto.command() == 'fetch-incidents':
+        elif demisto.command() == "fetch-incidents":
             # Set and define the fetch incidents command to run after activated via integration settings.
 
             # Convert the argument to an int using helper function or set to MIN_SCORE_TO_FETCH
-            min_score = arg_to_number(
-                arg=demisto.params().get('min_score'),
-                arg_name='min_score',
-                required=False
-            )
+            min_score = arg_to_number(arg=demisto.params().get("min_score"), arg_name="min_score", required=False)
             if not min_score or min_score < MIN_SCORE_TO_FETCH:
                 min_score = MIN_SCORE_TO_FETCH
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_alerts = arg_to_number(
-                arg=demisto.params().get('max_fetch', MAX_INCIDENTS_TO_FETCH),
-                arg_name='max_fetch',
-                required=False
+                arg=demisto.params().get("max_fetch", MAX_INCIDENTS_TO_FETCH), arg_name="max_fetch", required=False
             )
             if not max_alerts or max_alerts > MAX_INCIDENTS_TO_FETCH:
                 max_alerts = MAX_INCIDENTS_TO_FETCH
@@ -740,7 +721,7 @@ def main() -> None:     # pragma: no cover
                 max_alerts=max_alerts,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=first_fetch_time,
-                min_score=min_score
+                min_score=min_score,
             )
 
             # Use the variables defined above as the outputs of fetch_incidents to set up the next call and create incidents:
@@ -750,29 +731,29 @@ def main() -> None:     # pragma: no cover
             # of incidents to create
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'darktrace-get-ai-analyst-incident-event':
+        elif demisto.command() == "darktrace-get-ai-analyst-incident-event":
             return_results(get_ai_analyst_incident_event_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-get-comments-for-ai-analyst-incident-event':
+        elif demisto.command() == "darktrace-get-comments-for-ai-analyst-incident-event":
             return_results(get_comments_for_ai_analyst_incident_event_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-post-comment-to-ai-analyst-incident-event':
+        elif demisto.command() == "darktrace-post-comment-to-ai-analyst-incident-event":
             return_results(post_comment_to_ai_analyst_incident_event_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-acknowledge-ai-analyst-incident-event':
+        elif demisto.command() == "darktrace-acknowledge-ai-analyst-incident-event":
             return_results(acknowledge_ai_analyst_incident_event_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-unacknowledge-ai-analyst-incident-event':
+        elif demisto.command() == "darktrace-unacknowledge-ai-analyst-incident-event":
             return_results(unacknowledge_ai_analyst_incident_event_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-get-ai-analyst-incident-group-from-eventId':
+        elif demisto.command() == "darktrace-get-ai-analyst-incident-group-from-eventId":
             return_results(get__ai_analyst_incident_group_from_eventId_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
 """*****ENTRY POINT****"""
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

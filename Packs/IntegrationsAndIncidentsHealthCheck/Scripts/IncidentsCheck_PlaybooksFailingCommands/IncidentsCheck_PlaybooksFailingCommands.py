@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import collections
 import random
-from typing import Counter
+from collections import Counter
 
 
 def parse_data(failed_commands):
@@ -17,38 +17,26 @@ def parse_data(failed_commands):
         for command in top_commands:
             random_number = random.randint(0, 16777215)
             hex_number = str(hex(random_number))  # convert to hexadecimal
-            color = f'#{hex_number[2:].zfill(6)}'  # remove 0x and prepend '#'
+            color = f"#{hex_number[2:].zfill(6)}"  # remove 0x and prepend '#'
 
             command_widget_data = {
-                "data": [
-                    command[1]
-                ],
+                "data": [command[1]],
                 "groups": None,
                 "name": str(command[0]),
                 "label": str(command[0]),
-                "color": color
+                "color": color,
             }
 
             commands_data.append(command_widget_data)
             command_number += 1
 
-    return {
-        "Type": 17,
-        "ContentsFormat": "pie",
-        "Contents": {
-            "stats":
-                commands_data,
-            "params": {
-                "layout": "vertical"
-            }
-        }
-    }
+    return {"Type": 17, "ContentsFormat": "pie", "Contents": {"stats": commands_data, "params": {"layout": "vertical"}}}
 
 
 def main():
     incident = demisto.incidents()
 
-    failed_commands = incident[0].get('CustomFields', {}).get('playbooksfailedcommands')
+    failed_commands = incident[0].get("CustomFields", {}).get("playbooksfailedcommands")
     if failed_commands:
         data = parse_data(failed_commands)
 
@@ -58,20 +46,10 @@ def main():
             "ContentsFormat": "pie",
             "Contents": {
                 "stats": [
-                    {
-                        "data": [
-                            0
-                        ],
-                        "groups": None,
-                        "name": "N/A",
-                        "label": "N/A",
-                        "color": "rgb(255, 23, 68)"
-                    },
+                    {"data": [0], "groups": None, "name": "N/A", "label": "N/A", "color": "rgb(255, 23, 68)"},
                 ],
-                "params": {
-                    "layout": "vertical"
-                }
-            }
+                "params": {"layout": "vertical"},
+            },
         }
 
     demisto.results(data)

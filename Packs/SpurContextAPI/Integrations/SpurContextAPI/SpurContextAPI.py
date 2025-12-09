@@ -1,11 +1,11 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 import ipaddress
-import urllib3
-import urllib.parse
 import traceback
+import urllib.parse
 from typing import Any
+
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -19,7 +19,6 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-
     def ip(self, ip: str) -> dict:
         # Validate that the input is a valid IP address
         try:
@@ -45,9 +44,7 @@ class Client(BaseClient):
 
 
 class SpurIP(Common.IP):
-
     def __init__(self, client_types=None, risks=None, tunnels=None, **kwargs) -> None:
-
         super().__init__(**kwargs)
 
         self.client_types = client_types if client_types else []
@@ -94,7 +91,6 @@ def fix_nested_client(data):
 
 
 def test_module(client: Client) -> str:
-
     message: str = ""
     try:
         full_url = urljoin(client._base_url, "status")
@@ -108,7 +104,7 @@ def test_module(client: Client) -> str:
         )
         message = "ok"
     except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in "":  # TODO: make sure you capture authentication errors
+        if "Forbidden" in str(e) or "Authorization" in "":  # noqa: PLR0133  # TODO: make sure you capture authentication errors
             message = "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
@@ -174,13 +170,15 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
 
         response = fix_nested_client(response)
 
-        results.append(CommandResults(
-            outputs_prefix="SpurContextAPI.Context",
-            outputs_key_field="",
-            outputs=response,
-            raw_response=response,
-            indicator=_build_spur_indicator(ip, response),
-        ))
+        results.append(
+            CommandResults(
+                outputs_prefix="SpurContextAPI.Context",
+                outputs_key_field="",
+                outputs=response,
+                raw_response=response,
+                indicator=_build_spur_indicator(ip, response),
+            )
+        )
 
     return results
 
@@ -201,9 +199,7 @@ def main() -> None:
     try:
         headers: dict = {"TOKEN": api_key}
 
-        client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         command = demisto.command()
 

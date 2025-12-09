@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
 
@@ -13,20 +14,17 @@ def extract_engines_data_from_indicator(indicator_data):
     if "detectionengines" not in cstm_fields:
         detection_engines = 0
     else:
-        detection_engines = try_parse_int(
-            cstm_fields["detectionengines"], '"Detection Engines" must be a number'
-        )
+        detection_engines = try_parse_int(cstm_fields["detectionengines"], '"Detection Engines" must be a number')
     if "positivedetections" not in cstm_fields:
         positive_detections = 0
     else:
-        positive_detections = try_parse_int(
-            cstm_fields["positivedetections"], '"Positive Detections" must be a number'
-        )
+        positive_detections = try_parse_int(cstm_fields["positivedetections"], '"Positive Detections" must be a number')
     unknown_detections = detection_engines - positive_detections
     if unknown_detections < 0:
         raise ValueError(
             f'"Detection Engines ({detection_engines})" must be greater or equal '
-            f'to "Positive Detections ({positive_detections})"')
+            f'to "Positive Detections ({positive_detections})"'
+        )
     return create_pie(unknown_detections, positive_detections)
 
 
@@ -36,20 +34,10 @@ def create_pie(unknown_detections, positive_detections):
         "ContentsFormat": "pie",
         "Contents": {
             "stats": [
-                {
-                    "data": [positive_detections],
-                    "groups": None,
-                    "name": "Positive Detections",
-                    "color": "rgb(255, 23, 68)"
-                },
-                {
-                    "data": [unknown_detections],
-                    "groups": None,
-                    "name": "Unknown",
-                    "color": "rgb(255, 144, 0)"
-                }
+                {"data": [positive_detections], "groups": None, "name": "Positive Detections", "color": "rgb(255, 23, 68)"},
+                {"data": [unknown_detections], "groups": None, "name": "Unknown", "color": "rgb(255, 144, 0)"},
             ],
-            "params": {"layout": "vertical"}
+            "params": {"layout": "vertical"},
         },
     }
     return data

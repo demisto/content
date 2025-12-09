@@ -48,8 +48,7 @@ SECRET_PASSWORD_UPDATE_ARGS = {"secret_id": "4", "newpassword": "NEWPASSWORD1", 
 SECRET_CHECKOUT_ARGS = {"secret_id": "3"}
 SECRET_CHECKIN_ARGS = {"secret_id": "4"}
 SECRET_DELETE_ARGS = {"id": "9", "autoComment": "TestDeleteSecret"}
-FOLDER_CREATE_ARGS = {"folderName": "xsoarFolderTest3", "folderTypeId": "1",
-                      "parentFolderId": "3"}
+FOLDER_CREATE_ARGS = {"folderName": "xsoarFolderTest3", "folderTypeId": "1", "parentFolderId": "3"}
 FOLDER_DELETE_ARGS = {"folder_id": "9"}
 FOLDER_UPDATE_ARGS = {"id": "12", "folderName": "xsoarTF3New"}
 SECRET_SERVER_USER_CREATE_ARGS = {"displayName": "dispalyName", "password": "password",

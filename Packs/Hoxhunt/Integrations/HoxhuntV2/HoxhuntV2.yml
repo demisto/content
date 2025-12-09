@@ -1,3 +1,6 @@
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Hoxhunt v2
   version: -1
@@ -32,6 +35,7 @@ configuration:
   - Incoming And Outgoing
   hidden:
   - marketplacev2
+  - platform
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -153,7 +157,7 @@ script:
       type: unknown
     - name: threat_feedback_reported_at_limit
       required: true
-      description: Datetime limit as a iso string (e.g. "2024-10-30T08:37:42.359Z").
+      description: Datetime limit. Accepts (<number> <time unit>), e.g "7 days", "one month" or a iso string (e.g. "2024-10-30T08:37:42.359Z").
       type: unknown
     outputs:
     - contextPath: Hoxhunt.sendIncidentSocFeedback
@@ -218,7 +222,7 @@ script:
     name: get-mapping-fields
     arguments: []
     outputs: []
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   subtype: python3

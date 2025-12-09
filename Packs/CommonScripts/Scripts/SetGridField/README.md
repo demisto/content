@@ -78,7 +78,7 @@ keys="Received,Thread-Index,X-MS-Exchange-Organization-AuthSource,Accept-Languag
 
 Grid after update: \
 ![Grid](../../doc_files/grid_key_value_update.png)
- 
+
 2. List of item properties to Grid:
 
 ```shell script
@@ -87,7 +87,7 @@ keys="name, value"
 ```
 
 Grid after update: \
-![Grid](../../doc_files/grid_list_update.png) 
+![Grid](../../doc_files/grid_list_update.png)
 
 Entry Context:
 
@@ -140,5 +140,3 @@ To resolve the error:
 
 1. Make sure the grid field is associated with the incident type the field is being used in.
 2. Run the following command to initialize the grid field: `!setIncident <GRID_FIELD_NAME>=[]`
-
-

@@ -1,6 +1,7 @@
 Retrieves the number of on-call hours per user.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Retrieves the number of on-call hours per user.
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Retrieves the number of on-call hours per user.
 | userId | The user ID for whom to get the number of on-call hours for the shift \(e.g. johndoe\). |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

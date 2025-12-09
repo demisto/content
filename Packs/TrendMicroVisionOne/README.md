@@ -1,26 +1,58 @@
-# Key Benefits of XDR with Trend Micro Vision One™
-## Prioritized view of threats across the organization
+# Trend Micro Vision One
 
-Organizations without an XDR approach ignore nearly double the security alerts as those with XDR capabilities. XDR correlates and combines low level signals into high-fidelity alerts which tell the story of an attack. Security personnel can quickly understand where to focus efforts.
-## More effective analysis
+## Overview
 
-With native integration into email, endpoints, servers, cloud environments, and networks, XDR sensors benefit from a deep understanding of data sources. This results in more effective analytics combined with continuously updated detection rules and global threat intelligence from Trend Micro Research, compared to having third-party integration through application programming interfaces (APIs). Organizations with an XDR approach suffered half as many successful attacks.
-## Clearer contextual view of threats
+Trend Micro Vision One is a cybersecurity platform that provides one central place to see, detect, and respond to threats across your organization's IT environment.  
+It does this by combining critical security capabilities, such as Attack Surface Risk Management (ASRM) and Extended Detection and Response (XDR) into a single, integrated architecture.
 
-By viewing more contextual alerts across more threat vectors, events that seem benign on their own suddenly become meaningful indicators of compromise. This allows you to connect more dots into a single view, simplifying the steps towards achieving an attack-centric view of an entire chain of events across security layers and take response actions from one place. This enables more insightful investigations and gives you the ability to detect threats earlier.
-## Stops more attacks, quicker
+<~XSIAM>
 
-The net of XDR is better protection for your organization through earlier detection and faster response. According to ESG, those with XDR are 2.2 times more likely to detect a data breach or successful attack in a few days or less, versus weeks or months for those without.
-## Reduces time to detect and stop threats
+## This Pack Includes
 
-Collapses the time it takes to detect, contain, and respond to threats, minimizing the severity and scope of impact. ESG found that organizations with an XDR approach respond more completely to attacks and were 60% less likely to report that attack re-propagation had been an issue.
-## Increased effectiveness and efficiency of threat investigation
+### Data Normalization and Querying Capabilities
 
-By automatically correlating threat data from multiple sources, XDR speeds up and removes manual steps involved in investigations and enables security analysts to quickly find the story of an attack. Organizations with an XDR approach stated it would take eight full time employees to replace the data correlation capabilities of XDR and also are 2.6 times less likely to report their team is overwhelmed.
-## Integrated with third-party systems
+* Data modeling rules to normalize Trend Micro Vision One logs that are ingested via _TrendMicroVisionOneEventCollector_ to Cortex XSIAM.
+* Querying ingested logs in XQL Search using the _trend_micro_vision_one_raw_ dataset.
 
-As you may have other security tools and technologies deployed in your environment, we offer a growing portfolio of open APIs and integrations to third-party systems, such as Palo Alto Networks Cortex™ XSOAR. Trend Micro Vision One™ has the ability to fit within these ecosystems and security operations workflows, acquiring meaningful data from your infrastructure to further enrich and validate your XDR capabilities.
+## Supported Log Categories
 
----
+| Category                    | Category Display Name
+| :---| :---
+| [Workbench Alerts Logs](https://automation.trendmicro.com/xdr/api-v3/#tag/Workbench)                                  | Workbench
+| [Search Result Logs](https://automation.trendmicro.com/xdr/api-v3/#tag/Search/paths/~1v3.0~1search~1detections/get)   | Search Detection
+| [Observed Attack Technique Logs](https://automation.trendmicro.com/xdr/api-v3/#tag/Observed-Attack-Techniques)        | Observed Attack Techniques
+| [Audit Logs](https://automation.trendmicro.com/xdr/api-v3/#tag/Audit-Logs)                                            | Audit
 
-Why not take [Trend Micro Vision One™](https://resources.trendmicro.com/vision-one-test-drive.html?_ga=2.258269898.1102686256.1644357627-2.266528910.1607693918.1639750068-undefined) for a test drive to see how it can help you see more and respond faster to the threats your organization faces?
+***
+
+## Enable Data Collection
+
+### Configure Trend Micro Vision One
+
+Send an invitation to be added as an account. For more information, see the Trend Micro Vision One documentation [here.](https://automation.trendmicro.com/xdr/api-v3/#tag/Accounts-(Foundation-Services-release)/paths/~1v3.0~1iam~1accounts/post)
+
+1. Log in to your Trend Micro Vision One console.
+2. Navigate to **Administration** → **User Accounts**.
+3. Select the **Roles** tab and create a new custom role.
+4. In the **Permissions** section, navigate to **Platform Capabilities** → **XDR Threat Investigation** and enable the following permissions:
+    * Workbench, select View and Manage.
+    * Observed Attack Techniques, select View, filter, and search.
+    * Search, select View, filter and search.
+    * Suspicious Object Management, select View, filter and search and Manage lists and configure settings.
+5. Go to the **Users** tab and create a new user account. Assign the role you just created to this user.
+6. Once the user is created, generate an API authentication token for this account.
+
+For a configuration example from Sekoia, see [here](https://docs.sekoia.io/integration/categories/endpoint/trend_micro_vision_one_oat/).
+
+### Configure Cortex XSIAM
+
+To fetch events from Trend Micro Vision One, see the integration configuration details [here](https://xsoar.pan.dev/docs/reference/integrations/trend-micro-vision-one-event-collector).
+
+1. Navigate to **Settings** → **Configuration** → **Data Collection** → **Automation & Feed Integrations**.
+2. Search for Trend Micro Vision One.
+3. Click **Add Instance**.
+4. Insert the **Server URL**.
+5. Insert the **API Key** generated from Trend Micro Vision One.
+6. Under _Collect_, select on **Fetch events**.
+
+</~XSIAM>

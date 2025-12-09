@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: LOLBAS Feed
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -41,7 +41,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
+  required: false
   type: 15
   section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
@@ -61,6 +61,7 @@ configuration:
   display: ''
   name: feedExpirationInterval
   type: 1
+  section: Collect
   required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: 'false'
@@ -165,11 +166,22 @@ script:
     - contextPath: LOLBAS.Indicators.Type
       description: 'The type of the indicator.'
       type: String
+    - contextPath: LOLBAS.Indicators.URL
+      description: 'The URL to the indicator.'
+      type: String
   feed: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.8.0
 tests:
 - FeedLOLBas_test
+supportedModules:
+- X1
+- X3
+- X5
+- agentix
+- ENT_PLUS
+- xsiam
+- edr

@@ -1,5 +1,5 @@
 category: Authentication & Identity Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -34,7 +34,7 @@ configuration:
   section: Collect
   required: false
 - defaultvalue: '0'
-  display: CyberArk PAS score (0.0-100.0)
+  display: CyberArk PAM score (0.0-100.0)
   name: score
   type: 0
   section: Collect
@@ -57,8 +57,8 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Use the CyberArk Privileged Access Security (PAS) solution to manage users, safes, vaults, and accounts from Cortex XSOAR.
-display: CyberArk PAS
+description: Use the CyberArk Privileged Access Management (PAM) solution to manage users, safes, vaults, and accounts from Cortex XSOAR.
+display: CyberArk PAM
 name: CyberArkPAS
 script:
   commands:
@@ -68,7 +68,7 @@ script:
       required: true
     - description: The user type according to the license.
       name: user_type
-    - description: The CyberArkPAS interfaces that this user is not authorized to use, e.g., - "PSM", "PSMP".
+    - description: The CyberArkPAM interfaces that this user is not authorized to use, e.g., - "PSM", "PSMP".
       isArray: true
       name: non_authorized_interfaces
     - description: The location in the vault where the user will be created. Must begin with "\\".  If just "\\", the vault is in the root.
@@ -165,7 +165,7 @@ script:
       name: username
     - description: User type according to the license.
       name: user_type
-    - description: The CyberArkPAS interfaces that this user is not authorized to use, e.g., "PSM", "PSMP".
+    - description: The CyberArkPAM interfaces that this user is not authorized to use, e.g., "PSM", "PSMP".
       isArray: true
       name: non_authorized_interfaces
     - description: The location in the vault where the user will be created. Must begin with "\\". If just "\\", the vault is in the root.
@@ -513,7 +513,7 @@ script:
         e.g., UseAccounts,RetrieveAccounts.
       isArray: true
       name: permissions
-    - description: The name of the safe to add a member to.
+    - description: The URL encoded name of the safe to add a member to.
       name: safe_name
       required: true
     - auto: PREDEFINED
@@ -557,7 +557,7 @@ script:
         e.g., UseAccounts,RetrieveAccounts.
       isArray: true
       name: permissions
-    - description: The name of the safe to which the safe member belongs.
+    - description: The URL encoded name of the safe to which the safe member belongs.
       name: safe_name
       required: true
     - auto: PREDEFINED
@@ -589,7 +589,7 @@ script:
       description: The vault or domain where the user or group was found.
       type: String
   - arguments:
-    - description: The name of the safe to delete a member from.
+    - description: The URL encoded name of the safe to delete a member from.
       name: safe_name
       required: true
     - description: The name of the safe member to delete from the safe’s list of members.
@@ -694,8 +694,26 @@ script:
     description: Delete a specific account in the vault.
     name: cyberark-pas-account-delete
     outputs:
+    - contextPath: CyberArkPAS.Accounts.id
+      description: The unique ID of the account.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.secretManagement
+      description: Whether the account secret is automatically managed by the CPM.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.address
+      description: The name or address of the machine where the account will be used.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.secretType
+      description: The type of password.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.safeName
+      description: The safe where the account was created.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.userName
+      description: The user name of the account.
+      type: String
     - contextPath: CyberArkPAS.Accounts.Deleted
-      description: Whether the safe was deleted.
+      description: Whether the account was deleted.
       type: Boolean
   - arguments:
     - description: The unique ID of the account to update.
@@ -899,6 +917,8 @@ script:
       required: true
     description: Enable users to set the account's credentials to use for the next Central Policy Manager (CPM) change.
     name: cyberark-pas-credentials-change-set-new-password
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: |-
         The starting date to get the security events from. Must be in the following timestamp format:
@@ -932,7 +952,7 @@ script:
     - contextPath: CyberArkPAS.SecurityEvents.type
       description: The type of the security events.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   script: '-'

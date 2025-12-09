@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-'''
+"""
 Script Description:
     This script runs the 'prisma-cloud-compute-images-scan-list' command for a specific image id and returns details about its
 compliance issues, if found.
@@ -13,7 +13,7 @@ issues details.
     - Severity
     - Title
     - Description
-'''
+"""
 
 
 # Command Function
@@ -28,12 +28,9 @@ def run_prisma_cloud_compute_images_scan_list(image_id: str) -> list:
     Returns:
         list
     """
-    preconfigured_args = {
-        'compact': 'false',
-        'all_results': 'true'
-    }
+    preconfigured_args = {"compact": "false", "all_results": "true"}
 
-    args = {'id': image_id}
+    args = {"id": image_id}
     args.update(preconfigured_args)
 
     # Run the 'prisma-cloud-compute-images-scan-list' command
@@ -42,12 +39,12 @@ def run_prisma_cloud_compute_images_scan_list(image_id: str) -> list:
         return_error(f"Failed to run 'prisma-cloud-compute-images-scan-list': {get_error(result)}")
 
     # Check if the result is a list and contains 'Contents'
-    if not result or not isinstance(result, list) or not result[0].get('Contents'):
+    if not result or not isinstance(result, list) or not result[0].get("Contents"):
         return_error("No valid results found in the command output.")
 
     # Extract specific details from the command results
-    contents_list = result[0]['Contents'][0]
-    compliance_issues = contents_list.get('complianceIssues')
+    contents_list = result[0]["Contents"][0]
+    compliance_issues = contents_list.get("complianceIssues")
 
     return compliance_issues
 
@@ -67,10 +64,10 @@ def filter_compliance_issues(compliance_issues: list, compliance_ids: str) -> li
         return compliance_issues  # Return all issues if no IDs provided
 
     # Split comma-separated IDs into a list
-    ids_to_filter = [compliance_id.strip() for compliance_id in compliance_ids.split(',')]
+    ids_to_filter = [compliance_id.strip() for compliance_id in compliance_ids.split(",")]
 
     # Filter issues based on provided IDs
-    filtered_compliance_issues = [issue for issue in compliance_issues if str(issue.get('id', '')) in ids_to_filter]
+    filtered_compliance_issues = [issue for issue in compliance_issues if str(issue.get("id", "")) in ids_to_filter]
 
     return filtered_compliance_issues
 
@@ -91,30 +88,25 @@ def process_and_output_compliance_issues(compliance_issues: list, image_id: str)
 
     for issue in compliance_issues:
         row = {
-            'ComplianceID': str(issue.get('id', '')),
-            'Cause': issue.get('cause', ''),
-            'Severity': issue.get('severity', ''),
-            'Title': issue.get('title', ''),
-            'Description': issue.get('description', '')
+            "ComplianceID": str(issue.get("id", "")),
+            "Cause": issue.get("cause", ""),
+            "Severity": issue.get("severity", ""),
+            "Title": issue.get("title", ""),
+            "Description": issue.get("description", ""),
         }
         rows.append(row)
 
     # Build CommandResults object
     command_results = CommandResults(
-        outputs_prefix='PrismaCloudCompute.PCC_ImageComplianceIssues',
-        outputs={
-            'image_id': image_id,
-            'compliance_issues': rows
-        },
-        tags=['ComplianceIssuesResults'],
+        outputs_prefix="PrismaCloudCompute.PCC_ImageComplianceIssues",
+        outputs={"image_id": image_id, "compliance_issues": rows},
+        tags=["ComplianceIssuesResults"],
         readable_output=tableToMarkdown(
-            f'Compliance Issues of image {image_id}',
-            rows,
-            headers=['ComplianceID', 'Cause', 'Severity', 'Title', 'Description']
-        )
+            f"Compliance Issues of image {image_id}", rows, headers=["ComplianceID", "Cause", "Severity", "Title", "Description"]
+        ),
     )
-    incident_id = demisto.incidents()[0]['id']
-    demisto.executeCommand('setIncident', {'id': incident_id, 'prismacloudcomputeshowcompliancetab': 'image-detailed'})
+    incident_id = demisto.incidents()[0]["id"]
+    demisto.executeCommand("setIncident", {"id": incident_id, "prismacloudcomputeshowcompliancetab": "image-detailed"})
 
     return command_results
 
@@ -132,13 +124,13 @@ def main() -> None:
     """
     try:
         # Get user-provided arguments
-        image_id = demisto.getArg('image_id')
-        compliance_ids = demisto.getArg('compliance_ids')
+        image_id = demisto.getArg("image_id")
+        compliance_ids = demisto.getArg("compliance_ids")
 
         # Verify and normalize image_id
-        if not image_id.startswith('sha256:'):
+        if not image_id.startswith("sha256:"):
             if len(image_id) == 64:
-                image_id = f'sha256:{image_id}'
+                image_id = f"sha256:{image_id}"
             else:
                 return_error("Invalid image_id. It should be in the format 'sha256:{64 characters}'.")
         elif len(image_id) != 71:
@@ -157,8 +149,8 @@ def main() -> None:
         return_results(command_results)
 
     except Exception as e:
-        return_error(f"Error in script: {str(e)}")
+        return_error(f"Error in script: {e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

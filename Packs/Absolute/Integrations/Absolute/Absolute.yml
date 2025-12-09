@@ -1,5 +1,5 @@
 category: Endpoint
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -168,6 +168,8 @@ script:
     - contextPath: Absolute.FreezeRequest.Errors.messageKey
       description: The reference key for the error message.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: A comma-separated list of the unique identifiers of devices included in the request. The recommendation is to use up to 10,000 devices per request.
       isArray: true
@@ -648,7 +650,7 @@ script:
     - description: A comma-separated list of the last known public IP addresses of a device.
       isArray: true
       name: public_ips
-    description: Gets a list of device records and their corresponding data that meets the required fields for all devices in your account.
+    description: Gets a list of device records and their corresponding data that meets the required fields for all devices in your account. Note that the command supports returning a maximum of 500 distinct devices.
     name: absolute-device-get
     outputs:
     - contextPath: Absolute.Device.Id
@@ -789,26 +791,26 @@ script:
       description: The date and time (in Unix epoch) when the device last changed its location.
       type: Number
   - arguments:
-      - name: should_push_events
-        description: Set this argument to True in order to create events, otherwise the command will only display them.
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-        defaultValue: "false"
-      - name: start_date
-        description: Filters the results to the records on or after the start date.
-      - name: end_date
-        description: Filters the results to the records until the end date.
-      - name: limit
-        description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
+    - name: should_push_events
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    - name: start_date
+      description: Filters the results to the records on or after the start date.
+    - name: end_date
+      description: Filters the results to the records until the end date.
+    - name: limit
+      description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
     name: absolute-device-get-events
     description: Retrieves a list of events from the Absolute instance.
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/auth-utils:1.0.0.1968974
+  dockerimage: demisto/auth-utils:1.0.0.3639076
   isfetchevents: true
   isfetchevents:xsoar: false
 fromversion: 6.0.0

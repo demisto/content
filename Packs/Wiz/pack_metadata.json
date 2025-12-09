@@ -1,8 +1,8 @@
 {
     "name": "Wiz",
-    "description": "Integrate with Wiz for bidirectional Issue management and fetching of resource information. \n",
+    "description": "Integrate with Wiz for bidirectional Issue management, Detections investigation, and fetching of resource information. \n",
     "support": "partner",
-    "currentVersion": "1.3.4",
+    "currentVersion": "2.0.1",
     "author": "Wiz Inc.",
     "url": "https://wiz.io/",
     "email": "support@wiz.io",
@@ -24,8 +24,18 @@
         }
     },
     "githubUser": "ariel-wiz",
+    "defaultDataSource": "Wiz",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

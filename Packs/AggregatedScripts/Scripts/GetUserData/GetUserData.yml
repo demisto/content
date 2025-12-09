@@ -1,0 +1,91 @@
+args:
+- description: List of users IDs of the user to retrieve.
+  name: user_id
+  isArray: true
+- description: List of names of the users to retrieve.
+  name: user_name
+  isArray: true
+- description: List of emails of the users to retrieve.
+  name: user_email
+  isArray: true
+- description: list of AD user's attributes to retrieve, separated by comma.
+  name: attributes
+- description: The domain to retrieve users from. Available only for the iam-get-user command.
+  name: domain
+- description: |-
+    Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
+    For multi-select provide a comma-separated list. For example: "SailPointIdentityNow,Active Directory Query v2,PingOne".
+  name: brands
+  auto: PREDEFINED
+  predefined:
+  - 'Active Directory Query v2'
+  - 'Okta v2'
+  - 'Okta IAM'
+  - 'AWS - IAM'
+  - 'AWS-ILM'
+  - 'Microsoft Graph User'
+  - 'Cortex XDR - IR'
+  - 'Cortex Core - IR'
+  - 'PrismaCloud v2'
+  - 'AzureRiskyUsers'
+  - 'GSuiteAdmin'
+- description: Whether to fetch a human-readable entry for each command or just the final result. If set to true, all commands will have human-readable entries. If set to false, only the final result will be human-readable.
+  name: verbose
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- description: Whether to return unmapped fields to the context output under the "AdditionalFields" path.
+  auto: PREDEFINED
+  name: additional_fields
+  defaultValue: 'false'
+  predefined:
+    - 'true'
+    - 'false'
+- description: Whether to return only risky users from Core/XDR brands or all given users. If set to true, the execution might take some time.
+  auto: PREDEFINED
+  name: list_non_risky_users
+  defaultValue: 'false'
+  predefined:
+    - 'true'
+    - 'false'
+comment: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+commonfields:
+  id: get-user-data
+  version: -1
+name: get-user-data
+outputs:
+- contextPath: UserData.Source
+  description: Deprecated. Use "UserData.Brand" instead.
+- contextPath: UserData.Brand
+  description: The brand (integration) used to disable the user.
+  type: String
+- contextPath: UserData.Instance
+  description: The integration instance used to disable the user.
+  type: String
+- contextPath: UserData.ID
+  description: The user ID.
+  type: String
+- contextPath: UserData.Username
+  description: The username in the relevant system.
+  type: String
+- contextPath: UserData.Email
+  description: The email address of the account.
+  type: String
+- contextPath: UserData.RiskLevel
+  description: The risk level of the user.
+  type: String
+- contextPath: UserData.AdditionalFields
+  description: All the other outputs returned.
+  type: String
+- contextPath: UserData.Status
+  description: Status of the results returned from the command.
+  type: String
+script: '-'
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 6.10.0
+tests:
+- GetUserData - Test

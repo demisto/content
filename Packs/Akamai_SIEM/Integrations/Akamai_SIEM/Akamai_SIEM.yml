@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -105,6 +105,7 @@ configuration:
   section: Collect
   hidden:
   - marketplacev2
+  - platform
 - display: Events Fetch Interval
   name: eventFetchInterval
   type: 19
@@ -147,7 +148,7 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-- display: Max allowed concurrent tasks 
+- display: Max allowed concurrent tasks
   name: max_concurrent_tasks
   type: 0
   defaultvalue: '100'
@@ -253,7 +254,7 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.1968974
+  dockerimage: demisto/auth-utils:1.0.0.5476008
   isfetch: true
   isfetch:marketplacev2: false
   isfetchevents: true

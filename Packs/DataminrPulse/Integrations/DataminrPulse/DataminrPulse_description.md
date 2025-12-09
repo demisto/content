@@ -17,6 +17,7 @@ To use the integration, Client ID and Client Secret will be required, which are 
 | Client Secret                      | The Client Secret required to authenticate to the service.                                                                                                             |
 | Watchlist Names                    | A comma-separated string of watchlist names, from which to fetch the alerts. If not provided, then it will fetch alerts from all available watchlists on the platform. |
 | Query                              | Terms to search within Dataminr Alerts.                                                                                                                                |
+| Include Related Alerts             | Auto include related alerts for Dataminr Pulse incidents. |
 | Alert Type                         | Filters the incoming alerts with the provided alert type. Default All.                                                                                                 |
 | Max Fetch                          | The maximum number of alerts to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.                                   |
 | Trust any certificate (not secure) | Indicates whether to allow connections without verifying the SSL certificate's validity.                                                                               |

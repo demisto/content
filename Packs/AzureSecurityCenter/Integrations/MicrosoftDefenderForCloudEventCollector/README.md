@@ -2,7 +2,6 @@ XSIAM collector for Microsoft Defender for Cloud alerts.
 
 ## Configure Microsoft Defender for Cloud Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Microsoft Azure Management URL |  | False |
@@ -15,7 +14,6 @@ XSIAM collector for Microsoft Defender for Cloud alerts.
 | First fetch time interval | First time to start fetching alerts from. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 
@@ -56,7 +54,6 @@ Lists alerts for the subscription according to the specified filters.
 | MicrosoftDefenderForCloud.Alert.DetectedTimeUtc | date | The time the vendor detected the incident. |
 | MicrosoftDefenderForCloud.Alert.ReportedSeverity | string | The estimated severity of this alert. |
 | MicrosoftDefenderForCloud.Alert.ID | string | The alert ID. |
-
 
 ### ms-defender-for-cloud-auth-reset
 

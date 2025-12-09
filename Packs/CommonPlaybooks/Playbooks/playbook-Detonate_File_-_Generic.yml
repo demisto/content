@@ -5,7 +5,7 @@ description: |-
   Detonate files through one or more active integrations that support file detonation.
   Supported integrations:
   - SecneurX Analysis
-  - ANY.RUN
+  - ANY.RUN Cloud Sandbox
   - McAfee Advanced Threat Defense
   - WildFire
   - Lastline
@@ -36,7 +36,6 @@ tasks:
       - "9"
       - "14"
       - "15"
-      - "18"
       - "19"
       - "20"
       - "23"
@@ -47,11 +46,12 @@ tasks:
       - "30"
       - "31"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2880,
-          "y": 230
+          "x": 2415,
+          "y": 50
         }
       }
     note: false
@@ -59,7 +59,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -75,11 +74,12 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2880,
-          "y": 710
+          "x": 3295,
+          "y": 890
         }
       }
     note: false
@@ -87,7 +87,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -133,6 +132,7 @@ tasks:
       Timeout:
         simple: "15"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -141,8 +141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1070,
-          "y": 370
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -150,7 +150,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -181,6 +180,7 @@ tasks:
       Timeout:
         simple: "15"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -189,8 +189,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1870,
-          "y": 370
+          "x": 480,
+          "y": 720
         }
       }
     note: false
@@ -198,7 +198,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -226,6 +225,7 @@ tasks:
       timeout:
         simple: "10"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -234,8 +234,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2280,
-          "y": 370
+          "x": 910,
+          "y": 720
         }
       }
     note: false
@@ -243,50 +243,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: b8ddd535-06ef-401d-8981-a4abfae80dbf
-    type: playbook
-    task:
-      id: b8ddd535-06ef-401d-8981-a4abfae80dbf
-      version: -1
-      name: Detonate File - ANYRUN
-      description: |-
-        Detonates one or more files using the ANYRUN sandbox integration.
-        Returns relevant reports to the War Room and file reputations to the context data.
-        All file types are supported.
-      playbookName: Detonate File - ANYRUN
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      File:
-        complex:
-          root: inputs.File
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "15"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 670,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "19":
@@ -314,6 +270,7 @@ tasks:
       Timeout:
         simple: "30"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -322,8 +279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3880,
-          "y": 370
+          "x": 1340,
+          "y": 720
         }
       }
     note: false
@@ -331,7 +288,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "20":
@@ -361,6 +317,7 @@ tasks:
       timeout:
         simple: "10"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -369,8 +326,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4280,
-          "y": 370
+          "x": 1770,
+          "y": 720
         }
       }
     note: false
@@ -378,7 +335,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "21":
@@ -406,11 +362,12 @@ tasks:
         complex:
           root: inputs.EntryID
     separatecontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 5630,
-          "y": 540
+          "x": 3510,
+          "y": 720
         }
       }
     note: false
@@ -418,7 +375,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "23":
@@ -438,11 +394,12 @@ tasks:
       '#none#':
       - "3"
     separatecontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 370
+          "x": 2200,
+          "y": 720
         }
       }
     note: false
@@ -452,7 +409,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "24":
     id: "24"
     taskid: f19de2c0-c4f0-4e34-8922-c319d40a1781
@@ -485,8 +441,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3080,
-          "y": 370
+          "x": 2630,
+          "y": 720
         }
       }
     note: false
@@ -514,6 +470,7 @@ tasks:
       "yes":
       - "26"
       - "21"
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -530,8 +487,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5077.5,
-          "y": 370
+          "x": 3295,
+          "y": 210
         }
       }
     note: false
@@ -569,8 +526,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5230,
-          "y": 540
+          "x": 3080,
+          "y": 720
         }
       }
     note: false
@@ -614,8 +571,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3480,
-          "y": 370
+          "x": 5250,
+          "y": 720
         }
       }
     note: false
@@ -659,8 +616,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2680,
-          "y": 370
+          "x": 5680,
+          "y": 720
         }
       }
     note: false
@@ -731,8 +688,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4680,
-          "y": 370
+          "x": 6110,
+          "y": 720
         }
       }
     note: false
@@ -774,8 +731,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1470,
-          "y": 370
+          "x": 6540,
+          "y": 720
         }
       }
     note: false
@@ -785,19 +742,228 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 5a218a31-9417-4da1-818f-e46204e57f90
+    type: playbook
+    task:
+      id: 5a218a31-9417-4da1-818f-e46204e57f90
+      description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It helps to automate malware detonation and behavior observation on Android OS.
+      version: -1
+      name: ANYRUN Detonate File Android
+      playbookName: ANYRUN Detonate File Android
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3960,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 97ba62f0-bdcd-42ca-8281-4550ece095bd
+    type: playbook
+    task:
+      id: 97ba62f0-bdcd-42ca-8281-4550ece095bd
+      description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It helps to automate malware detonation and behavior observation on Ubuntu OS.
+      version: -1
+      name: ANYRUN Detonate File Linux
+      playbookName: ANYRUN Detonate File Linux
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4390,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: cf6dfc9a-fe83-4241-8273-164c93cb29f3
+    type: playbook
+    task:
+      id: cf6dfc9a-fe83-4241-8273-164c93cb29f3
+      description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. It helps to automate malware detonation and behavior observation on Windows OS.
+      version: -1
+      name: ANYRUN Detonate File Windows
+      playbookName: ANYRUN Detonate File Windows
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4820,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 9a6ceb8b-af9e-4e7f-8ff3-a4900825e4a0
+    type: condition
+    task:
+      id: 9a6ceb8b-af9e-4e7f-8ff3-a4900825e4a0
+      version: -1
+      name: Check the correctness of the ANY.RUN parameters
+      description: Check the correctness of the ANY.RUN parameters
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.anyrun_os
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.incident
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4062.5,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 9d870bdd-181b-4f7b-b175-04b532a4efbd
+    type: condition
+    task:
+      id: 9d870bdd-181b-4f7b-b175-04b532a4efbd
+      version: -1
+      name: Select ANY.RUN playbook
+      description: Select ANY.RUN playbook
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Android:
+      - "33"
+      Linux:
+      - "34"
+      Windows:
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: Windows
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.anyrun_os
+            iscontext: true
+          right:
+            value:
+              simple: windows
+    - label: Android
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.anyrun_os
+            iscontext: true
+          right:
+            value:
+              simple: android
+    - label: Linux
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.anyrun_os
+            iscontext: true
+          right:
+            value:
+              simple: linux
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4390,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "25_21_yes": 0.71,
       "25_26_yes": 0.5,
-      "25_3_#default#": 0.1
+      "25_3_#default#": 0.1,
+      "40_33_Android": 0.52
     },
     "paper": {
       "dimensions": {
-        "height": 545,
-        "width": 5740,
-        "x": 270,
-        "y": 230
+        "height": 900,
+        "width": 6870,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -817,6 +983,29 @@ inputs:
   required: false
   description: File object of file to be detonated
   playbookInputQuery:
+- key: anyrun_os
+  value:
+    simple: windows
+  required: false
+  description: 'Specify ANY.RUN operation system type. Supports: windows, linux, android'
+  playbookInputQuery:
+- key: incident
+  value:
+    simple: ${incident}
+  required: false
+  description: Information about the active incident where the found indicators will be linked
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - EntryID
+  - File
+  name: General (Inputs group)
+  description: Generic group for inputs
+- inputs:
+  - anyrun_os
+  - incident
+  name: ANY.RUN
+  description: ANY.RUN group for inputs
 outputs:
 - contextPath: Joe.Analysis.Status
   description: Analysis Status.
@@ -1016,180 +1205,6 @@ outputs:
 - contextPath: Cuckoo.Task.Monitor
   description: Monitor of the reported task.
   type: string
-- contextPath: ANYRUN.Task.AnalysisDate
-  description: Date and time the analysis was executed.
-  type: String
-- contextPath: ANYRUN.Task.Behavior.Category
-  description: Category of a process behavior.
-  type: String
-- contextPath: ANYRUN.Task.Behavior.Action
-  description: Actions performed by a process.
-  type: String
-- contextPath: ANYRUN.Task.Behavior.ThreatLevel
-  description: Threat score associated with a process behavior.
-  type: Number
-- contextPath: ANYRUN.Task.Behavior.ProcessUUID
-  description: Unique ID of the process whose behaviors are being profiled.
-  type: String
-- contextPath: ANYRUN.Task.Connection.Reputation
-  description: Connection reputation.
-  type: String
-- contextPath: ANYRUN.Task.Connection.ProcessUUID
-  description: ID of the process that created the connection.
-  type: String
-- contextPath: ANYRUN.Task.Connection.ASN
-  description: Connection autonomous system network.
-  type: String
-- contextPath: ANYRUN.Task.Connection.Country
-  description: Connection country.
-  type: String
-- contextPath: ANYRUN.Task.Connection.Protocol
-  description: Connection protocol.
-  type: String
-- contextPath: ANYRUN.Task.Connection.Port
-  description: Connection port number.
-  type: Number
-- contextPath: ANYRUN.Task.Connection.IP
-  description: Connection IP number.
-  type: String
-- contextPath: ANYRUN.Task.DnsRequest.Reputation
-  description: Reputation of the DNS request.
-  type: String
-- contextPath: ANYRUN.Task.DnsRequest.IP
-  description: IP addresses associated with a DNS request.
-  type: Unknown
-- contextPath: ANYRUN.Task.DnsRequest.Domain
-  description: Domain resolution of a DNS request.
-  type: String
-- contextPath: ANYRUN.Task.Threat.ProcessUUID
-  description: Unique process ID from where the threat originated.
-  type: String
-- contextPath: ANYRUN.Task.Threat.Msg
-  description: Threat message.
-  type: String
-- contextPath: ANYRUN.Task.Threat.Class
-  description: Class of the threat.
-  type: String
-- contextPath: ANYRUN.Task.Threat.SrcPort
-  description: Port on which the threat originated.
-  type: Number
-- contextPath: ANYRUN.Task.Threat.DstPort
-  description: Destination port of the threat.
-  type: Number
-- contextPath: ANYRUN.Task.Threat.SrcIP
-  description: Source IP address where the threat originated.
-  type: String
-- contextPath: ANYRUN.Task.Threat.DstIP
-  description: Destination IP address of the threat.
-  type: String
-- contextPath: ANYRUN.Task.HttpRequest.Reputation
-  description: Reputation of the HTTP request.
-  type: String
-- contextPath: ANYRUN.Task.HttpRequest.Country
-  description: HTTP request country.
-  type: String
-- contextPath: ANYRUN.Task.HttpRequest.ProcessUUID
-  description: ID of the process making the HTTP request.
-  type: String
-- contextPath: ANYRUN.Task.HttpRequest.Body
-  description: HTTP request body parameters and details.
-  type: Unknown
-- contextPath: ANYRUN.Task.HttpRequest.HttpCode
-  description: HTTP request response code.
-  type: Number
-- contextPath: ANYRUN.Task.HttpRequest.Status
-  description: Status of the HTTP request.
-  type: String
-- contextPath: ANYRUN.Task.HttpRequest.ProxyDetected
-  description: Whether the HTTP request was made through a proxy.
-  type: Boolean
-- contextPath: ANYRUN.Task.HttpRequest.Port
-  description: HTTP request port.
-  type: Number
-- contextPath: ANYRUN.Task.HttpRequest.IP
-  description: HTTP request IP address.
-  type: String
-- contextPath: ANYRUN.Task.HttpRequest.URL
-  description: HTTP request URL.
-  type: String
-- contextPath: ANYRUN.Task.HttpRequest.Host
-  description: HTTP request host.
-  type: String
-- contextPath: ANYRUN.Task.HttpRequest.Method
-  description: HTTP request method type.
-  type: String
-- contextPath: ANYRUN.Task.FileInfo
-  description: Details of the submitted file.
-  type: String
-- contextPath: ANYRUN.Task.OS
-  description: OS of the sandbox in which the file was analyzed.
-  type: String
-- contextPath: ANYRUN.Task.ID
-  description: The unique ID of the task.
-  type: String
-- contextPath: ANYRUN.Task.MIME
-  description: The MIME of the file submitted for analysis.
-  type: String
-- contextPath: ANYRUN.Task.MD5
-  description: The MD5 hash of the file submitted for analysis.
-  type: String
-- contextPath: ANYRUN.Task.SHA1
-  description: The SHA1 hash of the file submitted for analysis.
-  type: String
-- contextPath: ANYRUN.Task.SHA256
-  description: The SHA256 hash of the file submitted for analysis.
-  type: String
-- contextPath: ANYRUN.Task.SSDeep
-  description: SSDeep hash of the file submitted for analysis.
-  type: String
-- contextPath: ANYRUN.Task.Verdict
-  description: ANY.RUN verdict for the maliciousness of the submitted file or URL.
-  type: String
-- contextPath: ANYRUN.Task.Process.FileName
-  description: File name of the process.
-  type: String
-- contextPath: ANYRUN.Task.Process.PID
-  description: Process identification number.
-  type: Number
-- contextPath: ANYRUN.Task.Process.PPID
-  description: Parent process identification number.
-  type: Number
-- contextPath: ANYRUN.Task.Process.ProcessUUID
-  description: Unique process ID (used by ANY.RUN).
-  type: String
-- contextPath: ANYRUN.Task.Process.CMD
-  description: Process command.
-  type: String
-- contextPath: ANYRUN.Task.Process.Path
-  description: Path of the executed command.
-  type: String
-- contextPath: ANYRUN.Task.Process.User
-  description: User who executed the command.
-  type: String
-- contextPath: ANYRUN.Task.Process.IntegrityLevel
-  description: The process integrity level.
-  type: String
-- contextPath: ANYRUN.Task.Process.ExitCode
-  description: Process exit code.
-  type: Number
-- contextPath: ANYRUN.Task.Process.MainProcess
-  description: Whether the process is the main process.
-  type: Boolean
-- contextPath: ANYRUN.Task.Process.Version.Company
-  description: Company responsible for the program executed.
-  type: String
-- contextPath: ANYRUN.Task.Process.Version.Description
-  description: Description of the type of program.
-  type: String
-- contextPath: ANYRUN.Task.Process.Version.Version
-  description: Version of the program executed.
-  type: String
-- contextPath: File.SSDeep
-  description: SSDeep hash of the file submitted for analysis.
-  type: String
-- contextPath: ANYRUN.Task.Status
-  description: Task analysis status.
-  type: String
 - contextPath: VMRay.Job
   description: The Job Object.
   type: unknown
@@ -1742,6 +1757,720 @@ outputs:
   description: The SHA256 of the file.
 - contextPath: OPSWAT.Filescan.Analysis.file.type
   description: The type of the submission.
+- contextPath: ANYRUN.SandboxAnalysis.mitre.name
+  description: 'MITRE Technic text description.'
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.mitre.phases
+  description: "MITRE Technic phases."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.mitre.id
+  description: "MITRE Technic identifier."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.debugStrings
+  type: Unknown
+  description: "Analysis debug information."
+- contextPath: ANYRUN.SandboxAnalysis.incidents.process
+  description: "Analysis process."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.events.time
+  type: Date
+  description: "Event time."
+- contextPath: ANYRUN.SandboxAnalysis.incidents.events.cmdline
+  description: "Event command line."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.events.image
+  description: "Event image."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.mitre.v
+  description: "MITRE version."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.mitre.sid
+  description: "SID."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.mitre.tid
+  description: "TID."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.count
+  description: "Count of related incidents."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.firstSeen
+  type: Date
+  description: "Incident first seen date."
+- contextPath: ANYRUN.SandboxAnalysis.incidents.source
+  description: "Incident source."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.desc
+  description: "Incident description."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.title
+  description: "Incident title."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.threatLevel
+  description: "Incident threat level."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.events.typeValue
+  description: "Event type value."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.events.key
+  description: "Event key."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.events.value
+  description: "Event value."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.events.name
+  description: "Event name."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.events.operation
+  description: "Even operation."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.events.cmdParent
+  description: "Event parent cmd."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.incidents.events.cmdChild
+  description: "Event child cmd."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.registry.time
+  type: Date
+  description: "Registry time."
+- contextPath: ANYRUN.SandboxAnalysis.modified.registry.process
+  description: "Registry process."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.registry.operation
+  description: "Registry operation."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.registry.value
+  description: "Registry value."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.registry.name
+  description: "Registry name."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.registry.key
+  description: "Registry key."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.process
+  description: "File process."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.size
+  description: "File size."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.filename
+  description: "Filename."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.time
+  type: Date
+  description: "File creating time."
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.info.mime
+  description: "File MIME type."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.info.file
+  description: "File content."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.permanentUrl
+  description: "File url."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.ssdeep
+  description: "File SSDeep."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.sha256
+  description: "File sha256 hash."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.sha1
+  description: "File sha1 hash."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.md5
+  description: "File md5 hash."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.threatLevel
+  description: "File threat level."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.modified.files.type
+  description: "File type."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.threats
+  type: Unknown
+  description: "Analysis network threats."
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.reputation
+  description: "Network connection reputation."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3SFullstring
+  description: "Network connection ja3S."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3S
+  description: "Network connection ja3S."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3Fullstring
+  description: "Network connection ja3F."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3
+  description: "Network connection ja3F."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.time
+  type: Date
+  description: "Network connection time."
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.asn
+  description: "Network connection ASN."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.country
+  description: "Network connection country."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.protocol
+  description: "Network connection protocol."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.port
+  description: "Network connection port."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.ip
+  description: "Network connection ip."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.process
+  description: "Network connection processes."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.jarm
+  description: "Network connection jarm."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.country
+  description: "HTTP Request country."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.reputation
+  description: "HTTP Request reputation."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.process
+  description: "HTTP Request related process."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.httpCode
+  description: "HTTP Request status code."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.status
+  description: "HTTP Request status."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.user-agent
+  description: "HTTP Request User-Agent header value."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.proxyDetected
+  description: "HTTP Request is proxy detected."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.port
+  description: "HTTP Request port."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.ip
+  description: "HTTP Request ip."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.url
+  description: "HTTP Request url."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.host
+  description: "HTTP Request host."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.method
+  description: "HTTP Request method."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.time
+  type: Date
+  description: "HTTP Request time estimate."
+- contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.reputationNumber
+  description: "DNS Request reputation number."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.reputation
+  description: "DNS Request reputation."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.ips
+  description: "DNS Request IPs."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.domain
+  description: "DNS Request domain."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.time
+  type: Date
+  description: "DNS Request time estimate."
+- contextPath: ANYRUN.SandboxAnalysis.malconf
+  type: Unknown
+  description: "Analysis malconf."
+- contextPath: ANYRUN.SandboxAnalysis.processes.synchronization
+  type: Unknown
+  description: "Analysis processes synchronization."
+- contextPath: ANYRUN.SandboxAnalysis.processes.modules
+  type: Unknown
+  description: "Analysis processes modules."
+- contextPath: ANYRUN.SandboxAnalysis.processes.hasMalwareConfig
+  description: "Process has malware config."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.parentUUID
+  description: "Process parent UUID."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.status
+  description: "Process status."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.malwareConfig
+  description: "Process malware config."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.privEscalation
+  description: "Process priv escalation."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.stealing
+  description: "Process stealing."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.networkLoader
+  description: "Process network loader."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.network
+  description: "Process network."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.lowAccess
+  description: "Process low access."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.knownThreat
+  description: "Process known threat."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.injects
+  description: "Process inject."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.exploitable
+  description: "Process exploitable."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.executableDropped
+  description: "Process executable dropped."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.debugOutput
+  description: "Process debug output."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.crashedApps
+  description: "Process crashed apps."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.autoStart
+  description: "Process auto start."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.loadsSusp
+  description: "Process loads susp."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.injected
+  description: "Process injected."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.dropped
+  description: "Process dropped."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.verdict.threatLevelText
+  description: "Process threat level text."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.verdict.threatLevel
+  description: "Process threat level."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.verdict.score
+  description: "Process score."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.context.userName
+  description: "Process context username."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.context.integrityLevel
+  description: "Process context integrity level."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.context.rebootNumber
+  description: "Process context reboot number."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.versionInfo.version
+  description: "Process version."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.versionInfo.description
+  description: "Process description."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.versionInfo.company
+  description: "Process company."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.mainProcess
+  description: "Process main process."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.fileType
+  description: "Process file type."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.fileName
+  description: "Process filename."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.commandLine
+  description: "Process cmd."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.image
+  description: "Process image."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.uuid
+  description: "Process uuid."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.ppid
+  description: "Process PPID."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.important
+  description: "Process important."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.pid
+  description: "Process PID."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.exitCode
+  description: "Process exit code."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.times.terminate
+  type: Date
+  description: "Process time terminate."
+- contextPath: ANYRUN.SandboxAnalysis.processes.times.start
+  type: Date
+  description: "Process time start."
+- contextPath: ANYRUN.SandboxAnalysis.processes.resolvedCOM.title
+  description: "Process resolved COM title."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.operation
+  description: "Process sync operation."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.type
+  description: "Process sync type."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.name
+  description: "Process sync name."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.time
+  type: Date
+  description: "Process sync time."
+- contextPath: ANYRUN.SandboxAnalysis.processes.modules.image
+  description: "Process module image."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.modules.time
+  type: Date
+  description: "Process module time."
+- contextPath: ANYRUN.SandboxAnalysis.processes.scores.monitoringReason
+  description: "Process monitoring reason."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.processes.times.monitoringSince
+  type: Date
+  description: "Process monitoring since."
+- contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.type.event
+  description: "Process sync event."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.type.mutex
+  description: "Process sync mutex."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.operation.create
+  description: "Process sync operation create."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.operation.open
+  description: "Process sync operation open."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.total
+  description: "Process sync total."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.registry.delete
+  description: "Registry delete."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.registry.write
+  description: "Registry write."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.registry.read
+  description: "Registry reed."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.registry.total
+  description: "Registry total."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.files.malicious
+  description: "File malicious count."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.files.suspicious
+  description: "File suspicious count."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.files.text
+  description: "File text."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.files.unknown
+  description: "File unknown count."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.network.threats
+  description: "Network threats count."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.network.dns
+  description: "Network dns count."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.network.connections
+  description: "Network connections count."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.network.http
+  description: "Network networks count."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.processes.malicious
+  description: "Malicious processes count."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.processes.suspicious
+  description: "Suspicious processes count."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.processes.monitored
+  description: "Monitored processes count."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.counters.processes.total
+  description: "Total processes count."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.hotfixes.title
+  description: "Environment hotfixes title."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.software.version
+  description: "Environment software version."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.software.title
+  description: "Environment software title."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.internetExplorer.kbnum
+  description: "Environment Internet Explorer KBNUM."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.internetExplorer.version
+  description: "Environment Internet Explorer version."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.os.bitness
+  description: "Environment OS version."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.os.softSet
+  description: "Environment OS software set."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.os.servicePack
+  description: "Environment OS service pack."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.os.major
+  description: "Environment OS major version."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.os.productType
+  description: "Environment OS product type."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.os.variant
+  description: "Environment OS variant."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.os.product
+  description: "Environment OS product."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.os.build
+  description: "Environment OS build."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.environments.os.title
+  description: "Environment OS title."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.dumps
+  type: Unknown
+  description: "Content dumps."
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.thumbnailUrl
+  description: "Screenshots thumbnail url."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.permanentUrl
+  description: "Screenshots permanent url."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.time
+  description: "Screenshots time."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.uuid
+  description: "Screenshots uuid."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.sslkeys.present
+  description: "SSL keys present."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.pcap.permanentUrl
+  description: "Pcap dump permanent url."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.pcap.present
+  description: "Pcap present."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.video.permanentUrl
+  description: "Video permanent url."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.video.present
+  description: "Video present."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.ssdeep
+  description: "Main object ssdeep."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.sha256
+  description: "Main object sha256."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.sha1
+  description: "Main object sha1."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.md5
+  description: "Main object md5."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.url
+  description: "Main object url."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.type
+  description: "Main object type."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.knownThreat
+  description: "Specs known threat."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.malwareConfig
+  description: "Specs malware Config."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.notStarted
+  description: "Specs not started."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.privEscalation
+  description: "Specs priv escalation."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.torUsed
+  description: "Specs TOR used."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.suspStruct
+  description: "Specs susp structure."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.stealing
+  description: "Specs stealing."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.staticDetections
+  description: "Specs static detections."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.spam
+  description: "Specs spam."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.serviceLauncher
+  description: "Specs service launcher."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.rebooted
+  description: "Specs rebooted."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.networkThreats
+  description: "Specs network threats."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.networkLoader
+  description: "Specs network loader."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.multiprocessing
+  description: "Specs multiprocessing."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.memOverrun
+  description: "Specs memory overrun."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.lowAccess
+  description: "Specs low access."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.exploitable
+  description: "Specs exploitable."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.executableDropped
+  description: "Specs executable dropped."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.debugOutput
+  description: "Specs debug output."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.crashedTask
+  description: "Specs crashed task."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.crashedApps
+  description: "Specs crashed apps."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.cpuOverrun
+  description: "Specs CPU overrun."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.autoStart
+  description: "Specs suto start."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.injects
+  description: "Specs injects."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.verdict.threatLevelText
+  description: "Verdict threat level text."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.verdict.threatLevel
+  description: "Verdict threat level."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.scores.verdict.score
+  description: "Verdict score."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.automatization.uac
+  description: "Options automatization UAC."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.privateSample
+  description: "Options private sample."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.privacy
+  description: "Options privacy."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.network
+  description: "Options network."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.hideSource
+  description: "Options hide source."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.video
+  description: "Options video."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.presentation
+  description: "Options presentation."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.tor.used
+  description: "Options tor used."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.mitm
+  description: "Options MITM proxy."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.heavyEvasion
+  description: "Options kernel heavy evasion."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.fakeNet
+  description: "Options fake network."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.additionalTime
+  description: "Options additions time."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.options.timeout
+  description: "Options timeout."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.tags
+  type: Unknown
+  description: "Analysis tags."
+- contextPath: ANYRUN.SandboxAnalysis.analysis.stopExecText
+  type: Date
+  description: "Analysis stopExecText."
+- contextPath: ANYRUN.SandboxAnalysis.analysis.stopExec
+  type: Date
+  description: "Analysis creation stopExec."
+- contextPath: ANYRUN.SandboxAnalysis.analysis.creationText
+  type: Date
+  description: "Analysis creation creation text."
+- contextPath: ANYRUN.SandboxAnalysis.analysis.creation
+  type: Date
+  description: "Analysis creation date."
+- contextPath: ANYRUN.SandboxAnalysis.analysis.duration
+  description: "Analysis duration."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.sandbox.plan.name
+  description: "Analysis sandbox user plan name."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.sandbox.name
+  description: "Analysis sandbox name."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.reports.graph
+  description: "Analysis reports graph."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.reports.STIX
+  description: "Analysis STIX report url."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.reports.HTML
+  description: "Analysis HTML report url."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.reports.MISP
+  description: "Analysis MISP report url."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.reports.IOC
+  description: "Analysis IOC report url."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.permanentUrl
+  description: "Analysis permanent url."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.analysis.uuid
+  description: "Analysis uuid."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysis.status
+  description: "Analysis status."
+  type: String
+- contextPath: ANYRUN.SandboxAnalysisReportVerdict
+  description: "The analysis verdict."
+  type: String
+- contextPath: ANYRUN_DetonateFileAndroid.TaskID
+  description: 'Task UUID.'
+  type: String
+- contextPath: ANYRUN_DetonateFileLinux.TaskID
+  description: 'Task UUID.'
+  type: String
+- contextPath: ANYRUN_DetonateFileWindows.TaskID
+  description: 'Task UUID.'
+  type: String
 fromversion: 5.0.0
 tests:
 - Detonate File - No Files test

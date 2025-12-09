@@ -1,7 +1,7 @@
 commonfields:
   id: CrowdStrike Falcon Sandbox V2
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: CrowdStrike Falcon Sandbox V2
@@ -11,9 +11,9 @@ description: Fully automated malware analysis using Hybrid Analysis API.
 configuration:
 - name: serverUrl
   required: true
-  defaultvalue: https://www.hybrid-analysis.com
+  defaultvalue: https://hybrid-analysis.com
   type: 0
-  display: Server URL (e.g. https://www.hybrid-analysis.com)
+  display: Server URL (e.g. https://hybrid-analysis.com)
   section: Connect
 - name: credentials
   required: true
@@ -53,15 +53,17 @@ script:
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.11.4284848
   commands:
   - name: cs-falcon-sandbox-scan
     polling: true
     arguments:
     - name: file
-      description: A comma-separated list of file hashes (MD5, SHA1, or SHA256).
-      required: true
+      description: "A comma-separated list of file hashes (SHA256)."
+      required: false
       isArray: true
+    - name: environmentID
+      description: 'A comma-separated list of environment IDs. That list would be used with, and should be the same length, as the file argument. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
     - name: polling
       description: "Whether to poll until there is at least one result."
       auto: PREDEFINED
@@ -69,7 +71,8 @@ script:
       - "true"
       - "false"
     - name: JobID
-      description: The JobID to check the state of when polling.
+      description: "A comma-separated list of JobIDs to check the state of when polling. Use this argument or the file argument."
+      isArray: true
     - name: hide_polling_output
       deprecated: true
       description: ''
@@ -209,7 +212,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    description: Gets summary information for a given MD5, SHA1, or SHA256 and all the reports generated for any environment ID.
+    description: Gets report summary information for a job_id or a sha256 hash.
   - name: crowdstrike-scan
     polling: true
     deprecated: true

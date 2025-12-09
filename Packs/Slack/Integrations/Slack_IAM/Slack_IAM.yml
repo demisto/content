@@ -1,5 +1,5 @@
 category: Identity and Access Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -172,6 +172,8 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - description: A User Profile indicator.
       name: user-profile
@@ -247,6 +249,8 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
+    compliantpolicies:
+    - User Hard Remediation
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
   - arguments:
@@ -356,7 +360,7 @@ script:
     - contextPath: UpdateGroup.errorMessage
       description: Reason why the API failed.
       type: String
-  dockerimage: demisto/python3:3.11.10.113941
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3
@@ -366,3 +370,16 @@ script:
 tests:
 - No tests
 fromversion: 6.0.0
+supportedModules:
+- xsiam
+- agentix
+- edr
+- cloud
+- cloud_runtime_security
+- C1
+- C3
+- X0
+- X1
+- X3
+- X5
+- ENT_PLUS

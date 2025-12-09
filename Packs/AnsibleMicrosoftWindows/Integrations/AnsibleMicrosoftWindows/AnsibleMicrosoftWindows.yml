@@ -20,7 +20,7 @@ configuration:
   name: concurrency
   required: true
   type: 0
-description: Agentless Windows host management over WinRM
+description: Agentless Windows host management over WinRM.
 display: Ansible Microsoft Windows
 fromversion: 6.0.0
 name: AnsibleMicrosoftWindows
@@ -86,7 +86,7 @@ script:
       isArray: true
       name: host
       required: true
-    - description: Path to be used for changing inheritance
+    - description: Path to be used for changing inheritance.
       name: path
       required: true
     - auto: PREDEFINED
@@ -128,7 +128,7 @@ script:
     name: win-audit-policy-system
     outputs:
     - contextPath: MicrosoftWindows.WinAuditPolicySystem.current_audit_policy
-      description: details on the policy being targetted
+      description: details on the policy being targetted.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -180,7 +180,7 @@ script:
     name: win-audit-rule
     outputs:
     - contextPath: MicrosoftWindows.WinAuditRule.current_audit_rules
-      description: 'The current rules on the defined `path` Will return "No audit rules defined on `path`"'
+      description: 'The current rules on the defined `path` Will return "No audit rules defined on `path`".'
       type: unknown
     - contextPath: MicrosoftWindows.WinAuditRule.path_type
       description: 'The type of `path` being targetted. Will be one of file, directory, registry.'
@@ -204,7 +204,7 @@ script:
       name: thumbprint
     - auto: PREDEFINED
       defaultValue: My
-      description: 'The store name to use when importing a certificate or searching for a certificate. `AddressBook`: The X.509 certificate store for other users `AuthRoot`: The X.509 certificate store for third-party certificate authorities (CAs) `CertificateAuthority`: The X.509 certificate store for intermediate certificate authorities (CAs) `Disallowed`: The X.509 certificate store for revoked certificates `My`: The X.509 certificate store for personal certificates `Root`: The X.509 certificate store for trusted root certificate authorities (CAs) `TrustedPeople`: The X.509 certificate store for directly trusted people and resources `TrustedPublisher`: The X.509 certificate store for directly trusted publishers'
+      description: 'The store name to use when importing a certificate or searching for a certificate. `AddressBook`: The X.509 certificate store for other users `AuthRoot`: The X.509 certificate store for third-party certificate authorities (CAs) `CertificateAuthority`: The X.509 certificate store for intermediate certificate authorities (CAs) `Disallowed`: The X.509 certificate store for revoked certificates `My`: The X.509 certificate store for personal certificates `Root`: The X.509 certificate store for trusted root certificate authorities (CAs) `TrustedPeople`: The X.509 certificate store for directly trusted people and resources `TrustedPublisher`: The X.509 certificate store for directly trusted publishers.'
       name: store_name
       predefined:
       - AddressBook
@@ -399,7 +399,7 @@ script:
     name: win-chocolatey-facts
     outputs:
     - contextPath: MicrosoftWindows.WinChocolateyFacts.facts
-      description: Detailed information about the Chocolatey installation
+      description: Detailed information about the Chocolatey installation.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -661,7 +661,7 @@ script:
       isArray: true
       name: host
       required: true
-    - description: Path to an ISO, VHD, or VHDX image on the target Windows host (the file cannot reside on a network share)
+    - description: Path to an ISO, VHD, or VHDX image on the target Windows host (the file cannot reside on a network share).
       name: image_path
       required: true
     - auto: PREDEFINED
@@ -908,7 +908,7 @@ script:
       - universal
     - auto: PREDEFINED
       defaultValue: present
-      description: 'If `state=present` this module will ensure the group is created and is configured accordingly. If `state=absent` this module will delete the group if it exists'
+      description: 'If `state=present` this module will ensure the group is created and is configured accordingly. If `state=absent` this module will delete the group if it exists.'
       name: state
       predefined:
       - absent
@@ -953,7 +953,7 @@ script:
       description: The Security ID of the group.
       type: string
     - contextPath: MicrosoftWindows.WinDomainGroup.created
-      description: Whether a group was created
+      description: Whether a group was created.
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1054,7 +1054,7 @@ script:
       name: account_locked
       predefined:
       - 'False'
-    - description: Description of the user
+    - description: Description of the user.
       name: description
     - description: 'Adds or removes the user from this list of groups, depending on the value of `groups_action`. To remove all but the Principal Group, set `groups=<principal group name>` and `groups_action=replace`. Note that users cannot be removed from their principal group (for example, "Domain Users").'
       isArray: true
@@ -1117,76 +1117,76 @@ script:
     name: win-domain-user
     outputs:
     - contextPath: MicrosoftWindows.WinDomainUser.account_locked
-      description: true if the account is locked
+      description: true if the account is locked.
       type: boolean
     - contextPath: MicrosoftWindows.WinDomainUser.changed
-      description: true if the account changed during execution
+      description: true if the account changed during execution.
       type: boolean
     - contextPath: MicrosoftWindows.WinDomainUser.city
-      description: The user city
+      description: The user city.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.company
-      description: The user company
+      description: The user company.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.country
-      description: The user country
+      description: The user country.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.description
-      description: A description of the account
+      description: A description of the account.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.distinguished_name
-      description: DN of the user account
+      description: DN of the user account.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.email
-      description: The user email address
+      description: The user email address.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.enabled
-      description: true if the account is enabled and false if disabled
+      description: true if the account is enabled and false if disabled.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.firstname
-      description: The user first name
+      description: The user first name.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.groups
-      description: AD Groups to which the account belongs
+      description: AD Groups to which the account belongs.
       type: unknown
     - contextPath: MicrosoftWindows.WinDomainUser.msg
-      description: Summary message of whether the user is present or absent
+      description: Summary message of whether the user is present or absent.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.name
-      description: The username on the account
+      description: The username on the account.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.password_expired
-      description: true if the account password has expired
+      description: true if the account password has expired.
       type: boolean
     - contextPath: MicrosoftWindows.WinDomainUser.password_updated
-      description: true if the password changed during this execution
+      description: true if the password changed during this execution.
       type: boolean
     - contextPath: MicrosoftWindows.WinDomainUser.postal_code
-      description: The user postal code
+      description: The user postal code.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.sid
-      description: The SID of the account
+      description: The SID of the account.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.state
-      description: The state of the user account
+      description: The state of the user account.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.state_province
-      description: The user state or province
+      description: The user state or province.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.street
-      description: The user street address
+      description: The user street address.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.surname
-      description: The user last name
+      description: The user last name.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.upn
-      description: The User Principal Name of the account
+      description: The User Principal Name of the account.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.user_cannot_change_password
-      description: true if the user is not allowed to change password
+      description: true if the user is not allowed to change password.
       type: string
     - contextPath: MicrosoftWindows.WinDomainUser.created
-      description: Whether a user was created
+      description: Whether a user was created.
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1278,10 +1278,10 @@ script:
     name: win-environment
     outputs:
     - contextPath: MicrosoftWindows.WinEnvironment.before_value
-      description: the value of the environment key before a change, this is null if it didn't exist
+      description: the value of the environment key before a change, this is null if it didn't exist.
       type: string
     - contextPath: MicrosoftWindows.WinEnvironment.value
-      description: the value the environment key has been set to, this is null if removed
+      description: the value the environment key has been set to, this is null if removed.
       type: string
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1454,7 +1454,7 @@ script:
     name: win-file-version
     outputs:
     - contextPath: MicrosoftWindows.WinFileVersion.path
-      description: file path
+      description: file path.
       type: string
     - contextPath: MicrosoftWindows.WinFileVersion.file_version
       description: File version number..
@@ -1631,9 +1631,9 @@ script:
       name: localip
     - description: 'The remote ip address/range this rule applies to. Set to `any` to apply to all remote ip addresses. Defaults to `any` when creating a new rule.'
       name: remoteip
-    - description: 'The local port this rule applies to. Set to `any` to apply to all local ports. Defaults to `any` when creating a new rule. Must have `protocol` set'
+    - description: 'The local port this rule applies to. Set to `any` to apply to all local ports. Defaults to `any` when creating a new rule. Must have `protocol` set.'
       name: localport
-    - description: 'The remote port this rule applies to. Set to `any` to apply to all remote ports. Defaults to `any` when creating a new rule. Must have `protocol` set'
+    - description: 'The remote port this rule applies to. Set to `any` to apply to all remote ports. Defaults to `any` when creating a new rule. Must have `protocol` set.'
       name: remoteport
     - description: 'The program this rule applies to. Set to `any` to apply to all programs. Defaults to `any` when creating a new rule.'
       name: program
@@ -1791,28 +1791,28 @@ script:
     name: win-get-url
     outputs:
     - contextPath: MicrosoftWindows.WinGetUrl.dest
-      description: destination file/path
+      description: destination file/path.
       type: string
     - contextPath: MicrosoftWindows.WinGetUrl.checksum_dest
-      description: <algorithm> checksum of the file after the download
+      description: <algorithm> checksum of the file after the download.
       type: string
     - contextPath: MicrosoftWindows.WinGetUrl.checksum_src
-      description: <algorithm> checksum of the remote resource
+      description: <algorithm> checksum of the remote resource.
       type: string
     - contextPath: MicrosoftWindows.WinGetUrl.elapsed
       description: The elapsed seconds between the start of poll and the end of the module.
       type: unknown
     - contextPath: MicrosoftWindows.WinGetUrl.size
-      description: size of the dest file
+      description: size of the dest file.
       type: number
     - contextPath: MicrosoftWindows.WinGetUrl.url
-      description: requested url
+      description: requested url.
       type: string
     - contextPath: MicrosoftWindows.WinGetUrl.msg
-      description: Error message, or HTTP status message from web-server
+      description: Error message, or HTTP status message from web-server.
       type: string
     - contextPath: MicrosoftWindows.WinGetUrl.status_code
-      description: HTTP status code
+      description: HTTP status code.
       type: number
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2086,13 +2086,13 @@ script:
     name: win-iis-webbinding
     outputs:
     - contextPath: MicrosoftWindows.WinIisWebbinding.website_state
-      description: 'The state of the website being targetted Can be helpful in case you accidentally cause a binding collision which can result in the targetted site being stopped'
+      description: 'The state of the website being targetted Can be helpful in case you accidentally cause a binding collision which can result in the targetted site being stopped.'
       type: string
     - contextPath: MicrosoftWindows.WinIisWebbinding.operation_type
-      description: 'The type of operation performed Can be removed, updated, matched, or added'
+      description: 'The type of operation performed Can be removed, updated, matched, or added.'
       type: string
     - contextPath: MicrosoftWindows.WinIisWebbinding.binding_info
-      description: Information on the binding being manipulated
+      description: Information on the binding being manipulated.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2105,7 +2105,7 @@ script:
     - description: 'Explicitly set the IIS numeric ID for a site. Note that this value cannot be changed after the website has been created.'
       name: site_id
     - auto: PREDEFINED
-      description: State of the web site
+      description: State of the web site.
       name: state
       predefined:
       - absent
@@ -2124,7 +2124,7 @@ script:
       name: hostname
     - description: Enables HTTPS binding on the site..
       name: ssl
-    - description: Custom site Parameters from string where properties are separated by a pipe and property name/values by colon Ex. "foo:1|bar:2"
+    - description: Custom site Parameters from string where properties are separated by a pipe and property name/values by colon Ex. "foo:1|bar:2".
       name: parameters
     description: "Configures a IIS Web site\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_website_module.html"
     name: win-iis-website
@@ -2338,7 +2338,7 @@ script:
       name: description
     - description: The display name to set for the service.
       name: display_name
-    - description: The working directory to run the service executable from (defaults to the directory containing the application binary)
+    - description: The working directory to run the service executable from (defaults to the directory containing the application binary).
       name: working_directory
     - description: Path to receive output.
       name: stdout_file
@@ -2396,7 +2396,7 @@ script:
     name: win-optional-feature
     outputs:
     - contextPath: MicrosoftWindows.WinOptionalFeature.reboot_required
-      description: True when the target server requires a reboot to complete updates
+      description: True when the target server requires a reboot to complete updates.
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2762,7 +2762,7 @@ script:
       - high
       - low
       - realtime
-    - description: The connection timeout in seconds
+    - description: The connection timeout in seconds.
       name: timeout
     - auto: PREDEFINED
       defaultValue: 'Yes'
@@ -3170,7 +3170,7 @@ script:
       isArray: true
       name: host
       required: true
-    - description: The full path including file name to the registry file on the remote machine to be merged
+    - description: The full path including file name to the registry file on the remote machine to be merged.
       name: path
       required: true
     - description: The parent key to use when comparing the contents of the registry to the contents of the file.  Needs to be in HKLM or HKCU part of registry. Use a PS-Drive style path for example HKLM:\SOFTWARE not HKEY_LOCAL_MACHINE\SOFTWARE If not supplied, or the registry key is not found, no comparison will be made, and the module will report changed.
@@ -3179,13 +3179,13 @@ script:
     name: win-regmerge
     outputs:
     - contextPath: MicrosoftWindows.WinRegmerge.compare_to_key_found
-      description: whether the parent registry key has been found for comparison
+      description: whether the parent registry key has been found for comparison.
       type: boolean
     - contextPath: MicrosoftWindows.WinRegmerge.difference_count
-      description: number of differences between the registry and the file
+      description: number of differences between the registry and the file.
       type: number
     - contextPath: MicrosoftWindows.WinRegmerge.compared
-      description: whether a comparison has taken place between the registry and the file
+      description: whether a comparison has taken place between the registry and the file.
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3449,7 +3449,7 @@ script:
       description: Details on the task settings.
       type: unknown
     - contextPath: MicrosoftWindows.WinScheduledTaskStat.state
-      description: Details on the state of the task
+      description: Details on the state of the task.
       type: unknown
     - contextPath: MicrosoftWindows.WinScheduledTaskStat.task_exists
       description: Whether the task at the folder exists.
@@ -3537,7 +3537,7 @@ script:
     - description: 'The password to set the service to start as. This and the `username` argument must be supplied together. If specifying `LocalSystem`, `NetworkService` or `LocalService` this field must be an empty string and not null.'
       name: password
     - auto: PREDEFINED
-      description: 'Set the startup type for the service. A newly created service will default to `auto`. `delayed` added in Ansible 2.3'
+      description: 'Set the startup type for the service. A newly created service will default to `auto`. `delayed` added in Ansible 2.3.'
       name: start_mode
       predefined:
       - auto
@@ -3710,7 +3710,7 @@ script:
       name: community_strings
     - auto: PREDEFINED
       defaultValue: set
-      description: '`add` will add new SNMP community strings and/or SNMP managers `set` will replace SNMP community strings and/or SNMP managers. An empty list for either `community_strings` or `permitted_managers` will result in the respective lists being removed entirely. `remove` will remove SNMP community strings and/or SNMP managers'
+      description: '`add` will add new SNMP community strings and/or SNMP managers `set` will replace SNMP community strings and/or SNMP managers. An empty list for either `community_strings` or `permitted_managers` will result in the respective lists being removed entirely. `remove` will remove SNMP community strings and/or SNMP managers.'
       name: action
       predefined:
       - add
@@ -3735,7 +3735,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'Yes'
-      description: Whether to return a checksum of the file (default sha1)
+      description: Whether to return a checksum of the file (default sha1).
       name: get_checksum
       predefined:
       - 'Yes'
@@ -3761,10 +3761,10 @@ script:
     name: win-stat
     outputs:
     - contextPath: MicrosoftWindows.WinStat.changed
-      description: Whether anything was changed
+      description: Whether anything was changed.
       type: boolean
     - contextPath: MicrosoftWindows.WinStat.stat
-      description: dictionary containing all the stat data
+      description: dictionary containing all the stat data.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3866,7 +3866,7 @@ script:
       isArray: true
       name: host
       required: true
-    - description: 'Timezone to set to. Example: Central Standard Time'
+    - description: 'Timezone to set to. Example: Central Standard Time.'
       name: timezone
       required: true
     description: "Sets Windows machine timezone\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_timezone_module.html"
@@ -3954,13 +3954,13 @@ script:
     name: win-unzip
     outputs:
     - contextPath: MicrosoftWindows.WinUnzip.dest
-      description: The provided destination path
+      description: The provided destination path.
       type: string
     - contextPath: MicrosoftWindows.WinUnzip.removed
-      description: Whether the module did remove any files during task run
+      description: Whether the module did remove any files during task run.
       type: boolean
     - contextPath: MicrosoftWindows.WinUnzip.src
-      description: The provided source path
+      description: The provided source path.
       type: string
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3991,7 +3991,7 @@ script:
       - windows_update
     - auto: PREDEFINED
       defaultValue: installed
-      description: 'Controls whether found updates are downloaded or installed or listed This module also supports Ansible check mode, which has the same effect as setting state=searched'
+      description: 'Controls whether found updates are downloaded or installed or listed This module also supports Ansible check mode, which has the same effect as setting state=searched.'
       name: state
       predefined:
       - installed
@@ -4226,7 +4226,7 @@ script:
       description: A list of groups and their ADSI path the user is a member of.
       type: unknown
     - contextPath: MicrosoftWindows.WinUser.name
-      description: The name of the user
+      description: The name of the user.
       type: string
     - contextPath: MicrosoftWindows.WinUser.password_expired
       description: Whether the password is expired.
@@ -4243,6 +4243,8 @@ script:
     - contextPath: MicrosoftWindows.WinUser.user_cannot_change_password
       description: Whether the user can change their own password.
       type: boolean
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
@@ -4448,7 +4450,7 @@ script:
       description: The impersonation level of the token, only valid if `token_type` is `TokenImpersonation`, see `https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572.aspx`.
       type: string
     - contextPath: MicrosoftWindows.WinWhoami.login_time
-      description: The logon time in ISO 8601 format
+      description: The logon time in ISO 8601 format.
       type: string
     - contextPath: MicrosoftWindows.WinWhoami.groups
       description: A list of groups and attributes that the user is a member of.
@@ -4534,7 +4536,7 @@ script:
     - contextPath: MicrosoftWindows.WinXml.err
       description: XML comparison exceptions.
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.2024530
+  dockerimage: demisto/ansible-runner:1.0.0.3456168
   script: ''
   subtype: python3
   type: python

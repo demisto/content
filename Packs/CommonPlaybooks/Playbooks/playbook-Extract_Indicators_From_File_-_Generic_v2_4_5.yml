@@ -21,16 +21,20 @@ description: |-
   - DOTM
   - XLSB
   - DOT
-  - PPSM.
+  - PPSM
+  - PNG
+  - JPG/JPEG
+  - GIF (when Image OCR is enabled).
+  In addition, the playbook supports QR codes.
   The playbook does not support encrypted / password-protected files such as XLSB. Such files will be skipped.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 872fa459-b3f9-41a4-85ea-0aa06bc63d8b
+    taskid: 19112ab0-6176-49fc-83c5-b0d3b14eafe7
     type: start
     task:
-      id: 872fa459-b3f9-41a4-85ea-0aa06bc63d8b
+      id: 19112ab0-6176-49fc-83c5-b0d3b14eafe7
       version: -1
       name: ""
       iscommand: false
@@ -57,10 +61,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 359dee17-14b5-4800-8429-16255df23121
+    taskid: 27e3a138-4521-475e-ab6e-d2fa5278a561
     type: condition
     task:
-      id: 359dee17-14b5-4800-8429-16255df23121
+      id: 27e3a138-4521-475e-ab6e-d2fa5278a561
       version: -1
       name: Is there a file?
       description: |
@@ -101,10 +105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4c38c426-3444-4c6b-83dc-2ac1cda0aa3c
+    taskid: 463760b9-550a-4dea-8a06-42354107dc49
     type: title
     task:
-      id: 4c38c426-3444-4c6b-83dc-2ac1cda0aa3c
+      id: 463760b9-550a-4dea-8a06-42354107dc49
       version: -1
       name: Done
       type: title
@@ -117,7 +121,7 @@ tasks:
       {
         "position": {
           "x": 915,
-          "y": 1740
+          "y": 1826
         }
       }
     note: false
@@ -129,10 +133,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0aaef151-686c-4b5d-8632-cdd9dad3c501
+    taskid: 832f6312-844f-43ce-8c6b-ce6e3feb0ada
     type: title
     task:
-      id: 0aaef151-686c-4b5d-8632-cdd9dad3c501
+      id: 832f6312-844f-43ce-8c6b-ce6e3feb0ada
       version: -1
       name: Extract Indicators From Files
       type: title
@@ -167,10 +171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: a8ed00fd-f07a-492a-8a9a-d2af590ab91d
+    taskid: 615974ba-0088-4aed-92bf-80613b251d49
     type: condition
     task:
-      id: a8ed00fd-f07a-492a-8a9a-d2af590ab91d
+      id: 615974ba-0088-4aed-92bf-80613b251d49
       version: -1
       name: Is there a text-based file?
       description: Checks if there is a text-based file in context. Skips MSG and EML files.
@@ -225,6 +229,24 @@ tasks:
                     right:
                       value:
                         simple: JSON data
+                    ignorecase: true
+                  - operator: containsString
+                    left:
+                      value:
+                        simple: inputs.File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CSV text
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: csv
                     ignorecase: true
                 - - operator: notContainsString
                     left:
@@ -333,10 +355,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: e5274670-6c0c-4595-864f-0df9591c3f11
+    taskid: f2241e90-214f-4661-a5ea-0cc6769773bc
     type: regular
     task:
-      id: e5274670-6c0c-4595-864f-0df9591c3f11
+      id: f2241e90-214f-4661-a5ea-0cc6769773bc
       version: -1
       name: Extract indicators from text-based file
       description: Extracts indicators from text-based files.
@@ -385,6 +407,24 @@ tasks:
               right:
                 value:
                   simple: JSON data
+              ignorecase: true
+            - operator: containsString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: CSV text
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: csv
               ignorecase: true
           - - operator: notContainsString
               left:
@@ -484,10 +524,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 4126190b-f834-4906-858c-7645baea24d0
+    taskid: fe9aa9e7-8981-4594-b9a4-b7a4225a12fa
     type: condition
     task:
-      id: 4126190b-f834-4906-858c-7645baea24d0
+      id: fe9aa9e7-8981-4594-b9a4-b7a4225a12fa
       version: -1
       name: Is there a PDF file?
       description: Checks if there is a PDF file in context.
@@ -549,81 +589,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: effd1883-322e-43b7-8ce7-0f8c87f29df2
-    type: regular
-    task:
-      id: effd1883-322e-43b7-8ce7-0f8c87f29df2
-      version: -1
-      name: Extract indicators from PDF file
-      description: Load a PDF file's content and metadata into context.
-      scriptName: ReadPDFFileV2
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-      - "25"
-    scriptarguments:
-      entryID:
-        complex:
-          root: inputs.File
-          filters:
-          - - operator: containsString
-              left:
-                value:
-                  simple: inputs.File.Type
-                iscontext: true
-              right:
-                value:
-                  simple: pdf
-              ignorecase: true
-            - operator: containsString
-              left:
-                value:
-                  simple: inputs.File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: pdf
-              ignorecase: true
-          accessor: EntryID
-          transformers:
-          - operator: AppendIfNotEmpty
-            args:
-              item:
-                value:
-                  simple: ${File(val.Info=="application/pdf").EntryID}
-              raw: {}
-          - operator: uniq
-      maxImages:
-        complex:
-          root: inputs.MaxImagesFromPDF
-    reputationcalc: 2
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1320,
-          "y": 1010
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: b1b59f7d-7360-4392-829e-eb6d1fb39adf
+    taskid: b61b2d2d-526f-4d64-8bcc-46a45a3da866
     type: condition
     task:
-      id: b1b59f7d-7360-4392-829e-eb6d1fb39adf
+      id: b61b2d2d-526f-4d64-8bcc-46a45a3da866
       version: -1
       name: Is there a Word file?
       description: Checks if there is a Word file (DOC, DOCX) in context.
@@ -857,10 +828,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 0ecedf15-716d-48cd-8980-1812cb900663
+    taskid: 3e880c19-d946-4cca-8dd4-fabe023b5f27
     type: title
     task:
-      id: 0ecedf15-716d-48cd-8980-1812cb900663
+      id: 3e880c19-d946-4cca-8dd4-fabe023b5f27
       version: -1
       name: No File To Parse
       type: title
@@ -888,10 +859,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 302236a9-6e02-4ca8-86ab-52e5a8c10b14
+    taskid: cce17910-c4c9-4c71-862c-9a55cbeca170
     type: regular
     task:
-      id: 302236a9-6e02-4ca8-86ab-52e5a8c10b14
+      id: cce17910-c4c9-4c71-862c-9a55cbeca170
       version: -1
       name: Extract indicators from Word file
       description: Extracts indicators from word files (DOC, DOCX).
@@ -1075,10 +1046,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 61e4f247-0d0f-4a85-8f28-491314b03130
+    taskid: 13a4204e-43c3-4c7d-8331-5048057a0ab2
     type: condition
     task:
-      id: 61e4f247-0d0f-4a85-8f28-491314b03130
+      id: 13a4204e-43c3-4c7d-8331-5048057a0ab2
       version: -1
       name: Is Image OCR enabled?
       description: Checks whether there is an active instance of the Image OCR integration. enabled.
@@ -1113,8 +1084,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2190,
-          "y": 900
+          "x": 2809,
+          "y": 718
         }
       }
     note: false
@@ -1126,10 +1097,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: b00731f6-af3b-4011-8be2-3680f778777e
+    taskid: 5fe1445f-0d84-48e8-84b5-265e777b594f
     type: regular
     task:
-      id: b00731f6-af3b-4011-8be2-3680f778777e
+      id: 5fe1445f-0d84-48e8-84b5-265e777b594f
       version: -1
       name: Extract text from images
       description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract to get reputation for indicators.
@@ -1190,8 +1161,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2640,
-          "y": 1320
+          "x": 2778,
+          "y": 1099
         }
       }
     note: false
@@ -1203,10 +1174,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: bebd1cad-b2c2-4a97-82c7-10d8e02c4d5a
+    taskid: a7ba5b59-d995-4fcd-8454-668c7047028c
     type: condition
     task:
-      id: bebd1cad-b2c2-4a97-82c7-10d8e02c4d5a
+      id: a7ba5b59-d995-4fcd-8454-668c7047028c
       version: -1
       name: Is there another supported document type?
       description: |-
@@ -1389,10 +1360,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 44043d32-09a6-4681-8091-12ad898a44d0
+    taskid: 80811529-61cb-4b0c-8000-e31cd312fdda
     type: regular
     task:
-      id: 44043d32-09a6-4681-8091-12ad898a44d0
+      id: 80811529-61cb-4b0c-8000-e31cd312fdda
       version: -1
       name: Convert a document to PDF
       description: |-
@@ -1409,7 +1380,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "32"
     scriptarguments:
       all_files:
         simple: "yes"
@@ -1550,6 +1521,8 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
+      ignore-outputs:
+        simple: "false"
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
@@ -1569,10 +1542,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 44201d6c-9d35-47b0-836f-48bbf43f0bc6
+    taskid: 7f90c4cc-3035-4244-8785-360f594ddc62
     type: regular
     task:
-      id: 44201d6c-9d35-47b0-836f-48bbf43f0bc6
+      id: 7f90c4cc-3035-4244-8785-360f594ddc62
       version: -1
       name: Set ExtractedURLsFromFiles
       description: |-
@@ -1600,7 +1573,7 @@ tasks:
       {
         "position": {
           "x": 915,
-          "y": 1550
+          "y": 1690
         }
       }
     note: false
@@ -1612,10 +1585,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 7f7c2617-8a16-46bc-8141-96f650642272
+    taskid: 7ce286a8-d86f-42f4-8e36-426f4753740c
     type: playbook
     task:
-      id: 7f7c2617-8a16-46bc-8141-96f650642272
+      id: 7ce286a8-d86f-42f4-8e36-426f4753740c
       version: -1
       name: Microsoft Office File Enrichment - Oletools
       description: |-
@@ -1667,10 +1640,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 6bead496-6144-44a8-8973-6e43547abcf3
+    taskid: 6515f21b-9e06-4b53-8b76-4ade7d43e829
     type: condition
     task:
-      id: 6bead496-6144-44a8-8973-6e43547abcf3
+      id: 6515f21b-9e06-4b53-8b76-4ade7d43e829
       version: -1
       name: Is there an image file?
       description: |-
@@ -1739,7 +1712,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2190,
+          "x": 2397,
           "y": 460
         }
       }
@@ -1752,10 +1725,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 1b7979ee-7c46-429d-84ae-f0af5678b192
+    taskid: 23e84751-1ddc-46b8-85dd-043b3252e940
     type: regular
     task:
-      id: 1b7979ee-7c46-429d-84ae-f0af5678b192
+      id: 23e84751-1ddc-46b8-85dd-043b3252e940
       version: -1
       name: Extract indicators from docx file
       description: Extracts indicators from word files (DOC, DOCX).
@@ -1820,10 +1793,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 86766e4e-e9f9-4df3-8dc9-13646c82d2fa
+    taskid: 07993c36-28e2-46b3-8816-e580ba1ae505
     type: condition
     task:
-      id: 86766e4e-e9f9-4df3-8dc9-13646c82d2fa
+      id: 07993c36-28e2-46b3-8816-e580ba1ae505
       version: -1
       name: Is there a Word docx file?
       description: Checks if there is a Word file (DOC, DOCX) in context.
@@ -1895,10 +1868,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: ca969180-8bc8-43a8-8018-6fc398457815
+    taskid: e80f3f02-7c8b-4cde-8456-79145e049569
     type: regular
     task:
-      id: ca969180-8bc8-43a8-8018-6fc398457815
+      id: e80f3f02-7c8b-4cde-8456-79145e049569
       version: -1
       name: Extract Text from QR Code
       description: Extracts the text from a QR code. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
@@ -1960,8 +1933,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
-          "y": 1350
+          "x": 1606,
+          "y": 1540
         }
       }
     note: false
@@ -1973,10 +1946,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 01fbc9fb-75db-4c5a-8336-c97950443b5e
+    taskid: 1c5f93e5-dd4c-46bf-8f76-ae594a83a90d
     type: regular
     task:
-      id: 01fbc9fb-75db-4c5a-8336-c97950443b5e
+      id: 1c5f93e5-dd4c-46bf-8f76-ae594a83a90d
       version: -1
       name: Convert PDF to Image
       description: Converts a PDF file to an image file.
@@ -1990,34 +1963,15 @@ tasks:
     scriptarguments:
       EntryID:
         complex:
-          root: inputs.File
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.File.Type
-                iscontext: true
-              right:
-                value:
-                  simple: pdf
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: pdf
-              ignorecase: true
-          accessor: EntryID
+          root: ValidPDFEntryIDs
           transformers:
-          - operator: append
+          - operator: AppendIfNotEmpty
             args:
               item:
                 value:
-                  simple: ${File(val.Info=="application/pdf").EntryID}
+                  simple: AdditionalPDFs
                 iscontext: true
+              raw: {}
           - operator: uniq
           - operator: RemoveEmpty
             args:
@@ -2030,8 +1984,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
-          "y": 1170
+          "x": 1606,
+          "y": 1404
         }
       }
     note: false
@@ -2043,10 +1997,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 4fb08fe7-5b0b-48ef-8d70-8cc00cb5c6c8
+    taskid: 53db3653-4ebd-46c3-84e2-2a029bb9561c
     type: condition
     task:
-      id: 4fb08fe7-5b0b-48ef-8d70-8cc00cb5c6c8
+      id: 53db3653-4ebd-46c3-84e2-2a029bb9561c
       version: -1
       name: Is there a PPTX/XSLX file?
       description: Checks if there is a PowerPoint or Excel file (PPTX/XSLX) in context.
@@ -2136,10 +2090,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 213aae05-47d1-4361-8a40-a5f58b03d241
+    taskid: 629dd9a1-1eb5-42f1-8846-faf65be915f9
     type: regular
     task:
-      id: 213aae05-47d1-4361-8a40-a5f58b03d241
+      id: 629dd9a1-1eb5-42f1-8846-faf65be915f9
       version: -1
       name: Extract Hyper-Links from Office Files
       description: 'Extracts hyperlinks from Office files. Supported file types are: xlsx, docx, pptx.'
@@ -2222,16 +2176,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: ff1834e4-8544-4395-86e4-81f108cf6920
+    taskid: 8cae1b0c-df86-4070-83bc-2108b2fb3281
     type: condition
     task:
-      id: ff1834e4-8544-4395-86e4-81f108cf6920
+      id: 8cae1b0c-df86-4070-83bc-2108b2fb3281
       version: -1
       name: Does ReadQRCode support the image?
+      description: Check if the image type is supported by the ReadQRCode script.
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "19"
@@ -2269,8 +2223,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1820,
-          "y": 1050
+          "x": 2398,
+          "y": 860
         }
       }
     note: false
@@ -2282,28 +2236,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: f127825e-9cc0-45f3-852c-beabcce6848a
-    type: condition
+    taskid: f3ab8c1c-f06f-4e23-8fb8-92d02cbee65a
+    type: regular
     task:
-      id: f127825e-9cc0-45f3-852c-beabcce6848a
+      id: f3ab8c1c-f06f-4e23-8fb8-92d02cbee65a
       version: -1
-      name: Is PDF File Encrypted
-      description: Checks if the PDF file is encrypted or not.
-      scriptName: IsPDFFileEncrypted
-      type: condition
+      name: Check validity of PDF files
+      description: Returns wether a PDF is both valid and encrypted.
+      scriptName: CheckPDFEncryptionAndValidity
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
-      - "8"
-      "yes":
-      - "19"
+      '#none#':
+      - "30"
     scriptarguments:
       EntryID:
         complex:
           root: inputs.File
           filters:
-          - - operator: containsGeneral
+          - - operator: containsString
               left:
                 value:
                   simple: inputs.File.Type
@@ -2311,7 +2263,8 @@ tasks:
               right:
                 value:
                   simple: pdf
-            - operator: containsGeneral
+              ignorecase: true
+          - - operator: containsString
               left:
                 value:
                   simple: inputs.File.Info
@@ -2319,7 +2272,14 @@ tasks:
               right:
                 value:
                   simple: pdf
+              ignorecase: true
           accessor: EntryID
+          transformers:
+          - operator: uniq
+      extend-context:
+        simple: CheckedPDFs=
+      ignore-outputs:
+        simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2327,6 +2287,268 @@ tasks:
         "position": {
           "x": 1320,
           "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 544e230f-6df0-46c2-8d9d-e4535594f5b4
+    type: condition
+    task:
+      id: 544e230f-6df0-46c2-8d9d-e4535594f5b4
+      version: -1
+      name: Any readable PDF files?
+      description: Checks if there are valid, non-encrypted PDFs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CheckedPDFs
+                filters:
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: CheckedPDFs.IsValid
+                      iscontext: true
+                - - operator: isFalse
+                    left:
+                      value:
+                        simple: CheckedPDFs.IsEncrypted
+                      iscontext: true
+                    ignorecase: true
+                accessor: EntryID
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 5ff6052a-4a53-49d0-8471-508a5e27af03
+    type: regular
+    task:
+      id: 5ff6052a-4a53-49d0-8471-508a5e27af03
+      version: -1
+      name: Extract indicators from PDF files
+      description: Load a PDF file's content and metadata into context.
+      scriptName: ReadPDFFileV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      entryID:
+        complex:
+          root: ValidPDFEntryIDs
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: AdditionalPDFs
+                iscontext: true
+              raw: {}
+          - operator: uniq
+      maxImages:
+        complex:
+          root: inputs.MaxImagesFromPDF
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1606,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 5b9ddd9d-143f-47fc-8cf8-0249889f1532
+    type: regular
+    task:
+      id: 5b9ddd9d-143f-47fc-8cf8-0249889f1532
+      version: -1
+      name: Save converted PDFs separately
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      key:
+        simple: AdditionalPDFs
+      value:
+        complex:
+          root: File
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: File.SHA256
+                iscontext: true
+              right:
+                value:
+                  simple: ConvertedFile.FileSHA256
+                iscontext: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 82c30ea3-4fbc-42dc-852b-0bda54ef1315
+    type: regular
+    task:
+      id: 82c30ea3-4fbc-42dc-852b-0bda54ef1315
+      version: -1
+      name: Save valid PDFs separately
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      key:
+        simple: ValidPDFEntryIDs
+      value:
+        complex:
+          root: CheckedPDFs
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: CheckedPDFs.IsValid
+                iscontext: true
+          - - operator: isFalse
+              left:
+                value:
+                  simple: CheckedPDFs.IsEncrypted
+                iscontext: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 1013
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 54c92f03-3cc6-4742-b121-8694a35255b2
+    type: condition
+    task:
+      id: 54c92f03-3cc6-4742-b121-8694a35255b2
+      version: -1
+      name: Assert there are pdf files to extract from
+      description: Checks whether there are any PDF files to process
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ValidPDFEntryIDs
+                transformers:
+                - operator: AppendIfNotEmpty
+                  args:
+                    item:
+                      value:
+                        simple: AdditionalPDFs
+                      iscontext: true
+                    raw: {}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1606,
+          "y": 1149
         }
       }
     note: false
@@ -2346,19 +2568,18 @@ view: |-
       "21_10_#default#": 0.1,
       "23_10_#default#": 0.14,
       "23_22_yes": 0.43,
-      "29_19_yes": 0.13,
-      "29_8_no": 0.57,
+      "28_24_yes": 0.88,
+      "34_19_#default#": 0.42,
       "5_10_#default#": 0.33,
       "5_6_yes": 0.36,
       "7_10_#default#": 0.1,
-      "7_29_yes": 0.42,
       "9_10_#default#": 0.18,
       "9_11_yes": 0.35
     },
     "paper": {
       "dimensions": {
-        "height": 1815,
-        "width": 3995,
+        "height": 1896,
+        "width": 4165,
         "x": -975,
         "y": -10
       }

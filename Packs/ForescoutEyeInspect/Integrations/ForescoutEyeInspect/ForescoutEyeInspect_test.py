@@ -24,11 +24,10 @@ def mock_client() -> Client:
 
 
 def mock_csrf_token(requests_mock):
-    requests_mock.get(f"{MOCK_BASE_URL}/sensors",
-                      headers={
-                          "CCJSESSIONID": os.urandom(32).hex().upper(),
-                          "X-CSRF-Token": os.urandom(32).hex().upper()
-                      })
+    requests_mock.get(
+        f"{MOCK_BASE_URL}/sensors",
+        headers={"CCJSESSIONID": os.urandom(32).hex().upper(), "X-CSRF-Token": os.urandom(32).hex().upper()},
+    )
 
 
 def test_list_hosts(requests_mock):
@@ -356,11 +355,7 @@ def test_add_ip_blacklist(requests_mock):
     mock_csrf_token(requests_mock)
     requests_mock.post(f"{MOCK_BASE_URL}/sensors/2/itl/itl_sec_udb_bip/blacklist", text="")
 
-    result = add_ip_blacklist_command(client, {
-        "sensor_id": 2,
-        "address": "1.2.3.4",
-        "comment": "Malicious IP address"
-    })
+    result = add_ip_blacklist_command(client, {"sensor_id": 2, "address": "1.2.3.4", "comment": "Malicious IP address"})
 
     assert "1.2.3.4" in result.readable_output
     assert "Malicious IP address" in result.readable_output
@@ -414,11 +409,7 @@ def test_add_domain_blacklist(requests_mock):
     mock_csrf_token(requests_mock)
     requests_mock.post(f"{MOCK_BASE_URL}/sensors/2/itl/itl_sec_udb_dns_bd/blacklist", text="")
 
-    result = add_domain_blacklist_command(client, {
-        "sensor_id": 2,
-        "domain_name": "xyz.com",
-        "comment": "Malicious domain"
-    })
+    result = add_domain_blacklist_command(client, {"sensor_id": 2, "domain_name": "xyz.com", "comment": "Malicious domain"})
 
     assert "xyz.com" in result.readable_output
     assert "Malicious domain" in result.readable_output
@@ -442,8 +433,7 @@ def test_get_ssl_client_blacklist(requests_mock):
     client = mock_client()
     mock_response = load_json_mock_response("ssl_client_blacklist")
 
-    requests_mock.get(f"{MOCK_BASE_URL}/sensors/2/itl/itl_sec_udb_ssl_bja3/blacklist",
-                      json=mock_response)
+    requests_mock.get(f"{MOCK_BASE_URL}/sensors/2/itl/itl_sec_udb_ssl_bja3/blacklist", json=mock_response)
 
     result = get_ssl_client_blacklist_command(client, {"sensor_id": 2, "page": 1, "limit": 50})
 
@@ -665,11 +655,7 @@ def test_create_group_policy(requests_mock):
         {
             "name": "Allow MODBUS TCP Policy",
             "description": "Allow MODBUS TCP traffic",
-            "constraints": {
-                "type": "os_version",
-                "operator": "equals",
-                "os_version": "1.2.3"
-            },
+            "constraints": {"type": "os_version", "operator": "equals", "os_version": "1.2.3"},
         },
     )
 
@@ -706,11 +692,7 @@ def test_update_group_policy(requests_mock):
             "policy_id": 1,
             "name": "Allow MODBUS TCP",
             "description": "Allow MODBUS TCP traffic",
-            "constraints": {
-                "type": "os_version",
-                "operator": "equals",
-                "os_version": "1.2.3"
-            },
+            "constraints": {"type": "os_version", "operator": "equals", "os_version": "1.2.3"},
         },
     )
 
@@ -718,11 +700,7 @@ def test_update_group_policy(requests_mock):
 
     assert result.outputs["id"] == 1
     assert result.outputs["name"] == "Test Policy"
-    assert result.outputs["constraints"] == [{
-        "operator": "equals",
-        "os_version": "1.2.3",
-        "type": "os_version"
-    }]
+    assert result.outputs["constraints"] == [{"operator": "equals", "os_version": "1.2.3", "type": "os_version"}]
 
 
 def test_delete_group_policy(requests_mock):
@@ -769,11 +747,7 @@ def test_assign_group_policy_hosts(requests_mock):
     mock_csrf_token(requests_mock)
     requests_mock.post(f"{MOCK_BASE_URL}/group_policy/1/add_hosts", json={"count": 2})
 
-    result = assign_group_policy_hosts_command(client, {
-        "policy_id": 1,
-        "filter_type": "address",
-        "filter_value": "192.168.1.5"
-    })
+    result = assign_group_policy_hosts_command(client, {"policy_id": 1, "filter_type": "address", "filter_value": "192.168.1.5"})
 
     assert result.readable_output == "## 2 Additional Hosts Were Assigned to Group Policy 1!"
 
@@ -797,11 +771,9 @@ def test_unassign_group_policy_hosts(requests_mock):
     mock_csrf_token(requests_mock)
     requests_mock.post(f"{MOCK_BASE_URL}/group_policy/1/remove_hosts", json={"count": 2})
 
-    result = unassign_group_policy_hosts_command(client, {
-        "policy_id": 1,
-        "filter_type": "address",
-        "filter_value": "192.168.1.5"
-    })
+    result = unassign_group_policy_hosts_command(
+        client, {"policy_id": 1, "filter_type": "address", "filter_value": "192.168.1.5"}
+    )
 
     assert result.readable_output == "## 2 Additional Hosts Were Unassigned from Group Policy 1!"
 

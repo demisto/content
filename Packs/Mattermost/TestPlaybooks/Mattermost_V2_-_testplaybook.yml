@@ -22,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -90
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -57,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 60
+          "x": 50,
+          "y": 210
         }
       }
     note: false
@@ -96,8 +96,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 380
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -136,8 +136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 760
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -162,7 +162,7 @@ tasks:
       brand: MattermostV2
     nexttasks:
       '#none#':
-      - "7"
+      - "14"
     scriptarguments:
       limit:
         simple: "1"
@@ -173,8 +173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 990
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -199,7 +199,7 @@ tasks:
       brand: MattermostV2
     nexttasks:
       '#none#':
-      - "8"
+      - "15"
     scriptarguments:
       channel:
         simple: channel_test_playbook_${RandomString}
@@ -212,8 +212,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1180
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -251,8 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1370
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
@@ -277,7 +277,26 @@ tasks:
       brand: MattermostV2
     scriptarguments:
       channel:
-        simple: ${Mattermost.Channel.name}
+        complex:
+          root: ${Mattermost.Channel.name}
+          filters:
+          - - operator: endWith
+              left:
+                value:
+                  simple: ${Mattermost.Channel.name}
+                iscontext: true
+              right:
+                value:
+                  simple: RandomString
+                iscontext: true
+          - - operator: startWith
+              left:
+                value:
+                  simple: ${Mattermost.Channel.name}
+                iscontext: true
+              right:
+                value:
+                  simple: channel_test_playbook_
       channel_name:
         simple: channel_test_playbook_${RandomString}
       team_name:
@@ -287,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1930
+          "x": 50,
+          "y": 3170
         }
       }
     note: false
@@ -324,8 +343,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 560
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -362,8 +381,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1570
+          "x": 50,
+          "y": 2820
         }
       }
     note: false
@@ -405,8 +424,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1750
+          "x": 50,
+          "y": 2995
         }
       }
     note: false
@@ -448,8 +467,100 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 220
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: cead912b-c4c4-4f89-80a7-c47a25fc9cda
+    type: regular
+    task:
+      id: cead912b-c4c4-4f89-80a7-c47a25fc9cda
+      version: -1
+      name: mattermost-list-private-channels-for-user
+      description: Get all the private channels on a team for a user.
+      script: MattermostV2|||mattermost-list-private-channels-for-user
+      type: regular
+      iscommand: true
+      brand: MattermostV2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      user_id:
+        simple: ${Mattermost.User.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: edebf854-6426-4cf9-848e-228a849987fc
+    type: regular
+    task:
+      id: edebf854-6426-4cf9-848e-228a849987fc
+      version: -1
+      name: mattermost-set-channel-role
+      description: Update a user's roles for a channel. The user has to already be a member of the channel.
+      script: MattermostV2|||mattermost-set-channel-role
+      type: regular
+      iscommand: true
+      brand: MattermostV2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      channel_id:
+        complex:
+          root: Mattermost.Channel
+          filters:
+          - - operator: endWith
+              left:
+                value:
+                  simple: Mattermost.Channel.name
+                iscontext: true
+              right:
+                value:
+                  simple: RandomString
+                iscontext: true
+          - - operator: startWith
+              left:
+                value:
+                  simple: Mattermost.Channel.name
+                iscontext: true
+              right:
+                value:
+                  simple: channel_test_playbook_
+          accessor: id
+      user_id:
+        simple: ${Mattermost.User.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1570
         }
       }
     note: false
@@ -464,10 +575,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2115,
-        "width": 380,
-        "x": 450,
-        "y": -90
+        "height": 2270,
+        "width": 381,
+        "x": 50,
+        "y": 50
       }
     }
   }

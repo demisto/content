@@ -1,0 +1,5 @@
+{
+    "title": "Alert from Cortex XSOAR",
+    "message": "Hello world.",
+    "s4_external_id": "id1234"
+}

@@ -1,0 +1,28 @@
+{
+    "data": {
+        "entity": {
+            "type": "url",
+            "value": "https://29102.shop"
+        },
+        "risk": {
+            "malicious_score": 80,
+            "detected_activities": [
+                {
+                    "type": "infecting_url",
+                    "observation_date": "2025-03-05T11:18:01.941280+00:00",
+                    "description": "URL that may infect it’s visitors with malware.",
+                    "confidence": 100,
+                    "occurrences_count": 1
+                }
+            ],
+            "occurrences_count": 1
+        },
+        "enrichment": {
+            "related_entities": null,
+            "ips": [],
+            "hostname": null,
+            "domain": null
+        },
+        "benign": false
+    }
+}

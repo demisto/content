@@ -871,5 +871,6 @@ contentitemexportablefields:
   contentitemfields: {}
 system: true
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
+- platform

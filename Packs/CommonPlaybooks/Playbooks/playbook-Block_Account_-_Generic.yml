@@ -371,6 +371,7 @@ outputs: []
 tests:
 - No tests (auto formatted)
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
+- platform
 deprecated: true

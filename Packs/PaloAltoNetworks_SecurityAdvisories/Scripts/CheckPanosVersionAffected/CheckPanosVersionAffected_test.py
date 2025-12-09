@@ -8,17 +8,18 @@ import demistomock as demisto
 @pytest.fixture()
 def advisories_list():
     from CheckPanosVersionAffected import Advisory
+
     return [
         Advisory(
-            data_type='CVE',
-            data_format='MITRE',
-            cve_id='CVE-2019-17440',
-            cve_date_public='2019-12-19T19:35:00.000Z',
-            cve_title='PAN-OS on PA-7000 Series: Improper restriction of communication to Log Forwarding Card (LFC)',
-            description='Improper restriction of communication',
+            data_type="CVE",
+            data_format="MITRE",
+            cve_id="CVE-2019-17440",
+            cve_date_public="2019-12-19T19:35:00.000Z",
+            cve_title="PAN-OS on PA-7000 Series: Improper restriction of communication to Log Forwarding Card (LFC)",
+            description="Improper restriction of communication",
             cvss_score=10,
-            cvss_severity='CRITICAL',
-            cvss_vector_string='CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H',
+            cvss_severity="CRITICAL",
+            cvss_vector_string="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
             affected_version_list=[
                 "PAN-OS 9.0.5",
                 "PAN-OS 9.0.4",
@@ -34,25 +35,21 @@ def advisories_list():
                 "PAN-OS 9.0.1",
                 "PAN-OS 9.0.0",
                 "PAN-OS 9.0",
-                "PAN-OS 8.1.11"
+                "PAN-OS 8.1.11",
             ],
         ),
         Advisory(
-            data_type='CVE',
-            data_format='MITRE',
-            cve_id='CVE-2019-17441',
-            cve_date_public='2019-12-15T19:35:00.000Z',
-            cve_title='This is a fake advisory',
-            description='Improper restriction of communication',
+            data_type="CVE",
+            data_format="MITRE",
+            cve_id="CVE-2019-17441",
+            cve_date_public="2019-12-15T19:35:00.000Z",
+            cve_title="This is a fake advisory",
+            description="Improper restriction of communication",
             cvss_score=10,
-            cvss_severity='CRITICAL',
-            cvss_vector_string='CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H',
-            affected_version_list=[
-                "PAN-OS 8.1.12-h3",
-                "PAN-OS 8.1.11",
-                "PAN-OS 8.1.10"
-            ],
-        )
+            cvss_severity="CRITICAL",
+            cvss_vector_string="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+            affected_version_list=["PAN-OS 8.1.12-h3", "PAN-OS 8.1.11", "PAN-OS 8.1.10"],
+        ),
     ]
 
 
@@ -61,6 +58,7 @@ def test_compare_version_with_advisories(advisories_list):
     Given a list of advisories as dataclasses, tests the comparison function
     """
     from CheckPanosVersionAffected import compare_version_with_advisories
+
     # Match single item
     match = compare_version_with_advisories(panos_version="9.0.5", advisories_list=advisories_list)
     assert len(match) == 1
@@ -81,15 +79,11 @@ def test_main(mocker):
     integration command.
     """
     from CheckPanosVersionAffected import main
-    advisories_list = json.load(
-        open(os.path.sep.join(["test_data", "example_advisories_data.json"])))
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "advisories": advisories_list,
-        "version": "9.1.3"
-    })
-    expected_results = json.load(
-        open(os.path.sep.join(["test_data", "expected_response.json"])))
-    mocker.patch.object(demisto, 'results')
+    advisories_list = json.load(open(os.path.sep.join(["test_data", "example_advisories_data.json"])))
+
+    mocker.patch.object(demisto, "args", return_value={"advisories": advisories_list, "version": "9.1.3"})
+    expected_results = json.load(open(os.path.sep.join(["test_data", "expected_response.json"])))
+    mocker.patch.object(demisto, "results")
     main()
     demisto.results.assert_called_with(expected_results)

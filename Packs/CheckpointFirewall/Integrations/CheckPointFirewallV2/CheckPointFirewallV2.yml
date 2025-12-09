@@ -1,5 +1,5 @@
 category: IT Services
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -1832,7 +1832,7 @@ script:
     outputs:
     - contextPath: CheckPoint.DeletedThreatProtections
       description: ''
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''
   subtype: python3

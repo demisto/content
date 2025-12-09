@@ -40,31 +40,31 @@ def dt_to_filetime(dt):
     # return EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
     ad_time = EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
     ad_time_str = str(ad_time)
-    entry = ({
+    entry = {
         "Type": entryTypes["note"],
         "ContentsFormat": formats["json"],
         "Contents": ad_time,
         "HumanReadable": ad_time,
-        "EntryContext": {"ADFileTime": ad_time, "ADFileTimeStr": ad_time_str}
-    })
+        "EntryContext": {"ADFileTime": ad_time, "ADFileTimeStr": ad_time_str},
+    }
     return entry
 
 
-'''MAIN FUNCTION'''
+"""MAIN FUNCTION"""
 
 
 def main():
     try:
         args = demisto.args()
-        days_ago = args['days_ago']
+        days_ago = args["days_ago"]
         new_date = datetime.today() - timedelta(int(days_ago))
         dt = new_date.replace(hour=0, minute=0, second=0, microsecond=0)
         entry = dt_to_filetime(dt)
         demisto.results(entry)
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute script.\nError:\n{str(e)}')
+        return_error(f"Failed to execute script.\nError:\n{str(e)}")
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

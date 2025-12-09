@@ -1,7 +1,7 @@
 Use the LockPath KeyLight integration to manage GRC tickets in the Keylight platform.
 This integration was integrated and tested with version 5.5.018.10 of Lockpath KeyLight.
-## Configure Lockpath KeyLight v2 in Cortex
 
+## Configure Lockpath KeyLight v2 in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -16,38 +16,41 @@ This integration was integrated and tested with version 5.5.018.10 of Lockpath K
 | isFetch | Fetch incidents | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### kl-get-component
+
 ***
 Retrieves a component specified by ID or alias. If no parameters are specified, all components will be retrieved.
-
 
 ##### Base Command
 
 `kl-get-component`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| component_id | The id of the component. | Optional | 
-| alias | The alias of the component. | Optional | 
-
+| component_id | The id of the component. | Optional |
+| alias | The alias of the component. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Keylight.Component.ID | String | The ID of the component. | 
-| Keylight.Component.Name | String | The name of the component. | 
-| Keylight.Component.ShortName | String | The short name of the component. | 
-| Keylight.Component.SystemName | String | The system name of the component. | 
-
+| Keylight.Component.ID | String | The ID of the component. |
+| Keylight.Component.Name | String | The name of the component. |
+| Keylight.Component.ShortName | String | The short name of the component. |
+| Keylight.Component.SystemName | String | The system name of the component. |
 
 ##### Command Example
+
 ```!kl-get-component alias="_auditdemisto"```
 
 ##### Context Example
+
 ```
 {
     "Keylight": {
@@ -62,43 +65,45 @@ Retrieves a component specified by ID or alias. If no parameters are specified, 
 ```
 
 ##### Human Readable Output
+
 ### Keylight Components
+
 |ID|Name|ShortName|SystemName|
 |---|---|---|---|
 | 10359 | Audit Tasks (Demisto Test) | _auditdemisto | _auditdemisto |
 
-
 ### kl-get-field-list
+
 ***
 Retrieves a detail field listing for a component specified by ID.
-
 
 ##### Base Command
 
 `kl-get-field-list`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| component_id | The id of the component. | Required | 
-
+| component_id | The id of the component. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Keylight.Field.ID | String | The ID of the field. | 
-| Keylight.Field.Name | String | The field&\#x27;s name. | 
-| Keylight.Field.SystemName | String | The system name of the field. | 
-| Keylight.Field.ShortName | String | The short name of the field. | 
-| Keylight.Field.ReadOnly | Boolean | Is the field read only. | 
-| Keylight.Field.Required | Boolean | Is the field required. | 
-
+| Keylight.Field.ID | String | The ID of the field. |
+| Keylight.Field.Name | String | The field&\#x27;s name. |
+| Keylight.Field.SystemName | String | The system name of the field. |
+| Keylight.Field.ShortName | String | The short name of the field. |
+| Keylight.Field.ReadOnly | Boolean | Is the field read only. |
+| Keylight.Field.Required | Boolean | Is the field required. |
 
 ##### Command Example
+
 ```!kl-get-field-list component_id="10359"```
 
 ##### Context Example
+
 ```
 {
     "Keylight": {
@@ -309,7 +314,9 @@ Retrieves a detail field listing for a component specified by ID.
 ```
 
 ##### Human Readable Output
-### Keylight fields for component 10359:
+
+### Keylight fields for component 10359
+
 |ID|Name|SystemName|ShortName|ReadOnly|Required|
 |---|---|---|---|---|---|
 | 8998 | Assignee | _assignee | _assignee | false | true |
@@ -330,39 +337,39 @@ Retrieves a detail field listing for a component specified by ID.
 | 9012 | Work Log | _worktime | _worktime | false | false |
 | 8957 | Workflow Stage | WorkflowStage | WorkflowStage | true | false |
 
-
 ### kl-get-field
+
 ***
 Retrieves details for a field specified by ID.
-
 
 ##### Base Command
 
 `kl-get-field`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| component_id | The ID of the component. Get the ID from the kl-get-component command. | Required | 
-| field_name | The name of the field. | Required | 
-
+| component_id | The ID of the component. Get the ID from the kl-get-component command. | Required |
+| field_name | The name of the field. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Keylight.Field.ID | String | The ID of the field. | 
-| Keylight.Field.Name | String | The field&\#x27;s name. | 
-| Keylight.Field.SystemName | String | The system name of the field. | 
-| Keylight.Field.ShortName | String | The short name of the field. | 
-| Keylight.Field.ReadOnly | Boolean | Is the field read only. | 
-| Keylight.Field.Required | String | Is the field required. | 
-
+| Keylight.Field.ID | String | The ID of the field. |
+| Keylight.Field.Name | String | The field&\#x27;s name. |
+| Keylight.Field.SystemName | String | The system name of the field. |
+| Keylight.Field.ShortName | String | The short name of the field. |
+| Keylight.Field.ReadOnly | Boolean | Is the field read only. |
+| Keylight.Field.Required | String | Is the field required. |
 
 ##### Command Example
+
 ```!kl-get-field component_id="10359" field_name="Task ID"```
 
 ##### Context Example
+
 ```
 {
     "Keylight": {
@@ -383,44 +390,46 @@ Retrieves details for a field specified by ID.
 ```
 
 ##### Human Readable Output
-### Keylight field 9083:
+
+### Keylight field 9083
+
 |ID|Name|SystemName|ShortName|ReadOnly|Required|
 |---|---|---|---|---|---|
 | 9083 | Task ID | _taskid | _taskid | false | true |
 
-
 ### kl-get-record
+
 ***
 Returns the complete set of fields for a given record within a component.
-
 
 ##### Base Command
 
 `kl-get-record`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| component_id | The component ID. Get the D from the kl-get-component. | Required | 
-| field_names | The filter specific for field names.<br/>* Case sensitive.<br/>* If one of the names contains a space, add all names in parenthesis (such as &quot;Id,Published Revision&quot;). | Optional | 
-| record_id | The record ID. Get the ID from Keylight or from the kl-get-records command. | Required | 
-| detailed | Whether to get detailed records. Default is false. | Optional | 
-
+| component_id | The component ID. Get the D from the kl-get-component. | Required |
+| field_names | The filter specific for field names.<br/>*Case sensitive.<br/>* If one of the names contains a space, add all names in parenthesis (such as &quot;Id,Published Revision&quot;). | Optional |
+| record_id | The record ID. Get the ID from Keylight or from the kl-get-records command. | Required |
+| detailed | Whether to get detailed records. Default is false. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Keylight.Record.ID | String | The record ID. | 
-| Keylight.Record.Fields | String | The fields in the record. | 
-| Keylight.Record.ComponentID | String | The component ID of the record. | 
-| Keylight.Record.DisplayName | String | The display name of the record. | 
-
+| Keylight.Record.ID | String | The record ID. |
+| Keylight.Record.Fields | String | The fields in the record. |
+| Keylight.Record.ComponentID | String | The component ID of the record. |
+| Keylight.Record.DisplayName | String | The display name of the record. |
 
 ##### Command Example
+
 ```!kl-get-record record_id=13  component_id=10359```
 
 ##### Context Example
+
 ```
 {
     "Keylight": {
@@ -468,53 +477,57 @@ Returns the complete set of fields for a given record within a component.
 ```
 
 ##### Human Readable Output
-### Details for record This is a task:
+
+### Details for record This is a task
+
 |ComponentID|DisplayName|ID|
 |---|---|---|
 | 10359 | This is a task | 13 |
-### With the following fields:
+
+### With the following fields
+
 |Assignee|Attachment|Audit Project|Authority Doc Citations|Comments|Created At|Created By|Current Revision|Deleted|Description|Document Attachment|Due Date|Evidence|Id|Published Revision|Task ID|Updated At|Updated By|Work Log|Workflow Stage|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Value: Admin, Keylight<br></br>ID: 6 |  |  |  |  | 2019-11-20T14:26:17.2285486 | Value: Development, Demisto<br></br>ID: 268 | 1 | false |  |  |  |  | 13 | 1 | This is a task | 2019-11-20T14:26:17.2285486 | Value: Development, Demisto<br></br>ID: 268 |  | Value: Published<br></br>ID: 221 |
 
-
 ### kl-get-records
+
 ***
 Retrieves the title/default field for a set of records within a chosen component.
 Filters may be applied to retrieve only the records meeting the selected criteria.
 
-
 ##### Base Command
 
 `kl-get-records`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| component_id | The ID of the desired component. Get the ID from the kl-get-component command. | Required | 
-| page_index | The index of the page of result to return. Must be &gt;= 0 | Optional | 
-| page_size | The index of the page of result to return. Must be between 0 and 100. | Optional | 
-| filter_type | The type of filter to apply. Can be: &quot;Contains&quot;, &quot;Excludes&quot;, &quot;Starts With&quot;, &quot;Ends With&quot;, &quot;Equals&quot;, &quot;Not Equals&quot;, &quot;Greater Than&quot;, &quot;Less Than&quot;, &quot;Greater Than&quot;, &quot;Less Than&quot;, &quot;Greater Equals Than&quot;, &quot;Between&quot;, &quot;Not Between&quot;, &quot;Is Null&quot;, &quot;Is Not Null&quot;. | Optional | 
-| filter_field_name | The name of the field for which to apply the filter. | Optional | 
-| filter_value | The value for which to filter. | Optional | 
-| detailed | Whether to get detailed records. | Optional | 
-| returned_fields | A list of specific fields to return. If empty, return all fields. | Optional | 
-
+| component_id | The ID of the desired component. Get the ID from the kl-get-component command. | Required |
+| page_index | The index of the page of result to return. Must be &gt;= 0 | Optional |
+| page_size | The index of the page of result to return. Must be between 0 and 100. | Optional |
+| filter_type | The type of filter to apply. Can be: &quot;Contains&quot;, &quot;Excludes&quot;, &quot;Starts With&quot;, &quot;Ends With&quot;, &quot;Equals&quot;, &quot;Not Equals&quot;, &quot;Greater Than&quot;, &quot;Less Than&quot;, &quot;Greater Than&quot;, &quot;Less Than&quot;, &quot;Greater Equals Than&quot;, &quot;Between&quot;, &quot;Not Between&quot;, &quot;Is Null&quot;, &quot;Is Not Null&quot;. | Optional |
+| filter_field_name | The name of the field for which to apply the filter. | Optional |
+| filter_value | The value for which to filter. | Optional |
+| detailed | Whether to get detailed records. | Optional |
+| returned_fields | A list of specific fields to return. If empty, return all fields. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Keylight.Record.ComponentID | String | The ID of the component containing the record. | 
-| Keylight.Record.DisplayName | String | The display name of the record. | 
-| Keylight.Record.Fields | Unknown | The fields in the record. | 
-| Keylight.Record.ID | Unknown | The ID of the record. | 
-
+| Keylight.Record.ComponentID | String | The ID of the component containing the record. |
+| Keylight.Record.DisplayName | String | The display name of the record. |
+| Keylight.Record.Fields | Unknown | The fields in the record. |
+| Keylight.Record.ID | Unknown | The ID of the record. |
 
 ##### Command Example
+
 ```!kl-get-records component_id="10359" filter_type="Starts With" filter_field_name="Task ID" filter_value="Updated" detailed="True"```
 
 ##### Context Example
+
 ```
 {
     "Keylight": {
@@ -524,77 +537,82 @@ Filters may be applied to retrieve only the records meeting the selected criteri
 ```
 
 ##### Human Readable Output
-### Records for component 10359 
+
+### Records for component 10359
+
 ### with filter "Starts With: Updated" on field "Task ID"
+
 **No entries.**
 
-
 ### kl-get-record-count
+
 ***
 Get the number of records for a specific component and filter.
-
 
 ##### Base Command
 
 `kl-get-record-count`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| component_id | The ID of the desired component. Get the ID from the kl-get-component command. | Required | 
-| filter_type | The type of filter to apply. Can be: &quot;Contains&quot;, &quot;Excludes&quot;, &quot;Starts With&quot;, &quot;Ends With&quot;, &quot;Equals&quot;, &quot;Not Equals&quot;, &quot;Greater Than&quot;, &quot;Less Than&quot;, &quot;Greater Than&quot;, &quot;Less Than&quot;, &quot;Greater Equals Than&quot;, &quot;Between&quot;, &quot;Not Between&quot;, &quot;Is Null&quot;, &quot;Is Not Null&quot;. | Optional | 
-| filter_field_name | The name of the field for which to apply the filter. | Optional | 
-| filter_value | The value for which to filter. | Optional | 
-
+| component_id | The ID of the desired component. Get the ID from the kl-get-component command. | Required |
+| filter_type | The type of filter to apply. Can be: &quot;Contains&quot;, &quot;Excludes&quot;, &quot;Starts With&quot;, &quot;Ends With&quot;, &quot;Equals&quot;, &quot;Not Equals&quot;, &quot;Greater Than&quot;, &quot;Less Than&quot;, &quot;Greater Than&quot;, &quot;Less Than&quot;, &quot;Greater Equals Than&quot;, &quot;Between&quot;, &quot;Not Between&quot;, &quot;Is Null&quot;, &quot;Is Not Null&quot;. | Optional |
+| filter_field_name | The name of the field for which to apply the filter. | Optional |
+| filter_value | The value for which to filter. | Optional |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!kl-get-record-count component_id=10359```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
-## There are **27** records in component 10359.
 
+## There are **27** records in component 10359
 
 ### kl-get-record-attachments
+
 ***
 Return the attachments of a specific field and record.
-
 
 ##### Base Command
 
 `kl-get-record-attachments`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| component_id | The ID of the desired component. Get the ID from the kl-get-component command. | Required | 
-| record_id | The record ID. Can get from Keylight or from the kl-get-records command. | Required | 
-| field_name | The name of the field that holds the attachments. Must be type &quot;Documents&quot;. | Required | 
-
+| component_id | The ID of the desired component. Get the ID from the kl-get-component command. | Required |
+| record_id | The record ID. Can get from Keylight or from the kl-get-records command. | Required |
+| field_name | The name of the field that holds the attachments. Must be type &quot;Documents&quot;. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Keylight.Attachment.FileName | String | The name of the attachment. | 
-| Keylight.Attachment.FieldID | String | The field ID of the attachment. | 
-| Keylight.Attachment.DocumentID | String | The ID of the document containing the attachment. | 
-| Keylight.Attachment.ComponentID | String | The component ID of the attachment. | 
-| Keylight.Attachment.RecordID | String | The record ID of the attachment. | 
-
+| Keylight.Attachment.FileName | String | The name of the attachment. |
+| Keylight.Attachment.FieldID | String | The field ID of the attachment. |
+| Keylight.Attachment.DocumentID | String | The ID of the document containing the attachment. |
+| Keylight.Attachment.ComponentID | String | The component ID of the attachment. |
+| Keylight.Attachment.RecordID | String | The record ID of the attachment. |
 
 ##### Command Example
+
 ```!kl-get-record-attachments component_id=10359 field_name="Evidence" record_id=4```
 
 ##### Context Example
+
 ```
 {
     "Keylight": {
@@ -610,38 +628,41 @@ Return the attachments of a specific field and record.
 ```
 
 ##### Human Readable Output
-### Field Evidence in record 4 has the following attachments:
+
+### Field Evidence in record 4 has the following attachments
+
 |ComponentID|DocumentID|FieldID|FileName|RecordID|
 |---|---|---|---|---|
 | 10359 | 409 | 9006 | 20170105_133423 (1).jpg | 4 |
 
-
 ### kl-get-record-attachment
+
 ***
 Returns a single attachment associated with the component ID, record ID, documents field ID, and the document ID.
-
 
 ##### Base Command
 
 `kl-get-record-attachment`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| component_id | The ID of the desired component. Get the ID from the kl-get-component command. | Required | 
-| record_id | The record ID. Can get from Keylight or from the kl-get-records command. | Required | 
-| field_name | The name of the field that holds the attachments. Must be type &quot;Documents&quot;. | Required | 
-| document_id | The ID of the document. | Required | 
-
+| component_id | The ID of the desired component. Get the ID from the kl-get-component command. | Required |
+| record_id | The record ID. Can get from Keylight or from the kl-get-records command. | Required |
+| field_name | The name of the field that holds the attachments. Must be type &quot;Documents&quot;. | Required |
+| document_id | The ID of the document. | Required |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!kl-get-record-attachment component_id=10359 field_name="Evidence" record_id=4 document_id=409```
 
 ##### Context Example
+
 ```
 {
     "File": {
@@ -662,129 +683,132 @@ There is no context output for this command.
 
 ##### Human Readable Output
 
-
 ### kl-delete-record
+
 ***
 Deletes a selected record from within a chosen component.
-
 
 ##### Base Command
 
 `kl-delete-record`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| component_id | The component ID. Get the ID from the kl-get-component command. | Required | 
-| record_id | The record ID. | Required | 
-
+| component_id | The component ID. Get the ID from the kl-get-component command. | Required |
+| record_id | The record ID. | Required |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!kl-delete-record component_id="10359" record_id="106"```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
-### Record 106 of component 10359 was deleted successfully.
+
+### Record 106 of component 10359 was deleted successfully
 
 ### kl-delete-record-attachment
+
 ***
 Deletes a specific attachment.
-
 
 ##### Base Command
 
 `kl-delete-record-attachment`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| component_id | The ID of the component. Get the ID from the kl-get-component command. | Required | 
-| record_id | The ID of the record to delete. | Required | 
-| field_id | The ID of the field. | Required | 
-| document_id | The ID of the document to delete. | Required | 
-
+| component_id | The ID of the component. Get the ID from the kl-get-component command. | Required |
+| record_id | The ID of the record to delete. | Required |
+| field_id | The ID of the field. | Required |
+| document_id | The ID of the document to delete. | Required |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
-``` ```
+
+``````
 
 ##### Human Readable Output
 
-
 ### kl-get-lookup-report-column-fields
+
 ***
 Retrieves information of each field in a field path, which relates to a lookup report column.
-
 
 ##### Base Command
 
 `kl-get-lookup-report-column-fields`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lookup_field_id | The lookup field ID, which relates to a lookup field that uses the report definition. | Required | 
-| field_path_id | The field path ID, which relates to the field path that retrieves fields. Get from the kl-get-record command. Detailed=True. | Required | 
-
+| lookup_field_id | The lookup field ID, which relates to a lookup field that uses the report definition. | Required |
+| field_path_id | The field path ID, which relates to the field path that retrieves fields. Get from the kl-get-record command. Detailed=True. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Keylight.LookupField.ID | String | The lookup field&\#x27;s ID. | 
-| Keylight.LookupField.Name | String | The lookup field&\#x27;s name. | 
-| Keylight.LookupField.ComponentID | String | The lookup field&\#x27;s component ID. | 
-| Keylight.LookupField.SystemName | String | The system name of the lookup field. | 
-
+| Keylight.LookupField.ID | String | The lookup field&\#x27;s ID. |
+| Keylight.LookupField.Name | String | The lookup field&\#x27;s name. |
+| Keylight.LookupField.ComponentID | String | The lookup field&\#x27;s component ID. |
+| Keylight.LookupField.SystemName | String | The system name of the lookup field. |
 
 ##### Command Example
-``` ```
+
+``````
 
 ##### Human Readable Output
 
-
 ### kl-create-record
+
 ***
 Creates a new record within the specified component of the Keylight application.
-* The Required option for a field is only enforced through the user interface, not through Cortex XSOAR.
 
+* The Required option for a field is only enforced through the user interface, not through Cortex XSOAR.
 
 ##### Base Command
 
 `kl-create-record`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| component_id | The ID of the component the record should be created in. Get the ID from the kl-get-component command. | Required | 
-| record_json | A JSON file in the format that the API requests. The exact format is found in the API documentation. | Optional | 
-
+| component_id | The ID of the component the record should be created in. Get the ID from the kl-get-component command. | Required |
+| record_json | A JSON file in the format that the API requests. The exact format is found in the API documentation. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Keylight.Record.ComponentID | String | The component ID of the record. | 
-| Keylight.Record.DisplayName | String | The display name of the record. | 
-| Keylight.Record.Fields | Unknown | The fields in the record. | 
-| Keylight.Record.ID | String | The record ID. | 
-
+| Keylight.Record.ComponentID | String | The component ID of the record. |
+| Keylight.Record.DisplayName | String | The display name of the record. |
+| Keylight.Record.Fields | Unknown | The fields in the record. |
+| Keylight.Record.ID | String | The record ID. |
 
 ##### Command Example
+
 ```!kl-create-record component_id="10359" record_json="[{\"fieldName\": \"Task ID\", \"value\": \"Created by Demisto Test Playbook\", \"isLookup\": false}, {\"fieldName\": \"Audit Project\", \"value\": 3, \"isLookup\": true}]"```
 
 ##### Context Example
+
 ```
 {
     "Keylight": {
@@ -832,86 +856,90 @@ Creates a new record within the specified component of the Keylight application.
 ```
 
 ##### Human Readable Output
-### Task "Created by Demisto Test Playbook":
+
+### Task "Created by Demisto Test Playbook"
+
 |ComponentID|DisplayName|ID|
 |---|---|---|
 | 10359 | Created by Demisto Test Playbook | 359 |
-### With the following fields:
+
+### With the following fields
+
 |Assignee|Attachment|Audit Project|Authority Doc Citations|Comments|Created At|Created By|Current Revision|Deleted|Description|Document Attachment|Due Date|Evidence|Id|Published Revision|Task ID|Updated At|Updated By|Work Log|Workflow Stage|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |  |  | Value: 123<br></br>ID: 3 |  |  | 2020-04-19T07:20:16.195364Z | Value: Development, Demisto<br></br>ID: 268 | 1 | false |  |  |  |  | 359 |  | Created by Demisto Test Playbook | 2020-04-19T07:20:16.195364Z | Value: Development, Demisto<br></br>ID: 268 |  | Value: Published<br></br>ID: 221 |
 
-
 ### kl-update-record
+
 ***
 Update fields in a specified record.
-* The Required option for a field is only enforced through the user interface, not through Cortex XSOAR.
 
+* The Required option for a field is only enforced through the user interface, not through Cortex XSOAR.
 
 ##### Base Command
 
 `kl-update-record`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| component_id | The ID of the component. Get the ID from the kl-get-component command. | Required | 
-| record_id | The ID of the record to be updated. Get the ID from Keylight or from the kl-get-records command. | Required | 
-| record_json | A JSON file in the format that the API requests. The exact format is found in the API documentation. | Optional | 
-
+| component_id | The ID of the component. Get the ID from the kl-get-component command. | Required |
+| record_id | The ID of the record to be updated. Get the ID from Keylight or from the kl-get-records command. | Required |
+| record_json | A JSON file in the format that the API requests. The exact format is found in the API documentation. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Keylight.Record.ComponentID | String | The ID of the component the record is in. | 
-| Keylight.Record.DisplayName | String | The display name of the record. | 
-| Keylight.Record.Fields | String | The fields in the record. | 
-| Keylight.Record.ID | String | The record ID | 
-
+| Keylight.Record.ComponentID | String | The ID of the component the record is in. |
+| Keylight.Record.DisplayName | String | The display name of the record. |
+| Keylight.Record.Fields | String | The fields in the record. |
+| Keylight.Record.ID | String | The record ID |
 
 ##### Command Example
-``` ```
+
+``````
 
 ##### Human Readable Output
 
-
 ### kl-get-user-by-id
+
 ***
 Get user details by his ID.
-
 
 ##### Base Command
 
 `kl-get-user-by-id`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID. | Required | 
-
+| user_id | The user ID. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Keylight.User.Id | String | The user ID. | 
-| Keylight.User.FullName | String | The user&\#x27;s full name. | 
-| Keylight.User.Username | String | The user&\#x27;s username. | 
-| Keylight.User.Active | Boolean | Is the user active. | 
-| Keylight.User.FirstName | String | The user&\#x27;s first name. | 
-| Keylight.User.MiddleName | String | The users middle name. | 
-| Keylight.User.LastName | String | The user&\#x27;s last name. | 
-| Keylight.User.EmailAddress | String | The user&\#x27;s email address. | 
-| Keylight.User.HomePhone | String | The user&\#x27;s home phone. | 
-| Keylight.User.WorkPhone | String | The user&\#x27;s work phone. | 
-| Keylight.User.MobilePhone | String | The user&\#x27;s mobile phone. | 
-
+| Keylight.User.Id | String | The user ID. |
+| Keylight.User.FullName | String | The user&\#x27;s full name. |
+| Keylight.User.Username | String | The user&\#x27;s username. |
+| Keylight.User.Active | Boolean | Is the user active. |
+| Keylight.User.FirstName | String | The user&\#x27;s first name. |
+| Keylight.User.MiddleName | String | The users middle name. |
+| Keylight.User.LastName | String | The user&\#x27;s last name. |
+| Keylight.User.EmailAddress | String | The user&\#x27;s email address. |
+| Keylight.User.HomePhone | String | The user&\#x27;s home phone. |
+| Keylight.User.WorkPhone | String | The user&\#x27;s work phone. |
+| Keylight.User.MobilePhone | String | The user&\#x27;s mobile phone. |
 
 ##### Command Example
+
 ```!kl-get-user-by-id user_id=268```
 
 ##### Context Example
+
 ```
 {
     "Keylight": {
@@ -959,7 +987,9 @@ Get user details by his ID.
 ```
 
 ##### Human Readable Output
+
 ### Keylight user 268
+
 |APIAccess|AccountType|Active|Deleted|EmailAddress|Fax|FirstName|FullName|FunctionalRoles|Groups|HomePhone|Id|IsLDAP|IsSAML|Language|LastName|Locked|MiddleName|MobilePhone|SecurityConfiguration|SecurityRoles|Title|Username|WorkPhone|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | true | 1 | true | false | demisto@demisto.com |  | Demisto | Development, Demisto |  | {'Id': 42, 'Name': 'Demisto Development'} |  | 268 | false | false | 1033 | Development | false |  |  | Id: 7<br></br>DisplayName: Standard User Configuration | {'Id': 28, 'Name': 'Demisto Developer'} | Demisto Users | demisto@demisto.com |  |

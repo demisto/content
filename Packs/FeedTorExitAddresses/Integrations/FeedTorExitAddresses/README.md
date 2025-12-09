@@ -2,7 +2,6 @@ Tor is free software and an open network that helps you defend against traffic a
 
 ## Configure Tor Exit Addresses Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -14,7 +13,6 @@ Tor is free software and an open network that helps you defend against traffic a
 | Tags | Supports CSV values. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 
@@ -34,7 +32,7 @@ Gets the feed indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 50. Default is 50. | Optional | 
+| limit | The maximum number of results to return. The default value is 50. Default is 50. | Optional |
 
 #### Context Output
 

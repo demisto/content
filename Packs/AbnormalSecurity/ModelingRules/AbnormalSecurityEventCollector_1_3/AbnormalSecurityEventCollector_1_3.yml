@@ -1,6 +1,6 @@
-fromversion: 6.10.0
-name: Abnormal Security Event Collector
-id: ModelingAbnormalSecurityEventCollector
+fromversion: 8.4.0
+name: Abnormal Security Modeling Rule
+id: Abnormal_Security_ModelingRule
 tags:
 rules: ''
 schema: ''

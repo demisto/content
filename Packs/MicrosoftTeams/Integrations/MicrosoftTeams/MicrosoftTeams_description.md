@@ -12,13 +12,13 @@ Important note: resetting the integration cache removes all data about teams, ch
 
 For more information about registering a calling bot see the [Microsoft Teams Documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/registering-calling-bot#add-microsoft-graph-permissions).
 
-#### Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)
+#### Authorize Cortex XSOAR for Entra ID Users (Self deployed Azure App)
 
 There are two different authentication methods for [self-deployed configuration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#configuring-the-instance-with-the-chosen-authentication-flow): 
 - [Client Credentials flow](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#client-credentials-flow)
 - [Authorization Code flow](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#authorization-code-flow)
 
-In order to use ***microsoft-teams-ring-user***, you must use the **Client Credentials flow**.
+***microsoft-teams-ring-user*** always uses **Client Credentials flow**. If **Authorization Code flow** is configured. The integration will authenticate using **Client Credentials** when the command is called. This should have no effect on other commands.
 
 In order to use the following commands, you must use the **Authorization Code flow**:
   - ***microsoft-teams-chat-create***

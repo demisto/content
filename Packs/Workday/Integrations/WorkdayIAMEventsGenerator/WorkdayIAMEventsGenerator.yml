@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Workday_IAM_Event_Generator
   version: -1
@@ -7,15 +10,18 @@ configuration:
   name: longRunning
   type: 8
   required: false
+  section: Connect
 - defaultvalue: '5000'
   display: Port mapping (<port> or <host port>:<docker port>)
   name: longRunningPort
   required: true
   type: 0
+  section: Connect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 description: Generates mock reports and events for Workday IAM. Use these for testing and development.
 display: Workday IAM Event Generator (Beta)
 name: Workday_IAM_Event_Generator
@@ -63,7 +69,7 @@ script:
     name: workday-generate-terminate-event
   - description: Reset the integration context to fetch the first run reports.
     name: initialize-context
-  dockerimage: demisto/teams:1.0.0.116912
+  dockerimage: demisto/teams:1.0.0.3748709
   longRunning: true
   longRunningPort: true
   script: '-'
@@ -74,3 +80,14 @@ tests:
 fromversion: 6.0.0
 toversion: 7.9.9
 beta: true
+triggers:
+- conditions:
+  - name: engine
+    operator: not_exists
+  - name: isEngineGroup
+    operator: not_exists
+  effects:
+  - name: longRunningPort
+    action:
+      hidden: true
+      required: false

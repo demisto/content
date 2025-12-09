@@ -1,15 +1,16 @@
 import json
 import os
-from http import HTTPStatus
-from urllib.parse import urljoin
 from datetime import datetime
+from http import HTTPStatus
 from typing import Any
+from urllib.parse import urljoin
+
 import pytest
 from CommonServerPython import *
 from DataBee import (
+    SEARCH_CONFIGURATIONS,
     Client,
     SearchConfiguration,
-    SEARCH_CONFIGURATIONS,
     SearchTypes,
 )
 

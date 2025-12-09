@@ -1,16 +1,20 @@
+from datetime import datetime
+
+import demistomock as demisto
+import pytest
+import requests
 from CommonServerPython import DemistoException
 from DruvaEventCollector import (
+    DATE_FORMAT_FOR_TOKEN,
+    MAX_FETCH,
     Client,
-    test_module as run_test_module,
-    get_events,
     fetch_events,
-    DATE_FORMAT_FOR_TOKEN, MAX_FETCH,
+    get_events,
 )
-import pytest
-import demistomock as demisto
-import requests
+from DruvaEventCollector import (
+    test_module as run_test_module,
+)
 from freezegun import freeze_time
-from datetime import datetime
 
 RESPONSE_WITH_EVENTS_1 = {
     "events": [
@@ -159,9 +163,7 @@ def test_get_events_command(mocker, mock_client):
     Then:
     - events and tracker as expected
     """
-    mocker.patch.object(
-        mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1
-    )
+    mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1)
     events, tracker = get_events(client=mock_client)
 
     assert tracker == "xxxx"
@@ -225,9 +227,7 @@ def test_search_events_called_with(mocker, mock_client):
     -  Ensure all arguments were sent to the api call as expected
     """
 
-    http_mock = mocker.patch.object(
-        mock_client, "_http_request", return_value=RESPONSE_WITHOUT_EVENTS
-    )
+    http_mock = mocker.patch.object(mock_client, "_http_request", return_value=RESPONSE_WITHOUT_EVENTS)
 
     mock_client.search_events(tracker="xxxx")
     http_mock.assert_called_with(
@@ -270,25 +270,17 @@ def test_fetch_events_command(mocker, mock_client):
     - Ensure number of events fetched, and the next run, match the response data
     """
     # First fetch
-    mocker.patch.object(
-        mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1
-    )
+    mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1)
     first_run = {}
-    events, tracker_for_second_run = fetch_events(
-        client=mock_client, last_run=first_run, max_fetch=MAX_FETCH
-    )
+    events, tracker_for_second_run = fetch_events(client=mock_client, last_run=first_run, max_fetch=MAX_FETCH)
 
     assert len(events) == 1
     assert tracker_for_second_run["tracker"] == "xxxx"
     assert events[0]["eventID"] == 0
 
     # Second fetch
-    mock_search_events = mocker.patch.object(
-        mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_2
-    )
-    events, tracker_for_third_run = fetch_events(
-        client=mock_client, last_run=tracker_for_second_run, max_fetch=MAX_FETCH
-    )
+    mock_search_events = mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_2)
+    events, tracker_for_third_run = fetch_events(client=mock_client, last_run=tracker_for_second_run, max_fetch=MAX_FETCH)
     mock_search_events.assert_called_with(tracker_for_second_run.get("tracker"))
     assert len(events) == 1
     assert tracker_for_third_run["tracker"] == "yyyy"
@@ -303,9 +295,7 @@ def test_fetch_events_command(mocker, mock_client):
         (
             {
                 "Token": "DUMMY TOKEN",
-                "expiration_time": datetime(2022, 2, 28, 10, 50).strftime(
-                    DATE_FORMAT_FOR_TOKEN
-                ),
+                "expiration_time": datetime(2022, 2, 28, 10, 50).strftime(DATE_FORMAT_FOR_TOKEN),
             }
         ),
     ],
@@ -321,15 +311,9 @@ def test_login_invalid_token(mocker, integration_context):
     Then:
     - Ensure a new token is generated
     """
-    mocker.patch.object(
-        demisto, "getIntegrationContext", return_value=integration_context
-    )
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=integration_context)
     mocker.patch.object(demisto, "setIntegrationContext")
-    mock_refresh_access_token = mocker.patch.object(
-        Client,
-        "_refresh_access_token",
-        return_value=("", 0)
-    )
+    mock_refresh_access_token = mocker.patch.object(Client, "_refresh_access_token", return_value=("", 0))
     Client(
         base_url="test",
         client_id="client_id",
@@ -358,15 +342,11 @@ def test_login_valid_token(mocker):
         "getIntegrationContext",
         return_value={
             "Token": "DUMMY TOKEN",
-            "expiration_time": datetime(2022, 2, 28, 11, 10).strftime(
-                DATE_FORMAT_FOR_TOKEN
-            ),
+            "expiration_time": datetime(2022, 2, 28, 11, 10).strftime(DATE_FORMAT_FOR_TOKEN),
         },
     )
     mocker.patch.object(demisto, "setIntegrationContext")
-    mock_refresh_access_token = mocker.patch.object(
-        Client, "_refresh_access_token", return_value=("DUMMY_TOKEN", 1800)
-    )
+    mock_refresh_access_token = mocker.patch.object(Client, "_refresh_access_token", return_value=("DUMMY_TOKEN", 1800))
     Client(
         base_url="test",
         client_id="client_id",
@@ -416,18 +396,12 @@ def test_fetch_events_invalid_tracker(mocker, mock_client):
     - Ensure no events are returned
     """
     # First fetch
-    mocker.patch.object(
-        mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1
-    )
-    events, tracker_for_second_run = fetch_events(
-        client=mock_client, last_run={}, max_fetch=MAX_FETCH
-    )
+    mocker.patch.object(mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1)
+    events, tracker_for_second_run = fetch_events(client=mock_client, last_run={}, max_fetch=MAX_FETCH)
 
     # Second fetch
     mocker.patch.object(mock_client, "search_events", side_effect=Exception("Invalid tracker"))
-    events, tracker_for_third_run = fetch_events(
-        client=mock_client, last_run=tracker_for_second_run, max_fetch=MAX_FETCH
-    )
+    events, tracker_for_third_run = fetch_events(client=mock_client, last_run=tracker_for_second_run, max_fetch=MAX_FETCH)
 
     # same tracker should be returned when "Invalid tracker" exception is thrown and no events
     assert tracker_for_third_run["tracker"] == tracker_for_second_run["tracker"]

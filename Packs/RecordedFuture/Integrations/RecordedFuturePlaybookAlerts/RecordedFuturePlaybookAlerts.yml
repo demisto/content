@@ -1,16 +1,17 @@
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
   id: RecordedFuturePlaybookAlerts
   version: -1
 name: RecordedFuturePlaybookAlerts
+deprecated: true
 display: 'Recorded Future - Playbook Alerts'
 category: Data Enrichment & Threat Intelligence
 defaultclassifier: Recorded Future Playbook Alert Classifier
 defaultmapperin: Recorded Future Playbook Alert Mapper
 image:
-description: 'Fetch & triage Recorded Future Playbook Alerts.'
+description: 'Deprecated. Use "Recorded Future Alerts" from "Recorded Future" pack instead.'
 configuration:
 - display: API URL (e.g., https://api.recordedfuture.com/gw/xsoar/)
   name: server_url

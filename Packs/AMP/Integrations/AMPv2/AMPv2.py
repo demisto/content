@@ -1,16 +1,17 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """
 CiscoAMP (Advanced Malware Protection) API Integration for Cortex XSOAR (aka Demisto).
 """
 import copy
 import math
-from typing import Any
+from collections import namedtuple
 from collections.abc import Callable, MutableMapping, MutableSequence
 from http import HTTPStatus
-from collections import namedtuple
-from CommonServerUserPython import *  # pylint: disable=wildcard-import
+from typing import Any
 
+from CommonServerUserPython import *  # pylint: disable=wildcard-import
 
 """ GLOBAL/PARAMS """  # pylint: disable=pointless-string-statement
 
@@ -332,9 +333,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: List of computers.
         """
-        params = remove_empty_elements(
-            {"q": username, "limit": limit, "offset": offset}
-        )
+        params = remove_empty_elements({"q": username, "limit": limit, "offset": offset})
 
         return self._http_request(
             method="GET",
@@ -412,9 +411,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def computer_move_request(
-        self, connector_guid: str, group_guid: str
-    ) -> dict[str, Any]:
+    def computer_move_request(self, connector_guid: str, group_guid: str) -> dict[str, Any]:
         """
         Moves the computer with the input connector_guid to a group with the input group_guid.
 
@@ -448,9 +445,7 @@ class Client(BaseClient):
             url_suffix=f"/computers/{connector_guid}",
         )
 
-    def computer_activity_list_request(
-        self, query_string: str, limit: int = None, offset: str = None
-    ) -> dict[str, Any]:
+    def computer_activity_list_request(self, query_string: str, limit: int = None, offset: str = None) -> dict[str, Any]:
         """
         Get computers that have observed activity by given username.
 
@@ -478,9 +473,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def computer_isolation_feature_availability_get_request(
-        self, connector_guid: str
-    ) -> requests.Response:
+    def computer_isolation_feature_availability_get_request(self, connector_guid: str) -> requests.Response:
         """
         Get information about available options for a computer's isolation.
 
@@ -511,9 +504,7 @@ class Client(BaseClient):
             url_suffix=f"/computers/{connector_guid}/isolation",
         )
 
-    def computer_isolation_create_request(
-        self, connector_guid: str, comment: str, unlock_code: str
-    ) -> dict[str, Any]:
+    def computer_isolation_create_request(self, connector_guid: str, comment: str, unlock_code: str) -> dict[str, Any]:
         """
         Put a computer in isolation.
 
@@ -614,11 +605,19 @@ class Client(BaseClient):
             }
         )
         demisto.debug(f"Sending request: {params}")
-        return self._http_request(
-            method="GET",
-            url_suffix="/events",
-            params=params,
-        )
+        try:
+            res = self._http_request(
+                method="GET",
+                url_suffix="/events",
+                params=params,
+            )
+        except DemistoException as e:
+            if e.res.status_code == 429:
+                res = {}
+                demisto.debug("Rate limit reached.")
+            else:
+                raise e
+        return res
 
     def event_type_list_request(self) -> dict[str, Any]:
         """
@@ -709,9 +708,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def file_list_item_list_request(
-        self, file_list_guid: str, limit: int = None, offset: int = None
-    ) -> dict[str, Any]:
+    def file_list_item_list_request(self, file_list_guid: str, limit: int = None, offset: int = None) -> dict[str, Any]:
         """
         Get information about a file list items.
 
@@ -738,9 +735,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def file_list_item_get_request(
-        self, file_list_guid: str, sha256: str
-    ) -> dict[str, Any]:
+    def file_list_item_get_request(self, file_list_guid: str, sha256: str) -> dict[str, Any]:
         """
         Get information about a file list item.
 
@@ -756,9 +751,7 @@ class Client(BaseClient):
             url_suffix=f"/file_lists/{file_list_guid}/files/{sha256}",
         )
 
-    def file_list_item_create_request(
-        self, file_list_guid: str, sha256: str, description: str = None
-    ) -> dict[str, Any]:
+    def file_list_item_create_request(self, file_list_guid: str, sha256: str, description: str = None) -> dict[str, Any]:
         """
         Create a new file list item.
 
@@ -781,9 +774,7 @@ class Client(BaseClient):
             json_data=body,
         )
 
-    def file_list_item_delete_request(
-        self, file_list_guid: str, sha256: str
-    ) -> dict[str, Any]:
+    def file_list_item_delete_request(self, file_list_guid: str, sha256: str) -> dict[str, Any]:
         """
         Delete an item from a file list item.
 
@@ -799,9 +790,7 @@ class Client(BaseClient):
             url_suffix=f"/file_lists/{file_list_guid}/files/{sha256}",
         )
 
-    def group_list_request(
-        self, name: str = None, limit: int = None, offset: int = None
-    ) -> dict[str, Any]:
+    def group_list_request(self, name: str = None, limit: int = None, offset: int = None) -> dict[str, Any]:
         """
         Get a list of groups information that can be filtered by a name.
 
@@ -960,9 +949,7 @@ class Client(BaseClient):
             url_suffix=f"/indicators/{indicator_guid}",
         )
 
-    def indicator_list_request(
-        self, limit: int = None, offset: int = None
-    ) -> dict[str, Any]:
+    def indicator_list_request(self, limit: int = None, offset: int = None) -> dict[str, Any]:
         """
         Get a list of indicators information.
 
@@ -1055,9 +1042,7 @@ class Client(BaseClient):
             "ios_bid": ios_bid,
         }
 
-        return self._http_request(
-            method="GET", url_suffix="/app_trajectory/queries", params=params
-        )
+        return self._http_request(method="GET", url_suffix="/app_trajectory/queries", params=params)
 
     def version_get_request(self) -> dict[str, Any]:
         """
@@ -1161,6 +1146,18 @@ class Client(BaseClient):
             params=params,
         )
 
+    def license_info_get_request(self) -> dict[str, Any]:
+        """
+        Get license information about the tenant such as number of connectors registered, tier level, licensed seats count etc.
+
+        Returns:
+            Dict[str, Any]: Licensing information about the tenant.
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="/license_summaries",
+        )
+
 
 """ COMMAND FUNCTIONS """  # pylint: disable=pointless-string-statement
 
@@ -1227,11 +1224,9 @@ def fetch_incidents(
     counter = 1
     while True:
         demisto.debug(f"looping on page #{counter}")
-        response = client.event_list_request(start_date=last_fetch,
-                                             event_types=event_types,
-                                             limit=500,
-                                             offset=offset)
-
+        response = client.event_list_request(start_date=last_fetch, event_types=event_types, limit=500, offset=offset)
+        if not response:
+            break
         demisto.debug(f"Received {len(response['data'])}. Adding.")
 
         items = items + response["data"]
@@ -1288,9 +1283,7 @@ def fetch_incidents(
                 ),
                 "occurred": timestamp_to_datestring(incident_timestamp),
                 "rawJSON": json.dumps(item),
-                "severity": XSOAR_SEVERITY_BY_AMP_SEVERITY.get(
-                    str(severity), IncidentSeverity.UNKNOWN
-                ),
+                "severity": XSOAR_SEVERITY_BY_AMP_SEVERITY.get(str(severity), IncidentSeverity.UNKNOWN),
                 "details": str(item.get("event_type")),
                 "dbotMirrorId": incident_id,
             }
@@ -1388,9 +1381,7 @@ def computer_list_command(client: Client, args: dict[str, Any]) -> List[CommandR
     )
 
     if is_get_request and is_list_request:
-        raise ValueError(
-            "connector_guid must be the only input, when fetching a specific computer."
-        )
+        raise ValueError("connector_guid must be the only input, when fetching a specific computer.")
 
     if not is_get_request:
         pagination = get_pagination_parameters(page, page_size, limit)
@@ -1401,9 +1392,7 @@ def computer_list_command(client: Client, args: dict[str, Any]) -> List[CommandR
             raw_response_list.append(
                 client.computer_list_request(
                     limit=pagination.limit,
-                    offset=None
-                    if pagination.offset is None
-                    else pagination.offset * request_number,
+                    offset=None if pagination.offset is None else pagination.offset * request_number,
                     hostnames=hostnames,
                     internal_ip=internal_ip,
                     external_ip=external_ip,
@@ -1416,9 +1405,7 @@ def computer_list_command(client: Client, args: dict[str, Any]) -> List[CommandR
             if not raw_response_list[-1]["data"]:
                 break
 
-        raw_response: dict[str, Any] = combine_response_results(
-            raw_response_list, pagination.is_automatic
-        )
+        raw_response: dict[str, Any] = combine_response_results(raw_response_list, pagination.is_automatic)
 
     else:
         raw_response = client.computer_get_request(
@@ -1459,9 +1446,7 @@ def computer_list_command(client: Client, args: dict[str, Any]) -> List[CommandR
     return command_results
 
 
-def computer_trajectory_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def computer_trajectory_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about a computer's trajectory.
     The command supports pagination.
@@ -1495,15 +1480,11 @@ def computer_trajectory_list_command(
 
     raw_response = client.computer_trajectory_list_request(
         connector_guid=connector_guid,
-        limit=pagination.page * pagination.page_size
-        if pagination.is_manual
-        else (limit or None),
+        limit=pagination.page * pagination.page_size if pagination.is_manual else (limit or None),
         query_string=query_string,
     )
 
-    context_output, readable_output = extract_pagination_from_response(
-        pagination, raw_response
-    )
+    context_output, readable_output = extract_pagination_from_response(pagination, raw_response)
 
     return CommandResults(
         outputs_prefix="CiscoAMP.ComputerTrajectory",
@@ -1514,9 +1495,7 @@ def computer_trajectory_list_command(
     )
 
 
-def computer_user_activity_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def computer_user_activity_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about computers with user activity on them.
     The command supports pagination.
@@ -1543,18 +1522,14 @@ def computer_user_activity_list_command(
             client.computer_user_activity_get_request(
                 username=username,
                 limit=pagination.limit,
-                offset=None
-                if pagination.offset is None
-                else pagination.offset * request_number,
+                offset=None if pagination.offset is None else pagination.offset * request_number,
             )
         )
 
         if not raw_response_list[-1]["data"]:
             break
 
-    raw_response: dict[str, Any] = combine_response_results(
-        raw_response_list, pagination.is_automatic
-    )
+    raw_response: dict[str, Any] = combine_response_results(raw_response_list, pagination.is_automatic)
 
     context_output = get_context_output(raw_response, ["links"])
 
@@ -1575,9 +1550,7 @@ def computer_user_activity_list_command(
     )
 
 
-def computer_user_trajectory_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def computer_user_trajectory_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about a computer's trajectory with the option filter by username.
     The command supports pagination.
@@ -1599,15 +1572,11 @@ def computer_user_trajectory_list_command(
 
     raw_response = client.computer_user_trajectory_list_request(
         connector_guid=connector_guid,
-        limit=pagination.page * pagination.page_size
-        if pagination.is_manual
-        else (limit or None),
+        limit=pagination.page * pagination.page_size if pagination.is_manual else (limit or None),
         username=username,
     )
 
-    context_output, readable_output = extract_pagination_from_response(
-        pagination, raw_response
-    )
+    context_output, readable_output = extract_pagination_from_response(pagination, raw_response)
 
     return CommandResults(
         outputs_prefix="CiscoAMP.ComputerUserTrajectory",
@@ -1618,9 +1587,7 @@ def computer_user_trajectory_list_command(
     )
 
 
-def computer_vulnerabilities_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def computer_vulnerabilities_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about a computer's vulnerabilities.
     The command supports pagination.
@@ -1651,18 +1618,14 @@ def computer_vulnerabilities_list_command(
                 start_time=start_time,
                 end_time=end_time,
                 limit=pagination.limit,
-                offset=None
-                if pagination.offset is None
-                else pagination.offset * request_number,
+                offset=None if pagination.offset is None else pagination.offset * request_number,
             )
         )
 
         if not raw_response_list[-1]["data"]:
             break
 
-    raw_response: dict[str, Any] = combine_response_results(
-        raw_response_list, pagination.is_automatic
-    )
+    raw_response: dict[str, Any] = combine_response_results(raw_response_list, pagination.is_automatic)
 
     context_output = get_context_output(raw_response, ["links"])
     context_output = context_output[0]["vulnerabilities"]
@@ -1756,9 +1719,7 @@ def computer_delete_command(client: Client, args: dict[str, Any]) -> CommandResu
     )
 
 
-def computer_activity_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def computer_activity_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about computers with query activity on them.
     The command supports pagination.
@@ -1798,18 +1759,14 @@ def computer_activity_list_command(
             client.computer_activity_list_request(
                 query_string=query_string,
                 limit=pagination.limit,
-                offset=None
-                if pagination.offset is None
-                else pagination.offset * request_number,
+                offset=None if pagination.offset is None else pagination.offset * request_number,
             )
         )
 
         if not raw_response_list[-1]["data"]:
             break
 
-    raw_response: dict[str, Any] = combine_response_results(
-        raw_response_list, pagination.is_automatic
-    )
+    raw_response: dict[str, Any] = combine_response_results(raw_response_list, pagination.is_automatic)
 
     context_output = get_context_output(raw_response, ["links"])
 
@@ -1830,9 +1787,7 @@ def computer_activity_list_command(
     )
 
 
-def computers_isolation_feature_availability_get_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def computers_isolation_feature_availability_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about available isolation options for a computer.
 
@@ -1862,9 +1817,7 @@ def computers_isolation_feature_availability_get_command(
     return CommandResults(readable_output=readable_output)
 
 
-def computer_isolation_get_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def computer_isolation_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about a computer's isolation.
 
@@ -1902,9 +1855,7 @@ def computer_isolation_get_command(
     )
 
 
-def computer_isolation_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def computer_isolation_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Put a computer in isolation.
 
@@ -1952,9 +1903,7 @@ def computer_isolation_create_command(
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def computer_isolation_create_polling_command(
-    args: dict[str, Any], **kwargs
-) -> PollResult:
+def computer_isolation_create_polling_command(args: dict[str, Any], **kwargs) -> PollResult:
     """
     Polling command to display the progress of computer isolation create command.
     After the first run, progress will be shown through the computer isolation get command.
@@ -1975,9 +1924,7 @@ def computer_isolation_create_polling_command(
     )
 
 
-def computer_isolation_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def computer_isolation_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Stop a computer's in isolation.
 
@@ -2018,9 +1965,7 @@ def computer_isolation_delete_command(
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def computer_isolation_delete_polling_command(
-    args: dict[str, Any], **kwargs
-) -> PollResult:
+def computer_isolation_delete_polling_command(args: dict[str, Any], **kwargs) -> PollResult:
     """
     Polling command to display the progress of computer isolation delete command.
     After the first run, progress will be shown through the computer isolation get command.
@@ -2087,24 +2032,17 @@ def computer_isolation_polling_command(
     )
 
 
-def create_relationships(
-    client: Client, indicator: str, relationship: dict[str, str | int | dict]
-):
-    '''
+def create_relationships(client: Client, indicator: str, relationship: dict[str, str | int | dict]):
+    """
     Creates relationships only when the event has a parent file for the file attached to the event
-    '''
+    """
     if not client.should_create_relationships or not relationship:
         return None
 
-    if not (identity := relationship.get("identity", {})) or not isinstance(
-        identity, dict
-    ):
+    if not (identity := relationship.get("identity", {})) or not isinstance(identity, dict):
         return None
 
-    if (
-        not (entity_b := identity.get("sha256"))
-        or auto_detect_indicator_type(entity_b) != FeedIndicatorType.File
-    ):
+    if not (entity_b := identity.get("sha256")) or auto_detect_indicator_type(entity_b) != FeedIndicatorType.File:
         return None
 
     relationships = [
@@ -2170,15 +2108,11 @@ def event_list_command(client: Client, args: dict[str, Any]) -> List[CommandResu
                 start_date=start_date,
                 event_types=event_type,  # type: ignore # List[Optional[int]] arg_to_number; expected Optional[List[int]]
                 limit=pagination.limit,
-                offset=None
-                if pagination.offset is None
-                else pagination.offset * request_number,
+                offset=None if pagination.offset is None else pagination.offset * request_number,
             )
         )
 
-    raw_response: dict[str, Any] = combine_response_results(
-        raw_response_list, pagination.is_automatic
-    )
+    raw_response: dict[str, Any] = combine_response_results(raw_response_list, pagination.is_automatic)
 
     context_outputs = get_context_output(raw_response, ["links"])
 
@@ -2202,12 +2136,10 @@ def event_list_command(client: Client, args: dict[str, Any]) -> List[CommandResu
             dbot_score = get_dbotscore(client.reliability, sha256, disposition)
 
             # Create relationships for the file indicator
-            relationships = (
-                create_relationships(
-                    client=client,
-                    indicator=sha256,
-                    relationship=dict_safe_get(context_output, ["file", "parent"]),
-                )
+            relationships = create_relationships(
+                client=client,
+                indicator=sha256,
+                relationship=dict_safe_get(context_output, ["file", "parent"]),
             )
 
             file_indicator = Common.File(
@@ -2318,18 +2250,14 @@ def file_list_list_command(client: Client, args: dict[str, Any]) -> CommandResul
                 file_list_request_by_type[file_list_type](
                     names=names,
                     limit=pagination.limit,
-                    offset=None
-                    if pagination.offset is None
-                    else pagination.offset * request_number,
+                    offset=None if pagination.offset is None else pagination.offset * request_number,
                 )
             )
 
             if not raw_response_list[-1]["data"]:
                 break
 
-        raw_response: dict[str, Any] = combine_response_results(
-            raw_response_list, pagination.is_automatic
-        )
+        raw_response: dict[str, Any] = combine_response_results(raw_response_list, pagination.is_automatic)
 
     else:
         raw_response = client.file_list_get_request(
@@ -2384,18 +2312,14 @@ def file_list_item_list_command(client: Client, args: dict[str, Any]) -> Command
                 client.file_list_item_list_request(
                     file_list_guid=file_list_guid,
                     limit=pagination.limit,
-                    offset=None
-                    if pagination.offset is None
-                    else pagination.offset * request_number,
+                    offset=None if pagination.offset is None else pagination.offset * request_number,
                 )
             )
 
             if not raw_response_list[-1]["data"]:
                 break
 
-        raw_response: dict[str, Any] = combine_response_results(
-            raw_response_list, pagination.is_automatic
-        )
+        raw_response: dict[str, Any] = combine_response_results(raw_response_list, pagination.is_automatic)
 
     else:
         raw_response = client.file_list_item_get_request(
@@ -2431,9 +2355,7 @@ def file_list_item_list_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
-def file_list_item_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def file_list_item_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Create a new item for a file list.
 
@@ -2481,9 +2403,7 @@ def file_list_item_create_command(
     )
 
 
-def file_list_item_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def file_list_item_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Delete an item from a file list.
 
@@ -2545,18 +2465,14 @@ def group_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
                 client.group_list_request(
                     name=name,
                     limit=pagination.limit,
-                    offset=None
-                    if pagination.offset is None
-                    else pagination.offset * request_number,
+                    offset=None if pagination.offset is None else pagination.offset * request_number,
                 )
             )
 
             if not raw_response_list[-1]["data"]:
                 break
 
-        raw_response: dict[str, Any] = combine_response_results(
-            raw_response_list, pagination.is_automatic
-        )
+        raw_response: dict[str, Any] = combine_response_results(raw_response_list, pagination.is_automatic)
 
         readable_output = get_results_readable_output(raw_response)
         readable_output += get_readable_output(
@@ -2784,18 +2700,14 @@ def indicator_list_command(client: Client, args: dict[str, Any]) -> CommandResul
             raw_response_list.append(
                 client.indicator_list_request(
                     limit=pagination.limit,
-                    offset=None
-                    if pagination.offset is None
-                    else pagination.offset * request_number,
+                    offset=None if pagination.offset is None else pagination.offset * request_number,
                 )
             )
 
             if not raw_response_list[-1]["data"]:
                 break
 
-        raw_response: dict[str, Any] = combine_response_results(
-            raw_response_list, pagination.is_automatic
-        )
+        raw_response: dict[str, Any] = combine_response_results(raw_response_list, pagination.is_automatic)
 
     else:
         raw_response = client.indicator_get_request(
@@ -2868,18 +2780,14 @@ def policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
                     products=products,
                     names=names,
                     limit=pagination.limit,
-                    offset=None
-                    if pagination.offset is None
-                    else pagination.offset * request_number,
+                    offset=None if pagination.offset is None else pagination.offset * request_number,
                 )
             )
 
             if not raw_response_list[-1]["data"]:
                 break
 
-        raw_response: dict[str, Any] = combine_response_results(
-            raw_response_list, pagination.is_automatic
-        )
+        raw_response: dict[str, Any] = combine_response_results(raw_response_list, pagination.is_automatic)
 
     else:
         raw_response = client.policy_get_request(
@@ -2905,9 +2813,7 @@ def policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-def app_trajectory_query_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def app_trajectory_query_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get app trajectory query for a given IOS bundle ID..
     The command supports pagination.
@@ -2954,9 +2860,7 @@ def app_trajectory_query_list_command(
     )
 
 
-def version_get_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:  # pylint: disable=unused-argument
+def version_get_command(client: Client, args: dict[str, Any]) -> CommandResults:  # pylint: disable=unused-argument
     """
     Get the current version of the API.
 
@@ -2979,6 +2883,62 @@ def version_get_command(
         outputs_key_field="version",
         outputs=context_output,
         readable_output=readable_output,
+        raw_response=raw_response,
+    )
+
+
+def license_info_get_command(client: Client, args: dict[str, Any]) -> CommandResults:  # pylint: disable=unused-argument
+    """
+    Get license information about the tenant such as number of connectors registered, tier level, licensed seats count etc.
+
+    Args:
+        client (Client): Cisco AMP client to run desired requests
+
+    Returns:
+        CommandResults: Current version of the API.
+    """
+    raw_response = client.license_info_get_request()
+    license_information = raw_response.get("data", {})
+
+    connector_info = [
+        {
+            "Number of connectors registered": license_information.get("number_of_connectors_registered"),
+            "Number of connectors seen in the last 30 days": license_information.get(
+                "number_of_connectors_seen_in_the_last_30_days"
+            ),
+        }
+    ]
+
+    license_summaries = license_information.get("license_summaries", [])
+    license_summary = [
+        {
+            "Licensed seats count": license.get("licensed_seats_count"),
+            "Start date": license.get("start_date"),
+            "End date": license.get("end_date"),
+            "Tier": license.get("tier"),
+        }
+        for license in license_summaries
+    ]
+
+    connector_info_table = tableToMarkdown(
+        "Connector Information",
+        connector_info,
+        headers=["Number of connectors registered", "Number of connectors seen in the last 30 days"],
+        removeNull=True,
+    )
+
+    license_summary_table = tableToMarkdown(
+        "License Summary",
+        license_summary,
+        headers=["Licensed seats count", "Start date", "End date", "Tier"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CiscoAMP.LicenseInformation",
+        outputs_key_field="license_information",
+        outputs=license_information,
+        readable_output=connector_info_table + license_summary_table,
         raw_response=raw_response,
     )
 
@@ -3016,9 +2976,7 @@ def vulnerability_list_command(client: Client, args: dict[str, Any]) -> CommandR
                     start_time=start_time,
                     end_time=end_time,
                     limit=pagination.limit,
-                    offset=None
-                    if pagination.offset is None
-                    else pagination.offset * request_number,
+                    offset=None if pagination.offset is None else pagination.offset * request_number,
                 )
             )
 
@@ -3030,18 +2988,14 @@ def vulnerability_list_command(client: Client, args: dict[str, Any]) -> CommandR
                     start_time=start_time,
                     end_time=end_time,
                     limit=pagination.limit,
-                    offset=None
-                    if pagination.offset is None
-                    else pagination.offset * request_number,
+                    offset=None if pagination.offset is None else pagination.offset * request_number,
                 )
             )
 
         if not raw_response_list[-1]["data"]:
             break
 
-    raw_response: dict[str, Any] = combine_response_results(
-        raw_response_list, pagination.is_automatic
-    )
+    raw_response: dict[str, Any] = combine_response_results(raw_response_list, pagination.is_automatic)
 
     readable_output = get_results_readable_output(raw_response)
     if sha256:
@@ -3088,9 +3042,7 @@ def endpoint_command(client: Client, args: dict[str, Any]) -> List[CommandResult
     endpoint_hostnames = argToList(args.get("hostname"))
 
     if not any((endpoint_ids, endpoint_ips, endpoint_hostnames)):
-        raise DemistoException(
-            "CiscoAMP - In order to run this command, please provide a valid id, ip or hostname"
-        )
+        raise DemistoException("CiscoAMP - In order to run this command, please provide a valid id, ip or hostname")
 
     responses = []
 
@@ -3104,7 +3056,7 @@ def endpoint_command(client: Client, args: dict[str, Any]) -> List[CommandResult
         for endpoint_ip in endpoint_ips:
             response = client.computer_list_request(internal_ip=endpoint_ip)
 
-        responses.append(response)
+            responses.append(response)
 
     else:
         responses.append(client.computer_list_request(hostnames=endpoint_hostnames))
@@ -3130,9 +3082,7 @@ def endpoint_command(client: Client, args: dict[str, Any]) -> List[CommandResult
             )
 
             endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-            readable_output = tableToMarkdown(
-                f'CiscoAMP - Endpoint {data["hostname"]}', endpoint_context
-            )
+            readable_output = tableToMarkdown(f'CiscoAMP - Endpoint {data["hostname"]}', endpoint_context)
 
             endpoints.append(
                 CommandResults(
@@ -3191,21 +3141,11 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
                 disposition = dict_safe_get(data, ["file", "disposition"])
                 dbot_score = get_dbotscore(client.reliability, file_hash, disposition)
 
-                file_indicator.md5 = file_indicator.md5 or dict_safe_get(
-                    data, ["file", "identity", "md5"]
-                )
-                file_indicator.sha1 = file_indicator.sha1 or dict_safe_get(
-                    data, ["file", "identity", "sha1"]
-                )
-                file_indicator.path = file_indicator.path or dict_safe_get(
-                    data, ["file", "file_path"]
-                )
-                file_indicator.name = file_indicator.name or dict_safe_get(
-                    data, ["file", "file_name"]
-                )
-                file_indicator.hostname = file_indicator.hostname or dict_safe_get(
-                    data, ["computer", "hostname"]
-                )
+                file_indicator.md5 = file_indicator.md5 or dict_safe_get(data, ["file", "identity", "md5"])
+                file_indicator.sha1 = file_indicator.sha1 or dict_safe_get(data, ["file", "identity", "sha1"])
+                file_indicator.path = file_indicator.path or dict_safe_get(data, ["file", "file_path"])
+                file_indicator.name = file_indicator.name or dict_safe_get(data, ["file", "file_name"])
+                file_indicator.hostname = file_indicator.hostname or dict_safe_get(data, ["computer", "hostname"])
                 file_indicator.dbot_score = file_indicator.dbot_score or dbot_score
 
                 is_all_filled = (
@@ -3222,9 +3162,7 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
                     break
 
             file_context = file_indicator.to_context().get(Common.File.CONTEXT_PATH)
-            readable_output = tableToMarkdown(
-                f"Cisco AMP - Hash Reputation for: {file_hash}", file_context
-            )
+            readable_output = tableToMarkdown(f"Cisco AMP - Hash Reputation for: {file_hash}", file_context)
 
         else:  # an empty list
             readable_output = f"Cisco AMP: {file_hash} not found in Cisco AMP v2."
@@ -3337,9 +3275,7 @@ def get_pagination_parameters(
     )
 
 
-def extract_pagination_from_response(
-    pagination: Pagination, raw_response: dict[str, Any]
-) -> tuple[List, str]:
+def extract_pagination_from_response(pagination: Pagination, raw_response: dict[str, Any]) -> tuple[List, str]:
     """
     Extract values from the response according to pagination parameters.
 
@@ -3357,9 +3293,7 @@ def extract_pagination_from_response(
         raw_response["data"]["events"] = raw_response["data"]["events"][start:stop]
 
     else:
-        raw_response["data"]["events"] = raw_response["data"]["events"][
-            : pagination.limit
-        ]
+        raw_response["data"]["events"] = raw_response["data"]["events"][: pagination.limit]
 
     context_output = get_context_output(raw_response, ["links"])
     context_output = context_output[0]["events"]
@@ -3380,9 +3314,7 @@ def extract_pagination_from_response(
     return context_output, readable_output
 
 
-def delete_keys_from_dict(
-    dictionary: MutableMapping, keys_to_delete: List[str] | Set[str]
-) -> dict[str, Any]:
+def delete_keys_from_dict(dictionary: MutableMapping, keys_to_delete: List[str] | Set[str]) -> dict[str, Any]:
     """
     Get a modified dictionary without the requested keys
 
@@ -3401,14 +3333,8 @@ def delete_keys_from_dict(
             if isinstance(value, MutableMapping):
                 modified_dict[key] = delete_keys_from_dict(value, keys_set)
 
-            elif (
-                isinstance(value, MutableSequence)
-                and len(value) > 0
-                and isinstance(value[0], MutableMapping)
-            ):
-                modified_dict[key] = [
-                    delete_keys_from_dict(val, keys_set) for val in value
-                ]
+            elif isinstance(value, MutableSequence) and len(value) > 0 and isinstance(value[0], MutableMapping):
+                modified_dict[key] = [delete_keys_from_dict(val, keys_set) for val in value]
 
             else:
                 modified_dict[key] = copy.deepcopy(value)
@@ -3416,9 +3342,7 @@ def delete_keys_from_dict(
     return modified_dict
 
 
-def add_item_to_all_dictionaries(
-    dictionaries: List[dict[str, Any]], key: str, value: Any
-) -> None:
+def add_item_to_all_dictionaries(dictionaries: List[dict[str, Any]], key: str, value: Any) -> None:
     for dictionary in dictionaries:
         dictionary[key] = value
 
@@ -3462,9 +3386,7 @@ def validate_query(
     )
 
 
-def get_dbotscore(
-    reliability: str, sha256: str = None, disposition: str = None
-) -> Common.DBotScore:
+def get_dbotscore(reliability: str, sha256: str = None, disposition: str = None) -> Common.DBotScore:
     """
     Get XSOAR score for the file's disposition.
 
@@ -3497,9 +3419,7 @@ def get_dbotscore(
     )
 
 
-def combine_response_results(
-    raw_response_list: List[dict[str, Any]], is_automatic: bool = False
-) -> dict[str, Any]:
+def combine_response_results(raw_response_list: List[dict[str, Any]], is_automatic: bool = False) -> dict[str, Any]:
     """
     If the pagination is automatic combine the results returned from all the http requests.
 
@@ -3516,14 +3436,14 @@ def combine_response_results(
         return concatenated_raw_response
 
     for raw_response in raw_response_list[1:]:
-        concatenated_raw_response["metadata"]["results"][
-            "current_item_count"
-        ] += dict_safe_get(raw_response, ["metadata", "results", "current_item_count"])
+        concatenated_raw_response["metadata"]["results"]["current_item_count"] += dict_safe_get(
+            raw_response, ["metadata", "results", "current_item_count"]
+        )
         concatenated_raw_response["data"].extend(raw_response["data"])
 
-    concatenated_raw_response["metadata"]["results"][
-        "items_per_page"
-    ] = concatenated_raw_response["metadata"]["results"]["current_item_count"]
+    concatenated_raw_response["metadata"]["results"]["items_per_page"] = concatenated_raw_response["metadata"]["results"][
+        "current_item_count"
+    ]
 
     return concatenated_raw_response
 
@@ -3750,13 +3670,9 @@ def main() -> None:
     include_null_severities = params.get("include_null_severities", False)
 
     if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
-            reliability
-        )
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
-        raise Exception(
-            "Please provide a valid value for the Source Reliability parameter."
-        )
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
     commands = {
         "cisco-amp-computer-list": computer_list_command,
@@ -3787,6 +3703,7 @@ def main() -> None:
         "cisco-amp-app-trajectory-query-list": app_trajectory_query_list_command,
         "cisco-amp-version-get": version_get_command,
         "cisco-amp-vulnerability-list": vulnerability_list_command,
+        "cisco-amp-license-get": license_info_get_command,
         "endpoint": endpoint_command,
         "file": file_command,
     }
@@ -3801,7 +3718,7 @@ def main() -> None:
             verify=verify_certificate,
             reliability=reliability,
             proxy=proxy,
-            should_create_relationships=argToBoolean(params.get("create_relationships", True))
+            should_create_relationships=argToBoolean(params.get("create_relationships", True)),
         )
 
         if command == "test-module":
@@ -3811,9 +3728,7 @@ def main() -> None:
             incident_severities = argToList(params.get("incident_severities"))
             max_incidents_to_fetch = arg_to_number(params.get("max_fetch", FETCH_LIMIT))
             event_types = argToList(params.get("event_types"))
-            first_fetch_datetime = arg_to_datetime(
-                arg=params["first_fetch"], arg_name="First fetch time", required=True
-            )
+            first_fetch_datetime = arg_to_datetime(arg=params["first_fetch"], arg_name="First fetch time", required=True)
 
             if not isinstance(max_incidents_to_fetch, int):
                 raise ValueError("Failed to get max fetch.")
@@ -3846,7 +3761,7 @@ def main() -> None:
 
     except Exception as exc:  # pylint: disable=broad-except
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {command} command.\nError:\n{str(exc)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{exc!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

@@ -13,6 +13,7 @@ name: StringifyArray
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
+isllm: false
 tags:
 - entirelist
 - transformer

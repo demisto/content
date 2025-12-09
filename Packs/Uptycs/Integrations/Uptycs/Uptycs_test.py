@@ -25,14 +25,18 @@ def test_uptycs_get_carves(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_carves_source_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -40,7 +44,7 @@ def test_uptycs_get_carves(mocker, requests_mock):
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
     mock_response = {
-        'items': [
+        "items": [
             {
                 "id": "e037cb0b-e9b0-4061-8966-5d3404cef9f6",
                 "assetId": "2fb29ec9-5c16-4021-af7c-65528fead280",
@@ -52,17 +56,17 @@ def test_uptycs_get_carves(mocker, requests_mock):
                 "offset": 0,
                 "length": 197,
                 "deletedUserName": "",
-                "deletedAt": ""
+                "deletedAt": "",
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/carves'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/carves"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_carves_source_command()
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_carves_link(mocker, requests_mock):
@@ -80,50 +84,54 @@ def test_uptycs_get_carves_link(mocker, requests_mock):
             -  Checks the output of the command function with the expected output.
 
     """
-    from Uptycs import uptycs_get_carves_link_command, uptycs_get_carves_file_command
+    from Uptycs import uptycs_get_carves_file_command, uptycs_get_carves_link_command
 
     carve_id = "e037cb0b-e9b0-4061-8966-5d3404cef9f6"
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "carve_id": carve_id
-    })
+    mocker.patch.object(demisto, "args", return_value={"carve_id": carve_id})
 
     mock_response = {
-        "url": "https://uptycs-carves-testing.s3.us-west-2.amazonaws.com/%s/testurl?" % CUSTOMER_ID
+        "url": f"https://uptycs-carves-testing.s3.us-west-2.amazonaws.com/{CUSTOMER_ID}/testurl?"  # disable-secrets-detection
     }
-    access_control_headers = ['x-amz-server-side-encryption-customer-algorithm',
-                              'x-amz-server-side-encryption-customer-key',
-                              'x-amz-server-side-encryption-customer-key-md5',
-                              'x-requested-with']
+    access_control_headers = [
+        "x-amz-server-side-encryption-customer-algorithm",
+        "x-amz-server-side-encryption-customer-key",
+        "x-amz-server-side-encryption-customer-key-md5",
+        "x-requested-with",
+    ]
     for header in access_control_headers:
-        mock_response['url'] += header + '=' + 'testvalue&'
-    mock_response['url'] = mock_response['url'][:-1]
+        mock_response["url"] += header + "=" + "testvalue&"
+    mock_response["url"] = mock_response["url"][:-1]
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/carves/{carve_id}/link'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/carves/{carve_id}/link"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_carves_link_command()
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/carves/{carve_id}/link'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/carves/{carve_id}/link"
     requests_mock.get(test_url, json=mock_response)
 
-    with open('test_data/blob.tar', 'rb') as file_mock:
-        requests_mock.get(mock_response['url'], content=file_mock.read())
+    with open("test_data/blob.tar", "rb") as file_mock:
+        requests_mock.get(mock_response["url"], content=file_mock.read())
 
     result = uptycs_get_carves_file_command()
     assert result is None
@@ -146,19 +154,19 @@ def test_uptycs_get_assets(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_assets_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
-    mocker.patch.object(demisto, 'args', return_value={
-        "os": "mac",
-        "host_name_like": "work",
-        "object_group_id": "test"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={"os": "mac", "host_name_like": "work", "object_group_id": "test"})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -166,7 +174,7 @@ def test_uptycs_get_assets(mocker, requests_mock):
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
     mock_response = {
-        'items': [
+        "items": [
             {
                 "status": "active",
                 "last_enrolled_at": "2019-07-19 14:47:27.485",
@@ -181,16 +189,16 @@ def test_uptycs_get_assets(mocker, requests_mock):
                 "os": "Mac OS X",
                 "id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
                 "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "location": "United States"
+                "location": "United States",
             }
         ]
     }
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_assets_command()
 
-    assert response['Contents'] == mock_response['items']
+    assert response["Contents"] == mock_response["items"]
 
 
 def test_uptycs_get_asset_with_id(mocker, requests_mock):
@@ -210,18 +218,20 @@ def test_uptycs_get_asset_with_id(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_asset_id_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
     asset_id = "984d4a7a-9f3a-580a-a3ef-2841a561669b"
-    mocker.patch.object(demisto, 'args', return_value={
-        "asset_id": asset_id
-    })
+    mocker.patch.object(demisto, "args", return_value={"asset_id": asset_id})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -251,15 +261,15 @@ def test_uptycs_get_asset_with_id(mocker, requests_mock):
         "memoryMb": 8192,
         "arch": "x86_64",
         "osDisplay": "macOS 10.14.5",
-        "location": "United States"
+        "location": "United States",
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/{asset_id}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/{asset_id}"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_asset_id_command()
-    mock_response['tags'] = ''
-    assert response['Contents'] == mock_response
+    mock_response["tags"] = ""
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_tag(mocker, requests_mock):
@@ -279,18 +289,20 @@ def test_uptycs_get_tag(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_tag_with_id_source_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
     tag_id = "984d4a7a-9f3a-580a-a3ef-2841a561669b"
-    mocker.patch.object(demisto, 'args', return_value={
-        "tag_id": tag_id
-    })
+    mocker.patch.object(demisto, "args", return_value={"tag_id": tag_id})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -317,15 +329,15 @@ def test_uptycs_get_tag(mocker, requests_mock):
         "source": "direct",
         "system": False,
         "custom": False,
-        "tagRuleId": ""
+        "tagRuleId": "",
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/tags/{tag_id}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/tags/{tag_id}"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_tag_with_id_source_command()
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_tags(mocker, requests_mock):
@@ -345,14 +357,18 @@ def test_uptycs_get_tags(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_tags_source_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -360,7 +376,7 @@ def test_uptycs_get_tags(mocker, requests_mock):
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
     mock_response = {
-        'items': [
+        "items": [
             {
                 "tag": "asset-group=Asset test 1",
                 "resourceType": "asset",
@@ -381,17 +397,17 @@ def test_uptycs_get_tags(mocker, requests_mock):
                 "source": "direct",
                 "system": False,
                 "custom": False,
-                "tagRuleId": ""
+                "tagRuleId": "",
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/tags'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/tags"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_tags_source_command()
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_lookuptable(mocker, requests_mock):
@@ -411,18 +427,20 @@ def test_uptycs_get_lookuptable(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_lookuptable_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
     table_id = "984d4a7a-9f3a-580a-a3ef-2841a561669b"
-    mocker.patch.object(demisto, 'args', return_value={
-        "table_id": table_id
-    })
+    mocker.patch.object(demisto, "args", return_value={"table_id": table_id})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -442,15 +460,15 @@ def test_uptycs_get_lookuptable(mocker, requests_mock):
         "rowCount": 24,
         "seedId": "",
         "updatedAt": "2023-04-25T04:11:04.664Z",
-        "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2"
+        "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2",
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_lookuptable_command()
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_lookuptables(mocker, requests_mock):
@@ -470,14 +488,18 @@ def test_uptycs_get_lookuptables(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_lookuptables_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -485,7 +507,7 @@ def test_uptycs_get_lookuptables(mocker, requests_mock):
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
     mock_response = {
-        'items': [
+        "items": [
             {
                 "active": True,
                 "createdAt": "2023-04-21T08:27:20.888Z",
@@ -500,17 +522,17 @@ def test_uptycs_get_lookuptables(mocker, requests_mock):
                 "rowCount": 24,
                 "seedId": "",
                 "updatedAt": "2023-04-25T04:11:04.664Z",
-                "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2"
+                "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2",
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_lookuptables_command()
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_edit_lookuptable(mocker, requests_mock):
@@ -530,21 +552,29 @@ def test_uptycs_edit_lookuptable(mocker, requests_mock):
     """
     from Uptycs import uptycs_edit_lookuptable_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
     table_id = "984d4a7a-9f3a-580a-a3ef-2841a561669b"
-    mocker.patch.object(demisto, 'args', return_value={
-        "table_id": table_id,
-        "name": "test_table_new_1",
-        "description": "look up table with new address",
-        "active": True
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "table_id": table_id,
+            "name": "test_table_new_1",
+            "description": "look up table with new address",
+            "active": True,
+        },
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -566,16 +596,16 @@ def test_uptycs_edit_lookuptable(mocker, requests_mock):
         "rowCount": 24,
         "seedId": "",
         "updatedAt": "2023-04-25T04:11:04.664Z",
-        "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2"
+        "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2",
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}"
     requests_mock.put(test_url, json=mock_response)
 
     response = uptycs_edit_lookuptable_command()
 
-    assert response['Contents'] == mock_response
-    assert response['HumanReadable'] == 'Uptycs Edited lookuptable'
+    assert response["Contents"] == mock_response
+    assert response["HumanReadable"] == "Uptycs Edited lookuptable"
 
 
 def test_uptycs_delete_lookuptable(mocker, requests_mock):
@@ -595,30 +625,32 @@ def test_uptycs_delete_lookuptable(mocker, requests_mock):
     """
     from Uptycs import uptycs_delete_lookuptable_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
     table_id = "984d4a7a-9f3a-580a-a3ef-2841a561669b"
-    mocker.patch.object(demisto, 'args', return_value={
-        "table_id": table_id
-    })
+    mocker.patch.object(demisto, "args", return_value={"table_id": table_id})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}"
     requests_mock.delete(test_url, json={})
 
     response = uptycs_delete_lookuptable_command()
 
-    assert response['HumanReadable'] == 'Uptycs Deleted lookuptable'
+    assert response["HumanReadable"] == "Uptycs Deleted lookuptable"
 
 
 def test_uptycs_delete_assets_tag(mocker, requests_mock):
@@ -638,32 +670,33 @@ def test_uptycs_delete_assets_tag(mocker, requests_mock):
     """
     from Uptycs import uptycs_delete_assets_tag_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
     asset_id = "984d4a7a-9f3a-580a-a3ef-2841a561669b"
     tag_id = "984d4a7a-9f3a-580a-a3ef-2841a561669b"
-    mocker.patch.object(demisto, 'args', return_value={
-        "asset_id": asset_id,
-        "tagId": tag_id
-    })
+    mocker.patch.object(demisto, "args", return_value={"asset_id": asset_id, "tagId": tag_id})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/tags'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/tags"
     requests_mock.delete(test_url, json={})
 
     response = uptycs_delete_assets_tag_command()
 
-    assert response['HumanReadable'] == 'Uptycs disassociated assets tags'
+    assert response["HumanReadable"] == "Uptycs disassociated assets tags"
 
 
 def test_uptycs_delete_tag(mocker, requests_mock):
@@ -683,30 +716,32 @@ def test_uptycs_delete_tag(mocker, requests_mock):
     """
     from Uptycs import uptycs_delete_tag_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
     tag_id = "984d4a7a-9f3a-580a-a3ef-2841a561669b"
-    mocker.patch.object(demisto, 'args', return_value={
-        "tag_id": tag_id
-    })
+    mocker.patch.object(demisto, "args", return_value={"tag_id": tag_id})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/tags/{tag_id}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/tags/{tag_id}"
     requests_mock.delete(test_url, json={})
 
     response = uptycs_delete_tag_command()
 
-    assert response['HumanReadable'] == 'Uptycs Deleted tag'
+    assert response["HumanReadable"] == "Uptycs Deleted tag"
 
 
 def test_uptycs_get_threat_indicators(mocker, requests_mock):
@@ -726,17 +761,19 @@ def test_uptycs_get_threat_indicators(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_threat_indicators_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1'
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={"limit": "1"})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -744,7 +781,7 @@ def test_uptycs_get_threat_indicators(mocker, requests_mock):
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
     mock_response = {
-        'items': [
+        "items": [
             {
                 "indicator": "54.165.17.209",
                 "description": "malware.com",
@@ -752,17 +789,17 @@ def test_uptycs_get_threat_indicators(mocker, requests_mock):
                 "indicatorType": "IPv4",
                 "createdAt": "2019-07-19T16:44:17.511Z",
                 "id": "8e54f94c-469a-4737-9eef-4e650a93ab58",
-                "isActive": True
+                "isActive": True,
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatIndicators?limit=1'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatIndicators?limit=1"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_threat_indicators_command()
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_threat_indicator(mocker, requests_mock):
@@ -782,18 +819,20 @@ def test_uptycs_get_threat_indicator(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_threat_indicator_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
     indicator_id = "0ab619bb-cfe0-4db0-8a31-0a71fcc2a362"
-    mocker.patch.object(demisto, 'args', return_value={
-        "indicator_id": indicator_id
-    })
+    mocker.patch.object(demisto, "args", return_value={"indicator_id": indicator_id})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -809,24 +848,18 @@ def test_uptycs_get_threat_indicator(mocker, requests_mock):
         "updatedAt": "2019-01-10T21:25:49.280Z",
         "id": indicator_id,
         "isActive": True,
-        "threat": {
-            "threatSourceId": "testsourceid",
-            "threatSource": {
-                "threatVendorId": "testvendor",
-                "name": "testsource"
-            }
-        }
+        "threat": {"threatSourceId": "testsourceid", "threatSource": {"threatVendorId": "testvendor", "name": "testsource"}},
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatIndicators/{indicator_id}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatIndicators/{indicator_id}"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_threat_indicator_command()
-    mock_response['threat_source_id'] = 'testsourceid'
-    mock_response['threat_vendor_id'] = 'testvendor'
-    mock_response['threat_source_name'] = 'testsource'
-    del mock_response['threat']
-    assert response['Contents'] == mock_response
+    mock_response["threat_source_id"] = "testsourceid"
+    mock_response["threat_vendor_id"] = "testvendor"
+    mock_response["threat_source_name"] = "testsource"
+    del mock_response["threat"]
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_threat_source(mocker, requests_mock):
@@ -846,18 +879,20 @@ def test_uptycs_get_threat_source(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_threat_source_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
     threat_source_id = "0ab619bb-cfe0-4db0-8a31-0a71fcc2a362"
-    mocker.patch.object(demisto, 'args', return_value={
-        "threat_source_id": threat_source_id
-    })
+    mocker.patch.object(demisto, "args", return_value={"threat_source_id": threat_source_id})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -871,15 +906,15 @@ def test_uptycs_get_threat_source(mocker, requests_mock):
         "custom": False,
         "lastDownload": "2019-05-13T01:00:05.934Z",
         "createdAt": "2019-05-12T01:01:04.154Z",
-        "description": "A feed of malicious domains and IP addresses"
+        "description": "A feed of malicious domains and IP addresses",
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatSources/{threat_source_id}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatSources/{threat_source_id}"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_threat_source_command()
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_threat_sources(mocker, requests_mock):
@@ -899,17 +934,19 @@ def test_uptycs_get_threat_sources(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_threat_sources_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1'
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={"limit": "1"})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -925,17 +962,17 @@ def test_uptycs_get_threat_sources(mocker, requests_mock):
                 "custom": False,
                 "lastDownload": "2019-05-13T01:00:05.934Z",
                 "createdAt": "2019-05-12T01:01:04.154Z",
-                "description": "A feed of malicious domains and IP addresses"
+                "description": "A feed of malicious domains and IP addresses",
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatSources?limit=1'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatSources?limit=1"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_threat_sources_command()
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_threat_vendors(mocker, requests_mock):
@@ -955,17 +992,19 @@ def test_uptycs_get_threat_vendors(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_threat_vendors_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1'
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={"limit": "1"})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -984,17 +1023,17 @@ def test_uptycs_get_threat_vendors(mocker, requests_mock):
                 "lastDownload": "2018-11-20T19:15:05.611Z",
                 "id": "42b9220c-7e29-4fd8-9cf7-9f811e851f8e",
                 "createdAt": "2018-11-20T19:15:05.611Z",
-                "description": "Uptycs threat vendor"
+                "description": "Uptycs threat vendor",
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatVendors?limit=1'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatVendors?limit=1"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_threat_vendors_command()
 
-    assert response['Contents'] == mock_response['items']
+    assert response["Contents"] == mock_response["items"]
 
 
 def test_uptycs_get_alerts(mocker, requests_mock):
@@ -1014,20 +1053,21 @@ def test_uptycs_get_alerts(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_alerts_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1',
-        "host_name": 'testhost',
-        "time_ago": "1 day",
-        "host_name_like": 'test'
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
+    mocker.patch.object(
+        demisto, "args", return_value={"limit": "1", "host_name": "testhost", "time_ago": "1 day", "host_name_like": "test"}
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -1049,23 +1089,23 @@ def test_uptycs_get_alerts(mocker, requests_mock):
                 "host_name": "kyle-mbp-work",
                 "key": "identifier",
                 "assigned_to": "testuser",
-                "metadata": "{\"type\":\"application\",\"pid\":\"437\"}",
+                "metadata": '{"type":"application","pid":"437"}',
                 "id": "0049641c-1645-4b98-830f-7f1ce783bfcc",
-                "grouping": "OS X Crashes"
+                "grouping": "OS X Crashes",
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_alerts_command()
 
-    mock_response['items'][0]["threat_source_name"] = 'No threat source for this alert'
-    mock_response['items'][0]["pid"] = '437'
-    mock_response['items'][0]["threat_indicator_id"] = 'No threat indicator for this alert'
+    mock_response["items"][0]["threat_source_name"] = "No threat source for this alert"
+    mock_response["items"][0]["pid"] = "437"
+    mock_response["items"][0]["threat_indicator_id"] = "No threat indicator for this alert"
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_events(mocker, requests_mock):
@@ -1085,20 +1125,21 @@ def test_uptycs_get_events(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_events_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1',
-        "host_name": 'testhost',
-        "time_ago": "1 day",
-        "host_name_like": 'test'
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
+    mocker.patch.object(
+        demisto, "args", return_value={"limit": "1", "host_name": "testhost", "time_ago": "1 day", "host_name_like": "test"}
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -1120,17 +1161,17 @@ def test_uptycs_get_events(mocker, requests_mock):
                 "key": "identifier",
                 "assigned_to": "testuser",
                 "id": "0049641c-1645-4b98-830f-7f1ce783bfcc",
-                "grouping": "OS X Crashes"
+                "grouping": "OS X Crashes",
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_events_command()
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_alert_rules(mocker, requests_mock):
@@ -1150,17 +1191,19 @@ def test_uptycs_get_alert_rules(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_alert_rules_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1'
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={"limit": "1"})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -1175,17 +1218,17 @@ def test_uptycs_get_alert_rules(mocker, requests_mock):
                 "grouping": "test",
                 "enabled": True,
                 "updatedAt": "2018-11-20T19:15:05.611Z",
-                "description": "Uptycs threat vendor"
+                "description": "Uptycs threat vendor",
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/alertRules?limit=1'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/alertRules?limit=1"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_alert_rules_command()
 
-    assert response['Contents'] == mock_response['items']
+    assert response["Contents"] == mock_response["items"]
 
 
 def test_uptycs_get_event_rules(mocker, requests_mock):
@@ -1205,17 +1248,19 @@ def test_uptycs_get_event_rules(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_event_rules_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1'
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={"limit": "1"})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -1230,17 +1275,17 @@ def test_uptycs_get_event_rules(mocker, requests_mock):
                 "grouping": "test",
                 "enabled": True,
                 "updatedAt": "2018-11-20T19:15:05.611Z",
-                "description": "Uptycs threat vendor"
+                "description": "Uptycs threat vendor",
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/eventRules?limit=1'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/eventRules?limit=1"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_event_rules_command()
 
-    assert response['Contents'] == mock_response['items']
+    assert response["Contents"] == mock_response["items"]
 
 
 def test_uptycs_get_users(mocker, requests_mock):
@@ -1260,23 +1305,24 @@ def test_uptycs_get_users(mocker, requests_mock):
             -  Checks the output of the command function with the expected output.
 
     """
-    from Uptycs import uptycs_get_users_command, uptycs_get_user_asset_groups_command
+    from Uptycs import uptycs_get_user_asset_groups_command, uptycs_get_users_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     user_id = "33436e24-f30f-42d0-8438-d948be12b5af"
     object_group_id = "8963abf8-9c8d-4ef5-8a80-af836fe69be4"
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1',
-        "asset_group_id": object_group_id
-    })
+    mocker.patch.object(demisto, "args", return_value={"limit": "1", "asset_group_id": object_group_id})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -1291,40 +1337,31 @@ def test_uptycs_get_users(mocker, requests_mock):
         "active": True,
         "createdAt": "2018-11-20T19:15:05.611Z",
         "updatedAt": "2018-11-20T19:15:05.611Z",
-        "userObjectGroups": [
-            {
-                "objectGroupId": object_group_id
-            }
-        ]
+        "userObjectGroups": [{"objectGroupId": object_group_id}],
     }
 
     mock_response = {}
-    mock_response['items'] = [mock_user]
+    mock_response["items"] = [mock_user]
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/users?limit=1'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/users?limit=1"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_users_command()
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/users'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/users"
     requests_mock.get(test_url, json=mock_response)
 
-    test_url_extra = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/users/{user_id}'
+    test_url_extra = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/users/{user_id}"
     requests_mock.get(test_url_extra, json=mock_user)
 
     asset_groups = uptycs_get_user_asset_groups_command()
 
-    del mock_user['userObjectGroups']
-    assert response['Contents'] == mock_response
+    del mock_user["userObjectGroups"]
+    assert response["Contents"] == mock_response
 
-    users_in_group = {
-        mock_user['name']: {
-            'email': mock_user['email'],
-            'id': mock_user['id']
-        }
-    }
+    users_in_group = {mock_user["name"]: {"email": mock_user["email"], "id": mock_user["id"]}}
 
-    assert asset_groups['Contents'] == users_in_group
+    assert asset_groups["Contents"] == users_in_group
 
 
 def test_uptycs_get_user_information(mocker, requests_mock):
@@ -1344,18 +1381,20 @@ def test_uptycs_get_user_information(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_user_information_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
     user_id = "33436e24-f30f-42d0-8438-d948be12b5af"
-    mocker.patch.object(demisto, 'args', return_value={
-        "user_id": user_id
-    })
+    mocker.patch.object(demisto, "args", return_value={"user_id": user_id})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -1366,23 +1405,17 @@ def test_uptycs_get_user_information(mocker, requests_mock):
         "name": "Bschmoll",
         "id": user_id,
         "email": "goo@test.com",
-        "userRoles": [
-            {
-                'role': {
-                    'name': 'admin'
-                }
-            }
-        ],
-        "userObjectGroups": "testuser"
+        "userRoles": [{"role": {"name": "admin"}}],
+        "userObjectGroups": "testuser",
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/users/{user_id}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/users/{user_id}"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_user_information_command()
 
-    for key in ['name', 'id', 'email', 'userObjectGroups']:
-        assert response['Contents'][key] == mock_response[key]
+    for key in ["name", "id", "email", "userObjectGroups"]:
+        assert response["Contents"][key] == mock_response[key]
 
 
 def test_uptycs_get_asset_groups(mocker, requests_mock):
@@ -1402,17 +1435,19 @@ def test_uptycs_get_asset_groups(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_asset_groups_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1'
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={"limit": "1"})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -1428,17 +1463,17 @@ def test_uptycs_get_asset_groups(mocker, requests_mock):
                 "updatedAt": "2018-09-24T17:24:45.604Z",
                 "id": "106eef5e-c3a6-44eb-bb3d-1a2087cded3d",
                 "createdAt": "2018-09-24T17:24:45.604Z",
-                "objectType": "ASSET"
+                "objectType": "ASSET",
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/objectGroups?limit=1'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/objectGroups?limit=1"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_asset_groups_command()
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_saved_queries(mocker, requests_mock):
@@ -1458,20 +1493,21 @@ def test_uptycs_get_saved_queries(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_saved_queries_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
     query_id = "16de057d-6f69-46b0-80d0-46cb9348c8fe"
     query_name = "test_saved_query"
-    mocker.patch.object(demisto, 'args', return_value={
-        "query_id": query_id,
-        "name": query_name
-    })
+    mocker.patch.object(demisto, "args", return_value={"query_id": query_id, "name": query_name})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -1486,17 +1522,17 @@ def test_uptycs_get_saved_queries(mocker, requests_mock):
                 "grouping": "default",
                 "description": "this is a test query",
                 "name": query_name,
-                "executionType": "realtime"
+                "executionType": "realtime",
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/queries/{query_id}?name={query_name}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/queries/{query_id}?name={query_name}"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_saved_queries_command()
 
-    assert response['Contents'] == mock_response['items']
+    assert response["Contents"] == mock_response["items"]
 
 
 def test_uptycs_run_saved_query(mocker, requests_mock):
@@ -1516,21 +1552,21 @@ def test_uptycs_run_saved_query(mocker, requests_mock):
     """
     from Uptycs import uptycs_run_saved_query_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
     query_id = "16de057d-6f69-46b0-80d0-46cb9348c8fe"
     query_name = "test_saved_query"
-    mocker.patch.object(demisto, 'args', return_value={
-        "query_id": query_id,
-        "name": query_name,
-        "host_name_like": "test"
-    })
+    mocker.patch.object(demisto, "args", return_value={"query_id": query_id, "name": query_name, "host_name_like": "test"})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
@@ -1545,19 +1581,19 @@ def test_uptycs_run_saved_query(mocker, requests_mock):
                 "grouping": "default",
                 "description": "this is a test query",
                 "name": query_name,
-                "executionType": "realtime"
+                "executionType": "realtime",
             }
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/queries/{query_id}?name={query_name}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/queries/{query_id}?name={query_name}"
     requests_mock.get(test_url, json=mock_response)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_run_saved_query_command()
-    assert response['Contents'] == mock_response['items']
+    assert response["Contents"] == mock_response["items"]
 
 
 def test_uptycs_run_query(mocker, requests_mock):
@@ -1577,14 +1613,18 @@ def test_uptycs_run_query(mocker, requests_mock):
     """
     from Uptycs import uptycs_run_query_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
         "query": "select * from upt_assets limit 1",
@@ -1593,28 +1633,32 @@ def test_uptycs_run_query(mocker, requests_mock):
         "name": "test_saved_query",
         "executionType": "realtime",
         "type": "default",
-        "custom": True
+        "custom": True,
     }
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "name": mock_response['name'],
-        "type": mock_response['type'],
-        "description": mock_response['description'],
-        "execution_type": mock_response['executionType'],
-        "query": mock_response['query'],
-        "asset_id": mock_response['asset_id']
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "name": mock_response["name"],
+            "type": mock_response["type"],
+            "description": mock_response["description"],
+            "execution_type": mock_response["executionType"],
+            "query": mock_response["query"],
+            "asset_id": mock_response["asset_id"],
+        },
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_run_query_command()
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_process_open_sockets(mocker, requests_mock):
@@ -1634,14 +1678,18 @@ def test_uptycs_get_process_open_sockets(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_process_open_sockets_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
         "items": [
@@ -1658,28 +1706,25 @@ def test_uptycs_get_process_open_sockets(mocker, requests_mock):
                 "state": "ESTABLISHED",
                 "upt_hostname": "kyle-mbp-work",
                 "path": "",
-                "local_address": "192.168.86.61"
+                "local_address": "192.168.86.61",
             }
         ]
     }
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1',
-        "host_name_is": "testhost",
-        "host_name_like": "test",
-        "time_ago": "1 day"
-    })
+    mocker.patch.object(
+        demisto, "args", return_value={"limit": "1", "host_name_is": "testhost", "host_name_like": "test", "time_ago": "1 day"}
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_process_open_sockets_command()
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_process_information(mocker, requests_mock):
@@ -1699,14 +1744,18 @@ def test_uptycs_get_process_information(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_process_information_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
         "items": [
@@ -1716,28 +1765,25 @@ def test_uptycs_get_process_information(mocker, requests_mock):
                 "upt_hostname": "kyle-mbp-work",
                 "path": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
                 "cmdline": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
-                "name": "VBoxHeadless"
+                "name": "VBoxHeadless",
             }
         ]
     }
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "pid": '5119',
-        "host_name_is": "testhost",
-        "host_name_like": "test",
-        "time_ago": "1 day"
-    })
+    mocker.patch.object(
+        demisto, "args", return_value={"pid": "5119", "host_name_is": "testhost", "host_name_like": "test", "time_ago": "1 day"}
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_process_information_command()
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_process_child_processes(mocker, requests_mock):
@@ -1757,14 +1803,18 @@ def test_uptycs_get_process_child_processes(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_process_child_processes_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
         "items": [
@@ -1775,30 +1825,34 @@ def test_uptycs_get_process_child_processes(mocker, requests_mock):
                 "upt_hostname": "kyle-mbp-work",
                 "path": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
                 "cmdline": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
-                "name": "VBoxHeadless"
+                "name": "VBoxHeadless",
             }
         ]
     }
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "parent": '5119',
-        "limit": '1',
-        "asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-        "parent_start_time": "2023-01-28 14:16:58.000",
-        "parent_end_time": "2019-01-29 14:16:58.000",
-        "time_ago": "1 day"
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "parent": "5119",
+            "limit": "1",
+            "asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+            "parent_start_time": "2023-01-28 14:16:58.000",
+            "parent_end_time": "2019-01-29 14:16:58.000",
+            "time_ago": "1 day",
+        },
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_process_child_processes_command()
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_processes(mocker, requests_mock):
@@ -1818,14 +1872,18 @@ def test_uptycs_processes(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_processes_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
         "items": [
@@ -1839,28 +1897,25 @@ def test_uptycs_processes(mocker, requests_mock):
                 "upt_hostname": "kyle-mbp-work",
                 "pgroup": 60051,
                 "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "cwd": "/"
+                "cwd": "/",
             }
         ]
     }
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1',
-        "time_ago": "1 day",
-        "host_name_is": "test",
-        "host_name_like": "test"
-    })
+    mocker.patch.object(
+        demisto, "args", return_value={"limit": "1", "time_ago": "1 day", "host_name_is": "test", "host_name_like": "test"}
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_processes_command()
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_process_open_files(mocker, requests_mock):
@@ -1880,14 +1935,18 @@ def test_uptycs_process_open_files(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_process_open_files_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
         "items": [
@@ -1897,28 +1956,25 @@ def test_uptycs_process_open_files(mocker, requests_mock):
                 "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
                 "upt_hostname": "kyle-mbp-work",
                 "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "fd": 35
+                "fd": 35,
             }
         ]
     }
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1',
-        "time_ago": "1 day",
-        "host_name_is": "test",
-        "host_name_like": "test"
-    })
+    mocker.patch.object(
+        demisto, "args", return_value={"limit": "1", "time_ago": "1 day", "host_name_is": "test", "host_name_like": "test"}
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_process_open_files_command()
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_process_event_information(mocker, requests_mock):
@@ -1938,14 +1994,18 @@ def test_uptycs_process_event_information(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_process_event_information_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
         "items": [
@@ -1957,28 +2017,25 @@ def test_uptycs_process_event_information(mocker, requests_mock):
                 "upt_hostname": "kyle-mbp-work",
                 "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
                 "cmdline": "xpcproxy com.apple.WebKit.WebContent.024FB342-0ECE-4E09-82E1-B9C9CF5F9CDF 3266",
-                "cwd": "/"
+                "cwd": "/",
             }
         ]
     }
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1',
-        "time_ago": "1 day",
-        "host_name_is": "test",
-        "host_name_like": "test"
-    })
+    mocker.patch.object(
+        demisto, "args", return_value={"limit": "1", "time_ago": "1 day", "host_name_is": "test", "host_name_like": "test"}
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_process_event_information_command()
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_process_events(mocker, requests_mock):
@@ -1998,14 +2055,18 @@ def test_uptycs_process_events(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_process_events_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
         "items": [
@@ -2017,28 +2078,25 @@ def test_uptycs_process_events(mocker, requests_mock):
                 "upt_hostname": "kyle-mbp-work",
                 "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
                 "cmdline": "xpcproxy com.apple.WebKit.WebContent.024FB342-0ECE-4E09-82E1-B9C9CF5F9CDF 3266",
-                "cwd": "/"
+                "cwd": "/",
             }
         ]
     }
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1',
-        "time_ago": "1 day",
-        "host_name_is": "test",
-        "host_name_like": "test"
-    })
+    mocker.patch.object(
+        demisto, "args", return_value={"limit": "1", "time_ago": "1 day", "host_name_is": "test", "host_name_like": "test"}
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_process_events_command()
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_socket_events(mocker, requests_mock):
@@ -2058,14 +2116,18 @@ def test_uptycs_socket_events(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_socket_events_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
         "items": [
@@ -2082,28 +2144,25 @@ def test_uptycs_socket_events(mocker, requests_mock):
                 "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
                 "upt_hostname": "kyle-mbp-work",
                 "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "action": "connect"
+                "action": "connect",
             }
         ]
     }
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1',
-        "time_ago": "1 day",
-        "host_name_is": "test",
-        "host_name_like": "test"
-    })
+    mocker.patch.object(
+        demisto, "args", return_value={"limit": "1", "time_ago": "1 day", "host_name_is": "test", "host_name_like": "test"}
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_socket_events_command()
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_parent_event_information(mocker, requests_mock):
@@ -2123,14 +2182,18 @@ def test_uptycs_parent_event_information(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_parent_event_information_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
         "items": [
@@ -2142,28 +2205,25 @@ def test_uptycs_parent_event_information(mocker, requests_mock):
                 "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
                 "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
                 "cmdline": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "cwd": ""
+                "cwd": "",
             }
         ]
     }
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1',
-        "time_ago": "1 day",
-        "host_name_is": "test",
-        "host_name_like": "test"
-    })
+    mocker.patch.object(
+        demisto, "args", return_value={"limit": "1", "time_ago": "1 day", "host_name_is": "test", "host_name_like": "test"}
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_parent_event_information_command()
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_socket_event_information(mocker, requests_mock):
@@ -2183,14 +2243,18 @@ def test_uptycs_socket_event_information(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_socket_event_information_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
         "items": [
@@ -2207,28 +2271,25 @@ def test_uptycs_socket_event_information(mocker, requests_mock):
                 "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
                 "upt_hostname": "kyle-mbp-work",
                 "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "action": "connect"
+                "action": "connect",
             }
         ]
     }
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1',
-        "time_ago": "1 day",
-        "host_name_is": "test",
-        "host_name_like": "test"
-    })
+    mocker.patch.object(
+        demisto, "args", return_value={"limit": "1", "time_ago": "1 day", "host_name_is": "test", "host_name_like": "test"}
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_socket_event_information_command()
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_get_asset_tags(mocker, requests_mock):
@@ -2248,41 +2309,36 @@ def test_uptycs_get_asset_tags(mocker, requests_mock):
     """
     from Uptycs import uptycs_get_asset_tags_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
-        "tags": [
-            "Uptycs=work laptop",
-            "owner=Uptycs office",
-            "network=low",
-            "cpu=unknown",
-            "memory=unknown",
-            "disk=high"
-        ]
+        "tags": ["Uptycs=work laptop", "owner=Uptycs office", "network=low", "cpu=unknown", "memory=unknown", "disk=high"]
     }
 
     asset_id = "984d4a7a-9f3a-580a-a3ef-2841a561669b"
-    mocker.patch.object(demisto, 'args', return_value={
-        "asset_id": asset_id
-    })
+    mocker.patch.object(demisto, "args", return_value={"asset_id": asset_id})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/{asset_id}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/{asset_id}"
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_asset_tags_command()
-    assert response['Contents'] == mock_response['tags']
+    assert response["Contents"] == mock_response["tags"]
 
 
 def test_uptycs_set_alert_status(mocker, requests_mock):
@@ -2302,14 +2358,18 @@ def test_uptycs_set_alert_status(mocker, requests_mock):
     """
     from Uptycs import uptycs_set_alert_status_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     mock_response = {
         "status": "assigned",
@@ -2317,24 +2377,17 @@ def test_uptycs_set_alert_status(mocker, requests_mock):
         "updatedAt": "2019-07-19T17:07:27.447Z",
         "id": "9cb18abd-2c9a-43a8-988a-0601e9140f6c",
         "createdAt": "2019-02-22T21:13:21.238Z",
-        "updatedByUser": {
-            "name": "B schmoll",
-            "admin": "True",
-            "email": "goo@test.com"
-        }
+        "updatedByUser": {"name": "B schmoll", "admin": "True", "email": "goo@test.com"},
     }
 
-    mocker.patch.object(demisto, 'args', return_value={
-        "alert_id": "testalert",
-        "status": "open"
-    })
+    mocker.patch.object(demisto, "args", return_value={"alert_id": "testalert", "status": "open"})
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/alerts/testalert'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/alerts/testalert"
     requests_mock.put(test_url, json=mock_response)
 
     response = uptycs_set_alert_status_command()
@@ -2344,7 +2397,7 @@ def test_uptycs_set_alert_status(mocker, requests_mock):
     mock_response["updatedByAdmin"] = "True"
     mock_response["updatedBy"] = "B schmoll"
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
 
 def test_uptycs_create_lookuptable(mocker, requests_mock):
@@ -2363,36 +2416,42 @@ def test_uptycs_create_lookuptable(mocker, requests_mock):
             -  Checks the output of the command function with the expected output.
 
     """
-    from Uptycs import uptycs_post_new_lookuptable_command, uptycs_post_lookuptable_data_source_command
+    from Uptycs import uptycs_post_lookuptable_data_source_command, uptycs_post_new_lookuptable_command
 
-    mocker.patch.object(demisto, 'params', return_value={
-        "key": KEY,
-        "secret": SECRET,
-        "domain": DOMAIN,
-        "customer_id": CUSTOMER_ID,
-        "proxy": "false",
-        "fetch_time": "7 days"
-    })
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "key": KEY,
+            "secret": SECRET,
+            "domain": DOMAIN,
+            "customer_id": CUSTOMER_ID,
+            "proxy": "false",
+            "fetch_time": "7 days",
+        },
+    )
 
     table_id = "984d4a7a-9f3a-580a-a3ef-2841a561669b"
     id_field = "remote_address"
     description = "look up table with remote address"
-    mocker.patch.object(demisto, 'args', return_value={
-        "name": "test_table_new",
-        "id_field": id_field,
-        "description": description,
-        "table_id": table_id,
-        "filename": "test_data/look_up_table_test.csv"
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "name": "test_table_new",
+            "id_field": id_field,
+            "description": description,
+            "table_id": table_id,
+            "filename": "test_data/look_up_table_test.csv",
+        },
+    )
 
     mocker.patch("Uptycs.KEY", new=KEY)
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
     # Mocking demisto.getFilePath
-    mocker.patch.object(demisto, "getFilePath", return_value={
-        'path': './test_data/look_up_table_test.csv'
-    })
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "./test_data/look_up_table_test.csv"})
 
     mock_response = {
         "active": True,
@@ -2408,25 +2467,25 @@ def test_uptycs_create_lookuptable(mocker, requests_mock):
         "seedId": "",
         "updatedAt": "2023-04-25T04:11:04.664Z",
         "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2",
-        "id": table_id
+        "id": table_id,
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables"
     requests_mock.post(test_url, json=mock_response)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}/csvdata'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}/csvdata"
     requests_mock.post(test_url, json=mock_response)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}"
     requests_mock.put(test_url, json=mock_response)
 
     response = uptycs_post_new_lookuptable_command()
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}/csvdata'
+    test_url = f"https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}/csvdata"
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_post_lookuptable_data_source_command()
 
-    assert response['Contents'] == mock_response
+    assert response["Contents"] == mock_response

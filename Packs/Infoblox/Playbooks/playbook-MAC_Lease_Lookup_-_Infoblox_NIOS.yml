@@ -1,0 +1,509 @@
+id: MAC Lease Lookup - Infoblox NIOS
+version: -1
+name: MAC Lease Lookup - Infoblox NIOS
+description: This playbook looks up MAC Leases using Infoblox NIOS integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b4c0539c-4f0f-4878-8887-4c933886a789
+    type: start
+    task:
+      id: b4c0539c-4f0f-4878-8887-4c933886a789
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 854f0c7c-bb1e-433f-8914-f6f1ab140c99
+    type: condition
+    task:
+      id: 854f0c7c-bb1e-433f-8914-f6f1ab140c99
+      version: -1
+      name: Is Infoblox NIOS integration enabled?
+      description: Checks whether Infoblox NIOS integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Infoblox
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: fd65645a-f58d-45c2-8cbd-4e7f27c9a59a
+    type: regular
+    task:
+      id: fd65645a-f58d-45c2-8cbd-4e7f27c9a59a
+      version: -1
+      name: Clear previous inputs
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: Collect MAC Addresses, network
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 255a1751-76d3-4581-8249-dc8da6bb123e
+    type: collection
+    task:
+      id: 255a1751-76d3-4581-8249-dc8da6bb123e
+      version: -1
+      name: Collect MAC Addresses
+      description: Collect MAC Addresses.
+      type: collection
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: FoundIndicators=.={"value":val.value,"indicator_type":val.indicator_type}
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Collect MAC Addresses.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the MAC addresses to lookup
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The provided MAC address will be used for look up.
+        readonly: false
+      title: Collect MAC Addresses
+      description: This task collects MAC address to lookup
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: fb31b1f6-c6be-47e5-8095-d3657c0983ef
+    type: regular
+    task:
+      id: fb31b1f6-c6be-47e5-8095-d3657c0983ef
+      version: -1
+      name: DHCP Lease Lookup
+      description: Look up a DHCP lease by IP address.
+      script: '|||infoblox-dhcp-lease-lookup'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "6"
+      '#none#':
+      - "12"
+    scriptarguments:
+      extend-context:
+        simple: network=result.[0].network
+      hardware:
+        complex:
+          root: Collect MAC Addresses.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.mac_addresses
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 119369b7-a642-4bad-8988-fa0250b5ff9a
+    type: title
+    task:
+      id: 119369b7-a642-4bad-8988-fa0250b5ff9a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5dc634b5-7ad5-4b12-84f4-cac6050a8567
+    type: condition
+    task:
+      id: 5dc634b5-7ad5-4b12-84f4-cac6050a8567
+      version: -1
+      name: Check whether MAC addresses are available in playbook input
+      description: Check whether MAC addresses are available in playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.mac_addresses
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 9769ffcb-39e3-4b50-80f5-7e16939f1015
+    type: title
+    task:
+      id: 9769ffcb-39e3-4b50-80f5-7e16939f1015
+      version: -1
+      name: Check for indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: a5b89524-ed66-479d-81e0-fee30107cfd5
+    type: condition
+    task:
+      id: a5b89524-ed66-479d-81e0-fee30107cfd5
+      version: -1
+      name: Check that MAC addresses are present or not
+      description: Check that MAC addresses are present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Collect MAC Addresses.Answers
+                accessor: "0"
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.mac_addresses
+                      iscontext: true
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 41f3caf9-8f2c-431f-88d8-be8bcf625e38
+    type: regular
+    task:
+      id: 41f3caf9-8f2c-431f-88d8-be8bcf625e38
+      version: -1
+      name: List Network Info
+      description: List network information.
+      script: '|||infoblox-list-network-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      pattern:
+        complex:
+          root: network
+          transformers:
+          - operator: trim
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_4_yes": 0.46,
+      "11_6_#default#": 0.2,
+      "1_2_yes": 0.58,
+      "1_6_#default#": 0.1,
+      "4_6_#error#": 0.22,
+      "8_10_yes": 0.16,
+      "8_3_#default#": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1755,
+        "width": 600,
+        "x": 610,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: mac_addresses
+  value: {}
+  required: false
+  description: The optional comma-separated list of MAC addresses to lookup.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

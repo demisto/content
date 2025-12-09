@@ -15,4 +15,3 @@ or tags can be automatically applied on each task in the playbook editor
 An incident level report can then be generated from this tab in the layout.
 
 ![incident_report](doc_files/incident_report.png)
-

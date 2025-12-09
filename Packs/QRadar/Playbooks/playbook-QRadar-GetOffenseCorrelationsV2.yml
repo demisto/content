@@ -4,15 +4,15 @@ name: QRadar - Get offense correlations v2
 fromversion: 5.0.0
 deprecated: true
 description: |-
- Deprecated. Use the "QRadar - Get Offense Logs" playbook instead.
-  Run on a QRadar offense to get more information:
+  Deprecated. Use the "QRadar - Get Offense Logs" playbook instead.
+   Run on a QRadar offense to get more information:
 
-  * Get all correlations relevant to the offense
-  * Get all logs relevant to the correlations (not done by default - set "GetCorrelationLogs" to "True")
+   * Get all correlations relevant to the offense
+   * Get all logs relevant to the correlations (not done by default - set "GetCorrelationLogs" to "True")
 
-  Inputs:
-  * GetCorrelationLogs (default: False)
-  * MaxLogsCount (default: 20)
+   Inputs:
+   * GetCorrelationLogs (default: False)
+   * MaxLogsCount (default: 20)
 starttaskid: "0"
 tasks:
   "0":
@@ -193,8 +193,7 @@ tasks:
       id: c6cdc0aa-a2df-41e1-849b-efdaa8442288
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: This playbook runs a QRadar query and return its results to the context.
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -267,8 +266,7 @@ tasks:
       output_key:
         simple: QRadar.Correlation
       replace_dict:
-        simple: '{"sourceip": "SourceIP", "qid":"QID", "destinationip": "DestinationIP",
-          "category": "CategoryID", "starttime": "StartTime"}'
+        simple: '{"sourceip": "SourceIP", "qid":"QID", "destinationip": "DestinationIP", "category": "CategoryID", "starttime": "StartTime"}'
     separatecontext: false
     view: |-
       {
@@ -373,8 +371,7 @@ tasks:
       id: 7f2ab0ca-d773-43f7-8937-cc3e6a10d395
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: This playbook runs a QRadar query and return its results to the context.
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -781,13 +778,13 @@ inputs:
     simple: "True"
   required: false
   description: When set to "True", retrieves all of the offense's correlations logs
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MaxLogsCount
   value:
     simple: "20"
   required: false
   description: 'Maximum number of log entires to query from QRadar (default: 20)'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ID
   value:
     complex:
@@ -795,7 +792,7 @@ inputs:
       accessor: labels.id
   required: true
   description: 'The QRadar offense ID '
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: StartTime
   value:
     complex:
@@ -803,7 +800,7 @@ inputs:
       accessor: labels.start_time
   required: true
   description: The QRadar offense start time
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: GetOnlyCREEvents
   value:
     simple: All
@@ -811,18 +808,18 @@ inputs:
   description: |-
     If value "OnlyCRE" get only events made by CRE.
     Values can be "OnlyCRE", "OnlyNotCRE", "All".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MaxCorrelationCount
   value:
     simple: "100"
   required: false
   description: 'Maximum number of correlations to query from QRadar (default: 100)'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Fields
   value: {}
   required: false
   description: A comma-separated list of extra fields to get from each event.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: QRadar.Correlation.StartTime
   description: The correlation start time
@@ -870,3 +867,10 @@ outputs:
   description: The log's protocol name
 tests:
 - No test
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam

@@ -1,6 +1,9 @@
 [file:playbook-Azure_AD_account_unlock_or_password_reset.yml]
 ignore=GR103
 
+[file:silent-playbook-First_Azure_AD_PowerShell_operation_for_a_user.yml]
+ignore=GR103
+
 [file:silent-playbook-Azure_AD_account_unlock_or_password_reset_Test.yml]
 ignore=GR103
 
@@ -13,9 +16,17 @@ ignore=PB106
 [file:silent-playbook-A_mail_forwarding_rule_was_configured_in_Google_Workspace_Test.yml]
 ignore=PB106
 
+[file:playbook-CVE-2025-49704_and_CVE-2025-49706_and_CVE-2025-53770_and_CVE-2025-53771_-_Microsoft_SharePoint_ToolShell_vulnerability_chain.yml]
+ignore=RM116
+
+[file:playbook-Uncommon_creation_or_access_operation_of_sensitive_shadow_copy_by_a_high_risk_process.yml]
+ignore=RM116
 
 [file:README.md]
 ignore=RM104,RM106
+
+[file:1_1_45.md]
+ignore=RN114
 
 # GR103 fails on SearchAlertsv2
 [file:playbook-A_user_executed_multiple_LDAP_enumeration_queries.yml]
@@ -39,6 +50,10 @@ ignore=GR103
 
 # GR103 fails on SearchAlertsv2
 [file:silent-playbook_Intense_SSO_failures_with_suspicious_characteristics.yml]
+ignore=GR103
+
+# GR103 fails on SearchAlertsv2
+[file:silent-playbook-Suspicious_user_access_to_multiple_resources_via_SSO.yml]
 ignore=GR103
 
 [known_words]

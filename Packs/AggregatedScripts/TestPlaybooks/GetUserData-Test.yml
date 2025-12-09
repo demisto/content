@@ -1,0 +1,806 @@
+id: GetUserData - Test
+version: -1
+name: GetUserData - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 84d1ec15-46ee-4f1e-8595-86dbe68ad529
+    type: start
+    task:
+      id: 84d1ec15-46ee-4f1e-8595-86dbe68ad529
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b3245423-f23b-4cf7-b95b-d63e6bfce081
+    type: regular
+    task:
+      id: b3245423-f23b-4cf7-b95b-d63e6bfce081
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 077f186e-0176-415a-8219-0411ffebeeec
+    type: regular
+    task:
+      id: 077f186e-0176-415a-8219-0411ffebeeec
+      version: -1
+      name: AWS-IAM list users
+      description: Lists the IAM users, returns all users in the AWS account.
+      script: '|||aws-iam-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f0aee5e9-485d-4bbf-b34b-82ff4ea8b45d
+    type: regular
+    task:
+      id: f0aee5e9-485d-4bbf-b34b-82ff4ea8b45d
+      version: -1
+      name: MSG list users
+      description: |-
+        Retrieves a list of user objects.
+        Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application).
+      script: '|||msgraph-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 3b18a4c1-6d3a-4cf0-9f23-c77374f5b3c4
+    type: title
+    task:
+      id: 3b18a4c1-6d3a-4cf0-9f23-c77374f5b3c4
+      version: -1
+      name: Case 1 - Base case, no additional args
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 550bad1f-4aa4-4dfd-ba4f-cfffd2d88ab3
+    type: regular
+    task:
+      id: 550bad1f-4aa4-4dfd-ba4f-cfffd2d88ab3
+      version: -1
+      name: GetUserData
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      user_id:
+        complex:
+          root: MSGraphUser
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+      user_name:
+        complex:
+          root: AWS.IAM.Users
+          accessor: UserName
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: bcf8529b-fb6a-4453-a3e4-840e9d0b9a53
+    type: condition
+    task:
+      id: bcf8529b-fb6a-4453-a3e4-840e9d0b9a53
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: UserData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: found
+                accessor: Brand
+            iscontext: true
+          right:
+            value:
+              simple: Microsoft Graph User
+      - - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: UserData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: found
+                accessor: Brand
+            iscontext: true
+          right:
+            value:
+              simple: Active Directory Query v2
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: UserData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: found
+                accessor: Brand
+            iscontext: true
+          right:
+            value:
+              simple: AWS - IAM
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: UserData.Brand
+            iscontext: true
+          right:
+            value:
+              simple: Okta v2
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: UserData.Status
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: found
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: UserData
+            iscontext: true
+          right:
+            value:
+              simple: AdditionalFields
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 73f073ce-6771-4369-9a5b-e198c9e47e5d
+    type: title
+    task:
+      id: 73f073ce-6771-4369-9a5b-e198c9e47e5d
+      version: -1
+      name: Case 2 - Running with Brands & additional info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d5ca811b-35f5-4b3a-9764-76a4e51575d4
+    type: regular
+    task:
+      id: d5ca811b-35f5-4b3a-9764-76a4e51575d4
+      version: -1
+      name: Clear GetUserData results
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key:
+        simple: UserData
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b217d524-4206-4fd2-845d-f411cfcc5722
+    type: regular
+    task:
+      id: b217d524-4206-4fd2-845d-f411cfcc5722
+      version: -1
+      name: GetUserData
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      brands:
+        simple: Microsoft Graph User
+      user_id:
+        complex:
+          root: MSGraphUser
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 1342554e-84cf-40f3-8b04-8e6a9ea1706f
+    type: condition
+    task:
+      id: 1342554e-84cf-40f3-8b04-8e6a9ea1706f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: UserData.AdditionalFields
+            iscontext: true
+      - - operator: hasLength
+          left:
+            value:
+              simple: UserData
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UserData.Brand
+            iscontext: true
+          right:
+            value:
+              simple: Microsoft Graph User
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0ccb2c17-9e11-45b4-b09e-428bfb4ad874
+    type: title
+    task:
+      id: 0ccb2c17-9e11-45b4-b09e-428bfb4ad874
+      version: -1
+      name: Case 3 - Failing with no args
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: dcf3bc4d-5b90-4a6c-8756-0414d2c5cc6d
+    type: regular
+    task:
+      id: dcf3bc4d-5b90-4a6c-8756-0414d2c5cc6d
+      version: -1
+      name: Clear GetUserData results
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: UserData
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: dfc8c302-5485-4657-99fa-35a30e02b881
+    type: regular
+    task:
+      id: dfc8c302-5485-4657-99fa-35a30e02b881
+      version: -1
+      name: GetUserData
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "17"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 46bd9236-4182-415f-9ab6-260a6366f618
+    type: title
+    task:
+      id: 46bd9236-4182-415f-9ab6-260a6366f618
+      version: -1
+      name: Case 4 - Failing with unknown args
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 948d9340-027d-474d-835a-a5193ff46b2c
+    type: regular
+    task:
+      id: 948d9340-027d-474d-835a-a5193ff46b2c
+      version: -1
+      name: Clear GetUserData results
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: UserData
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2253.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: aa25bcf2-4e5c-499b-b5d7-2a2c65d122ee
+    type: regular
+    task:
+      id: aa25bcf2-4e5c-499b-b5d7-2a2c65d122ee
+      version: -1
+      name: GetUserData
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      user_email:
+        simple: dasdasda
+      user_id:
+        simple: dasdas
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2413.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 56c044d3-a475-4798-bb8e-d051bb9a278a
+    type: title
+    task:
+      id: 56c044d3-a475-4798-bb8e-d051bb9a278a
+      version: -1
+      name: Finish
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 42ed370c-005c-4e49-9d83-07b6f10be5ee
+    type: condition
+    task:
+      id: 42ed370c-005c-4e49-9d83-07b6f10be5ee
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: UserData.Status
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: found
+            iscontext: true
+          right:
+            value:
+              simple: found
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_17_#error#": 0.46
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2750,
+        "width": 830,
+        "x": 240,
+        "y": 30
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+description: Execute multiple cases for GetUserData aggregated script.

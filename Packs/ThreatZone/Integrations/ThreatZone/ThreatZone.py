@@ -1,10 +1,10 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-import urllib3
-import requests
-from typing import Any
 import shutil
+from typing import Any
+
+import demistomock as demisto  # noqa: F401
+import requests
+import urllib3
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -290,7 +290,6 @@ def threatzone_get_result(client: Client, args: dict[str, Any], only_sanitized: 
     levels = {0: "Not Measured", 1: "Informative", 2: "Suspicious", 3: "Malicious"}
 
     def create_res(readable_dict: dict, output: dict) -> list[CommandResults]:
-
         def extract_ioc(output: dict) -> dict:
             indicators: dict = {"URL": [], "DOMAIN": [], "EMAIL": [], "IP": []}
             if output["REPORT"].get("ioc", {}):
@@ -553,7 +552,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

@@ -1,6 +1,7 @@
 Internal script used for generating PDF reports.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Internal script used for generating PDF reports.
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -25,5 +27,6 @@ Internal script used for generating PDF reports.
 | tableTextMaxLength | table text max length |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

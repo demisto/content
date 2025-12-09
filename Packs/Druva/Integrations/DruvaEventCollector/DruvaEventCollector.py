@@ -1,9 +1,9 @@
+import base64
 from urllib.parse import quote
 
 import demistomock as demisto
-from CommonServerPython import *
 import urllib3
-import base64
+from CommonServerPython import *
 
 MIN_FETCH = 1
 MAX_FETCH = 10_000
@@ -22,9 +22,7 @@ PRODUCT = "Druva"
 
 
 class Client(BaseClient):
-
     def __init__(self, base_url: str, client_id: str, secret_key: str, max_fetch: int, verify: bool, proxy: bool):
-
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.credentials = f"{client_id}:{secret_key}"
         self.max_fetch = max_fetch
@@ -39,9 +37,7 @@ class Client(BaseClient):
         now = datetime.utcnow()
 
         if (cache := get_integration_context()) and (token := cache.get("Token")):
-            expiration_time = datetime.strptime(
-                cache["expiration_time"], DATE_FORMAT_FOR_TOKEN
-            )
+            expiration_time = datetime.strptime(cache["expiration_time"], DATE_FORMAT_FOR_TOKEN)
 
             # check if token is still valid, and use the old one. otherwise regenerate a new one
             if (seconds_left := (expiration_time - now).total_seconds()) > 0:
@@ -78,9 +74,7 @@ class Client(BaseClient):
         data = {"grant_type": "client_credentials", "scope": "read"}
 
         try:
-            response_json = self._http_request(
-                method="POST", url_suffix="/token", headers=headers, data=data
-            )
+            response_json = self._http_request(method="POST", url_suffix="/token", headers=headers, data=data)
         except Exception as e:
             # 400 - "invalid_grant" - reason: invalid Server URL, Client ID or Secret Key.
             if "invalid_grant" in str(e):
@@ -100,18 +94,16 @@ class Client(BaseClient):
         Returns:
             dict: List of events
         """
-        demisto.debug(f'This is the tracker before encoding: {tracker=}')
+        demisto.debug(f"This is the tracker before encoding: {tracker=}")
 
         if tracker:
             encoding_tracker = quote(tracker, safe="!~*'()")  # remove invalid characters from tracker
-            demisto.debug(f'after encoding: {encoding_tracker=}')
+            demisto.debug(f"after encoding: {encoding_tracker=}")
             url_suffix_tracker = f"?tracker={encoding_tracker}"
         else:
             url_suffix_tracker = ""
 
-        headers = (self._headers or {}) | {
-            "accept": "application/json"
-        }  # self._headers won't really be None, just for mypy
+        headers = (self._headers or {}) | {"accept": "application/json"}  # self._headers won't really be None, just for mypy
         try:
             response = self._http_request(
                 method="GET",
@@ -121,7 +113,7 @@ class Client(BaseClient):
         except Exception as e:
             # 403 - "User is not authorized to access this resource with an explicit deny" - reason: tracker is expired
             # 400 - "Invalid tracker"
-            raise DemistoException(f"Error in search-events: {str(e)}") from e
+            raise DemistoException(f"Error in search-events: {e!s}") from e
         return response
 
     def _set_headers(self, token: str):
@@ -168,9 +160,7 @@ def get_events(client: Client, tracker: Optional[str] = None) -> tuple[list[dict
     return response["events"], response["tracker"]
 
 
-def fetch_events(
-    client: Client, last_run: dict[str, str], max_fetch: int
-) -> tuple[list[dict], dict[str, str]]:
+def fetch_events(client: Client, last_run: dict[str, str], max_fetch: int) -> tuple[list[dict], dict[str, str]]:
     """
     Args:
         client (Client): Druva client to use.
@@ -180,7 +170,7 @@ def fetch_events(
         last_run (dict): A dict containing the next tracker (a pointer to the next event).
         events (list): List of events that will be created in XSIAM.
     """
-    demisto.debug(f'Last Run: {last_run}')
+    demisto.debug(f"Last Run: {last_run}")
     final_events: list[dict] = []
     done_fetching: bool = False
     while len(final_events) < max_fetch and not done_fetching:
@@ -190,8 +180,9 @@ def fetch_events(
             events, new_tracker = get_events(client, tracker)
         except Exception as e:
             if "Invalid tracker" in str(e):
-                demisto.debug("The tracker is invalid,"
-                              " catching the error and continuing with the same tracker for the next time.")
+                demisto.debug(
+                    "The tracker is invalid, catching the error and continuing with the same tracker for the next time."
+                )
                 events, new_tracker = [], tracker  # type:ignore[assignment]
             else:
                 raise e
@@ -267,21 +258,17 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
-            events, next_run = fetch_events(
-                client=client,
-                last_run=demisto.getLastRun(),
-                max_fetch=max_fetch
-            )
+            events, next_run = fetch_events(client=client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
 
             add_time_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-            demisto.debug(f'fetched {len(events or [])} events. Setting {next_run=}.')
+            demisto.debug(f"fetched {len(events or [])} events. Setting {next_run=}.")
             demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

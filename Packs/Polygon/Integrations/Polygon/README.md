@@ -3,7 +3,6 @@ This integration was integrated and tested with version 3.1 of Group-IB THF Poly
 
 ## Configure Group-IB THF Polygon in Cortex
 
-
 | **Parameter** | **Description** | **Required** |f
 | --- | --- | --- |
 | server | Server URL (e.g., `https://huntbox.group-ib.com`) | True |
@@ -11,7 +10,6 @@ This integration was integrated and tested with version 3.1 of Group-IB THF Poly
 | report_language | Default reports language | True |
 | insecure | Trust any certificate \(insecure\) | False |
 | proxy | Use system proxy settings | False |
-
 
 ## Commands
 
@@ -23,7 +21,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Upload file for analysis
 
-
 #### Base Command
 
 `polygon-upload-file`
@@ -32,19 +29,17 @@ Upload file for analysis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | File ID in Demisto | Required | 
-| password | Password for analyzed archive | Optional | 
-
+| file_id | File ID in Demisto | Required |
+| password | Password for analyzed archive | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Polygon.Analysis.ID | string | Analysis ID in THF | 
-| Polygon.Analysis.EntryID | string | File id in Demisto | 
-| Polygon.Analysis.FileName | string | Original file name | 
-| Polygon.Analysis.Status | string | The analysis status | 
-
+| Polygon.Analysis.ID | string | Analysis ID in THF |
+| Polygon.Analysis.EntryID | string | File id in Demisto |
+| Polygon.Analysis.FileName | string | Original file name |
+| Polygon.Analysis.Status | string | The analysis status |
 
 #### Command Example
 
@@ -69,14 +64,12 @@ Upload file for analysis
 
 >File uploaded successfully. Analysis ID: F2136015
 
-
 ### polygon-upload-url
 
 ***
 Upload URL for analysis.
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 #### Base Command
 
@@ -86,17 +79,15 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL for analysis | Required | 
-
+| url | URL for analysis | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Polygon.Analysis.ID | string | Analysis ID in THF. | 
-| Polygon.Analysis.URL | string | URL analyzed. | 
-| Polygon.Analysis.Status | string | Polygon analysis status. | 
-
+| Polygon.Analysis.ID | string | Analysis ID in THF. |
+| Polygon.Analysis.URL | string | URL analyzed. |
+| Polygon.Analysis.Status | string | Polygon analysis status. |
 
 #### Command Example
 
@@ -125,7 +116,6 @@ Notice: Submitting indicators using this command might make the indicator data p
 ***
 Get THF Polygon analysis info
 
-
 #### Base Command
 
 `polygon-analysis-info`
@@ -134,62 +124,60 @@ Get THF Polygon analysis info
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tds_analysis_id | Analysis ID in THF. | Required | 
-
+| tds_analysis_id | Analysis ID in THF. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Name | string | The full file name \(including file extension\). | 
-| File.MD5 | string | The MD5 hash of the file. | 
-| File.SHA1 | string | The SHA1 hash of the file. | 
-| File.SHA256 | string | The SHA256 hash of the file. | 
-| File.Type | string | File type. | 
-| File.Malicious.Vendor | string | The vendor that reported the file as malicious. | 
-| File.Malicious.Description | string | A description explaining why the file was determined to be malicious. | 
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| DBotScore.Score | number | The actual score. | 
-| IP.Address | String | IP address. | 
-| Domain.Name | String | The Domain name. | 
-| Domain.DNS | String | A list of IP objects resolved by DNS. | 
-| URL.Data | String | The URL. | 
-| URL.Malicious.Vendor | string | The vendor that reported the url as malicious. | 
-| URL.Malicious.Description | string | A description explaining why the url was determined to be malicious. | 
-| RegistryKey.Path | String | The path to the registry key. | 
-| RegistryKey.Value | String | The value at the given RegistryKey. | 
-| Process.Name | String | Process name. | 
-| Process.PID | String | Process PID. | 
-| Process.CommandLine | String | Process Command Line. | 
-| Process.Path | String | Process path. | 
-| Process.StartTime | date | Process start time. | 
-| Process.EndTime | date | Process end time. | 
-| Polygon.Analysis.ID | string | THF File ID. | 
-| Polygon.Analysis.Name | string | File Name. | 
-| Polygon.Analysis.Size | number | File Size. | 
-| Polygon.Analysis.Started | date | Analysis start timestamp. | 
-| Polygon.Analysis.Analyzed | date | Analysis finish timestamp. | 
-| Polygon.Analysis.MD5 | string | Analyzed file MD5 hash. | 
-| Polygon.Analysis.SHA1 | string | Analyzed file SHA1 hash. | 
-| Polygon.Analysis.SHA256 | string | Analyzed file SHA256. | 
-| Polygon.Analysis.Result | boolean | Analysis verdict. | 
-| Polygon.Analysis.Status | string | Analysis status. | 
-| Polygon.Analysis.Verdict | string | Analysis verdict. | 
-| Polygon.Analysis.Probability | string | Verdict probability. | 
-| Polygon.Analysis.Families | string | Malware families. | 
-| Polygon.Analysis.Score | number | Polygon score | 
-| Polygon.Analysis.Internet-connection | string | Internet availability. | 
-| Polygon.Analysis.Type | string | File type. | 
-| Polygon.Analysis.DumpExists | boolean | Network activity dump exists. | 
-| Polygon.Analysis.File | unknown | The information about files in analysis. | 
-| Polygon.Analysis.URL | unknown | The information about URL indicators. | 
-| Polygon.Analysis.IP | unknown | The information about IP indicators. | 
-| Polygon.Analysis.Domain | unknown | The information about Domain indicators. | 
-| Polygon.Analysis.RegistryKey | unknown | The information about registry keys which were modified during the analysis. | 
-| Polygon.Analysis.Process | unknown | The information about processes started during the analysis. | 
-
+| File.Name | string | The full file name \(including file extension\). |
+| File.MD5 | string | The MD5 hash of the file. |
+| File.SHA1 | string | The SHA1 hash of the file. |
+| File.SHA256 | string | The SHA256 hash of the file. |
+| File.Type | string | File type. |
+| File.Malicious.Vendor | string | The vendor that reported the file as malicious. |
+| File.Malicious.Description | string | A description explaining why the file was determined to be malicious. |
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| DBotScore.Score | number | The actual score. |
+| IP.Address | String | IP address. |
+| Domain.Name | String | The Domain name. |
+| Domain.DNS | String | A list of IP objects resolved by DNS. |
+| URL.Data | String | The URL. |
+| URL.Malicious.Vendor | string | The vendor that reported the url as malicious. |
+| URL.Malicious.Description | string | A description explaining why the url was determined to be malicious. |
+| RegistryKey.Path | String | The path to the registry key. |
+| RegistryKey.Value | String | The value at the given RegistryKey. |
+| Process.Name | String | Process name. |
+| Process.PID | String | Process PID. |
+| Process.CommandLine | String | Process Command Line. |
+| Process.Path | String | Process path. |
+| Process.StartTime | date | Process start time. |
+| Process.EndTime | date | Process end time. |
+| Polygon.Analysis.ID | string | THF File ID. |
+| Polygon.Analysis.Name | string | File Name. |
+| Polygon.Analysis.Size | number | File Size. |
+| Polygon.Analysis.Started | date | Analysis start timestamp. |
+| Polygon.Analysis.Analyzed | date | Analysis finish timestamp. |
+| Polygon.Analysis.MD5 | string | Analyzed file MD5 hash. |
+| Polygon.Analysis.SHA1 | string | Analyzed file SHA1 hash. |
+| Polygon.Analysis.SHA256 | string | Analyzed file SHA256. |
+| Polygon.Analysis.Result | boolean | Analysis verdict. |
+| Polygon.Analysis.Status | string | Analysis status. |
+| Polygon.Analysis.Verdict | string | Analysis verdict. |
+| Polygon.Analysis.Probability | string | Verdict probability. |
+| Polygon.Analysis.Families | string | Malware families. |
+| Polygon.Analysis.Score | number | Polygon score |
+| Polygon.Analysis.Internet-connection | string | Internet availability. |
+| Polygon.Analysis.Type | string | File type. |
+| Polygon.Analysis.DumpExists | boolean | Network activity dump exists. |
+| Polygon.Analysis.File | unknown | The information about files in analysis. |
+| Polygon.Analysis.URL | unknown | The information about URL indicators. |
+| Polygon.Analysis.IP | unknown | The information about IP indicators. |
+| Polygon.Analysis.Domain | unknown | The information about Domain indicators. |
+| Polygon.Analysis.RegistryKey | unknown | The information about registry keys which were modified during the analysis. |
+| Polygon.Analysis.Process | unknown | The information about processes started during the analysis. |
 
 #### Command Example
 
@@ -840,12 +828,10 @@ Get THF Polygon analysis info
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2020-05-07 10:29:42 | true | F2118597 | Available | ba9fe2cb8ee2421ea24a55306ce9d923 | link.pdf | 64.80% | true | 44b3f79dfd7c5861501a19a3bac89f544c7ff815 | 0d1b77c84c68c50932e28c3462a1962916abbbebb456ce654751ab401aa37697 | 24.6 | 36375 | 2020-05-07 10:27:30 | Finished | PDF document, version 1.7 | Malicious |
 
-
 ### polygon-export-report
 
 ***
 Export an archive with THF Polygon report to War Room
-
 
 #### Base Command
 
@@ -855,19 +841,17 @@ Export an archive with THF Polygon report to War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tds_analysis_id | Analysis ID in THF | Required | 
-
+| tds_analysis_id | Analysis ID in THF | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Name | string | The report file name. | 
-| File.EntryID | string | Report file ID in Demisto. | 
-| File.Size | number | The report size. | 
-| File.Type | string | The report file type. | 
-| File.Info | string | The report file info. | 
-
+| File.Name | string | The report file name. |
+| File.EntryID | string | Report file ID in Demisto. |
+| File.Size | number | The report size. |
+| File.Type | string | The report file type. |
+| File.Info | string | The report file info. |
 
 #### Command Example
 
@@ -890,13 +874,10 @@ Export an archive with THF Polygon report to War Room
 
 #### Human Readable Output
 
-
-
 ### polygon-export-pcap
 
 ***
 Network activity dump export
-
 
 #### Base Command
 
@@ -906,19 +887,17 @@ Network activity dump export
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tds_analysis_id | Analysis ID in THF | Required | 
-
+| tds_analysis_id | Analysis ID in THF | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Name | string | The dump file name. | 
-| File.EntryID | string | The dump file ID in Demisto. | 
-| File.Size | number | The dump file size. | 
-| File.Type | string | The dump file type. | 
-| File.Info | unknown | The dump file info. | 
-
+| File.Name | string | The dump file name. |
+| File.EntryID | string | The dump file ID in Demisto. |
+| File.Size | number | The dump file size. |
+| File.Type | string | The dump file type. |
+| File.Info | unknown | The dump file info. |
 
 #### Command Example
 
@@ -941,13 +920,10 @@ Network activity dump export
 
 #### Human Readable Output
 
-
-
 ### polygon-export-video
 
 ***
 Screen activity video export
-
 
 #### Base Command
 
@@ -957,19 +933,17 @@ Screen activity video export
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tds_analysis_id | Analysis ID in THF | Required | 
-
+| tds_analysis_id | Analysis ID in THF | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Name | string | The video file name | 
-| File.EntryID | string | The video file ID in Demisto | 
-| File.Size | number | The video file size | 
-| File.Type | string | The video file type | 
-| File.Info | string | The video file info | 
-
+| File.Name | string | The video file name |
+| File.EntryID | string | The video file ID in Demisto |
+| File.Size | number | The video file size |
+| File.Type | string | The video file type |
+| File.Info | string | The video file info |
 
 #### Command Example
 
@@ -992,13 +966,10 @@ Screen activity video export
 
 #### Human Readable Output
 
-
-
 ### file
 
 ***
 Check file reputation
-
 
 #### Base Command
 
@@ -1008,30 +979,28 @@ Check file reputation
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | File hash (MD5, SHA1, SHA256) | Required | 
-
+| file | File hash (MD5, SHA1, SHA256) | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.MD5 | string | The MD5 hash of the file. | 
-| File.SHA1 | string | The SHA1 hash of the file. | 
-| File.SHA256 | string | The SHA256 hash of the file. | 
-| File.Malicious.Vendor | string | The vendor that reported the file as malicious. | 
-| File.Malicious.Description | string | A description explaining why the file was determined to be malicious. | 
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| DBotScore.Score | number | The actual score. | 
-| Polygon.Analysis.Score | number | Malware score in Polygon. | 
-| Polygon.Analysis.MD5 | string | The MD5 hash of the file. | 
-| Polygon.Analysis.SHA1 | string | The SHA1 hash of the file. | 
-| Polygon.Analysis.SHA256 | string | The SHA256 hash of the file. | 
-| Polygon.Analysis.Found | bool | File was found in cloud or not. | 
-| Polygon.Analysis.Verdict | bool | Polygon verdict for file. | 
-| Polygon.Analysis.Malware-families | string | Malware families. | 
-
+| File.MD5 | string | The MD5 hash of the file. |
+| File.SHA1 | string | The SHA1 hash of the file. |
+| File.SHA256 | string | The SHA256 hash of the file. |
+| File.Malicious.Vendor | string | The vendor that reported the file as malicious. |
+| File.Malicious.Description | string | A description explaining why the file was determined to be malicious. |
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| DBotScore.Score | number | The actual score. |
+| Polygon.Analysis.Score | number | Malware score in Polygon. |
+| Polygon.Analysis.MD5 | string | The MD5 hash of the file. |
+| Polygon.Analysis.SHA1 | string | The SHA1 hash of the file. |
+| Polygon.Analysis.SHA256 | string | The SHA256 hash of the file. |
+| Polygon.Analysis.Found | bool | File was found in cloud or not. |
+| Polygon.Analysis.Verdict | bool | Polygon verdict for file. |
+| Polygon.Analysis.Malware-families | string | Malware families. |
 
 #### Command Example
 

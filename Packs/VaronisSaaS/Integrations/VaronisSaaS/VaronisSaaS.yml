@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -82,8 +82,6 @@ configuration:
   - New
   - Under Investigation
   - Closed
-  - Action Required
-  - Auto-Resolved
   required: false
   type: 15
   section: Collect
@@ -185,7 +183,13 @@ script:
       description: Alert severity.
       type: String
     - contextPath: Varonis.Alert.Rule.Category.Name
-      description: "Alert category.\nOptions are:\n- Reconnaissance \n- Intrusion \n- Exploitation \n- Privilege Escalation \n- Lateral Movement."
+      description:  |- 
+        Alert category. Options are:
+        - Reconnaissance 
+        - Intrusion 
+        - Exploitation 
+        - Privilege Escalation 
+        - Lateral Movement.
       type: String
     - contextPath: Varonis.Alert.Location.CountryName
       description: Name of the country from which the event occurred.
@@ -198,9 +202,7 @@ script:
         Alert state. Options are:
         - New
         - Under investigation
-        - Closed
-        - Action Required
-        - Auto-Resolved.
+        - Closed.
       type: String
     - contextPath: Varonis.Alert.CloseReason.Name
       description: |-
@@ -307,8 +309,6 @@ script:
       predefined:
       - New
       - Under Investigation
-      - Action Required
-      - Auto-Resolved
       default: false
       description: Alert new status.
       isArray: false
@@ -390,7 +390,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: True
-      description: Indicates whether events should be ordered in newest to oldest order.      
+      description: Indicates whether events should be ordered in newest to oldest order.
       predefined:
       - 'True'
       - 'False'
@@ -538,7 +538,7 @@ script:
     name: get-mapping-fields
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3720084
   feed: false
   isfetch: true
   ismappable: true

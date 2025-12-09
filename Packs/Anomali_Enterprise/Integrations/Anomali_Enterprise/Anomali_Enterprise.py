@@ -1,14 +1,12 @@
-from typing import Dict, List
-
 import urllib3
 from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-VENDOR_NAME = 'Anomali Enterprise'
+VENDOR_NAME = "Anomali Enterprise"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -17,15 +15,12 @@ class Client(BaseClient):
     """
 
     def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool):
-        headers = {
-            'Content-Type': 'application/json',
-            'ae-authorization': f'{username}:{password}'
-        }
+        headers = {"Content-Type": "application/json", "ae-authorization": f"{username}:{password}"}
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
         self._username = username
         self._password = password
 
-    def start_search_job_request(self, from_: str, to_: str, indicators: List[str]) -> dict:
+    def start_search_job_request(self, from_: str, to_: str, indicators: list[str]) -> dict:
         """Initiate a search job.
         Args:
             from_: from which time to initiate the search
@@ -34,10 +29,8 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        data = {'username': self._username, 'password': self._password, 'from': from_, 'to': to_,
-                'indicators': indicators}
-        return self._http_request(method='POST', url_suffix='/api/v1/mars/forensic', headers=self._headers,
-                                  json_data=data)
+        data = {"username": self._username, "password": self._password, "from": from_, "to": to_, "indicators": indicators}
+        return self._http_request(method="POST", url_suffix="/api/v1/mars/forensic", headers=self._headers, json_data=data)
 
     def get_search_job_result_request(self, job_id: str) -> dict:
         """Retrieve a search job results.
@@ -46,34 +39,34 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        params = {'jobid': job_id}
-        return self._http_request(method='GET', url_suffix='/api/v1/mars/forensic', headers=self._headers,
-                                  params=params)
+        params = {"jobid": job_id}
+        return self._http_request(method="GET", url_suffix="/api/v1/mars/forensic", headers=self._headers, params=params)
 
-    def domain_request(self, domain: List[str]) -> dict:
+    def domain_request(self, domain: list[str]) -> dict:
         """Retrieve information regarding a domain.
         Args:
             domain: the domain name to search
         Returns:
             Response from API.
         """
-        data = {'username': self._username, 'password': self._password, 'domains': domain}
-        return self._http_request(method='POST', url_suffix='/api/v1/mars/dga_score', headers=self._headers,
-                                  json_data=data)
+        data = {"username": self._username, "password": self._password, "domains": domain}
+        return self._http_request(method="POST", url_suffix="/api/v1/mars/dga_score", headers=self._headers, json_data=data)
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def module(client: Client) -> str:
     """
     Performs basic get request
     """
-    response = client.domain_request(argToList('google.com'))
-    if response.get('result') != 'success':
-        raise Exception('To Use Anomali Enterprise, make sure you are using the current username and password '
-                        'and have the needed permissions.')
-    return 'ok'
+    response = client.domain_request(argToList("google.com"))
+    if response.get("result") != "success":
+        raise Exception(
+            "To Use Anomali Enterprise, make sure you are using the current username and password "
+            "and have the needed permissions."
+        )
+    return "ok"
 
 
 def start_search_job(client: Client, args: dict) -> CommandResults:
@@ -86,11 +79,11 @@ def start_search_job(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    from_ = str(args.get('from', '1 day'))
-    to_ = str(args.get('to', ''))
-    indicators = argToList(args.get('indicators'))
+    from_ = str(args.get("from", "1 day"))
+    to_ = str(args.get("to", ""))
+    indicators = argToList(args.get("indicators"))
 
-    timestamp_format = '%Y-%m-%dT%H:%M:%S.%f'
+    timestamp_format = "%Y-%m-%dT%H:%M:%S.%f"
     from_iso = parse_date_range(from_, date_format=timestamp_format)[0]
     if to_:
         to_iso = parse_date_range(to_, date_format=timestamp_format)[0]
@@ -99,21 +92,18 @@ def start_search_job(client: Client, args: dict) -> CommandResults:
 
     response = client.start_search_job_request(from_iso, to_iso, indicators)
 
-    start_search_outputs = {
-        'status': 'in progress',
-        'job_id': response.get('jobid', '')
-    }
+    start_search_outputs = {"status": "in progress", "job_id": response.get("jobid", "")}
 
     return CommandResults(
-        outputs_prefix='AnomaliEnterprise.ForensicSearch',
-        outputs_key_field='job_id',
+        outputs_prefix="AnomaliEnterprise.ForensicSearch",
+        outputs_key_field="job_id",
         outputs=start_search_outputs,
         readable_output=tableToMarkdown(name="Forensic search started:", t=start_search_outputs, removeNull=True),
-        raw_response=response
+        raw_response=response,
     )
 
 
-def get_search_job_result(client: Client, args: Dict) -> List[CommandResults]:
+def get_search_job_result(client: Client, args: dict) -> list[CommandResults]:
     """Get the search job result.
 
     Args:
@@ -123,41 +113,41 @@ def get_search_job_result(client: Client, args: Dict) -> List[CommandResults]:
     Returns:
         CommandResults.
     """
-    job_ids = argToList((args.get('job_id')))
-    limit = int(args.get('limit', '20'))
-    verbose = args.get('verbose', 'true') == 'true'
+    job_ids = argToList(args.get("job_id"))
+    limit = int(args.get("limit", "20"))
+    verbose = args.get("verbose", "true") == "true"
 
     command_results: list = []
     for job_id in job_ids:
         response = client.get_search_job_result_request(job_id)
-        if 'error' in response:
-            raise Exception(f"{str(response.get('error'))}. Job ID might have expired.")
+        if "error" in response:
+            raise Exception(f"{response.get('error')!s}. Job ID might have expired.")
 
         outputs = response
-        outputs.update({'job_id': job_id})
-        if not response.get('complete'):
-            human_readable = f'job ID: {job_id} is still in progress.'
-            outputs.update({'status': 'in progress'})
+        outputs.update({"job_id": job_id})
+        if not response.get("complete"):
+            human_readable = f"job ID: {job_id} is still in progress."
+            outputs.update({"status": "in progress"})
         else:
-            if response.get('totalMatches'):
-                headers = ['status', 'job_id', 'category', 'totalFiles', 'scannedEvents']
-                human_readable = tableToMarkdown(name="Forensic search metadata:", t=response, headers=headers,
-                                                 removeNull=True)
+            if response.get("totalMatches"):
+                headers = ["status", "job_id", "category", "totalFiles", "scannedEvents"]
+                human_readable = tableToMarkdown(name="Forensic search metadata:", t=response, headers=headers, removeNull=True)
                 if verbose:
-                    human_readable += tableToMarkdown(name="Forensic search results:",
-                                                      t=response.get('streamResults', [])[:limit], removeNull=True)
-                if 'streamResults' in outputs:
-                    outputs['streamResults'] = outputs.get('streamResults', [])[:limit]  # limit the outputs to the context
+                    human_readable += tableToMarkdown(
+                        name="Forensic search results:", t=response.get("streamResults", [])[:limit], removeNull=True
+                    )
+                if "streamResults" in outputs:
+                    outputs["streamResults"] = outputs.get("streamResults", [])[:limit]  # limit the outputs to the context
             else:
-                human_readable = f'No matches found for the given job ID: {job_id}.'
-                response.update({'status': 'completed'})
+                human_readable = f"No matches found for the given job ID: {job_id}."
+                response.update({"status": "completed"})
 
         command_result = CommandResults(
-            outputs_prefix='AnomaliEnterprise.ForensicSearch',
-            outputs_key_field='job_id',
+            outputs_prefix="AnomaliEnterprise.ForensicSearch",
+            outputs_key_field="job_id",
             outputs=response,
             readable_output=human_readable,
-            raw_response=response
+            raw_response=response,
         )
         command_results.append(command_result)
     return command_results
@@ -173,29 +163,29 @@ def dga_domain_status(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    domains = argToList(str(args.get('domains')))
+    domains = argToList(str(args.get("domains")))
 
     response = client.domain_request(domains)
 
-    domains_data = response.get('data', {})
+    domains_data = response.get("data", {})
     outputs = []
     for domain in domains:
         output = {
-            'domain': domain,
-            'malware_family': domains_data.get(domain, {}).get('malware_family'),
-            'probability': domains_data.get(domain, {}).get('probability')
+            "domain": domain,
+            "malware_family": domains_data.get(domain, {}).get("malware_family"),
+            "probability": domains_data.get(domain, {}).get("probability"),
         }
         outputs.append(output)
     return CommandResults(
-        outputs_prefix='AnomaliEnterprise.DGA',
-        outputs_key_field='domain',
+        outputs_prefix="AnomaliEnterprise.DGA",
+        outputs_key_field="domain",
         outputs=outputs,
         readable_output=tableToMarkdown(name="Domains DGA:", t=outputs, removeNull=True),
-        raw_response=response
+        raw_response=response,
     )
 
 
-def domain_command(client: Client, args: dict) -> List[CommandResults]:
+def domain_command(client: Client, args: dict) -> list[CommandResults]:
     """Search domain DGA status.
 
     Args:
@@ -205,16 +195,16 @@ def domain_command(client: Client, args: dict) -> List[CommandResults]:
     Returns:
         CommandResults and DBotScore.
     """
-    domain_list = argToList(args.get('domain'))
+    domain_list = argToList(args.get("domain"))
 
     response = client.domain_request(domain_list)
-    domains_data = response.get('data', {})
+    domains_data = response.get("data", {})
     command_results_list = []
     for domain in domain_list:
         output = {
-            'domain': domain,
-            'malware_family': domains_data.get(domain, {}).get('malware_family'),
-            'probability': domains_data.get(domain, {}).get('probability')
+            "domain": domain,
+            "malware_family": domains_data.get(domain, {}).get("malware_family"),
+            "probability": domains_data.get(domain, {}).get("probability"),
         }
         score = calculate_dbot_score(domains_data.get(domain, {}))
 
@@ -223,23 +213,23 @@ def domain_command(client: Client, args: dict) -> List[CommandResults]:
             indicator_type=DBotScoreType.DOMAIN,
             integration_name=VENDOR_NAME,
             score=score,
-            malicious_description=str(output.get('malware_family', '')),
-            reliability=demisto.params().get('integrationReliability')
+            malicious_description=str(output.get("malware_family", "")),
+            reliability=demisto.params().get("integrationReliability"),
         )
 
         domain = Common.Domain(
             domain=domain,
             dbot_score=dbot_score,
-            tags='DGA' if score in [Common.DBotScore.SUSPICIOUS, Common.DBotScore.BAD] else None
+            tags="DGA" if score in [Common.DBotScore.SUSPICIOUS, Common.DBotScore.BAD] else None,
         )
 
         command_results = CommandResults(
-            outputs_prefix='AnomaliEnterprise.DGA',
-            outputs_key_field='domain',
+            outputs_prefix="AnomaliEnterprise.DGA",
+            outputs_key_field="domain",
             outputs=output,
             readable_output=tableToMarkdown(name="Domains DGA:", t=output, removeNull=True),
             indicator=domain,
-            raw_response=response
+            raw_response=response,
         )
         command_results_list.append(command_results)
 
@@ -259,15 +249,15 @@ def calculate_dbot_score(domain_data: dict) -> int:
         DBot Score.
     """
     score = Common.DBotScore.NONE
-    if domain_data.get('malware_family', {}):
-        if float(domain_data.get('probability', 0)) > 0.6:
+    if domain_data.get("malware_family", {}):
+        if float(domain_data.get("probability", 0)) > 0.6:
             score = Common.DBotScore.BAD
         else:
             score = Common.DBotScore.SUSPICIOUS
     return score
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -275,24 +265,24 @@ def main() -> None:
     Parse and validates integration params, runs integration commands.
     """
     params = demisto.params()
-    server_url = params.get('url')
-    username = params.get('credentials', {}).get('identifier')
-    password = params.get('credentials', {}).get('password')
-    verify = not params.get('insecure', False)
-    proxy = params.get('proxy') is True
+    server_url = params.get("url")
+    username = params.get("credentials", {}).get("identifier")
+    password = params.get("credentials", {}).get("password")
+    verify = not params.get("insecure", False)
+    proxy = params.get("proxy") is True
 
     command = demisto.command()
-    LOG(f'Command being called in {VENDOR_NAME} is: {command}')
+    LOG(f"Command being called in {VENDOR_NAME} is: {command}")
 
     try:
         client = Client(server_url=server_url, username=username, password=password, verify=verify, proxy=proxy)
         commands = {
-            'anomali-enterprise-retro-forensic-search': start_search_job,
-            'anomali-enterprise-retro-forensic-search-results': get_search_job_result,
-            'anomali-enterprise-dga-domain-status': dga_domain_status,
-            'domain': domain_command,
+            "anomali-enterprise-retro-forensic-search": start_search_job,
+            "anomali-enterprise-retro-forensic-search-results": get_search_job_result,
+            "anomali-enterprise-dga-domain-status": dga_domain_status,
+            "domain": domain_command,
         }
-        if command == 'test-module':
+        if command == "test-module":
             return_results(module(client))
         elif command in commands:
             return_results(commands[command](client, demisto.args()))
@@ -300,11 +290,10 @@ def main() -> None:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as err:
-        return_error(f'Failed to execute {command} command. Error: {str(err)} \n '
-                     f'tracback: {traceback.format_exc()}')
+        return_error(f"Failed to execute {command} command. Error: {err!s} \n tracback: {traceback.format_exc()}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

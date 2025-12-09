@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from dateparser import parse
 from unittest.mock import patch
-from CommonServerPython import DemistoException, IncidentStatus
+from CommonServerPython import DemistoException, IncidentStatus, EntryType, CommandResults
 from CyberBlindspot import (
     LOGGING_PREFIX,
     CBS_INCOMING_DATE_FORMAT,
@@ -13,6 +13,7 @@ from CyberBlindspot import (
     CBS_CARD_FIELDS,
     CBS_CRED_FIELDS,
     CBS_DOMAIN_INFRINGE_FIELDS,
+    CBS_MALWARE_LOG_FIELDS,
 )
 
 """CONSTANTS"""
@@ -59,6 +60,12 @@ MODULES = [
         "CyberBlindspot.IncidentList",
         "CyberBlindspot.RemoteIncident",
         CBS_DOMAIN_INFRINGE_FIELDS,
+    ),
+    (
+        "malware_logs",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_MALWARE_LOG_FIELDS,
     ),
 ]
 
@@ -112,6 +119,7 @@ def mock_last_fetch_ids():
     Then:
         - Return a list of ids.
     """
+
     def mock_ids(module_type: str):
         match module_type:
             case "compromised_cards":
@@ -138,12 +146,19 @@ def mock_last_fetch_ids():
                     "RD-5049BCA31",
                     "RD-FBD354127",
                 ]
+            case "malware_logs":
+                return [
+                    "ML-904CE0968",
+                    "ML-DEAF1ABD5",
+                    "ML-919AE2387",
+                ]
             case _:
                 return [
                     "COMX123456123456",
                     "COMX123456654321",
                     "COMX987654",
                 ]
+
     return mock_ids
 
 
@@ -210,6 +225,7 @@ def test_log(mock_log_type, mock_log_function, mock_message, mock_asserts, caplo
         - Ensure logged message is as expected.
     """
     from CyberBlindspot import log
+
     logging.getLogger().propagate = True
     with caplog.at_level(mock_log_type[0]):
         log(mock_log_type[1], mock_message)
@@ -240,12 +256,7 @@ def test_log(mock_log_type, mock_log_function, mock_message, mock_asserts, caplo
                 "timestamp": True,
                 "input_format_string": CBS_INCOMING_DATE_FORMAT,
                 "output_format": "",
-                "kwargs": {
-                    "settings": {
-                        "TIMEZONE": "UTC+3",
-                        "TO_TIMEZONE": "UTC"
-                    }
-                }
+                "kwargs": {"settings": {"TIMEZONE": "UTC+3", "TO_TIMEZONE": "UTC"}},
             },
             1670270614000,
         ),
@@ -255,12 +266,7 @@ def test_log(mock_log_type, mock_log_function, mock_message, mock_asserts, caplo
                 "timestamp": False,
                 "input_format_string": CBS_INCOMING_DATE_FORMAT,
                 "output_format": "",
-                "kwargs": {
-                    "settings": {
-                        "TIMEZONE": "UTC",
-                        "TO_TIMEZONE": "UTC"
-                    }
-                }
+                "kwargs": {"settings": {"TIMEZONE": "UTC", "TO_TIMEZONE": "UTC"}},
             },
             datetime(2022, 12, 5, 23, 3, 34),
         ),
@@ -270,13 +276,7 @@ def test_log(mock_log_type, mock_log_function, mock_message, mock_asserts, caplo
                 "timestamp": False,
                 "input_format_string": CBS_INCOMING_DATE_FORMAT,
                 "output_format": CBS_OUTGOING_DATE_FORMAT,
-                "kwargs":
-                    {
-                        "settings": {
-                            "TIMEZONE": "UTC",
-                            "TO_TIMEZONE": "UTC"
-                        }
-                    }
+                "kwargs": {"settings": {"TIMEZONE": "UTC", "TO_TIMEZONE": "UTC"}},
             },
             "05-12-2022 23:03",
         ),
@@ -302,13 +302,16 @@ def test_convert_time_string(mock_input, mock_args, mock_asserts, capfd, caplog)
             mock_args["input_format_string"],
             mock_args["output_format"],
             mock_args["timestamp"],
-            **mock_args["kwargs"]
+            **mock_args["kwargs"],
         )
         caplog.set_level(logging.INFO)
         assert result == mock_asserts
         if caplog.text:
-            assert f"{LOGGING_PREFIX} An error was encountered at `convert_time_string()` \
-                err=ValueError('The passed date string and/or format string is not valid')" in caplog.text
+            assert (
+                f"{LOGGING_PREFIX} An error was encountered at `convert_time_string()` \
+                err=ValueError('The passed date string and/or format string is not valid')"
+                in caplog.text
+            )
 
 
 @pytest.mark.parametrize(
@@ -319,7 +322,8 @@ def test_convert_time_string(mock_input, mock_args, mock_asserts, capfd, caplog)
         ("fetch_creds_response_valid.json", "cred_list_cmd_result_valid.json", MODULES[2][0]),
         ("fetch_domains_response_valid.json", "domain_list_cmd_result_valid.json", MODULES[3][0]),
         ("fetch_subdomains_response_valid.json", "subdomain_list_cmd_result_valid.json", MODULES[4][0]),
-    ]
+        ("fetch_malware_logs_response_valid.json", "malware_logs_list_cmd_result_valid.json", MODULES[5][0]),
+    ],
 )
 def test_map_and_create_incident(mock_input_file, mock_assert_file, mock_module):
     """
@@ -334,11 +338,11 @@ def test_map_and_create_incident(mock_input_file, mock_assert_file, mock_module)
 
     mock_fetched_incident = load_mock_response(mock_input_file)[0]
     mock_assert = load_mock_response(mock_assert_file)[0]
-    del mock_assert['rawJson']
+    del mock_assert["rawJson"]
 
-    with patch('CyberBlindspot.INSTANCE.module', new=mock_module):
+    with patch("CyberBlindspot.INSTANCE.module", new=mock_module):
         result = map_and_create_incident(mock_fetched_incident)
-        del result['rawJson']
+        del result["rawJson"]
         logging.debug(result)
         logging.debug(mock_assert)
         assert result == mock_assert
@@ -362,10 +366,14 @@ def test_map_and_create_incident(mock_input_file, mock_assert_file, mock_module)
         ("", ([], []), ([], []), MODULES[4][0]),
         ("fetch_subdomains_response_valid.json", 2, ([], []), MODULES[4][0]),
         ("fetch_subdomains_response_valid.json", -2, ([], []), MODULES[4][0]),
-    ]
+        ("", ([], []), ([], []), MODULES[5][0]),
+        ("fetch_malware_logs_response_valid.json", 2, ([], []), MODULES[5][0]),
+        ("fetch_malware_logs_response_valid.json", -2, ([], []), MODULES[5][0]),
+    ],
 )
 def test_deduplicate_and_create_incidents(
-        input_file_name, mock_input, mock_asserts, mock_module, mock_last_fetch_ids, capfd, caplog):
+    input_file_name, mock_input, mock_asserts, mock_module, mock_last_fetch_ids, capfd, caplog
+):
     """
     Given:
         - List of fetched incidents.
@@ -377,12 +385,13 @@ def test_deduplicate_and_create_incidents(
         - Create a new list of XSOAR-ready incidents only for incidents not found in the last run.
     """
     from CyberBlindspot import deduplicate_and_create_incidents
+
     with capfd.disabled():
         caplog.set_level(logging.DEBUG)
         if input_file_name:
             mock_input = [
                 load_mock_response(input_file_name),
-                mock_last_fetch_ids(mock_module)[mock_input:] if mock_input != -2 else []
+                mock_last_fetch_ids(mock_module)[mock_input:] if mock_input != -2 else [],
             ]
         new_hashes, unique_incidents = deduplicate_and_create_incidents(mock_input[1], mock_input[0])
         assert new_hashes == mock_asserts[0]
@@ -394,7 +403,7 @@ def test_deduplicate_and_create_incidents(
     [
         ("PascalCaseTest", "pascal_case_test"),
         ("camelCaseTest", "camel_case_test"),
-    ]
+    ],
 )
 def test_to_snake_case(mock_input, mock_assert):
     """
@@ -410,6 +419,38 @@ def test_to_snake_case(mock_input, mock_assert):
     assert to_snake_case(mock_input) == mock_assert
 
 
+@pytest.mark.parametrize(
+    "mock_response",
+    [
+        {"hits": [{"testkey": "testval"}], "statusCode": 200},
+        {"statusCode": 200},
+        {"errors": "Invalid API-KEY", "statusCode": 400},
+        {"statusCode": 500},
+    ],
+)
+def test_test_configuration(mock_response, mock_client, mocker):
+    """
+    Given:
+        - CyberBlindspot Client.
+    When:
+        - test_configuration is called.
+    Then:
+        - The returned value must be a list.
+    """
+
+    mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
+
+    if mock_response.get("statusCode") > 200:
+        # Expecting an exception
+        with pytest.raises(DemistoException) as e:
+            incidents = mock_client.test_configuration({})
+            if type(e) is DemistoException:
+                assert e == mock_response.get("errors", "request was not successful")
+    else:
+        incidents = mock_client.test_configuration({})
+        assert type(incidents) is list
+
+
 """ COMMAND TESTS """
 
 
@@ -418,52 +459,42 @@ def test_to_snake_case(mock_input, mock_assert):
     [
         (
             {
-                'mirror_direction': '',
+                "mirror_direction": "",
             },
-            DemistoException('Invalid "Mirroring Direction" Value')
+            DemistoException('Invalid "Mirroring Direction" Value'),
         ),
         (
             {
-                'mirror_direction': 'None',
-                'first_fetch': 'wrong',
+                "mirror_direction": "None",
+                "first_fetch": "wrong",
             },
-            DemistoException('Invalid "First Fetch" Value')
+            DemistoException('Invalid "First Fetch" Value'),
         ),
         (
             {
-                'mirror_direction': 'None',
-                'max_fetch': '-1',
+                "mirror_direction": "None",
+                "max_fetch": "-1",
             },
-            DemistoException(f'Invalid "Max Fetch" Value. Should be between 1 to {ABSOLUTE_MAX_FETCH}')
+            DemistoException(f'Invalid "Max Fetch" Value. Should be between 1 to {ABSOLUTE_MAX_FETCH}'),
         ),
         (
             {
-                'mirror_direction': 'None',
-                'date_from': 'wrong',
+                "mirror_direction": "None",
+                "date_from": "wrong",
             },
-            DemistoException('Invalid "Date From" Value (Does not match format "%d-%m-%Y %H:%M")')
+            DemistoException('Invalid "Date From" Value (Does not match format "%d-%m-%Y %H:%M")'),
         ),
         (
             {
-                'mirror_direction': 'None',
-                'date_to': 'wrong',
+                "mirror_direction": "None",
+                "date_to": "wrong",
             },
-            DemistoException('Invalid "Date To" Value (Does not match format "%d-%m-%Y %H:%M")')
+            DemistoException('Invalid "Date To" Value (Does not match format "%d-%m-%Y %H:%M")'),
         ),
+        ({"mirror_direction": "None", "api_key": {"password": ""}}, DemistoException('Invalid "API Key" Value')),
         (
-            {
-                'mirror_direction': 'None',
-                'api_key': {'password': ''}
-            },
-            DemistoException('Invalid "API Key" Value')
-        ),
-        (
-            {
-                'mirror_direction': 'None',
-                'api_key': {'password': 'test'},
-                'module_to_use': ''
-            },
-            DemistoException('Invalid "Module" Value')
+            {"mirror_direction": "None", "api_key": {"password": "test"}, "module_to_use": ""},
+            DemistoException('Invalid "Module" Value'),
         ),
     ],
 )
@@ -507,90 +538,130 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
                     "remarks": "Remarks about the incident",
                     "first_seen": "The creation date of the incident",
                     "last_seen": "The date the incident got last updated",
+                    "screenshots": "The screenshot evidence if available",
                     "brand": "The organization the incident belongs to",
                     "timestamp": "The timestamp of when the record was created",
+                    "external_link": "External link to the remote platform",
                 }
-            }
+            },
         ),
         (
             MODULES[1][0],
             {
                 "CyberBlindspot Incident": {
-                    'first_seen': 'The creation date of the incident',
-                    'last_seen': 'The date the incident got last updated',
-                    'timestamp': 'The timestamp of when the record was created',
-                    'brand': 'The organization the incident belongs to',
-                    'status': 'Incident\'s current state of affairs',
-                    'severity': 'The severity of the incident',
-                    'remarks': 'Remarks about the incident',
-                    'type': 'Incident type',
-                    'id': 'Unique ID for the incident record',
-                    'card_number': 'The compromised card\'s number.',
-                    'cvv': 'The compromised card\'s Card Verification Value (CVV).',
-                    'expiry_month': 'The compromised card\'s expiration month.',
-                    'expiry_year': 'The compromised card\'s expiration year.',
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "timestamp": "The timestamp of when the record was created",
+                    "brand": "The organization the incident belongs to",
+                    "status": "Incident's current state of affairs",
+                    "severity": "The severity of the incident",
+                    "remarks": "Remarks about the incident",
+                    "type": "Incident type",
+                    "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
+                    "card_number": "The compromised card's number.",
+                    "cvv": "The compromised card's Card Verification Value (CVV).",
+                    "expiry_month": "The compromised card's expiration month.",
+                    "expiry_year": "The compromised card's expiration year.",
                 }
-            }
+            },
         ),
         (
             MODULES[2][0],
             {
                 "CyberBlindspot Incident": {
-                    'first_seen': 'The creation date of the incident',
-                    'last_seen': 'The date the incident got last updated',
-                    'timestamp': 'The timestamp of when the record was created',
-                    'brand': 'The organization the incident belongs to',
-                    'status': 'Incident\'s current state of affairs',
-                    'severity': 'The severity of the incident',
-                    'remarks': 'Remarks about the incident',
-                    'type': 'Incident type',
-                    'id': 'Unique ID for the incident record',
-                    'breach_source': 'The source of breached data.',
-                    'domain': 'The domain related to the breached data.',
-                    'email': 'Email found in the breached data.',
-                    'username': 'Username found in the breached data.',
-                    'executive_name': 'Executive member\'s name related to the breached data.',
-                    'password': 'Password found in the breached data.',
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "timestamp": "The timestamp of when the record was created",
+                    "brand": "The organization the incident belongs to",
+                    "status": "Incident's current state of affairs",
+                    "severity": "The severity of the incident",
+                    "remarks": "Remarks about the incident",
+                    "type": "Incident type",
+                    "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
+                    "breach_source": "The source of breached data.",
+                    "domain": "The domain related to the breached data.",
+                    "email": "Email found in the breached data.",
+                    "username": "Username found in the breached data.",
+                    "executive_name": "Executive member's name related to the breached data.",
+                    "password": "Password found in the breached data.",
                 }
-            }
+            },
         ),
         (
             MODULES[3][0],
             {
                 "CyberBlindspot Incident": {
-                    'first_seen': 'The creation date of the incident',
-                    'last_seen': 'The date the incident got last updated',
-                    'timestamp': 'The timestamp of when the record was created',
-                    'brand': 'The organization the incident belongs to',
-                    'status': 'Incident\'s current state of affairs',
-                    'severity': 'The severity of the incident',
-                    'remarks': 'Remarks about the incident',
-                    'type': 'Incident type',
-                    'id': 'Unique ID for the incident record',
-                    'confirmation_time': 'The time of infringement confirmation.',
-                    'risks': 'The potential difficulties carried by the infringement.',
-                    'incident_status': 'The status of the infringement incident.',
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "timestamp": "The timestamp of when the record was created",
+                    "brand": "The organization the incident belongs to",
+                    "status": "Incident's current state of affairs",
+                    "severity": "The severity of the incident",
+                    "remarks": "Remarks about the incident",
+                    "type": "Incident type",
+                    "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
+                    "confirmation_time": "The time of infringement confirmation.",
+                    "risks": "The potential difficulties carried by the infringement.",
+                    "incident_status": "The status of the infringement incident.",
                 }
-            }
+            },
         ),
         (
             MODULES[4][0],
             {
                 "CyberBlindspot Incident": {
-                    'first_seen': 'The creation date of the incident',
-                    'last_seen': 'The date the incident got last updated',
-                    'timestamp': 'The timestamp of when the record was created',
-                    'brand': 'The organization the incident belongs to',
-                    'status': 'Incident\'s current state of affairs',
-                    'severity': 'The severity of the incident',
-                    'remarks': 'Remarks about the incident',
-                    'type': 'Incident type',
-                    'id': 'Unique ID for the incident record',
-                    'confirmation_time': 'The time of infringement confirmation.',
-                    'risks': 'The potential difficulties carried by the infringement.',
-                    'incident_status': 'The status of the infringement incident.',
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "timestamp": "The timestamp of when the record was created",
+                    "brand": "The organization the incident belongs to",
+                    "status": "Incident's current state of affairs",
+                    "severity": "The severity of the incident",
+                    "remarks": "Remarks about the incident",
+                    "type": "Incident type",
+                    "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
+                    "confirmation_time": "The time of infringement confirmation.",
+                    "risks": "The potential difficulties carried by the infringement.",
+                    "incident_status": "The status of the infringement incident.",
                 }
-            }
+            },
+        ),
+        (
+            MODULES[5][0],
+            {
+                "CyberBlindspot Incident": {
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "timestamp": "The timestamp of when the record was created",
+                    "brand": "The organization the incident belongs to",
+                    "status": "Incident's current state of affairs",
+                    "severity": "The severity of the incident",
+                    "remarks": "Remarks about the incident",
+                    "type": "Incident type",
+                    "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
+                    "masked_password": "The masked password related to the breached data.",
+                    "password": "Password found in the breached data or compromised account.",
+                    "software": "The software related to the breached data.",
+                    "user": "The user related to the breached data.",
+                    "user_domain": "The domain of the user related to the breached data.",
+                    "website": "The website related to the breached data.",
+                    "sources": "The sources related to the breached data.",
+                    "source_uri": "The source URI related to the breached data.",
+                    "domain": "The domain related to the breached data or compromised device.",
+                    "hostname": "The hostname related to the breached data.",
+                    "stealer_family": "The family of the malware.",
+                    "compromise_details": "The details of the compromise.",
+                    "date_compromised": "The date the malware was compromised.",
+                    "computer_name": "The name of the computer that was compromised.",
+                    "operating_system": "The operating system of the computer that was compromised.",
+                    "malware_path": "The path of the malware.",
+                    "url_path": "The URL path of the malware.",
+                }
+            },
         ),
     ],
 )
@@ -607,7 +678,7 @@ def test_get_mapping_fields_command(mock_module, expected_mappings):
 
     mock_instance = Instance(module=mock_module)
 
-    with patch('CyberBlindspot.INSTANCE', new=mock_instance):
+    with patch("CyberBlindspot.INSTANCE", new=mock_instance):
         mappings = get_mapping_fields_command()
         assert mappings.extract_mapping() == expected_mappings
 
@@ -667,7 +738,7 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_module,
     assert len(incidents) == 2
     assert len(next_run.get("last_fetch_ids", [])) == 3
     if incidents and incidents[0].get("xsoar_mirroring", {}).get("mirror_direction"):
-        assert (incidents[0].get("xsoar_mirroring", {}).get("mirror_id") == "COMX123456654321")
+        assert incidents[0].get("xsoar_mirroring", {}).get("mirror_id") == "COMX123456654321"
     assert incidents[0].get("name") == "New leaked_credential with severity High found"
     assert incidents[0].get("CustomFields", {}).get("cbs_type") == "Leaked Credential"
 
@@ -765,11 +836,25 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_module,
             MODULES[4][0],
             MODULES[4][1],
         ),
+        (
+            "fetch_malware_logs_response_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "malware_logs_list_cmd_result_valid.json",
+            MODULES[5][0],
+            MODULES[5][1],
+        ),
+        (
+            False,
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            False,
+            MODULES[5][0],
+            MODULES[5][1],
+        ),
     ],
 )
 def test_ctm360_cbs_incident_list_command(
-        response_file_name, mock_args, mock_asserts_file,
-        mock_module, mock_module_prefix, mock_client, mocker, capfd, caplog):
+    response_file_name, mock_args, mock_asserts_file, mock_module, mock_module_prefix, mock_client, mocker, capfd, caplog
+):
     """
     Given:
         - CyberBlindspot Client.
@@ -780,18 +865,19 @@ def test_ctm360_cbs_incident_list_command(
         - Fetch the list of incidents from the remote server.
     """
     from CyberBlindspot import ctm360_cbs_list_command, Instance
+
     patched_response = load_mock_response(response_file_name) if response_file_name else []
     mocker.patch.object(mock_client, "fetch_incidents", return_value=patched_response)
     mock_instance = Instance(module=mock_module)
     with capfd.disabled():
         caplog.set_level(logging.DEBUG)
-        with patch('CyberBlindspot.INSTANCE', new=mock_instance):
+        with patch("CyberBlindspot.INSTANCE", new=mock_instance):
             cmd_results = ctm360_cbs_list_command(mock_client, mock_args)
             expected_results = load_mock_response(mock_asserts_file) if mock_asserts_file else []
-            cmd_results = cmd_results.to_context().get('Contents')
+            cmd_results = cmd_results.to_context().get("Contents")
             if cmd_results and expected_results:
-                cmd_results = [{k: v for k, v in item.items() if k != 'rawJson'} for item in cmd_results]
-                expected_results = [{k: v for k, v in item.items() if k != 'rawJson'} for item in expected_results]
+                cmd_results = [{k: v for k, v in item.items() if k != "rawJson"} for item in cmd_results]
+                expected_results = [{k: v for k, v in item.items() if k != "rawJson"} for item in expected_results]
             logging.debug(cmd_results)
             logging.debug(expected_results)
             assert cmd_results == expected_results
@@ -812,10 +898,12 @@ def test_ctm360_cbs_incident_list_command(
                 "status": "Member Feedback",
                 "coa": "Member Side Action",
                 "remarks": "New leaked_credential with severity High found",
+                "external_link": "https://platform.ctm360.com/cbs/threat_manager/incidents/COMX584598490058",
                 "first_seen": "27-12-2023 05:42:18 AM",
                 "last_seen": "27-12-2023 05:42:18 AM",
-                "brand": "Mock Brand",
-                "timestamp": 1703655740964
+                "screenshots": [{"filename": "screenshot1.png", "filepath": "29207a3d7f2ce17cd6309d1fc0f5ad7e"}],
+                "brand": "RiskAssess Demo",
+                "timestamp": "1703655740964",
             },
             MODULES[0],
         ),
@@ -826,23 +914,22 @@ def test_ctm360_cbs_incident_list_command(
             MODULES[0],
         ),
         (
-            "card_details_response_valid.json",
+            "cred_details_response_valid.json",
             {"ticketId": "BC-0D7FDA777"},
             {
                 "first_seen": "24-11-2024 09:23:11 PM",
                 "last_seen": "24-11-2024 09:23:11 PM",
-                "breach_source": [
-                    "Pure Incubation"
-                ],
+                "breach_source": ["Pure Incubation"],
                 "domain": "example.local",
                 "type": "",
                 "remarks": "Pure Incubation Breach - yash.abc@example.local",
+                "external_link": "https://platform.ctm360.com/cbs/leaks/breached_credentials?filters=[]&searchQuery=BC-0D7FDA777&selectedSearchField=leak_id",
                 "email": "yash.abc@example.local",
                 "username": "yser",
                 "password": "ypass123!",
                 "brand": "RiskAssess Demo",
                 "id": "BC-0D7FDA777",
-                "status": "new"
+                "status": "new",
             },
             MODULES[1],
         ),
@@ -853,7 +940,7 @@ def test_ctm360_cbs_incident_list_command(
             MODULES[1],
         ),
         (
-            "cred_details_response_valid.json",
+            "card_details_response_valid.json",
             {"ticketId": "LC-A1E4B2F49"},
             {
                 "first_seen": "25-12-2024 09:16:59 AM",
@@ -862,13 +949,14 @@ def test_ctm360_cbs_incident_list_command(
                 "cvv": "123",
                 "expiry_month": 4,
                 "expiry_year": 2026,
-                "brand": "Demo Bank",
+                "brand": "RiskAssess Demo",
                 "id": "LC-A1E4B2F49",
+                "external_link": "https://platform.ctm360.com/cbs/leaks/compromised_cards?filters=[]&searchQuery=LC-A1E4B2F49&selectedSearchField=leak_id",
                 "status": "new",
-                "timestamp": 1735107419000,
+                "timestamp": "1735107419000",
                 "severity": "Low",
                 "type": "Compromised Cards",
-                "remarks": "Compromised Card 0123456789012345"
+                "remarks": "Compromised Card 0123456789012345",
             },
             MODULES[2],
         ),
@@ -888,17 +976,12 @@ def test_ctm360_cbs_incident_list_command(
                 "subject": "trybackme.xyz",
                 "severity": "High",
                 "type": "Domain Infringement",
-                "risks": [
-                    "Has A Record",
-                    "Has MX Record",
-                    "Newly registered when detected",
-                    "Has NS Record",
-                    "Has DNS Record"
-                ],
+                "risks": ["Has A Record", "Has MX Record", "Newly registered when detected", "Has NS Record", "Has DNS Record"],
+                "external_link": "https://platform.ctm360.com/cbs/domains/registered/uYa30ZYB_inRxraHlAO4",
                 "status": "monitoring",
                 "incident_status": "member_feedback",
                 "brand": "RiskAssess Demo",
-                "timestamp": 1730239105000
+                "timestamp": "1730239105000",
             },
             MODULES[3],
         ),
@@ -918,14 +1001,11 @@ def test_ctm360_cbs_incident_list_command(
                 "subject": "sse.host-master.trybackme.wo",
                 "severity": "High",
                 "type": "Subdomain Infringement",
-                "risks": [
-                    "SSL issued on domain",
-                    "Has DNS Record",
-                    "Has NS Record"
-                ],
+                "risks": ["SSL issued on domain", "Has DNS Record", "Has NS Record"],
+                "external_link": "https://platform.ctm360.com/cbs/domains/registered/uYa30ZYB_inRxraHlAO4",
                 "status": "monitoring",
                 "brand": "RiskAssess Demo",
-                "timestamp": 1729904803311
+                "timestamp": "1729904803311",
             },
             MODULES[4],
         ),
@@ -934,6 +1014,69 @@ def test_ctm360_cbs_incident_list_command(
             {"ticketId": "COMX165756654321"},
             {},
             MODULES[4],
+        ),
+        (
+            "malware_logs_details_response_valid.json",
+            {"ticketId": "ML-919AE2387"},
+            {
+                "brand": "RiskAssess Demo",
+                "compromise_details": [
+                    {
+                        "antiviruses": ["Windows Defender"],
+                        "clientAt": ["trybackme.io"],
+                        "computer_name": "DESKTOP-KPLOECB (DELL)",
+                        "date_compromised": "2025-05-23T03:48:49.000Z",
+                        "date_uploaded": "2025-05-23T08:51:12.080Z",
+                        "employeeAt": ["sit.edu.lb"],
+                        "employee_session_cookies": [
+                            {
+                                "domain": "trybackme.io",
+                                "expiry": "2025-07-25T23:04:06.000Z",
+                                "name": "SNID",
+                                "url": "trybackme.io",
+                                "value": "AILqd3Wz3s_6iqTeieieLAII1KgBAAQOBFY3RDT6ncttjkiZ4SJgKF00Gq3kHD07-D95EwhPEoflTkPv0PFXiUM"
+                                "adqwSnwNE4e",
+                            }
+                        ],
+                        "installed_software": None,
+                        "ip": "154.134.143.229",
+                        "malware_path": " C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\maxerste.exe",
+                        "operating_system": "Windows 10 Professionnel (10.0.19045) x64",
+                        "stealer": "[MA]154.134.143.229",
+                        "stealer_family": "Lumma",
+                        "type": "client",
+                    }
+                ],
+                "computer_name": "DESKTOP-KPLOECB (DELL)",
+                "date_compromised": "23-05-2025 03:48:49 AM",
+                "domain": "trybackme.io",
+                "external_link": "https://platform.ctm360.com/cbs/leaks/malware_logs/user_credentials_web_app?filters=[]&searchQuery=ML-919AE2387&selectedSearchField=leak_id",
+                "first_seen": "23-05-2025 09:35:21 PM",
+                "hostname": "trybackme.io",
+                "id": "ML-919AE2387",
+                "last_seen": "23-05-2025 09:35:21 PM",
+                "malware_path": " C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\maxerste.exe",
+                "masked_password": "***pezz753",
+                "operating_system": "Windows 10 Professionnel (10.0.19045) x64",
+                "password": "Suppezz753",
+                "remarks": "ML-919AE2387",
+                "source_uri": ["leak/malware_logs?path=eaf75fb8f9431fe403b9"],
+                "sources": ["Chr log files"],
+                "status": "new",
+                "stealer_family": ["Lumma"],
+                "timestamp": "1748036121189",
+                "type": "User Credentials Web App",
+                "user": "otronerfinn",
+                "user_domain": "",
+                "website": "trybackme.io",
+            },
+            MODULES[5],
+        ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            {},
+            MODULES[5],
         ),
     ],
 )
@@ -950,11 +1093,11 @@ def test_ctm360_cbs_incident_details_command(response_file_name, mock_args, mock
 
     mock_instance = Instance(module=mock_module)
 
-    with patch('CyberBlindspot.INSTANCE', new=mock_instance):
+    with patch("CyberBlindspot.INSTANCE", new=mock_instance):
         patched_response = load_mock_response(response_file_name) if response_file_name else {}
         mocker.patch.object(mock_client, "fetch_incident", return_value=patched_response)
         cmd_results = ctm360_cbs_details_command(mock_client, mock_args)
-        assert cmd_results.to_context().get('Contents') == mock_asserts
+        assert cmd_results.to_context().get("Contents") == mock_asserts
 
 
 @pytest.mark.parametrize(
@@ -991,7 +1134,7 @@ def test_ctm360_cbs_incident_close_command(response_file_name, mock_args, mock_a
     mock_response = load_mock_response(response_file_name) if response_file_name else {}
     mocker.patch.object(mock_client, "close_incident", return_value=mock_response)
     cmd_results = ctm360_cbs_incident_close_command(mock_client, mock_args)
-    assert cmd_results.to_context().get('HumanReadable') == mock_asserts
+    assert cmd_results.to_context().get("HumanReadable") == mock_asserts
 
 
 @pytest.mark.parametrize(
@@ -1028,7 +1171,7 @@ def test_ctm360_cbs_incident_request_takedown_command(response_file_name, mock_a
     mock_response = load_mock_response(response_file_name) if response_file_name else {}
     mocker.patch.object(mock_client, "request_takedown", return_value=mock_response)
     cmd_results = ctm360_cbs_incident_request_takedown_command(mock_client, mock_args)
-    assert cmd_results.to_context().get('HumanReadable') == mock_asserts
+    assert cmd_results.to_context().get("HumanReadable") == mock_asserts
 
 
 @pytest.mark.parametrize(
@@ -1040,34 +1183,36 @@ def test_ctm360_cbs_incident_request_takedown_command(response_file_name, mock_a
         (MODULES[0][0], "incident_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
         (MODULES[0][0], "incident_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
         (MODULES[0][0], "incident_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
-
         (MODULES[1][0], "card_details_response_valid.json", "", ""),
         (MODULES[1][0], "card_details_response_valid.json", STATUS_ENTRIES["wip"], "wip"),
         (MODULES[1][0], "card_details_response_valid.json", STATUS_ENTRIES["closed"], "closed"),
         (MODULES[1][0], "card_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
         (MODULES[1][0], "card_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
         (MODULES[1][0], "card_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
-
         (MODULES[2][0], "cred_details_response_valid.json", "", ""),
         (MODULES[2][0], "cred_details_response_valid.json", STATUS_ENTRIES["wip"], "wip"),
         (MODULES[2][0], "cred_details_response_valid.json", STATUS_ENTRIES["closed"], "closed"),
         (MODULES[2][0], "cred_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
         (MODULES[2][0], "cred_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
         (MODULES[2][0], "cred_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
-
         (MODULES[3][0], "domain_details_response_valid.json", "", ""),
         (MODULES[3][0], "domain_details_response_valid.json", STATUS_ENTRIES["wip"], "wip"),
         (MODULES[3][0], "domain_details_response_valid.json", STATUS_ENTRIES["closed"], "closed"),
         (MODULES[3][0], "domain_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
         (MODULES[3][0], "domain_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
         (MODULES[3][0], "domain_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
-
         (MODULES[4][0], "subdomain_details_response_valid.json", "", ""),
         (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["wip"], "wip"),
         (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["closed"], "closed"),
         (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
         (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
         (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
+        (MODULES[5][0], "malware_logs_details_response_valid.json", "", ""),
+        (MODULES[5][0], "malware_logs_details_response_valid.json", STATUS_ENTRIES["wip"], "wip"),
+        (MODULES[5][0], "malware_logs_details_response_valid.json", STATUS_ENTRIES["closed"], "closed"),
+        (MODULES[5][0], "malware_logs_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
+        (MODULES[5][0], "malware_logs_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
+        (MODULES[5][0], "malware_logs_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
     ],
 )
 def test_get_remote_data(mock_module, mock_response, mock_entry, mock_status, mock_client, mocker):
@@ -1086,17 +1231,14 @@ def test_get_remote_data(mock_module, mock_response, mock_entry, mock_status, mo
     mock_args = {"id": "COMX165756654321", "lastUpdate": "2024-01-02T13:30:21.172707565Z"}
     mock_result = load_mock_response(mock_response)
     if type(mock_result) is dict:
-        mock_result['status'] = mock_status
+        mock_result["status"] = mock_status
 
     if type(mock_result) is dict:
         mock_result2 = deepcopy(mock_result)
-    mocker.patch.object(
-        mock_client, 'fetch_incident',
-        return_value=mock_result
-    )
+    mocker.patch.object(mock_client, "fetch_incident", return_value=mock_result)
 
     mock_instance = Instance(module=mock_module)
-    with patch('CyberBlindspot.INSTANCE', new=mock_instance):
+    with patch("CyberBlindspot.INSTANCE", new=mock_instance):
         result = get_remote_data_command(mock_client, mock_args)
         mock_result = map_and_create_incident(mock_result2) if mock_status else []
         if isinstance(mock_result, dict):
@@ -1107,9 +1249,9 @@ def test_get_remote_data(mock_module, mock_response, mock_entry, mock_status, mo
         if mock_status == "":
             assert result.entries == []
         elif mock_status == "closed":
-            assert result.entries[0].get('Contents', {}).get('closeReason', '') == mock_entry
+            assert result.entries[0].get("Contents", {}).get("closeReason", "") == mock_entry
         else:
-            assert result.entries[0].get('Contents', '') == mock_entry
+            assert result.entries[0].get("Contents", "") == mock_entry
 
 
 @pytest.mark.parametrize(
@@ -1131,19 +1273,16 @@ def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
     from CyberBlindspot import get_modified_remote_data_command
 
     mock_args = {
-        'date_field': 'last_seen',
-        'order': 'asc',
-        'date_from': '1704183134',
-        'max_hits': 50,
-        'lastUpdate': "2024-01-02T13:30:21.172707565Z"
+        "date_field": "last_seen",
+        "order": "asc",
+        "date_from": "1704183134",
+        "max_hits": 50,
+        "lastUpdate": "2024-01-02T13:30:21.172707565Z",
     }
     mock_result = load_mock_response(mock_input_file)
-    mocker.patch.object(
-        mock_client, 'fetch_incidents',
-        return_value=mock_result
-    )
+    mocker.patch.object(mock_client, "fetch_incidents", return_value=mock_result)
     result = get_modified_remote_data_command(mock_client, mock_args)
-    mock_assert = [item['id'] for item in mock_result]
+    mock_assert = [item["id"] for item in mock_result]
     assert result.modified_incident_ids == mock_assert
 
 
@@ -1158,9 +1297,9 @@ def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
                 "entries": [],
                 "status": IncidentStatus.ACTIVE,
                 "incidentChanged": False,
-                "delta": {"not_empty": "value"}
+                "delta": {"not_empty": "value"},
             },
-            f"{LOGGING_PREFIX} Incident 1 was not modified locally.."
+            f"{LOGGING_PREFIX} Incident 1 was not modified locally..",
         ),
         (
             "",
@@ -1170,9 +1309,9 @@ def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
                 "entries": [],
                 "status": IncidentStatus.ARCHIVE,
                 "incidentChanged": True,
-                "delta": {"not_empty": "value"}
+                "delta": {"not_empty": "value"},
             },
-            f"{LOGGING_PREFIX} Modification to 2 is not configured for outgoing mirroring.."
+            f"{LOGGING_PREFIX} Modification to 2 is not configured for outgoing mirroring..",
         ),
         (
             "close_incident_response_valid.json",
@@ -1182,9 +1321,9 @@ def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
                 "entries": [],
                 "status": IncidentStatus.DONE,
                 "incidentChanged": True,
-                "delta": {"not_empty": "value"}
+                "delta": {"not_empty": "value"},
             },
-            f"{LOGGING_PREFIX} Closing incident 3"
+            f"{LOGGING_PREFIX} Closing incident 3",
         ),
     ],
 )
@@ -1201,9 +1340,215 @@ def test_update_remote_system(mock_response_file, mock_args, mock_log_asserts, m
     from CyberBlindspot import update_remote_system_command
 
     with caplog.at_level(logging.INFO):
-
         if mock_response_file:
-            mocker.patch.object(mock_client, 'close_incident', return_value=load_mock_response(mock_response_file))
+            mocker.patch.object(mock_client, "close_incident", return_value=load_mock_response(mock_response_file))
         result = update_remote_system_command(mock_client, mock_args)
-        assert result == mock_args['remoteId']
+        assert result == mock_args["remoteId"]
         assert mock_log_asserts in caplog.text
+
+
+@pytest.mark.parametrize(
+    "mock_response,mock_params,expected_result",
+    [
+        (
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data"}}]},
+            {"ticket_id": "COMX123456"},
+            [{"filename": "screenshot1.png", "filedata": {"data": b"test_data"}}],
+        ),
+        ({"results": []}, {"ticket_id": "COMX123456"}, []),
+        ({"results": None}, {"ticket_id": "COMX123456"}, []),
+    ],
+)
+def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_client, mocker):
+    """
+    Given:
+        - CyberBlindspot Client
+        - Parameters for the screenshot request
+        - Mock API response
+    When:
+        - get_screenshot_files is called
+    Then:
+        - Ensure the correct response is returned
+    """
+    mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
+    result = mock_client.get_screenshot_files(mock_params)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "mock_conf,mock_response,mock_args,existing_files,api_error,expected_result",
+    [
+        # Test when screenshot retrieval is disabled
+        (
+            False,
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}}]},
+            {"ticket_id": "COMX123456"},
+            [],
+            None,
+            CommandResults(readable_output="Screenshot Evidence Retrieval is Disabled in Instance Configuration."),
+        ),
+        # Test with single screenshot
+        (
+            True,
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}}]},
+            {"ticket_id": "COMX123456"},
+            [],
+            None,
+            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}],
+        ),
+        # Test with multiple screenshots
+        (
+            True,
+            {
+                "results": [
+                    {"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}},
+                    {"filename": "screenshot2.png", "filedata": {"data": b"test_data2"}},
+                ]
+            },
+            {"ticket_id": "COMX123456"},
+            [],
+            None,
+            [
+                {"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE},
+                {"File": "screenshot2.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE},
+            ],
+        ),
+        # Test with no results
+        (
+            True,
+            {"results": []},
+            {"ticket_id": "COMX123456"},
+            [],
+            None,
+            CommandResults(readable_output="No new screenshots to fetch"),
+        ),
+        # Test with filtered files (no files to fetch after filtering)
+        (
+            True,
+            {"results": []},
+            {"files": [{"filename": "screenshot1.png", "filepath": "/path/to/file"}]},
+            [],
+            None,
+            CommandResults(readable_output="No new screenshots to fetch"),
+        ),
+        # Test with empty files list
+        (
+            True,
+            {"results": []},
+            {"ticket_id": "COMX123456", "files": []},
+            [],
+            None,
+            CommandResults(readable_output="No new screenshots to fetch"),
+        ),
+        # Test with all files already existing in context
+        (
+            True,
+            {"results": []},
+            {"files": [{"filename": "existing.png", "filepath": "/path/to/file"}]},
+            [{"Name": "existing.png"}],
+            None,
+            CommandResults(readable_output="All requested screenshots already exist in context"),
+        ),
+        # Test with invalid type in files list (should be filtered out)
+        (
+            True,
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}}]},
+            {"files": [{"filename": "screenshot1.png"}, "not_a_dict"]},
+            [],
+            None,
+            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}],
+        ),
+        # Test with API error
+        (
+            True,
+            {"results": []},
+            {"ticket_id": "COMX123456"},
+            [],
+            Exception("API connection error"),
+            CommandResults(readable_output="Failed to fetch screenshots from API: API connection error"),
+        ),
+        # Test with non-dictionary in results
+        (
+            True,
+            {"results": ["not_a_dict", {"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}}]},
+            {"ticket_id": "COMX123456"},
+            [],
+            None,
+            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}],
+        ),
+        # Test with non-list InfoFile
+        (
+            True,
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}}]},
+            {"ticket_id": "COMX123456"},
+            {"Name": "other_file.png"},  # Not a list
+            None,
+            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}],
+        ),
+    ],
+)
+def test_ctm360_cbs_incident_retrieve_screenshots_command(
+    mock_conf, mock_response, mock_args, existing_files, api_error, expected_result, mock_client, mocker, capfd
+):
+    """
+    Given:
+        - CyberBlindspot Client
+        - Command arguments
+        - Mock API response
+        - Existing files in context
+        - Optional API error to simulate
+    When:
+        - ctm360_cbs_incident_retrieve_screenshots_command is called
+    Then:
+        - Ensure the correct file results or command results are returned
+        - Verify error handling works as expected
+        - Verify critical logs are generated
+    """
+    from CyberBlindspot import ctm360_cbs_incident_retrieve_screenshots_command
+
+    # Mock fileResult to avoid writing to disk
+    def mock_file_result(filename, data, file_type=None):
+        return {"File": filename, "FileID": "mock_file_id", "Type": file_type}
+
+    # Create a mock for demisto context
+    mock_context = mocker.MagicMock(return_value={"InfoFile": existing_files})
+
+    # Mock log function but keep track of calls
+    mock_log = mocker.patch("CyberBlindspot.log")
+
+    # Patch everything with mocker
+    mocker.patch("CyberBlindspot.demisto.context", mock_context)
+    mocker.patch("CyberBlindspot.RETRIEVE_SCREENSHOTS", new=mock_conf)
+    mocker.patch("CyberBlindspot.fileResult", side_effect=mock_file_result)
+    mocker.patch("CommonServerPython.fileResult", side_effect=mock_file_result)
+
+    # Configure get_screenshot_files based on whether we want to simulate an error
+    if api_error:
+        mocker.patch.object(mock_client, "get_screenshot_files", side_effect=api_error)
+    else:
+        mocker.patch.object(mock_client, "get_screenshot_files", return_value=mock_response.get("results", []))
+
+    # Run the function with capfd disabled to prevent stdout issues
+    with capfd.disabled():
+        result = ctm360_cbs_incident_retrieve_screenshots_command(mock_client, mock_args)
+
+    # Verify results
+    if isinstance(result, list):
+        assert len(result) == len(expected_result)
+        for r, e in zip(result, expected_result):
+            assert r["File"] == e["File"]
+            assert r["Type"] == e["Type"]
+    elif isinstance(result, CommandResults):
+        assert isinstance(expected_result, CommandResults)
+        assert result.readable_output == expected_result.readable_output
+
+    # Verify critical logging behavior only
+    if api_error:
+        # For API errors, verify error is logged
+        mock_log.assert_any_call("error", f"Error calling get_screenshot_files: {str(api_error)}")
+    elif not mock_conf:
+        # For disabled screenshots, verify info message
+        mock_log.assert_any_call("info", "Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+    elif result and isinstance(result, list):
+        # For successful file retrieval, verify success message
+        mock_log.assert_any_call("info", f"Added {len(result)} new screenshot(s) to context")

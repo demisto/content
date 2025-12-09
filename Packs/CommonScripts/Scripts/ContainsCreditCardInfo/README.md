@@ -1,5 +1,7 @@
 Checks if a given value is true. If not a "no" will be returned.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -7,8 +9,8 @@ Checks if a given value is true. If not a "no" will be returned.
 | Script Type | javascript |
 | Tags | Utility, Condition |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,6 +18,7 @@ Checks if a given value is true. If not a "no" will be returned.
 | data | The data to check for credit card info in (type string). |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

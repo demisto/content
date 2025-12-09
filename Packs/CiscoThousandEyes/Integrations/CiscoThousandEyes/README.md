@@ -10,7 +10,6 @@ This integration was developed and tested with version 1.0.0 of Cisco ThousandEy
 2. Search for **CiscoThousandEyes**.
 3. Click **Add instance** to create and configure a new integration instance.
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The URL of the Cisco ThousandEyes server (e.g., `https://api.thousandeyes.com`). | True |
@@ -20,8 +19,8 @@ This integration was developed and tested with version 1.0.0 of Cisco ThousandEy
 | Trust any certificate (not secure) | If enabled, the integration will trust self-signed certificates. | False |
 | Use system proxy settings | If enabled, the integration will use the system proxy settings. | False |
 
-
-## Note:
+## Note
+>
 >This API returns a list of activity log events **in the current account group**.
 If the user has View activity log permission for all users in the account group, the logs returned include events across all the account groups they belong to.
 
@@ -43,10 +42,10 @@ Gets events from Cisco ThousandEyes.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of events to return. Default is 10. | Optional | 
-| start_date | The start date from which to filter events. | Optional | 
-| end_date | The end date to which to filter events. | Optional | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
+| limit | The number of events to return. Default is 10. | Optional |
+| start_date | The start date from which to filter events. | Optional |
+| end_date | The end date to which to filter events. | Optional |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional |
 
 #### Example Usage
 

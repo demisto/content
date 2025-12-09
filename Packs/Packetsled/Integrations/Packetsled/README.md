@@ -105,7 +105,7 @@
 <pre>{  
    "name":"Source: Packetsled SENSOR: , ENTITY: ",
    "rawJSON":{  
-      
+
    }
 }</pre>
 <hr>
@@ -341,7 +341,6 @@
 </tbody>
 </table>
 
-
 ### packetsled-sensors
 
 ***
@@ -360,10 +359,11 @@ List the sensors attached to the packetsled platform.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Packetsled.Sensors | unknown | The list of sensors | 
-| Packetsled.Sensors.label | unknown | The label of the sensor | 
-| Packetsled.Sensors.envid | unknown | The environment id of the sensor | 
-| Packetsled.Sensors.probe | unknown | The probe number of the sensor | 
+| Packetsled.Sensors | unknown | The list of sensors |
+| Packetsled.Sensors.label | unknown | The label of the sensor |
+| Packetsled.Sensors.envid | unknown | The environment id of the sensor |
+| Packetsled.Sensors.probe | unknown | The probe number of the sensor |
+
 ### packetsled-get-events
 
 ***
@@ -377,15 +377,15 @@ Get all of the events for a given uid
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uid | The uid to retrieve logs for. Use the _id attribute from a flow for this parameter value. | Required | 
-| envid | The environment id of the probe to search. | Optional | 
-| probe | The probe number of the probe to search. | Optional | 
+| uid | The uid to retrieve logs for. Use the _id attribute from a flow for this parameter value. | Required |
+| envid | The environment id of the probe to search. | Optional |
+| probe | The probe number of the probe to search. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Packetsled.Events | unknown | Retrieve all logs for a single flow | 
-| Packetsled.Events._id | unknown | The unique id of the Event | 
-| Packetsled.Events.src_ip | unknown | The originator of the Events | 
-| Packetsled.Events.dest_ip | unknown | The respondant of the Events | 
+| Packetsled.Events | unknown | Retrieve all logs for a single flow |
+| Packetsled.Events._id | unknown | The unique id of the Event |
+| Packetsled.Events.src_ip | unknown | The originator of the Events |
+| Packetsled.Events.dest_ip | unknown | The respondant of the Events |

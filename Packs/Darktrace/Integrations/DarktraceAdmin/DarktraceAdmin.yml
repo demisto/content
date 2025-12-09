@@ -1,6 +1,6 @@
 category: Network Security
 fromversion: 6.6.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -263,7 +263,7 @@ script:
     - contextPath: Darktrace.Device.response
       description: POST action message response.
       type: String
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3

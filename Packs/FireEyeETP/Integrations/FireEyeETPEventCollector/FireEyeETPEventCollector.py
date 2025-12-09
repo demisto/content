@@ -1,7 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
+import base64
 import dateparser
+import demistomock as demisto
+import time
 import urllib3
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -11,7 +13,10 @@ urllib3.disable_warnings()
 
 VENDOR = "fireeye"
 PRODUCT = "etp"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
+EVENTS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # for "_TIME" field in the events dataset
+ACTIVITY_LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%zZ"  # for "from" and "to" time filters in user activity log API
+
 LOG_LINE = f"{VENDOR}_{PRODUCT}:"
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 1000
@@ -62,37 +67,106 @@ class Client(BaseClient):  # pragma: no cover
         base_url: str,
         verify_certificate: bool,
         proxy: bool,
-        api_key: str,
-        outbound_traffic: bool,
-        hide_sensitive: bool,
+        client_id: str = "",
+        client_secret: str = "",
+        scope: str = "",
+        api_key: str = "",
+        outbound_traffic: bool = False,
+        hide_sensitive: bool = False,
     ) -> None:
         super().__init__(base_url, verify_certificate, proxy)
-        self._headers = {
-            "x-fireeye-api-key": api_key,
-            "Content-Type": "application/json",
-        }
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.scope = scope
+        self.api_key = api_key
         self.outbound_traffic = outbound_traffic
         self.hide_sensitive = hide_sensitive
+        self.access_token = ""
 
-    def get_alerts(
-        self, from_LastModifiedOn: str, size: int, outbound: bool = False
-    ) -> dict:
+        # Set up headers based on authentication method
+        self._headers = {"Content-Type": "application/json"}
+
+        auth_method = get_authentication_method(client_id, client_secret, api_key)
+        if auth_method == "oauth2":
+            demisto.debug(f"{LOG_LINE} Using OAuth2 authentication (Client ID/Secret)")
+            self.access_token = self._get_valid_oauth_token()
+            self._headers["Authorization"] = f"Bearer {self.access_token}"
+        elif auth_method == "api_key":
+            demisto.debug(f"{LOG_LINE} Using API Key authentication")
+            self._headers["x-fireeye-api-key"] = self.api_key
+
+    def _get_valid_oauth_token(self) -> str:
+        """
+        Get a valid OAuth access token, reusing cached token if still valid.
+        Returns the access token or raises ValueError if authentication fails.
+        """
+        context = get_integration_context()
+        cached_token = context.get("access_token", "")
+        token_expiry = context.get("token_expiry", 0)
+
+        # Check if cached token is still valid (with 60-second buffer)
+        current_time = time.time()
+        is_expired = current_time >= (token_expiry - 60)
+
+        if cached_token and not is_expired:
+            demisto.debug(f"{LOG_LINE} Using cached OAuth token")
+            return cached_token
+
+        # Need to fetch new token
+        demisto.debug(f"{LOG_LINE} Fetching new OAuth token")
+        return self._fetch_oauth_token()
+
+    def _fetch_oauth_token(self) -> str:
+        """
+        Fetch a new OAuth access token using this client instance and cache it in integration context.
+        Returns the access token or raises ValueError if authentication fails.
+        """
+        try:
+            # Trellix OAuth2 endpoint
+            token_url = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token"
+
+            credentials = f"{self.client_id}:{self.client_secret}"
+            encoded_credentials = base64.b64encode(credentials.encode()).decode()
+
+            auth_data = {"grant_type": "client_credentials", "scope": self.scope}
+
+            response = requests.post(
+                token_url,
+                headers={"Content-Type": "application/x-www-form-urlencoded", "Authorization": f"Basic {encoded_credentials}"},
+                data=auth_data,
+                verify=self._verify,
+            )
+            response.raise_for_status()
+
+            result = response.json()
+            access_token = result.get("access_token", "")
+            expires_in = result.get("expires_in", 600)  # Default to 10 minutes
+
+            if not access_token:
+                raise ValueError("Failed to obtain access token from OAuth2 authentication")
+
+            # Cache token in integration context
+            token_expiry = int(time.time()) + int(expires_in)
+            set_integration_context({"access_token": access_token, "token_expiry": token_expiry})
+
+            demisto.debug(f"{LOG_LINE} OAuth2 authentication successful, token cached")
+            return access_token
+
+        except Exception as e:
+            demisto.error(f"{LOG_LINE} OAuth2 authentication failed: {str(e)}")
+            raise ValueError(f"OAuth2 authentication failed: {str(e)}")
+
+    def get_alerts(self, from_LastModifiedOn: str, size: int, outbound: bool = False) -> dict:
         req_body = assign_params(
             traffic_type="outbound" if outbound else "inbound",
             fromLastModifiedOn=from_LastModifiedOn,
             size=size,
         )
-        demisto.debug(
-            f"{LOG_LINE} request sent: {from_LastModifiedOn=},{size=}, {outbound=}, {req_body=} "
-        )
-        res = self._http_request(
-            method="POST", url_suffix="/api/v1/alerts", json_data=req_body
-        )
+        demisto.debug(f"{LOG_LINE} request sent: {from_LastModifiedOn=},{size=}, {outbound=}, {req_body=} ")
+        res = self._http_request(method="POST", url_suffix="/api/v1/alerts", json_data=req_body)
         return res
 
-    def get_email_trace(
-        self, from_LastModifiedOn: str, size: int, outbound: bool = False
-    ) -> dict:
+    def get_email_trace(self, from_LastModifiedOn: str, size: int, outbound: bool = False) -> dict:
         req_body = assign_params(
             traffic_type="outbound" if outbound else "inbound",
             size=size,
@@ -103,22 +177,21 @@ class Client(BaseClient):  # pragma: no cover
                 },
             ),
         )
-        demisto.debug(
-            f"{LOG_LINE} request sent: {from_LastModifiedOn=},{size=}, {outbound=}, {req_body=} "
-        )
+        demisto.debug(f"{LOG_LINE} request sent: {from_LastModifiedOn=},{size=}, {outbound=}, {req_body=} ")
 
-        res = self._http_request(
-            method="POST", url_suffix="/api/v1/messages/trace", json_data=req_body
-        )
+        res = self._http_request(method="POST", url_suffix="/api/v1/messages/trace", json_data=req_body)
 
         return res
 
-    def get_activity_log(
-        self, from_LastModifiedOn: str, size: int, to_LastModifiedOn: str
-    ) -> dict:
+    def get_activity_log(self, from_LastModifiedOn: str, size: int, to_LastModifiedOn: str) -> dict:
         time = {"from": from_LastModifiedOn}
         if to_LastModifiedOn:
             time["to"] = to_LastModifiedOn
+        else:
+            # API requires "to" time
+            demisto.debug(f"{LOG_LINE} empty to_LastModifiedOn. Setting to now.")
+            utc_now = datetime.now(timezone.utc)
+            time["to"] = datetime.strftime(utc_now, ACTIVITY_LOG_DATE_FORMAT)
 
         req_body = assign_params(
             size=size,
@@ -134,9 +207,7 @@ class Client(BaseClient):  # pragma: no cover
 
 class LastRun:
     class LastRunEvent:
-        def __init__(
-            self, start_time: datetime | None = None, last_ids: set[str] | None = None
-        ) -> None:
+        def __init__(self, start_time: datetime | None = None, last_ids: set[str] | None = None) -> None:
             self.last_ids = last_ids if last_ids else set()
             self.last_run_timestamp = start_time if start_time else datetime.now()
 
@@ -168,10 +239,7 @@ class LastRun:
             return {}
         data = {
             LAST_RUN: {
-                event_type.name: self.__getattribute__(
-                    event_type.name
-                ).to_demisto_last_run()
-                for event_type in self.event_types
+                event_type.name: self.__getattribute__(event_type.name).to_demisto_last_run() for event_type in self.event_types
             }
         }
         return data
@@ -190,20 +258,14 @@ class LastRun:
 
 def get_last_run_from_dict(data: dict, event_types: list[EventType]) -> LastRun:
     new_last_run = LastRun()
-    demisto.debug(
-        f"{LOG_LINE} - Starting to parse last run from server: {str(data.get(LAST_RUN, 'Missing Last Run key'))}"
-    )
+    demisto.debug(f"{LOG_LINE} - Starting to parse last run from server: {data.get(LAST_RUN, 'Missing Last Run key')!s}")
 
     for event_type in data.get(LAST_RUN, {}):
         demisto.debug(f"{LOG_LINE} - Parsing {event_type=}")
 
-        time = datetime.fromisoformat(
-            data[LAST_RUN].get(event_type, {}).get("last_fetch_timestamp")
-        )
+        time = datetime.fromisoformat(data[LAST_RUN].get(event_type, {}).get("last_fetch_timestamp"))
         ids = set(data[LAST_RUN].get(event_type, {}).get("last_fetch_last_ids", []))
-        demisto.debug(
-            f"{LOG_LINE} - found id and timestamp in data, adding. \n {ids=}, {time=}"
-        )
+        demisto.debug(f"{LOG_LINE} - found id and timestamp in data, adding. \n {ids=}, {time=}")
 
         new_last_run.add_event_type(event_type, time, ids, event_types)
 
@@ -213,34 +275,22 @@ def get_last_run_from_dict(data: dict, event_types: list[EventType]) -> LastRun:
 
 
 class EventCollector:
-    def __init__(
-        self, client: Client, events_to_run_on: None | list[EventType] = None
-    ) -> None:
+    def __init__(self, client: Client, events_to_run_on: None | list[EventType] = None) -> None:
         self.client = client
         self.event_types_to_run_on = events_to_run_on if events_to_run_on else []
 
-    def fetch_command(
-        self, demisto_last_run: dict, first_fetch: None | datetime = None
-    ):
+    def fetch_command(self, demisto_last_run: dict, first_fetch: None | datetime = None):
         events: list = []
 
         if not demisto_last_run:  # First fetch
             first_fetch = first_fetch if first_fetch else datetime.now()
-            demisto.debug(
-                f"{LOG_LINE} First fetch recognized, setting first_datetime to {first_fetch}"
-            )
-            next_run = LastRun(
-                self.event_types_to_run_on, start_time=first_fetch, last_ids=set()
-            )
+            demisto.debug(f"{LOG_LINE} First fetch recognized, setting first_datetime to {first_fetch}")
+            next_run = LastRun(self.event_types_to_run_on, start_time=first_fetch, last_ids=set())
 
         else:
-            demisto.debug(
-                f"{LOG_LINE} previous fetch recognized. Loading demisto_last_run"
-            )
+            demisto.debug(f"{LOG_LINE} previous fetch recognized. Loading demisto_last_run")
 
-            next_run = get_last_run_from_dict(
-                demisto_last_run, self.event_types_to_run_on
-            )
+            next_run = get_last_run_from_dict(demisto_last_run, self.event_types_to_run_on)
 
             #  Getting new events
             demisto.debug(f"{LOG_LINE} Getting new events")
@@ -248,9 +298,12 @@ class EventCollector:
             for event_type in self.event_types_to_run_on:
                 demisto.debug(f"{LOG_LINE} getting events of type {event_type.name}")
                 if event_type.client_max_fetch > 0:
-                    next_run, new_events = self.get_events(
-                        event_type=event_type, last_run=next_run
-                    )
+                    next_run, new_events = self.get_events(event_type=event_type, last_run=next_run)
+                    # annotate direction for non-activity events
+                    if event_type.name != "activity_log":
+                        direction = "outbound" if event_type in OUTBOUND_EVENT_TYPES else "inbound"
+                        for evt in new_events:
+                            evt.setdefault("direction_source", direction)
                     events += new_events
 
         demisto.debug(f"{LOG_LINE} fetched {len(events)} to load. Setting last_run")
@@ -267,18 +320,14 @@ class EventCollector:
             if event_type.client_max_fetch > 0:
                 _, new_events = self.get_events(
                     event_type=event_type,
-                    last_run=LastRun(
-                        self.event_types_to_run_on, start_time, last_ids=set()
-                    ),
+                    last_run=LastRun(self.event_types_to_run_on, start_time, last_ids=set()),
                 )
                 events += new_events
 
         hr = tableToMarkdown(name="Test Event", t=events)
         return events, CommandResults(readable_output=hr)
 
-    def fetch_alerts(
-        self, event_type: EventType, start_time: datetime, fetched_ids: set = set()
-    ) -> tuple[list[dict], datetime]:
+    def fetch_alerts(self, event_type: EventType, start_time: datetime, fetched_ids: set = set()) -> tuple[list[dict], datetime]:
         res_count = 0
         res: list[dict] = []
         results_left = True
@@ -286,9 +335,7 @@ class EventCollector:
 
         #  Running as long as we have not reached the amount of event or the time frame requested.
         while results_left and res_count < event_type.client_max_fetch:
-            demisto.debug(
-                f"{LOG_LINE} getting alerts: {results_left=}, {res_count=}, {start_time=}"
-            )
+            demisto.debug(f"{LOG_LINE} getting alerts: {results_left=}, {res_count=}, {start_time=}")
             current_batch = self.client.get_alerts(
                 iso_start_time,
                 min(event_type.api_max, event_type.client_max_fetch - res_count),
@@ -310,9 +357,7 @@ class EventCollector:
                     )
                     res.extend(dedup_data)
                     res_count += len(dedup_data)
-                    fetched_ids = fetched_ids.union(
-                        {item.get("id") for item in dedup_data}
-                    )
+                    fetched_ids = fetched_ids.union({item.get("id") for item in dedup_data})
                     # Getting last item's modification date, assuming asc order
                     iso_start_time = current_batch["meta"]["fromLastModifiedOn"]["end"]
                 else:
@@ -322,9 +367,7 @@ class EventCollector:
 
         return res, parse_special_iso_format(iso_start_time)
 
-    def fetch_activity_log(
-        self, event_type: EventType, start_time: datetime, fetched_ids: set = set()
-    ) -> tuple[list[dict], str]:
+    def fetch_activity_log(self, event_type: EventType, start_time: datetime, fetched_ids: set = set()) -> tuple[list[dict], str]:
         res = []
 
         results_left = True
@@ -332,12 +375,10 @@ class EventCollector:
         demisto.debug(f"Converting {start_time=} to string")
         # formatting to iso z format without microseconds due to api lack of support,
         # api response should be already in this format.
-        iso_start_time = f"{datetime.strftime(start_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
+        iso_start_time = datetime.strftime(start_time.astimezone(timezone.utc), ACTIVITY_LOG_DATE_FORMAT)
 
         while results_left and ((not iso_end_time) or iso_end_time >= iso_start_time):
-            demisto.debug(
-                f"{LOG_LINE} getting user activity: {results_left=}, {iso_start_time=}, {iso_end_time=}"
-            )
+            demisto.debug(f"{LOG_LINE} getting user activity: {results_left=}, {iso_start_time=}, {iso_end_time=}")
             current_batch = self.client.get_activity_log(
                 from_LastModifiedOn=iso_start_time,
                 size=event_type.api_max,
@@ -346,11 +387,7 @@ class EventCollector:
             current_batch_data = current_batch.get("data", [])
 
             if current_batch_data:
-                dedup_data = [
-                    item
-                    for item in current_batch_data
-                    if get_activity_log_id(item) not in fetched_ids
-                ]
+                dedup_data = [item for item in current_batch_data if get_activity_log_id(item) not in fetched_ids]
                 if dedup_data:
                     demisto.debug(
                         f"Fetching {len(dedup_data)} non duplicates alerts from\
@@ -358,36 +395,28 @@ class EventCollector:
                     )
                     res.extend(dedup_data)
 
-                    fetched_ids = fetched_ids.union(
-                        {get_activity_log_id(item) for item in dedup_data}
-                    )
+                    fetched_ids = fetched_ids.union({get_activity_log_id(item) for item in dedup_data})
 
                     # Last run of pagination, avoiding endless loop if all page has the same time.
                     # We do not have other eay to handle this case.
                     if iso_end_time == iso_start_time:
-                        demisto.debug(
-                            "Got equal start and end time, this was the last page."
-                        )
+                        demisto.debug("Got equal start and end time, this was the last page.")
                         results_left = False
 
                     # Getting last item's modification date, Assuming Asc order.
                     # We have to format as the response are not have to be in invalid format
-                    end_time = parse_special_iso_format(
-                        dedup_data[-1]["attributes"]["time"]
-                    )
-                    iso_end_time = f"{datetime.strftime(end_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
+                    end_time = parse_special_iso_format(dedup_data[-1]["attributes"]["time"])
+                    iso_end_time = datetime.strftime(end_time.astimezone(timezone.utc), ACTIVITY_LOG_DATE_FORMAT)
 
                 else:
-                    demisto.debug(
-                        "Avoiding infinite loop due to multiple alerts in the same time blocking pagination."
-                    )
+                    demisto.debug("Avoiding infinite loop due to multiple alerts in the same time blocking pagination.")
                     results_left = False
             else:
                 results_left = False
 
         # Got all results from API, taking only the last #max_limit.
         if len(res) > event_type.client_max_fetch:
-            res = res[-event_type.client_max_fetch:]
+            res = res[-event_type.client_max_fetch :]
 
         # Getting last_run_time
         next_run = res[0]["attributes"]["time"] if res else iso_start_time
@@ -406,9 +435,7 @@ class EventCollector:
         results_left = True
 
         while results_left and res_count < event_type.client_max_fetch:
-            demisto.debug(
-                f"{LOG_LINE} getting trace: {results_left=}, {res_count=}, {start_time=}"
-            )
+            demisto.debug(f"{LOG_LINE} getting trace: {results_left=}, {res_count=}, {start_time=}")
 
             current_batch = self.client.get_email_trace(
                 iso_start_time,
@@ -432,14 +459,10 @@ class EventCollector:
                     res.extend(dedup_data)
                     res_count += len(dedup_data)
 
-                    fetched_ids = fetched_ids.union(
-                        {item.get("id") for item in dedup_data}
-                    )
+                    fetched_ids = fetched_ids.union({item.get("id") for item in dedup_data})
 
                     # Getting last item's modification date, assuming asc order
-                    iso_start_time = current_batch["meta"]["fromLastModifiedOn"]["end"][
-                        :-1
-                    ]
+                    iso_start_time = current_batch["meta"]["fromLastModifiedOn"]["end"][:-1]
                 else:
                     results_left = False
             else:
@@ -447,13 +470,9 @@ class EventCollector:
 
         return res, parse_special_iso_format(iso_start_time)
 
-    def get_events(
-        self, event_type: EventType, last_run: LastRun
-    ) -> tuple[LastRun, list]:
+    def get_events(self, event_type: EventType, last_run: LastRun) -> tuple[LastRun, list]:
         last_fetched_ids = last_run.get_last_run_event(event_type.name).last_ids
-        last_fetch_time: datetime = last_run.get_last_run_event(
-            event_type.name
-        ).last_run_timestamp
+        last_fetch_time: datetime = last_run.get_last_run_event(event_type.name).last_run_timestamp
         # if not last_fetch_time.microsecond:
         demisto.debug(f"{LOG_LINE} {last_fetch_time=}, {last_fetched_ids=}")
 
@@ -467,10 +486,7 @@ class EventCollector:
                 last_run_ids: set[str] = {
                     item.get("id", "")
                     for item in filter(
-                        lambda item: datetime.fromisoformat(
-                            item["attributes"]["meta"]["last_modified_on"]
-                        )
-                        == last_run_time,
+                        lambda item: datetime.fromisoformat(item["attributes"]["meta"]["last_modified_on"]) == last_run_time,
                         events,
                     )
                 }
@@ -485,10 +501,7 @@ class EventCollector:
                 last_run_ids = {
                     item.get("id", "")
                     for item in filter(
-                        lambda item: datetime.fromisoformat(
-                            item["attributes"]["lastModifiedDateTime"]
-                        )
-                        == last_run_time,
+                        lambda item: datetime.fromisoformat(item["attributes"]["lastModifiedDateTime"]) == last_run_time,
                         events,
                     )
                 }
@@ -502,9 +515,7 @@ class EventCollector:
                     fetched_ids=last_fetched_ids,
                 )
                 last_run_ids = {
-                    get_activity_log_id(item)
-                    for item in events
-                    if demisto.get(item, "attributes.time") == next_run_time
+                    get_activity_log_id(item) for item in events if demisto.get(item, "attributes.time") == next_run_time
                 }
 
                 format_activity_log(events)
@@ -512,9 +523,12 @@ class EventCollector:
             case _:
                 raise DemistoException("Event's type format is undefined.")
 
-        demisto.debug(
-            f"{LOG_LINE} Got {len(events)} events to load with type {event_type.name}. Setting last_run"
-        )
+        if event_type.name != "activity_log":
+            direction = "outbound" if event_type in OUTBOUND_EVENT_TYPES else "inbound"
+            for evt in events:
+                evt["direction_source"] = direction
+
+        demisto.debug(f"{LOG_LINE} Got {len(events)} events to load with type {event_type.name}. Setting last_run")
         last_run.get_last_run_event(event_type.name).set_ids(last_run_ids)
         last_run.get_last_run_event(event_type.name).last_run_timestamp = last_run_time
 
@@ -543,7 +557,7 @@ def parse_special_iso_format(datetime_str: str) -> datetime:
     """
 
     def fix_date_format(datetime_str: str):
-        """" Gets a time string according to the API standard, fix it and parse it.
+        """ " Gets a time string according to the API standard, fix it and parse it.
 
         Args:
             datetime_str (str): A string representing time (Might be ISO, ISO Z).
@@ -565,15 +579,13 @@ def parse_special_iso_format(datetime_str: str) -> datetime:
             # getting length of milliseconds part, as API only return with 'Z' of both tz and 'Z'.
             end_index = tz_index if tz_index else len(datetime_str) - 1
 
-            if len(datetime_str[decimal_index + 1: end_index]) < 6:
+            if len(datetime_str[decimal_index + 1 : end_index]) < 6:
                 datetime_str = f"{datetime_str[:decimal_index+1]}000{datetime_str[decimal_index+1:]}"
         date_obj = dateparser.parse(datetime_str, settings={"TIMEZONE": "UTC"})
 
         if not date_obj:
             demisto.debug(f"Failed to parse date after changes: {datetime_str}")
-            raise DemistoException(
-                "Failed parsing date. Check logs for more information."
-            )
+            raise DemistoException("Failed parsing date. Check logs for more information.")
         return date_obj
 
     try:
@@ -584,7 +596,7 @@ def parse_special_iso_format(datetime_str: str) -> datetime:
         return date_obj
 
     except Exception as e:
-        demisto.debug(f"Failed parsing {datetime_str}. Error={str(e)}.")
+        demisto.debug(f"Failed parsing {datetime_str}. Error={e!s}.")
         raise e
 
 
@@ -599,11 +611,7 @@ def parse_date_for_api_3_digits(date_to_parse: datetime) -> str:
     # Dealing with 3 digit AND 6 digit microseconds if exists
     # since .123 is .000123 in ISO.
     # If no microseconds found, add .000 instead
-    micro_sec = (
-        str(int(iso_start_time_splitted[1]))[:3]
-        if len(iso_start_time_splitted) == 2
-        else "000"
-    )
+    micro_sec = str(int(iso_start_time_splitted[1]))[:3] if len(iso_start_time_splitted) == 2 else "000"
     return f"{iso_start_time_splitted[0]}.{micro_sec}"
 
 
@@ -612,24 +620,15 @@ def parse_date_for_api_3_digits(date_to_parse: datetime) -> str:
 
 def format_alerts(events: list[dict], hide_sensitive: bool):
     for event_data in events:
-        create_time = datetime.fromisoformat(
-            event_data["attributes"]["meta"].get("last_modified_on")
-        )
+        create_time = datetime.fromisoformat(event_data["attributes"]["meta"].get("last_modified_on"))
 
         if create_time:
             event_data["_ENTRY_STATUS"] = (
-                "modified"
-                if datetime.fromisoformat(
-                    event_data["attributes"]["alert"].get("timestamp")
-                )
-                < create_time
-                else "new"
+                "modified" if datetime.fromisoformat(event_data["attributes"]["alert"].get("timestamp")) < create_time else "new"
             )
             event_data["_TIME"] = create_time.isoformat()
         else:
-            demisto.info(
-                "API response corrupted, no value found in attributes.meta.last_modified_on."
-            )
+            demisto.info("API response corrupted, no value found in attributes.meta.last_modified_on.")
         event_data["event_type"] = "alert"
 
         if hide_sensitive:
@@ -642,23 +641,14 @@ def format_alerts(events: list[dict], hide_sensitive: bool):
 
 def format_email_trace(events: list[dict], hide_sensitive: bool):
     for event_data in events:
-        create_time = datetime.fromisoformat(
-            event_data["attributes"].get("lastModifiedDateTime")
-        )
+        create_time = datetime.fromisoformat(event_data["attributes"].get("lastModifiedDateTime"))
         if create_time:
             event_data["_ENTRY_STATUS"] = (
-                "modified"
-                if datetime.fromisoformat(
-                    event_data["attributes"].get("acceptedDateTime")
-                )
-                < create_time
-                else "new"
+                "modified" if datetime.fromisoformat(event_data["attributes"].get("acceptedDateTime")) < create_time else "new"
             )
             event_data["_TIME"] = create_time.isoformat()
         else:
-            demisto.info(
-                "API response corrupted, no value found in attributes.meta.last_modified_on."
-            )
+            demisto.info("API response corrupted, no value found in attributes.meta.last_modified_on.")
 
         event_data["event_type"] = "trace"
 
@@ -676,7 +666,7 @@ def format_activity_log(events: list[dict]):
         # Removing Z letter and adding ":" to get valid iso format
         valid_event_time = f"{event_time[:-3]}:{event_time[-3:-1]}"
         create_time = datetime.fromisoformat(valid_event_time)
-        event_data["_TIME"] = create_time.strftime(DATE_FORMAT) if create_time else None
+        event_data["_TIME"] = create_time.strftime(EVENTS_DATE_FORMAT) if create_time else None
         event_data["event_type"] = "activity"
 
 
@@ -719,11 +709,7 @@ def _get_max_events_to_fetch(params_max_fetch: str | int, arg_limit: str | int) 
         ValueError: If the limit is not a valid integer.
     """
     try:
-        limit_param = (
-            DEFAULT_MAX_FETCH
-            if params_max_fetch in ["", None]
-            else int(params_max_fetch)
-        )
+        limit_param = DEFAULT_MAX_FETCH if params_max_fetch in ["", None] else int(params_max_fetch)
 
         limit_arg = None if arg_limit in ["", None] else int(arg_limit)
         val = limit_arg if limit_arg is not None else limit_param
@@ -734,16 +720,95 @@ def _get_max_events_to_fetch(params_max_fetch: str | int, arg_limit: str | int) 
         raise ValueError("Please provide a valid integer value for a fetch limit.")
 
 
+def validate_authentication_params(client_id: str, client_secret: str, api_key: str, scope: str) -> None:
+    """
+    Validate authentication parameters.
+
+    Args:
+        client_id: The Client ID for OAuth2 authentication.
+        client_secret: The Client Secret for OAuth2 authentication.
+        api_key: The API Key.
+        scope: The space-separated OAuth Scopes.
+
+    Raises: ValueError if authentication configuration is invalid or over-configured.
+    """
+    has_client_id = bool(client_id)
+    has_client_secret = bool(client_secret)
+    has_api_key = bool(api_key)
+    has_scopes = bool(scope)
+
+    # CHECK FOR AMBIGUOUS OVER-CONFIGURATION
+    if has_client_id and has_client_secret and has_api_key:
+        raise ValueError(
+            "Both OAuth2 (Client ID/Secret) and API Key were provided. " "Please configure only one authentication method."
+        )
+
+    # OAUTH2 VALIDATION
+    if has_client_id or has_client_secret:
+        # Check for incomplete OAuth2 configuration
+        if has_client_id and not has_client_secret:
+            raise ValueError(
+                "Client ID provided but Client Secret is missing. "
+                "Both Client ID and Client Secret are required for OAuth2 authentication."
+            )
+
+        if has_client_secret and not has_client_id:
+            raise ValueError(
+                "Client Secret provided but Client ID is missing. "
+                "Both Client ID and Client Secret are required for OAuth2 authentication."
+            )
+
+        # Check for required SCOPES when using OAuth2
+        if not has_scopes:
+            raise ValueError(
+                "Client ID and Client Secret provided, but the 'OAuth Scopes' parameter is missing. "
+                "Scopes are required for OAuth2 authentication."
+            )
+        return
+
+    # NO AUTHENTICATION METHOD PROVIDED
+    if not has_api_key:
+        raise ValueError("No authentication credentials provided.")
+
+
+def get_authentication_method(client_id: str, client_secret: str, api_key: str) -> str:
+    """
+    Determine which authentication method to use based on provided credentials.
+
+    Args:
+        client_id: The Client ID for OAuth2 authentication.
+        client_secret: The Client Secret for OAuth2 authentication.
+        api_key: The API Key.
+
+    Returns: 'oauth2' for Client ID/Secret, 'api_key' for API Key
+    """
+    if client_id and client_secret:
+        demisto.debug(f"{LOG_LINE} Authentication: Using OAuth2 (Client ID/Secret)")
+        return "oauth2"
+    elif api_key:
+        demisto.debug(f"{LOG_LINE} Authentication: Using API Key")
+        return "api_key"
+    else:
+        raise ValueError("No authentication credentials provided.")
+
+
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
 
+    # Extract authentication parameters - prioritize OAuth2 over legacy API Key
+    client_id = params.get("oauth_credentials", {}).get("identifier", "")
+    client_secret = params.get("oauth_credentials", {}).get("password", "")
+    scope = params.get("oauth_scopes", "etp.conf.ro etp.rprt.ro").strip()
     api_key = params.get("credentials", {}).get("password", "")
     base_url = params.get("url", "").rstrip("/")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     outbound_traffic = argToBoolean(params.get("outbound_traffic", False))
     hide_sensitive = argToBoolean(params.get("hide_sensitive", True))
+
+    # Validate authentication configuration
+    validate_authentication_params(client_id, client_secret, api_key, scope)
 
     last_run = demisto.getLastRun()
 
@@ -753,9 +818,7 @@ def main() -> None:  # pragma: no cover
         # setting the max fetch on each event type
         set_events_max(
             ["alerts", "alerts_outbound"],
-            _get_max_events_to_fetch(
-                params.get("alerts_max_fetch", DEFAULT_MAX_FETCH), args.get("limit", "")
-            ),
+            _get_max_events_to_fetch(params.get("alerts_max_fetch", DEFAULT_MAX_FETCH), args.get("limit", "")),
         )
         set_events_max(
             ["email_trace", "email_trace_outbound"],
@@ -776,18 +839,17 @@ def main() -> None:  # pragma: no cover
             base_url=base_url,
             verify_certificate=verify,
             proxy=proxy,
+            client_id=client_id,
+            client_secret=client_secret,
+            scope=scope,
             api_key=api_key,
             outbound_traffic=outbound_traffic,
             hide_sensitive=hide_sensitive,
         )
 
-        events_to_run_on = (
-            EVENT_TYPES + OUTBOUND_EVENT_TYPES if outbound_traffic else EVENT_TYPES
-        )
+        events_to_run_on = EVENT_TYPES + OUTBOUND_EVENT_TYPES if outbound_traffic else EVENT_TYPES
         collector = EventCollector(client, events_to_run_on)
-        demisto.debug(
-            f"{LOG_LINE} events configured: {[e.name for e in events_to_run_on]}"
-        )
+        demisto.debug(f"{LOG_LINE} events configured: {[e.name for e in events_to_run_on]}")
 
         demisto.debug(f"Command being called is {command}")
         if command == "test-module":
@@ -797,9 +859,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == "fireeye-etp-get-events":
             should_push_events = argToBoolean(args.pop("should_push_events", ""))
-            first_fetch_time = arg_to_datetime(
-                arg=params.get("first_fetch", "30 days"), required=True
-            )
+            first_fetch_time = arg_to_datetime(arg=params.get("first_fetch", "30 days"), required=True)
             assert isinstance(first_fetch_time, datetime)
 
             events, results = collector.get_events_command(start_time=first_fetch_time)
@@ -820,7 +880,7 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

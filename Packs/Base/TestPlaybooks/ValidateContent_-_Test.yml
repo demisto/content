@@ -5,15 +5,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6c6141b6-21d2-4f12-8c96-19d659db4509
+    taskid: 0e5de40c-4df2-4b1c-8a38-87dc02fc7ae6
     type: start
     task:
-      id: 6c6141b6-21d2-4f12-8c96-19d659db4509
+      id: 0e5de40c-4df2-4b1c-8a38-87dc02fc7ae6
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -35,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c5008e0e-4020-460c-8525-475dbc42e2a5
+    taskid: 60d7f103-8072-476d-8a3a-e53eebcbdd13
     type: regular
     task:
-      id: c5008e0e-4020-460c-8525-475dbc42e2a5
+      id: 60d7f103-8072-476d-8a3a-e53eebcbdd13
       version: -1
       name: Download integration with errors
       description: Sends a HTTP request with advanced capabilities
@@ -76,13 +75,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 8969f029-5612-4983-824e-7c7bf41ea9ba
+    taskid: 941baa94-011b-48c8-9db6-a06415d01d4b
     type: regular
     task:
-      id: 8969f029-5612-4983-824e-7c7bf41ea9ba
+      id: 941baa94-011b-48c8-9db6-a06415d01d4b
       version: -1
       name: ValidateContent
-      description: Runs validation and linting using the Demisto SDK on content items, such as integrations, automations and content packs. This automation script is used as part of the content validation that runs as part of the contribution flow.
+      description: Runs validation and linting using the Demisto SDK on content items,
+        such as integrations, automations and content packs. This automation script
+        is used as part of the content validation that runs as part of the contribution
+        flow.
       scriptName: ValidateContent
       type: regular
       iscommand: false
@@ -93,6 +95,8 @@ tasks:
     scriptarguments:
       entry_id:
         simple: ${lastCompletedTaskEntries}
+      execution-timeout:
+        simple: "300"
       retry-count:
         simple: "1"
     separatecontext: false
@@ -113,10 +117,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 500e0a7c-4ae3-49cb-8ff7-891dc2d2b2b1
+    taskid: dd6e20b0-9093-4b84-8362-11a3d13c66ff
     type: condition
     task:
-      id: 500e0a7c-4ae3-49cb-8ff7-891dc2d2b2b1
+      id: dd6e20b0-9093-4b84-8362-11a3d13c66ff
       version: -1
       name: Assert Validation Errors Found
       type: condition
@@ -154,16 +158,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 6a894ddf-9d2a-4432-8b06-46c97f9f5b11
+    taskid: 9fa0ca96-721a-432c-8731-863871b14117
     type: title
     task:
-      id: 6a894ddf-9d2a-4432-8b06-46c97f9f5b11
+      id: 9fa0ca96-721a-432c-8731-863871b14117
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -185,8 +188,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 815,
-        "width": 395,
+        "height": 810,
+        "width": 396,
         "x": 265,
         "y": 50
       }

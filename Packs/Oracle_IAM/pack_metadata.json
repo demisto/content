@@ -1,19 +1,46 @@
 {
     "name": "Oracle IAM",
-    "description": "Oracle IAM",
+    "description": "A suite of solutions that enables secure user authentication, authorization, identity governance, and access control across enterprise applications and services.",
     "support": "xsoar",
-    "currentVersion": "1.0.26",
+    "currentVersion": "1.0.30",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
+        "Analytics & SIEM",
         "Identity and Access Management"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "IAM",
+        "Network"
+    ],
+    "useCases": [
+        "Identity and Access Management",
+        "Network Security"
+    ],
+    "keywords": [
+        "oracle",
+        "oam",
+        "iam",
+        "Access Manager",
+        "Identity Federation"
+    ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "C1",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam",
+        "cloud_posture",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }

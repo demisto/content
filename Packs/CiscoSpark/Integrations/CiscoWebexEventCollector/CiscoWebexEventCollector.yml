@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -149,13 +149,13 @@ script:
       name: since_datetime
     description: Gets events from Cisco Webex.
     name: cisco-webex-get-compliance-officer-events
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-"marketplaces": ["marketplacev2"]
+"marketplaces": ["marketplacev2", "platform"]
 fromversion: 6.12.0
 tests:
 - No tests (auto formatted)

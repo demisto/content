@@ -10,12 +10,12 @@ Triage:
 
 Remediation & Eradication:
 
-- The playbooks will suggest several actions for the analyst to take: disabling the user account using Active Directory or Azure Active Directory, expiring the user password using Active Directory, or blocking traffic from TOR exit nodes using PAN-OS and Palo Alto Networks' predefined EDL.
+- The playbooks will suggest several actions for the analyst to take: disabling the user account using Active Directory or Entra ID, expiring the user password using Active Directory, or blocking traffic from TOR exit nodes using PAN-OS and Palo Alto Networks' predefined EDL.
 
 The analyst can select multiple actions, which will then be executed by the playbook based on the analyst's choices.
 
-Requirements: 
-For any response action, you will need one of the following integrations: Azure Active Directory Users / Active Directory Users.
+Requirements:
+For any response action, you will need one of the following integrations: Entra ID Users / Active Directory Users.
 
 ## Dependencies
 

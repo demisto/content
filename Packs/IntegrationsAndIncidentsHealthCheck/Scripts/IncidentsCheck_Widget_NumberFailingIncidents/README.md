@@ -1,5 +1,7 @@
 Data output script for populating dashboard number graph widget with the number of failing incident.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,9 +11,11 @@ Data output script for populating dashboard number graph widget with the number 
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

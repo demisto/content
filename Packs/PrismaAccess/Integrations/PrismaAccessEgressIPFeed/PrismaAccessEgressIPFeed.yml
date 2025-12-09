@@ -4,28 +4,35 @@ commonfields:
 name: Prisma Access Egress IP feed
 display: Prisma Access Egress IP feed
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
 description: Dynamically retrieve and add to allow list IPs Prisma Access uses to egress traffic to the internet and SaaS apps.
 configuration:
 - display: Fetch indicators
   name: feed
   defaultvalue: "true"
   type: 8
+  section: Collect
   required: false
 - display: URL
   name: URL
   defaultvalue: https://api.gpcloudservice.com
   type: 0
+  section: Connect
   required: true
-- displaypassword: Prisma Access API Key
+- displaypassword: Prisma Access API Key from Panorama
   name: credentials
   type: 9
+  section: Connect
   hiddenusername: true
   required: false
 - display: Service Type
   name: serviceType
   defaultvalue: all
   type: 15
-  required: true
+  section: Collect
+  required: false
   options:
   - all
   - remote_network
@@ -37,7 +44,8 @@ configuration:
   name: addrType
   defaultvalue: all
   type: 15
-  required: true
+  section: Collect
+  required: false
   options:
   - all
   - active
@@ -47,6 +55,7 @@ configuration:
   name: location
   defaultvalue: all
   type: 15
+  section: Collect
   options:
   - all
   - deployed
@@ -56,6 +65,7 @@ configuration:
   name: feedReputation
   defaultvalue: Good
   type: 18
+  section: Collect
   options:
   - None
   - Good
@@ -67,7 +77,8 @@ configuration:
   name: feedReliability
   defaultvalue: A - Completely reliable
   type: 15
-  required: true
+  section: Collect
+  required: false
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -85,11 +96,13 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  section: Collect
   required: false
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
   type: 17
+  section: Collect
   options:
   - never
   - interval
@@ -100,34 +113,41 @@ configuration:
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
+  section: Collect
   required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: "30"
   type: 19
+  section: Collect
   required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
+  section: Collect
   defaultvalue: "true"
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
   required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  section: Collect
   required: false
 - display: Prisma Access API Key (Deprecated)
   name: api_key
   type: 4
+  section: Connect
   hidden: true
   additionalinfo: The Prisma Access API Key to use (retrieve via Panorama->Service Setup->Egress IP API)
   required: false
@@ -147,7 +167,7 @@ script:
       description: Prisma Access Egress IP zone.
       type: string
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.12.5490952
   feed: true
   subtype: python3
 fromversion: 5.5.0

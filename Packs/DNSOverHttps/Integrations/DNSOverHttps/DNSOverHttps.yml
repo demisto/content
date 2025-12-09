@@ -50,10 +50,10 @@ script:
     description: Resolve a name to IP over HTTPS
     name: doh-resolve
     outputs:
-    - contextPath: DNSoOverHTTPS.Results
+    - contextPath: DNSOverHTTPS.Results
       description: DNS query results
       type: list
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   script: ''
   subtype: python3
   type: python

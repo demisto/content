@@ -1,6 +1,7 @@
 Create a phishing classifier using machine learning technique, based on email content.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Create a phishing classifier using machine learning technique, based on email co
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -34,5 +36,6 @@ Create a phishing classifier using machine learning technique, based on email co
 | trainingAlgorithm | The training algorithm to use for training the model. Default is "auto". If "auto" is selected, the training algorithm will be chosen automatically based on the number of incidents per each label. Use "from_scratch" to train a new model from scratch, based on your incidents only. In general, "from_scratch" will perform better where the number of incidents is high \(500 incidents or more per each verdict\). "fine-tune" trains a model based on the out-of-the-box model. "fine-tune" will perform better when the number of incidents is relatively low. It's possible to train multiple models using different algorithms options, and compare their results. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

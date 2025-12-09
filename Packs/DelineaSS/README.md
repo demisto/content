@@ -1,5 +1,4 @@
 # Delinea Secret Server / Platform
-(Formly known as "Thycotic Software Secret Server")
 This pack includes XSIAM content.
 
 Secret Server and Platform is the fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution. Palo Alto Networks and Delinea integrations allow you to manage credentials for applications, databases, CI/CD tools, and services without causing friction in the development process

@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """HelloWorld Script for Cortex XSOAR (aka Demisto)
 
 This script is just a simple example on Code Conventions to write automation
@@ -26,7 +27,7 @@ from CommonServerUserPython import *
 from typing import Any
 
 
-''' STANDALONE FUNCTION '''
+""" STANDALONE FUNCTION """
 
 
 def say_hello(name: str) -> str:
@@ -40,10 +41,10 @@ def say_hello(name: str) -> str:
         dict: string containing 'Hello {name}'
     """
 
-    return f'Hello {name}'
+    return f"Hello {name}"
 
 
-''' COMMAND FUNCTION '''
+""" COMMAND FUNCTION """
 
 
 def say_hello_command(args: dict[str, Any]) -> CommandResults:
@@ -60,36 +61,28 @@ def say_hello_command(args: dict[str, Any]) -> CommandResults:
     # Check the HelloWorld comments from the HelloWorld Integration
     # as the command "say_hello_command" is the same.
 
-    name = args.get('name', None)
+    name = args.get("name", None)
 
     original_result = say_hello(name)
 
-    markdown = f'## {original_result}'
-    outputs = {
-        'HelloWorld': {
-            'hello': original_result
-        }
-    }
+    markdown = f"## {original_result}"
+    outputs = {"HelloWorld": {"hello": original_result}}
 
-    return CommandResults(
-        readable_output=markdown,
-        outputs=outputs,
-        outputs_key_field=None
-    )
+    return CommandResults(readable_output=markdown, outputs=outputs, outputs_key_field=None)
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
     try:
         return_results(say_hello_command(demisto.args()))
     except Exception as ex:
-        return_error(f'Failed to execute HelloWorldScript. Error: {str(ex)}')
+        return_error(f"Failed to execute HelloWorldScript. Error: {str(ex)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

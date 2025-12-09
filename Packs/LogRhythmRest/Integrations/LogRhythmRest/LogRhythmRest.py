@@ -1,49 +1,93 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# -*- coding: utf-8 -*-
 
+# -*- coding: utf-8 -*-
 from CommonServerUserPython import *
 
-''' IMPORTS '''
+""" IMPORTS """
 
 import json
-import requests
 import random
 import string
 from datetime import datetime, timedelta
+
 import defusedxml.ElementTree as defused_ET
+import requests
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' GLOBALS/PARAMS '''
+""" GLOBALS/PARAMS """
 
-TOKEN = demisto.params().get('credentials_api_token', {}).get('password') or demisto.params().get('token', '')
-BASE_URL = demisto.params().get('url', '').strip('/')
-INSECURE = not demisto.params().get('insecure')
-CLUSTER_ID = demisto.params().get('cluster-id')
-ENTITY_ID = demisto.params().get('entity-id')
+TOKEN = demisto.params().get("credentials_api_token", {}).get("password") or demisto.params().get("token", "")
+BASE_URL = demisto.params().get("url", "").strip("/")
+INSECURE = not demisto.params().get("insecure")
+CLUSTER_ID = demisto.params().get("cluster-id")
+ENTITY_ID = demisto.params().get("entity-id")
 
 # Headers to be sent in requests
 HEADERS = {
-    'Authorization': 'Bearer ' + TOKEN,
-    'Content-Type': 'application/json',
+    "Authorization": "Bearer " + TOKEN,
+    "Content-Type": "application/json",
 }
 
-HOSTS_HEADERS = ["ID", "Name", "EntityId", "EntityName", "OS", "Status", "Location", "RiskLevel", "ThreatLevel",
-                 "ThreatLevelComments", "DateUpdated", "HostZone"]
+HOSTS_HEADERS = [
+    "ID",
+    "Name",
+    "EntityId",
+    "EntityName",
+    "OS",
+    "Status",
+    "Location",
+    "RiskLevel",
+    "ThreatLevel",
+    "ThreatLevelComments",
+    "DateUpdated",
+    "HostZone",
+]
 LOGS_HEADERS = ["Level", "Computer", "Channel", "Keywords", "EventData"]
 PERSON_HEADERS = ["ID", "HostStatus", "IsAPIPerson", "FirstName", "LastName", "UserID", "UserLogin", "DateUpdated"]
-NETWORK_HEADERS = ["ID", "BeganIP", "EndIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location",
-                   "ThreatLevel", "DateUpdated", "HostZone"]
+NETWORK_HEADERS = [
+    "ID",
+    "BeganIP",
+    "EndIP",
+    "HostStatus",
+    "Name",
+    "RiskLevel",
+    "EntityId",
+    "EntityName",
+    "Location",
+    "ThreatLevel",
+    "DateUpdated",
+    "HostZone",
+]
 ALARM_SUMMARY_HEADERS = ["PIFType", "DrillDownSummaryLogs"]
-USER_HEADERS = ["ID", "DateUpdated", "HostStatus", "LastName", "FirstName", "UserType", "Entity", "Owner", "ReadAccess",
-                "WriteAccess"]
+USER_HEADERS = [
+    "ID",
+    "DateUpdated",
+    "HostStatus",
+    "LastName",
+    "FirstName",
+    "UserType",
+    "Entity",
+    "Owner",
+    "ReadAccess",
+    "WriteAccess",
+]
 LOGIN_HEADERS = ["Login", "UserProfileId", "UserId", "DefaultEntityId", "HostStatus", "DateUpdated", "DateCreated"]
-PROFILE_HEADERS = ["ID", "Name", "ShortDescription", "LongDescription", "DataProcessorAccessMode", "SecurityRole", "ProfileType",
-                   "DateUpdated", "TotalAssociatedUsers"]
+PROFILE_HEADERS = [
+    "ID",
+    "Name",
+    "ShortDescription",
+    "LongDescription",
+    "DataProcessorAccessMode",
+    "SecurityRole",
+    "ProfileType",
+    "DateUpdated",
+    "TotalAssociatedUsers",
+]
 
 PIF_TYPES = {
     "1": "Direction",
@@ -192,7 +236,7 @@ PIF_TYPES = {
     "10006": "Region (Origin or Impacted)",
     "10007": "City (Origin or Impacted)",
     "10008": "Bytes In/Out",
-    "10009": "Items In/Out"
+    "10009": "Items In/Out",
 }
 
 ALARM_STATUS = {
@@ -1162,26 +1206,25 @@ SOURCE_TYPE_MAP = {
     "UDLA_-_VMWare_vCenter_Server": 1000378,
     "UDLA_-_VMWare_vCloud": 1000538,
     "VLS_-_Syslog_-_Infoblox_-_DNS_RPZ": 1000643,
-    "VLS_-_Syslog_-_Infoblox_-_Threat_Protection": 1000642
+    "VLS_-_Syslog_-_Infoblox_-_Threat_Protection": 1000642,
 }
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def fix_date_values(item):
-    date_keys = ['normalDateMin', 'normalDate', 'normalMsgDateMax', 'logDate']
+    date_keys = ["normalDateMin", "normalDate", "normalMsgDateMax", "logDate"]
 
     for key in date_keys:
         if item.get(key):
-            item[key] = datetime.fromtimestamp(item.get(key) / 1000.0).\
-                strftime('%Y-%m-%d %H:%M:%S')
+            item[key] = datetime.fromtimestamp(item.get(key) / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def fix_location_value(items):
     for item in items:
-        location_val = str(item.get('location'))
-        if location_val == '{u\'id\': -1}':
-            item['location'] = 'NA'
+        location_val = str(item.get("location"))
+        if location_val == "{u'id': -1}":
+            item["location"] = "NA"
 
     return items
 
@@ -1190,59 +1233,55 @@ def get_time_frame(time_frame, start_arg, end_arg):
     start = datetime.now()
     end = datetime.now()
 
-    if time_frame == 'Today':
+    if time_frame == "Today":
         start = datetime(end.year, end.month, end.day)
-    elif time_frame == 'Last2Days':
+    elif time_frame == "Last2Days":
         start = end - timedelta(days=2)
-    elif time_frame == 'LastWeek':
+    elif time_frame == "LastWeek":
         start = end - timedelta(days=7)
-    elif time_frame == 'LastMonth':
+    elif time_frame == "LastMonth":
         start = end - timedelta(days=30)
-    elif time_frame == 'Custom':
+    elif time_frame == "Custom":
         if not start_arg:
-            return_error('start-date argument is missing')
+            return_error("start-date argument is missing")
         if not end_arg:
-            return_error('end-date argument is missing')
-        start = datetime.strptime(start_arg, '%Y-%m-%d')
-        end = datetime.strptime(end_arg, '%Y-%m-%d')
+            return_error("end-date argument is missing")
+        start = datetime.strptime(start_arg, "%Y-%m-%d")
+        end = datetime.strptime(end_arg, "%Y-%m-%d")
 
     return start, end
 
 
 def http_request(method, url_suffix, data=None, headers=HEADERS):
     try:
-        res = requests.request(
-            method,
-            urljoin(BASE_URL, url_suffix),
-            headers=headers,
-            verify=INSECURE,
-            data=data
-        )
+        res = requests.request(method, urljoin(BASE_URL, url_suffix), headers=headers, verify=INSECURE, data=data)
     except Exception as e:
         return_error(e)
 
     # Handle error responses gracefully
-    if 'application/json' not in res.headers.get('Content-Type', []) and res.status_code != 204:
-        LOG(f'response status code is: {res.status_code}')
-        return_error('invalid url or port: ' + BASE_URL)
+    if "application/json" not in res.headers.get("Content-Type", []) and res.status_code != 204:
+        LOG(f"response status code is: {res.status_code}")
+        return_error("invalid url or port: " + BASE_URL)
 
     if res.status_code == 404:
-        if res.json().get('message'):
-            return_error(res.json().get('message'))
+        if res.json().get("message"):
+            return_error(res.json().get("message"))
         else:
-            return_error('No data returned')
+            return_error("No data returned")
 
     if res.status_code not in {200, 201, 202, 204, 207}:
         return_error(
-            'Error in API call to {}, status code: {}, reason: {}'.format(BASE_URL + '/' + url_suffix, res.status_code,
-                                                                          res.json()['message']))
+            "Error in API call to {}, status code: {}, reason: {}".format(
+                BASE_URL + "/" + url_suffix, res.status_code, res.json()["message"]
+            )
+        )
     if res.status_code == 204:
         return {}
     return res.json()
 
 
 def get_host_by_id(host_id):
-    res = http_request('GET', 'lr-admin-api/hosts/' + host_id)
+    res = http_request("GET", "lr-admin-api/hosts/" + host_id)
     return fix_location_value([res])
 
 
@@ -1251,20 +1290,20 @@ def update_hosts_keys(hosts):
 
     for host in hosts:
         tmp_host = {
-            'EntityId': host.get('entity').get('id'),
-            'EntityName': host.get('entity').get('name'),
-            'OS': host.get('os'),
-            'ThreatLevel': host.get('threatLevel'),
-            'UseEventlogCredentials': host.get('useEventlogCredentials'),
-            'Name': host.get('name'),
-            'DateUpdated': host.get('dateUpdated'),
-            'HostZone': host.get('hostZone'),
-            'RiskLevel': host.get('riskLevel'),
-            'Location': host.get('location'),
-            'Status': host.get('recordStatusName'),
-            'ThreatLevelComments': host.get('threatLevelComments'),
-            'ID': host.get('id'),
-            'OSType': host.get('osType')
+            "EntityId": host.get("entity").get("id"),
+            "EntityName": host.get("entity").get("name"),
+            "OS": host.get("os"),
+            "ThreatLevel": host.get("threatLevel"),
+            "UseEventlogCredentials": host.get("useEventlogCredentials"),
+            "Name": host.get("name"),
+            "DateUpdated": host.get("dateUpdated"),
+            "HostZone": host.get("hostZone"),
+            "RiskLevel": host.get("riskLevel"),
+            "Location": host.get("location"),
+            "Status": host.get("recordStatusName"),
+            "ThreatLevelComments": host.get("threatLevelComments"),
+            "ID": host.get("id"),
+            "OSType": host.get("osType"),
         }
         new_hosts.append(tmp_host)
     return new_hosts
@@ -1275,18 +1314,18 @@ def update_networks_keys(networks):
 
     for network in networks:
         tmp_network = {
-            'EndIP': network.get('eip'),
-            'HostStatus': network.get('recordStatusName'),
-            'Name': network.get('name'),
-            'RiskLevel': network.get('riskLevel'),
-            'EntityId': network.get('entity').get('id'),
-            'EntityName': network.get('entity').get('name'),
-            'Location': network.get('location'),
-            'ThreatLevel': network.get('threatLevel'),
-            'DateUpdated': network.get('dateUpdated'),
-            'HostZone': network.get('hostZone'),
-            'ID': network.get('id'),
-            'BeganIP': network.get('bip')
+            "EndIP": network.get("eip"),
+            "HostStatus": network.get("recordStatusName"),
+            "Name": network.get("name"),
+            "RiskLevel": network.get("riskLevel"),
+            "EntityId": network.get("entity").get("id"),
+            "EntityName": network.get("entity").get("name"),
+            "Location": network.get("location"),
+            "ThreatLevel": network.get("threatLevel"),
+            "DateUpdated": network.get("dateUpdated"),
+            "HostZone": network.get("hostZone"),
+            "ID": network.get("id"),
+            "BeganIP": network.get("bip"),
         }
         new_networks.append(tmp_network)
     return new_networks
@@ -1297,16 +1336,16 @@ def update_users_keys(users):
 
     for user in users:
         tmp_user = {
-            'ID': user.get('id'),
-            'DateUpdated': user.get('dateUpdated'),
-            'HostStatus': user.get('recordStatusName'),
-            'LastName': user.get('lastName'),
-            'FirstName': user.get('firstName'),
-            'UserType': user.get('userType'),
-            'Entity': user.get('objectPermissions').get('entity'),
-            'Owner': user.get('objectPermissions').get('owner'),
-            'ReadAccess': user.get('objectPermissions').get('readAccess'),
-            'WriteAccess': user.get('objectPermissions').get('writeAccess')
+            "ID": user.get("id"),
+            "DateUpdated": user.get("dateUpdated"),
+            "HostStatus": user.get("recordStatusName"),
+            "LastName": user.get("lastName"),
+            "FirstName": user.get("firstName"),
+            "UserType": user.get("userType"),
+            "Entity": user.get("objectPermissions").get("entity"),
+            "Owner": user.get("objectPermissions").get("owner"),
+            "ReadAccess": user.get("objectPermissions").get("readAccess"),
+            "WriteAccess": user.get("objectPermissions").get("writeAccess"),
         }
         new_users.append(tmp_user)
     return new_users
@@ -1317,14 +1356,14 @@ def update_logins_keys(logins):
 
     for login in logins:
         tmp_login = {
-            'Login': login.get('login'),
-            'UserProfileId': login.get('userProfileId'),
-            'UserId': login.get('userId'),
-            'DefaultEntityId': login.get('defaultEntityId'),
-            'HostStatus': login.get('recordStatusName'),
-            'DateUpdated': login.get('dateUpdated'),
-            'DateCreated': login.get('dateCreated'),
-            'Entities': login.get('entities')
+            "Login": login.get("login"),
+            "UserProfileId": login.get("userProfileId"),
+            "UserId": login.get("userId"),
+            "DefaultEntityId": login.get("defaultEntityId"),
+            "HostStatus": login.get("recordStatusName"),
+            "DateUpdated": login.get("dateUpdated"),
+            "DateCreated": login.get("dateCreated"),
+            "Entities": login.get("entities"),
         }
         new_logins.append(tmp_login)
     return new_logins
@@ -1335,24 +1374,23 @@ def update_profiles_keys(profiles):
 
     for profile in profiles:
         tmp_profile = {
-            'ID': profile.get('id'),
-            'Name': profile.get('name'),
-            'ShortDescription': profile.get('shortDescription'),
-            'LongDescription': profile.get('longDescription'),
-            'DataProcessorAccessMode': profile.get('dataProcessorAccessMode'),
-            'SecurityRole': profile.get('securityRole'),
-            'ProfileType': profile.get('ProfileType'),
-            'DateUpdated': profile.get('dateUpdated'),
-            'TotalAssociatedUsers': profile.get('totalAssociatedUsers'),
-            'NotificationGroupsPermissions': profile.get('notificationGroupsPermissions'),
-            'ADGroupsPermissions': profile.get('adGroupsPermissions'),
-            'EntityPermissions': profile.get('entityPermissions'),
-            'DataProcessorsPermissions': profile.get('dataProcessorsPermissions'),
-            'LogsourceListPermissions': profile.get('logsourceListPermissions'),
-            'LogSourcePermissions': profile.get('logSourcePermissions'),
-            'Privileges': profile.get('privileges'),
-            'SmartResponsePluginsPermissions': profile.get('smartResponsePluginsPermissions')
-
+            "ID": profile.get("id"),
+            "Name": profile.get("name"),
+            "ShortDescription": profile.get("shortDescription"),
+            "LongDescription": profile.get("longDescription"),
+            "DataProcessorAccessMode": profile.get("dataProcessorAccessMode"),
+            "SecurityRole": profile.get("securityRole"),
+            "ProfileType": profile.get("ProfileType"),
+            "DateUpdated": profile.get("dateUpdated"),
+            "TotalAssociatedUsers": profile.get("totalAssociatedUsers"),
+            "NotificationGroupsPermissions": profile.get("notificationGroupsPermissions"),
+            "ADGroupsPermissions": profile.get("adGroupsPermissions"),
+            "EntityPermissions": profile.get("entityPermissions"),
+            "DataProcessorsPermissions": profile.get("dataProcessorsPermissions"),
+            "LogsourceListPermissions": profile.get("logsourceListPermissions"),
+            "LogSourcePermissions": profile.get("logSourcePermissions"),
+            "Privileges": profile.get("privileges"),
+            "SmartResponsePluginsPermissions": profile.get("smartResponsePluginsPermissions"),
         }
         new_profiles.append(tmp_profile)
     return new_profiles
@@ -1363,14 +1401,14 @@ def update_persons_keys(persons):
 
     for person in persons:
         tmp_person = {
-            'ID': person.get('id'),
-            'DateUpdated': person.get('dateUpdated'),
-            'HostStatus': person.get('recordStatusName'),
-            'LastName': person.get('lastName'),
-            'FirstName': person.get('firstName'),
-            'IsAPIPerson': person.get('isAPIPerson'),
-            'UserID': person.get('user').get('id'),
-            'UserLogin': person.get('user').get('login')
+            "ID": person.get("id"),
+            "DateUpdated": person.get("dateUpdated"),
+            "HostStatus": person.get("recordStatusName"),
+            "LastName": person.get("lastName"),
+            "FirstName": person.get("firstName"),
+            "IsAPIPerson": person.get("isAPIPerson"),
+            "UserID": person.get("user").get("id"),
+            "UserLogin": person.get("user").get("login"),
         }
         new_persons.append(tmp_person)
     return new_persons
@@ -1382,10 +1420,7 @@ def generate_query_value(valueType, value):
     elif valueType == 5:
         return str(value)
     else:
-        return {
-            "value": value,
-            "matchType": 2
-        }
+        return {"value": value, "matchType": 2}
 
 
 def generate_query_item(filterType, valueType, value):
@@ -1393,97 +1428,88 @@ def generate_query_item(filterType, valueType, value):
         "filterItemType": 0,
         "fieldOperator": 1,
         "filterMode": 1,
-        "values": [
-            {
-                "filterType": filterType,
-                "valueType": valueType,
-                "value": generate_query_value(valueType, value)
-            }
-        ]
+        "values": [{"filterType": filterType, "valueType": valueType, "value": generate_query_value(valueType, value)}],
     }
 
     return query
 
 
-''' COMMANDS + REQUESTS FUNCTIONS '''
+""" COMMANDS + REQUESTS FUNCTIONS """
 
 
 def test_module():
-    http_request('GET', 'lr-admin-api/hosts')
-    demisto.results('ok')
+    http_request("GET", "lr-admin-api/hosts")
+    demisto.results("ok")
 
 
 def add_host(data_args):
     data = {
         "id": -1,
-        "entity": {
-            "id": int(data_args.get('entity-id')),
-            "name": data_args.get('entity-name')
-        },
-        "name": data_args.get('name'),
-        "shortDesc": data_args.get('short-description'),
-        "longDesc": data_args.get('long-description'),
-        "riskLevel": data_args.get('risk-level'),
-        "threatLevel": data_args.get('threat-level'),
-        "threatLevelComments": data_args.get('threat-level-comments'),
-        "recordStatusName": data_args.get('host-status'),
-        "hostZone": data_args.get('host-zone'),
-        "os": data_args.get('os'),
-        "useEventlogCredentials": bool(data_args.get('use-eventlog-credentials')),
-        "osType": data_args.get('os-type')
+        "entity": {"id": int(data_args.get("entity-id")), "name": data_args.get("entity-name")},
+        "name": data_args.get("name"),
+        "shortDesc": data_args.get("short-description"),
+        "longDesc": data_args.get("long-description"),
+        "riskLevel": data_args.get("risk-level"),
+        "threatLevel": data_args.get("threat-level"),
+        "threatLevelComments": data_args.get("threat-level-comments"),
+        "recordStatusName": data_args.get("host-status"),
+        "hostZone": data_args.get("host-zone"),
+        "os": data_args.get("os"),
+        "useEventlogCredentials": bool(data_args.get("use-eventlog-credentials")),
+        "osType": data_args.get("os-type"),
     }
 
-    res = http_request('POST', 'lr-admin-api/hosts/', json.dumps(data))
+    res = http_request("POST", "lr-admin-api/hosts/", json.dumps(data))
     res = fix_location_value([res])
     context = createContext(update_hosts_keys(res), removeNull=True)
-    outputs = {'Logrhythm.Host(val.ID === obj.ID)': context}
-    return_outputs(readable_output=data_args.get('name') + " added successfully to " + data_args.get('entity-name'),
-                   outputs=outputs, raw_response=res)
+    outputs = {"Logrhythm.Host(val.ID === obj.ID)": context}
+    return_outputs(
+        readable_output=data_args.get("name") + " added successfully to " + data_args.get("entity-name"),
+        outputs=outputs,
+        raw_response=res,
+    )
 
 
 def get_hosts_by_entity(data_args):
-    res = http_request('GET', 'lr-admin-api/hosts?entity=' + data_args['entity-name'] + '&count=' + data_args['count'])
+    res = http_request("GET", "lr-admin-api/hosts?entity=" + data_args["entity-name"] + "&count=" + data_args["count"])
     res = fix_location_value(res)
     res = update_hosts_keys(res)
     context = createContext(res, removeNull=True)
-    human_readable = tableToMarkdown('Hosts for ' + data_args.get('entity-name'), res, HOSTS_HEADERS)
-    outputs = {'Logrhythm.Host(val.Name && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown("Hosts for " + data_args.get("entity-name"), res, HOSTS_HEADERS)
+    outputs = {"Logrhythm.Host(val.Name && val.ID === obj.ID)": context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def get_hosts(data_args):
-    id = data_args.get('host-id')
+    id = data_args.get("host-id")
     if id:
         res = get_host_by_id(id)
     else:
-        res = http_request('GET', 'lr-admin-api/hosts?count=' + data_args['count'])
+        res = http_request("GET", "lr-admin-api/hosts?count=" + data_args["count"])
 
     res = fix_location_value(res)
     res = update_hosts_keys(res)
     context = createContext(res, removeNull=True)
-    human_readable = tableToMarkdown('Hosts information:', res, HOSTS_HEADERS)
-    outputs = {'Logrhythm.Host(val.Name && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown("Hosts information:", res, HOSTS_HEADERS)
+    outputs = {"Logrhythm.Host(val.Name && val.ID === obj.ID)": context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def change_status(data_args):
-    data = [{
-        "hostId": int(data_args.get('host-id')),
-        "status": data_args.get('status')
-    }]
+    data = [{"hostId": int(data_args.get("host-id")), "status": data_args.get("status")}]
 
-    res = http_request('PUT', 'lr-admin-api/hosts/status', json.dumps(data))
+    res = http_request("PUT", "lr-admin-api/hosts/status", json.dumps(data))
 
-    host_info = get_host_by_id(data_args.get('host-id'))
+    host_info = get_host_by_id(data_args.get("host-id"))
     context = createContext(update_hosts_keys(host_info), removeNull=True)
-    outputs = {'Logrhythm.Host(val.ID === obj.ID)': context}
-    return_outputs(readable_output='Status updated to ' + data_args.get('status'), outputs=outputs, raw_response=res)
+    outputs = {"Logrhythm.Host(val.ID === obj.ID)": context}
+    return_outputs(readable_output="Status updated to " + data_args.get("status"), outputs=outputs, raw_response=res)
 
 
 def execute_query(data_args):
     # generate random string for request id
-    req_id = ''.join(random.choice(string.ascii_letters) for x in range(8))
-    start, end = get_time_frame(data_args.get('time-frame'), data_args.get('start-date'), data_args.get('end-date'))
+    req_id = "".join(random.choice(string.ascii_letters) for x in range(8))
+    start, end = get_time_frame(data_args.get("time-frame"), data_args.get("start-date"), data_args.get("end-date"))
     delta = end - start
     dates = []
 
@@ -1494,249 +1520,237 @@ def execute_query(data_args):
         "indices": dates,
         "searchType": "DFS_QUERY_THEN_FETCH",
         "source": {
-            "size": data_args.get('page-size'),
-            "query": {
-                "query_string": {
-                    "default_field": "logMessage",
-                    "query": data_args.get('keyword')
-                }
-            },
+            "size": data_args.get("page-size"),
+            "query": {"query_string": {"default_field": "logMessage", "query": data_args.get("keyword")}},
             "stored_fields": "logMessage",
-            "sort": [
-                {
-                    "normalDate": {
-                        "order": "asc"
-                    }
-                }
-            ]
-        }
+            "sort": [{"normalDate": {"order": "asc"}}],
+        },
     }
 
     headers = dict(HEADERS)
-    headers['Content-Type'] = 'application/json'
-    headers['Request-Id'] = req_id
-    headers['Request-Origin-Date'] = str(datetime.now())
-    headers['x-gateway-route-to-tag'] = CLUSTER_ID
+    headers["Content-Type"] = "application/json"
+    headers["Request-Id"] = req_id
+    headers["Request-Origin-Date"] = str(datetime.now())
+    headers["x-gateway-route-to-tag"] = CLUSTER_ID
 
-    res = http_request('POST', 'lr-legacy-search-api/esquery', json.dumps(data), headers)
-    logs = res['hits']['hits']
+    res = http_request("POST", "lr-legacy-search-api/esquery", json.dumps(data), headers)
+    logs = res["hits"]["hits"]
     logs_response = []
 
-    xml_ns = './/{http://schemas.microsoft.com/win/2004/08/events/event}'
+    xml_ns = ".//{http://schemas.microsoft.com/win/2004/08/events/event}"
 
     for log in logs:
-        message = str(log['fields']['logMessage'])
+        message = str(log["fields"]["logMessage"])
         message = message[3:-2]
 
         try:
             root = defused_ET.fromstring(message)
 
             log_item = {
-                "EventID": str(root.find(xml_ns + 'EventID').text),  # type: ignore
-                "Level": str(root.find(xml_ns + 'Level').text),  # type: ignore
-                "Task": str(root.find(xml_ns + 'Task').text),  # type: ignore
-                "Opcode": str(root.find(xml_ns + 'Opcode').text),  # type: ignore
-                "Keywords": str(root.find(xml_ns + 'Keywords').text),  # type: ignore
-                "Channel": str(root.find(xml_ns + 'Channel').text),  # type: ignore
-                "Computer": str(root.find(xml_ns + 'Computer').text),  # type: ignore
-                "EventData": str(root.find(xml_ns + 'EventData').text)  # type: ignore
-                .replace('\\r\\n', '\n').replace('\\t', '\t')
+                "EventID": str(root.find(xml_ns + "EventID").text),  # type: ignore
+                "Level": str(root.find(xml_ns + "Level").text),  # type: ignore
+                "Task": str(root.find(xml_ns + "Task").text),  # type: ignore
+                "Opcode": str(root.find(xml_ns + "Opcode").text),  # type: ignore
+                "Keywords": str(root.find(xml_ns + "Keywords").text),  # type: ignore
+                "Channel": str(root.find(xml_ns + "Channel").text),  # type: ignore
+                "Computer": str(root.find(xml_ns + "Computer").text),  # type: ignore
+                "EventData": str(root.find(xml_ns + "EventData").text)  # type: ignore
+                .replace("\\r\\n", "\n")
+                .replace("\\t", "\t"),
             }
             logs_response.append(log_item)
         except Exception:
             continue
 
     context = createContext(logs_response, removeNull=True)
-    human_readable = tableToMarkdown('logs results', logs_response, LOGS_HEADERS)
-    outputs = {'Logrhythm.Log': context}
+    human_readable = tableToMarkdown("logs results", logs_response, LOGS_HEADERS)
+    outputs = {"Logrhythm.Log": context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=logs_response)
 
 
 def get_persons(data_args):
-    id = data_args.get('person-id')
+    id = data_args.get("person-id")
     if id:
-        res = [http_request('GET', 'lr-admin-api/persons/' + id)]
+        res = [http_request("GET", "lr-admin-api/persons/" + id)]
     else:
-        res = http_request('GET', 'lr-admin-api/persons?count=' + data_args['count'])
+        res = http_request("GET", "lr-admin-api/persons?count=" + data_args["count"])
     res = update_persons_keys(res)
     context = createContext(res, removeNull=True)
-    outputs = {'Logrhythm.Person(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Persons information', context, PERSON_HEADERS)
+    outputs = {"Logrhythm.Person(val.ID === obj.ID)": context}
+    human_readable = tableToMarkdown("Persons information", context, PERSON_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def get_users(data_args):
-    id = data_args.get('user_id')
+    id = data_args.get("user_id")
     if id:
-        res = [http_request('GET', 'lr-admin-api/users/' + id)]
+        res = [http_request("GET", "lr-admin-api/users/" + id)]
     else:
-        res = http_request('GET', 'lr-admin-api/users?count=' + data_args['count'])
+        res = http_request("GET", "lr-admin-api/users?count=" + data_args["count"])
     res = update_users_keys(res)
     context = createContext(res, removeNull=True)
-    outputs = {'Logrhythm.User(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Users information', context, USER_HEADERS)
+    outputs = {"Logrhythm.User(val.ID === obj.ID)": context}
+    human_readable = tableToMarkdown("Users information", context, USER_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def add_user(data_args):
-    data = {
-        "userType": "Individual",
-        "firstName": data_args.get("first_name"),
-        "lastName": data_args.get("last_name")
-    }
+    data = {"userType": "Individual", "firstName": data_args.get("first_name"), "lastName": data_args.get("last_name")}
     if not data_args.get("abbreviation"):
         data["abbreviation"] = f"{data_args.get('first_name')[0]}{data_args.get('last_name')}".lower()
     else:
         data["abbreviation"] = data_args.get("abbreviation")
-    res = [http_request('POST', 'lr-admin-api/users/', json.dumps(data))]
+    res = [http_request("POST", "lr-admin-api/users/", json.dumps(data))]
     res = update_users_keys(res)
     context = createContext(res, removeNull=True)
-    outputs = {'Logrhythm.User(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('User added', context, USER_HEADERS)
+    outputs = {"Logrhythm.User(val.ID === obj.ID)": context}
+    human_readable = tableToMarkdown("User added", context, USER_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def get_logins(data_args):
-    id = data_args.get('user_id')
+    id = data_args.get("user_id")
     if id:
-        res = [http_request('GET', 'lr-admin-api/users/' + id + '/login/')]
+        res = [http_request("GET", "lr-admin-api/users/" + id + "/login/")]
     else:
-        res = http_request('GET', 'lr-admin-api/users/user-logins?count=' + data_args['count'])
+        res = http_request("GET", "lr-admin-api/users/user-logins?count=" + data_args["count"])
     res = update_logins_keys(res)
     context = createContext(res, removeNull=True)
-    outputs = {'Logrhythm.Login(val.Login === obj.Login)': context}
-    human_readable = tableToMarkdown('Logins information', context, LOGIN_HEADERS)
+    outputs = {"Logrhythm.Login(val.Login === obj.Login)": context}
+    human_readable = tableToMarkdown("Logins information", context, LOGIN_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def add_login(data_args):
-    id = data_args.get('user_id')
+    id = data_args.get("user_id")
     data = {
         "login": data_args.get("login"),
         "userProfileId": arg_to_number(data_args.get("profile_id")),
         "defaultEntityId": arg_to_number(data_args.get("entity_id")),
-        "password": data_args.get("password")
+        "password": data_args.get("password"),
     }
-    res = [http_request('POST', 'lr-admin-api/users/' + id + '/login/', json.dumps(data))]
+    res = [http_request("POST", "lr-admin-api/users/" + id + "/login/", json.dumps(data))]
     res = update_logins_keys(res)
     context = createContext(res, removeNull=True)
-    outputs = {'Logrhythm.User(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Login added', context, LOGIN_HEADERS)
+    outputs = {"Logrhythm.User(val.ID === obj.ID)": context}
+    human_readable = tableToMarkdown("Login added", context, LOGIN_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def get_privileges(data_args):
-    id = data_args.get('user_id')
-    res = http_request('GET', 'lr-admin-api/users/' + id + '/privileges?offset='
-                       + data_args['offset'] + '&count=' + data_args['count'])
+    id = data_args.get("user_id")
+    res = http_request(
+        "GET", "lr-admin-api/users/" + id + "/privileges?offset=" + data_args["offset"] + "&count=" + data_args["count"]
+    )
     res = {"ID": id, "Privileges": res}
     context = createContext(res, removeNull=True)
-    outputs = {'Logrhythm.Privileges(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Privileges information', context, ["Privileges"])
+    outputs = {"Logrhythm.Privileges(val.ID === obj.ID)": context}
+    human_readable = tableToMarkdown("Privileges information", context, ["Privileges"])
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def get_profiles(data_args):
-    id = data_args.get('profile_id')
+    id = data_args.get("profile_id")
     if id:
-        res = [http_request('GET', 'lr-admin-api/user-profiles/' + id)]
+        res = [http_request("GET", "lr-admin-api/user-profiles/" + id)]
     else:
-        res = http_request('GET', 'lr-admin-api/user-profiles?count=' + data_args['count'])
+        res = http_request("GET", "lr-admin-api/user-profiles?count=" + data_args["count"])
     res = update_profiles_keys(res)
     context = createContext(res, removeNull=True)
-    outputs = {'Logrhythm.Profile(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Users information', context, PROFILE_HEADERS)
+    outputs = {"Logrhythm.Profile(val.ID === obj.ID)": context}
+    human_readable = tableToMarkdown("Users information", context, PROFILE_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def get_networks(data_args):
-    id = data_args.get('network-id')
+    id = data_args.get("network-id")
     if id:
-        res = [http_request('GET', 'lr-admin-api/networks/' + id)]
+        res = [http_request("GET", "lr-admin-api/networks/" + id)]
     else:
-        res = http_request('GET', 'lr-admin-api/networks?count=' + data_args['count'])
+        res = http_request("GET", "lr-admin-api/networks?count=" + data_args["count"])
     res = fix_location_value(res)
     res = update_networks_keys(res)
     context = createContext(res, removeNull=True)
-    outputs = {'Logrhythm.Network(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Networks information', context, NETWORK_HEADERS)
+    outputs = {"Logrhythm.Network(val.ID === obj.ID)": context}
+    human_readable = tableToMarkdown("Networks information", context, NETWORK_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def get_alarm_data(data_args):
-    id = data_args.get('alarm-id')
-    res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
+    id = data_args.get("alarm-id")
+    res = http_request("GET", "lr-drilldown-cache-api/drilldown/" + id)
     if not res:
         return_outputs(readable_output=f"No data was found for alarm with ID {id}.")
 
-    alarm_data = res['Data']['DrillDownResults']
-    alarm_summaries = res['Data']['DrillDownResults']['RuleBlocks']
-    del alarm_data['RuleBlocks']
-    aie_message = xml2json(str(alarm_data.get('AIEMsgXml'))).replace('\"@', '\"')
-    alarm_data['AIEMsgXml'] = json.loads(aie_message).get('aie')
-    alarm_data['Status'] = ALARM_STATUS[str(alarm_data['Status'])]
-    alarm_data['ID'] = alarm_data['AlarmID']
-    del alarm_data['AlarmID']
+    alarm_data = res["Data"]["DrillDownResults"]
+    alarm_summaries = res["Data"]["DrillDownResults"]["RuleBlocks"]
+    del alarm_data["RuleBlocks"]
+    aie_message = xml2json(str(alarm_data.get("AIEMsgXml"))).replace('"@', '"')
+    alarm_data["AIEMsgXml"] = json.loads(aie_message).get("aie")
+    alarm_data["Status"] = ALARM_STATUS[str(alarm_data["Status"])]
+    alarm_data["ID"] = alarm_data["AlarmID"]
+    del alarm_data["AlarmID"]
 
     dds_summaries = []
     for block in alarm_summaries:
-        for item in block['DDSummaries']:
-            item['PIFType'] = PIF_TYPES[str(item['PIFType'])]
-            m = re.findall(r'"field": "(([^"]|\\")*)"', item['DrillDownSummaryLogs'])
+        for item in block["DDSummaries"]:
+            item["PIFType"] = PIF_TYPES[str(item["PIFType"])]
+            m = re.findall(r'"field": "(([^"]|\\")*)"', item["DrillDownSummaryLogs"])
             fields = [k[0] for k in m]
-            item['DrillDownSummaryLogs'] = ", ".join(fields)
-            del item['DefaultValue']
+            item["DrillDownSummaryLogs"] = ", ".join(fields)
+            del item["DefaultValue"]
             dds_summaries.append(item)
 
-    alarm_data['Summary'] = dds_summaries
+    alarm_data["Summary"] = dds_summaries
 
     context = createContext(alarm_data, removeNull=True)
-    outputs = {'Logrhythm.Alarm(val.ID === obj.ID)': context}
+    outputs = {"Logrhythm.Alarm(val.ID === obj.ID)": context}
 
-    del alarm_data['AIEMsgXml']
-    del alarm_data['Summary']
-    human_readable = tableToMarkdown('Alarm information for alarm id ' + id, alarm_data) + tableToMarkdown(
-        'Alarm summaries', dds_summaries, ALARM_SUMMARY_HEADERS)
+    del alarm_data["AIEMsgXml"]
+    del alarm_data["Summary"]
+    human_readable = tableToMarkdown("Alarm information for alarm id " + id, alarm_data) + tableToMarkdown(
+        "Alarm summaries", dds_summaries, ALARM_SUMMARY_HEADERS
+    )
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def get_alarm_events(data_args):
-    id = data_args.get('alarm-id')
-    count = data_args.get('count')
-    count = int(data_args.get('count'))
-    fields = data_args.get('fields')
-    show_log_message = data_args.get('get-log-message') == 'True'
+    id = data_args.get("alarm-id")
+    count = data_args.get("count")
+    count = int(data_args.get("count"))
+    fields = data_args.get("fields")
+    show_log_message = data_args.get("get-log-message") == "True"
 
-    res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
+    res = http_request("GET", "lr-drilldown-cache-api/drilldown/" + id)
     if not res:
         return_outputs(readable_output=f"No events were found for alarm with ID {id}")
-    res = res['Data']['DrillDownResults']['RuleBlocks']
+    res = res["Data"]["DrillDownResults"]["RuleBlocks"]
 
     events = []
 
     for block in res:
-        if not block.get('DrillDownLogs'):
+        if not block.get("DrillDownLogs"):
             continue
-        logs = json.loads(block['DrillDownLogs'])
+        logs = json.loads(block["DrillDownLogs"])
         for log in logs:
             fix_date_values(log)
             if not show_log_message:
-                del log['logMessage']
-            events.append((log))
+                del log["logMessage"]
+            events.append(log)
 
     events = events[:count]
-    human_readable = tableToMarkdown('Events information for alarm ' + id, events)
+    human_readable = tableToMarkdown("Events information for alarm " + id, events)
 
     if fields:
-        fields = fields.split(',')
+        fields = fields.split(",")
         for event in events:
-            for key in event.keys():
+            for key in event:
                 if key not in fields:
                     del event[key]
 
     ec = {"ID": int(id), "Event": events}
     context = createContext(ec, removeNull=True)
-    outputs = {'Logrhythm.Alarm(val.ID === obj.ID)': context}
+    outputs = {"Logrhythm.Alarm(val.ID === obj.ID)": context}
 
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
@@ -1747,32 +1761,30 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
 
     # Check if first run. If not, continue running from the last case dateCreated field.
-    if last_run and 'start_time' in last_run:
-        start_time = last_run.get('start_time')
-        headers['createdAfter'] = start_time
+    if last_run and "start_time" in last_run:
+        start_time = last_run.get("start_time")
+        headers["createdAfter"] = start_time
         # print(start_time)
     else:
-        headers['createdBefore'] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+        headers["createdBefore"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Get list of cases
     if ENTITY_ID:
-        cases = http_request('GET', 'lr-case-api/cases?entityNumber=' + str(ENTITY_ID), headers=headers)
+        cases = http_request("GET", "lr-case-api/cases?entityNumber=" + str(ENTITY_ID), headers=headers)
     else:
-        cases = http_request('GET', 'lr-case-api/cases', headers=headers)
+        cases = http_request("GET", "lr-case-api/cases", headers=headers)
     # Set Last Run to the last case dateCreated field
 
     if cases:
-        demisto.setLastRun({
-            'start_time': cases[len(cases) - 1]['dateCreated']
-        })
+        demisto.setLastRun({"start_time": cases[len(cases) - 1]["dateCreated"]})
 
     # Generate incidents
     incidents = []
     for case in cases:
         incident = {
-            'name': 'Case #' + str(case['number']) + ' ' + str(case['name']),
-            'occurred': str(case['dateCreated']),
-            'rawJSON': json.dumps(case)
+            "name": "Case #" + str(case["number"]) + " " + str(case["name"]),
+            "occurred": str(case["dateCreated"]),
+            "rawJSON": json.dumps(case),
         }
         incidents.append(incident)
 
@@ -1780,34 +1792,34 @@ def fetch_incidents():
 
 
 def lr_get_case_evidence(data_args):
-    case_id = data_args.get('case_id')
-    case = http_request('GET', 'lr-case-api/cases/' + case_id + '/evidence')
+    case_id = data_args.get("case_id")
+    case = http_request("GET", "lr-case-api/cases/" + case_id + "/evidence")
 
     result = CommandResults(
-        outputs_prefix='Logrhythm.Evidence',
+        outputs_prefix="Logrhythm.Evidence",
         outputs=case,
-        readable_output=tableToMarkdown('Evidences for case ' + case_id, case, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("Evidences for case " + case_id, case, headerTransform=string_to_table_header),
         raw_response=case,
-        outputs_key_field='number'
+        outputs_key_field="number",
     )
     return_results(result)
 
 
 def lr_execute_search_query(data_args):
-    number_of_days = data_args.get('number_of_days')
-    source_type = data_args.get('source_type')
-    host_name = data_args.get('host_name')
-    username = data_args.get('username')
-    subject = data_args.get('subject')
-    sender = data_args.get('sender')
-    recipient = data_args.get('recipient')
-    hash = data_args.get('hash')
-    url = data_args.get('URL')
-    process_name = data_args.get('process_name')
-    object = data_args.get('object')
-    ipaddress = data_args.get('ip_address')
-    max_message = data_args.get('max_massage')
-    query_timeout = data_args.get('query_timeout')
+    number_of_days = data_args.get("number_of_days")
+    source_type = data_args.get("source_type")
+    host_name = data_args.get("host_name")
+    username = data_args.get("username")
+    subject = data_args.get("subject")
+    sender = data_args.get("sender")
+    recipient = data_args.get("recipient")
+    hash = data_args.get("hash")
+    url = data_args.get("URL")
+    process_name = data_args.get("process_name")
+    object = data_args.get("object")
+    ipaddress = data_args.get("ip_address")
+    max_message = data_args.get("max_massage")
+    query_timeout = data_args.get("query_timeout")
 
     # Create filter query
     query = []
@@ -1855,11 +1867,7 @@ def lr_execute_search_query(data_args):
         "queryTimeout": int(query_timeout),
         "queryRawLog": True,
         "queryEventManager": False,
-        "dateCriteria": {
-            "useInsertedDate": False,
-            "lastIntervalValue": int(number_of_days),
-            "lastIntervalUnit": 4
-        },
+        "dateCriteria": {"useInsertedDate": False, "lastIntervalValue": int(number_of_days), "lastIntervalUnit": 4},
         "queryLogSources": [],
         "queryFilter": {
             "msgFilterType": 2,
@@ -1869,56 +1877,41 @@ def lr_execute_search_query(data_args):
                 "fieldOperator": 1,
                 "filterMode": 1,
                 "filterGroupOperator": 0,
-                "filterItems": query
-            }
-        }
+                "filterItems": query,
+            },
+        },
     }
 
     headers = HEADERS
-    headers['Content-Type'] = 'application/json'
+    headers["Content-Type"] = "application/json"
 
-    search_task = http_request('POST', 'lr-search-api/actions/search-task', json.dumps(querybody), headers)
-    task_id = search_task.get('TaskId')
+    search_task = http_request("POST", "lr-search-api/actions/search-task", json.dumps(querybody), headers)
+    task_id = search_task.get("TaskId")
 
     results = CommandResults(
         outputs={"TaskID": task_id},
         outputs_prefix="Logrhythm.Search.Task",
-        outputs_key_field='taskID',
+        outputs_key_field="taskID",
         raw_response=search_task,
-        readable_output='New search query created, Task ID=' + task_id
+        readable_output="New search query created, Task ID=" + task_id,
     )
 
     return_results(results)
 
 
 def lr_get_query_result(data_args):
-    task_id = data_args.get('task_id')
+    task_id = data_args.get("task_id")
 
     queryresult = json.dumps(
-        {
-            "data": {
-                "searchGuid": task_id,
-                "search": {
-                    "sort": [],
-                    "fields": []
-                },
-                "paginator": {
-                    "origin": 0,
-                    "page_size": 50
-                }
-            }
-        })
+        {"data": {"searchGuid": task_id, "search": {"sort": [], "fields": []}, "paginator": {"origin": 0, "page_size": 50}}}
+    )
 
     headers = HEADERS
-    headers['Content-Type'] = 'application/json'
+    headers["Content-Type"] = "application/json"
 
-    search_result = http_request('POST', 'lr-search-api/actions/search-result', queryresult, headers)
+    search_result = http_request("POST", "lr-search-api/actions/search-result", queryresult, headers)
 
-    context = {
-        "TaskID": task_id,
-        "TaskStatus": search_result["TaskStatus"],
-        "Items": search_result["Items"]
-    }
+    context = {"TaskID": task_id, "TaskStatus": search_result["TaskStatus"], "Items": search_result["Items"]}
 
     if search_result["TaskStatus"] == "Completed: No Results":
         message = "#### No results, please modify your search"
@@ -1931,76 +1924,77 @@ def lr_get_query_result(data_args):
 
     elif search_result["Items"]:
         for log in search_result["Items"]:
-            log.pop('logMessage', None)
-        message = tableToMarkdown("Search results for task " + task_id, search_result["Items"],
-                                  headerTransform=string_to_table_header)
+            log.pop("logMessage", None)
+        message = tableToMarkdown(
+            "Search results for task " + task_id, search_result["Items"], headerTransform=string_to_table_header
+        )
     else:
         message = "#### Please try again later"
 
     results = CommandResults(
         readable_output=message,
         outputs=context,
-        outputs_key_field='TaskID',
+        outputs_key_field="TaskID",
         outputs_prefix="Logrhythm.Search.Results",
-        raw_response=search_result
+        raw_response=search_result,
     )
     return_results(results)
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+""" COMMANDS MANAGER / SWITCH PANEL """
 
 
 def main():
-    LOG('Command being called is %s' % (demisto.command()))
+    LOG(f"Command being called is {demisto.command()}")
     if not TOKEN:
-        raise DemistoException('API token must be provided.')
+        raise DemistoException("API token must be provided.")
     try:
         handle_proxy()
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration test button.
             test_module()
-        elif demisto.command() == 'lr-add-host':
+        elif demisto.command() == "lr-add-host":
             add_host(demisto.args())
-        elif demisto.command() == 'lr-get-hosts-by-entity':
+        elif demisto.command() == "lr-get-hosts-by-entity":
             get_hosts_by_entity(demisto.args())
-        elif demisto.command() == 'lr-get-hosts':
+        elif demisto.command() == "lr-get-hosts":
             get_hosts(demisto.args())
-        elif demisto.command() == 'lr-execute-query':
+        elif demisto.command() == "lr-execute-query":
             execute_query(demisto.args())
-        elif demisto.command() == 'lr-update-host-status':
+        elif demisto.command() == "lr-update-host-status":
             change_status(demisto.args())
-        elif demisto.command() == 'lr-get-persons':
+        elif demisto.command() == "lr-get-persons":
             get_persons(demisto.args())
-        elif demisto.command() == 'lr-get-users':
+        elif demisto.command() == "lr-get-users":
             get_users(demisto.args())
-        elif demisto.command() == 'lr-get-logins':
+        elif demisto.command() == "lr-get-logins":
             get_logins(demisto.args())
-        elif demisto.command() == 'lr-get-privileges':
+        elif demisto.command() == "lr-get-privileges":
             get_privileges(demisto.args())
-        elif demisto.command() == 'lr-get-profiles':
+        elif demisto.command() == "lr-get-profiles":
             get_profiles(demisto.args())
-        elif demisto.command() == 'lr-get-networks':
+        elif demisto.command() == "lr-get-networks":
             get_networks(demisto.args())
-        elif demisto.command() == 'lr-get-alarm-data':
+        elif demisto.command() == "lr-get-alarm-data":
             get_alarm_data(demisto.args())
-        elif demisto.command() == 'lr-get-alarm-events':
+        elif demisto.command() == "lr-get-alarm-events":
             get_alarm_events(demisto.args())
-        elif demisto.command() == 'fetch-incidents':
+        elif demisto.command() == "fetch-incidents":
             fetch_incidents()
-        elif demisto.command() == 'lr-execute-search-query':
+        elif demisto.command() == "lr-execute-search-query":
             lr_execute_search_query(demisto.args())
-        elif demisto.command() == 'lr-get-query-result':
+        elif demisto.command() == "lr-get-query-result":
             lr_get_query_result(demisto.args())
-        elif demisto.command() == 'lr-get-case-evidence':
+        elif demisto.command() == "lr-get-case-evidence":
             lr_get_case_evidence(demisto.args())
-        elif demisto.command() == 'lr-add-user':
+        elif demisto.command() == "lr-add-user":
             add_user(demisto.args())
-        elif demisto.command() == 'lr-add-login':
+        elif demisto.command() == "lr-add-login":
             add_login(demisto.args())
     except Exception as e:
-        return_error('error has occurred: {}'.format(str(e)))
+        return_error(f"error has occurred: {e!s}")
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()

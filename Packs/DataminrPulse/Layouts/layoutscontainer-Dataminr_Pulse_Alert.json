@@ -399,10 +399,19 @@
                         "items": [
                             {
                                 "endCol": 2,
+                                "fieldId": "alertname",
+                                "height": 53,
+                                "id": "adb40260-1057-11f0-bccb-990a8d94d633",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "alertid",
                                 "height": 53,
                                 "id": "f113a4b0-a08e-11ed-bcfe-4d4302963afc",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -412,7 +421,7 @@
                                 "fieldId": "dataminrpulsealerttype",
                                 "height": 53,
                                 "id": "e7362940-a08e-11ed-bcfe-4d4302963afc",
-                                "index": 1,
+                                "index": 2,
                                 "listId": "caseinfoid-vfoldxqzmh-field-changed-vfoldxqzmh-caseinfoid-ce12eb60-a08e-11ed-bcfe-4d4302963afc",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -423,7 +432,7 @@
                                 "fieldId": "dataminrpulseparentalertid",
                                 "height": 53,
                                 "id": "f2ed6dc0-a08e-11ed-bcfe-4d4302963afc",
-                                "index": 2,
+                                "index": 3,
                                 "listId": "caseinfoid-vfoldxqzmh-field-changed-vfoldxqzmh-caseinfoid-ce12eb60-a08e-11ed-bcfe-4d4302963afc",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -433,7 +442,7 @@
                                 "fieldId": "dataminrpulseexpandalerturl",
                                 "height": 53,
                                 "id": "059d8450-a08f-11ed-bcfe-4d4302963afc",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -442,7 +451,7 @@
                                 "fieldId": "dataminrpulseavailablerelatedalerts",
                                 "height": 53,
                                 "id": "1d471a80-a08f-11ed-bcfe-4d4302963afc",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

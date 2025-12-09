@@ -1,5 +1,5 @@
 category: Endpoint
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -24,17 +24,32 @@ configuration:
   - Custom
   advanced: true
   required: false
+- displaypassword: ID
+  name: _auth_id_encrypted
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
+- displaypassword: Token
+  name: _tenant_id_encrypted
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
 - display: ID
   name: _auth_id
   type: 0
   section: Connect
   required: false
+  hidden: true
 - display: Token
   name: _tenant_id
   type: 0
   section: Connect
   required: false
+  hidden: true
 - displaypassword: Key
+  section: Connect
   name: credentials
   type: 9
   hiddenusername: true
@@ -393,6 +408,8 @@ script:
       type: String
     execution: true
     polling: true
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
@@ -444,6 +461,8 @@ script:
       description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
     polling: true
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: A comma-separated list of computer DNS name.
       isArray: true
@@ -1604,6 +1623,20 @@ script:
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
+    - description: Whether to use polling.
+      auto: PREDEFINED
+      defaultValue: 'false'
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - name: timeout_in_seconds
+      description: Timeout for polling. Default is 300 seconds.
+    - name: interval_in_seconds
+      description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
+    - description: action IDs to use in polling commands. (automatically filled by polling).
+      name: action_ids
+      deprecated: true
     description: Stop the execution of a file on a machine and delete it.
     name: microsoft-atp-stop-and-quarantine-file
     outputs:
@@ -1644,6 +1677,8 @@ script:
       description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
     polling: true
+    compliantpolicies:
+    - Quarantine File
   - arguments:
     - description: ID can be the investigation ID or the investigation triggering alert ID.
       name: id
@@ -2441,7 +2476,7 @@ script:
       description: A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not used by the targetProduct security tool.
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
-      description: Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of the submitting client.
+      description: Stamped by the system when the indicator is ingested. The Entra ID tenant ID of the submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Values are 0 – 100, with 100 being the highest.
@@ -2628,7 +2663,7 @@ script:
       description: A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not used by the targetProduct security tool.
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
-      description: Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of the submitting client.
+      description: Stamped by the system when the indicator is ingested. The Entra ID tenant ID of the submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest.
@@ -2893,7 +2928,7 @@ script:
       description: A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not used by the targetProduct security tool.
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
-      description: Stamped by the system when the indicator is ingested. The Azure Active Directory tenant id of submitting client.
+      description: Stamped by the system when the indicator is ingested. The Entra ID tenant id of submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest.
@@ -3156,7 +3191,7 @@ script:
       description: A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not used by the targetProduct security tool.
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
-      description: Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of the submitting client.
+      description: Stamped by the system when the indicator is ingested. The Entra ID tenant ID of the submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest.
@@ -3336,7 +3371,7 @@ script:
       description: A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not used by the targetProduct security tool.
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
-      description: Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of the submitting client.
+      description: Stamped by the system when the indicator is ingested. The Entra ID tenant ID of the submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest.
@@ -3663,6 +3698,8 @@ script:
       description: The actual score.
       type: Number
     polling: true
+    compliantpolicies:
+    - Quarantine File
   - arguments:
     - description: The value of the indicator to update.
       name: indicator_value
@@ -3814,6 +3851,8 @@ script:
       description: The actual score.
       type: Number
     polling: true
+    compliantpolicies:
+    - Quarantine File
   - arguments:
     - description: The ID of the indicator to delete. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command.
       name: indicator_id
@@ -3824,6 +3863,8 @@ script:
     description: Deletes the specified indicator.
     name: microsoft-atp-sc-indicator-delete
     polling: true
+    compliantpolicies:
+    - Quarantine File
   - arguments:
     - description: The maximum number of indicators to return.
       name: limit
@@ -5665,7 +5706,228 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.117163
+  - description: This command gets the permissions from the currently configured credentials. Use for debugging and detecting permission issues.
+    name: microsoft-atp-list-auth-permissions
+  - arguments:
+    - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
+      name: machine_id
+      required: true
+    description: Get the specific machine's software details.
+    name: microsoft-atp-get-machine-software
+    polling: true
+    outputs:
+    - contextPath: MicrosoftATP.Software.ID
+      description: The software ID.
+      type: String
+    - contextPath: MicrosoftATP.Software.Name
+      description: The software name.
+      type: String
+    - contextPath: MicrosoftATP.Software.Vendor
+      description: The software vendor name.
+      type: String
+    - contextPath: MicrosoftATP.Software.Weaknesses
+      description: The amount of weaknesses present in the software.
+      type: Number
+    - contextPath: MicrosoftATP.Software.PublicExploit
+      description: Does this software have a public exploit?
+      type: Boolean
+    - contextPath: MicrosoftATP.Software.ActiveAlert
+      description: Does this software have an active alert?
+      type: Boolean
+    - contextPath: MicrosoftATP.Software.ExposedMachines
+      description: The amount of machines exposed to this software.
+      type: Number
+    - contextPath: MicrosoftATP.Software.InstalledMachines
+      description: The amount of machines with this software installed.
+      type: Number
+    - contextPath: MicrosoftATP.Software.ImpactScore
+      description: The impact score of the software.
+      type: Number
+    - contextPath: MicrosoftATP.Software.IsNormalized
+      description: Is the software value normalized?
+      type: Boolean
+    - contextPath: MicrosoftATP.Software.Category
+      description: The software category.
+      type: String
+    - contextPath: MicrosoftATP.Software.Distributions
+      description: The distributions on which this software is present.
+      type: String
+  - arguments:
+    - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
+      name: machine_id
+      required: true
+    description: Get the specific machine's missing security updates (KBs).
+    name: microsoft-atp-get-machine-missing-kbs
+    polling: true
+    outputs:
+    - contextPath: MicrosoftATP.PublicProductFix.ID
+      description: The missing KB ID.
+      type: String
+    - contextPath: MicrosoftATP.PublicProductFix.Name
+      description: The missing KB name.
+      type: String
+    - contextPath: MicrosoftATP.PublicProductFix.ProductsNames
+      description: The product names.
+      type: String
+    - contextPath: MicrosoftATP.PublicProductFix.URL
+      description: The KB URL.
+      type: String
+    - contextPath: MicrosoftATP.PublicProductFix.MachineMissedOn
+      description: The amount of machines that is missing this KB.
+      type: Number
+    - contextPath: MicrosoftATP.PublicProductFix.CVEAddressed
+      description: The CVE addressed by this KB.
+      type: Number
+    - contextPath: MicrosoftATP.PublicProductFix.OSBuild
+      description: The OS build.
+      type: String
+  - arguments:
+    - default: true
+      description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
+      isArray: true
+      name: file
+      required: true
+    description: Checks the file reputation of the specified hash.
+    name: file
+    outputs:
+    - contextPath: MicrosoftATP.File.Sha1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: MicrosoftATP.File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: MicrosoftATP.File.Sha256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: MicrosoftATP.File.GlobalPrevalence
+      description: The file prevalence across the organization.
+      type: Number
+    - contextPath: MicrosoftATP.File.GlobalFirstObserved
+      description: The first time the file was observed.
+      type: Date
+    - contextPath: MicrosoftATP.File.GlobalLastObserved
+      description: The last time the file was observed.
+      type: Date
+    - contextPath: MicrosoftATP.File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: MicrosoftATP.File.FileType
+      description: The type of the file.
+      type: String
+    - contextPath: MicrosoftATP.File.IsPeFile
+      description: True if the file is portable executable, False otherwise.
+      type: Boolean
+    - contextPath: MicrosoftATP.File.FilePublisher
+      description: The file's publisher.
+      type: String
+    - contextPath: MicrosoftATP.File.FileProductName
+      description: The file product name.
+      type: String
+    - contextPath: MicrosoftATP.File.Signer
+      description: The file signer.
+      type: String
+    - contextPath: MicrosoftATP.File.Issuer
+      description: The file issuer.
+      type: String
+    - contextPath: MicrosoftATP.File.SignerHash
+      description: The hash of the signing certificate.
+      type: String
+    - contextPath: MicrosoftATP.File.IsValidCertificate
+      description: Was signing certificate successfully verified by Microsoft Defender ATP agent.
+      type: Boolean
+    - contextPath: MicrosoftATP.File.DeterminationValue
+      description: The file determination value.
+      type: String
+    - contextPath: MicrosoftATP.File.DeterminationType
+      description: The file determination type.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.Size
+      description: The file size.
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
+      name: machine_id
+      required: true
+    description: Get the specific machine's vulnerabilities.
+    name: microsoft-atp-get-machine-vulnerabilities
+    polling: true
+    outputs:
+    - contextPath: MicrosoftATP.PublicVulnerability.ID
+      description: The vulnerability ID.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.Name
+      description: The vulnerability name.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.CVESupportability
+      description: The CVE supportability.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.CVSSV3
+      description: The CVSS V3.
+      type: Number
+    - contextPath: MicrosoftATP.PublicVulnerability.CVSSVector
+      description: The CVSS vector.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.Description
+      description: A description of this vulnerability.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.EPSS
+      description: The EPSS.
+      type: Number
+    - contextPath: MicrosoftATP.PublicVulnerability.ExploitInKit
+      description: Is this vulnerability in an exploit kit?
+      type: Boolean
+    - contextPath: MicrosoftATP.PublicVulnerability.ExploitTypes
+      description: The type(s) of exploit(s).
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.ExploitUris
+      description: The exploit URIs.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.ExploitVerified
+      description: Is this exploit verified?
+      type: Boolean
+    - contextPath: MicrosoftATP.PublicVulnerability.ExposedMachines
+      description: The amount of machines exposed to this vulnerability.
+      type: Number
+    - contextPath: MicrosoftATP.PublicVulnerability.FirstDetected
+      description: The date and time when this vulnerability was first detected.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.PublicExploit
+      description: Does this vulnerability have a public exploit?
+      type: Boolean
+    - contextPath: MicrosoftATP.PublicVulnerability.PublishedOn
+      description: The date and time when this vulnerability was published.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.Severity
+      description: The severity of this vulnerability.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.Tags
+      description: The tags associated with this vulnerability.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.UpdatedOn
+      description: The date and time when this vulnerability was last updated.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.4578119
   isfetch: true
   runonce: false
   script: '-'

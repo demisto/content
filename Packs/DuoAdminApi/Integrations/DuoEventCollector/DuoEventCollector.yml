@@ -71,9 +71,9 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-        - "AUTHENTICATION"
-        - "ADMINISTRATION"
-        - "TELEPHONY"
+      - "AUTHENTICATION"
+      - "ADMINISTRATION"
+      - "TELEPHONY"
     - defaultValue: 1 day
       description: Date from which to get events (e.g. <number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year or 2023-13-30T03:11:29Z).
       name: after
@@ -85,11 +85,12 @@ script:
       required: false
     description: Manual command to fetch events and display them.
     name: duo-get-events
-  dockerimage: demisto/vendors-sdk:1.0.0.1876031
+  dockerimage: demisto/vendors-sdk:1.0.0.3242986
   isfetchevents: true
   subtype: python3
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.8.0
 tests:
 - No tests

@@ -1,0 +1,6 @@
+domain, category, score, first_seen, last_seen, ports (|)
+domain.com,27,58,2019-04-13,2019-11-14,80
+malicious.com, ambermoon.hamazo.tv,31,2019-10-18,2019-10-18,80
+domain.com,4,122,2020-01-19,2020-01-21,80
+outofbounds.com,999,50,2020-01-01,2020-01-02,80
+empty-category.com,,60,2020-01-01,2020-01-02,80

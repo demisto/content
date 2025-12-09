@@ -1,0 +1,75 @@
+commonfields:
+  id: CoreQuarantineFiles
+  version: -1
+name: CoreQuarantineFiles
+script: ''
+type: python
+tags:
+- Utilities
+comment: A polling wrapper script; Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
+enabled: true
+args:
+- description: Links the response action to the triggered incident.
+  name: incident_id
+- description: List of endpoint IDs.
+  isArray: true
+  name: endpoint_id_list
+  required: true
+- description: String that represents the path of the file you want to quarantine.
+  name: file_path
+  required: true
+- description: String that represents the file's hash. Must be a valid SHA256 hash.
+  name: file_hash
+  required: true
+outputs:
+- contextPath: Core.GetActionStatus.action_id
+  description: The quarantine action ID.
+  type: String
+- contextPath: Core.GetActionStatus.endpoint_id
+  description: The endpoint ID on which the quarantine action was taken.
+  type: String
+- contextPath: Core.GetActionStatus.status
+  description: The status of the action.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons
+  type: unknown
+  description: The error reasons (if occurred).
+- contextPath: Core.GetActionStatus.ErrorReasons.bucket
+  description: The bucket in which the error occurred.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons.file_name
+  description: The name of the file that caused the error.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons.file_path
+  description: The path of the file that caused the error.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons.file_size
+  description: The size of the file that caused the error.
+  type: Number
+- contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+  description: The missing files that caused the error.
+  type: Unknown
+- contextPath: Core.GetActionStatus.ErrorReasons.errorData
+  description: The error reason data.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+  description: The instance ID which terminated the action and caused the error.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+  description: The error reason description.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+  description: The error reason terminate result.
+  type: Unknown
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 6.1.0
+isInternal: true
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform
+supportedModules:
+- agentix_xsiam
+- xsiam

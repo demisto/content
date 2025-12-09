@@ -40,17 +40,20 @@ Hello command - prints hello to anyone.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of whom you want to say hello to. | Optional | 
+| name | The name of whom you want to say hello to. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| hello | String | Should be Hello \*\*something\*\* here. | 
+| hello | String | Should be Hello \*\*something\*\* here. |
 
 #### Command example
+
 ```!helloworld-say-hello name="Hello Dbot"```
+
 #### Context Example
+
 ```json
 {
     "hello": "Hello Hello Dbot"
@@ -74,23 +77,26 @@ Lists the example alerts as it would be fetched from the API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Filter by alert item ID. If not provided, all IDs will be retrieved. | Optional | 
-| limit | How many alerts to fetch. Default is 10. | Optional | 
-| severity | The severity  by which to filter the alerts. | Optional | 
+| alert_id | Filter by alert item ID. If not provided, all IDs will be retrieved. | Optional |
+| limit | How many alerts to fetch. Default is 10. | Optional |
+| severity | The severity  by which to filter the alerts. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HelloWorld.alert.id | Number | The ID of the alert. | 
-| HelloWorld.alert.name | String | The name of the alert. | 
-| HelloWorld.alert.severity | String | The severity of the alert. | 
-| HelloWorld.alert.date | Date | The date of the alert occurrence. | 
-| HelloWorld.alert.status | String | The status of the alert. | 
+| HelloWorld.alert.id | Number | The ID of the alert. |
+| HelloWorld.alert.name | String | The name of the alert. |
+| HelloWorld.alert.severity | String | The severity of the alert. |
+| HelloWorld.alert.date | Date | The date of the alert occurrence. |
+| HelloWorld.alert.status | String | The status of the alert. |
 
 #### Command example
+
 ```!helloworld-alert-list limit="3" severity="low"```
+
 #### Context Example
+
 ```json
 {
     "HelloWorld": {
@@ -124,16 +130,19 @@ Lists the example alerts as it would be fetched from the API.
 #### Human Readable Output
 
 >### Items List (Sample Data)
+>
 >|date|id|name|severity|status|
 >|---|---|---|---|---|
 >| 2023-09-14T11:30:39.882955 | 1 | XSOAR Test Alert #1 | low | Testing |
 >| 2023-09-14T11:30:39.882955 | 2 | XSOAR Test Alert #2 | low | Testing |
 >| 2023-09-14T11:30:39.882955 | 3 | XSOAR Test Alert #3 | low | Testing |
 
-
 #### Command example
+
 ```!helloworld-alert-list alert_id=2```
+
 #### Context Example
+
 ```json
 {
     "HelloWorld": {
@@ -151,10 +160,10 @@ Lists the example alerts as it would be fetched from the API.
 #### Human Readable Output
 
 >### Items List (Sample Data)
+>
 >|date|id|name|severity|status|
 >|---|---|---|---|---|
 >| 2023-09-14T11:30:39.882955 | 2 | XSOAR Test Alert #2 | low | Testing |
-
 
 ### helloworld-alert-note-create
 
@@ -169,22 +178,25 @@ Example of creating a new item in the API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alert's ID to add the note to. | Required | 
-| note_text | The comment to add to the note. | Required | 
+| alert_id | The alert's ID to add the note to. | Required |
+| note_text | The comment to add to the note. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HelloWorld.alert.id | Number | The ID of the alert. | 
-| HelloWorld.alert.name | String | The name of the alert. | 
-| HelloWorld.alert.severity | String | The severity of the alert. | 
-| HelloWorld.alert.date | Date | The date of the alert occurrence. | 
-| HelloWorld.alert.status | String | The status of the alert. | 
+| HelloWorld.alert.id | Number | The ID of the alert. |
+| HelloWorld.alert.name | String | The name of the alert. |
+| HelloWorld.alert.severity | String | The severity of the alert. |
+| HelloWorld.alert.date | Date | The date of the alert occurrence. |
+| HelloWorld.alert.status | String | The status of the alert. |
 
 #### Command example
+
 ```!helloworld-alert-note-create alert_id=2 note_text=test```
+
 #### Context Example
+
 ```json
 {
     "HelloWorld": {
@@ -213,60 +225,63 @@ Return IP information and reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | List of IPs. | Optional | 
-| threshold | If the IP has a reputation above the threshold, then the IP is defined as malicious. If threshold is not set, then the threshold from the instance configuration is used. Default is 65. | Optional | 
+| ip | List of IPs. | Optional |
+| threshold | If the IP has a reputation above the threshold, then the IP is defined as malicious. If threshold is not set, then the threshold from the instance configuration is used. Default is 65. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| HelloWorld.IP.asn | String | The autonomous system name for the IP address. | 
-| HelloWorld.IP.asn_cidr | String | The ASN CIDR. | 
-| HelloWorld.IP.asn_country_code | String | The ASN country code. | 
-| HelloWorld.IP.asn_date | Date | The date on which the ASN was assigned. | 
-| HelloWorld.IP.asn_description | String | The ASN description. | 
-| HelloWorld.IP.asn_registry | String | The registry the ASN belongs to. | 
-| HelloWorld.IP.entities | String | Entities associated to the IP. | 
-| HelloWorld.IP.ip | String | The actual IP address. | 
-| HelloWorld.IP.network.cidr | String | Network CIDR for the IP address. | 
-| HelloWorld.IP.network.country | Unknown | The country of the IP address. | 
-| HelloWorld.IP.network.end_address | String | The last IP address of the CIDR. | 
-| HelloWorld.IP.network.events.action | String | The action that happened on the event. | 
-| HelloWorld.IP.network.events.actor | Unknown | The actor that performed the action on the event. | 
-| HelloWorld.IP.network.events.timestamp | String | The timestamp when the event occurred. | 
-| HelloWorld.IP.network.handle | String | The handle of the network. | 
-| HelloWorld.IP.network.ip_version | String | The IP address version. | 
-| HelloWorld.IP.network.links | String | Links associated to the IP address. | 
-| HelloWorld.IP.network.name | String | The name of the network. | 
-| HelloWorld.IP.network.notices.description | String | The description of the notice. | 
-| HelloWorld.IP.network.notices.links | Unknown | Links associated with the notice. | 
-| HelloWorld.IP.network.notices.title | String | Title of the notice. | 
-| HelloWorld.IP.network.parent_handle | String | Handle of the parent network. | 
-| HelloWorld.IP.network.raw | Unknown | Additional raw data for the network. | 
-| HelloWorld.IP.network.remarks | Unknown | Additional remarks for the network. | 
-| HelloWorld.IP.network.start_address | String | The first IP address of the CIDR. | 
-| HelloWorld.IP.network.status | String | Status of the network. | 
-| HelloWorld.IP.network.type | String | The type of the network. | 
-| HelloWorld.IP.query | String | IP address that was queried. | 
-| HelloWorld.IP.raw | Unknown | Additional raw data for the IP address. | 
-| HelloWorld.IP.score | Number | Reputation score from HelloWorld for this IP \(0 to 100, where higher is worse\). | 
-| IP.Address | String | IP address. | 
-| IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. | 
-| IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. | 
-| IP.ASN | String | The autonomous system name for the IP address. | 
-| IP.Relationships.EntityA | string | The source of the relationship. | 
-| IP.Relationships.EntityB | string | The destination of the relationship. | 
-| IP.Relationships.Relationship | string | The name of the relationship. | 
-| IP.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| HelloWorld.IP.asn | String | The autonomous system name for the IP address. |
+| HelloWorld.IP.asn_cidr | String | The ASN CIDR. |
+| HelloWorld.IP.asn_country_code | String | The ASN country code. |
+| HelloWorld.IP.asn_date | Date | The date on which the ASN was assigned. |
+| HelloWorld.IP.asn_description | String | The ASN description. |
+| HelloWorld.IP.asn_registry | String | The registry the ASN belongs to. |
+| HelloWorld.IP.entities | String | Entities associated to the IP. |
+| HelloWorld.IP.ip | String | The actual IP address. |
+| HelloWorld.IP.network.cidr | String | Network CIDR for the IP address. |
+| HelloWorld.IP.network.country | Unknown | The country of the IP address. |
+| HelloWorld.IP.network.end_address | String | The last IP address of the CIDR. |
+| HelloWorld.IP.network.events.action | String | The action that happened on the event. |
+| HelloWorld.IP.network.events.actor | Unknown | The actor that performed the action on the event. |
+| HelloWorld.IP.network.events.timestamp | String | The timestamp when the event occurred. |
+| HelloWorld.IP.network.handle | String | The handle of the network. |
+| HelloWorld.IP.network.ip_version | String | The IP address version. |
+| HelloWorld.IP.network.links | String | Links associated to the IP address. |
+| HelloWorld.IP.network.name | String | The name of the network. |
+| HelloWorld.IP.network.notices.description | String | The description of the notice. |
+| HelloWorld.IP.network.notices.links | Unknown | Links associated with the notice. |
+| HelloWorld.IP.network.notices.title | String | Title of the notice. |
+| HelloWorld.IP.network.parent_handle | String | Handle of the parent network. |
+| HelloWorld.IP.network.raw | Unknown | Additional raw data for the network. |
+| HelloWorld.IP.network.remarks | Unknown | Additional remarks for the network. |
+| HelloWorld.IP.network.start_address | String | The first IP address of the CIDR. |
+| HelloWorld.IP.network.status | String | Status of the network. |
+| HelloWorld.IP.network.type | String | The type of the network. |
+| HelloWorld.IP.query | String | IP address that was queried. |
+| HelloWorld.IP.raw | Unknown | Additional raw data for the IP address. |
+| HelloWorld.IP.score | Number | Reputation score from HelloWorld for this IP \(0 to 100, where higher is worse\). |
+| IP.Address | String | IP address. |
+| IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. |
+| IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. |
+| IP.ASN | String | The autonomous system name for the IP address. |
+| IP.Relationships.EntityA | string | The source of the relationship. |
+| IP.Relationships.EntityB | string | The destination of the relationship. |
+| IP.Relationships.Relationship | string | The name of the relationship. |
+| IP.Relationships.EntityAType | string | The type of the source of the relationship. |
+| IP.Relationships.EntityBType | string | The type of the destination of the relationship. |
 
 #### Command example
+
 ```!ip ip="8.8.8.8"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -679,11 +694,13 @@ Return IP information and reputation.
 #### Human Readable Output
 
 >### IP (Sample Data)
+>
 >|id|ip|links|type|
 >|---|---|---|---|
 >| x.x.x.x | 8.8.8.8 | self: https:<span>//</span>www.virustotal.com/api/v3/ip_addresses/x.x.x.x | ip_address |
+>
 >### Attributes
+>
 >|as_owner|asn|continent|country|jarm|last_analysis_stats|last_modification_date|network|regional_internet_registry|reputation|tags|total_votes|whois_date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| EMERALD-ONION |  | NA | US | :jarm: | ***harmless***: 72<br/>***malicious***: 5<br/>***suspicious***: 2<br/>***timeout***: 0<br/>***undetected***: 8 |  | :cidr: | ARIN |  | ***values***:  | ***harmless***: 0<br/>***malicious***: 1 |  |
-

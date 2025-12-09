@@ -1910,11 +1910,29 @@ script:
     deprecated: true
     name: panorama-delete-rule
     outputs:
-    - contextPath: Panorama.SecurityRule.Name
+    - contextPath: Panorama.CleanedUpRules.Category
+      description: The rule category.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.RuleName
       description: The rule name.
       type: string
-    - contextPath: Panorama.SecurityRule.DeviceGroup
-      description: The device group for the rule (Panorama instances).
+    - contextPath: Panorama.CleanedUpRules.Rulebase
+      description: The rule rulebase.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.PrePost
+      description: The rule prepost.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.DeviceGroup
+      description: The rule device group.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Target
+      description: The rule target.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Vsys
+      description: The rule vsys.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.AppliedAction
+      description: The rule applied action.
       type: string
   - arguments:
     - auto: PREDEFINED
@@ -3721,6 +3739,8 @@ script:
       - complete
       - show
       - get
+    - description: The object's new name, used when action=rename. If no value is provided, the name defaults to 'newname'.
+      name: newname
     - description: The category parameter. For example, when exporting a configuration file, use "category=configuration".
       name: category
     - description: Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`.
@@ -5431,8 +5451,25 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
-    - description: The device group for which to return addresses for the rule (Panorama instances).
+    - description: The device group where the rule is configured (Panorama instances).
       name: device-group
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
+    - auto: PREDEFINED
+      defaultValue: security
+      description: The rulebase from which to delete the rule.
+      name: rulebase
+      required: false
+      predefined:
+      - security
+      - application-override
+      - authentication
+      - decryption
+      - nat
+      - pbf
+    - defaultValue: vsys1
+      description: The Firewall VSYS to delete the rule from. Use for deleting local rules from a firewall via Panorama or to specify a different VSYS than set in Integration parameters.
+      name: vsys
     description: Deletes a policy rule.
     name: pan-os-delete-rule
     outputs:
@@ -5441,6 +5478,153 @@ script:
       type: string
     - contextPath: Panorama.SecurityRule.DeviceGroup
       description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.NAT.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.NAT.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.SSLRule.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.SSLRule.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.PBF.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.PBF.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.AuthRule.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.AuthRule.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.AppOverride.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.AppOverride.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Category
+      description: The category of rule that was cleaned up (Local or Panorama).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.AppliedAction
+      description: The applied cleanup action (Disabled or Deleted).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.DeviceGroup
+      description: The device group that the rule was cleaned up from (Panorama instances).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.PrePost
+      description: The location where the rule was cleaned up from (Panorama instances).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.RuleName
+      description: The name of the rule.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Rulebase
+      description: The rulebase where the rule was cleaned up from (for example, 'security', 'nat').
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Target
+      description: The target firewall serial number, if provided.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Vsys
+      description: The VSYS where the rule was cleaned up from.
+      type: string
+    execution: true
+  - arguments:
+    - description: The name of the rule to disable.
+      name: rulename
+      required: true
+    - description: The pre-rule or post-rule (Panorama instances).
+      name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: The device group where the rule is configured (Panorama instances).
+      name: device-group
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
+    - description: The rulebase from which to disable the rule.
+      auto: PREDEFINED
+      name: rulebase
+      predefined:
+      - security
+      - application-override
+      - authentication
+      - decryption
+      - nat
+      - pbf
+      defaultValue: security
+      required: true
+    - description: The Firewall VSYS to disable the rule on. Use for disabling local rules on a firewall via Panorama or to specify a different VSYS than set in Integration parameters.
+      name: vsys
+      defaultValue: vsys1
+    description: Disables a policy rule.
+    name: pan-os-disable-rule
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.NAT.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.NAT.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.SSLRule.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.SSLRule.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.PBF.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.PBF.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.AuthRule.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.AuthRule.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.AppOverride.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.AppOverride.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Category
+      description: The category of rule cleaned up (Local or Panorama).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.AppliedAction
+      description: The applied cleanup action (Disabled or Deleted).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.DeviceGroup
+      description: The device group where the rule was cleaned up from (Panorama instances).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.PrePost
+      description: The location where the rule was cleaned up from (Panorama instances).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.RuleName
+      description: The name of the rule.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Rulebase
+      description: The rulebase where the rule was cleaned up from (e.g. 'security', 'nat').
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Target
+      description: The target firewall serial number, if provided.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Vsys
+      description: The VSYS where the rule was cleaned up from.
       type: string
     execution: true
   - arguments:
@@ -5997,7 +6181,7 @@ script:
       - corr
       - system
       - decryption
-    - description: The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs.
+    - description: "The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. Do not use the query arguemnt in combination with the following arugments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest."
       name: query
     - description: |-
         The time the log was generated from the timestamp and prior to it.
@@ -6686,22 +6870,474 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
-    description: Downloads the latest content update.
+    description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content. When running from a Panorama instance, the 'target' argument must be specified.
+    name: pan-os-check-dynamic-updates-status
+    outputs:
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.update-type
+      description: Type of update package (Full, Incremental, etc).
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.IsUpToDate
+      description: Whether the latest available AntiVirus package is active on the device.
+      type: Boolean
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.update-type
+      description: Type of update package (Full, Incremental, etc).
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.update-type
+      description: Type of update package (Full, Incremental, etc).
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.IsUpToDate
+      description: Whether the latest available App/Threat package is active on the device.
+      type: Boolean
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.update-type
+      description: Type of update package (Full, Incremental, etc).
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.ContentTypesOutOfDate.Count
+      description: The total number of active Dynamic Updates that have updates available.
+      type: Number
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.update-type
+      description: Type of update package (Full, Incremental, etc).
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.IsUpToDate
+      description: Whether the latest available GP Clientless VPN package is active on the device.
+      type: Boolean
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.update-type
+      description: Type of update package (Full, Incremental, etc).
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.update-type
+      description: Type of update package (Full, Incremental, etc).
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.IsUpToDate
+      description: Whether the latest available WildFire package is active on the device.
+      type: Boolean
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.update-type
+      description: Type of update package (Full, Incremental, etc).
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.version
+      description: Version of the dynamic update package.
+      type: String
+  - arguments:
+    - description: Serial number of the firewall on which to run the command. Mandatory for Panorama instances.
+      name: target
+    - description: Job ID for a running download process. Used for status polling.
+      name: job_id
+      hidden: true
+    - description: When set to false, the function will not use polling and will immediately return the ID of the download job.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: false
+      name: polling
+    description: Downloads the latest app/threat dynamic update.
     name: pan-os-download-latest-content-update
     outputs:
     - contextPath: Panorama.Content.Download.JobID
-      description: The job ID of the content download.
+      description: The job ID of the app/threat download.
       type: String
     - contextPath: Panorama.Content.Download.Status
-      description: The content download status.
+      description: The app/threat download status.
       type: String
+    - contextPath: Panorama.Content.Download.Details
+      description: The download job details.
+      type: String
+    polling: true
+  - arguments:
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
+    - description: Job ID for a running download process. Used for status polling.
+      name: job_id
+      hidden: true
+    description: Downloads the latest antivirus dynamic update.
+    name: pan-os-download-latest-antivirus-update
+    outputs:
+    - contextPath: Panorama.AntiVirus.Download.JobID
+      description: The job ID of the antivirus download.
+      type: String
+    - contextPath: Panorama.AntiVirus.Download.Status
+      description: The antivirus download status.
+      type: String
+    - contextPath: Panorama.AntiVirus.Download.Details
+      description: The download job details.
+      type: String
+    polling: true
+  - arguments:
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
+    - description: Job ID for a running download process. Used for status polling.
+      name: job_id
+      hidden: true
+    description: Downloads the latest WildFire dynamic update.
+    name: pan-os-download-latest-wildfire-update
+    outputs:
+    - contextPath: Panorama.WildFire.Download.JobID
+      description: The job ID of the WildFire download.
+      type: String
+    - contextPath: Panorama.WildFire.Download.Status
+      description: The WildFire download status.
+      type: String
+    - contextPath: Panorama.WildFire.Download.Details
+      description: The download job details.
+      type: String
+    polling: true
+  - arguments:
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
+    - description: Job ID for a running download process. Used for status polling.
+      name: job_id
+      hidden: true
+    description: Downloads the latest GlobalProtect Clientless VPN dynamic update.
+    name: pan-os-download-latest-gp-update
+    outputs:
+    - contextPath: Panorama.GP.Download.JobID
+      description: The job ID of the GlobalProtect Clientless VPN download.
+      type: String
+    - contextPath: Panorama.GP.Download.Status
+      description: The GlobalProtect Clientless VPN download status.
+      type: String
+    - contextPath: Panorama.GP.Download.Details
+      description: The download job details.
+      type: String
+    polling: true
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     - description: The job ID to check.
       name: job_id
       required: true
-    description: Checks the download status of a content update.
+    description: Checks the download status of an app/threat dynamic update.
     name: pan-os-content-update-download-status
     outputs:
     - contextPath: Panorama.Content.Download.JobID
@@ -6713,17 +7349,89 @@ script:
     - contextPath: Panorama.Content.Download.Details
       description: The job ID details.
       type: String
+    polling: true
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
-    description: Installs the latest content update.
+    - description: Job ID for a running download process. Used for status polling.
+      name: job_id
+      hidden: true
+    - description: When set to false, the function will not use polling and will immediately return the ID of the install job.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: false
+      name: polling
+    description: Installs the latest app/threat dynamic update.
     name: pan-os-install-latest-content-update
     outputs:
     - contextPath: Panorama.Content.Install.JobID
       description: The job ID of the installation.
       type: String
-    - contextPath: Content.Install.Status
+    - contextPath: Panorama.Content.Install.Status
       description: The installation status.
+      type: String
+    - contextPath: Panorama.Content.Install.Details
+      description: The install job details.
+      type: String
+    polling: true
+  - arguments:
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
+    - description: Job ID for a running download process. Used for status polling.
+      name: job_id
+      hidden: true
+    description: Installs the latest Antivirus update.
+    name: pan-os-install-latest-antivirus-update
+    outputs:
+    - contextPath: Panorama.AntiVirus.Install.JobID
+      description: The job ID of the installation.
+      type: String
+    - contextPath: Panorama.AntiVirus.Install.Status
+      description: The installation status.
+      type: String
+    - contextPath: Panorama.AntiVirus.Install.Details
+      description: The install job details.
+      type: String
+    polling: true
+  - arguments:
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
+    - description: Job ID for a running download process. Used for status polling.
+      name: job_id
+      hidden: true
+    description: Installs the latest WildFire dynamic update.
+    name: pan-os-install-latest-wildfire-update
+    outputs:
+    - contextPath: Panorama.WildFire.Install.JobID
+      description: The job ID of the installation.
+      type: String
+    - contextPath: Panorama.WildFire.Install.Status
+      description: The installation status.
+      type: String
+    - contextPath: Panorama.WildFire.Install.Details
+      description: The install job details.
+      type: String
+    polling: true
+  - arguments:
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
+    - description: Job ID for a running download process. Used for status polling.
+      name: job_id
+      hidden: true
+    description: Installs the latest GlobalProtect Clientless VPN dynamic update.
+    name: pan-os-install-latest-gp-update
+    polling: true
+    outputs:
+    - contextPath: Panorama.GP.Install.JobID
+      description: The job ID of the installation.
+      type: String
+    - contextPath: Panorama.GP.Install.Status
+      description: The installation status.
+      type: String
+    - contextPath: Panorama.GP.Install.Details
+      description: The install job details.
       type: String
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
@@ -6731,7 +7439,7 @@ script:
     - description: The job ID of the content installation.
       name: job_id
       required: true
-    description: Gets the installation status of the content update.
+    description: Gets the installation status of the app/threat dynamic update.
     name: pan-os-content-update-install-status
     outputs:
     - contextPath: Panorama.Content.Install.JobID
@@ -6743,6 +7451,7 @@ script:
     - contextPath: Panorama.Content.Install.Details
       description: The content installation status details.
       type: String
+    polling: true
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
@@ -6823,11 +7532,11 @@ script:
     description: Reboots the firewall device.
     name: pan-os-device-reboot
   - arguments:
-    - description: The IP address from which to return information.
-      name: ip_address
+    - name: ip_address
+      description: The IP address from which to return information.
       required: true
-    description: Gets location information for an IP address.
     name: pan-os-show-location-ip
+    description: Gets location information for an IP address.
     outputs:
     - contextPath: Panorama.Location.IP.country_code
       description: The IP address location country code.
@@ -6870,9 +7579,9 @@ script:
       description: The serial number of the license.
       type: String
   - arguments:
-    - auto: PREDEFINED
+    - name: security_profile
       description: The security profile for which to get information.
-      name: security_profile
+      auto: PREDEFINED
       predefined:
       - data-filtering
       - file-blocking
@@ -6881,8 +7590,8 @@ script:
       - virus
       - vulnerability
       - wildfire-analysis
-    - description: The device group for which to return security profiles.
-      name: device-group
+    - name: device-group
+      description: The device group for which to return security profiles.
     description: Gets information for the specified security profile.
     name: pan-os-get-security-profiles
     outputs:
@@ -7136,11 +7845,11 @@ script:
       description: The schedule that is recurring.
       type: String
   - arguments:
-    - name: profile_name
-      description: The URL filtering profile name. Gets the name by running the get-security-profiles command.
+    - description: The URL filtering profile name. Gets the name by running the get-security-profiles command.
+      name: profile_name
       required: true
-    name: pan-os-url-filtering-block-default-categories
     description: Sets default categories to block in the URL filtering profile.
+    name: pan-os-url-filtering-block-default-categories
   - arguments: []
     description: Get anti-spyware best practices.
     name: pan-os-get-anti-spyware-best-practice
@@ -7179,8 +7888,8 @@ script:
       description: The botnet domain max version.
       type: String
   - arguments:
-    - name: anti_spyware_profile_name
-      description: The name of the anti spyware profile. If the profile exists, the command will operate on it, otherwise, if a new name is given, a new anti-spyware profile will be created.
+    - description: The name of the anti spyware profile. If the profile exists, the command will operate on it, otherwise, if a new name is given, a new anti-spyware profile will be created.
+      name: anti_spyware_profile_name
       required: true
     - name: dns_signature_source
       description: The EDL name to link to the profile.
@@ -7421,8 +8130,8 @@ script:
     name: pan-os-list-configured-user-id-agents
     outputs:
     - contextPath: Panorama.UserIDAgents.Name
-      description: The user ID agent name.
       type: String
+      description: The user ID agent name.
     - contextPath: Panorama.UserIDAgents.Host
       description: The user ID agent host.
       type: String
@@ -7436,8 +8145,8 @@ script:
       description: Whether NLTM authentication is used in the user ID agent.
       type: String
     - contextPath: Panorama.UserIDAgents.EnableHipCollection
-      description: Whether HIP collection is enabled in the user ID agent.
       type: String
+      description: Whether HIP collection is enabled in the user ID agent.
     - contextPath: Panorama.UserIDAgents.IpUserMapping
       description: Whether IP user mapping is enabled in the user ID agent.
       type: String
@@ -7465,12 +8174,13 @@ script:
       - wildfire
       - anti-virus
       - content
-    description: Uploads a content file to Panorama.
+    description: >-
+      Uploads a content file to Panorama.
     name: pan-os-upload-content-update-file
     outputs:
     - contextPath: Panorama.Content.Upload.Status
-      description: The content upload status.
       type: string
+      description: The content upload status.
     - contextPath: Panorama.Content.Upload.Message
       description: The content upload message.
       type: string
@@ -7486,10 +8196,10 @@ script:
       - wildfire
       - anti-virus
       - content
-    - auto: PREDEFINED
-      defaultValue: no
+    - defaultValue: 'no'
       description: Skips the file validity check with the PAN-OS update server. Use this option for air-gapped networks and only if you trust the content file.
       name: skip_validity_check
+      auto: PREDEFINED
       predefined:
       - yes
       - no
@@ -7498,8 +8208,8 @@ script:
     name: pan-os-install-file-content-update
     outputs:
     - contextPath: Panorama.Content.Install.JobID
-      description: The job ID of the installation.
       type: string
+      description: The job ID of the installation.
     - contextPath: Panorama.Content.Install.Status
       description: The installation status.
       type: string
@@ -7508,12 +8218,13 @@ script:
       name: device_filter_string
     - description: The target number of the firewall. Used only on a Panorama instance.
       name: target
-    description: Gets all ARP tables from all firewalls in the topology.
+    description: >-
+      Gets all ARP tables from all firewalls in the topology.
     name: pan-os-platform-get-arp-tables
     outputs:
     - contextPath: PANOS.ShowArp.Summary.hostid
-      description: The ID of the PAN-OS host.
       type: String
+      description: The ID of the PAN-OS host.
     - contextPath: PANOS.ShowArp.Summary.max
       description: The maximum number of supported ARP entries.
       type: String
@@ -7524,8 +8235,8 @@ script:
       description: The ARP entry timeout.
       type: String
     - contextPath: PANOS.ShowArp.Summary.dp
-      description: The firewall dataplane associated with the entry.
       type: String
+      description: The firewall dataplane associated with the entry.
     - contextPath: PANOS.ShowArp.Result.hostid
       description: The ID of the PAN-OS host.
       type: String
@@ -7556,8 +8267,8 @@ script:
     name: pan-os-platform-get-route-summary
     outputs:
     - contextPath: PANOS.ShowRouteSummary.Summary.hostid
-      description: The ID of the PAN-OS host.
       type: Number
+      description: The ID of the PAN-OS host.
     - contextPath: PANOS.ShowRouteSummary.Summary.total
       description: The total number of routes.
       type: Number
@@ -7576,8 +8287,8 @@ script:
     name: pan-os-platform-get-routes
     outputs:
     - contextPath: PANOS.ShowRoute.Summary.hostid
-      description: The ID of the PAN-OS host.
       type: String
+      description: The ID of the PAN-OS host.
     - contextPath: PANOS.ShowRoute.Summary.interface
       description: The next hop interface.
       type: String
@@ -7616,12 +8327,13 @@ script:
       name: device_filter_string
     - description: The target number of the firewall. Used only on a Panorama instance.
       name: target
-    description: Gets information from all PAN-OS systems in the topology.
+    description: >-
+      Gets information from all PAN-OS systems in the topology.
     name: pan-os-platform-get-system-info
     outputs:
     - contextPath: PANOS.ShowSystemInfo.Summary.hostid
-      description: The ID of the PAN-OS host.
       type: String
+      description: The ID of the PAN-OS host.
     - contextPath: PANOS.ShowSystemInfo.Summary.ip_address
       description: The management IP address.
       type: String
@@ -7635,29 +8347,29 @@ script:
       description: The platform model.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.uptime
-      description: The total system uptime.
       type: String
+      description: The total system uptime.
     - contextPath: PANOS.ShowSystemInfo.Summary.hostname
+      type: String
       description: The system hostname.
-      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.hostid
+      type: String
       description: The ID of the PAN-OS host.
-      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.ip_address
+      type: String
       description: The management IP address.
-      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.netmask
+      type: String
       description: The management netmask.
-      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.mac_address
+      type: String
       description: The management MAC address.
-      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.uptime
+      type: String
       description: The total system uptime.
-      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.family
-      description: The platform family.
       type: String
+      description: The platform family.
     - contextPath: PANOS.ShowSystemInfo.Result.model
       description: The platform model.
       type: String
@@ -7706,8 +8418,17 @@ script:
     - contextPath: PANOS.ShowSystemInfo.Result.url_filtering_version
       description: The URL filtering content version.
       type: String
+    - contextPath: PANOS.ShowSystemInfo.Result.global_protect_client_package_version
+      description: The GlobalProtect client package version.
+      type: String
+    - contextPath: PANOS.ShowSystemInfo.Result.advanced_routing
+      description: Advanced routing feature.
+      type: String
+    - contextPath: PANOS.ShowSystemInfo.Result.multi_vsys
+      description: Virtual system feature.
+      type: String
   - arguments:
-    - description: The string by which to filter the results to only show specific hostnames or serial numbers.
+    - description: The string to filter the results by to only show specific hostnames or serial numbers.
       name: device_filter_string
     description: Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
     name: pan-os-platform-get-device-groups
@@ -7725,15 +8446,16 @@ script:
       description: The firewall hostname.
       type: String
     - contextPath: PANOS.DeviceGroupOp.last_commit_all_state_sp
+      type: String
       description: The state of the last commit.
-      type: String
     - contextPath: PANOS.DeviceGroupOp.name
-      type: String
       description: The device group name.
+      type: String
   - arguments:
-    - description: The string by which to filter the results to only show specific hostnames or serial numbers.
+    - description: 'The string by which to filter the results to only show specific hostnames or serial numbers.'
       name: device_filter_string
-    description: Gets the operational information of the template stacks in the topology.
+    description: >-
+      Gets the operational information of the template stacks in the topology.
     name: pan-os-platform-get-template-stacks
     outputs:
     - contextPath: PANOS.TemplateStackOp.hostid
@@ -7763,8 +8485,8 @@ script:
     name: pan-os-platform-get-global-counters
     outputs:
     - contextPath: PANOS.ShowCounters.Summary.hostid
-      type: String
       description: The host ID.
+      type: String
     - contextPath: PANOS.ShowCounters.Summary.name
       description: The human readable counter name.
       type: String
@@ -7775,8 +8497,8 @@ script:
       description: The packets per second rate.
       type: Number
     - contextPath: PANOS.ShowCounters.Summary.desc
-      description: The human readable counter description.
       type: String
+      description: The human readable counter description.
     - contextPath: PANOS.ShowCounters.Result.hostid
       description: The host ID.
       type: String
@@ -7813,8 +8535,8 @@ script:
     name: pan-os-platform-get-bgp-peers
     outputs:
     - contextPath: PANOS.ShowBGPPeers.Summary.hostid
-      type: String
       description: The host ID.
+      type: String
     - contextPath: PANOS.ShowBGPPeers.Summary.peer
       description: The name of the Border Gateway Protocol (BGP) peer.
       type: String
@@ -7872,8 +8594,8 @@ script:
     name: pan-os-platform-get-available-software
     outputs:
     - contextPath: PANOS.SoftwareVersions.Summary.hostid
-      type: String
       description: The host ID.
+      type: String
     - contextPath: PANOS.SoftwareVersions.Summary.version
       description: The software version in Major.Minor.Maint format.
       type: String
@@ -7884,20 +8606,20 @@ script:
       description: The size of the software in MB.
       type: String
     - contextPath: PANOS.SoftwareVersions.Summary.size_kb
+      type: String
       description: The size of the software in KB.
-      type: String
     - contextPath: PANOS.SoftwareVersions.Summary.release_notes
-      type: String
       description: The link to version release notes on PAN knowledge base.
+      type: String
     - contextPath: PANOS.SoftwareVersions.Summary.downloaded
-      type: Boolean
       description: True if the software version is present on the system.
+      type: Boolean
     - contextPath: PANOS.SoftwareVersions.Summary.current
-      type: Boolean
       description: True if this is the currently installed software on the system.
-    - contextPath: PANOS.SoftwareVersions.Summary.latest
       type: Boolean
+    - contextPath: PANOS.SoftwareVersions.Summary.latest
       description: True if this is the most recently released software for this platform.
+      type: Boolean
     - contextPath: PANOS.SoftwareVersions.Summary.uploaded
       type: Boolean
       description: True if the software version has been uploaded to the system.
@@ -7910,8 +8632,8 @@ script:
     name: pan-os-platform-get-ha-state
     outputs:
     - contextPath: PANOS.HAState.hostid
-      type: String
       description: The host ID.
+      type: String
     - contextPath: PANOS.HAState.active
       description: Whether this is the active firewall in a pair. "True" if standalone as well.
       type: Boolean
@@ -7922,7 +8644,7 @@ script:
       description: The HA peer.
       type: String
   - arguments:
-    - description: The string by which to filter the results to only show specific hostnames or serial numbers.
+    - description: 'The string by which to filter the results to only show specific hostnames or serial numbers.'
       name: device_filter_string
     - description: The filter to return jobs by status.
       name: status
@@ -7937,8 +8659,8 @@ script:
     name: pan-os-platform-get-jobs
     outputs:
     - contextPath: PANOS.JobStatus.hostid
-      type: String
       description: The host ID.
+      type: String
     - contextPath: PANOS.JobStatus.id
       description: The ID of the job.
       type: Number
@@ -8019,8 +8741,8 @@ script:
     name: pan-os-platform-get-system-status
     outputs:
     - contextPath: PANOS.SystemStatus.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.SystemStatus.up
       description: Whether the host device is up or still unavailable.
       type: String
@@ -8064,8 +8786,8 @@ script:
       description: The total number of matching issues.
       type: Number
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
-      type: String
       description: The host ID.
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.container_name
       description: The parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8081,20 +8803,27 @@ script:
   - arguments:
     - description: The string by which to filter so that only the given device is checked.
       name: device_filter_string
-    - defaultValue: critical,high
-      description: A comma-separated list of severities that must be in drop/reset/block-ip mode.
-      isArray: true
+    - description: A comma-separated list of severities that must be in drop/reset/block-ip mode.
       name: minimum_block_severities
+      defaultValue: critical,high
+      isArray: true
     - defaultValue: medium,low
       description: A comma-separated list of severities that must be in alert/default or higher mode.
       isArray: true
       name: minimum_alert_severities
+    - auto: PREDEFINED
+      defaultValue: 'no'
+      description: Whether or not to return details about profiles that do not conform to best practices.
+      name: return_nonconforming_profiles
+      predefined:
+      - 'yes'
+      - 'no'
     description: Checks the configured vulnerability profiles to ensure at least one meets best practices.
     name: pan-os-hygiene-check-vulnerability-profiles
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
-      description: The description of the hygiene check.
       type: String
+      description: The description of the hygiene check.
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
       description: The shorthand code for this hygiene check.
       type: String
@@ -8105,8 +8834,8 @@ script:
       description: The total number of matching issues.
       type: Number
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
-      type: String
       description: The host ID.
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.container_name
       description: The parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8125,29 +8854,36 @@ script:
       required: true
     - description: The string by which to filter to only install to specific devices or serial numbers.
       name: device_filter_string
-    - defaultValue: 'false'
-      description: If provided, runs the download synchronously. Make sure 'execution-timeout' is increased.
+    - description: If provided, runs the download synchronously. Make sure 'execution-timeout' is increased.
       name: sync
+      defaultValue: 'false'
     - description: The target number of the firewall. Used only on a Panorama instance.
       name: target
     description: Installs the given software version onto the device. Downloads the software first with panorama-download-panos-version.
     name: pan-os-platform-install-software
     outputs:
     - contextPath: PANOS.InstallStatus.Summary.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.InstallStatus.Summary.started
       description: Whether the download process has started.
       type: String
   - arguments:
     - description: The string by which to filter to only check given devices.
       name: device_filter_string
-    - defaultValue: critical,high
-      description: A CSV list of severities that must be in drop/reset/block-ip mode.
+    - description: A CSV list of severities that must be in drop/reset/block-ip mode.
       name: minimum_block_severities
-    - defaultValue: medium,low
-      description: A CSV list of severities that must be in alert/default or higher mode.
+      defaultValue: critical,high
+    - description: A CSV list of severities that must be in alert/default or higher mode.
       name: minimum_alert_severities
+      defaultValue: medium,low
+    - auto: PREDEFINED
+      defaultValue: 'no'
+      description: Whether or not to return details about profiles that do not conform to best practices.
+      name: return_nonconforming_profiles
+      predefined:
+      - 'yes'
+      - 'no'
     description: Checks the configured anti-spyware profiles to ensure at least one meets best practices.
     name: pan-os-hygiene-check-spyware-profiles
     outputs:
@@ -8164,8 +8900,8 @@ script:
       description: The total number of matching issues.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
-      type: String
       description: The host ID.
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.container_name
       description: What parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8181,7 +8917,14 @@ script:
   - arguments:
     - description: The string to filter to only check a given device.
       name: device_filter_string
-    description: Checks the configured URL filtering profiles to ensure at least one meets best practices.
+    - auto: PREDEFINED
+      defaultValue: 'no'
+      description: Whether or not to return details about profiles that do not conform to best practices.
+      name: return_nonconforming_profiles
+      predefined:
+      - 'yes'
+      - 'no'
+    description: Checks the configured URL filtering profiles to ensure at least one meets best practices of blocking the following URL categories - abused-drugs, adult, command-and-control, compromised-websites, gambling, grayware, hacking, malware, phishing, questionable, ransomware, scanning-activity, weapons.
     name: pan-os-hygiene-check-url-filtering-profiles
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
@@ -8197,8 +8940,8 @@ script:
       description: The total number of matching issues.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
-      type: String
       description: The host ID.
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.container_name
       description: What parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8218,8 +8961,8 @@ script:
     name: pan-os-hygiene-conforming-url-filtering-profiles
     outputs:
     - contextPath: PANOS.PanosObject.hostid
-      type: String
       description: The host ID.
+      type: String
     - contextPath: PANOS.PanosObject.container_name
       description: What parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8232,12 +8975,12 @@ script:
   - arguments:
     - description: The string to filter to only check a given device.
       name: device_filter_string
-    - defaultValue: critical,high
-      description: A CSV list of severities that must be in drop/reset/block-ip mode.
+    - description: A CSV list of severities that must be in drop/reset/block-ip mode.
       name: minimum_block_severities
-    - defaultValue: medium,low
-      description: A CSV list of severities that must be in alert/default or higher mode.
+      defaultValue: critical,high
+    - description: A CSV list of severities that must be in alert/default or higher mode.
       name: minimum_alert_severities
+      defaultValue: medium,low
     description: Returns all anti-spyware profiles that conform to best practices.
     name: pan-os-hygiene-conforming-spyware-profiles
     outputs:
@@ -8256,12 +8999,12 @@ script:
   - arguments:
     - description: The string to filter to only check a given device.
       name: device_filter_string
-    - defaultValue: critical,high
-      description: A CSV list of severities that must be in drop/reset/block-ip mode.
+    - description: A CSV list of severities that must be in drop/reset/block-ip mode.
       name: minimum_block_severities
-    - defaultValue: medium,low
-      description: A CSV list of severities that must be in alert/default or higher mode.
+      defaultValue: critical,high
+    - description: A CSV list of severities that must be in alert/default or higher mode.
       name: minimum_alert_severities
+      defaultValue: medium,low
     description: Returns all vulnerability profiles that conform to best practices.
     name: pan-os-hygiene-conforming-vulnerability-profiles
     outputs:
@@ -8284,8 +9027,8 @@ script:
     name: pan-os-hygiene-check-security-zones
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
-      type: String
       description: The description of the check.
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
       description: The shorthand code for this hygiene check.
       type: String
@@ -8317,8 +9060,8 @@ script:
     name: pan-os-hygiene-check-security-rules
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
-      type: String
       description: The description of the check.
+      type: String
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
       description: The shorthand code for this hygiene check.
       type: String
@@ -8345,15 +9088,15 @@ script:
       type: String
   - arguments:
     - description: The Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
-      isArray: true
       name: issue
+      isArray: true
       required: true
     description: Fixes log forwarding issues identified by pan-os-hygiene-check-log-forwarding.
     name: pan-os-hygiene-fix-log-forwarding
     outputs:
     - contextPath: PANOS.ConfigurationHygieneFix.hostid
-      type: String
       description: The host ID.
+      type: String
     - contextPath: PANOS.ConfigurationHygieneFix.container_name
       description: What parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8368,9 +9111,9 @@ script:
       type: String
   - arguments:
     - description: The Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
-      isArray: true
       name: issue
       required: true
+      isArray: true
     - description: The name of the log forwarding profile to set.
       name: log_forwarding_profile_name
       required: true
@@ -8394,9 +9137,9 @@ script:
       type: String
   - arguments:
     - description: The Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
-      isArray: true
       name: issue
       required: true
+      isArray: true
     - description: The name of the log forwarding profile.
       name: log_forwarding_profile_name
       required: true
@@ -8420,9 +9163,9 @@ script:
       type: String
   - arguments:
     - description: The Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
-      isArray: true
       name: issue
       required: true
+      isArray: true
     - description: The name of the security profile group to use as the log setting.
       name: security_profile_group_name
       required: true
@@ -8445,9 +9188,9 @@ script:
       description: The affected object name.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The type of object to search. See https://pandevice.readthedocs.io/en/latest/module-objects.html.
+    - description: The type of object to search. See https://pandevice.readthedocs.io/en/latest/module-objects.html.
       name: object_type
+      auto: PREDEFINED
       predefined:
       - AddressObject
       - AddressGroup
@@ -8512,12 +9255,12 @@ script:
   - arguments:
     - description: The name of the template to retrieve. If not provided then all available templates will be returned.
       name: template_name
-    - defaultValue: '50'
-      description: The maximum number of templates to retrieve. This value is used by default if page argument is not provided.
+    - description: The maximum number of templates to retrieve. This value is used by default if page argument is not provided.
       name: limit
-    - defaultValue: '50'
-      description: The page size of the templates to return.
+      defaultValue: '50'
+    - description: The page size of the templates to return.
       name: page_size
+      defaultValue: '50'
     - description: The page at which to start listing templates. This must be a positive number.
       name: page
     description: Returns a list of available templates. (To be used only in Panorama instances).
@@ -8546,28 +9289,28 @@ script:
       name: name
     - description: The device group in which the NAT rules are part of.
       name: device-group
-    - auto: PREDEFINED
-      description: The pre-rule or post-rule (Panorama instances only).
+    - description: The pre-rule or post-rule (Panorama instances only).
       name: pre_post
+      auto: PREDEFINED
       predefined:
       - pre-rulebase
       - post-rulebase
-    - defaultValue: 'false'
+    - auto: PREDEFINED
       description: Whether to show the un-committed rules or not.
       name: show_uncommitted
-      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
+      defaultValue: 'false'
     - description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the NAT rules.
       name: disabled
       auto: PREDEFINED
       predefined:
       - yes
       - no
-    - description: The type of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
+    - auto: PREDEFINED
+      description: The type of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
       name: nat_type
-      auto: PREDEFINED
       predefined:
       - ipv4
       - nat64
@@ -8638,23 +9381,23 @@ script:
       name: description
     - description: The device-group in which the new rule should be created (Panorama instances only).
       name: device-group
-    - auto: PREDEFINED
-      description: The pre-rule or post-rule (Panorama instances only).
+    - description: The pre-rule or post-rule (Panorama instances only).
       name: pre_post
+      auto: PREDEFINED
       predefined:
       - pre-rulebase
       - post-rulebase
     - defaultValue: 'ipv4'
+      description: The NAT type in which the rule will be created.
+      name: nat_type
       auto: PREDEFINED
       predefined:
       - ipv4
       - nat64
       - nptv6
-      description: The NAT type in which the rule will be created.
-      name: nat_type
     - description: A comma-separated list of source zones.
-      isArray: true
       name: source_zone
+      isArray: true
       defaultValue: 'any'
     - description: The destination zone.
       name: destination_zone
@@ -8751,9 +9494,9 @@ script:
       required: true
     - description: The device-group that the NAT rule is part of. Only for a Panorama instance.
       name: device-group
-    - auto: PREDEFINED
-      description: The pre-rule or post-rule (Panorama instances only).
+    - description: The pre-rule or post-rule (Panorama instances only).
       name: pre_post
+      auto: PREDEFINED
       predefined:
       - pre-rulebase
       - post-rulebase
@@ -8761,13 +9504,13 @@ script:
       description: The operation to perform on the rule.
       name: behavior
       predefined:
-      - replace
-      - add
+      - 'replace'
+      - 'add'
       - remove
       defaultValue: 'replace'
-    - auto: PREDEFINED
-      description: The element to change.
+    - description: The element to change.
       name: element_to_change
+      auto: PREDEFINED
       required: true
       predefined:
       - tags
@@ -8802,19 +9545,19 @@ script:
       name: virtual_router
     - description: The template that the virtual router is part of. Use only for Panorama instances.
       name: template
-    - defaultValue: 'false'
+    - auto: PREDEFINED
       description: Whether to show the un-committed virtual routers or not.
       name: show_uncommitted
-      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - defaultValue: '50'
-      description: The maximum number of virtual routers to retrieve. Will be used by default if the page argument was not provided.
+      defaultValue: 'false'
+    - description: The maximum number of virtual routers to retrieve. Will be used by default if the page argument was not provided.
       name: limit
-    - defaultValue: '50'
-      description: The size of virtual-routers to return.
+      defaultValue: '50'
+    - description: The size of virtual-routers to return.
       name: page_size
+      defaultValue: '50'
     - description: The page at which to start listing virtual-routers. Must be a positive number.
       name: page
     description: Returns a list of virtual routers of either a Panorama/firewall instance.
@@ -8900,21 +9643,21 @@ script:
       required: true
     - description: The template that the virtual-router is in. Use only for Panorama instances.
       name: template
-    - auto: PREDEFINED
-      description: Comma-separated list of the filter source types.
-      isArray: true
+    - description: Comma-separated list of the filter source types.
       name: filter_source_type
+      auto: PREDEFINED
       predefined:
-      - bgp
-      - ospf
+      - 'bgp'
+      - 'ospf'
       - rip
       - static
+      isArray: true
     - description: A comma-separated list of destination to filter by.
-      isArray: true
       name: destination
-    - description: A comma-separated list of next-hops to filter by.
       isArray: true
+    - description: A comma-separated list of next-hops to filter by.
       name: nexthop
+      isArray: true
     - description: A comma-separated list of interfaces to filter by.
       isArray: true
       name: interface
@@ -8959,13 +9702,12 @@ script:
       required: true
     - description: The template that the virtual-router is in. Only for Panorama instances.
       name: template
-    - auto: PREDEFINED
-      description: The element to change.
+    - description: The element to change.
       name: element_to_change
-      required: true
+      auto: PREDEFINED
       predefined:
-      - filter_type
-      - filter_destination
+      - 'filter_type'
+      - 'filter_destination'
       - filter_nexthop
       - filter_interface
       - priority
@@ -8975,9 +9717,10 @@ script:
       - filter_ospf_path_type
       - filter_bgp_community
       - filter_bgp_extended_community
+      required: true
     - description: The value of the element to change. Can be a list for all the elements except priority and action.
-      isArray: true
       name: element_value
+      isArray: true
       required: true
     - auto: PREDEFINED
       description: The operation to perform on the profile.
@@ -9092,8 +9835,8 @@ script:
       required: true
     - description: The description that the new PBF-rule should have.
       name: description
-    - description: The device-group in which the new rule should be created. Only for a Panorama instance.
-      name: device-group
+    - name: device-group
+      description: The device-group in which the new rule should be created. Only for a Panorama instance.
     - auto: PREDEFINED
       description: The pre-rule or post-rule (Panorama instances only).
       name: pre_post
@@ -9179,19 +9922,18 @@ script:
       required: true
     - description: The device-group that the PBF rule is in.
       name: device-group
-    - auto: PREDEFINED
-      description: The pre-rule or post-rule (Panorama instances only).
+    - description: The pre-rule or post-rule (Panorama instances only).
       name: pre_post
+      auto: PREDEFINED
       predefined:
-      - pre-rulebase
-      - post-rulebase
-    - auto: PREDEFINED
-      description: The element to change.
+      - 'pre-rulebase'
+      - 'post-rulebase'
+    - description: The element to change.
       name: element_to_change
-      required: true
+      auto: PREDEFINED
       predefined:
-      - source_zone
-      - source_address
+      - 'source_zone'
+      - 'source_address'
       - source_user
       - service
       - destination_address
@@ -9207,9 +9949,10 @@ script:
       - action_forward_no_pbf
       - disabled
       - audit-comment
+      required: true
     - description: The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically.
-      isArray: true
       name: element_value
+      isArray: true
       required: true
     - auto: PREDEFINED
       description: The operation to perform on the PBF rule.
@@ -9227,9 +9970,9 @@ script:
       required: true
     - description: The device-group from which the pbf-rule should be deleted. Only for a Panorama instance.
       name: device-group
-    - auto: PREDEFINED
-      description: The pre-rule or post-rule (Panorama instances only).
+    - description: The pre-rule or post-rule (Panorama instances only).
       name: pre_post
+      auto: PREDEFINED
       predefined:
       - pre-rulebase
       - post-rulebase
@@ -9240,16 +9983,16 @@ script:
       name: name
     - description: The device-group that the nat-rules are part of.
       name: device-group
-    - defaultValue: 'false'
-      description: Whether to show the un-committed application-groups or not.
+    - description: Whether to show the un-committed application-groups or not.
       name: show_uncommitted
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - defaultValue: '50'
-      description: The maximum number of application-groups to retrieve. Will be used by default if page argument was not provided.
+    - description: The maximum number of application-groups to retrieve. Will be used by default if page argument was not provided.
       name: limit
+      defaultValue: '50'
     - defaultValue: '50'
       description: The page size of the application-groups to return.
       name: page_size
@@ -9272,13 +10015,13 @@ script:
       name: name
       required: true
     - description: Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications.
-      isArray: true
       name: applications
+      isArray: true
       required: true
     - description: The device-group in which the application-group should be created. Only for a Panorama instance.
       name: device-group
-    description: Creates a new application group rule in a Panorama/firewall instance.
     name: pan-os-create-application-group
+    description: Creates a new application group rule in a Panorama/firewall instance.
     outputs:
     - contextPath: Panorama.ApplicationGroup.Name
       description: The name of the application-group object.
@@ -9289,16 +10032,17 @@ script:
     - contextPath: Panorama.ApplicationGroup.Members
       description: The number of the applications that are part of the application-group.
       type: Number
-  - arguments:
-    - description: The name for the application-group to be edit. Can be retrieved from the pan-os-list-application-groups command.
-      name: name
+  - name: pan-os-edit-application-group
+    arguments:
+    - name: name
+      description: The name for the application-group to be edit. Can be retrieved from the pan-os-list-application-groups command.
       required: true
-    - description: Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications.
+    - name: applications
+      description: Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications.
+      required: true
       isArray: true
-      name: applications
-      required: true
-    - description: The device-group in which the application-group should be created. Only for a Panorama instance.
-      name: device-group
+    - name: device-group
+      description: The device-group in which the application-group should be created. Only for a Panorama instance.
     - description: The action to perform on the application-group.
       name: action
       required: true
@@ -9308,7 +10052,6 @@ script:
       - 'remove'
       defaultValue: 'add'
     description: Edits an application-group.
-    name: pan-os-edit-application-group
     outputs:
     - contextPath: Panorama.ApplicationGroup.Name
       description: The name of the application-group object.
@@ -9323,7 +10066,7 @@ script:
     - description: The name of the application-group to delete. Can be retrieved from the pan-os-list-application-groups command.
       name: name
       required: true
-    - description: The device-group in which the application-group is part of. Only for a Panorama instance.
+    - description: "The device-group in which the application-group is part of. Only for a Panorama instance."
       name: device-group
     description: Deletes an application-group.
     name: pan-os-delete-application-group
@@ -9335,7 +10078,7 @@ script:
       - 'Yes'
       - 'No'
       defaultValue: 'No'
-    - description: The device group that the tags are part of.
+    - description: "The device group that the tags are part of."
       name: device-group
     description: Returns a list of tags from Panorama.
     name: pan-os-list-tag
@@ -9359,7 +10102,7 @@ script:
     - description: The name for the new tag to be created.
       name: name
       required: true
-    - description: The device group that the tag will be part of.
+    - description: "The device group that the tag will be part of."
       name: device-group
     - description: Whether to disable overriding the tag (Panorama instances).
       name: disable_override
@@ -9403,33 +10146,33 @@ script:
       required: true
     description: Deletes a tag from Panorama.
     name: pan-os-delete-tag
-  - arguments: []
-    name: pan-os-list-device-groups
-    description: Returns all device groups from Panorama (use only in Panorama instances).
+  - name: pan-os-list-device-groups
+    description: 'Returns all device groups from Panorama (use only in Panorama instances).'
+    arguments: []
     outputs:
     - contextPath: Panorama.DeviceGroupNames
       description: The list of device groups.
       type: string
   - name: pan-os-export-tech-support-file
+    description: 'Exports a tech support file (TSF).'
     arguments:
-    - name: interval_in_seconds
-      description: The polling interval (in seconds).
+    - description: The polling interval (in seconds).
+      name: interval_in_seconds
       defaultValue: "30"
-    - name: timeout
-      description: The polling timeout (in seconds).
+    - description: "The polling timeout (in seconds)."
+      name: timeout
       defaultValue: "1200"
-    - name: job_id
+    - description: The job ID to use when polling.
+      name: job_id
       hidden: true
-      description: The job ID to use when polling.
-    description: Exports a tech support file (TSF).
     polling: true
-  - arguments:
+  - name: pan-os-list-security-profile-group
+    description: Returns a list of security profile groups from Panorama.
+    arguments:
     - description: A given group name to return the data for.
       name: group_name
-    - description: The device group that the security profile groups are part of.
+    - description: "The device group that the security profile groups are part of."
       name: device-group
-    description: Returns a list of security profile groups from Panorama.
-    name: pan-os-list-security-profile-group
     outputs:
     - contextPath: Panorama.ProfileGroup.name
       description: The name of the group.
@@ -9461,7 +10204,9 @@ script:
     - contextPath: Panorama.ProfileGroup.disable-override
       description: Whether overriding the security profile group is disabled.
       type: String
-  - arguments:
+  - name: pan-os-create-security-profile-group
+    description: Creates a new security profile group in Panorama.
+    arguments:
     - description: The name of the security profile group.
       name: group_name
       required: true
@@ -9481,9 +10226,9 @@ script:
       name: data_filtering_profile
     - description: The WildFire analysis profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
       name: wildfire_analysis_profile
-    description: Creates a new security profile group in Panorama.
-    name: pan-os-create-security-profile-group
-  - arguments:
+  - name: pan-os-edit-security-profile-group
+    description: Edits the security profile group in Panorama.
+    arguments:
     - description: The name of the security profile group to edit.
       name: group_name
       required: true
@@ -9504,38 +10249,36 @@ script:
       required: true
     - description: The device group that the security profile group is part of.
       name: device-group
-    description: Edits the security profile group in Panorama.
-    name: pan-os-edit-security-profile-group
-  - arguments:
+  - name: pan-os-delete-security-profile-group
+    description: 'Deletes a security profile group from Panorama.'
+    arguments:
     - description: The name of the security profile group to delete.
       name: group_name
       required: true
     - description: The device group that the security profile group is part of.
       name: device-group
-    description: Deletes a security profile group from Panorama.
-    name: pan-os-delete-security-profile-group
-  - arguments:
+  - name: pan-os-get-audit-comment
+    description: 'Gets the audit comment of a rule.'
+    arguments:
     - description: The rule name to apply.
       name: rule_name
       required: true
-    - auto: PREDEFINED
-      description: The rule type.
+    - description: The rule type.
       name: rule_type
       required: true
+      auto: PREDEFINED
       predefined:
       - Security Rule
       - NAT Rule
       - PBF Rule
-    - auto: PREDEFINED
-      description: The pre-rule or post-rule (Panorama instances only).
+    - description: The pre-rule or post-rule (Panorama instances only).
       name: pre_post
+      auto: PREDEFINED
       predefined:
       - Pre
       - Post
     - description: The device group that the rule is part of.
       name: device-group
-    description: Gets the audit comment of a rule.
-    name: pan-os-get-audit-comment
     outputs:
     - contextPath: Panorama.AuditComment.comment
       description: The audit comment ot the rule.
@@ -9722,6 +10465,94 @@ script:
     - contextPath: Panorama.Spyware.Exception.packet-capture
       description: The exception packet capture.
       type: String
+  - arguments:
+    - description: The string by which to filter the results to only show specific hostnames or serial numbers.
+      name: device_filter_string
+    - description: The target number of the firewall. Used only on a Panorama instance.
+      name: target
+    - auto: PREDEFINED
+      defaultValue: security
+      description: The firewall rulebase to check.
+      name: rulebase
+      predefined:
+      - application-override
+      - authentication
+      - decryption
+      - dos
+      - nat
+      - network-packet-broker
+      - pbf
+      - qos
+      - sdwan
+      - security
+      - tunnel-inspect
+    - defaultValue: all
+      description: The firewall VSYS name to check.  Returns results for all VSYSs if left blank.
+      name: vsys
+    - defaultValue: all
+      description: Comma-separated list of rule names to check.  Returns results for all rules if left blank.
+      isArray: true
+      name: rules
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If set to true, only returns rules with a hit count of 0.
+      name: unused_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Shows rules that have had hits, but not after the date provided (in the format YYYY/MM/DD HH:MM:SS).
+      name: no_new_hits_since
+    description: Gets rule hit counts from the firewall.  When connected to Panorama this command can be run on any firewall managed by it.
+    name: pan-os-get-rule-hitcounts
+    outputs:
+    - contextPath: PANOS.RuleHitCount.first_hit_timestamp
+      description: Timestamp when the rule was first hit.
+      type: Date
+    - contextPath: PANOS.RuleHitCount.from_dg_name
+      description: Name of the device group the rule is inherited from.
+      type: String
+    - contextPath: PANOS.RuleHitCount.hit_count
+      description: Number of hits for the rule.
+      type: Number
+    - contextPath: PANOS.RuleHitCount.hostid
+      description: Serial number of the firewall the entry was fetched from.
+      type: String
+    - contextPath: PANOS.RuleHitCount.instanceName
+      description: Name of the PAN-OS Integration Instance used to fetch the entry.
+      type: String
+    - contextPath: PANOS.RuleHitCount.instanceType
+      description: The type of the PAN-OS Integration Instance running the command (Panorama or firewall).
+      type: String
+    - contextPath: PANOS.RuleHitCount.is_from_panorama
+      description: Indicates if the rule was pushed from Panorama (true) or is local to the firewall (false).
+      type: Boolean
+    - contextPath: PANOS.RuleHitCount.last_hit_timestamp
+      description: Timestamp when the rule was most recently hit.
+      type: Date
+    - contextPath: PANOS.RuleHitCount.last_reset_timestamp
+      description: Timestamp when hit count data was last reset.
+      type: Date
+    - contextPath: PANOS.RuleHitCount.latest
+      description: Value of the `latest` property returned by the API.
+      type: String
+    - contextPath: PANOS.RuleHitCount.name
+      description: Name of the rule.
+      type: String
+    - contextPath: PANOS.RuleHitCount.position
+      description: Indicates the position of the rule pushed from Panorama (pre_rulebase or post_rulebase).
+      type: String
+    - contextPath: PANOS.RuleHitCount.rule_creation_timestamp
+      description: Timestamp when the rule was created.
+      type: Date
+    - contextPath: PANOS.RuleHitCount.rule_modification_timestamp
+      description: Timestamp when the rule was most recently modified.
+      type: Date
+    - contextPath: PANOS.RuleHitCount.rulebase
+      description: The rulebase of the rule (security, nat, and so on).
+      type: String
+    - contextPath: PANOS.RuleHitCount.vsys
+      description: The name of the firewall VSYS.
+      type: String
   - name: pan-os-get-master-key-details
     description: Show the details of the default master key that encrypts all the private keys and passwords in the configuration.
     outputs:
@@ -9798,7 +10629,38 @@ script:
       type: Number
       required: true
       isArray: false
-  dockerimage: demisto/pan-os-python:1.0.0.2067372
+  - name: pan-os-get-certificate-info
+    description: Gathers the name, expiration date, and expiration status of certificates configured locally on a Firewall or pushed from Panorama, as seen under Certificate Management.
+    arguments:
+    - description: Show only expired certificates.
+      name: show_expired_only
+      type: Boolean
+    outputs:
+    - contextPath: Panorama.Certificate.name
+      type: String
+      description: Name of the certificate.
+    - contextPath: Panorama.Certificate.device
+      type: String
+      description: Device where this certificate was found.
+    - contextPath: Panorama.Certificate.subject
+      type: String
+      description: Subject of the certificate.
+    - contextPath: Panorama.Certificate.expiration_date
+      type: String
+      description: Expiration date of the certificate.
+    - contextPath: Panorama.Certificate.expiration_status
+      type: String
+      description: Status of certificate - Expired, Expiring in 30 days, Expiring in 60 days, Expiring in 90 days or Valid.
+    - contextPath: Panorama.Certificate.location
+      type: String
+      description: Where this certificate was configured - Firewall or Panorama.
+    - contextPath: Panorama.Certificate.cert_type
+      type: String
+      description: Whether this certificate was pushed from Panorama, Local to Firewall, or predefined on Panorama or a Firewall.
+    - contextPath: Panorama.Certificate.devices_using_certificate
+      type: Unknown
+      description: List of devices using this certificate if it was pushed from Panorama.
+  dockerimage: demisto/pan-os-python:1.0.0.4889421
   isfetch: true
   runonce: false
   script: ''

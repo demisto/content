@@ -1,14 +1,13 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
 """ IMPORTS """
 
 import requests
-
-from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 from sixgill.sixgill_enrich_client import SixgillEnrichClient
-
+from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -66,8 +65,6 @@ def stix_to_indicator(stix_obj):
 
 def cve_enrich_command(client: SixgillEnrichClient, args) -> List[CommandResults]:
     cve_ids = argToList(args.get("cve_id"))
-    if len(cve_ids) == 0:
-        raise ValueError("CVE_ID(s) not specified")
 
     command_results: List[CommandResults] = []
     final_data_list = []
@@ -89,6 +86,37 @@ def cve_enrich_command(client: SixgillEnrichClient, args) -> List[CommandResults
     return command_results
 
 
+def cve_enrich_remediation_command(client: SixgillEnrichClient, args) -> List[CommandResults]:
+    cve_ids = argToList(args.get("cve_id"))
+
+    command_results: List[CommandResults] = []
+    remediations = []
+    for cve_id in cve_ids:
+        dve_remediations = client.enrich_dve_remediation(cve_id)
+        for dve_remediation in dve_remediations:
+            if any([dve_remediation.get("advisory"), dve_remediation.get("description"), dve_remediation.get("solutions")]):
+                remediations.append(
+                    {
+                        "Value": cve_id,
+                        "Advisory": dve_remediation.get("advisory", ""),
+                        "Description": dve_remediation.get("description", ""),
+                        "Solutions": dve_remediation.get("solutions", ""),
+                    }
+                )
+
+    readable_output = tableToMarkdown("Enriched results for cve_id:", remediations)
+
+    command_results.append(
+        CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="Sixgill.CVE",
+            outputs_key_field="CVE_ID",
+            outputs=remediations,
+        )
+    )
+    return command_results
+
+
 def main():
     channel_code = "d5cd46c205c20c87006b55a18b106428"
     params = demisto.params()
@@ -97,23 +125,19 @@ def main():
     session = requests.Session()
     session.proxies = handle_proxy()
 
-    client = SixgillEnrichClient(params.get("client_id"), params.get("client_secret"), channel_code, demisto,
-                                 session, verify)
+    client = SixgillEnrichClient(params.get("client_id"), params.get("client_secret"), channel_code, demisto, session, verify)
 
     LOG(f"Command being called is {demisto.command()}")
     try:
-
         if command == "cybersixgill-cve-enrich":
             return_results(cve_enrich_command(client, demisto.args()))
+        elif command == "cybersixgill-cve-remediation":
+            return_results(cve_enrich_remediation_command(client, demisto.args()))
         elif command == "test-module":
-            return_results(
-                test_module(
-                    params.get("client_id"), params.get("client_secret"), channel_code, session, verify
-                )
-            )
+            return_results(test_module(params.get("client_id"), params.get("client_secret"), channel_code, session, verify))
     # Log exceptions
     except Exception as e:
-        return_error(f"Failed to execute {command} command. Error: {str(e)}")
+        return_error(f"Failed to execute {command} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

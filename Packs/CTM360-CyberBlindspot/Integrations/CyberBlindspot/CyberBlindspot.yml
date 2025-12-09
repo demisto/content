@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -18,6 +18,7 @@ configuration:
   type: 15
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - defaultvalue: Incidents
@@ -30,33 +31,42 @@ configuration:
   - Incidents
   - Compromised Cards
   - Breached Credentials
+  - Malware Logs
   - Domain Infringement
   - Subdomain Infringement
   section: Collect
   hidden:
   - marketplacev2
-- additionalinfo: The time the incidents should be fetched starting from.
-  name: first_fetch
+  - platform
+- name: retrieve_screenshots
   required: false
+  type: 8
+  defaultvalue: 'true'
+  display: Retrieve Screenshots
+  section: Collect
+  advanced: true
+- name: first_fetch
   type: 0
+  required: false
+  additionalinfo: The time the incidents should be fetched starting from.
+  section: Collect
   defaultvalue: 7 days
   display: First fetch (<number> <time unit>, e.g., 12 hours. Default is `7 days`)
-  section: Collect
   advanced: true
 - name: api_key
   type: 9
   required: true
   additionalinfo: The CTM360 CyberBlindspot API Key to use for fetching data.
+  section: Connect
   displaypassword: API Key
   hiddenusername: true
-  section: Connect
 - display: Maximum Number of Incidents per Fetch
   name: max_fetch
   type: 0
   required: true
+  section: Collect
   defaultvalue: "25"
   additionalinfo: Default is 25. Maximum is 200.
-  section: Collect
   advanced: true
 - display: Fetch incidents
   name: isFetch
@@ -166,13 +176,13 @@ script:
     - contextPath: CyberBlindspot.RemoteIncident.breach_source
       description: The source of the breached data.
     - contextPath: CyberBlindspot.RemoteIncident.domain
-      description: The domain related to the breached data.
+      description: The domain related to the breached data or compromised device.
     - contextPath: CyberBlindspot.RemoteIncident.email
       description: Email found in the breached data.
     - contextPath: CyberBlindspot.RemoteIncident.username
       description: Username found in the breached data.
     - contextPath: CyberBlindspot.RemoteIncident.password
-      description: Password found in the breached data.
+      description: Password found in the breached data or compromised account.
     - contextPath: CyberBlindspot.RemoteIncident.executive_name
       description: Executive member's name related to the breached data.
     - contextPath: CyberBlindspot.RemoteIncident.confirmation_time
@@ -181,6 +191,63 @@ script:
       description: The potential difficulties carried by the infringement.
     - contextPath: CyberBlindspot.RemoteIncident.incident_status
       description: The status of the infringement incident.
+    - contextPath: CyberBlindspot.RemoteIncident.screenshots
+      description: The screenshot evidence if available.
+    - contextPath: CyberBlindspot.RemoteIncident.date_compromised
+      description: The date of the compromise.
+    - contextPath: CyberBlindspot.RemoteIncident.computer_name
+      description: The name of the computer that was compromised.
+    - contextPath: CyberBlindspot.RemoteIncident.operating_system
+      description: The operating system of the compromised device.
+    - contextPath: CyberBlindspot.RemoteIncident.malware_path
+      description: The path in which the malware was installed on the compromised device.
+    - contextPath: CyberBlindspot.RemoteIncident.url_path
+      description: The path of the URL.
+    - contextPath: CyberBlindspot.RemoteIncident.masked_password
+      description: The masked password of the compromised account.
+    - contextPath: CyberBlindspot.RemoteIncident.software
+      description: The software that was compromised.
+    - contextPath: CyberBlindspot.RemoteIncident.user
+      description: The user of the compromised account.
+    - contextPath: CyberBlindspot.RemoteIncident.user_domain
+      description: The domain of the compromised user.
+    - contextPath: CyberBlindspot.RemoteIncident.website
+      description: The website compromised.
+    - contextPath: CyberBlindspot.RemoteIncident.sources
+      description: The sources reporting the compromise.
+    - contextPath: CyberBlindspot.RemoteIncident.source_uri
+      description: The source URI of the compromise report.
+    - contextPath: CyberBlindspot.RemoteIncident.hostname
+      description: The hostname of the compromised device.
+    - contextPath: CyberBlindspot.RemoteIncident.stealer_family
+      description: The family of the malware.
+    - contextPath: CyberBlindspot.RemoteIncident.external_link
+      description: The external link to the remote platform.
+    - contextPath: CyberBlindspot.RemoteIncident.compromise_details
+      description: The details of the compromise.
+  - name: ctm360-cbs-incident-retrieve-screenshots
+    arguments:
+    - description: The files to retrieve.
+      name: files
+      required: true
+      isArray: true
+    description: Retrieves screenshot evidence if available.
+    outputs:
+    - contextPath: InfoFile.Name
+      description: FileName.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
   - name: get-remote-data
     arguments:
     - description: The incident ID.
@@ -210,7 +277,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.11.4095827
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

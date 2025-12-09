@@ -1,10 +1,9 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 import markdown  # type: ignore
 from bs4 import BeautifulSoup
+from CommonServerPython import *  # noqa: F401
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
@@ -21,7 +20,7 @@ def main():
             output_list.append(data)
             if not input_only_md:
                 # Add to the converted markdown the full HTML structure
-                data = f"<!doctype html><html><head><meta charset=\"utf-8\"></head><body>{data}</body></html>"
+                data = f'<!doctype html><html><head><meta charset="utf-8"></head><body>{data}</body></html>'
 
         if input_prettify:
             # Format the resulted HTML to a unicode string, with a separate line for each tag and each string.
@@ -30,17 +29,18 @@ def main():
 
         # Output the resulted HTML to the context
         res = CommandResults(
-            outputs_prefix='MarkdownToHTML',
-            outputs_key_field='',
-            readable_output=output_list,    # type: ignore
-            outputs={'HTML': output_list})
+            outputs_prefix="MarkdownToHTML",
+            outputs_key_field="",
+            readable_output=output_list,  # type: ignore
+            outputs={"HTML": output_list},
+        )
 
         return_results(res)
 
     except Exception as ex:
-        return_error(f'Failed to execute MarkdownToHTML. Error: {str(ex)}')
+        return_error(f"Failed to execute MarkdownToHTML. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+""" ENTRY POINT """
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

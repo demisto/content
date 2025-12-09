@@ -1,0 +1,56 @@
+{
+    "value": [
+        {
+            "@odata.context": "$metadata#articles/$entity",
+            "id": "12345",
+            "createdDateTime": "2023-03-03T18:20:22.677Z",
+            "lastUpdatedDateTime": "2023-03-03T18:20:22.677Z",
+            "title": "Test Article 1",
+            "summary": {
+                "content": "Trend Micro discusses Batloader campaigns that were observed in the last quarter of 2022.",
+                "format": "markdown"
+            },
+            "isFeatured": "False",
+            "body": {
+                "content": "#### Description\r\nTrend Micro discusses Batloader...",
+                "format": "markdown"
+            },
+            "tags": [
+                "OSINT",
+                "Batloader",
+                "RoyalRansomware",
+                "Python",
+                "JavaScript",
+                "MSI",
+                "PowerShell"
+            ],
+            "imageUrl": "None"
+        },
+        {
+            "@odata.context": "$metadata#articles/$entity",
+            "id": "67890",
+            "createdDateTime": "2023-03-03T18:20:22.677Z",
+            "lastUpdatedDateTime": "2023-03-03T18:20:22.677Z",
+            "title": "Test Article 2",
+            "summary": {
+                "content": "Trend Micro discusses Batloader campaigns that were observed in the last quarter of 2022.",
+                "format": "markdown"
+            },
+            "isFeatured": "False",
+            "body": {
+                "content": "#### Description\r\nAnother content...",
+                "format": "markdown"
+            },
+            "tags": [
+                "OSINT",
+                "Batloader",
+                "RoyalRansomware",
+                "Python",
+                "JavaScript",
+                "MSI",
+                "PowerShell"
+            ],
+            "imageUrl": "None"
+        }
+    ]
+}

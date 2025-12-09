@@ -4,6 +4,9 @@ commonfields:
 name: Google BigQuery
 display: Google BigQuery
 category: Database
+sectionorder:
+- Connect
+- Collect
 description: Integration for Google BigQuery, a data warehouse for querying and analyzing large databases. In all commands, for any argument not specified, the BigQuery default value for that argument will be applied.
 configuration:
 - display: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
@@ -12,37 +15,45 @@ configuration:
   type: 4
   hidden: true
   required: false
+  section: Connect
 - displaypassword: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
   name: credentials_google_service
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
   defaultvalue: '1 days'
   type: 0
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Fetch query
   name: fetch_query
   type: 0
   required: false
+  section: Collect
 - display: Fetch time field
   additionalinfo: Will be used for determining the time-specifying field of each row. Default is CreationTime.
   name: fetch_time_field
   defaultvalue: 'CreationTime'
+  section: Collect
   type: 0
   required: false
 script:
@@ -101,6 +112,8 @@ script:
       - WRITE_TRUNCATE
       - WRITE_APPEND
       description: Specifies the action that occurs if the destination table already exists.
+    - name: project_id
+      description: ID of the project used to execute the current query.
     outputs:
     - contextPath: BigQuery.Query
       description: The query performed.
@@ -109,7 +122,7 @@ script:
       description: The table rows the given query returned.
       type: Unknown
     description: Performs a query on BigQuery.
-  dockerimage: demisto/bigquery:1.0.0.117465
+  dockerimage: demisto/bigquery:1.0.0.3530104
   subtype: python3
   isfetch: true
 fromversion: 5.0.0

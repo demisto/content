@@ -1,16 +1,17 @@
 from datetime import datetime
-import pytest
-import OpenPhish_v2
+
 import demistomock as demisto
+import OpenPhish_v2
+import pytest
+from freezegun import freeze_time
 from OpenPhish_v2 import (
     Client,
     _is_reload_needed,
-    remove_backslash,
     reload_command,
+    remove_backslash,
     status_command,
     url_command,
 )
-from freezegun import freeze_time
 from test_data.api_raw import RAW_DATA
 
 MOCK_URL = "http://openphish.com"
@@ -77,12 +78,12 @@ RELOADED_DATA = [
         True,
     ),
 ]
-INTEGRATION_NAME = 'OpenPhish'
+INTEGRATION_NAME = "OpenPhish"
 
 
 @pytest.fixture(autouse=True)
 def handle_calling_context(mocker):
-    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
+    mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationBrand": INTEGRATION_NAME}})
 
 
 @pytest.mark.parametrize("client,data,output", RELOADED_DATA)
@@ -108,47 +109,38 @@ LINKS = [("goo.co/", "goo.co"), ("goo.co", "goo.co")]
 @pytest.mark.parametrize("url, expected_result", LINKS)
 def test_remove_backslash(url: str, expected_result: str):
     """
-       Given:
-           - string representing url
+    Given:
+        - string representing url
 
-       When:
-           - saving data from to the integration context or checking a specific url
+    When:
+        - saving data from to the integration context or checking a specific url
 
-       Then:
-           - checks the url format is without a backslash as last character
+    Then:
+        - checks the url format is without a backslash as last character
 
-       """
+    """
     assert remove_backslash(url) == expected_result
 
 
 def test_reload_command(mocker):
     """
-           When:
-               - reloading data from to the api to integration context
+    When:
+        - reloading data from to the api to integration context
 
-           Then:
-               - checks if the reloading finished successfully
+    Then:
+        - checks if the reloading finished successfully
 
-           """
+    """
     mock_data_from_api = RAW_DATA
     mocker.patch.object(Client, "http_request", return_value=mock_data_from_api)
     mocker.patch.object(demisto, "setIntegrationContext")
-    client = Client(
-        url=MOCK_URL, use_ssl=False, use_proxy=False, fetch_interval_hours=1
-    )
+    client = Client(url=MOCK_URL, use_ssl=False, use_proxy=False, fetch_interval_hours=1)
     status = reload_command(client)
-    assert (
-        status.readable_output
-        == "Database was updated successfully to the integration context."
-    )
+    assert status.readable_output == "Database was updated successfully to the integration context."
 
 
 STANDARD_NOT_LOADED_MSG = "OpenPhish Database Status\nDatabase not loaded.\n"
-STANDARD_4_LOADED_MSG = (
-    "OpenPhish Database Status\n"
-    "Total **4** URLs loaded.\n"
-    "Last load time **Thu Oct 01 2020 06:00:00 (UTC)**\n"
-)
+STANDARD_4_LOADED_MSG = "OpenPhish Database Status\nTotal **4** URLs loaded.\nLast load time **Thu Oct 01 2020 06:00:00 (UTC)**\n"
 CONTEXT_MOCK_WITH_STATUS = [
     ({}, STANDARD_NOT_LOADED_MSG),  # case no data in memory
     (
@@ -316,7 +308,9 @@ def test_url_command(mocker, url, context, expected_results):
 
     """
     mocker.patch.object(
-        demisto, "getIntegrationContext", return_value=context,
+        demisto,
+        "getIntegrationContext",
+        return_value=context,
     )
     mocker.patch.object(OpenPhish_v2, "_is_reload_needed", return_value=False)
     client = Client(MOCK_URL, True, False, 1)
@@ -324,7 +318,5 @@ def test_url_command(mocker, url, context, expected_results):
     assert len(results) >= 1
     for i in range(len(results)):
         output = results[i].to_context().get("EntryContext", {})
-        assert output.get(
-            "URL(val.Data && val.Data == obj.Data)", []
-        ) == expected_results[i].get("URL")
+        assert output.get("URL(val.Data && val.Data == obj.Data)", []) == expected_results[i].get("URL")
         assert output.get(DBOT_KEY, []) == expected_results[i].get("DBOTSCORE")

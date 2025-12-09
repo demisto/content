@@ -1,0 +1,35 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"CybelAngel"
+	],
+	"caseInsensitive": true,
+	"cliName": "cybelangelusergroups",
+	"closeForm": false,
+	"content": true,
+	"description": "UserGroups attributed to the Incident report",
+	"editForm": true,
+	"hidden": false,
+	"id": "incident_cybelangelusergroups",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "CybelAngel UserGroups",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"ownerOnly": false,
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"threshold": 72,
+	"group": 0,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": false,
+	"version": -1,
+	"fromVersion": "6.2.0"
+}

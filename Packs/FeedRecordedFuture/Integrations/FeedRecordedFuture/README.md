@@ -1,5 +1,6 @@
 Ingests indicators from Recorded Future feeds into Cortex XSOAR.
 This integration was integrated and tested with Recorded Future Feed
+
 ## Configure Recorded Future Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -27,7 +28,9 @@ This integration was integrated and tested with Recorded Future Feed
     | IOC Risk Score Threshold | If selected, will be used to filter out the ingested indicators, and only indicators with equivalent and higher risk score will be ingested into XSOAR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Notes
+
 1. It is highly recommended to not create multiple instances of the same indicator type, even when fetching both from fusion and connectApi. Creating multiple instances with same indicator type will lead to duplicate indicators being fetched which can cause performance issues for the server.
 2. Because of restrictions on the API side, it is strongly advisable to maintain the number of indicators below 100,000 per instance. Exceeding this limit may result in unforeseen expiration of indicators beyond that threshold.
 3. Recommended interval for fetching indicators according to Recorded Future documentation:
@@ -39,6 +42,7 @@ This integration was integrated and tested with Recorded Future Feed
     | Hash | 1 Day. |
     | URL | 2 Hours. |
     | Vulnerability | 2 Hours. |
+
 4. Per instance configuration, it is recommended to use either `connectApi` or `fusion` as a service for chosen indicator type, and not both, as most of the data between both services is duplicated.
 5. The feed size can be changed according to the chosen indicator type:
     - IP - As of September 24, 2020, this risk list includes over 5.9k records.
@@ -47,53 +51,53 @@ This integration was integrated and tested with Recorded Future Feed
     - URL - This risk list includes 100,000 records.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### rf-feed-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 #### Base Command
 
 `rf-feed-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 10. Default is 10. | Required | 
-| indicator_type | The indicator type. Can be "ip", "domain", "hash", "vulnerability" or "url". Possible values are: ip, domain, hash, url, vulnerability. | Optional | 
-
+| limit | The maximum number of results to return. The default value is 10. Default is 10. | Required |
+| indicator_type | The indicator type. Can be "ip", "domain", "hash", "vulnerability" or "url". Possible values are: ip, domain, hash, url, vulnerability. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
-
 ### rf-feed-get-risk-rules
+
 ***
 Get a list of the risk rules available for an indicator,
 To limit the 'connectApi' service indicators list.
 
-
 #### Base Command
 
 `rf-feed-get-risk-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_type | The indicator type. Possible values are: ip, domain, hash, url, vulnerability. | Required | 
-
+| indicator_type | The indicator type. Possible values are: ip, domain, hash, url, vulnerability. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RecordedFutureFeed.RiskRule.Name | String | The risk rule name. | 
-| RecordedFutureFeed.RiskRule.Description | String | The risk rule description. | 
-| RecordedFutureFeed.RiskRule.Criticality | String | The risk rule criticality. | 
-
+| RecordedFutureFeed.RiskRule.Name | String | The risk rule name. |
+| RecordedFutureFeed.RiskRule.Description | String | The risk rule description. |
+| RecordedFutureFeed.RiskRule.Criticality | String | The risk rule criticality. |
 
 ### Troubleshooting
 

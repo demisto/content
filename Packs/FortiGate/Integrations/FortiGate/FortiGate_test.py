@@ -1,6 +1,7 @@
 import json
 import os
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import CommonServerPython
 import FortiGate
@@ -21,7 +22,7 @@ def load_mock_response(file_name: str) -> dict[str, Any]:
     """
     file_path = os.path.join(TEST_DATA, file_name)
 
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -187,11 +188,9 @@ def test_get_service_type_success(args: dict[str, Any], expected_result: str):
         (
             {},
             (
-                (
-                    "No protocol type arguments were fully set."
-                    " Please provide arguments from one of the following protocol types:"
-                    " ['TCP/UDP/SCTP', 'IP', 'ICMP/ICMP6']"
-                )
+                "No protocol type arguments were fully set."
+                " Please provide arguments from one of the following protocol types:"
+                " ['TCP/UDP/SCTP', 'IP', 'ICMP/ICMP6']"
             ),
         ),
         (
@@ -740,9 +739,7 @@ def test_handle_group_items_by_action(input_items, action, current_items, expect
         ),
     ],
 )
-def test_handle_action_for_port_ranges(
-    obj, action, tcp_port_ranges, udp_port_ranges, sctp_port_ranges, expected_result
-):
+def test_handle_action_for_port_ranges(obj, action, tcp_port_ranges, udp_port_ranges, sctp_port_ranges, expected_result):
     """Test the handle_action_for_port_ranges function with different actions and port ranges.
 
     Scenarios:
@@ -1402,10 +1399,7 @@ def test_create_and_update_commands(
 
     command_results = command(mock_client, args)
 
-    assert (
-        command_results.readable_output
-        == f"## The firewall {firewall_object} '{identifier}' was successfully {action}."
-    )
+    assert command_results.readable_output == f"## The firewall {firewall_object} '{identifier}' was successfully {action}."
     assert command_results.raw_response == response
     assert command_results.outputs == outputs
     assert command_results.outputs_prefix == outputs_prefix
@@ -1589,9 +1583,7 @@ def test_update_group_commands(
 
     command_results = command(mock_client, args)
 
-    assert (
-        command_results.readable_output == f"## The firewall {firewall_object} '{identifier}' was successfully updated."
-    )
+    assert command_results.readable_output == f"## The firewall {firewall_object} '{identifier}' was successfully updated."
     assert command_results.raw_response == response2
     assert command_results.outputs == outputs
     assert command_results.outputs_prefix == outputs_prefix
@@ -1804,9 +1796,9 @@ def test_update_firewall_policy_command_error(mock_client: FortiGate.Client):
 
 def test_list_firewall_policies_return_all_policy_name(mock_client: FortiGate.Client, requests_mock):
     """
-        Given: Args to run list_firewall_policies command with policyName to filter by which does not match any policy.
-        When: Running list_firewall_policies command.
-        Then: Validate no results are returned.
+    Given: Args to run list_firewall_policies command with policyName to filter by which does not match any policy.
+    When: Running list_firewall_policies command.
+    Then: Validate no results are returned.
     """
 
     args = {
@@ -1814,7 +1806,7 @@ def test_list_firewall_policies_return_all_policy_name(mock_client: FortiGate.Cl
         "filter_field": "Lior",
         "filter_value": "SB",
         "format_fields": ["I", "Choose", "You"],
-        "policyName": "Non-exist-policy"
+        "policyName": "Non-exist-policy",
     }
 
     response = load_mock_response("policy_response.json")

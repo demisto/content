@@ -1,8 +1,7 @@
-from CommonServerPython import *
-
 import pickle
 import uuid
 
+from CommonServerPython import *
 from GetIncidentsApiModule import *
 
 
@@ -27,7 +26,7 @@ def to_file_entry(incidents: list[dict], output_format: str) -> dict[str, Any]:
                 "Filename": file_name,
                 "FileFormat": output_format,
             },
-        }
+        },
     }
 
 

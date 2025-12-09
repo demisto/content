@@ -1,12 +1,13 @@
-import urllib3
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from keepercommander.params import KeeperParams
-from keepercommander.auth.login_steps import LoginStepDeviceApproval, DeviceApprovalChannel, LoginStepPassword
-from keepercommander import utils, crypto, api
-from keepercommander.loginv3 import LoginV3Flow, LoginV3API, InvalidDeviceToken
-from keepercommander.proto import APIRequest_pb2
 from datetime import datetime
+
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
+from keepercommander import api, crypto, utils
+from keepercommander.auth.login_steps import DeviceApprovalChannel, LoginStepDeviceApproval, LoginStepPassword
+from keepercommander.loginv3 import InvalidDeviceToken, LoginV3API, LoginV3Flow
+from keepercommander.params import KeeperParams
+from keepercommander.proto import APIRequest_pb2
 
 """ CONSTANTS """
 
@@ -27,9 +28,7 @@ DEVICE_ALREADY_REGISTERED = (
     "Device is already registered, try running the 'keeper-security-register-complete'"
     " command without supplying a code argument."
 )
-SSO_REDIRECT = (
-    "Login was redirected to a cloud SSO. Please disable SSO redirect to continue."
-)
+SSO_REDIRECT = "Login was redirected to a cloud SSO. Please disable SSO redirect to continue."
 LAST_RUN = "Last Run"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
@@ -252,17 +251,17 @@ class Client:
         resp = self.save_device_tokens(
             encrypted_device_token=encryptedDeviceToken,
         )
-        if resp.loginState == APIRequest_pb2.DEVICE_APPROVAL_REQUIRED:
-            # client goes to “standard device approval”
+        if resp.loginState == APIRequest_pb2.DEVICE_APPROVAL_REQUIRED:  # pylint: disable=no-member
+            # client goes to "standard device approval"
             device_approval.send_push(
                 self.keeper_params,
                 DeviceApprovalChannel.Email,
                 encryptedDeviceToken,
                 resp.encryptedLoginToken,
             )
-        elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:
+        elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # pylint: disable=no-member
             raise DemistoException(DEVICE_ALREADY_REGISTERED)
-        elif resp.loginState == APIRequest_pb2.REDIRECT_CLOUD_SSO:
+        elif resp.loginState == APIRequest_pb2.REDIRECT_CLOUD_SSO:  # pylint: disable=no-member
             raise DemistoException(SSO_REDIRECT)
         else:
             raise DemistoException(f"Unknown login state {resp.loginState}")
@@ -284,7 +283,7 @@ class Client:
             DemistoException: When trying to verify the device registration, and an error occurs.
         """
         resp = LoginV3API.startLoginMessage(self.keeper_params, encrypted_device_token)
-        if resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:
+        if resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # pylint: disable=no-member
             salt = api.get_correct_salt(resp.salt)
             password_step = self.PasswordStep(salt_bytes=salt.salt, salt_iterations=salt.iterations)
             verify_password_response = password_step.verify_password(self.keeper_params, encrypted_login_token)
@@ -521,7 +520,7 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

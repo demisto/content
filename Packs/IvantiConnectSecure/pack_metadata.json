@@ -2,24 +2,30 @@
     "name": "Ivanti Connect Secure",
     "description": "XSIAM Modeling & Parsing Rules for ICS (Ivanti Connect Secure).",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network"
+    ],
     "useCases": [],
     "keywords": [
-        "Ivanti",
-        "Pulse",
-        "Pulse Connect Secure",
-        "Ivanti Connect Secure",
-        "Connect Secure",
-        "VPN"
+        "Pulse"
     ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

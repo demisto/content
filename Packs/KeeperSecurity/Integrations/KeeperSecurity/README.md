@@ -3,7 +3,6 @@ This integration was integrated and tested with version 16.11.8 of Keeper Comman
 
 ## Configure Keeper Secrets Manager Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The server URL. For more help, checkout the 'Server Regions' section in the description. | True |
@@ -12,7 +11,6 @@ This integration was integrated and tested with version 16.11.8 of Keeper Comman
 | Maximum number of Alerts to fetch. | The maximum number of Alert events to fetch. |  |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 

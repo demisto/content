@@ -1,0 +1,120 @@
+{
+    "reports": [
+        {
+            "id": "8bb43081-3349-4c89-b301-8dff0dcca56e",
+            "severity": 4,
+            "stream": "34bb7275-9c93-481c-a256-2d4089210e5a",
+            "status": "open",
+            "abstract": "Incident report about a detected open web server with vulnerabilities.",
+            "created_at": "2021-12-01T15:44:49.852033Z",
+            "detected_at": "2021-12-01T10:45:00+00:00",
+            "incident_id": "YAZ1MQ",
+            "incident_type": "cve",
+            "ip": "0.0.0.0",
+            "keywords": [
+                {
+                    "id": "46ba52b6-c789-47ea-adf7-1af9e08acc40",
+                    "name": "SEEGAL"
+                }
+            ],
+            "risks": [
+                {
+                    "type": "vulnerability",
+                    "message": "CVEs are publicly known vulnerabilities and are often patchable."
+                }
+            ],
+            "tags": [
+                "vulnerability",
+                "high-risk"
+            ],
+            "url": "https://example.com/reports/8bb43081-3349-4c89-b301-8dff0dcca56e"
+        },
+        {
+            "id": "1aa13072-1234-4abc-a011-1aff2cbbd123",
+            "severity": 3,
+            "stream": "12bb8276-8c23-4e9f-b307-1d8089211e4a",
+            "status": "resolved",
+            "abstract": "Incident report about a phishing email targeting employees.",
+            "created_at": "2023-01-15T12:30:49.852033Z",
+            "detected_at": "2023-01-15T11:00:00+00:00",
+            "incident_id": "PHISH123",
+            "incident_type": "phishing",
+            "ip": "0.0.0.0",
+            "keywords": [
+                {
+                    "id": "12345abc-de67-890f-gh12-3456789ijkl",
+                    "name": "Phishing"
+                }
+            ],
+            "risks": [
+                {
+                    "type": "phishing",
+                    "message": "Phishing emails can lead to credential theft or malware installation."
+                }
+            ],
+            "tags": [
+                "phishing",
+                "medium-risk"
+            ],
+            "url": "https://example.com/reports/1aa13072-1234-4abc-a011-1aff2cbbd123"
+        },
+        {
+            "id": "9cc44093-9876-5dfg-bc90-8dgg0fccb876",
+            "severity": 5,
+            "stream": "56cc4321-1d56-3a45-c780-5b6789212e3a",
+            "status": "open",
+            "abstract": "Incident report about a ransomware attack targeting sensitive data.",
+            "created_at": "2023-03-12T09:15:22.852033Z",
+            "detected_at": "2023-03-12T08:45:00+00:00",
+            "incident_id": "RANS567",
+            "incident_type": "ransomware",
+            "ip": "0.0.0.0",
+            "keywords": [
+                {
+                    "id": "98ba98f6-1111-44ef-bb12-56abcd123456",
+                    "name": "Ransomware"
+                }
+            ],
+            "risks": [
+                {
+                    "type": "ransomware",
+                    "message": "Ransomware attacks can encrypt sensitive data and disrupt operations."
+                }
+            ],
+            "tags": [
+                "ransomware",
+                "critical"
+            ],
+            "url": "https://example.com/reports/9cc44093-9876-5dfg-bc90-8dgg0fccb876"
+        },
+        {
+            "id": "4ff98024-5678-4cde-ba01-4ffc1eabb234",
+            "severity": 2,
+            "stream": "78cc5432-4a90-4c56-c870-8b6789213e4b",
+            "status": "closed",
+            "abstract": "Incident report about an exposed database containing customer information.",
+            "created_at": "2023-05-25T14:10:30.852033Z",
+            "detected_at": "2023-05-25T13:00:00+00:00",
+            "incident_id": "DBEX789",
+            "incident_type": "data_exposure",
+            "ip": "0.0.0.0",
+            "keywords": [
+                {
+                    "id": "12345def-6789-1234-abcd-0987654321fe",
+                    "name": "Data Exposure"
+                }
+            ],
+            "risks": [
+                {
+                    "type": "data_exposure",
+                    "message": "Exposed databases can lead to unauthorized access to sensitive data."
+                }
+            ],
+            "tags": [
+                "data-exposure",
+                "low-risk"
+            ],
+            "url": "https://example.com/reports/4ff98024-5678-4cde-ba01-4ffc1eabb234"
+        }
+    ]
+}

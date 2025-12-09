@@ -2169,5 +2169,6 @@ tests:
 - Endpoint Investigation Plan - Test
 marketplaces:
 - marketplacev2
+- platform
 - xpanse
 fromversion: 6.6.0

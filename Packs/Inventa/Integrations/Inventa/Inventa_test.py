@@ -11,21 +11,14 @@ you are implementing with your integration
 """
 
 import json
-import io
-from pytest import raises
-from Inventa import main, Client, format_pii_entities, generate_datasubject_payload, validate_incident_inputs_command
+
 import demistomock as demisto
+from Inventa import Client, format_pii_entities, generate_datasubject_payload, main, validate_incident_inputs_command
+from pytest import raises  # noqa: PT013
 
+constraints_cmds = ["inventa-get-datasubjects", "inventa-get-datasubject-id"]
 
-constraints_cmds = [
-    "inventa-get-datasubjects",
-    "inventa-get-datasubject-id"
-]
-
-datasubjectid_cmds = [
-    "inventa-get-sources",
-    "inventa-get-sources-piis"
-]
+datasubjectid_cmds = ["inventa-get-sources", "inventa-get-sources-piis"]
 
 ticket_cmds = [
     "inventa-get-datasubject-details",
@@ -34,20 +27,14 @@ ticket_cmds = [
     "inventa-get-dsar-files",
     "inventa-get-dsar-databases",
     "inventa-get-dsar-dataassets",
-    "inventa-get-datasubject-id-from-ticket"
+    "inventa-get-datasubject-id-from-ticket",
 ]
 
-reason_cmds = [
-    "inventa-create-ticket"
-]
+reason_cmds = ["inventa-create-ticket"]
 
-noarg_cmds = [
-    "inventa-get-entities"
-]
+noarg_cmds = ["inventa-get-entities"]
 
-mock_arguments_datasubjectid = {
-    "datasubject_id": "TEST_DATASUBJECT_ID"
-}
+mock_arguments_datasubjectid = {"datasubject_id": "TEST_DATASUBJECT_ID"}
 
 mock_arguments_constraints = {
     "national_id": "TEST_NATIONAL_ID",
@@ -62,26 +49,14 @@ mock_arguments_constraints = {
     "phone_number": "TEST_PHONE_NUMBER",
     "birthday": "TEST_BIRTHDAY",
     "city": "TEST_CITY",
-    "street_address": "TEST_STREET_ADDRESS"
+    "street_address": "TEST_STREET_ADDRESS",
 }
-mock_arguments_constraints_fail = {
-    "given_name": "TEST_GIVEN_NAME",
-    "surname": "TEST_SURNAME"
-}
-mock_arguments_ticket = {
-    "ticket_id": "TEST_TICKET_ID"
-}
+mock_arguments_constraints_fail = {"given_name": "TEST_GIVEN_NAME", "surname": "TEST_SURNAME"}
+mock_arguments_ticket = {"ticket_id": "TEST_TICKET_ID"}
 
-mock_arguments_reason_dsid = {
-    "reason": "TEST_REASON",
-    "datasubject_id": "TEST_DATASUBJECT_ID"
-}
+mock_arguments_reason_dsid = {"reason": "TEST_REASON", "datasubject_id": "TEST_DATASUBJECT_ID"}
 
-mock_demisto_params = {
-    "url": "--TEST URL--",
-    "apikey": "---TEST_API_KEY---",
-    "insecure": "True"
-}
+mock_demisto_params = {"url": "--TEST URL--", "apikey": "---TEST_API_KEY---", "insecure": "True"}
 
 
 def mock_params():
@@ -99,11 +74,11 @@ def mock_args(command_name):
         return mock_arguments_ticket
     if command_name in noarg_cmds:
         return {}
-    raise ValueError('Unimplemented command called: {}'.format(command_name))
+    raise ValueError(f"Unimplemented command called: {command_name}")
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -142,14 +117,14 @@ def mocker_automate(mocker, command_name, method_names):
     mocker.patch.object(demisto, "params", return_value=mock_params())
     mocker.patch.object(demisto, "args", return_value=mock_args(command_name))
     mocker.patch.object(demisto, "command", return_value=command_name)
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "results")
     for method_name in method_names:
         mocker.patch.object(Client, method_name, return_value=executeClient(method_name))
 
 
 def test_get_entities_cmd(mocker):
-    command_name = 'inventa-get-entities'
-    method_name = 'get_entities'
+    command_name = "inventa-get-entities"
+    method_name = "get_entities"
 
     mocker_automate(mocker, command_name, [method_name])
 
@@ -160,79 +135,7 @@ def test_get_entities_cmd(mocker):
 
 
 def test_get_datasubjects_cmd(mocker):
-    command_name = 'inventa-get-datasubjects'
-    method_name = 'get_datasubject'
-
-    mocker_automate(mocker, command_name, [method_name])
-
-    NATIONAL_ID = demisto.args().get("national_id", "")
-    PASSPORT_NUMBER = demisto.args().get("passport_number", "")
-    DRIVER_LICENSE = demisto.args().get("driver_license", "")
-    TAX_ID = demisto.args().get("tax_id", "")
-    CC_NUMBER = demisto.args().get("cc_number", "")
-    GIVEN_NAME = demisto.args().get("given_name", "")
-    SURNAME = demisto.args().get("surname", "")
-    FULL_NAME = demisto.args().get("full_name", "")
-    VEHICLE_NUMBER = demisto.args().get("vehicle_number", "")
-    PHONE_NUMBER = demisto.args().get("phone_number", "")
-    BIRTHDAY = demisto.args().get("birthday", "")
-    CITY = demisto.args().get("city", "")
-    STREET_ADDRESS = demisto.args().get("street_address", "")
-
-    # test presence of constraints
-    constraints = [
-        NATIONAL_ID,
-        PASSPORT_NUMBER,
-        DRIVER_LICENSE,
-        TAX_ID,
-        CC_NUMBER,
-        (GIVEN_NAME and VEHICLE_NUMBER),
-        (GIVEN_NAME and PHONE_NUMBER),
-        (GIVEN_NAME and SURNAME and BIRTHDAY),
-        (GIVEN_NAME and SURNAME and CITY and STREET_ADDRESS),
-        (FULL_NAME and BIRTHDAY),
-        (FULL_NAME and CITY and STREET_ADDRESS)
-    ]
-
-    constraint_passed = False
-    for constraint in constraints:
-        if constraint:
-            constraint_passed = True
-            break
-
-    assert constraint_passed
-
-    # test passed values
-    assert (NATIONAL_ID == "TEST_NATIONAL_ID")
-    assert (PASSPORT_NUMBER == "TEST_PASSPORT_NUMBER")
-    assert (DRIVER_LICENSE == "TEST_DRIVER_LICENSE")
-    assert (TAX_ID == "TEST_TAX_ID")
-    assert (CC_NUMBER == "TEST_CC_NUMBER")
-    assert (GIVEN_NAME == "TEST_GIVEN_NAME")
-    assert (SURNAME == "TEST_SURNAME")
-    assert (FULL_NAME == "TEST_FULL_NAME")
-    assert (VEHICLE_NUMBER == "TEST_VEHICLE_NUMBER")
-    assert (PHONE_NUMBER == "TEST_PHONE_NUMBER")
-    assert (BIRTHDAY == "TEST_BIRTHDAY")
-    assert (CITY == "TEST_CITY")
-    assert (STREET_ADDRESS == "TEST_STREET_ADDRESS")
-
-    main()
-    assert demisto.results.call_count == 1
-    results = demisto.results.call_args[0]
-
-    A = results[0]["Contents"]
-    B = mock_data.get(command_name, "")[0]
-
-    assert A["id"] == B["id"]
-    assert "|".join(A["personalInfo"]) == "|".join(B["personalInfo"])
-    assert A["sourceIds"] == B["sourceIds"]
-    assert A["rdaSourceIds"] == B["rdaSourceIds"]
-    assert A["timestamp"] == B["timestamp"]
-
-
-def test_get_datasubject_id_cmd(mocker):
-    command_name = 'inventa-get-datasubject-id'
+    command_name = "inventa-get-datasubjects"
     method_name = "get_datasubject"
 
     mocker_automate(mocker, command_name, [method_name])
@@ -263,7 +166,7 @@ def test_get_datasubject_id_cmd(mocker):
         (GIVEN_NAME and SURNAME and BIRTHDAY),
         (GIVEN_NAME and SURNAME and CITY and STREET_ADDRESS),
         (FULL_NAME and BIRTHDAY),
-        (FULL_NAME and CITY and STREET_ADDRESS)
+        (FULL_NAME and CITY and STREET_ADDRESS),
     ]
 
     constraint_passed = False
@@ -275,19 +178,91 @@ def test_get_datasubject_id_cmd(mocker):
     assert constraint_passed
 
     # test passed values
-    assert (NATIONAL_ID == "TEST_NATIONAL_ID")
-    assert (PASSPORT_NUMBER == "TEST_PASSPORT_NUMBER")
-    assert (DRIVER_LICENSE == "TEST_DRIVER_LICENSE")
-    assert (TAX_ID == "TEST_TAX_ID")
-    assert (CC_NUMBER == "TEST_CC_NUMBER")
-    assert (GIVEN_NAME == "TEST_GIVEN_NAME")
-    assert (SURNAME == "TEST_SURNAME")
-    assert (FULL_NAME == "TEST_FULL_NAME")
-    assert (VEHICLE_NUMBER == "TEST_VEHICLE_NUMBER")
-    assert (PHONE_NUMBER == "TEST_PHONE_NUMBER")
-    assert (BIRTHDAY == "TEST_BIRTHDAY")
-    assert (CITY == "TEST_CITY")
-    assert (STREET_ADDRESS == "TEST_STREET_ADDRESS")
+    assert NATIONAL_ID == "TEST_NATIONAL_ID"
+    assert PASSPORT_NUMBER == "TEST_PASSPORT_NUMBER"
+    assert DRIVER_LICENSE == "TEST_DRIVER_LICENSE"
+    assert TAX_ID == "TEST_TAX_ID"
+    assert CC_NUMBER == "TEST_CC_NUMBER"
+    assert GIVEN_NAME == "TEST_GIVEN_NAME"
+    assert SURNAME == "TEST_SURNAME"
+    assert FULL_NAME == "TEST_FULL_NAME"
+    assert VEHICLE_NUMBER == "TEST_VEHICLE_NUMBER"
+    assert PHONE_NUMBER == "TEST_PHONE_NUMBER"
+    assert BIRTHDAY == "TEST_BIRTHDAY"
+    assert CITY == "TEST_CITY"
+    assert STREET_ADDRESS == "TEST_STREET_ADDRESS"
+
+    main()
+    assert demisto.results.call_count == 1
+    results = demisto.results.call_args[0]
+
+    A = results[0]["Contents"]
+    B = mock_data.get(command_name, "")[0]
+
+    assert A["id"] == B["id"]
+    assert "|".join(A["personalInfo"]) == "|".join(B["personalInfo"])
+    assert A["sourceIds"] == B["sourceIds"]
+    assert A["rdaSourceIds"] == B["rdaSourceIds"]
+    assert A["timestamp"] == B["timestamp"]
+
+
+def test_get_datasubject_id_cmd(mocker):
+    command_name = "inventa-get-datasubject-id"
+    method_name = "get_datasubject"
+
+    mocker_automate(mocker, command_name, [method_name])
+
+    NATIONAL_ID = demisto.args().get("national_id", "")
+    PASSPORT_NUMBER = demisto.args().get("passport_number", "")
+    DRIVER_LICENSE = demisto.args().get("driver_license", "")
+    TAX_ID = demisto.args().get("tax_id", "")
+    CC_NUMBER = demisto.args().get("cc_number", "")
+    GIVEN_NAME = demisto.args().get("given_name", "")
+    SURNAME = demisto.args().get("surname", "")
+    FULL_NAME = demisto.args().get("full_name", "")
+    VEHICLE_NUMBER = demisto.args().get("vehicle_number", "")
+    PHONE_NUMBER = demisto.args().get("phone_number", "")
+    BIRTHDAY = demisto.args().get("birthday", "")
+    CITY = demisto.args().get("city", "")
+    STREET_ADDRESS = demisto.args().get("street_address", "")
+
+    # test presence of constraints
+    constraints = [
+        NATIONAL_ID,
+        PASSPORT_NUMBER,
+        DRIVER_LICENSE,
+        TAX_ID,
+        CC_NUMBER,
+        (GIVEN_NAME and VEHICLE_NUMBER),
+        (GIVEN_NAME and PHONE_NUMBER),
+        (GIVEN_NAME and SURNAME and BIRTHDAY),
+        (GIVEN_NAME and SURNAME and CITY and STREET_ADDRESS),
+        (FULL_NAME and BIRTHDAY),
+        (FULL_NAME and CITY and STREET_ADDRESS),
+    ]
+
+    constraint_passed = False
+    for constraint in constraints:
+        if constraint:
+            constraint_passed = True
+            break
+
+    assert constraint_passed
+
+    # test passed values
+    assert NATIONAL_ID == "TEST_NATIONAL_ID"
+    assert PASSPORT_NUMBER == "TEST_PASSPORT_NUMBER"
+    assert DRIVER_LICENSE == "TEST_DRIVER_LICENSE"
+    assert TAX_ID == "TEST_TAX_ID"
+    assert CC_NUMBER == "TEST_CC_NUMBER"
+    assert GIVEN_NAME == "TEST_GIVEN_NAME"
+    assert SURNAME == "TEST_SURNAME"
+    assert FULL_NAME == "TEST_FULL_NAME"
+    assert VEHICLE_NUMBER == "TEST_VEHICLE_NUMBER"
+    assert PHONE_NUMBER == "TEST_PHONE_NUMBER"
+    assert BIRTHDAY == "TEST_BIRTHDAY"
+    assert CITY == "TEST_CITY"
+    assert STREET_ADDRESS == "TEST_STREET_ADDRESS"
 
     main()
     assert demisto.results.call_count == 1
@@ -296,8 +271,8 @@ def test_get_datasubject_id_cmd(mocker):
 
 
 def test_get_sources_cmd(mocker):
-    command_name = 'inventa-get-sources'
-    method_name = 'get_sources'
+    command_name = "inventa-get-sources"
+    method_name = "get_sources"
 
     mocker_automate(mocker, command_name, [method_name])
 
@@ -325,8 +300,8 @@ def test_get_sources_cmd(mocker):
 
 
 def test_get_sources_piis_cmd(mocker):
-    command_name = 'inventa-get-sources-piis'
-    method_name = 'get_sources'
+    command_name = "inventa-get-sources-piis"
+    method_name = "get_sources"
 
     mocker_automate(mocker, command_name, [method_name])
 
@@ -343,7 +318,7 @@ def test_get_sources_piis_cmd(mocker):
 
 
 def test_create_ticket_cmd(mocker):
-    command_name = 'inventa-create-ticket'
+    command_name = "inventa-create-ticket"
     method_name_1 = "prepare_ticket"
     method_name_2 = "create_ticket"
 
@@ -359,7 +334,7 @@ def test_create_ticket_cmd(mocker):
 
 
 def test_get_datasubject_details_cmd(mocker):
-    command_name = 'inventa-get-datasubject-details'
+    command_name = "inventa-get-datasubject-details"
     method_name = "get_ticket"
 
     mocker_automate(mocker, command_name, [method_name])
@@ -372,8 +347,8 @@ def test_get_datasubject_details_cmd(mocker):
 
 
 def test_get_datasubjectid_from_ticket_cmd(mocker):
-    command_name = 'inventa-get-datasubject-id-from-ticket'
-    method_name = 'get_ticket'
+    command_name = "inventa-get-datasubject-id-from-ticket"
+    method_name = "get_ticket"
 
     mocker_automate(mocker, command_name, [method_name])
 
@@ -385,7 +360,7 @@ def test_get_datasubjectid_from_ticket_cmd(mocker):
 
 
 def test_get_dsar_piis_cmd(mocker):
-    command_name = 'inventa-get-dsar-piis'
+    command_name = "inventa-get-dsar-piis"
     method_name = "get_dsar"
 
     mocker_automate(mocker, command_name, [method_name])
@@ -404,7 +379,7 @@ def test_get_dsar_piis_cmd(mocker):
 
 
 def test_get_dsar_files_cmd(mocker):
-    command_name = 'inventa-get-dsar-files'
+    command_name = "inventa-get-dsar-files"
     method_name = "get_dsar"
 
     mocker_automate(mocker, command_name, [method_name])
@@ -422,7 +397,7 @@ def test_get_dsar_files_cmd(mocker):
 
     assert len(files_1) == len(files_2)
 
-    for index in range(0, len(files_1)):
+    for index in range(len(files_1)):
         file_1 = files_1[index]
         file_2 = files_2[index]
         entity_types_1 = file_1["entityTypes"]
@@ -440,7 +415,7 @@ def test_get_dsar_files_cmd(mocker):
 
 
 def test_get_dsar_transactions_cmd(mocker):
-    command_name = 'inventa-get-dsar-transactions'
+    command_name = "inventa-get-dsar-transactions"
     method_name = "get_dsar"
 
     mocker_automate(mocker, command_name, [method_name])
@@ -453,7 +428,7 @@ def test_get_dsar_transactions_cmd(mocker):
 
 
 def test_get_dsar_databases_cmd(mocker):
-    command_name = 'inventa-get-dsar-databases'
+    command_name = "inventa-get-dsar-databases"
     method_name = "get_dsar"
 
     mocker_automate(mocker, command_name, [method_name])
@@ -471,7 +446,7 @@ def test_get_dsar_databases_cmd(mocker):
 
     assert len(databases_1) == len(databases_2)
 
-    for index in range(0, len(databases_1)):
+    for index in range(len(databases_1)):
         db_1 = databases_1[index]
         db_2 = databases_2[index]
         assert db_1["id"] == db_2["id"]
@@ -485,7 +460,7 @@ def test_get_dsar_databases_cmd(mocker):
 
 
 def test_get_dsar_dataassets_cmd(mocker):
-    command_name = 'inventa-get-dsar-dataassets'
+    command_name = "inventa-get-dsar-dataassets"
     method_name = "get_dsar"
 
     mocker_automate(mocker, command_name, [method_name])
@@ -503,7 +478,7 @@ def test_get_dsar_dataassets_cmd(mocker):
 
     assert len(dataassets_1) == len(dataassets_2)
 
-    for index in range(0, len(dataassets_1)):
+    for index in range(len(dataassets_1)):
         dataasset_1 = dataassets_1[index]
         dataasset_2 = dataassets_2[index]
         piis_1 = dataasset_1["piis"]
@@ -523,7 +498,7 @@ def test_get_dsar_dataassets_cmd(mocker):
 
 
 def test_validate_incident_inputs_cmd(mocker):
-    command_name = 'inventa-get-dsar-dataassets'
+    command_name = "inventa-get-dsar-dataassets"
     mocker_automate(mocker, command_name, [])
 
     NATIONAL_ID = demisto.args().get("national_id", "")
@@ -556,7 +531,7 @@ def test_validate_incident_inputs_cmd(mocker):
         (GIVEN_NAME and SURNAME and BIRTHDAY),
         (GIVEN_NAME and SURNAME and CITY and STREET_ADDRESS),
         (FULL_NAME and BIRTHDAY),
-        (FULL_NAME and CITY and STREET_ADDRESS)
+        (FULL_NAME and CITY and STREET_ADDRESS),
     ]
 
     constraint_passed = False
@@ -572,88 +547,41 @@ def test_validate_incident_inputs_cmd(mocker):
 
 
 def test_generate_datasubject_payload():
-
-    pii_entities = [
-        "CC_CVV",
-        "CC_NUMBER",
-        "CC_TYPE"
-    ]
+    pii_entities = ["CC_CVV", "CC_NUMBER", "CC_TYPE"]
     test_kwargs = {
         "national_id": "TEST NATIONAL ID",
         "given_name": "TEST NAME",
         "cc_cvv": "TEST_CC_CVV",
         "cc_number": "TEST_CC_NUMBER",
-        "cc_type": "TEST_CC_TYPE"
+        "cc_type": "TEST_CC_TYPE",
     }
     payload = generate_datasubject_payload(pii_entities, **test_kwargs)
     test_payload = [
-        {
-            "piiEntityType": "CC_CVV",
-            "piiEntityValue": "TEST_CC_CVV"
-        },
-        {
-            "piiEntityType": "CC_NUMBER",
-            "piiEntityValue": "TEST_CC_NUMBER"
-        },
-        {
-            "piiEntityType": "CC_TYPE",
-            "piiEntityValue": "TEST_CC_TYPE"
-        },
+        {"piiEntityType": "CC_CVV", "piiEntityValue": "TEST_CC_CVV"},
+        {"piiEntityType": "CC_NUMBER", "piiEntityValue": "TEST_CC_NUMBER"},
+        {"piiEntityType": "CC_TYPE", "piiEntityValue": "TEST_CC_TYPE"},
     ]
     assert test_payload == payload
 
 
 def test_format_pii_entities():
     entities = {
-        "Demographic": [
-            {
-                "entityName": "BIRTHDAY",
-                "sensitive": False
-            }
-        ],
+        "Demographic": [{"entityName": "BIRTHDAY", "sensitive": False}],
         "Digital Identification": [
-            {
-                "entityName": "BROWSER_USER_AGENT",
-                "sensitive": False
-            },
-            {
-                "entityName": "GUID",
-                "sensitive": False
-            }
+            {"entityName": "BROWSER_USER_AGENT", "sensitive": False},
+            {"entityName": "GUID", "sensitive": False},
         ],
         "Financial information": [
-            {
-                "entityName": "ACCOUNT_NUMBER",
-                "sensitive": False
-            },
-            {
-                "entityName": "CC_CVV",
-                "sensitive": True
-            },
-            {
-                "entityName": "CC_EXPIRES",
-                "sensitive": False
-            },
-            {
-                "entityName": "CC_NUMBER",
-                "sensitive": False
-            },
-            {
-                "entityName": "CC_TYPE",
-                "sensitive": False
-            }
-        ]
+            {"entityName": "ACCOUNT_NUMBER", "sensitive": False},
+            {"entityName": "CC_CVV", "sensitive": True},
+            {"entityName": "CC_EXPIRES", "sensitive": False},
+            {"entityName": "CC_NUMBER", "sensitive": False},
+            {"entityName": "CC_TYPE", "sensitive": False},
+        ],
     }
 
-    test_value = {"entities": [
-        "BIRTHDAY",
-        "BROWSER_USER_AGENT",
-        "GUID",
-        "ACCOUNT_NUMBER",
-        "CC_CVV",
-        "CC_EXPIRES",
-        "CC_NUMBER",
-        "CC_TYPE"]
+    test_value = {
+        "entities": ["BIRTHDAY", "BROWSER_USER_AGENT", "GUID", "ACCOUNT_NUMBER", "CC_CVV", "CC_EXPIRES", "CC_NUMBER", "CC_TYPE"]
     }
 
     assert format_pii_entities(entities) == test_value

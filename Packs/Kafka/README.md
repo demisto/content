@@ -1,6 +1,6 @@
 Kafka is an open source distributed streaming platform. Use the Kafka integration to manage messages and partitions and to fetch Kafka messages to create incidents in Cortex XSOAR.
 
-## What does this pack do? 
+## What does this pack do?
 
 - Fetches Kafka messages to create Cortex XSOAR incidents.
 - Publishes messages to Kafka.

@@ -1,0 +1,37 @@
+{
+    "data": {
+        "entity": {
+            "type": "file/sha256",
+            "value": "6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789"
+        },
+        "risk": {
+            "malicious_score": 100,
+            "detected_activities": [
+                {
+                    "type": "malware",
+                    "observation_date": "2025-03-05T14:47:43.994848+00:00",
+                    "description": "",
+                    "confidence": 100,
+                    "occurrences_count": 1
+                },
+                {
+                    "type": "malware_payload",
+                    "observation_date": "2025-02-12T21:08:13+00:00",
+                    "description": "Detected in 1 source(s). Recognized as Trojan.Agent.CYZT.",
+                    "confidence": 80,
+                    "occurrences_count": 1
+                }
+            ],
+            "occurrences_count": 2
+        },
+        "enrichment": {
+            "related_entities": null,
+            "filenames": [
+                "rifaien2-TwxvxoHtj44icOI0.exe"
+            ],
+            "first_seen": "2025-02-12T21:08:13+00:00",
+            "download_urls": []
+        },
+        "benign": false
+    }
+}

@@ -26,6 +26,11 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0",
+    "itemVersion": "1.4.2",
+    "openEnded": false,
+    "systemAssociatedTypes": [
+        "GIB OSI Git Leak"
+    ],
     "marketplaces": [
         "xsoar"
     ]

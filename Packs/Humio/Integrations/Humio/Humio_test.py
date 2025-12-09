@@ -53,14 +53,13 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 import json
-import io
 import os
 import demistomock as demisto
 
 
 def util_load_json(path):
     path = os.path.join(os.path.dirname(__file__), path)
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -74,9 +73,7 @@ def test_humio_query(requests_mock):
     from Humio import Client, humio_query
 
     mock_response = util_load_json("test_data/query_results.json")
-    requests_mock.post(
-        "https://test.com/api/v1/repositories/sandbox/query", json=mock_response
-    )
+    requests_mock.post("https://test.com/api/v1/repositories/sandbox/query", json=mock_response)
 
     client = Client(base_url="https://test.com", verify=False, proxies=None)
     args = {
@@ -96,12 +93,8 @@ def test_humio_query_job(requests_mock):
     """Tests that a humio queryjob can be issued"""
     from Humio import Client, humio_query_job
 
-    mock_response = json.loads(
-        """{"id": "1-xK13lC_jjtOYqPR1onSdlLm8","queryOnView": "<R:tail(limit=1.0)>"}"""
-    )
-    requests_mock.post(
-        "https://test.com/api/v1/repositories/sandbox/queryjobs", json=mock_response
-    )
+    mock_response = json.loads("""{"id": "1-xK13lC_jjtOYqPR1onSdlLm8","queryOnView": "<R:tail(limit=1.0)>"}""")
+    requests_mock.post("https://test.com/api/v1/repositories/sandbox/queryjobs", json=mock_response)
 
     client = Client(base_url="https://test.com", verify=False, proxies=None)
     args = {
@@ -131,10 +124,7 @@ def test_humio_poll(requests_mock):
     args = {"id": "testid", "repository": "sandbox"}
 
     _, outputs, _ = humio_poll(client, args, headers)
-    assert (
-        outputs["Humio.Result(val.job_id == obj.job_id)"]["events"]
-        == mock_response["events"]
-    )
+    assert outputs["Humio.Result(val.job_id == obj.job_id)"]["events"] == mock_response["events"]
 
 
 def test_humio_list_alerts(requests_mock):
@@ -142,9 +132,7 @@ def test_humio_list_alerts(requests_mock):
     from Humio import Client, humio_list_alerts
 
     mock_response = util_load_json("test_data/list_alerts_results.json")
-    requests_mock.get(
-        "https://test.com/api/v1/repositories/sandbox/alerts", json=mock_response
-    )
+    requests_mock.get("https://test.com/api/v1/repositories/sandbox/alerts", json=mock_response)
 
     client = Client(base_url="https://test.com", verify=False, proxies=None)
     args = {"repository": "sandbox"}
@@ -235,11 +223,9 @@ def test_humio_get_notifier_by_id(requests_mock):
 def test_fetch_incidents(requests_mock, mocker):
     from Humio import Client, fetch_incidents
 
-    mocker.patch.object(demisto, "params", return_value={
-        'queryParameter': '0',
-        'queryRepository': 'sandbox',
-        'queryTimeZoneOffsetMinutes': '0'
-    })
+    mocker.patch.object(
+        demisto, "params", return_value={"queryParameter": "0", "queryRepository": "sandbox", "queryTimeZoneOffsetMinutes": "0"}
+    )
 
     mock_response = util_load_json("test_data/fetch_incidents.json")
     requests_mock.post(

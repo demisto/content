@@ -1,0 +1,16 @@
+{
+    "GoogleChronicleBackstory.VerifyReferenceList(val.command_name == obj.command_name)": {
+        "errors": [
+            {
+                "lineNumber": 1,
+                "errorMessage": "invalid cidr pattern L1"
+            },
+            {
+                "lineNumber": 3,
+                "errorMessage": "invalid cidr pattern L3"
+            }
+        ],
+        "command_name": "gcb-verify-reference-list",
+        "success": false
+    }
+}

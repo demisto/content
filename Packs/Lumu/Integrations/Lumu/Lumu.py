@@ -34,34 +34,24 @@ status_msg_types = [
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers):
-        super().__init__(
-            base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=None
-        )
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=None)
         self.api_key = None
 
     def retrieve_labels_request(self, page, items):
         params = assign_params(page=page, items=items, key=self.api_key)
 
-        response = self._http_request(
-            "GET", "api/administration/labels", params=params
-        )
+        response = self._http_request("GET", "api/administration/labels", params=params)
 
         return response
 
     def retrieve_a_specific_label_request(self, label_id):
         params = assign_params(key=self.api_key)
 
-        response = self._http_request(
-            "GET",
-            f"api/administration/labels/{label_id}",
-            params=params
-        )
+        response = self._http_request("GET", f"api/administration/labels/{label_id}", params=params)
 
         return response
 
-    def retrieve_incidents_request(
-        self, page, items, fromdate, todate, status, adversary_types, labels
-    ):
+    def retrieve_incidents_request(self, page, items, fromdate, todate, status, adversary_types, labels):
         params = assign_params(page=page, items=items, key=self.api_key)
         data = {
             "adversary-types": adversary_types,
@@ -71,31 +61,21 @@ class Client(BaseClient):
             "toDate": todate,
         }
 
-        response = self._http_request(
-            "POST", "api/incidents/all", params=params, json_data=data
-        )
+        response = self._http_request("POST", "api/incidents/all", params=params, json_data=data)
 
         return response
 
     def retrieve_a_specific_incident_details_request(self, lumu_incident_id):
         params = assign_params(key=self.api_key)
 
-        response = self._http_request(
-            "GET",
-            f"api/incidents/{lumu_incident_id}/details",
-            params=params
-        )
+        response = self._http_request("GET", f"api/incidents/{lumu_incident_id}/details", params=params)
 
         return response
 
     def retrieve_a_specific_incident_context_request(self, lumu_incident_id, hash):
         params = assign_params(hash=hash, key=self.api_key)
 
-        response = self._http_request(
-            "GET",
-            f"api/incidents/{lumu_incident_id}/context",
-            params=params
-        )
+        response = self._http_request("GET", f"api/incidents/{lumu_incident_id}/context", params=params)
 
         return response
 
@@ -104,11 +84,7 @@ class Client(BaseClient):
         data = {"comment": comment}
 
         response = self._http_request(
-            "POST",
-            f"api/incidents/{lumu_incident_id}/comment",
-            params=params,
-            json_data=data,
-            resp_type="text"
+            "POST", f"api/incidents/{lumu_incident_id}/comment", params=params, json_data=data, resp_type="text"
         )
 
         return response
@@ -117,9 +93,7 @@ class Client(BaseClient):
         params = assign_params(page=page, items=items, key=self.api_key)
         data = {"adversary-types": adversary_types, "labels": labels}
 
-        response = self._http_request(
-            "POST", "api/incidents/open", params=params, json_data=data
-        )
+        response = self._http_request("POST", "api/incidents/open", params=params, json_data=data)
 
         return response
 
@@ -140,35 +114,21 @@ class Client(BaseClient):
         params = assign_params(page=page, items=items, key=self.api_key)
         data = {"adversary-types": adversary_types, "labels": labels}
 
-        response = self._http_request(
-            "POST",
-            "api/incidents/closed",
-            params=params,
-            json_data=data
-        )
+        response = self._http_request("POST", "api/incidents/closed", params=params, json_data=data)
 
         return response
 
     def retrieve_endpoints_by_incident_request(self, lumu_incident_id, page, items):
         params = assign_params(page=page, items=items, key=self.api_key)
 
-        response = self._http_request(
-            "POST",
-            f"api/incidents/{lumu_incident_id}/endpoints-contacts",
-            params=params
-        )
+        response = self._http_request("POST", f"api/incidents/{lumu_incident_id}/endpoints-contacts", params=params)
 
         return response
 
     def mark_incident_as_read_request(self, lumu_incident_id):
         params = assign_params(key=self.api_key)
 
-        response = self._http_request(
-            "POST",
-            f"api/incidents/{lumu_incident_id}/mark-as-read",
-            params=params,
-            resp_type="text"
-        )
+        response = self._http_request("POST", f"api/incidents/{lumu_incident_id}/mark-as-read", params=params, resp_type="text")
 
         return response
 
@@ -177,11 +137,7 @@ class Client(BaseClient):
         data = {"comment": comment}
 
         response = self._http_request(
-            "POST",
-            f"api/incidents/{lumu_incident_id}/mute",
-            params=params,
-            json_data=data,
-            resp_type="text"
+            "POST", f"api/incidents/{lumu_incident_id}/mute", params=params, json_data=data, resp_type="text"
         )
 
         return response
@@ -191,11 +147,7 @@ class Client(BaseClient):
         data = {"comment": comment}
 
         response = self._http_request(
-            "POST",
-            f"api/incidents/{lumu_incident_id}/unmute",
-            params=params,
-            json_data=data,
-            resp_type="text"
+            "POST", f"api/incidents/{lumu_incident_id}/unmute", params=params, json_data=data, resp_type="text"
         )
 
         return response
@@ -203,11 +155,7 @@ class Client(BaseClient):
     def consult_incidents_updates_through_rest_request(self, offset, items, time):
         params = assign_params(offset=offset, items=items, time=time, key=self.api_key)
 
-        response = self._http_request(
-            "GET",
-            "api/incidents/open-incidents/updates",
-            params=params
-        )
+        response = self._http_request("GET", "api/incidents/open-incidents/updates", params=params)
 
         return response
 
@@ -216,11 +164,7 @@ class Client(BaseClient):
         data = {"comment": comment}
 
         response = self._http_request(
-            "POST",
-            f"api/incidents/{lumu_incident_id}/close",
-            params=params,
-            json_data=data,
-            resp_type="text"
+            "POST", f"api/incidents/{lumu_incident_id}/close", params=params, json_data=data, resp_type="text"
         )
 
         return response
@@ -231,7 +175,7 @@ class Client(BaseClient):
 
 def get_hmac_sha256(key: Optional[str], comment: str):
     if key is None:
-        key = ''
+        key = ""
     return hmac.new(key.encode(), comment.encode(), hashlib.sha256).hexdigest()
 
 
@@ -254,15 +198,11 @@ def validate_hmac_sha256(key: str, comment_w_hmac: str, separator="hmacsha256:")
     if len(result) != 2:
         return False
     comment, hash_mac = result
-    if get_hmac_sha256(key, comment) == hash_mac:
-        return True
-    return False
+    return get_hmac_sha256(key, comment) == hash_mac
 
 
 def is_msg_from_third_party(key, comment):
-    if comment and validate_hmac_sha256(key=key, comment_w_hmac=comment):
-        return True
-    return False
+    return comment and validate_hmac_sha256(key=key, comment_w_hmac=comment)
 
 
 def add_prefix_to_comment(commnet: Optional[str]) -> str:
@@ -282,17 +222,15 @@ def retrieve_labels_command(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Labels', response.get('labels', []), headerTransform=pascalToSpace, removeNull=True)
-        + '\n'
-        + tableToMarkdown('paginationInfo', response.get('paginationInfo', []), headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown("Labels", response.get("labels", []), headerTransform=pascalToSpace, removeNull=True)
+        + "\n"
+        + tableToMarkdown("paginationInfo", response.get("paginationInfo", []), headerTransform=pascalToSpace, removeNull=True),
     )
 
     return command_results
 
 
-def retrieve_a_specific_label_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def retrieve_a_specific_label_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     label_id = args.get("label_id")
 
     response = client.retrieve_a_specific_label_request(label_id)
@@ -302,7 +240,7 @@ def retrieve_a_specific_label_command(
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Label', response, headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown("Label", response, headerTransform=pascalToSpace, removeNull=True),
     )
 
     return command_results
@@ -322,24 +260,20 @@ def retrieve_incidents_command(client: Client, args: Dict[str, Any]) -> CommandR
     labels = argToList(labels)
     labels = [int(label) for label in labels]
 
-    response = client.retrieve_incidents_request(
-        page, items, fromdate, todate, status, adversary_types, labels
-    )
+    response = client.retrieve_incidents_request(page, items, fromdate, todate, status, adversary_types, labels)
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveIncidents",
         outputs_key_field="id",
         outputs=response.get("items"),
         raw_response=response,
-        readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
-        + '\n'
-        + tableToMarkdown('paginationInfo', response.get('paginationInfo', []), headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown("Incidents", response.get("items", []), headerTransform=pascalToSpace, removeNull=True)
+        + "\n"
+        + tableToMarkdown("paginationInfo", response.get("paginationInfo", []), headerTransform=pascalToSpace, removeNull=True),
     )
     return command_results
 
 
-def retrieve_a_specific_incident_details_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def retrieve_a_specific_incident_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     lumu_incident_id = args.get("lumu_incident_id")
 
     response = client.retrieve_a_specific_incident_details_request(lumu_incident_id)
@@ -350,41 +284,33 @@ def retrieve_a_specific_incident_details_command(
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Incident', human_response, headerTransform=pascalToSpace, removeNull=True)
-        + '\n'
-        + tableToMarkdown('Actions', actions, headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown("Incident", human_response, headerTransform=pascalToSpace, removeNull=True)
+        + "\n"
+        + tableToMarkdown("Actions", actions, headerTransform=pascalToSpace, removeNull=True),
     )
 
     return command_results
 
 
-def retrieve_a_specific_incident_context_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def retrieve_a_specific_incident_context_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     lumu_incident_id = args.get("lumu_incident_id")
     hash = args.get("hash")
 
-    response = client.retrieve_a_specific_incident_context_request(
-        lumu_incident_id, hash
-    )
+    response = client.retrieve_a_specific_incident_context_request(lumu_incident_id, hash)
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveASpecificIncidentContext",
         outputs_key_field="adversary_id",
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Incident', response, headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown("Incident", response, headerTransform=pascalToSpace, removeNull=True),
     )
 
     return command_results
 
 
-def comment_a_specific_incident_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def comment_a_specific_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     lumu_incident_id = args.get("lumu_incident_id")
-    comment = generate_hmac_sha256_msg(
-        client.api_key, add_prefix_to_comment(args.get("comment"))
-    )
+    comment = generate_hmac_sha256_msg(client.api_key, add_prefix_to_comment(args.get("comment")))
 
     response = client.comment_a_specific_incident_request(lumu_incident_id, comment)
     response = {"statusCode": 200, "response": response}
@@ -393,15 +319,13 @@ def comment_a_specific_incident_command(
         outputs_prefix="Lumu.CommentASpecificIncident",
         outputs=response,
         raw_response=response,
-        readable_output='Comment added to the incident successfully.'
+        readable_output="Comment added to the incident successfully.",
     )
 
     return command_results
 
 
-def retrieve_open_incidents_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def retrieve_open_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     page = args.get("page")
     items = args.get("limit")
     adversary_types = args.get("adversary_types")
@@ -411,25 +335,21 @@ def retrieve_open_incidents_command(
     labels = argToList(labels)
     labels = [int(label) for label in labels]
 
-    response = client.retrieve_open_incidents_request(
-        page, items, adversary_types, labels
-    )
+    response = client.retrieve_open_incidents_request(page, items, adversary_types, labels)
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveOpenIncidents",
         outputs_key_field="id",
         outputs=response.get("items"),
         raw_response=response,
-        readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
-        + '\n'
-        + tableToMarkdown('paginationInfo', response.get('paginationInfo', []), headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown("Incidents", response.get("items", []), headerTransform=pascalToSpace, removeNull=True)
+        + "\n"
+        + tableToMarkdown("paginationInfo", response.get("paginationInfo", []), headerTransform=pascalToSpace, removeNull=True),
     )
 
     return command_results
 
 
-def retrieve_muted_incidents_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def retrieve_muted_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     page = args.get("page")
     items = args.get("limit")
     adversary_types = args.get("adversary_types")
@@ -439,25 +359,21 @@ def retrieve_muted_incidents_command(
     labels = argToList(labels)
     labels = [int(label) for label in labels]
 
-    response = client.retrieve_muted_incidents_request(
-        page, items, adversary_types, labels
-    )
+    response = client.retrieve_muted_incidents_request(page, items, adversary_types, labels)
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveMutedIncidents",
         outputs_key_field="id",
         outputs=response.get("items"),
         raw_response=response,
-        readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
-        + '\n'
-        + tableToMarkdown('paginationInfo', response.get('paginationInfo', []), headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown("Incidents", response.get("items", []), headerTransform=pascalToSpace, removeNull=True)
+        + "\n"
+        + tableToMarkdown("paginationInfo", response.get("paginationInfo", []), headerTransform=pascalToSpace, removeNull=True),
     )
 
     return command_results
 
 
-def retrieve_closed_incidents_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def retrieve_closed_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     page = args.get("page")
     items = args.get("limit")
     adversary_types = args.get("adversary_types")
@@ -467,54 +383,46 @@ def retrieve_closed_incidents_command(
     labels = argToList(labels)
     labels = [int(label) for label in labels]
 
-    response = client.retrieve_closed_incidents_request(
-        page, items, adversary_types, labels
-    )
+    response = client.retrieve_closed_incidents_request(page, items, adversary_types, labels)
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveClosedIncidents",
         outputs_key_field="id",
         outputs=response.get("items"),
         raw_response=response,
-        readable_output=tableToMarkdown('Incidents', response.get('items', []), headerTransform=pascalToSpace, removeNull=True)
-        + '\n'
-        + tableToMarkdown('paginationInfo', response.get('paginationInfo', []), headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown("Incidents", response.get("items", []), headerTransform=pascalToSpace, removeNull=True)
+        + "\n"
+        + tableToMarkdown("paginationInfo", response.get("paginationInfo", []), headerTransform=pascalToSpace, removeNull=True),
     )
 
     return command_results
 
 
-def retrieve_endpoints_by_incident_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def retrieve_endpoints_by_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     lumu_incident_id = args.get("lumu_incident_id")
     page = args.get("page")
     items = args.get("limit")
 
-    response = client.retrieve_endpoints_by_incident_request(
-        lumu_incident_id, page, items
-    )
+    response = client.retrieve_endpoints_by_incident_request(lumu_incident_id, page, items)
     command_results = CommandResults(
         outputs_prefix="Lumu.RetrieveEndpointsByIncident",
         outputs_key_field="label",
         outputs=response.get("items"),
         raw_response=response,
-        readable_output=tableToMarkdown('Incident endpoints', response.get('items', []),
-                                        headerTransform=pascalToSpace, removeNull=True)
-        + '\n'
-        + tableToMarkdown('paginationInfo', response.get('paginationInfo', []), headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown(
+            "Incident endpoints", response.get("items", []), headerTransform=pascalToSpace, removeNull=True
+        )
+        + "\n"
+        + tableToMarkdown("paginationInfo", response.get("paginationInfo", []), headerTransform=pascalToSpace, removeNull=True),
     )
 
     return command_results
 
 
-def mark_incident_as_read_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def mark_incident_as_read_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     lumu_incident_id = args.get("lumu_incident_id")
     try:
         response = client.mark_incident_as_read_request(lumu_incident_id)
     except DemistoException as err:
-
         error_msg = "Failed to parse json object from response: b''"
         if str(err) == error_msg:
             response = {"statusCode": 200}
@@ -524,7 +432,7 @@ def mark_incident_as_read_command(
         outputs_prefix="Lumu.MarkIncidentAsRead",
         outputs=response,
         raw_response=response,
-        readable_output='Marked as read the incident successfully.'
+        readable_output="Marked as read the incident successfully.",
     )
 
     return command_results
@@ -532,9 +440,7 @@ def mark_incident_as_read_command(
 
 def mute_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     lumu_incident_id = args.get("lumu_incident_id")
-    comment = generate_hmac_sha256_msg(
-        client.api_key, add_prefix_to_comment(args.get("comment"))
-    )
+    comment = generate_hmac_sha256_msg(client.api_key, add_prefix_to_comment(args.get("comment")))
     response = client.mute_incident_request(lumu_incident_id, comment)
     response = {"statusCode": 200, "response": response}
 
@@ -542,7 +448,7 @@ def mute_incident_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_prefix="Lumu.MuteIncident",
         outputs=response,
         raw_response=response,
-        readable_output='Muted the incident successfully.'
+        readable_output="Muted the incident successfully.",
     )
 
     return command_results
@@ -550,9 +456,7 @@ def mute_incident_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 def unmute_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     lumu_incident_id = args.get("lumu_incident_id")
-    comment = generate_hmac_sha256_msg(
-        client.api_key, add_prefix_to_comment(args.get("comment"))
-    )
+    comment = generate_hmac_sha256_msg(client.api_key, add_prefix_to_comment(args.get("comment")))
     response = client.unmute_incident_request(lumu_incident_id, comment)
     response = {"statusCode": 200, "response": response}
 
@@ -560,7 +464,7 @@ def unmute_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs_prefix="Lumu.UnmuteIncident",
         outputs=response,
         raw_response=response,
-        readable_output='Unmute the incident successfully.'
+        readable_output="Unmute the incident successfully.",
     )
 
     return command_results
@@ -568,9 +472,7 @@ def unmute_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 def close_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     lumu_incident_id = args.get("lumu_incident_id")
-    comment = generate_hmac_sha256_msg(
-        client.api_key, add_prefix_to_comment(args.get("comment"))
-    )
+    comment = generate_hmac_sha256_msg(client.api_key, add_prefix_to_comment(args.get("comment")))
     response = client.close_incident_request(lumu_incident_id, comment)
     response = {"statusCode": 200, "response": response}
 
@@ -578,22 +480,18 @@ def close_incident_command(client: Client, args: Dict[str, Any]) -> CommandResul
         outputs_prefix="Lumu.CloseIncident",
         outputs=response,
         raw_response=response,
-        readable_output='Closed the incident successfully.'
+        readable_output="Closed the incident successfully.",
     )
 
     return command_results
 
 
-def consult_incidents_updates_through_rest_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def consult_incidents_updates_through_rest_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     offset = args.get("offset")
     items = args.get("limit")
     time = args.get("time")
 
-    response = client.consult_incidents_updates_through_rest_request(
-        offset, items, time
-    )
+    response = client.consult_incidents_updates_through_rest_request(offset, items, time)
     command_results = CommandResults(
         outputs_prefix="Lumu.ConsultIncidentsUpdatesThroughRest",
         outputs=response,
@@ -607,9 +505,7 @@ def fetch_incidents(client: Client, first_fetch_time, last_run, items, time):
     last_fetch = last_run.get("last_fetch", None)
     last_fetch = int(last_fetch or first_fetch_time)
 
-    response = client.consult_incidents_updates_through_rest_request(
-        last_fetch, items, time
-    )
+    response = client.consult_incidents_updates_through_rest_request(last_fetch, items, time)
 
     events = response["updates"]
     next_start_time = str(response["offset"])
@@ -639,16 +535,14 @@ def fetch_incidents(client: Client, first_fetch_time, last_run, items, time):
         event_doc["lumu_incidentId"] = inc_id
         event_doc["lumu_status"] = event_doc.get("status", "N/A")
 
-        if lumu_event_type_name in status_msg_types:
-            if is_msg_from_third_party(
-                key=client.api_key, comment=event_doc.get("comment", "na")
-            ):
-                # ignore to avoid a loop
-                demisto.debug(
-                    f"Ignoring Message ({lumu_event_type_name} - {inc_id}) from Cortex to not create a loop between both "
-                    f"parties"
-                )
-                continue
+        if lumu_event_type_name in status_msg_types and is_msg_from_third_party(
+            key=client.api_key, comment=event_doc.get("comment", "na")
+        ):
+            # ignore to avoid a loop
+            demisto.debug(
+                f"Ignoring Message ({lumu_event_type_name} - {inc_id}) from Cortex to not create a loop between both parties"
+            )
+            continue
 
         event_doc["comment"] = event_doc.get("comment") or "from fetching process"
 
@@ -664,7 +558,7 @@ def fetch_incidents(client: Client, first_fetch_time, last_run, items, time):
 
         incident = {
             "name": f'lumu - {event_doc.get("description","")} - {inc_id}',
-            "occurred": event_doc["timestamp"] if "timestamp" in event_doc else today,
+            "occurred": event_doc.get("timestamp", today),
             "dbotMirrorId": str(inc_id),
             "rawJSON": json.dumps(event_doc),
         }
@@ -690,32 +584,24 @@ def fetch_incidents(client: Client, first_fetch_time, last_run, items, time):
                 incs_to_cortex.append(inc)
                 cache["lumu_incidentsId"].append(inc["dbotMirrorId"])
         cache["lumu_incidentsId"] = list(set(cache["lumu_incidentsId"]))
-        demisto.debug(
-            f'There are {len(cache["cache"])} events queued ready to process their updates'
-        )
+        demisto.debug(f'There are {len(cache["cache"])} events queued ready to process their updates')
         set_integration_context(cache)
     next_run = {"last_fetch": str(next_start_time)}
 
     return next_run, incs_to_cortex
 
 
-def get_modified_remote_data_command(
-    client: Client, args: Dict[str, str]
-) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data_command(client: Client, args: Dict[str, str]) -> GetModifiedRemoteDataResponse:
     incidents_id = []
     try:
-
         cache = get_integration_context()
 
         incidents_id = cache["cache"].pop(0)
-        demisto.debug(
-            f'FIFO processing, there are {len(cache["cache"])} events left to process'
-        )
+        demisto.debug(f'FIFO processing, there are {len(cache["cache"])} events left to process')
 
     except IndexError:
         incidents_id = []
     finally:
-
         set_integration_context(cache)
         return GetModifiedRemoteDataResponse(incidents_id)
 
@@ -723,18 +609,14 @@ def get_modified_remote_data_command(
 def get_remote_data_command(client, args):
     parsed_args = GetRemoteDataArgs(args)
     try:
-        new_incident_data: Dict = client.retrieve_a_specific_incident_details_request(
-            parsed_args.remote_incident_id
-        )
+        new_incident_data: Dict = client.retrieve_a_specific_incident_details_request(parsed_args.remote_incident_id)
 
         parsed_entries = []
 
         new_incident_data["lumu_incidentId"] = new_incident_data["id"]
 
         if lumu_actions := new_incident_data.get("actions"):
-            new_incident_data[
-                "comment"
-            ] = f'{lumu_actions[0]["action"]} - {lumu_actions[0]["comment"]}'
+            new_incident_data["comment"] = f'{lumu_actions[0]["action"]} - {lumu_actions[0]["comment"]}'
 
             entry_comment = {
                 "Type": EntryType.NOTE,
@@ -747,25 +629,19 @@ def get_remote_data_command(client, args):
         new_incident_data["incomming_mirror_error"] = ""
 
         if inc_desc := new_incident_data.get("description"):
-            new_incident_data[
-                "name"
-            ] = f'lumu - {inc_desc} - {new_incident_data["lumu_incidentId"]}'
+            new_incident_data["name"] = f'lumu - {inc_desc} - {new_incident_data["lumu_incidentId"]}'
 
         for field_to_delete in FIELDS_TO_REMOVE_FROM_MIROR_IN:
             if field_to_delete in new_incident_data:
                 del new_incident_data[field_to_delete]
 
         inc_id = new_incident_data["lumu_incidentId"]
-        lumu_first_contact = new_incident_data.get("firstContactDetails", {}).get(
-            "datetime", "N/A"
-        )
+        lumu_first_contact = new_incident_data.get("firstContactDetails", {}).get("datetime", "N/A")
         lumu_adversary_types = ", ".join(new_incident_data.get("adversaryTypes", ""))
         lumu_desc = new_incident_data.get("description")
         lumu_total_contacts = new_incident_data.get("contacts", "N/A")
         lumu_total_endpoint = new_incident_data.get("totalEndpoints", "N/A")
-        lumu_url = (
-            f"https://portal.lumu.io/compromise/incidents/show/{inc_id}/detections"
-        )
+        lumu_url = f"https://portal.lumu.io/compromise/incidents/show/{inc_id}/detections"
 
         description = (
             f"Incident ID:  {inc_id} \nDate of first contact: {lumu_first_contact} \nAdversary type:"
@@ -774,9 +650,7 @@ def get_remote_data_command(client, args):
             f"\nURL: {lumu_url}"
         )
 
-        new_incident_data["description"] = (
-            new_incident_data["description"] + " - " + description
-        )
+        new_incident_data["description"] = new_incident_data["description"] + " - " + description
         entry_comment = {
             "Type": EntryType.NOTE,
             "Contents": description,
@@ -795,17 +669,13 @@ def get_remote_data_command(client, args):
                 "ContentsFormat": EntryFormat.JSON,
             }
             parsed_entries.append(entry_comment)
-            demisto.debug(
-                f"incident closed from Lumu, sync with Cortex {lumu_desc:$^40}"
-            )
+            demisto.debug(f"incident closed from Lumu, sync with Cortex {lumu_desc:$^40}")
         new_incident_data["lumu_status"] = new_incident_data.get("status", "N/A")
 
         return GetRemoteDataResponse(new_incident_data, parsed_entries)
     except Exception as e:
         demisto.debug(f"get_remote_data_command error {e}")
-        if "Rate limit exceeded" in str(
-            e
-        ):  # modify this according to the vendor's spesific message
+        if "Rate limit exceeded" in str(e):  # modify this according to the vendor's spesific message
             return_error("API rate limit")
 
 
@@ -820,9 +690,7 @@ def get_mapping_fields_command():
         "lumu_status",
         "status",
     ]:
-        lumu_type_scheme.add_field(
-            name=field, description="the description for the Lumu field"
-        )
+        lumu_type_scheme.add_field(name=field, description="the description for the Lumu field")
 
     return GetMappingFieldsResponse(lumu_type_scheme)
 
@@ -865,23 +733,16 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
                 response = client.close_incident_request(new_incident_id, new_comment)
                 response = {"statusCode": 200, "response": response}
 
-            elif (lumu_status := parsed_args.delta.get("lumustatus")) or (
-                lumu_status := parsed_args.delta.get("lumu_status")
-            ):
+            elif (lumu_status := parsed_args.delta.get("lumustatus")) or (lumu_status := parsed_args.delta.get("lumu_status")):
                 if lumu_status in ["mute", "muted"]:
-
                     new_comment = generate_hmac_sha256_msg(key, new_comment)
 
-                    response = client.mute_incident_request(
-                        new_incident_id, new_comment
-                    )
+                    response = client.mute_incident_request(new_incident_id, new_comment)
                     response = {"statusCode": 200, "response": response}
 
                 elif lumu_status in ["unmute", "unmuted"]:
                     new_comment = generate_hmac_sha256_msg(key, new_comment)
-                    response = client.unmute_incident_request(
-                        new_incident_id, new_comment
-                    )
+                    response = client.unmute_incident_request(new_incident_id, new_comment)
                     response = {"statusCode": 200, "response": response}
 
                 elif lumu_status in ["close", "closed"]:
@@ -891,29 +752,22 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
                 elif original_commnet:
                     new_comment = generate_hmac_sha256_msg(key, new_comment)
-                    response = client.comment_a_specific_incident_request(
-                        new_incident_id, new_comment
-                    )
+                    response = client.comment_a_specific_incident_request(new_incident_id, new_comment)
                     response = {"statusCode": 200, "response": response}
 
                 else:
                     response = {"statusCode": 404, "reason": "lumu status not found"}
 
             elif original_commnet:
-
                 new_comment = generate_hmac_sha256_msg(key, new_comment)
 
-                response = client.comment_a_specific_incident_request(
-                    new_incident_id, new_comment
-                )
+                response = client.comment_a_specific_incident_request(new_incident_id, new_comment)
                 response = {"statusCode": 200, "response": response}
 
         except DemistoException as err:
             raise DemistoException(repr(err))
 
-    demisto.debug(
-        f"{response=}, {parsed_args.delta=}, {parsed_args.remote_incident_id=}, {parsed_args.incident_changed}"
-    )
+    demisto.debug(f"{response=}, {parsed_args.delta=}, {parsed_args.remote_incident_id=}, {parsed_args.incident_changed}")
 
     return new_incident_id
 
@@ -927,20 +781,19 @@ def clear_cache_command():
         outputs_prefix="Lumu.ClearCache",
         outputs=f"cache cleared {get_integration_context()=}",
         raw_response=f"cache cleared {get_integration_context()=}",
-        readable_output=f"cache cleared {get_integration_context()=}"
+        readable_output=f"cache cleared {get_integration_context()=}",
     )
 
     return command_results
 
 
 def get_cache_command():
-
     cache = get_integration_context()
     command_results = CommandResults(
         outputs_prefix="Lumu.GetCache",
         outputs=cache,
         raw_response=cache,
-        readable_output=tableToMarkdown('Cache', cache, headerTransform=pascalToSpace, removeNull=True)
+        readable_output=tableToMarkdown("Cache", cache, headerTransform=pascalToSpace, removeNull=True),
     )
 
     return command_results
@@ -962,7 +815,6 @@ def test_module(client: Client, args: Dict[str, Any]) -> None:
 
 
 def main() -> None:
-
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
     url = params.get("url")
@@ -1004,20 +856,14 @@ def main() -> None:
 
         if command == "test-module":
             test_module(client, args)
-        elif (
-            "fetch-incidents" in command
-            or command == "fetch-incidents"
-        ):
-
+        elif "fetch-incidents" in command or command == "fetch-incidents":
             last_run = demisto.getLastRun()
             next_run, incidents = fetch_incidents(client, offset_set_off, last_run, items, time_last)
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
             count = Counter([inc["dbotMirrorId"] for inc in incidents])
-            demisto.debug(
-                f"total inc found: {len(incidents)}, {count=} {last_run=} {next_run=}"
-            )
+            demisto.debug(f"total inc found: {len(incidents)}, {count=} {last_run=} {next_run=}")
 
         elif command == "get-modified-remote-data":
             incidents_id = get_modified_remote_data_command(client, args)

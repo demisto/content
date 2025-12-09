@@ -1,6 +1,7 @@
 Build QRadar AQL Query. (Available from Cortex XSOAR 6.0.0).
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Build QRadar AQL Query. (Available from Cortex XSOAR 6.0.0).
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -30,17 +32,19 @@ Build QRadar AQL Query. (Available from Cortex XSOAR 6.0.0).
 | second_additional_field_match | Whether the values of the third field should be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will use ILIKE and add '%%' to the values. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | QRadarQuery | The resultant AQL query based on the inputs. | string |
 
-
 ## Script Example Search for a hash where we dont know the field
+
 ```!QRadarCreateAQLQuery base_field_match=partial base_values_to_search=2367666DB8DFF58982A74695760E3EF0ACEBD050```
 
 ### Context Example
+
 ```json
 {
     "QRadarQuery": "select DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username from events where (UTF8(payload) ILIKE '%2367666DB8DFF58982A74695760E3EF0ACEBD050%') LAST 1 HOURS"
@@ -52,9 +56,11 @@ Build QRadar AQL Query. (Available from Cortex XSOAR 6.0.0).
 >select DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username from events where (UTF8(payload) ILIKE '%2367666DB8DFF58982A74695760E3EF0ACEBD050%') LAST 1 HOURS
 
 ## Script Example Search for a hash in specific fields
+
 ```!QRadarCreateAQLQuery base_field_match=exact base_values_to_search=2367666DB8DFF58982A74695760E3EF0ACEBD050 base_fields_to_search=sha1,sha1-hash```
 
 ### Context Example
+
 ```json
 {
     "QRadarQuery": "select DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username from events where (sha1 = '2367666DB8DFF58982A74695760E3EF0ACEBD050' OR sha1-hash = '2367666DB8DFF58982A74695760E3EF0ACEBD050') LAST 1 HOURS"
@@ -66,9 +72,11 @@ Build QRadar AQL Query. (Available from Cortex XSOAR 6.0.0).
 >select DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username from events where (sha1 = '2367666DB8DFF58982A74695760E3EF0ACEBD050' OR sha1-hash = '2367666DB8DFF58982A74695760E3EF0ACEBD050') LAST 1 HOURS
 
 ## Script Example Search for user and hash
+
 ```!QRadarCreateAQLQuery base_field_match=exact base_values_to_search=2367666DB8DFF58982A74695760E3EF0ACEBD050 base_fields_to_search=sha1,sha1-hash first_additional_fields=username first_additional_values=admin```
 
 ### Context Example
+
 ```json
 {
     "QRadarQuery": "select DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username from events where (sha1 = '2367666DB8DFF58982A74695760E3EF0ACEBD050' OR sha1-hash = '2367666DB8DFF58982A74695760E3EF0ACEBD050') AND (username = 'admin') LAST 1 HOURS"
@@ -80,9 +88,11 @@ Build QRadar AQL Query. (Available from Cortex XSOAR 6.0.0).
 >select DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username from events where (sha1 = '2367666DB8DFF58982A74695760E3EF0ACEBD050' OR sha1-hash = '2367666DB8DFF58982A74695760E3EF0ACEBD050') AND (username = 'admin') LAST 1 HOURS
 
 ## Script Example Search for a hash in payload that doesnt contain admin
+
 ```!QRadarCreateAQLQuery base_field_match=exact base_values_to_search=2367666DB8DFF58982A74695760E3EF0ACEBD050 base_fields_to_search=sha1 first_additional_field_state=exclude first_additional_field_match=partial first_additional_values=admin```
 
 ### Context Example
+
 ```json
 {
     "QRadarQuery": "select DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username from events where (sha1 = '2367666DB8DFF58982A74695760E3EF0ACEBD050') AND (UTF8(payload) NOT ILIKE '%admin%') LAST 1 HOURS"

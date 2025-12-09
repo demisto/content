@@ -127,7 +127,8 @@ var login = function() {
             Method: 'POST',
             Body: JSON.stringify({'username':username,'password':password}),
         },
-        params.insecure
+        params.insecure,
+        params.proxy
     );
     if (result.StatusCode !== 200 && result.StatusCode !== 201) {
         throw 'Failed to login, request status code: ' + result.StatusCode + ', check that username/password are correct';
@@ -142,7 +143,8 @@ var logout = function(token) {
             Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
             Method: 'DELETE',
         },
-        params.insecure
+        params.insecure,
+        params.proxy
     );
     if (result.StatusCode !== 200 && result.StatusCode !== 401) {
         throw 'Failed to logout session, request status code: ' + result.StatusCode + ', body='+result.Body;
@@ -157,7 +159,8 @@ var listScans = function(token) {
             Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
             Method: 'GET',
         },
-        params.insecure
+        params.insecure,
+        params.proxy
     );
 
     if (result.StatusCode !== 200 ) {
@@ -199,7 +202,8 @@ var scanLaunch = function(token,scanId, targets) {
             Method: 'POST',
             Body: body,
         },
-        params.insecure
+        params.insecure,
+        params.proxy
     );
     if (result.StatusCode !== 200 ) {
         throw 'Failed to launch scans list, request status code: ' + result.StatusCode + ', body='+result.Body;
@@ -228,7 +232,8 @@ var scanDetails = function(token,scanId,historyId) {
             Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
             Method: 'GET',
         },
-        params.insecure
+        params.insecure,
+        params.proxy
     );
     if (result.StatusCode !== 200 ) {
         throw 'Failed to get scan Details, request status code: ' + result.StatusCode + ', body='+result.Body;
@@ -293,7 +298,8 @@ var scanStatus = function(token,scanId){
             Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
             Method: 'GET',
         },
-        params.insecure
+        params.insecure,
+        params.proxy
     );
     if (result.StatusCode !== 200 ) {
         throw 'Failed to get scan Details, request status code: ' + result.StatusCode + ', body='+result.Body;
@@ -327,7 +333,8 @@ var scanHostDetails = function(token,scanId,historyId,hostId) {
             Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
             Method: 'GET',
         },
-        params.insecure
+        params.insecure,
+        params.proxy
     );
     if (result.StatusCode !== 200 ) {
         throw 'Failed to get scan Details, request status code: ' + result.StatusCode + ', body='+result.Body;
@@ -355,7 +362,8 @@ var scanExport = function(token, scanId, historyId, format, password, chapters) 
             Method: 'POST',
             Body: JSON.stringify(body),
         },
-        params.insecure
+        params.insecure,
+        params.proxy
     );
     if (result.StatusCode !== 200 ) {
         throw 'Failed to launch scans list, request status code: ' + result.StatusCode + ', body='+result.Body;
@@ -381,7 +389,8 @@ var getReport = function(token, scanId, fileId) {
             Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
             Method: 'GET',
         },
-        params.insecure
+        params.insecure,
+        params.proxy
     );
     if (res.StatusCode !== 200) {
         return 'Failed to execute request:' + res.StatusCode + ', body: ' + res.Body;
@@ -442,7 +451,8 @@ var scanCreate = function(token, editorUuid, name, description, policy,folder, s
             Method: 'POST',
             Body: JSON.stringify(body),
         },
-        params.insecure
+        params.insecure,
+        params.proxy
     );
     if (result.StatusCode !== 200 ) {
         throw 'Failed to launch scans list, request status code: ' + result.StatusCode + ', body='+result.Body;
@@ -470,7 +480,8 @@ var getEditors = function(token) {
             Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
             Method: 'GET',
         },
-        params.insecure
+        params.insecure,
+        params.proxy
     );
     if (result.StatusCode !== 200 ) {
         throw 'Failed to get scan editors, request status code: ' + result.StatusCode + ', body='+result.Body;
@@ -496,7 +507,8 @@ var getStatus = function(token,scanId,fileId) {
             Headers: {'Content-Type': ['application/json'], 'X-Cookie': ['token='+token]},
             Method: 'GET',
         },
-        params.insecure
+        params.insecure,
+        params.proxy
     );
     if (result.StatusCode !== 200 ) {
         throw 'Failed to get export status, request status code: ' + result.StatusCode + ', body='+result.Body;

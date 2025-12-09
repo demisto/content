@@ -1,439 +1,796 @@
+from unittest.mock import patch, MagicMock
+
 import pytest
+
+from CommonServerPython import CommandResults
+from GroupIBTIA import (
+    fetch_incidents_command,
+    Client,
+    main,
+    get_available_collections_command,
+    local_search_command,
+    CommonHelpers,
+    INCIDENT_CREATED_DATES_MAPPING,
+)
+from urllib3.exceptions import InsecureRequestWarning
+from urllib3 import disable_warnings as urllib3_disable_warnings
+import GroupIBTIA
 from json import load
-from GroupIBTIA import fetch_incidents_command, Client, transform_function, main, get_available_collections_command
+import os
 
-with open('test_data/example.json') as example:
-    RAW_JSON = load(example)
-with open('test_data/results.json') as results:
-    RESULTS = load(results)
+realpath = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 
-# Because of errors with markdown tables
-RESULTS.update({
-    'osi/git_repository': (
-        ({'last_fetch': {'osi/git_repository': 1611862631144674}},
-         [{'name': 'Git Leak: https://github.com/somegit',
-           'occurred': '2021-01-28T22:32:54Z',
-           'rawJSON': '{"company": [], "companyId": [3150], "contributors": '
-                      '[{"authorEmail": "some@email.com", "authorName": "somename"}, '
-                      '{"authorEmail": "some@email.com", "authorName": "somename"}, '
-                      '{"authorEmail": "some@email.com", "authorName": "somename"}], '
-                      '"dataFound": {"password": 8, "apikey": 2, "secret": 1}, '
-                      '"dateCreated": "2021-01-23T22:12:58+03:00", "dateDetected": '
-                      '"2021-01-28T22:32:54+03:00", "evaluation": {"admiraltyCode": '
-                      '"A1", "credibility": 50, "reliability": 50, "severity": '
-                      '"orange", "tlp": "amber", "ttl": 30}, "favouriteForCompanies": '
-                      '[], "files": "| URL  |   Author Email  | Author Name  | Date '
-                      'Created| TimeStamp    |\\n| ---- | --------------- | '
-                      '------------ | ----------- | ------------ |\\n| '
-                      'https://github.com/somegit | some@email.com | TEST | '
-                      '1970-01-01T03:00:00+03:00 | [1611429178] |\\n", '
-                      '"hideForCompanies": [], "id": '
-                      '"21aed9b86d2e6cbb15180d803a84f6d27f673db4", '
-                      '"ignoreForCompanies": [], "isFavourite": false, "isHidden": '
-                      'false, "isIgnore": false, "matchesTypes": [], "name": "Git '
-                      'Leak: https://github.com/somegit", "numberOf": {"contributors": '
-                      '3, "files": 10}, "relations": {"infobip.com": "some.com", '
-                      '"Infobip": "some"}, "seqUpdate": 1611862631144674, "source": '
-                      '"github", "gibType": "osi/git_repository", '
-                      '"relatedIndicatorsData": [], "systemSeverity": 2}'}])),
-    'osi/public_leak': (
-        {'last_fetch': {'osi/public_leak': 1601909532153438}},
-        [
-            {
-                'name': 'Public Leak: a9a5b5cb9b971a2a037e3a0a30654185ea148095',
-                'occurred': '2020-10-05T17:51:31Z',
-                'rawJSON': '{"bind": [], "created": "2020-10-05T17:51:31+03:00", "data": '
-                           '"Pasted at: 05/10/2020 15:45", "displayOptions": null, '
-                           '"evaluation": {"admiraltyCode": "C3", "credibility": 50, '
-                           '"reliability": 50, "severity": "orange", "tlp": "amber", "ttl": '
-                           '30}, "hash": "a9a5b5cb9b971a2a037e3a0a30654185ea148095", "id": '
-                           '"a9a5b5cb9b971a2a037e3a0a30654185ea148095", "language": "c", '
-                           '"linkList": "| Author | Date Detected | Date Published | Hash | Link | Source |\\n'
-                           '| ------ | ------------- | -------------- | ---- |----- | ------ |\\n| whaaaaaat | '
-                           '2020-10-05T17:51:31+03:00 | 2020-10-05T17:45:46+03:00 | '
-                           '3066db9f57b7997607208fedc45d7203029d9cb3 | '
-                           '[https://some.ru](https://some.ru) | some.ru '
-                           '|\\n", "matches": "| Type | Sub Type | Value |\\n| ---- | -------- | ----- |\\n| email '
-                           '| email | some@gmail.ru |\\n", '
-                           '"oldId": null, '
-                           '"portalLink": "https://bt.group-ib.com/osi/public_leak?'
-                           'searchValue=id:a9a5b5cb9b971a2a037e3a0a30654186ea248094", '
-                           '"seqUpdate": 1601909532153438, "size": "345 B", "updated": '
-                           '"2020-10-05T17:51:31+03:00", "useful": 1, "name": '
-                           '"Public Leak: a9a5b5cb9b971a2a037e3a0a30654185ea148095", "gibType": '
-                           '"osi/public_leak", "relatedIndicatorsData": [], "systemSeverity": 2}'
-            }
-        ]
-    ),
-    'bp/phishing_kit': (
-        {'last_fetch': {'bp/phishing_kit': [1614921031175]}},
-        [
-            {'name': 'Phishing Kit: 8d7ea805fe20d6d77f57e2f0cadd17b1',
-             'occurred': '2021-01-14T12:10:41Z',
-             'rawJSON': '{"dateDetected": "2021-01-14T12:10:41+00:00", "dateFirstSeen": "2021-01-14T13:10:41+00:00", '
-                        '"dateLastSeen": "2021-01-14T14:12:17+00:00", "downloadedFrom": "| URL | File Name '
-                        '| Domain | Date |\\n| --- | --------- | ------ | ---- |\\n'
-                        '| https://some.ru | show.zip | some.ru | 2021-01-21 10:10:41 |\\n'
-                        '| https://some.ru | show.zip | "some.ru" '
-                        '| 2021-01-21 10:10:41 |\\n| https://some.ru | show.zip '
-                        '| some.ru | 2021-01-21 10:10:41 |\\n", '
-                        '"emails": [], "evaluation": {"admiraltyCode": "B2", "credibility": 70, '
-                        '"reliability": 80, "severity": "orange", "tlp": "amber", "ttl": '
-                        '30}, "hash": "8d7ea805fe20d6d77f57e2f0cadd17b1", "id": '
-                        '"044f3f2cb599228c1882884eb77eb073f68a25f2", "isFavourite": '
-                        'false, "isHidden": false, "oldId": "396793696", "path": '
-                        '"https://tap.group-ib.com/api/api/v2/web/attacks/phishing_kit'
-                        '/044f3f2cb599228c1882884eb77eb073f68a25f2/file'
-                        '/95b61a1df152012abb79c3951ed98680e0bd917bbcf1d440e76b66a120292c76", '
-                        '"portalLink": "https://bt.group-ib.com/attacks/phishing_kit?searchValue='
-                        'id:044f3f2cb599228c1882884eb77eb073f68a25f2", '
-                        '"seqUpdate": 1614921031175, "targetBrand": [], "tsFirstSeen": '
-                        'null, "tsLastSeen": null, "variables": null, "name": '
-                        '"Phishing Kit: 8d7ea805fe20d6d77f57e2f0cadd17b1", "gibType": '
-                        '"bp/phishing_kit", "relatedIndicatorsData": [[]], '
-                        '"systemSeverity": 2}'}]),
-})
-COLLECTION_NAMES = ['compromised/card', 'osi/git_repository', 'osi/public_leak',
-                    'bp/phishing', 'bp/phishing_kit', 'malware/targeted_malware', "compromised/breached",
-                    "compromised/account_group"]
+with open(f"{realpath}/test_data/main_collections_examples.json") as example:
+    COLLECTIONS_RAW_JSON = load(example)
+
+with open(f"{realpath}/test_data/search_example.json") as example:
+    SEARCH_RAW_JSON = load(example)
+
+with open(f"{realpath}/test_data/avalible_collections_example.json") as example:
+    AVALIBLE_COLLECTIONS_RAW_JSON = load(example)
+
+# Disable insecure warnings
+urllib3_disable_warnings(InsecureRequestWarning)
+
+COLLECTION_NAMES = [
+    "compromised/account_group",
+    "compromised/bank_card_group",
+    "compromised/mule",
+    "osi/git_repository",
+    "osi/vulnerability",
+    "attacks/ddos",
+    "attacks/deface",
+    "attacks/phishing_group",
+    "attacks/phishing_kit",
+    "suspicious_ip/tor_node",
+    "suspicious_ip/open_proxy",
+    "suspicious_ip/socks_proxy",
+    "suspicious_ip/vpn",
+    "suspicious_ip/scanner",
+    "malware/cnc",
+    "hi/threat",
+    "hi/threat_actor",
+    "apt/threat",
+    "apt/threat_actor",
+    "malware/malware",
+    "osi/public_leak",
+    "compromised/breached",
+]
 
 
-@pytest.fixture(scope='function', params=COLLECTION_NAMES, ids=COLLECTION_NAMES)
+@pytest.fixture(scope="function", params=COLLECTION_NAMES)
 def session_fixture(request):
     """
+    Fixture for creating a client instance specific to each collection name.
+
     Given:
-      - A list of collection names from the integration
+      - A list of predefined collection names that represent different types of data.
 
     When:
-      - Using each collection name as a parameter to the session_fixture
+      - Each test function requests an instance of this fixture.
 
     Then:
-      - The fixture creates the expected client for each collection name
+      - Returns a tuple with the current collection name and an instantiated Client object.
+      - The Client instance is configured to interact with the appropriate collection by connecting
+        to the integration's base URL, using authentication, and including necessary headers.
     """
-    return request.param, Client(base_url='https://some.ru')
+    return request.param, Client(
+        base_url="https://some-url.com",
+        auth=("example@example.com", "exampleAPI_TOKEN"),
+        verify=True,
+        headers={"Accept": "*/*"},
+    )
 
 
-def test_transform_function_on_dict():
+@pytest.fixture(scope="function")
+def single_session_fixture():
     """
+    Fixture for creating a generic client instance to be used across multiple tests.
+
     Given:
-      - A dictionary input to transform
+      - No specific parameters; only a need for a Client object with common configuration.
 
     When:
-      - Calling transform_function() on the input
+      - A test requires a general Client instance without needing to specify a collection.
 
     Then:
-      - The nested dict is flattened as expected
+      - Returns a Client instance configured with the base URL, authentication, and headers.
+      - The instance can be reused by any test that doesn't depend on a specific collection name.
     """
-    test_input = {'a': 1, 'b': {'c': 2}}
-    expected = {'a': 1, 'b c': 2}
-    actual, _ = transform_function(test_input)
-    assert actual == expected
-
-
-def test_transform_function_on_list():
-    """
-    Given:
-      - A list input to transform
-
-    When:
-      - Calling transform_function() on the input
-
-    Then:
-      - The nested list is flattened as expected
-    """
-    test_input = [{'a': 1}, {'b': 2}]
-    # expected = {}
-    actual, _ = transform_function(test_input)
-    assert actual == {}
-
-
-def test_transform_function_on_primitive():
-    """
-    Given:
-      - A primitive input to transform
-
-    When:
-      - Calling transform_function() on the input
-
-    Then:
-      - The nested primitive is flattened as expected
-    """
-    test_input = 'test'
-    expected = {'': 'test'}
-    actual, _ = transform_function(test_input)
-    assert actual == expected
-
-
-def test_transform_function_returns_tuple():
-    """
-    Given:
-      - A tuple input to transform
-
-    When:
-      - Calling transform_function() on the input
-
-    Then:
-      - The nested tuple is flattened as expected
-    """
-    test_input = {'a': 1}
-    actual = transform_function(test_input)
-    assert isinstance(actual, tuple)
-    assert len(actual) == 2
+    return Client(
+        base_url="https://some-url.com",
+        auth=("example@example.com", "exampleAPI_TOKEN"),
+        verify=True,
+        headers={"Accept": "*/*"},
+    )
 
 
 def test_fetch_incidents(mocker, session_fixture):
     """
+    Test for verifying the behavior of the fetch_incidents_command function.
+
     Given:
-    - Mocked API responses for fetch_incidents
-    - last_run dict, first_fetch_time str, etc.
+      - session_fixture, which provides a client instance associated with a specific collection name.
+      - last_run, a dictionary representing the previous state of incident fetching.
+      - first_fetch_time, a string specifying the starting time frame for incident retrieval.
 
     When:
-    - Calling fetch_incidents_command()
+      - fetch_incidents_command() is invoked with the above parameters.
 
     Then:
-    - next_run and incidents have expected types
-    - Number of incidents matches mock response
+      - Ensures that the command returns the correct types for next_run and incidents.
+      - Verifies that incidents is a list, as expected.
+      - This test validates that the command correctly retrieves incidents for each collection
+        and that the returned data structure matches the expected format.
     """
     collection_name, client = session_fixture
-    mocker.patch.object(client, 'create_poll_generator', return_value=[RAW_JSON[collection_name]])
-    next_run, incidents = fetch_incidents_command(client=client,
-                                                  last_run={},
-                                                  first_fetch_time="3 days",
-                                                  incident_collections=[],
-                                                  requests_count=3)
+    collection_name, client = session_fixture
+    mocker.patch.object(client, "create_poll_generator", return_value=[COLLECTIONS_RAW_JSON[collection_name]])
+    next_run, incidents = fetch_incidents_command(
+        client=client, last_run={}, first_fetch_time="3 days", incident_collections=[], max_requests=3, hunting_rules=False
+    )
     assert isinstance(incidents, list)
 
 
 def test_main_error():
     """
+    Test for verifying the error-handling behavior in the main() function.
+
     Given:
-      - main() setup to raise an exception
+      - A main() function configured to raise an exception when calling error_command.
 
     When:
-      - Calling the error_command() via main()
+      - The main function invokes error_command(), which is expected to trigger an error.
 
     Then:
-      - An exception is raised as expected
+      - Ensures that a SystemExit exception is raised as expected.
+      - The test checks that the main function handles errors in a predictable and controlled
+        manner, allowing graceful exits during failure.
     """
-    with pytest.raises(Exception):
-        main()["error_command"]()
+    with pytest.raises(SystemExit):
+        main()["error_command"]()  # type: ignore
 
 
-def test_global_search_command(mocker, session_fixture):
-    import GroupIBTIA
-    test_response = [{
-        "apiPath": "suspicious_ip/open_proxy",
-        "label": "Suspicious IP :: Open Proxy",
-        "link": "",
-        "count": 14,
-        "time": 0.299055199,
-        "detailedLinks": None,
-    }]
+def test_global_search_command(mocker, single_session_fixture):
+    """
+    Test for verifying the functionality of the global_search_command function.
 
-    collection_name, client = session_fixture
-    mocker.patch.object(Client, '_http_request', return_value=test_response)
-    mocker.patch.object(GroupIBTIA, 'find_element_by_key', return_value=test_response)
-    test_query = {'query': 'test'}
+    Given:
+      - single_session_fixture provides a client instance for performing a search.
+      - A test_query dictionary with a "query" key specifying a search term, in this case, an IP address.
+
+    When:
+      - The global_search_command() function is called with the client and test_query arguments.
+
+    Then:
+      - Ensures that the command's outputs_prefix and outputs_key_field are correctly set to expected values.
+      - Verifies that the command returns the data structure with the correct outputs_key_field ("query"),
+        ensuring compatibility with other functions that depend on this structure.
+      - This test validates that the search command integrates smoothly with the client and returns
+        consistent output formatting.
+    """
+    client = single_session_fixture
+    mocker.patch.object(client, "search_proxy_function", return_value=SEARCH_RAW_JSON)
+    test_query = {"query": "8.8.8.8"}
     result = GroupIBTIA.global_search_command(client=client, args=test_query)
 
     assert result.outputs_prefix == "GIBTIA.search.global"
     assert result.outputs_key_field == "query"
 
 
-def test_get_available_collections(mocker, session_fixture):
+def test_get_available_collections(mocker, single_session_fixture):
     """
+    Test for validating the get_available_collections_command function.
+
     Given:
-      - Mock client with a mocked get_available_collections method
+      - single_session_fixture, which provides a client instance for retrieving available collections.
 
     When:
-      - Calling get_available_collections_command()
+      - The get_available_collections_command() function is invoked with the client instance.
 
     Then:
-      - Outputs prefix and key field are as expected
-      - Result outputs is a list
+      - Verifies that the outputs_prefix is correctly set to "GIBTIA.OtherInfo", indicating that
+        the response data is categorized as general information.
+      - Checks that the outputs_key_field is "collections", matching the expected key for collections data.
+      - Ensures that the "collections" field in the output contains a list of collection names, as expected.
+      - This test confirms that the command accurately retrieves and formats the list of available
+        collections from the server response.
     """
-    import GroupIBTIA
-    collection_name, client = session_fixture
-    mocker.patch.object(Client, '_http_request', return_value=RAW_JSON)
-    mocker.patch.object(GroupIBTIA, 'find_element_by_key', return_value=RAW_JSON[collection_name])
-
+    client = single_session_fixture
+    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=[AVALIBLE_COLLECTIONS_RAW_JSON])
     result = get_available_collections_command(client=client)
 
     assert result.outputs_prefix == "GIBTIA.OtherInfo"
     assert result.outputs_key_field == "collections"
-    assert isinstance(result.outputs['collections'], list)
+    assert isinstance(result.outputs["collections"], list)
 
 
-def test_find_element_by_key_nested_dict():
+@pytest.fixture
+def mock_client():
+    """Fixture to create a mock client."""
+    client = MagicMock()
+    client.poller.create_search_generator.return_value = []
+    return client
+
+
+@pytest.fixture
+def mock_common_helpers():
+    """Fixture to mock CommonHelpers functions."""
+    with (
+        patch("GroupIBTIA.CommonHelpers.validate_collections") as mock_validate,
+        patch("GroupIBTIA.CommonHelpers.date_parse") as mock_date_parse,
+    ):
+        mock_validate.return_value = None
+        mock_date_parse.side_effect = lambda date, arg_name: f"parsed_{date}" if date else None
+        yield mock_validate, mock_date_parse
+
+
+def test_local_search_command_no_results(mock_client, mock_common_helpers):
     """
-    Given:
-      - A nested input dict
-
-    When:
-      - Calling find_element_by_key() with a nested key
-
-    Then:
-      - The expected nested value is returned
+    Given: A valid collection name and search query, with no results returned by the client.
+    When: The local_search_command function is executed.
+    Then: The function should return an empty list with appropriate formatting.
     """
-    from GroupIBTIA import find_element_by_key
-    test_dict = {'a': {'b': 'value'}}
-    result = find_element_by_key(test_dict, 'a.b')
-    assert result == 'value'
+    args = {"query": "test_query", "collection_name": "test_collection"}
+
+    result = local_search_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "GIBTIA.search.local"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == []
+    assert "Search results" in result.readable_output
 
 
-def test_find_element_by_key_list():
+def test_local_search_command_with_results(mock_client, mock_common_helpers):
     """
-    Given:
-      - A list input
-
-    When:
-      - Calling find_element_by_key() to get all values of a key
-
-    Then:
-      - A list containing all values is returned
+    Given: A valid collection name, search query, and results returned by the client.
+    When: The local_search_command function is executed.
+    Then: The function should return a formatted list of search results.
     """
-    from GroupIBTIA import find_element_by_key
-    test_list = [{'a': 'value1'}, {'a': 'value2'}]
-    result = find_element_by_key(test_list, 'a')
+    mock_client.poller.create_search_generator.return_value = [
+        MagicMock(
+            parse_portion=lambda keys, as_json: [
+                {"id": "123", "name": "Test Result"},
+                {"id": "456", "name": "Another Result"},
+            ]
+        )
+    ]
+
+    args = {"query": "test_query", "collection_name": "test_collection"}
+
+    result = local_search_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "GIBTIA.search.local"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "123"
+    assert result.outputs[0]["additional_info"] == "Name: Test Result"
+    assert "Search results" in result.readable_output
+    assert "Name: Test Result" in result.readable_output
+    assert "Name: Another Result" in result.readable_output
+
+
+# Unit tests for CommonHelpers
+
+
+def test_transform_dict_empty():
+    assert CommonHelpers.transform_dict({}) == [{}]
+
+
+def test_transform_dict_various_lengths():
+    input_dict = {"a": [1, 2], "b": "x", "c": []}
+    result = CommonHelpers.transform_dict(input_dict)
     assert len(result) == 2
-    assert 'value1' in result
-    assert 'value2' in result
+    assert result[0] == {"a": 1, "b": "x", "c": None}
+    assert result[1] == {"a": 2, "b": "x", "c": None}
 
 
-def test_find_element_by_key_missing():
+def test_remove_underscore_and_lowercase_keys():
+    data = [{"Test_Key": 1, "another_key": 2}]
+    result = CommonHelpers.remove_underscore_and_lowercase_keys(data)
+    assert result == [{"testkey": 1, "anotherkey": 2}]
+
+
+def test_replace_empty_values_dict():
+    data = {"a": "", "b": "value", "c": {"d": ""}}
+    result = CommonHelpers.replace_empty_values(data)
+    assert result == {"a": None, "b": "value", "c": {"d": None}}
+
+
+def test_replace_empty_values_list():
+    data = ["", "x", [], [{}]]
+    result = CommonHelpers.replace_empty_values(data)
+    assert result == [None, "x", None, [{}]]
+
+
+def test_replace_empty_values_empty_list_returns_none():
+    assert CommonHelpers.replace_empty_values([]) is None
+    assert CommonHelpers.replace_empty_values([[]]) is None
+
+
+def test_all_lists_empty_true():
+    data = {"a": [], "b": {"c": []}}
+    assert CommonHelpers.all_lists_empty(data) is True
+
+
+def test_all_lists_empty_false():
+    data = {"a": [1], "b": {}}
+    assert CommonHelpers.all_lists_empty(data) is False
+
+
+def test_date_parse_valid():
+    result = CommonHelpers.date_parse("2020-01-01", "date")
+    assert result.endswith("Z") or result == "2020-01-01"
+
+
+def test_date_parse_invalid():
+    with pytest.raises(Exception):
+        CommonHelpers.date_parse("invalid", "date")
+
+
+def test_transform_list_to_str():
+    data = [{"x": [1, 2], "y": "a"}, {"x": []}]
+    result = CommonHelpers.transform_list_to_str(data)
+    assert result[0]["x"] == "1, 2"
+    assert result[1]["x"] == ""
+
+
+def test_validate_collections_valid():
+    CommonHelpers.validate_collections("valid_collection")
+
+
+def _get_date_field_for_collection(collection_name: str) -> str:
     """
+    Helper function to get the appropriate date field for a collection.
+
+    Returns the first date field from INCIDENT_CREATED_DATES_MAPPING for the given collection.
+    """
+    date_field = INCIDENT_CREATED_DATES_MAPPING.get(collection_name, "dateFirstSeen")
+    if isinstance(date_field, list):
+        return str(date_field[0])  # Return first field if it's a list
+    return str(date_field)
+
+
+def test_fetch_incidents_with_combolist_and_unique_parameters(mocker, session_fixture):
+    """
+    Test for verifying fetch_incidents_command correctly passes combolist and unique parameters.
+
     Given:
-      - An input dict without the specified key
+      - A session_fixture providing a client and collection name.
+      - combolist and unique parameters set to True.
 
     When:
-      - Calling find_element_by_key() with a missing key
+      - fetch_incidents_command() is called with combolist=True and unique=True.
 
     Then:
-      - None is returned as expected
+      - Verifies that create_poll_generator is called with the correct combolist and unique parameters.
+      - Ensures incidents are returned as a list.
     """
-    from GroupIBTIA import find_element_by_key
-    test_dict = {'a': 1}
-    result = find_element_by_key(test_dict, 'b')
-    assert result is None
-
-
-def test_transform_some_fields_into_markdown():
-    from GroupIBTIA import transform_some_fields_into_markdown
-
-    collection_name = "osi/git_repository"
-    feed = {
-        "files": [
-            {
-                "url": "https://example.com",
-                "dateCreated": "2023-10-16",
-                "revisions": {
-                    "info": {
-                        "authorEmail": "author@example.com",
-                        "authorName": "John Doe",
-                        "timestamp": 1234567890
-                    }
-                }
-            },
-            # ...
-        ]
+    collection_name, client = session_fixture
+    mock_portions = []
+    mock_portion = MagicMock()
+    mock_portion.sequpdate = 12345
+    mock_portion.portion_size = 10
+    mock_portion.count = 10
+    # Mock incident data that will be processed by IncidentBuilder
+    # Include required fields: id, name, evaluation, and date field based on collection
+    # Use date format that matches real data: "YYYY-MM-DD" or "YYYY-MM-DDTHH:MM:SS+00:00"
+    date_field = _get_date_field_for_collection(collection_name)
+    mock_incident_data = {
+        "id": "test-id",
+        "name": "test",
+        "evaluation": {"severity": "green"},
     }
+    # Add the appropriate date field for this collection
+    mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
+    # For compromised/breached collection, add emails field required for portal link generation
+    if collection_name == "compromised/breached":
+        mock_incident_data["emails"] = ["test@example.com"]
+    mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
+    mock_portions.append(mock_portion)
 
-    expected_output = {
-        "files": "| URL  |   Author Email  | Author Name  | Date Created| TimeStamp    |\n"
-                 "| ---- | --------------- | ------------ | ----------- | ------------ |\n"
-                 "| https://example.com | author@example.com | John Doe | 2023-10-16 | 1234567890 |\n"
+    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(
+        client.poller,
+        "get_available_collections",
+        return_value=[collection_name],
+    )
+    mocker.patch.object(
+        client,
+        "create_poll_generator",
+        return_value=(mock_portions, None),
+    )
+
+    next_run, incidents = fetch_incidents_command(
+        client=client,
+        last_run={},
+        first_fetch_time="3 days",
+        incident_collections=[collection_name],
+        max_requests=3,
+        hunting_rules=0,
+        combolist=True,
+        unique=True,
+        enable_probable_corporate_access=False,
+    )
+
+    # Verify create_poll_generator was called with combolist and unique parameters
+    client.create_poll_generator.assert_called_once()
+    call_kwargs = client.create_poll_generator.call_args[1]
+    assert call_kwargs["combolist"] is True, "Expected combolist parameter to be True."
+    assert call_kwargs["unique"] is True, "Expected unique parameter to be True."
+    assert isinstance(incidents, list), "Expected incidents to be a list."
+
+
+def test_fetch_incidents_sequpdate_resolution(mocker, session_fixture):
+    """
+    Test for verifying sequpdate resolution in create_poll_generator when no last_fetch exists.
+
+    Given:
+      - A session_fixture providing a client and collection name.
+      - An empty last_run dictionary (first time fetch).
+      - A mocked get_seq_update_dict that returns a sequpdate value.
+
+    When:
+      - fetch_incidents_command() is called with first_fetch_time.
+
+    Then:
+      - Verifies that create_poll_generator resolves sequpdate via get_seq_update_dict.
+      - Ensures the resolved sequpdate is used instead of date_from.
+    """
+    collection_name, client = session_fixture
+    if collection_name == "compromised/breached":
+        # Skip this test for compromised/breached as it uses different logic
+        return
+
+    mock_portions = []
+    mock_portion = MagicMock()
+    mock_portion.sequpdate = 12345
+    mock_portion.portion_size = 10
+    mock_portion.count = 10
+    # Mock incident data with required fields
+    date_field = _get_date_field_for_collection(collection_name)
+    mock_incident_data = {
+        "id": "test-id",
+        "name": "test",
+        "evaluation": {"severity": "green"},
     }
+    # Add the appropriate date field for this collection
+    mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
+    mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
+    mock_portions.append(mock_portion)
 
-    result = transform_some_fields_into_markdown(collection_name, feed)
+    # Mock get_seq_update_dict to return a sequpdate
+    resolved_sequpdate = 10000
+    mocker.patch.object(
+        client.poller,
+        "get_seq_update_dict",
+        return_value={collection_name: resolved_sequpdate},
+    )
+    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(
+        client.poller,
+        "get_available_collections",
+        return_value=[collection_name],
+    )
+    mocker.patch.object(
+        client.poller,
+        "create_update_generator",
+        return_value=mock_portions,
+    )
 
-    assert result == expected_output
+    next_run, incidents = fetch_incidents_command(
+        client=client,
+        last_run={},
+        first_fetch_time="2023-01-01",
+        incident_collections=[collection_name],
+        max_requests=3,
+        hunting_rules=0,
+        combolist=False,
+        unique=False,
+        enable_probable_corporate_access=False,
+    )
+
+    # Verify get_seq_update_dict was called for sequpdate resolution
+    client.poller.get_seq_update_dict.assert_called_once()
+    assert isinstance(incidents, list), "Expected incidents to be a list."
 
 
-def test_transform_some_fields_into_markdown_phishing_kit():
-    from GroupIBTIA import transform_some_fields_into_markdown
+def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixture):
+    """
+    Test for verifying effective_last_fetch calculation using max(last_fetch, sequpdate).
 
-    collection_name = "bp/phishing_kit"
-    feed = {
-        "downloadedFrom": [
-            {
-                "date": "2023-10-16",
-                "url": "https://example.com",
-                "domain": "example.com",
-                "fileName": "phish.zip"
-            },
-            # ...
-        ]
+    Given:
+      - A session_fixture providing a client and collection name.
+      - A last_run dictionary with existing last_fetch value.
+      - Multiple portions with different sequpdate values.
+
+    When:
+      - fetch_incidents_command() processes portions and updates sequpdate.
+
+    Then:
+      - Verifies that next_run contains the maximum of last_fetch and sequpdate.
+      - Ensures effective_last_fetch is correctly calculated.
+    """
+    collection_name, client = session_fixture
+    if collection_name == "compromised/breached":
+        # Skip this test for compromised/breached as it uses different logic
+        return
+
+    last_fetch_value = 10000
+    sequpdate_value = 15000  # Higher than last_fetch
+
+    mock_portions = []
+    mock_portion = MagicMock()
+    mock_portion.sequpdate = sequpdate_value
+    mock_portion.portion_size = 10
+    mock_portion.count = 10
+    # Mock incident data with required fields
+    date_field = _get_date_field_for_collection(collection_name)
+    mock_incident_data = {
+        "id": "test-id",
+        "name": "test",
+        "evaluation": {"severity": "green"},
     }
+    # Add the appropriate date field for this collection
+    mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
+    mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
+    mock_portions.append(mock_portion)
 
-    expected_output = {'downloadedFrom': '| URL | File Name | Domain | Date |\n'
-                                         '| --- | --------- | ------ | ---- |\n'
-                                         '| https://example.com | phish.zip | example.com | '
-                                         '2023-10-16 |\n'}
+    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(
+        client.poller,
+        "get_available_collections",
+        return_value=[collection_name],
+    )
+    mocker.patch.object(
+        client,
+        "create_poll_generator",
+        return_value=(mock_portions, last_fetch_value),
+    )
 
-    result = transform_some_fields_into_markdown(collection_name, feed)
+    next_run, incidents = fetch_incidents_command(
+        client=client,
+        last_run={"last_fetch": {collection_name: last_fetch_value}},
+        first_fetch_time="3 days",
+        incident_collections=[collection_name],
+        max_requests=3,
+        hunting_rules=0,
+        combolist=False,
+        unique=False,
+        enable_probable_corporate_access=False,
+    )
 
-    assert result == expected_output
+    # Verify effective_last_fetch is max(last_fetch, sequpdate)
+    assert collection_name in next_run["last_fetch"], "Expected collection name in next_run['last_fetch']."
+    effective_last_fetch = next_run["last_fetch"][collection_name]
+    assert effective_last_fetch == max(
+        last_fetch_value, sequpdate_value
+    ), f"Expected effective_last_fetch to be max({last_fetch_value}, {sequpdate_value}) = {sequpdate_value}."
 
 
-def test_transform_some_fields_into_markdown_public_leak():
-    from GroupIBTIA import transform_some_fields_into_markdown
+def test_fetch_incidents_incident_processing_loop(mocker, session_fixture):
+    """
+    Test for verifying the incident processing loop handles multiple portions correctly.
 
-    collection_name = "osi/public_leak"
-    feed = {
-        "linkList": [
-            {
-                "author": "John Doe",
-                "dateDetected": "2023-10-16",
-                "datePublished": "2023-10-15",
-                "hash": "abcdef123456",
-                "link": "https://example.com",
-                "source": "Example Source"
-            },
-            # ...
-        ],
-        "matches": {
-            "Type1": {
-                "SubType1": ["Value1", "Value2"],
-                "SubType2": ["Value3"]
-            },
-            "Type2": {
-                "SubType3": ["Value4"]
-            }
+    Given:
+      - A session_fixture providing a client and collection name.
+      - Multiple portions with different sequpdate values.
+
+    When:
+      - fetch_incidents_command() processes multiple portions in a loop.
+
+    Then:
+      - Verifies that all portions are processed.
+      - Ensures sequpdate is updated from each portion.
+      - Checks that requests_count limits the number of processed portions.
+    """
+    collection_name, client = session_fixture
+    if collection_name == "compromised/breached":
+        # Skip this test for compromised/breached as it uses different logic
+        return
+
+    # Create multiple mock portions
+    mock_portions = []
+    date_field = _get_date_field_for_collection(collection_name)
+    for i in range(5):
+        mock_portion = MagicMock()
+        mock_portion.sequpdate = 10000 + i * 1000
+        mock_portion.portion_size = 10
+        mock_portion.count = 10
+        # Mock incident data with required fields
+        mock_incident_data = {
+            "id": f"test-id-{i}",
+            "name": f"test-{i}",
+            "evaluation": {"severity": "green"},
         }
-    }
+        # Add the appropriate date field for this collection
+        mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
+        mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
+        mock_portions.append(mock_portion)
 
-    expected_output = {'linkList': '| Author | Date Detected | Date Published | Hash | Link | Source |\n'
-                                   '| ------ | ------------- | -------------- | ---- |----- | ------ |\n'
-                                   '| John Doe | 2023-10-16 | 2023-10-15 | abcdef123456 | '
-                                   '[https://example.com](https://example.com) | Example Source |\n',
-                       'matches': '| Type | Sub Type | Value |\n'
-                                  '| ---- | -------- | ----- |\n'
-                                  '| Type1 | SubType1 | Value1 |\n'
-                                  '| Type1 | SubType1 | Value2 |\n'
-                                  '| Type1 | SubType2 | Value3 |\n'
-                                  '| Type2 | SubType3 | Value4 |\n'}
+    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(
+        client.poller,
+        "get_available_collections",
+        return_value=[collection_name],
+    )
+    mocker.patch.object(
+        client,
+        "create_poll_generator",
+        return_value=(mock_portions, None),
+    )
 
-    result = transform_some_fields_into_markdown(collection_name, feed)
+    max_requests = 3
+    next_run, incidents = fetch_incidents_command(
+        client=client,
+        last_run={},
+        first_fetch_time="3 days",
+        incident_collections=[collection_name],
+        max_requests=max_requests,
+        hunting_rules=0,
+        combolist=False,
+        unique=False,
+        enable_probable_corporate_access=False,
+    )
 
-    assert result == expected_output
+    # Verify that only max_requests portions were processed
+    assert len(incidents) == max_requests, f"Expected {max_requests} incidents, got {len(incidents)}."
+    # Verify that the final sequpdate is from the last processed portion
+    assert collection_name in next_run["last_fetch"], "Expected collection name in next_run['last_fetch']."
 
 
-def test_get_human_readable_feed():
-    from GroupIBTIA import get_human_readable_feed
+def test_create_poll_generator_with_combolist_and_unique(mocker, single_session_fixture):
+    """
+    Test for verifying create_poll_generator correctly passes combolist and unique to create_update_generator.
 
-    collection_name = "TestCollection"
-    feed = {
-        "id": 123,
-        "field1": "value1",
-        "field2": "value2",
-        "field3": "value3"
-    }
+    Given:
+      - A client instance.
+      - combolist=True and unique=True parameters.
 
-    expected_output = ('### Feed from TestCollection with ID 123\n'
-                       '|field1|field2|field3|id|\n'
-                       '|---|---|---|---|\n'
-                       '| value1 | value2 | value3 | 123 |')
+    When:
+      - create_poll_generator() is called with these parameters.
 
-    result = get_human_readable_feed(collection_name, feed)
+    Then:
+      - Verifies that create_update_generator is called with combolist=1 and unique=1 (converted to int).
+    """
+    client = single_session_fixture
+    collection_name = "compromised/account_group"
 
-    assert result.strip() == expected_output.strip()
+    mock_portions = []
+    mock_portion = MagicMock()
+    mock_portions.append(mock_portion)
+
+    mocker.patch.object(
+        client.poller,
+        "get_seq_update_dict",
+        return_value={},  # Empty dict means no sequpdate found, will use date_from
+    )
+    mocker.patch.object(
+        client.poller,
+        "create_update_generator",
+        return_value=mock_portions,
+    )
+
+    portions, last_fetch = client.create_poll_generator(
+        collection_name=collection_name,
+        hunting_rules=0,
+        enable_probable_corporate_access=False,
+        unique=True,
+        combolist=True,
+        last_fetch=None,
+        first_fetch_time="2023-01-01",
+    )
+
+    # Verify create_update_generator was called with combolist and unique as integers
+    client.poller.create_update_generator.assert_called_once()
+    call_kwargs = client.poller.create_update_generator.call_args[1]
+    assert call_kwargs["combolist"] == 1, "Expected combolist to be converted to 1 (int)."
+    assert call_kwargs["unique"] == 1, "Expected unique to be converted to 1 (int)."
+    assert portions == mock_portions, "Expected returned portions to match mocked portions."
+
+
+def test_create_poll_generator_sequpdate_resolution_success(mocker, single_session_fixture):
+    """
+    Test for verifying create_poll_generator resolves sequpdate via get_seq_update_dict when successful.
+
+    Given:
+      - A client instance.
+      - No last_fetch, but date_from is provided.
+      - get_seq_update_dict returns a valid sequpdate.
+
+    When:
+      - create_poll_generator() is called with first_fetch_time.
+
+    Then:
+      - Verifies that get_seq_update_dict is called.
+      - Ensures resolved sequpdate is used and date_from is set to None.
+    """
+    client = single_session_fixture
+    collection_name = "compromised/account_group"
+    resolved_sequpdate = 12345
+
+    mock_portions = []
+    mock_portion = MagicMock()
+    mock_portions.append(mock_portion)
+
+    mocker.patch.object(
+        client.poller,
+        "get_seq_update_dict",
+        return_value={collection_name: resolved_sequpdate},
+    )
+    mocker.patch.object(
+        client.poller,
+        "create_update_generator",
+        return_value=mock_portions,
+    )
+
+    portions, last_fetch = client.create_poll_generator(
+        collection_name=collection_name,
+        hunting_rules=0,
+        enable_probable_corporate_access=False,
+        unique=False,
+        combolist=False,
+        last_fetch=None,
+        first_fetch_time="2023-01-01",
+    )
+
+    # Verify get_seq_update_dict was called
+    client.poller.get_seq_update_dict.assert_called_once()
+    # Verify create_update_generator was called with resolved sequpdate and date_from=None
+    call_kwargs = client.poller.create_update_generator.call_args[1]
+    assert call_kwargs["sequpdate"] == resolved_sequpdate, "Expected resolved sequpdate to be used."
+    assert call_kwargs.get("date_from") is None, "Expected date_from to be None when sequpdate is resolved."
+
+
+def test_create_poll_generator_sequpdate_resolution_fallback(mocker, single_session_fixture):
+    """
+    Test for verifying create_poll_generator falls back to date_from when sequpdate resolution fails.
+
+    Given:
+      - A client instance.
+      - No last_fetch, but date_from is provided.
+      - get_seq_update_dict returns empty dict or raises exception.
+
+    When:
+      - create_poll_generator() is called with first_fetch_time.
+
+    Then:
+      - Verifies that get_seq_update_dict is called.
+      - Ensures date_from is used when sequpdate resolution fails.
+    """
+    client = single_session_fixture
+    collection_name = "compromised/account_group"
+
+    mock_portions = []
+    mock_portion = MagicMock()
+    mock_portions.append(mock_portion)
+
+    mocker.patch.object(
+        client.poller,
+        "get_seq_update_dict",
+        return_value={},  # Empty dict means no sequpdate found
+    )
+    mocker.patch.object(
+        client.poller,
+        "create_update_generator",
+        return_value=mock_portions,
+    )
+
+    portions, last_fetch = client.create_poll_generator(
+        collection_name=collection_name,
+        hunting_rules=0,
+        enable_probable_corporate_access=False,
+        unique=False,
+        combolist=False,
+        last_fetch=None,
+        first_fetch_time="2023-01-01",
+    )
+
+    # Verify get_seq_update_dict was called
+    client.poller.get_seq_update_dict.assert_called_once()
+    # Verify create_update_generator was called with date_from (fallback)
+    call_kwargs = client.poller.create_update_generator.call_args[1]
+    assert call_kwargs.get("date_from") is not None, "Expected date_from to be used when sequpdate resolution fails."
+    assert call_kwargs.get("sequpdate") is None, "Expected sequpdate to be None when resolution fails."

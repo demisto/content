@@ -2,6 +2,12 @@ args:
 - description: 'The JSON object that should be converted to a HTML table.'
   name: value
   required: true
+- description: 'e.g. pass id=”info-table” or class=”bootstrap-class”/data-* to apply these attributes to the generated table.'
+  name: table_attributes
+  required: false
+- description: 'Custom CSS styling inserted before the table object.'
+  name: custom_styling
+  required: false
 comment: 'Converts JSON objects to HTML tables.'
 commonfields:
   id: Json2HtmlTable
@@ -10,9 +16,11 @@ name: Json2HtmlTable
 script: '-'
 tags:
 - basescript
-- tansformer
+- transformer
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/py3-tools:1.0.0.114656
+dockerimage: demisto/py3-tools:1.0.0.5475267
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

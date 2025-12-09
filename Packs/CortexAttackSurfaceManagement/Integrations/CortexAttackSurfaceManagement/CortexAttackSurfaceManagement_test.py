@@ -23,7 +23,7 @@ from test_data.raw_response import (
     RCS_GET_SCAN_STATUS_FAILED_ERROR_RESPONSE_200,
     RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESPONSE_200,
     RCS_GET_SCAN_STATUS_OTHER_RESPONSE_200,
-    ASM_GET_ATTACK_SURFACE_RULE_RESPONSE
+    ASM_GET_ATTACK_SURFACE_RULE_RESPONSE,
 )
 from test_data.expected_results import (
     EXTERNAL_EXPOSURES_RESULTS,
@@ -41,7 +41,7 @@ from test_data.expected_results import (
     RCS_GET_SCAN_STATUS_FAILED_ERROR_RESULTS_200,
     RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESULTS_200,
     RCS_GET_SCAN_STATUS_OTHER_RESULTS_200,
-    ASM_GET_ATTACK_SURFACE_RULE_RESULTS
+    ASM_GET_ATTACK_SURFACE_RULE_RESULTS,
 )
 
 client = Client(
@@ -89,15 +89,15 @@ def test_main(mocker):
     mocker.patch.object(demisto, "args", return_value=args)
 
     mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(demisto, 'results')
-    mocker.patch('CortexAttackSurfaceManagement.Client.list_external_service_request',
-                 return_value=EXTERNAL_SERVICE_RESPONSE)
-    mocker.patch('CortexAttackSurfaceManagement.Client.get_attack_surface_rule_request',
-                 return_value=ASM_GET_ATTACK_SURFACE_RULE_RESPONSE)
+    mocker.patch.object(demisto, "results")
+    mocker.patch("CortexAttackSurfaceManagement.Client.list_external_service_request", return_value=EXTERNAL_SERVICE_RESPONSE)
+    mocker.patch(
+        "CortexAttackSurfaceManagement.Client.get_attack_surface_rule_request", return_value=ASM_GET_ATTACK_SURFACE_RULE_RESPONSE
+    )
 
     main()
     assert demisto.results.call_count == 1
-    assert demisto.results.call_args[0][0] == 'ok'
+    assert demisto.results.call_args[0][0] == "ok"
 
 
 def test_format_asm_id_func():
@@ -138,7 +138,7 @@ def test_general_500_error(requests_mock, mocker):
     requests_mock.post(
         "https://test.com/api/webapp/public_api/v1/assets/get_external_services/",
         json=GENERAL_500_WAITRESS_ERROR,
-        status_code=400
+        status_code=400,
     )
 
     with pytest.raises(NotFoundError) as err:
@@ -197,7 +197,7 @@ def test_get_attack_surface_rule_command(requests_mock):
         "attack_surface_rule_id": "RdpServer",
         "enabled_status": "ON",
         "priority": "High",
-        "category": "Attack Surface Reduction"
+        "category": "Attack Surface Reduction",
     }
 
     response = get_attack_surface_rule_command(args=args, client=client)
@@ -325,7 +325,8 @@ def test_list_asset_internet_exposure_command(requests_mock):
     response_azure_cloud_tags = list_asset_internet_exposure_command(args=args_azure_cloud_tags, client=client)
     response_has_xdr_agent = list_asset_internet_exposure_command(args=args_has_xdr_agent, client=client)
     response_externally_detected_providers = list_asset_internet_exposure_command(
-        args=args_externally_detected_providers, client=client)
+        args=args_externally_detected_providers, client=client
+    )
     response_has_bu_overrides = list_asset_internet_exposure_command(args=args_has_bu_overrides, client=client)
     response_business_units_list = list_asset_internet_exposure_command(args=args_business_units_list, client=client)
     response_mac_address = list_asset_internet_exposure_command(args=args_mac_address, client=client)
@@ -588,37 +589,32 @@ def test_start_remediation_confirmation_failure_codes(
             "12345abc-123a-1234-a123-efgh12345678",
             RCS_GET_SCAN_STATUS_SUCCESS_REMEDIATED_RESULTS_200,
             RCS_GET_SCAN_STATUS_SUCCESS_REMEDIATED_RESPONSE_200,
-            ""
+            "",
         ),
         (
             "12345abc-123a-1234-a123-efgh12345678",
             RCS_GET_SCAN_STATUS_SUCCESS_UNREMEDIATED_RESULTS_200,
             RCS_GET_SCAN_STATUS_SUCCESS_UNREMEDIATED_RESPONSE_200,
-            ""
+            "",
         ),
-        (
-            "12345abc-123a-1234-a123-efgh12345678",
-            None,
-            RCS_GET_SCAN_STATUS_IN_PROGRESS_RESPONSE_200,
-            "scan_id"
-        ),
+        ("12345abc-123a-1234-a123-efgh12345678", None, RCS_GET_SCAN_STATUS_IN_PROGRESS_RESPONSE_200, "scan_id"),
         (
             "12345abc-123a-1234-a123-efgh12345678",
             RCS_GET_SCAN_STATUS_FAILED_ERROR_RESULTS_200,
             RCS_GET_SCAN_STATUS_FAILED_ERROR_RESPONSE_200,
-            ""
+            "",
         ),
         (
             "12345abc-123a-1234-a123-efgh12345678",
             RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESULTS_200,
             RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESPONSE_200,
-            ""
+            "",
         ),
         (
             "12345abc-123a-1234-a123-efgh12345678",
             RCS_GET_SCAN_STATUS_OTHER_RESULTS_200,
             RCS_GET_SCAN_STATUS_OTHER_RESPONSE_200,
-            ""
+            "",
         ),
     ],
 )

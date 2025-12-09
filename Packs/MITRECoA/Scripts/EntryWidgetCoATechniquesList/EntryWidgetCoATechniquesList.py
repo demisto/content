@@ -2,8 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 
 incident = demisto.incident()
-count = len(incident.get('CustomFields', {}).get('techniqueslist', "").split(","))
-handled = incident.get('CustomFields', {}).get('handledtechniques', [])
+count = len(incident.get("CustomFields", {}).get("techniqueslist", "").split(","))
+handled = incident.get("CustomFields", {}).get("handledtechniques", [])
 stats = len([h for h in handled if h])
 
 data = {
@@ -17,14 +17,12 @@ data = {
             "sign": "",
             "colors": {
                 "items": {
-                    "#8C9EFF": {
-                        "value": 0
-                    },
+                    "#8C9EFF": {"value": 0},
                 }
             },
-            "type": "above"
-        }
-    }
+            "type": "above",
+        },
+    },
 }
 
 return_results(data)

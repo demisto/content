@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Jira Event Collector
   version: -1
@@ -8,30 +11,36 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: User name
   additionalinfo: The user name (admin@example.com) and password
   name: credentials
   displaypassword: API token
   required: true
   type: 9
+  section: Connect
 - defaultvalue: 3 days
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). default is 3 days.
   name: first_fetch
   required: true
   type: 0
+  section: Collect
 - defaultvalue: 1000
   display: The maximum number of events per fetch. Default is 1000.
   name: max_fetch
   required: true
   type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: 'Jira logs event collector integration for Cortex XSIAM.'
 display: Jira Event Collector
 name: Jira Event Collector
@@ -51,9 +60,17 @@ script:
   isfetchevents: true
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.4027705
 marketplaces:
 - marketplacev2
+- platform
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

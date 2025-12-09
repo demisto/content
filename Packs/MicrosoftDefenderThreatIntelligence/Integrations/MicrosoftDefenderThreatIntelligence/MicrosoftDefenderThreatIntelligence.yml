@@ -1,0 +1,256 @@
+category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: MicrosoftDefenderThreatIntelligence
+  version: -1
+
+configuration:
+- section: Connect
+  defaultvalue: 7f55ea8c-2e5c-4a52-aafa-d0bfc632b242
+  display: Application ID (Client ID for Client Credentials mode)
+  name: app_id
+  type: 0
+  required: false
+- section: Connect
+  display: Tenant ID (required for Client Credentials mode)
+  name: tenant_id
+  type: 0
+  required: false
+- section: Connect
+  displaypassword: Client Secret (required for Client Credentials mode)
+  name: credentials
+  type: 9
+  additionalinfo: Client Secret (required for Client Credentials mode)
+  hiddenusername: true
+  required: false
+- section: Connect
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: creds_certificate
+  type: 9
+  displaypassword: Private Key
+  advanced: true
+  required: false
+- section: Connect
+  additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  type: 8
+  required: false
+- section: Connect
+  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  hiddenusername: true
+  type: 9
+  required: false
+- section: Connect
+  defaultvalue: https://login.microsoftonline.com
+  display: Azure AD endpoint
+  name: azure_ad_endpoint
+  options:
+  - https://login.microsoftonline.com
+  - https://login.microsoftonline.us
+  - https://login.microsoftonline.de
+  - https://login.chinacloudapi.cn
+  type: 15
+  additionalinfo: Azure AD endpoint associated with a national cloud.
+  advanced: true
+  required: false
+- section: Connect
+  additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
+  display: Use Client Credentials Authorization Flow
+  name: client_credentials
+  type: 8
+  required: false
+- section: Connect
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  advanced: true
+  required: false
+- section: Connect
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  advanced: true
+  required: false
+
+description: Use the Microsoft Defender Threat Intelligence integration to query enriched threat intelligence data such as articles, threat actor profiles, WHOIS records, and host-related infrastructure.
+display: Microsoft Defender Threat Intelligence
+name: MicrosoftDefenderThreatIntelligence
+script:
+  commands:
+  - description: "Starts the authorization process.\nFollow the instructions in the command results."
+    name: msg-defender-threat-intel-auth-start
+  - description: "Completes the authorization process.\nShould be used after running the msg-defender-threat-intel-auth-start command."
+    name: msg-defender-threat-intel-auth-complete
+  - description: Reruns the authentication process.
+    name: msg-defender-threat-intel-auth-reset
+  - description: Tests connectivity to Microsoft.
+    name: msg-defender-threat-intel-auth-test
+  - arguments:
+    - description: "Article ID to retrieve specific article details.\nIf no value is provided all articles will be returned."
+      name: article_id
+    - defaultValue: '50'
+      description: Number of incidents in the list.
+      name: limit
+    - description: "Use odata query to customize the response."
+      name: odata
+    description: Get articles including their properties and relationships.
+    name: msg-defender-threat-intel-article-list
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.Article.id
+      description: The unique identifier of the threat intelligence article.
+      type: String
+    - contextPath: MSGDefenderThreatIntel.Article.title
+      description: The title of the Microsoft Defender Threat Intelligence article.
+      type: String
+  - arguments:
+    - description: "The unique identifier of the article to retrieve indicators from.\nChoose one of the following arguments: article_id or article_indicator_id."
+      name: article_id
+    - description: "The unique identifier of a specific indicator within the article.\nChoose one of the following arguments: article_id or article_indicator_id."
+      name: article_indicator_id
+    - defaultValue: '50'
+      description: Number of indicators in the list.
+      name: limit
+    - description: "Use odata query to customize the response."
+      name: odata
+    description: Get indicators of threat or compromise related to the contents of an article.
+    name: msg-defender-threat-intel-article-indicators-list
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.ArticleIndicator.id
+      description: The unique identifier of the indicator associated with the article.
+      type: String
+    - contextPath: MSGDefenderThreatIntel.ArticleIndicator.artifact.id
+      description: The unique identifier of the artifact (e.g., file, domain, IP) related to the indicator.
+      type: String
+  - arguments:
+    - default: false
+      description: "The unique identifier of the intelligence profile.\nIf no value is provided all profiles will be returned."
+      name: intel_profile_id
+    - defaultValue: '50'
+      description: 'Number of incidents in the list.'
+      name: limit
+    - default: false
+      description: "Use odata query to customize the response."
+      name: odata
+    description: 'Get Intelligence Profiles including their properties and relationships.'
+    name: msg-defender-threat-intel-profile-list
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.Profile.id
+      description: The unique identifier of the threat actor profile.
+    - contextPath: MSGDefenderThreatIntel.Profile.title
+      description: The title or name of the threat actor profile.
+      type: String
+  - arguments:
+    - description: "The unique identifier of the intelligence profile.\nChoose one of the following arguments: intel_profile_id or intel_profile_indicator_id."
+      name: intel_profile_id
+    - default: false
+      description: "The unique identifier of a specific indicator related to an intelligence profile.\nChoose one of the following arguments: intel_profile_id or intel_profile_indicator_id."
+      name: intel_profile_indicator_id
+    - defaultValue: '50'
+      description: Number of incidents in the list.
+      name: limit
+    - default: false
+      description: "Use odata query to customize the response."
+      name: odata
+    description: Get Intelligence Profiles Indicators and their properties.
+    name: msg-defender-threat-intel-profile-indicators-list
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.ProfileIndicator.id
+      description: The unique identifier of the indicator associated with the threat actor profile.
+    - contextPath: MSGDefenderThreatIntel.ProfileIndicator.artifact.id
+      description: The unique identifier of the artifact (e.g., IP address, domain, file hash) linked to the indicator.
+      type: String
+  - arguments:
+    - description: Hostname or IP address..
+      name: host_id
+      required: true
+    - description: "Use odata query to customize the response."
+      name: odata
+    description: Read the properties and relationships of a host object.
+    name: msg-defender-threat-intel-host
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.Host.id
+      description: The unique identifier of the host object in Microsoft Defender Threat Intelligence.
+    - contextPath: MSGDefenderThreatIntel.Host.registrar
+      description: The name of the domain registrar responsible for registering the host.
+      type: String
+    - contextPath: MSGDefenderThreatIntel.Host.registrant
+      description: The entity (person or organization) that registered the host domain.
+      type: String
+  - arguments:
+    - description: "Hostname or IP address.\nChoose one of the following arguments: host_id or whois_record_id."
+      name: host_id
+    - description: "The unique identifier of a specific whois record.\nChoose one of the following arguments: host_id or whois_record_id."
+      name: whois_record_id
+    - description: "Use odata query to customize the response."
+      name: odata
+    - defaultValue: '50'
+      description: Number of records in the list.
+      name: limit
+    description: Get the specified whoisRecord resource.
+    name: msg-defender-threat-intel-host-whois
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.Whois.id
+      description: The unique identifier of the WHOIS record in Microsoft Defender Threat Intelligence.
+    - contextPath: MSGDefenderThreatIntel.Whois.whoisServer
+      description: The WHOIS server that provided the domain registration information.
+      type: String
+    - contextPath: MSGDefenderThreatIntel.Whois.domainStatus
+      description: The current status of the domain (e.g., active, clientHold, expired) as reported in the WHOIS record.
+      type: String
+  - arguments:
+    - description: "Hostname or IP address.\nChoose one of the following arguments: host_id, whois_record_id or whois_history_record_id."
+      name: host_id
+    - description: "The unique identifier of the whois record whose history you want to retrieve.\nChoose one of the following arguments: host_id, whois_record_id or whois_history_record_id."
+      name: whois_record_id
+    - description: 'Use "odata" query to customize the response.'
+      name: odata
+    - defaultValue: '50'
+      description: 'Number of records in the list.'
+      name: limit
+    description: 'Get the history for a whoisRecord, as represented by a collection of whoisHistoryRecord resources.'
+    name: msg-defender-threat-intel-host-whois-history
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.WhoisHistory.id
+      description: The unique identifier of the historical WHOIS record.
+    - contextPath: MSGDefenderThreatIntel.WhoisHistory.whoisServer
+      description: The WHOIS server that provided the historical domain registration data.
+      type: String
+    - contextPath: MSGDefenderThreatIntel.WhoisHistory.domainStatus
+      description: The domain's status at the time of the historical WHOIS record (e.g., clientTransferProhibited, inactive).
+      type: String
+  - arguments:
+    - description: Hostname or IP address.
+      name: host_id
+      required: true
+    - description: "Use odata query to customize the response."
+      name: odata
+    description: Retrieves the reputation details, properties, and related information for a specified host.
+    name: msg-defender-threat-intel-host-reputation
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.HostReputation.id
+      description: The unique identifier of the host object in Microsoft Defender Threat Intelligence.
+      type: String
+    - contextPath: MSGDefenderThreatIntel.HostReputation.classification
+      description: The reputation classification of the host (e.g., Malicious, Suspicious, Unknown).
+      type: String
+    - contextPath: MSGDefenderThreatIntel.HostReputation.score
+      description: A numerical score representing the confidence or severity of the host's reputation.
+      type: String
+  isfetch: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/crypto:1.0.0.4578119
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+tests:
+- No tests (auto formatted)

@@ -3,7 +3,6 @@ This integration was integrated and tested with version 3.157 of Symantec CloudS
 
 ## Configure Symantec Cloud SOC Event Collector in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL (e.g., <https://api.elastica.net/casb/>) | True |
@@ -12,13 +11,13 @@ This integration was integrated and tested with version 3.157 of Symantec CloudS
 | First fetch time | False |
 | Maximum number of incidents per fetch | False |
 
-
-
 Symantec CloudSOC Event Collector collects the following event types:
+
 * Investigate logs
 * Detect incidents logs
   
 ### API Limitations
+
   You cannot retrieve investigate logs that are older than 180 days. Therefore, if setting a first fetch that is more than 180 days, for investigate logs it will be a maximum of 180 days.
 
 ## Commands
@@ -39,8 +38,8 @@ Gets events from Symantec CloudSOC.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of results to return. Default is 1000. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum number of results to return. Default is 1000. | Optional |
 
 #### Context Output
 

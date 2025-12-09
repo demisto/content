@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -130,6 +130,7 @@ script:
       description: The search type. When advanced, allows to query multiple search parameters.
       predefined:
       - advanced
+      - raw
       name: searchType
     - defaultValue: '20'
       description: The maximum number of results to return. Default is 20.
@@ -167,6 +168,8 @@ script:
     - contextPath: URLScan.FileType
       description: File type of the file scanned.
       type: string
+    - contextPath: URLScan.Search.Results
+      description: The unformatted search results from a raw search.
     polling: true
   - arguments:
     - description: The URL to scan.
@@ -490,7 +493,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3720084
 fromversion: 5.0.0
 tests:
 - urlscan_malicious_Test

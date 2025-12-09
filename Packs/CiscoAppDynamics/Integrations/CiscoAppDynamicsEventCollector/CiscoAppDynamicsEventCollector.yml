@@ -1,0 +1,117 @@
+category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Cisco AppDynamics
+  version: -1
+configuration:
+- defaultvalue: https://<controller address>/controller
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: The Server URL is the controller API Address
+- display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: Application ID
+  name: application_id
+  type: 0
+  required: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Fetch Events
+  name: isFetchEvents
+  required: false
+  type: 8
+  section: Collect
+- display: Event types to fetch (Multi-select list)
+  defaultvalue: Audit, Health Rule Violations Events
+  name: events_type_to_fetch
+  required: true
+  type: 16
+  section: Collect
+  advanced: true
+  options:
+  - Audit
+  - Health Rule Violations Events
+- display: The maximum number of Audit History API per fetch
+  name: max_audit_fetch
+  defaultvalue: '3000'
+  type: 0
+  required: false
+  advanced: true
+  section: Collect
+- display: The maximum number of Health Rule Violations Events per fetch
+  name: max_healthrule_fetch
+  defaultvalue: '3000'
+  type: 0
+  required: false
+  advanced: true
+  section: Collect
+description: AppDynamics enables you to automate incident management, gain real-time performance metrics, and optimize applications to meet business needs.
+display: Cisco AppDynamics
+name: Cisco AppDynamics
+script:
+  commands:
+  - name: cisco-appdynamics-get-events
+    description: Retrieves a list of events from the cisappdynamics instance.
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: false
+      description: If true, the command will create events, otherwise it will only display them. Use this for debugging purpose only.
+      name: should_push_events
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+    - description: 'The maximum number of events to fetch.'
+      name: limit
+      defaultValue: 3000
+      required: false
+    - auto: PREDEFINED
+      description: 'Which events to fetch.'
+      name: events_type_to_fetch
+      predefined:
+      - 'Audit'
+      - 'Health Rule Violations Events'
+      defaultValue: 'Audit'
+      required: false
+    - description: 'The starting date from which events should be fetched. The date should be in the format "%Y-%m-%dT%H:%M:%S.%fZ". Example: 2025-01-01T11:27:08.000Z.'
+      name: start_date
+      required: false
+    - description: 'The date up to which events should be fetched. The date should be in the format "%Y-%m-%dT%H:%M:%S.%fZ". Example: 2025-01-01T11:27:08.000Z.'
+      name: end_date
+      required: false
+    outputs:
+    - contextPath: CiscoAppDynamics
+      description: The list of events.
+      type: List
+  dockerimage: demisto/python3:3.12.12.5490952
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)

@@ -1,27 +1,27 @@
-from CrowdStrikeApiModule import CrowdStrikeClient
-from test_data.http_responses import MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE
-from test_data.context import MULTIPLE_ERRORS_RESULT
-import pytest
+from datetime import datetime, timedelta
+
 import demistomock as demisto
-from datetime import datetime
-from datetime import timedelta
+import pytest
+from CrowdStrikeApiModule import CrowdStrikeClient
+from test_data.context import MULTIPLE_ERRORS_RESULT
+from test_data.http_responses import MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE
 
 
 class ResMocker:
     def __init__(self, http_response):
         self.http_response = http_response
         self.status_code = 400
-        self.reason = 'error'
+        self.reason = "error"
         self.ok = False
 
     def json(self):
         return self.http_response
 
 
-@pytest.mark.parametrize('http_response, output', [
-    (MULTI_ERRORS_HTTP_RESPONSE, MULTIPLE_ERRORS_RESULT),
-    (NO_ERRORS_HTTP_RESPONSE, "Error in API call [400] - error\n")
-])
+@pytest.mark.parametrize(
+    "http_response, output",
+    [(MULTI_ERRORS_HTTP_RESPONSE, MULTIPLE_ERRORS_RESULT), (NO_ERRORS_HTTP_RESPONSE, "Error in API call [400] - error\n")],
+)
 def test_handle_errors(http_response, output, mocker):
     """Unit test
     Given
@@ -33,36 +33,32 @@ def test_handle_errors(http_response, output, mocker):
     - 1. show the exception content
     - 2. show no errors
     """
-    mocker.patch.object(CrowdStrikeClient, '_generate_token')
-    params = {
-        'insecure': False,
-        'credentials': {
-            'identifier': 'user1',
-            'password:': '12345'
-        },
-        'proxy': False
-    }
+    mocker.patch.object(CrowdStrikeClient, "_generate_token")
+    params = {"insecure": False, "credentials": {"identifier": "user1", "password:": "12345"}, "proxy": False}
     client = CrowdStrikeClient(params)
     try:
-        mocker.patch.object(client._session, 'request', return_value=ResMocker(http_response))
+        mocker.patch.object(client._session, "request", return_value=ResMocker(http_response))
         _, output, _ = client.check_quota_status()
     except Exception as e:
-        assert (str(e) == str(output))
+        assert str(e) == str(output)
 
 
-@pytest.mark.parametrize(argnames="context, expected_call_count", argvalues=[
-    ({}, 1),
-    ({'generation_time': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"), 'auth_token': 'test'}, 0),
-    ({'generation_time': (datetime.now() - timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%S")}, 1),
-])
+@pytest.mark.parametrize(
+    argnames="context, expected_call_count",
+    argvalues=[
+        ({}, 1),
+        ({"generation_time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"), "auth_token": "test"}, 0),
+        ({"generation_time": (datetime.now() - timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%S")}, 1),
+    ],
+)
 def test_get_token(mocker, context, expected_call_count):
     """
     Given - varios token generation time
     When - try to get access token when init the client
     Then - validate that token was generated only of required (after 28 min)
     """
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=context)
-    mocker.patch.object(CrowdStrikeClient, '_generate_token', return_value="test_token_generated")
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=context)
+    mocker.patch.object(CrowdStrikeClient, "_generate_token", return_value="test_token_generated")
 
     CrowdStrikeClient({})
 

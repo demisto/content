@@ -40,20 +40,15 @@ An example arrangement for EmailAskUser task is as below:
 
 ![image](../../doc_files/99517136-efc5b480-2986-11eb-879c-a0a88923c4b9.png)
 
-
 There needs to be a manual conditional task *after* the EmailAskUser Task - It is this task that is referenced as "task" in the EmailAskUser parameters.
 
 It is good practice to tag the wait task as shown:
 
 ![image](../../doc_files/99517219-0409b180-2987-11eb-9aa4-7e96b2a12238.png)
 
-
 The tag you choose (in this case "Await") can be used in lieu of the task id in the task field of the EmailAskUser Task:
 
-
 ![image](../../doc_files/99517256-0f5cdd00-2987-11eb-8a1f-1dc41d166b42.png)
-
-
 
 ## Script Data
 
@@ -74,9 +69,9 @@ The tag you choose (in this case "Await") can be used in lieu of the task id in 
 | email             | The email of the user to ask.                                                                                          |
 | subject           | The subject for the email.                                                                                             |
 | message           | The message sent to the user you are going to ask.                                                                     |
-| option1           | The first option for a user reply.The default is "yes".                                                                |
-| option2           | The second option for the user reply. The default is "no".                                                             |
-| additionalOptions | The comma delimited list of additional options if there are more than 2.                                               |
+| option1           | The first option for a user reply.The default is "yes". Options cannot contain whitespaces.                            |
+| option2           | The second option for the user reply. The default is "no". Options cannot contain whitespaces.                         |
+| additionalOptions | The comma delimited list of additional options if there are more than 2. Options cannot contain whitespaces.           |
 | task              | Which task the reply will close. If none, then no playbook tasks will be closed.                                       |
 | roles             | Send mail to all users of these roles (a CSV list).                                                                    |
 | attachIds         | The attachments.                                                                                                       |
@@ -87,21 +82,26 @@ The tag you choose (in this case "Await") can be used in lieu of the task id in 
 | retries           | How many times to try and create an entitlement in case of a failure.                                                  |
 | cc                | The CC email address.                                                                                                  |
 | bcc               | The BCC email address.                                                                                                 |
-| playbookTaskID    | The subplaybook ID, use `${currentPlaybookID}` to get from the context, `all` to complete all tasks from all plabooks. |
+| playbookTaskID    | The subplaybook ID, use `${currentPlaybookID}` to get from the context, `all` to complete all tasks from all playbooks.|
 
 ## Outputs
 
 ---
 There are no outputs for this script.
 
-
 ## Prerequisites
 
 ---
 Requires an instance of one of the available email integrations, set to fetch incidents.
 
-
 ## Troubleshooting
 
 ---
 In case that the incident in which the automation script is running, has limited permissions to (e.g. has a certain role assigned to it), then the responder to the email need to have the relevant permissions assigned to its user in Cortex XSOAR.
+
+## Notes
+
+---
+
+* `EmailAskUser` will not work when run in the playbook debugger. This is because the debugger does not generate entitlements, since they must be tied to an investigation. Entitlements are needed to track the response.
+* Whitespaces are not supported in custom options and will not work. (i.e. setting a button to `I Agree`)

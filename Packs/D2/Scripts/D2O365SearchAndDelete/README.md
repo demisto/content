@@ -1,5 +1,7 @@
 Assigns a `Mailbox Import Export` management role to a user. This script runs through the agent on a Windows machine, pulls and executes a `PowerShell`script - which talks to the Exchange server.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -7,8 +9,8 @@ Assigns a `Mailbox Import Export` management role to a user. This script runs th
 | Script Type | javascript |
 | Tags | email, office365 |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +21,6 @@ Assigns a `Mailbox Import Export` management role to a user. This script runs th
 | timeout | he amoun of time to wait before timing out (in seconds). The default is 5 mins. Max is 2 hours. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

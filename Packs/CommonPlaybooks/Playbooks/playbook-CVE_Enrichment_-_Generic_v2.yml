@@ -44,8 +44,7 @@ tasks:
       id: 4cfa2898-da16-4d61-839a-cc66e5492541
       version: -1
       name: Is there a CVE to enrich?
-      description: Verify that the playbook input includes at least one CVE ID to
-        enrich.
+      description: Verify that the playbook input includes at least one CVE ID to enrich.
       type: condition
       iscommand: false
       brand: ''
@@ -567,5 +566,6 @@ sourceplaybookid: cve_enrichment_-_generic
 tests:
 - No test
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
+- platform

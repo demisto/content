@@ -12,54 +12,37 @@ EXTERNAL_SERVICES_RESPONSE = {
                 "service_id": "8b8f9d0a-4acd-3d88-9042-c7d17c2b44e9",
                 "service_name": "DNS Server at 1.1.1.1:53",
                 "service_type": "DnsServer",
-                "ip_address": [
-                    "1.1.1.1"
-                ],
+                "ip_address": ["1.1.1.1"],
                 "domain": [],
-                "externally_detected_providers": [
-                    "Other"
-                ],
+                "externally_detected_providers": ["Other"],
                 "is_active": "Inactive",
                 "first_observed": 1661308020000,
                 "last_observed": 1661357820000,
                 "port": 53,
                 "protocol": "UDP",
                 "active_classifications": [],
-                "inactive_classifications": [
-                    "DnsServer"
-                ],
+                "inactive_classifications": ["DnsServer"],
                 "discovery_type": "ColocatedOnIp",
-                "business_units": [
-                    "Acme"
-                ],
+                "business_units": ["Acme"],
                 "externally_inferred_vulnerability_score": null,
-                "externally_inferred_cves": []
+                "externally_inferred_cves": [],
             },
             {
                 "service_id": "7a4ce6ec-9ce3-3002-ac66-862854b2d7f7",
                 "service_name": "DNS Server at 1.1.1.1:53",
                 "service_type": "DnsServer",
-                "ip_address": [
-                    "1.1.1.1"
-                ],
+                "ip_address": ["1.1.1.1"],
                 "domain": [],
-                "externally_detected_providers": [
-                    "Other"
-                ],
+                "externally_detected_providers": ["Other"],
                 "is_active": "Active",
                 "first_observed": 1661298300000,
                 "last_observed": 1662536820000,
                 "port": 53,
                 "protocol": "UDP",
-                "active_classifications": [
-                    "DnsServer",
-                    "ISCBIND9"
-                ],
+                "active_classifications": ["DnsServer", "ISCBIND9"],
                 "inactive_classifications": [],
                 "discovery_type": "ColocatedOnIp",
-                "business_units": [
-                    "VanDelay Industries"
-                ],
+                "business_units": ["VanDelay Industries"],
                 "externally_inferred_vulnerability_score": 9.8,
                 "externally_inferred_cves": [
                     "CVE-2021-25216",
@@ -93,10 +76,10 @@ EXTERNAL_SERVICES_RESPONSE = {
                     "CVE-2021-25219",
                     "CVE-2019-6465",
                     "CVE-2018-5745",
-                    "CVE-2017-3142"
-                ]
-            }
-        ]
+                    "CVE-2017-3142",
+                ],
+            },
+        ],
     }
 }
 
@@ -107,41 +90,23 @@ EXTERNAL_SERVICE_RESPONSE = {
                 "service_id": "94232f8a-f001-3292-aa65-63fa9d981427",
                 "service_name": "SSH Server at 1.1.1.1:22",
                 "service_type": "SshServer",
-                "ip_address": [
-                    "1.1.1.1"
-                ],
+                "ip_address": ["1.1.1.1"],
                 "domain": [],
-                "externally_detected_providers": [
-                    "Amazon Web Services"
-                ],
+                "externally_detected_providers": ["Amazon Web Services"],
                 "is_active": "Active",
                 "first_observed": 1662774120000,
                 "last_observed": 1662967560000,
                 "port": 22,
                 "protocol": "TCP",
-                "active_classifications": [
-                    "SSHWeakMACAlgorithmsEnabled",
-                    "SshServer",
-                    "OpenSSH"
-                ],
+                "active_classifications": ["SSHWeakMACAlgorithmsEnabled", "SshServer", "OpenSSH"],
                 "inactive_classifications": [],
                 "discovery_type": "ColocatedOnIp",
-                "business_units": [
-                    "Acme"
-                ],
+                "business_units": ["Acme"],
                 "externally_inferred_vulnerability_score": 7.8,
-                "ipv6s": [
-                    "2600:1900:4000:9664:0:7::"
-                ],
-                "aws_cloud_tags": [
-                    "Name:AD Lab"
-                ],
-                "gcp_cloud_tags": [
-                    "Name:gcp Lab"
-                ],
-                "azure_cloud_tags": [
-                    "Name:azure Lab"
-                ],
+                "ipv6s": ["2600:1900:4000:9664:0:7::"],
+                "aws_cloud_tags": ["Name:AD Lab"],
+                "gcp_cloud_tags": ["Name:gcp Lab"],
+                "azure_cloud_tags": ["Name:azure Lab"],
                 "mac_address": ["00:11:22:33:44:55"],
                 "has_xdr_agent": "NO",
                 "has_bu_overrides": False,
@@ -156,23 +121,13 @@ EXTERNAL_SERVICE_RESPONSE = {
                     "CVE-2018-15473",
                     "CVE-2018-15919",
                     "CVE-2018-20685",
-                    "CVE-2021-36368"
+                    "CVE-2021-36368",
                 ],
                 "details": {
                     "serviceKey": "1.1.1.1:22",
                     "serviceKeyType": "IP",
-                    "businessUnits": [
-                        {
-                            "name": "Acme"
-                        }
-                    ],
-                    "providerDetails": [
-                        {
-                            "name": "AWS",
-                            "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
-                        }
-                    ],
+                    "businessUnits": [{"name": "Acme"}],
+                    "providerDetails": [{"name": "AWS", "firstObserved": 1662774169000, "lastObserved": 1662967589000}],
                     "certificates": [],
                     "domains": [],
                     "ips": [
@@ -186,11 +141,11 @@ EXTERNAL_SERVICE_RESPONSE = {
                                 "countryCode": "US",
                                 "city": "ASHBURN",
                                 "regionCode": "VA",
-                                "timeZone": null
+                                "timeZone": null,
                             },
                             "activityStatus": "Active",
                             "lastObserved": 1662967589000,
-                            "firstObserved": 1662774169000
+                            "firstObserved": 1662774169000,
                         }
                     ],
                     "classifications": [
@@ -199,40 +154,30 @@ EXTERNAL_SERVICE_RESPONSE = {
                             "activityStatus": "Active",
                             "values": [
                                 {
-                                    "jsonValue": "{\"version\":\"2.0\",\"serverVersion\":\"OpenSSH_7.6p1\",\"extraInfo\":\"Ubuntu-4ubuntu0.7\"}",
+                                    "jsonValue": '{"version":"2.0","serverVersion":"OpenSSH_7.6p1","extraInfo":"Ubuntu-4ubuntu0.7"}',
                                     "firstObserved": 1662774169000,
-                                    "lastObserved": 1662967589000
+                                    "lastObserved": 1662967589000,
                                 }
                             ],
                             "firstObserved": 1662774120000,
-                            "lastObserved": 1662967560000
+                            "lastObserved": 1662967560000,
                         },
                         {
                             "name": "SSHWeakMACAlgorithmsEnabled",
                             "activityStatus": "Active",
-                            "values": [
-                                {
-                                    "jsonValue": "{}",
-                                    "firstObserved": 1662774169000,
-                                    "lastObserved": 1662958350000
-                                }
-                            ],
+                            "values": [{"jsonValue": "{}", "firstObserved": 1662774169000, "lastObserved": 1662958350000}],
                             "firstObserved": 1662774120000,
-                            "lastObserved": 1662958320000
+                            "lastObserved": 1662958320000,
                         },
                         {
                             "name": "OpenSSH",
                             "activityStatus": "Active",
                             "values": [
-                                {
-                                    "jsonValue": "{\"version\":\"7.6\"}",
-                                    "firstObserved": 1662774169000,
-                                    "lastObserved": 1662967589000
-                                }
+                                {"jsonValue": '{"version":"7.6"}', "firstObserved": 1662774169000, "lastObserved": 1662967589000}
                             ],
                             "firstObserved": 1662774120000,
-                            "lastObserved": 1662967560000
-                        }
+                            "lastObserved": 1662967560000,
+                        },
                     ],
                     "tlsVersions": [],
                     "inferredCvesObserved": [
@@ -248,12 +193,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -267,12 +212,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -286,12 +231,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -305,12 +250,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -324,12 +269,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -343,12 +288,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -362,12 +307,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -381,12 +326,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -400,12 +345,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -419,12 +364,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -438,17 +383,17 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
-                        }
+                            "lastObserved": 1662967589000,
+                        },
                     ],
                     "enrichedObservationSource": "CLOUD",
-                    "ip_ranges": {}
-                }
+                    "ip_ranges": {},
+                },
             }
         ]
     }
@@ -466,14 +411,8 @@ EXTERNAL_RANGES_RESPONSE = {
                 "ips_count": 64,
                 "active_responsive_ips_count": 0,
                 "date_added": 1662988031334,
-                "business_units": [
-                    "VanDelay Industries"
-                ],
-                "organization_handles": [
-                    "MAINT-HK-PCCW-BIA-CS",
-                    "TA66-AP",
-                    "BNA2-AP"
-                ]
+                "business_units": ["VanDelay Industries"],
+                "organization_handles": ["MAINT-HK-PCCW-BIA-CS", "TA66-AP", "BNA2-AP"],
             },
             {
                 "range_id": "6ef4638e-7788-3ef5-98a5-ad5b7f4e02f5",
@@ -482,17 +421,10 @@ EXTERNAL_RANGES_RESPONSE = {
                 "ips_count": 16,
                 "active_responsive_ips_count": 0,
                 "date_added": 1662988031334,
-                "business_units": [
-                    "VanDelay Industries"
-                ],
-                "organization_handles": [
-                    "EH92-RIPE",
-                    "EASYNET-UK-MNT",
-                    "AR17615-RIPE",
-                    "JW372-RIPE"
-                ]
-            }
-        ]
+                "business_units": ["VanDelay Industries"],
+                "organization_handles": ["EH92-RIPE", "EASYNET-UK-MNT", "AR17615-RIPE", "JW372-RIPE"],
+            },
+        ],
     }
 }
 
@@ -506,14 +438,8 @@ EXTERNAL_RANGE_RESPONSE = {
                 "ips_count": 64,
                 "active_responsive_ips_count": 0,
                 "date_added": 1662988031334,
-                "business_units": [
-                    "VanDelay Industries"
-                ],
-                "organization_handles": [
-                    "MAINT-HK-PCCW-BIA-CS",
-                    "TA66-AP",
-                    "BNA2-AP"
-                ],
+                "business_units": ["VanDelay Industries"],
+                "organization_handles": ["MAINT-HK-PCCW-BIA-CS", "TA66-AP", "BNA2-AP"],
                 "details": {
                     "networkRecords": [
                         {
@@ -533,12 +459,10 @@ EXTERNAL_RANGE_RESPONSE = {
                                     "org": "",
                                     "formattedName": "",
                                     "kind": "group",
-                                    "roles": [
-                                        "registrant"
-                                    ],
+                                    "roles": ["registrant"],
                                     "lastChanged": null,
                                     "firstRegistered": null,
-                                    "remarks": ""
+                                    "remarks": "",
                                 },
                                 {
                                     "handle": "TA66-AP",
@@ -549,12 +473,10 @@ EXTERNAL_RANGE_RESPONSE = {
                                     "org": "",
                                     "formattedName": "TECHNICAL ADMINISTRATORS",
                                     "kind": "group",
-                                    "roles": [
-                                        "technical"
-                                    ],
+                                    "roles": ["technical"],
                                     "lastChanged": 1468555410000,
                                     "firstRegistered": 1220514856000,
-                                    "remarks": ""
+                                    "remarks": "",
                                 },
                                 {
                                     "handle": "BNA2-AP",
@@ -565,18 +487,16 @@ EXTERNAL_RANGE_RESPONSE = {
                                     "org": "",
                                     "formattedName": "BIZ NETVIGATOR ADMINISTRATORS",
                                     "kind": "group",
-                                    "roles": [
-                                        "administrative"
-                                    ],
+                                    "roles": ["administrative"],
                                     "lastChanged": 1514892767000,
                                     "firstRegistered": 1220514857000,
-                                    "remarks": ""
-                                }
+                                    "remarks": "",
+                                },
                             ],
-                            "remarks": "Sears Holdings Global Sourcing Ltd"
+                            "remarks": "Sears Holdings Global Sourcing Ltd",
                         }
                     ]
-                }
+                },
             }
         ]
     }
@@ -588,35 +508,25 @@ EXTERNAL_EXPOSURES_RESPONSE = {
         "result_count": 2,
         "assets_internet_exposure": [
             {
-                "asm_ids": [
-                    "3c176460-8735-333c-b618-8262e2fb660c"
-                ],
+                "asm_ids": ["3c176460-8735-333c-b618-8262e2fb660c"],
                 "name": "*.acme.com",
                 "asset_type": "CERTIFICATE",
                 "cloud_provider": null,
                 "externally_detected_providers": [],
                 "region": null,
                 "ips": [],
-                "business_units": [
-                    "Acme"
-                ],
+                "business_units": ["Acme"],
                 "management_status": [],
                 "iot_model": null,
                 "iot_category": null,
                 "iot_profile": null,
-                "sensor": [
-                    "XPANSE"
-                ],
+                "sensor": ["XPANSE"],
                 "service_type": [],
                 "last_observed": null,
                 "first_observed": null,
                 "has_active_externally_services": false,
                 "has_xdr_agent": "NA",
-                "certificate_classifications": [
-                    "Wildcard",
-                    "Expired",
-                    "InsecureSignature"
-                ],
+                "certificate_classifications": ["Wildcard", "Expired", "InsecureSignature"],
                 "certificate_issuer": "Thawte",
                 "certificate_algorithm": "SHA1withRSA",
                 "mac_addresses": [],
@@ -626,37 +536,28 @@ EXTERNAL_EXPOSURES_RESPONSE = {
                 "operation_system": null,
                 "asm_va_score": null,
                 "externally_inferred_cves": [],
-                "agent_id": null
+                "agent_id": null,
             },
             {
-                "asm_ids": [
-                    "43164fde-8e87-3d1e-8530-82f14cd3ae9a"
-                ],
+                "asm_ids": ["43164fde-8e87-3d1e-8530-82f14cd3ae9a"],
                 "name": "*.ch3.intra.kmart.com",
                 "asset_type": "CERTIFICATE",
                 "cloud_provider": null,
                 "externally_detected_providers": [],
                 "region": null,
                 "ips": [],
-                "business_units": [
-                    "VanDelay Industries"
-                ],
+                "business_units": ["VanDelay Industries"],
                 "management_status": [],
                 "iot_model": null,
                 "iot_category": null,
                 "iot_profile": null,
-                "sensor": [
-                    "XPANSE"
-                ],
+                "sensor": ["XPANSE"],
                 "service_type": [],
                 "last_observed": null,
                 "first_observed": null,
                 "has_active_externally_services": false,
                 "has_xdr_agent": "NA",
-                "certificate_classifications": [
-                    "Wildcard",
-                    "Expired"
-                ],
+                "certificate_classifications": ["Wildcard", "Expired"],
                 "certificate_issuer": "COMODO",
                 "certificate_algorithm": "SHA256withRSA",
                 "mac_addresses": [],
@@ -666,9 +567,9 @@ EXTERNAL_EXPOSURES_RESPONSE = {
                 "operation_system": null,
                 "asm_va_score": null,
                 "externally_inferred_cves": [],
-                "agent_id": null
-            }
-        ]
+                "agent_id": null,
+            },
+        ],
     }
 }
 
@@ -684,20 +585,14 @@ EXTERNAL_EXPOSURE_RESPONSE = {
                 "externally_detected_providers": [],
                 "created": 1662987013779,
                 "ips": [],
-                "business_units": [
-                    "Acme"
-                ],
+                "business_units": ["Acme"],
                 "active_service_ids": [],
                 "all_service_ids": [],
                 "active_external_services_types": [],
                 "domain": null,
                 "certificate_issuer": "Thawte",
                 "certificate_algorithm": "SHA1withRSA",
-                "certificate_classifications": [
-                    "Wildcard",
-                    "Expired",
-                    "InsecureSignature"
-                ],
+                "certificate_classifications": ["Wildcard", "Expired", "InsecureSignature"],
                 "resolves": false,
                 "details": {
                     "providerDetails": [],
@@ -710,11 +605,7 @@ EXTERNAL_EXPOSURE_RESPONSE = {
                     "latestSampledIp": null,
                     "subdomainMetadata": null,
                     "recentIps": [],
-                    "businessUnits": [
-                        {
-                            "name": "Acme"
-                        }
-                    ],
+                    "businessUnits": [{"name": "Acme"}],
                     "certificateDetails": {
                         "issuer": "C=US,O=Thawte\\, Inc.,CN=Thawte SSL CA",
                         "issuerAlternativeNames": "",
@@ -748,14 +639,14 @@ EXTERNAL_EXPOSURE_RESPONSE = {
                         "publicKeySpki": "Up3fHwOddA9cXEeO4XBOgn63bfnvkXsOrOv6AycwQAk=",
                         "sha1Fingerprint": "77d025c36f055e254063ae2ac3625fd4bf4507fb",
                         "sha256Fingerprint": "9a37c952ee1169cfa6e91efb57fe6d405d1ca48b26a714e9a46f008c15ea62e8",
-                        "md5Fingerprint": "498ec19ebd6c6883ecd43d064e713002"
+                        "md5Fingerprint": "498ec19ebd6c6883ecd43d064e713002",
                     },
                     "inferredCvesObserved": [],
-                    "ip_ranges": {}
+                    "ip_ranges": {},
                 },
                 "external_services": [],
                 "externally_inferred_vulnerability_score": null,
-                "externally_inferred_cves": []
+                "externally_inferred_cves": [],
             }
         ]
     }
@@ -763,35 +654,25 @@ EXTERNAL_EXPOSURE_RESPONSE = {
 
 INTERNET_EXPOSURE_PRE_FORMAT = [
     {
-        "asm_ids": [
-            "3c176460-8735-333c-b618-8262e2fb660c"
-        ],
+        "asm_ids": ["3c176460-8735-333c-b618-8262e2fb660c"],
         "name": "*.acme.com",
         "asset_type": "CERTIFICATE",
         "cloud_provider": null,
         "externally_detected_providers": [],
         "region": null,
         "ips": [],
-        "business_units": [
-            "Acme"
-        ],
+        "business_units": ["Acme"],
         "management_status": [],
         "iot_model": null,
         "iot_category": null,
         "iot_profile": null,
-        "sensor": [
-            "XPANSE"
-        ],
+        "sensor": ["XPANSE"],
         "service_type": [],
         "last_observed": null,
         "first_observed": null,
         "has_active_externally_services": false,
         "has_xdr_agent": "NA",
-        "certificate_classifications": [
-            "Wildcard",
-            "Expired",
-            "InsecureSignature"
-        ],
+        "certificate_classifications": ["Wildcard", "Expired", "InsecureSignature"],
         "certificate_issuer": "Thawte",
         "certificate_algorithm": "SHA1withRSA",
         "mac_addresses": [],
@@ -801,37 +682,28 @@ INTERNET_EXPOSURE_PRE_FORMAT = [
         "operation_system": null,
         "asm_va_score": null,
         "externally_inferred_cves": [],
-        "agent_id": null
+        "agent_id": null,
     },
     {
-        "asm_ids": [
-            "43164fde-8e87-3d1e-8530-82f14cd3ae9a"
-        ],
+        "asm_ids": ["43164fde-8e87-3d1e-8530-82f14cd3ae9a"],
         "name": "*.ch3.intra.kmart.com",
         "asset_type": "CERTIFICATE",
         "cloud_provider": null,
         "externally_detected_providers": [],
         "region": null,
         "ips": [],
-        "business_units": [
-            "VanDelay Industries"
-        ],
+        "business_units": ["VanDelay Industries"],
         "management_status": [],
         "iot_model": null,
         "iot_category": null,
         "iot_profile": null,
-        "sensor": [
-            "XPANSE"
-        ],
+        "sensor": ["XPANSE"],
         "service_type": [],
         "last_observed": null,
         "first_observed": null,
         "has_active_externally_services": false,
         "has_xdr_agent": "NA",
-        "certificate_classifications": [
-            "Wildcard",
-            "Expired"
-        ],
+        "certificate_classifications": ["Wildcard", "Expired"],
         "certificate_issuer": "COMODO",
         "certificate_algorithm": "SHA256withRSA",
         "mac_addresses": [],
@@ -841,8 +713,8 @@ INTERNET_EXPOSURE_PRE_FORMAT = [
         "operation_system": null,
         "asm_va_score": null,
         "externally_inferred_cves": [],
-        "agent_id": null
-    }
+        "agent_id": null,
+    },
 ]
 
 LIST_ALERTS_RESPONSE = {
@@ -988,7 +860,7 @@ LIST_ALERTS_RESPONSE = {
                         "resource_type": null,
                         "resource_sub_type": null,
                         "user_agent": null,
-                        "user_name": null
+                        "user_name": null,
                     }
                 ],
                 "alert_id": "231",
@@ -1003,7 +875,7 @@ LIST_ALERTS_RESPONSE = {
                 "source": "ASM",
                 "action": "NOT_AVAILABLE",
                 "action_pretty": "N/A",
-                "tags": null
+                "tags": null,
             },
             {
                 "external_id": "FAKE-GUID",
@@ -1143,7 +1015,7 @@ LIST_ALERTS_RESPONSE = {
                         "resource_type": null,
                         "resource_sub_type": null,
                         "user_agent": null,
-                        "user_name": null
+                        "user_name": null,
                     }
                 ],
                 "alert_id": "33",
@@ -1158,7 +1030,7 @@ LIST_ALERTS_RESPONSE = {
                 "source": "ASM",
                 "action": "NOT_AVAILABLE",
                 "action_pretty": "N/A",
-                "tags": null
+                "tags": null,
             },
             {
                 "external_id": "FAKE-GUID-3",
@@ -1298,7 +1170,7 @@ LIST_ALERTS_RESPONSE = {
                         "resource_type": null,
                         "resource_sub_type": null,
                         "user_agent": null,
-                        "user_name": null
+                        "user_name": null,
                     }
                 ],
                 "alert_id": "34",
@@ -1313,9 +1185,9 @@ LIST_ALERTS_RESPONSE = {
                 "source": "ASM",
                 "action": "NOT_AVAILABLE",
                 "action_pretty": "N/A",
-                "tags": null
-            }
-        ]
+                "tags": null,
+            },
+        ],
     }
 }
 
@@ -1335,7 +1207,7 @@ ATTACK_SURFACE_RULES_RAW = {
                 "modified": 1688074708000,
                 "modified_by": null,
                 "priority": "High",
-                "remediation_guidance": ""
+                "remediation_guidance": "",
             },
             {
                 "attack_surface_rule_id": "Section889Violation",
@@ -1348,23 +1220,15 @@ ATTACK_SURFACE_RULES_RAW = {
                 "modified": 1688074708000,
                 "modified_by": null,
                 "priority": "High",
-                "remediation_guidance": "Investigate the devices that have been flagged under this policy and work with the owner of the affected assets to remove them from your network.\nFor clarification, Section 889 of the 2019 NDAA prohibits executive agencies from using equipment or services that have been flagged under this policy. (Huawei, Hikvision, Hytera, Dahua, ZTE)"
-            }
-        ]
+                "remediation_guidance": "Investigate the devices that have been flagged under this policy and work with the owner of the affected assets to remove them from your network.\nFor clarification, Section 889 of the 2019 NDAA prohibits executive agencies from using equipment or services that have been flagged under this policy. (Huawei, Hikvision, Hytera, Dahua, ZTE)",
+            },
+        ],
     }
 }
 
-TAG_APPLY_RAW = {
-    "reply": {
-        "assign_tags": True
-    }
-}
+TAG_APPLY_RAW = {"reply": {"assign_tags": True}}
 
-TAG_REMOVE_RAW = {
-    "reply": {
-        "remove_tags": True
-    }
-}
+TAG_REMOVE_RAW = {"reply": {"remove_tags": True}}
 
 LIST_INCIDENTS_RAW = {
     "reply": {
@@ -1387,9 +1251,7 @@ LIST_INCIDENTS_RAW = {
                 ],
                 "incident_id": "5471",
                 "incident_name": null,
-                "incident_sources": [
-                    "ASM"
-                ],
+                "incident_sources": ["ASM"],
                 "low_severity_alert_count": 4,
                 "manual_description": null,
                 "manual_score": null,
@@ -1397,9 +1259,7 @@ LIST_INCIDENTS_RAW = {
                 "med_severity_alert_count": 0,
                 "modification_time": 1689048065832,
                 "notes": null,
-                "original_tags": [
-                    "BU:Prod Ev2 Branch"
-                ],
+                "original_tags": ["BU:Prod Ev2 Branch"],
                 "resolve_comment": "",
                 "resolved_timestamp": null,
                 "rule_based_score": 75,
@@ -1409,7 +1269,7 @@ LIST_INCIDENTS_RAW = {
                 "tags": [],
                 "user_count": 0,
                 "xdr_url": "https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=5471",
-                "xpanse_risk_score": 75
+                "xpanse_risk_score": 75,
             }
         ]
     }
@@ -1443,23 +1303,15 @@ INCIDENT_GET_RAW = {
             "manual_description": null,
             "xdr_url": "https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=71",
             "starred": true,
-            "hosts": [
-                "1.1.1.1:null"
-            ],
-            "incident_sources": [
-                "ASM"
-            ],
+            "hosts": ["1.1.1.1:null"],
+            "incident_sources": ["ASM"],
             "rule_based_score": 825,
             "manual_score": null,
             "aggregated_score": 825,
             "alerts_grouping_status": "Disabled",
             "alert_categories": null,
-            "original_tags": [
-                "BU:Xpanse VanDelay Demo 3"
-            ],
-            "tags": [
-                "AR:Registered to You"
-            ],
+            "original_tags": ["BU:Xpanse VanDelay Demo 3"],
+            "tags": ["AR:Registered to You"],
             "xpanse_risk_score": 825,
             "xpanse_risk_explainer": {
                 "cves": [
@@ -1471,7 +1323,7 @@ INCIDENT_GET_RAW = {
                         "confidence": "High",
                         "exploitMaturity": "Weaponized",
                         "reportedExploitInTheWild": true,
-                        "mostRecentReportedExploitDate": "2023-10-12"
+                        "mostRecentReportedExploitDate": "2023-10-12",
                     },
                     {
                         "cveId": "CVE-2021-34473",
@@ -1481,7 +1333,7 @@ INCIDENT_GET_RAW = {
                         "confidence": "High",
                         "exploitMaturity": "Weaponized",
                         "reportedExploitInTheWild": true,
-                        "mostRecentReportedExploitDate": "2023-10-12"
+                        "mostRecentReportedExploitDate": "2023-10-12",
                     },
                     {
                         "cveId": "CVE-2021-34523",
@@ -1491,8 +1343,8 @@ INCIDENT_GET_RAW = {
                         "confidence": "High",
                         "exploitMaturity": "Weaponized",
                         "reportedExploitInTheWild": true,
-                        "mostRecentReportedExploitDate": "2023-10-12"
-                    }
+                        "mostRecentReportedExploitDate": "2023-10-12",
+                    },
                 ],
                 "riskFactors": [
                     {
@@ -1501,13 +1353,10 @@ INCIDENT_GET_RAW = {
                         "issueTypes": [
                             {
                                 "displayName": "Insecure Microsoft Exchange Server",
-                                "issueTypeId": "InsecureMicrosoftExchangeServer"
+                                "issueTypeId": "InsecureMicrosoftExchangeServer",
                             },
-                            {
-                                "displayName": "Missing X-XSS-Protection Header",
-                                "issueTypeId": "MissingXXssProtectionHeader"
-                            }
-                        ]
+                            {"displayName": "Missing X-XSS-Protection Header", "issueTypeId": "MissingXXssProtectionHeader"},
+                        ],
                     },
                     {
                         "attributeId": "critical_system",
@@ -1515,9 +1364,9 @@ INCIDENT_GET_RAW = {
                         "issueTypes": [
                             {
                                 "displayName": "Insecure Microsoft Exchange Server",
-                                "issueTypeId": "InsecureMicrosoftExchangeServer"
+                                "issueTypeId": "InsecureMicrosoftExchangeServer",
                             }
-                        ]
+                        ],
                     },
                     {
                         "attributeId": "potential_data_loss",
@@ -1525,13 +1374,13 @@ INCIDENT_GET_RAW = {
                         "issueTypes": [
                             {
                                 "displayName": "Insecure Microsoft Exchange Server",
-                                "issueTypeId": "InsecureMicrosoftExchangeServer"
+                                "issueTypeId": "InsecureMicrosoftExchangeServer",
                             }
-                        ]
-                    }
+                        ],
+                    },
                 ],
-                "versionMatched": true
-            }
+                "versionMatched": true,
+            },
         },
         "alerts": {
             "total_count": 2,
@@ -1587,7 +1436,7 @@ INCIDENT_GET_RAW = {
                         "subjectName": "*.acme.com",
                         "validNotBefore": 1694321753000,
                         "validNotAfter": 1728622552000,
-                        "serialNumber": "13753674210934031867582050232"
+                        "serialNumber": "13753674210934031867582050232",
                     },
                     "port_protocol": "TCP",
                     "business_unit_hierarchies": [
@@ -1598,7 +1447,7 @@ INCIDENT_GET_RAW = {
                             "id": "BU:fabdd2a9-e1e7-4d76-ba75-35a817980d3f",
                             "name": "Xpanse VanDelay Demo 3",
                             "parent_id": null,
-                            "update_time": 1697462161611
+                            "update_time": 1697462161611,
                         }
                     ],
                     "attack_surface_rule_name": null,
@@ -1610,7 +1459,7 @@ INCIDENT_GET_RAW = {
                             "subjectName": "*.acme.com",
                             "validNotBefore": 1662585851000,
                             "validNotAfter": 1696886650000,
-                            "serialNumber": "11782998671544538498441636296"
+                            "serialNumber": "11782998671544538498441636296",
                         },
                         "ipv4Address": "1.1.1.1",
                         "ipv6Address": null,
@@ -1618,7 +1467,7 @@ INCIDENT_GET_RAW = {
                         "portNumber": 443,
                         "portProtocol": "TCP",
                         "firstObserved": 1686300134000,
-                        "lastObserved": 1686300134000
+                        "lastObserved": 1686300134000,
                     },
                     "alert_id": "113716",
                     "detection_timestamp": 1684486808566,
@@ -1631,7 +1480,7 @@ INCIDENT_GET_RAW = {
                     "action": "NOT_AVAILABLE",
                     "action_pretty": "N/A",
                     "user_name": null,
-                    "events_length": 1
+                    "events_length": 1,
                 },
                 {
                     "category": null,
@@ -1684,7 +1533,7 @@ INCIDENT_GET_RAW = {
                         "subjectName": "*.acme.com",
                         "validNotBefore": 1694321753000,
                         "validNotAfter": 1728622552000,
-                        "serialNumber": "13753674210934031867582050232"
+                        "serialNumber": "13753674210934031867582050232",
                     },
                     "port_protocol": "TCP",
                     "business_unit_hierarchies": [
@@ -1695,7 +1544,7 @@ INCIDENT_GET_RAW = {
                             "id": "BU:fabdd2a9-e1e7-4d76-ba75-35a817980d3f",
                             "name": "Xpanse VanDelay Demo 3",
                             "parent_id": null,
-                            "update_time": 1697462161611
+                            "update_time": 1697462161611,
                         }
                     ],
                     "attack_surface_rule_name": null,
@@ -1707,7 +1556,7 @@ INCIDENT_GET_RAW = {
                             "subjectName": "*.acme.com",
                             "validNotBefore": 1662585851000,
                             "validNotAfter": 1696886650000,
-                            "serialNumber": "11782998671544538498441636296"
+                            "serialNumber": "11782998671544538498441636296",
                         },
                         "ipv4Address": "1.1.1.1",
                         "ipv6Address": null,
@@ -1715,7 +1564,7 @@ INCIDENT_GET_RAW = {
                         "portNumber": 443,
                         "portProtocol": "TCP",
                         "firstObserved": 1686300134000,
-                        "lastObserved": 1686300134000
+                        "lastObserved": 1686300134000,
                     },
                     "alert_id": "89896",
                     "detection_timestamp": 1684486808564,
@@ -1728,24 +1577,16 @@ INCIDENT_GET_RAW = {
                     "action": "NOT_AVAILABLE",
                     "action_pretty": "N/A",
                     "user_name": null,
-                    "events_length": 1
-                }
-            ]
+                    "events_length": 1,
+                },
+            ],
         },
-        "network_artifacts": {
-            "total_count": 0,
-            "data": []
-        },
-        "file_artifacts": {
-            "total_count": 0,
-            "data": []
-        }
+        "network_artifacts": {"total_count": 0, "data": []},
+        "file_artifacts": {"total_count": 0, "data": []},
     }
 }
 
-INCIDENT_UPDATE_RAW = {
-    "reply": True
-}
+INCIDENT_UPDATE_RAW = {"reply": True}
 
 ALERT_UPDATE_RAW = {
     "reply": {
@@ -1766,23 +1607,13 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                 "protocol": "HTTPS",
                 "is_active": "ACTIVE",
                 "site_categories": [],
-                "technology_ids": [
-                    "http-2",
-                    "google-font-api",
-                    "hsts"
-                ],
+                "technology_ids": ["http-2", "google-font-api", "hsts"],
                 "first_observed": 1704494700000,
                 "last_observed": 1705363560000,
-                "provider_names": [
-                    "Google"
-                ],
-                "ips": [
-                    "1.1.1.1"
-                ],
+                "provider_names": ["Google"],
+                "ips": ["1.1.1.1"],
                 "port": 443,
-                "active_service_ids": [
-                    null
-                ],
+                "active_service_ids": [null],
                 "http_type": "HTTPS",
                 "third_party_script_domains": [],
                 "security_assessments": [
@@ -1792,8 +1623,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This website uses HTTPS which encrypts data in transit between browser and server."
-                        }
+                            "description": "This website uses HTTPS which encrypts data in transit between browser and server.",
+                        },
                     },
                     {
                         "name": "Secure Forms",
@@ -1801,8 +1632,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Forms on this website are submitted over HTTPS."
-                        }
+                            "description": "Forms on this website are submitted over HTTPS.",
+                        },
                     },
                     {
                         "name": "No Mixed Content",
@@ -1810,8 +1641,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Pages on this website do not include content fetched using cleartext HTTP."
-                        }
+                            "description": "Pages on this website do not include content fetched using cleartext HTTP.",
+                        },
                     },
                     {
                         "name": "Protocol Downgrade",
@@ -1819,38 +1650,26 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Redirects never downgrade from HTTPS to HTTP."
-                        }
+                            "description": "Redirects never downgrade from HTTPS to HTTP.",
+                        },
                     },
                     {
                         "name": "Sets valid X-Frame-Options Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks."
-                        }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks.",
+                        },
                     },
                     {
                         "name": "Sets valid X-Content-Type-Options Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header is used by the server to prevent browsers from guessing the media type (MIME type) known as MIME sniffing. The absence of this header might cause browsers to transform non-executable content into executable content."
-                        }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This header is used by the server to prevent browsers from guessing the media type (MIME type) known as MIME sniffing. The absence of this header might cause browsers to transform non-executable content into executable content.",
+                        },
                     },
                     {
                         "name": "Sets valid Content-Type Header",
@@ -1858,8 +1677,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This header is used to indicate the original media type of the resource. The charset attribute is necessary in this header to prevent XSS in HTML pages."
-                        }
+                            "description": "This header is used to indicate the original media type of the resource. The charset attribute is necessary in this header to prevent XSS in HTML pages.",
+                        },
                     },
                     {
                         "name": "Sets HTTP Strict Transport Security Header",
@@ -1867,35 +1686,25 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This website sets a HSTS Header which ensures that the browser will always request the encrypted HTTPS version of the website regardless of what links are clicked or URL a site visitor enters."
-                        }
+                            "description": "This website sets a HSTS Header which ensures that the browser will always request the encrypted HTTPS version of the website regardless of what links are clicked or URL a site visitor enters.",
+                        },
                     },
                     {
                         "name": "Sets valid Referrer-Policy Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This HTTP header controls how much referrer information should be included with requests. Today, the default behavior in modern browsers is to no longer send all referrer information (origin, path, and query string) to the same site but to only send the origin to other sites. However, since not all users may be using the latest browsers we suggest forcing this behavior by sending this header on all requests."
-                        }
-                    }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This HTTP header controls how much referrer information should be included with requests. Today, the default behavior in modern browsers is to no longer send all referrer information (origin, path, and query string) to the same site but to only send the origin to other sites. However, since not all users may be using the latest browsers we suggest forcing this behavior by sending this header on all requests.",
+                        },
+                    },
                 ],
-                "authentication": [
-                    "Form Based Auth"
-                ],
+                "authentication": ["Form Based Auth"],
                 "rootPageHttpStatusCode": "302",
                 "isNonConfiguredHost": false,
                 "externally_inferred_vulnerability_score": null,
                 "externally_inferred_cves": [],
-                "tags": [
-                    "nemo"
-                ]
+                "tags": ["nemo"],
             },
             {
                 "website_id": null,
@@ -1903,23 +1712,13 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                 "protocol": "HTTPS",
                 "is_active": "ACTIVE",
                 "site_categories": [],
-                "technology_ids": [
-                    "http-2",
-                    "google-font-api",
-                    "hsts"
-                ],
+                "technology_ids": ["http-2", "google-font-api", "hsts"],
                 "first_observed": 1704494700000,
                 "last_observed": 1705363560000,
-                "provider_names": [
-                    "Google"
-                ],
-                "ips": [
-                    "1.1.1.1"
-                ],
+                "provider_names": ["Google"],
+                "ips": ["1.1.1.1"],
                 "port": 443,
-                "active_service_ids": [
-                    null
-                ],
+                "active_service_ids": [null],
                 "http_type": "HTTPS",
                 "third_party_script_domains": [],
                 "security_assessments": [
@@ -1929,8 +1728,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This website uses HTTPS which encrypts data in transit between browser and server."
-                        }
+                            "description": "This website uses HTTPS which encrypts data in transit between browser and server.",
+                        },
                     },
                     {
                         "name": "Secure Forms",
@@ -1938,8 +1737,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Forms on this website are submitted over HTTPS."
-                        }
+                            "description": "Forms on this website are submitted over HTTPS.",
+                        },
                     },
                     {
                         "name": "No Mixed Content",
@@ -1947,8 +1746,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Pages on this website do not include content fetched using cleartext HTTP."
-                        }
+                            "description": "Pages on this website do not include content fetched using cleartext HTTP.",
+                        },
                     },
                     {
                         "name": "Protocol Downgrade",
@@ -1956,38 +1755,26 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Redirects never downgrade from HTTPS to HTTP."
-                        }
+                            "description": "Redirects never downgrade from HTTPS to HTTP.",
+                        },
                     },
                     {
                         "name": "Sets valid X-Frame-Options Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks."
-                        }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks.",
+                        },
                     },
                     {
                         "name": "Sets valid X-Content-Type-Options Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header is used by the server to prevent browsers from guessing the media type (MIME type) known as MIME sniffing. The absence of this header might cause browsers to transform non-executable content into executable content."
-                        }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This header is used by the server to prevent browsers from guessing the media type (MIME type) known as MIME sniffing. The absence of this header might cause browsers to transform non-executable content into executable content.",
+                        },
                     },
                     {
                         "name": "Sets valid Content-Type Header",
@@ -1995,8 +1782,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This header is used to indicate the original media type of the resource. The charset attribute is necessary in this header to prevent XSS in HTML pages."
-                        }
+                            "description": "This header is used to indicate the original media type of the resource. The charset attribute is necessary in this header to prevent XSS in HTML pages.",
+                        },
                     },
                     {
                         "name": "Sets HTTP Strict Transport Security Header",
@@ -2004,35 +1791,25 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This website sets a HSTS Header which ensures that the browser will always request the encrypted HTTPS version of the website regardless of what links are clicked or URL a site visitor enters."
-                        }
+                            "description": "This website sets a HSTS Header which ensures that the browser will always request the encrypted HTTPS version of the website regardless of what links are clicked or URL a site visitor enters.",
+                        },
                     },
                     {
                         "name": "Sets valid Referrer-Policy Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This HTTP header controls how much referrer information should be included with requests. Today, the default behavior in modern browsers is to no longer send all referrer information (origin, path, and query string) to the same site but to only send the origin to other sites. However, since not all users may be using the latest browsers we suggest forcing this behavior by sending this header on all requests."
-                        }
-                    }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This HTTP header controls how much referrer information should be included with requests. Today, the default behavior in modern browsers is to no longer send all referrer information (origin, path, and query string) to the same site but to only send the origin to other sites. However, since not all users may be using the latest browsers we suggest forcing this behavior by sending this header on all requests.",
+                        },
+                    },
                 ],
-                "authentication": [
-                    "Form Based Auth"
-                ],
+                "authentication": ["Form Based Auth"],
                 "rootPageHttpStatusCode": "302",
                 "isNonConfiguredHost": false,
                 "externally_inferred_vulnerability_score": null,
                 "externally_inferred_cves": [],
-                "tags": [
-                    "nemo"
-                ]
+                "tags": ["nemo"],
             },
             {
                 "website_id": null,
@@ -2040,23 +1817,13 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                 "protocol": "HTTPS",
                 "is_active": "ACTIVE",
                 "site_categories": [],
-                "technology_ids": [
-                    "http-2",
-                    "google-font-api",
-                    "hsts"
-                ],
+                "technology_ids": ["http-2", "google-font-api", "hsts"],
                 "first_observed": 1704494700000,
                 "last_observed": 1705363560000,
-                "provider_names": [
-                    "Google"
-                ],
-                "ips": [
-                    "1.1.1.1"
-                ],
+                "provider_names": ["Google"],
+                "ips": ["1.1.1.1"],
                 "port": 443,
-                "active_service_ids": [
-                    null
-                ],
+                "active_service_ids": [null],
                 "http_type": "HTTPS",
                 "third_party_script_domains": [],
                 "security_assessments": [
@@ -2066,8 +1833,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This website uses HTTPS which encrypts data in transit between browser and server."
-                        }
+                            "description": "This website uses HTTPS which encrypts data in transit between browser and server.",
+                        },
                     },
                     {
                         "name": "Secure Forms",
@@ -2075,8 +1842,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Forms on this website are submitted over HTTPS."
-                        }
+                            "description": "Forms on this website are submitted over HTTPS.",
+                        },
                     },
                     {
                         "name": "No Mixed Content",
@@ -2084,8 +1851,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Pages on this website do not include content fetched using cleartext HTTP."
-                        }
+                            "description": "Pages on this website do not include content fetched using cleartext HTTP.",
+                        },
                     },
                     {
                         "name": "Protocol Downgrade",
@@ -2093,38 +1860,26 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Redirects never downgrade from HTTPS to HTTP."
-                        }
+                            "description": "Redirects never downgrade from HTTPS to HTTP.",
+                        },
                     },
                     {
                         "name": "Sets valid X-Frame-Options Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks."
-                        }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks.",
+                        },
                     },
                     {
                         "name": "Sets valid X-Content-Type-Options Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header is used by the server to prevent browsers from guessing the media type (MIME type) known as MIME sniffing. The absence of this header might cause browsers to transform non-executable content into executable content."
-                        }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This header is used by the server to prevent browsers from guessing the media type (MIME type) known as MIME sniffing. The absence of this header might cause browsers to transform non-executable content into executable content.",
+                        },
                     },
                     {
                         "name": "Sets valid Content-Type Header",
@@ -2132,8 +1887,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This header is used to indicate the original media type of the resource. The charset attribute is necessary in this header to prevent XSS in HTML pages."
-                        }
+                            "description": "This header is used to indicate the original media type of the resource. The charset attribute is necessary in this header to prevent XSS in HTML pages.",
+                        },
                     },
                     {
                         "name": "Sets HTTP Strict Transport Security Header",
@@ -2141,35 +1896,25 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This website sets a HSTS Header which ensures that the browser will always request the encrypted HTTPS version of the website regardless of what links are clicked or URL a site visitor enters."
-                        }
+                            "description": "This website sets a HSTS Header which ensures that the browser will always request the encrypted HTTPS version of the website regardless of what links are clicked or URL a site visitor enters.",
+                        },
                     },
                     {
                         "name": "Sets valid Referrer-Policy Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This HTTP header controls how much referrer information should be included with requests. Today, the default behavior in modern browsers is to no longer send all referrer information (origin, path, and query string) to the same site but to only send the origin to other sites. However, since not all users may be using the latest browsers we suggest forcing this behavior by sending this header on all requests."
-                        }
-                    }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This HTTP header controls how much referrer information should be included with requests. Today, the default behavior in modern browsers is to no longer send all referrer information (origin, path, and query string) to the same site but to only send the origin to other sites. However, since not all users may be using the latest browsers we suggest forcing this behavior by sending this header on all requests.",
+                        },
+                    },
                 ],
-                "authentication": [
-                    "Form Based Auth"
-                ],
+                "authentication": ["Form Based Auth"],
                 "rootPageHttpStatusCode": "302",
                 "isNonConfiguredHost": false,
                 "externally_inferred_vulnerability_score": null,
                 "externally_inferred_cves": [],
-                "tags": [
-                    "nemo"
-                ]
+                "tags": ["nemo"],
             },
             {
                 "website_id": null,
@@ -2177,23 +1922,13 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                 "protocol": "HTTPS",
                 "is_active": "ACTIVE",
                 "site_categories": [],
-                "technology_ids": [
-                    "http-2",
-                    "google-font-api",
-                    "hsts"
-                ],
+                "technology_ids": ["http-2", "google-font-api", "hsts"],
                 "first_observed": 1704494700000,
                 "last_observed": 1705363560000,
-                "provider_names": [
-                    "Google"
-                ],
-                "ips": [
-                    "1.1.1.1"
-                ],
+                "provider_names": ["Google"],
+                "ips": ["1.1.1.1"],
                 "port": 443,
-                "active_service_ids": [
-                    null
-                ],
+                "active_service_ids": [null],
                 "http_type": "HTTPS",
                 "third_party_script_domains": [],
                 "security_assessments": [
@@ -2203,8 +1938,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This website uses HTTPS which encrypts data in transit between browser and server."
-                        }
+                            "description": "This website uses HTTPS which encrypts data in transit between browser and server.",
+                        },
                     },
                     {
                         "name": "Secure Forms",
@@ -2212,8 +1947,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Forms on this website are submitted over HTTPS."
-                        }
+                            "description": "Forms on this website are submitted over HTTPS.",
+                        },
                     },
                     {
                         "name": "No Mixed Content",
@@ -2221,8 +1956,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Pages on this website do not include content fetched using cleartext HTTP."
-                        }
+                            "description": "Pages on this website do not include content fetched using cleartext HTTP.",
+                        },
                     },
                     {
                         "name": "Protocol Downgrade",
@@ -2230,38 +1965,26 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Redirects never downgrade from HTTPS to HTTP."
-                        }
+                            "description": "Redirects never downgrade from HTTPS to HTTP.",
+                        },
                     },
                     {
                         "name": "Sets valid X-Frame-Options Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks."
-                        }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks.",
+                        },
                     },
                     {
                         "name": "Sets valid X-Content-Type-Options Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header is used by the server to prevent browsers from guessing the media type (MIME type) known as MIME sniffing. The absence of this header might cause browsers to transform non-executable content into executable content."
-                        }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This header is used by the server to prevent browsers from guessing the media type (MIME type) known as MIME sniffing. The absence of this header might cause browsers to transform non-executable content into executable content.",
+                        },
                     },
                     {
                         "name": "Sets valid Content-Type Header",
@@ -2269,8 +1992,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This header is used to indicate the original media type of the resource. The charset attribute is necessary in this header to prevent XSS in HTML pages."
-                        }
+                            "description": "This header is used to indicate the original media type of the resource. The charset attribute is necessary in this header to prevent XSS in HTML pages.",
+                        },
                     },
                     {
                         "name": "Sets HTTP Strict Transport Security Header",
@@ -2278,35 +2001,25 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This website sets a HSTS Header which ensures that the browser will always request the encrypted HTTPS version of the website regardless of what links are clicked or URL a site visitor enters."
-                        }
+                            "description": "This website sets a HSTS Header which ensures that the browser will always request the encrypted HTTPS version of the website regardless of what links are clicked or URL a site visitor enters.",
+                        },
                     },
                     {
                         "name": "Sets valid Referrer-Policy Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This HTTP header controls how much referrer information should be included with requests. Today, the default behavior in modern browsers is to no longer send all referrer information (origin, path, and query string) to the same site but to only send the origin to other sites. However, since not all users may be using the latest browsers we suggest forcing this behavior by sending this header on all requests."
-                        }
-                    }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This HTTP header controls how much referrer information should be included with requests. Today, the default behavior in modern browsers is to no longer send all referrer information (origin, path, and query string) to the same site but to only send the origin to other sites. However, since not all users may be using the latest browsers we suggest forcing this behavior by sending this header on all requests.",
+                        },
+                    },
                 ],
-                "authentication": [
-                    "Form Based Auth"
-                ],
+                "authentication": ["Form Based Auth"],
                 "rootPageHttpStatusCode": "302",
                 "isNonConfiguredHost": false,
                 "externally_inferred_vulnerability_score": null,
                 "externally_inferred_cves": [],
-                "tags": [
-                    "nemo"
-                ]
+                "tags": ["nemo"],
             },
             {
                 "website_id": null,
@@ -2314,23 +2027,13 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                 "protocol": "HTTPS",
                 "is_active": "ACTIVE",
                 "site_categories": [],
-                "technology_ids": [
-                    "http-2",
-                    "google-font-api",
-                    "hsts"
-                ],
+                "technology_ids": ["http-2", "google-font-api", "hsts"],
                 "first_observed": 1704494700000,
                 "last_observed": 1705363560000,
-                "provider_names": [
-                    "Google"
-                ],
-                "ips": [
-                    "1.1.1.1"
-                ],
+                "provider_names": ["Google"],
+                "ips": ["1.1.1.1"],
                 "port": 443,
-                "active_service_ids": [
-                    null
-                ],
+                "active_service_ids": [null],
                 "http_type": "HTTPS",
                 "third_party_script_domains": [],
                 "security_assessments": [
@@ -2340,8 +2043,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This website uses HTTPS which encrypts data in transit between browser and server."
-                        }
+                            "description": "This website uses HTTPS which encrypts data in transit between browser and server.",
+                        },
                     },
                     {
                         "name": "Secure Forms",
@@ -2349,8 +2052,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Forms on this website are submitted over HTTPS."
-                        }
+                            "description": "Forms on this website are submitted over HTTPS.",
+                        },
                     },
                     {
                         "name": "No Mixed Content",
@@ -2358,8 +2061,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Pages on this website do not include content fetched using cleartext HTTP."
-                        }
+                            "description": "Pages on this website do not include content fetched using cleartext HTTP.",
+                        },
                     },
                     {
                         "name": "Protocol Downgrade",
@@ -2367,38 +2070,26 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "Redirects never downgrade from HTTPS to HTTP."
-                        }
+                            "description": "Redirects never downgrade from HTTPS to HTTP.",
+                        },
                     },
                     {
                         "name": "Sets valid X-Frame-Options Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks."
-                        }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks.",
+                        },
                     },
                     {
                         "name": "Sets valid X-Content-Type-Options Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header is used by the server to prevent browsers from guessing the media type (MIME type) known as MIME sniffing. The absence of this header might cause browsers to transform non-executable content into executable content."
-                        }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This header is used by the server to prevent browsers from guessing the media type (MIME type) known as MIME sniffing. The absence of this header might cause browsers to transform non-executable content into executable content.",
+                        },
                     },
                     {
                         "name": "Sets valid Content-Type Header",
@@ -2406,8 +2097,8 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This header is used to indicate the original media type of the resource. The charset attribute is necessary in this header to prevent XSS in HTML pages."
-                        }
+                            "description": "This header is used to indicate the original media type of the resource. The charset attribute is necessary in this header to prevent XSS in HTML pages.",
+                        },
                     },
                     {
                         "name": "Sets HTTP Strict Transport Security Header",
@@ -2415,35 +2106,26 @@ EXTERNAL_WEBSITES_RESPONSE = response = {
                         "score": 1,
                         "securityAssessmentDetails": {
                             "pages": [],
-                            "description": "This website sets a HSTS Header which ensures that the browser will always request the encrypted HTTPS version of the website regardless of what links are clicked or URL a site visitor enters."
-                        }
+                            "description": "This website sets a HSTS Header which ensures that the browser will always request the encrypted HTTPS version of the website regardless of what links are clicked or URL a site visitor enters.",
+                        },
                     },
                     {
                         "name": "Sets valid Referrer-Policy Header",
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This HTTP header controls how much referrer information should be included with requests. Today, the default behavior in modern browsers is to no longer send all referrer information (origin, path, and query string) to the same site but to only send the origin to other sites. However, since not all users may be using the latest browsers we suggest forcing this behavior by sending this header on all requests."
-                        }
-                    }
+                            "pages": [{"url": "https://example.com", "message": "not_set", "elements": []}],
+                            "description": "This HTTP header controls how much referrer information should be included with requests. Today, the default behavior in modern browsers is to no longer send all referrer information (origin, path, and query string) to the same site but to only send the origin to other sites. However, since not all users may be using the latest browsers we suggest forcing this behavior by sending this header on all requests.",
+                        },
+                    },
                 ],
-                "authentication": [
-                    "Form Based Auth"
-                ],
+                "authentication": ["Form Based Auth"],
                 "rootPageHttpStatusCode": "302",
                 "isNonConfiguredHost": false,
                 "externally_inferred_vulnerability_score": null,
                 "externally_inferred_cves": [],
-                "tags": [
-                    "nemo"
-                ]
-            }]
+                "tags": ["nemo"],
+            },
+        ],
     }
 }

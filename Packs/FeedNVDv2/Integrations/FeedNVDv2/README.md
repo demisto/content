@@ -1,17 +1,19 @@
-CVE feed from the National Vulnerability Database. 
+CVE feed from the National Vulnerability Database.
 
 This integration was built and tested with version 2.0 of National Vulnerability Database API. See [the NVD Developer API documentation](https://nvd.nist.gov/developers/start-here) for more information.
 
 An API key for this feed can be obtained at [the NIST NVD Developer Website](https://nvd.nist.gov/developers/request-an-api-key)
 
-## Configure National Vulnerability Database in Cortex
+This integration supports the latest CVSS - Common Vulnerability Scoring System standard - CVSS Version 4.0.
 
+## Configure National Vulnerability Database in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key | API Key from the NIST NVD Website (see above). | True |
 | Start_date | Start date for the integration to begin fetching CVEs from (YYYY-MM-DD). | True |
 | Return only CVEs that have a KEV | Check this box to only retrieve CVEs in the given date range that have a known exploited vulnerability (KEV) associated with them. Default: FALSE. | False |
+| CVSS Severity Filter | Filters CVEs by their CVSS Score, Supporting the latest CVSS Common Vulnerability Scoring System standard. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | True |
 | Indicator Expiration Method | The method to be used to expire indicators from this feed. Default: Never. | True |
@@ -42,8 +44,11 @@ An API key for this feed can be obtained at [the NIST NVD Developer Website](htt
     Current Total Fetched Indicator Count: 4184
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
+
 ### nvd-get-indicators
+
 ***
 Manually retrieve CVEs from NVD using the history parameter for the duration back to fetch.
 
@@ -52,6 +57,7 @@ Manually retrieve CVEs from NVD using the history parameter for the duration bac
 `!nvd-get-indicators history="7 days"`
 
 #### Input
+
 |**Argument Name**|**Description**|**Required**|
 |---|---|---|
 | History | Time back to retrieve CVEs, e.g. `7 days` | True |

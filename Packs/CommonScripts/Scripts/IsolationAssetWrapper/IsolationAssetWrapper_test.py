@@ -8,7 +8,7 @@ More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 import pytest
 
 
-@pytest.mark.parametrize('action', ['isolate', 'unisolate'])
+@pytest.mark.parametrize("action", ["isolate", "unisolate"])
 def test_create_command_executers(mocker, action):
     """
     Given:
@@ -19,14 +19,12 @@ def test_create_command_executers(mocker, action):
         Ensure the right commands wrappers are being returned.
 
     """
-    from IsolationAssetWrapper import demisto, create_commands, MSDE_ACTIONS, XDR_ACTIONS, \
-        CROWDSTRIKE_ACTIONS
-    device_ids = ['device1',
-                  'device2',
-                  'device3']
-    mocker.patch.object(demisto, 'incident', return_value={'id': 1})
+    from IsolationAssetWrapper import CROWDSTRIKE_ACTIONS, MSDE_ACTIONS, XDR_ACTIONS, create_commands, demisto
+
+    device_ids = ["device1", "device2", "device3"]
+    mocker.patch.object(demisto, "incident", return_value={"id": 1})
     msde_command, msde_args = MSDE_ACTIONS[action]
-    msde_args.update({'using-brand': 'Microsoft Defender Advanced Threat Protection'})
+    msde_args.update({"using-brand": "Microsoft Defender Advanced Threat Protection"})
     commands = create_commands(device_ids, action)
     assert len(commands) == 3
     for command in commands:
@@ -38,7 +36,7 @@ def test_create_command_executers(mocker, action):
             assert len(command.commands) == len(device_ids)
             assert len(command.args_lst) == len(device_ids)
             assert set(command.commands) == {XDR_ACTIONS.get(action)}
-            assert command.args_lst == [{'endpoint_id': device_id} for device_id in device_ids]
+            assert command.args_lst == [{"endpoint_id": device_id} for device_id in device_ids]
         if CROWDSTRIKE_ACTIONS.get(action) in command_names:
             assert command.commands == [CROWDSTRIKE_ACTIONS.get(action)]
-            assert command.args_lst == [{'ids': ','.join(device_ids)}]
+            assert command.args_lst == [{"ids": ",".join(device_ids)}]

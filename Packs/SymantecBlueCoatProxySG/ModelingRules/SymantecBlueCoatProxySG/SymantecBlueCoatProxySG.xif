@@ -2,71 +2,49 @@
 /* docs: 
     - log formats: https://techdocs.broadcom.com/us/en/symantec-security-software/web-and-network-security/edge-swg/7-4/getting-started/page-help-administration/page-help-logging/log-formats.html#concept26560_Custom
     - default formats: https://techdocs.broadcom.com/us/en/symantec-security-software/web-and-network-security/edge-swg/7-4/getting-started/page-help-administration/page-help-logging/log-formats/default-formats.html
-    - field list: date time time-taken c-ip sc-status s-action sc-bytes cs-bytes cs-method cs-uri-scheme cs-host cs-uri-port cs-uri-path cs-uri-query cs-username cs-auth-group s-supplier-name rs(Content-Type) cs(Referer) cs(User-Agent) sc-filter-result cs-categories x-virus-id s-ip
+    - field list: date time time-taken c-ip sc-status s-action sc-bytes cs-bytes cs-method cs-uri-scheme cs-host cs-uri-port cs-uri-path cs-uri-query cs-username cs-auth-group s-supplier-name rs(Content-Type) cs(Referer) cs(User-Agent) sc-filter-result cs-categories x-virus-id s-ip r-ip
 */
 
 // filter out records which contain only metadata 
-filter _raw_log !~= "^#.*" 
-
-// extract log fields which are separated by double quotes e.g., "user agent"
-| alter quoted_fields = regextract(_raw_log, "\"(\S[^\"]+)") 
-
-// inits a character that would be used as a temporary field separator to build a field list 
-| alter field_separator = "#" 
-
-// split the raw log into segments, using quotes as a segment delimiter 
-| alter log_segments = split(_raw_log, "\"")
-
- // clean white spaces from the extracted segments
-| alter log_segments_cleaned = arrayfilter(arraymap(log_segments, trim("@element")), len("@element") > 0)
-
-// insert a delimiter between the different fields within each segment 
-| alter field_delimited_log_segments = arraymap(log_segments_cleaned, 
-        // if the segment is originally a quoted string, leave it as is: 
-        if(quoted_fields contains trim("@element"), "@element", 
-        // else, add the defined separator between each field in the segment (separated originally by a space)
-        arraystring(regextract("@element", "\S+"), field_separator)))
-
-// add the field separator between the segments and flatten them to a unified string
-| alter flattened_field_list  = arraystring(field_delimited_log_segments, field_separator)
-
-// split the delimited string of fields into an index-based array 
-| alter field_list = split(flattened_field_list, field_separator)
+filter raw_log_cleaned !~= "^#.*"
 
 | alter // Extract fields based on their relative location in the list
-    time_taken = arrayindex(field_list, 2), // Time taken (in milliseconds) to process the request
-    c_ip = arrayindex(field_list, 3), // IP address of the client
-    sc_status = arrayindex(field_list, 4), // Protocol status code from appliance to client
-    s_action = arrayindex(field_list, 5), // Type of action the Edge SWG (ProxySG) took to process this request (see https://techdocs.broadcom.com/us/en/symantec-security-software/web-and-network-security/edge-swg/7-4/getting-started/page-help-administration/page-help-logging/log-formats.html#concept26560_ActionF)
-    sc_bytes = arrayindex(field_list, 6), // Number of bytes sent from appliance to client
-    cs_bytes = arrayindex(field_list, 7), // Number of bytes sent from client to appliance
-    cs_method = arrayindex(field_list, 8), // Request method that is used from client to appliance
-    cs_uri_scheme = arrayindex(field_list, 9), // Scheme from the log URL.
-    cs_host = arrayindex(field_list, 10), // Hostname from the log URL
-    cs_uri_port = arrayindex(field_list, 11), // Port from the log URL.
-    cs_uri_path = arrayindex(field_list, 12), // Path from the log URL. Does not include the query.
-    cs_uri_query = arrayindex(field_list, 13), // Query from the log URL
-    cs_username = arrayindex(field_list, 14), // username of a client authenticated to the proxy
-    cs_auth_group = arrayindex(field_list, 15), // group to which an authenticated user belongs
-    s_supplier_name = arrayindex(field_list, 16), // Hostname of the upstream host
-    rs_content_type = arrayindex(field_list, 17), // Response header: Content-Type
-    cs_referer = arrayindex(field_list, 18), // Request header: Referer 
-    cs_user_agent = arrayindex(field_list, 19), // Request header: User-Agent
-    sc_filter_result = arrayindex(field_list, 20), // Content filtering result: Denied, Proxied, or Observed 
-    cs_categories = arrayindex(field_list, 21), // Content filtering category of the request URL
-    x_virus_id = arrayindex(field_list, 22), // Identifier of a virus if one was detected.
-    s_ip = arrayindex(field_list, 23) // IP address of the appliance on which the client established its connection
-
+    time_taken = parsed_fields -> time_taken, // Time taken (in milliseconds) to process the request
+    c_ip = parsed_fields -> c_ip, // IP address of the client
+    sc_status = parsed_fields -> sc_status, // Protocol status code from appliance to client
+    s_action = parsed_fields -> s_action, // Type of action the Edge SWG (ProxySG) took to process this request (see https://techdocs.broadcom.com/us/en/symantec-security-software/web-and-network-security/edge-swg/7-4/getting-started/page-help-administration/page-help-logging/log-formats.html#concept26560_ActionF)
+    sc_bytes = parsed_fields -> sc_bytes, // Number of bytes sent from appliance to client
+    cs_bytes = parsed_fields -> cs_bytes, // Number of bytes sent from client to appliance
+    cs_method = parsed_fields -> cs_method, // Request method that is used from client to appliance
+    cs_uri_scheme = parsed_fields -> cs_uri_scheme, // Scheme from the log URL.
+    cs_host = parsed_fields -> cs_host, // Hostname from the log URL
+    cs_uri_port = parsed_fields -> cs_uri_port, // Port from the log URL.
+    cs_uri_path = parsed_fields -> cs_uri_path, // Path from the log URL. Does not include the query.
+    cs_uri_query = parsed_fields -> cs_uri_query, // Query from the log URL
+    cs_username = parsed_fields -> cs_username, // username of a client authenticated to the proxy
+    cs_auth_group = parsed_fields -> cs_auth_group, // group to which an authenticated user belongs
+    s_supplier_name = parsed_fields -> s_supplier_name, // Hostname of the upstream host
+    rs_content_type = parsed_fields -> rs_content_type, // Response header: Content-Type
+    cs_referer = parsed_fields -> cs_referer, // Request header: Referer 
+    cs_user_agent = parsed_fields -> cs_user_agent, // Request header: User-Agent
+    sc_filter_result = parsed_fields -> sc_filter_result, // Content filtering result: Denied, Proxied, or Observed 
+    cs_categories = parsed_fields -> cs_categories, // Content filtering category of the request URL
+    x_virus_id = parsed_fields -> x_virus_id, // Identifier of a virus if one was detected.
+    s_ip = parsed_fields -> s_ip, // IP address of the appliance on which the client established its connection
+    r_ip = parsed_fields -> r_ip, // IP address of the destination
+    event_description = arrayindex(regextract(raw_log_cleaned ,"\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\s\S+\s(.*)"),0) // The raw log without headers
 | alter // post extraction processing 
     // check IP addresses formats 
     c_ip_v4 = if(c_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", c_ip),
     c_ip_v6 = if(c_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", c_ip),
     s_ip_v4 = if(s_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", s_ip),
     s_ip_v6 = if(s_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", s_ip),
+    r_ip_v4 = if(r_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", r_ip),
+    r_ip_v6 = if(r_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", r_ip),
 
     // decode url-encoded spaces (%20) back to an ascii space   
-    cs_username_decoded = replace(cs_username, "%20", " "),
-    rs_content_type_decoded = replace(rs_content_type, "%20", " "),
+    cs_username_decoded = replex(cs_username, "\%20", " "),
+    rs_content_type_decoded = replex(rs_content_type, "\%20", " "),
 
     // assure uppercase values for enum mapping
     cs_http_method = uppercase(cs_method),
@@ -95,6 +73,8 @@ filter _raw_log !~= "^#.*"
     xdm.source.ipv4 = c_ip_v4,
     xdm.source.ipv6 = c_ip_v6,
     xdm.target.port = to_integer(cs_uri_port),
+    xdm.target.ipv4 = r_ip_v4,
+    xdm.target.ipv6 = r_ip_v6,
     xdm.source.sent_bytes = to_integer(cs_bytes),
     xdm.source.user_agent = cs_user_agent,
     xdm.source.user.groups = if(cs_auth_group != null, arraycreate(cs_auth_group)),
@@ -102,5 +82,5 @@ filter _raw_log !~= "^#.*"
     xdm.target.host.hostname = cs_host,
     xdm.target.resource.name = cs_uri_path,
     xdm.target.sent_bytes = to_integer(sc_bytes), 
-    xdm.target.url = cs_url;
-    
+    xdm.target.url = cs_url,
+    xdm.event.description = event_description;

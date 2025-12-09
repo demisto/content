@@ -16,7 +16,7 @@ description: |-
   * Envoy IAM
   * ExceedLMS IAM
   * Okta
-  * Microsoft Graph User (Azure Active Directory Users)
+  * Microsoft Graph User (Entra ID Users)
   * Google Workspace Admin
   * Slack IAM
   * ServiceNow IAM
@@ -2627,3 +2627,4 @@ fromversion: 6.5.0
 marketplaces:
 - xsoar
 - marketplacev2
+- platform

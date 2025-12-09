@@ -24,8 +24,8 @@ This transformer will remove elements of the array that contain an identical com
 ---
 There are no outputs for this script.
 
-
 ---
+
 ## Examples-1
 
 Here is a table to be used as samples in the Examples-1.
@@ -44,7 +44,6 @@ Here is a table to be used as samples in the Examples-1.
 | 2.2.2.2 | 192.168.1.2 |
 | 2.2.2.2 | 192.168.1.3 |
 | 2.2.2.2 | 192.168.1.3 |
-
 
 The JSON data is below to be given to the `value` argument parameter of the transformer for the samples.
 
@@ -101,13 +100,12 @@ The JSON data is below to be given to the `value` argument parameter of the tran
 ]
 ```
 
-
 ---
 Deduplicate by `SourceIP`.
 
 > keys: SourceIP
 
-#### Output:
+#### Output
 
 It will give you the result below.
 It's guaranteed to keep the original order, and gives you the first record when multiple records are found by collecting keys given.
@@ -140,7 +138,7 @@ Deduplicate by `SourceIP` and `DestinationIP`.
 
 > keys: SourceIP, DestinationIP
 
-#### Output:
+#### Output
 
 It will give you the result below.
 It's guaranteed to keep the original order, and gives you the first record when multiple records are found by collecting keys given.
@@ -183,8 +181,8 @@ It's guaranteed to keep the original order, and gives you the first record when 
 ]
 ```
 
-
 ---
+
 ## Examples-2
 
 Here is an array to be used as samples in the Examples-2.
@@ -217,11 +215,10 @@ Deduplicate an array without keys.
 
 > keys:
 
-#### Output:
+#### Output
 
 It will give you the result below.
 It's guaranteed to keep the original order, and gives you the first record when multiple records are found by collecting keys given.
-
 
 ```
 [

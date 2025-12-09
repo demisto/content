@@ -1,16 +1,17 @@
 ## Overview
+
 ---
 
-Fetch indicators stored in an Elasticsearch database. 
-1. The Cortex XSOAR Feed contains system indicators saved in an Elasticsearch index. 
-2. The Cortex XSOAR MT Shared Feed contains indicators shared by a tenant account in a multi-tenant environment. 
+Fetch indicators stored in an Elasticsearch database.
+
+1. The Cortex XSOAR Feed contains system indicators saved in an Elasticsearch index.
+2. The Cortex XSOAR MT Shared Feed contains indicators shared by a tenant account in a multi-tenant environment.
 3. The Generic Feed contains a feed in a format specified by the user.
 
 Supports version 6 and later.
 This integration was integrated and tested with versions 6.6.2, 7.3, 8.4.1 of Elasticsearch.
 
 ## Configure Elasticsearch Feed in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -38,7 +39,6 @@ This integration was integrated and tested with versions 6.6.2, 7.3, 8.4.1 of El
 | Index Time Field | Used for sorting and limiting data. If empty, results are not sorted. Relevant for generic feed type only. | False |
 | Query | Elasticsearch query to execute when fetching indicators from Elasticsearch | False |
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -62,3 +62,13 @@ Gets indicators available in the configured Elasticsearch database.
 #### Context Output
 
 There is no context output for this command.
+
+## Known Limitations
+
+**Indicator Type Case Sensitivity**: The indicator type field in Elasticsearch must exactly match the indicator type in Cortex XSOAR, including case sensitivity. For example, if the indicator type in XSOAR is `File` (with uppercase 'F'), then the indicator type in Elasticsearch must also be `File`, not `file` (lowercase). If there is a case mismatch, indicators will not be created in XSOAR.
+  
+To resolve this issue:
+
+  1. Check the existing indicator types in XSOAR by navigating to: `<XSOAR Domain>/configuration/indicator/types`
+  2. Update your Elasticsearch documents so that the indicator type field matches the exact case of the type in XSOAR
+  3. For the Generic Feed type, ensure the field specified in the "Indicator Type Field" parameter returns values that match XSOAR's indicator types exactly

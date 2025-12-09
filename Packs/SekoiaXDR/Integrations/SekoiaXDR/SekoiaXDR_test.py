@@ -12,7 +12,7 @@ import json
 MOCK_URL = "https://api.sekoia.io"
 
 
-def util_load_json(path):
+def util_load_json(path) -> dict:
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
@@ -28,21 +28,27 @@ def client():
     return client
 
 
+@pytest.fixture()
+def context_cache_with_mirroring():
+    alert = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    return {"mirroring_cache": [{"alert": alert, "entries": {}}]}
+
+
+@pytest.fixture()
+def context_cache_without_mirroring():
+    return {}
+
+
 """ TEST HELPER FUNCTIONS """
 
 
 @freeze_time("2024-09-24 11:25:31 UTC")
 def test_arg_to_timestamp():
-    assert (
-        SekoiaXDR.arg_to_timestamp("2024-04-25T09:20:55", "lastupdate", True)
-        == 1714036855
-    )
+    assert SekoiaXDR.arg_to_timestamp("2024-04-25T09:20:55", "lastupdate", True) == 1714036855
     assert SekoiaXDR.arg_to_timestamp(1714036855.55, "lastupdate", True) == 1714036855
 
     three_days_ago = datetime.now() - timedelta(days=3)
-    assert SekoiaXDR.arg_to_timestamp("3 days", "lastupdate", True) == int(
-        three_days_ago.timestamp()
-    )
+    assert SekoiaXDR.arg_to_timestamp("3 days", "lastupdate", True) == int(three_days_ago.timestamp())
 
     with pytest.raises(ValueError):
         assert SekoiaXDR.arg_to_timestamp(None, "lastupdate", True) == 1714036855
@@ -55,9 +61,7 @@ def test_timezone_format():
 
 
 def test_time_converter():
-    assert (
-        SekoiaXDR.time_converter("2024-04-20T15:30:00+00:00") == "2024-04-20T15:30:00"
-    )
+    assert SekoiaXDR.time_converter("2024-04-20T15:30:00+00:00") == "2024-04-20T15:30:00"
     assert SekoiaXDR.time_converter("1678872055") == "2023-03-15T09:20:55"
     with pytest.raises(ValueError):
         assert SekoiaXDR.time_converter("2024-04-20T15:30:00") == "2024-04-20T15:30:00"
@@ -77,9 +81,7 @@ def test_exclude_info_events():
     result = SekoiaXDR.exclude_info_events(upload_test_data, "sekoiaio.any_asset.name")
     assert "sekoiaio.any_asset.name" not in result
 
-    second_result = SekoiaXDR.exclude_info_events(
-        upload_test_data, "sekoiaio.tags.related.ip,sekoiaio.tags.host.ip"
-    )
+    second_result = SekoiaXDR.exclude_info_events(upload_test_data, "sekoiaio.tags.related.ip,sekoiaio.tags.host.ip")
     assert "sekoiaio.tags.related.ip" not in second_result
     assert "sekoiaio.tags.host.ip" not in second_result
 
@@ -88,8 +90,8 @@ def test_undot():
     upload_test_data = util_load_json("test_data/SekoiaXDR_retrieve_events.json")
     result = SekoiaXDR.undot(upload_test_data)
 
-    assert "agent_id" in result
-    assert "agent.id" not in result
+    assert type(result) is dict
+    assert result["items"][0]["agent_id"]
 
 
 def test_filter_list_by_keys():
@@ -135,6 +137,77 @@ def test_filter_dict_by_keys_with_empty_dict():
     assert SekoiaXDR.filter_dict_by_keys(dict, keys_to_keep) == expected_result
 
 
+def test_check_id_in_context_with_mirroring(context_cache_with_mirroring):
+    assert SekoiaXDR.check_id_in_context("ALL1A4SKUiU2", context_cache_with_mirroring) == (
+        context_cache_with_mirroring["mirroring_cache"][0],
+        0,
+    )
+
+
+def test_fetch_alerts_asc_mode(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_get_alerts.json")
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
+
+    args = {
+        "client": client,
+        "alert_status": None,
+        "alert_urgency": None,
+        "alert_type": None,
+        "max_results": 100,
+        "alerts_created_at": None,
+        "alerts_updated_at": None,
+        "sort_by": None,
+    }
+
+    result = SekoiaXDR.fetch_alerts_asc_mode(**args)
+    assert len(result) == 2
+    assert result[0]["created_at"] < result[1]["created_at"]
+
+
+def test_handle_alert_events_query_finished_status(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_query_events.json")
+    requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response)
+
+    mock_response_query_events_status = util_load_json("test_data/SekoiaXDR_query_events_status.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
+        json=mock_response_query_events_status,
+    )
+
+    mock_response_retrieve_events = util_load_json("test_data/SekoiaXDR_retrieve_events.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f/events",
+        json=mock_response_retrieve_events,
+    )
+
+    alert = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    args = {
+        "client": client,
+        "alert": alert,
+        "earliest_time": "2024-04-25T10:00:23",
+        "latest_time": "2024-04-25T15:00:23",
+        "events_term": "sekoiaio.intake.uuid:834a2d7f-3623-4b26",
+    }
+
+    result = SekoiaXDR.handle_alert_events_query(**args)
+    assert result["events"]
+
+
+def test_handle_alert_events_query_in_progress_status(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_query_events.json")
+    requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response)
+
+    mock_response_query_events_status = util_load_json("test_data/SekoiaXDR_query_events_status_in_progress.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
+        json=mock_response_query_events_status,
+    )
+
+
+def test_check_id_in_context_without_mirroring(context_cache_without_mirroring):
+    assert not SekoiaXDR.check_id_in_context("ALL1A4SKUiU2", context_cache_without_mirroring)
+
+
 """ TEST COMMANDS FUNCTIONS """
 
 
@@ -166,9 +239,7 @@ def test_test_module_ok(client, requests_mock):
     ],
 )
 def test_test_module_nok(client, requests_mock, api_response, expected):
-    requests_mock.get(
-        MOCK_URL + "/v1/auth/validate", json=api_response, status_code=401
-    )
+    requests_mock.get(MOCK_URL + "/v1/auth/validate", json=api_response, status_code=401)
 
     assert expected in SekoiaXDR.test_module(client)
 
@@ -185,9 +256,7 @@ def test_test_module_nok(client, requests_mock, api_response, expected):
         ),
     ],
 )
-def test_http_request_list(
-    client, requests_mock, method, url_suffix, params, json_test_file
-):
+def test_http_request_list(client, requests_mock, method, url_suffix, params, json_test_file):
     mock_response = util_load_json(json_test_file)
     requests_mock.get(MOCK_URL + url_suffix, json=mock_response)
 
@@ -219,9 +288,7 @@ def test_get_alert(client, requests_mock):
 
 def test_get_workflow_alert(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_get_alert_workflow.json")
-    requests_mock.get(
-        MOCK_URL + "/v1/sic/alerts/ALWVYiP2Msz4/workflow", json=mock_response
-    )
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts/ALWVYiP2Msz4/workflow", json=mock_response)
 
     args = {"id": "ALWVYiP2Msz4"}
     result = SekoiaXDR.get_workflow_alert_command(client=client, args=args)
@@ -232,8 +299,7 @@ def test_get_workflow_alert(client, requests_mock):
 def test_get_cases_alert(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_get_alert_cases.json")
     requests_mock.get(
-        MOCK_URL
-        + "/v1/sic/cases?match[alert_uuid]=4fb686e0-ab0c-479c-9afe-856beef9d592&match[short_id]=CAs3AT1XeGCp",
+        MOCK_URL + "/v1/sic/cases?match[alert_uuid]=4fb686e0-ab0c-479c-9afe-856beef9d592&match[short_id]=CAs3AT1XeGCp",
         json=mock_response,
     )
 
@@ -248,9 +314,7 @@ def test_get_cases_alert(client, requests_mock):
 
 def test_update_status_alert(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_get_alert_workflow.json")
-    requests_mock.get(
-        MOCK_URL + "/v1/sic/alerts/ALWVYiP2Msz4/workflow", json=mock_response
-    )
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts/ALWVYiP2Msz4/workflow", json=mock_response)
     requests_mock.patch(MOCK_URL + "/v1/sic/alerts/ALWVYiP2Msz4/workflow", json={})
 
     args = {"id": "ALWVYiP2Msz4", "status": "Acknowledged", "comment": "test cortex"}
@@ -260,9 +324,7 @@ def test_update_status_alert(client, requests_mock):
 
 
 def test_comments_alert_command(client, requests_mock):
-    mock_response_alert_comments = util_load_json(
-        "test_data/SekoiaXDR_get_alert_comments.json"
-    )
+    mock_response_alert_comments = util_load_json("test_data/SekoiaXDR_get_alert_comments.json")
     requests_mock.get(
         MOCK_URL + "/v1/sic/alerts/ALL1A4SKUiU2/comments",
         json=mock_response_alert_comments,
@@ -282,9 +344,7 @@ def test_comments_alert_command(client, requests_mock):
 
 def test_post_comment_alert(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_post_alert_comment.json")
-    requests_mock.post(
-        MOCK_URL + "/v1/sic/alerts/ALU9FpFZoApW/comments", json=mock_response
-    )
+    requests_mock.post(MOCK_URL + "/v1/sic/alerts/ALU9FpFZoApW/comments", json=mock_response)
 
     args = {
         "id": "ALU9FpFZoApW",
@@ -298,9 +358,7 @@ def test_post_comment_alert(client, requests_mock):
 
 def kill_chain_command(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_get_killchain.json")
-    requests_mock.get(
-        MOCK_URL + "/v1/sic/kill-chains/73708d4f-419f-44aa", json=mock_response
-    )
+    requests_mock.get(MOCK_URL + "/v1/sic/kill-chains/73708d4f-419f-44aa", json=mock_response)
 
     args = {"kill_chain_uuid": "73708d4f-419f-44aa"}
     result = SekoiaXDR.get_kill_chain_command(client=client, args=args)
@@ -349,15 +407,9 @@ def test_retrieve_events(client, requests_mock):
 
 def test_search_events(client, requests_mock, mocker):
     mock_response_query_events = util_load_json("test_data/SekoiaXDR_query_events.json")
-    mock_response_query_events_status = util_load_json(
-        "test_data/SekoiaXDR_query_events_status.json"
-    )
-    mock_response_retrieve_events = util_load_json(
-        "test_data/SekoiaXDR_retrieve_events.json"
-    )
-    requests_mock.post(
-        MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response_query_events
-    )
+    mock_response_query_events_status = util_load_json("test_data/SekoiaXDR_query_events_status.json")
+    mock_response_retrieve_events = util_load_json("test_data/SekoiaXDR_retrieve_events.json")
+    requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response_query_events)
     requests_mock.get(
         MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
         json=mock_response_query_events_status,
@@ -400,9 +452,7 @@ def test_list_assets(client, requests_mock):
 
 def test_get_asset(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_get_asset.json")
-    requests_mock.get(
-        MOCK_URL + "/v1/asset-management/assets/015ea33b-a7a2-4e34", json=mock_response
-    )
+    requests_mock.get(MOCK_URL + "/v1/asset-management/assets/015ea33b-a7a2-4e34", json=mock_response)
 
     args = {"asset_uuid": "015ea33b-a7a2-4e34"}
     result = SekoiaXDR.get_asset_command(client=client, args=args)
@@ -413,8 +463,7 @@ def test_get_asset(client, requests_mock):
 def test_add_keys_asset(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_post_asset_key.json")
     requests_mock.post(
-        MOCK_URL
-        + "/v1/asset-management/assets/015ea33b-a7a2-4e34-8beb-0197a93a1011/keys?name=host&value=computer1",
+        MOCK_URL + "/v1/asset-management/assets/015ea33b-a7a2-4e34-8beb-0197a93a1011/keys?name=host&value=computer1",
         json=mock_response,
     )
 
@@ -431,8 +480,7 @@ def test_add_keys_asset(client, requests_mock):
 
 def test_remove_keys_asset(client, requests_mock):
     requests_mock.delete(
-        MOCK_URL
-        + "/v1/asset-management/assets/015ea33b-a7a2-4e34-8beb-0197a93a1011/keys/8007222c-f135-4f5f",
+        MOCK_URL + "/v1/asset-management/assets/015ea33b-a7a2-4e34-8beb-0197a93a1011/keys/8007222c-f135-4f5f",
         json={},
     )
 
@@ -448,8 +496,7 @@ def test_remove_keys_asset(client, requests_mock):
 def test_add_attr_asset(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_post_asset_attr.json")
     requests_mock.post(
-        MOCK_URL
-        + "/v1/asset-management/assets/015ea33b-a7a2-4e34-8beb-0197a93a1011/attr?name=attr_test_4&value=value4",
+        MOCK_URL + "/v1/asset-management/assets/015ea33b-a7a2-4e34-8beb-0197a93a1011/attr?name=attr_test_4&value=value4",
         json=mock_response,
     )
 
@@ -466,8 +513,7 @@ def test_add_attr_asset(client, requests_mock):
 
 def test_remove_attr_asset(client, requests_mock):
     requests_mock.delete(
-        MOCK_URL
-        + "/v1/asset-management/assets/015ea33b-a7a2-4e34-8beb-0197a93a1011/attr/8007222c-f135-4f5f",
+        MOCK_URL + "/v1/asset-management/assets/015ea33b-a7a2-4e34-8beb-0197a93a1011/attr/8007222c-f135-4f5f",
         json={},
     )
 
@@ -520,22 +566,12 @@ def test_get_remote_data(
 ):
     mock_response = util_load_json("test_data/SekoiaXDR_get_alert.json")
     mock_response_query_events = util_load_json("test_data/SekoiaXDR_query_events.json")
-    mock_response_query_events_status = util_load_json(
-        "test_data/SekoiaXDR_query_events_status.json"
-    )
-    mock_response_retrieve_events = util_load_json(
-        "test_data/SekoiaXDR_retrieve_events.json"
-    )
-    mock_response_killchain = util_load_json(
-        "test_data/SekoiaXDR_get_killchain_mirroring.json"
-    )
-    requests_mock.get(
-        MOCK_URL + "/v1/sic/kill-chains/KCXKNfnJuUUU", json=mock_response_killchain
-    )
+    mock_response_query_events_status = util_load_json("test_data/SekoiaXDR_query_events_status.json")
+    mock_response_retrieve_events = util_load_json("test_data/SekoiaXDR_retrieve_events.json")
+    mock_response_killchain = util_load_json("test_data/SekoiaXDR_get_killchain_mirroring.json")
+    requests_mock.get(MOCK_URL + "/v1/sic/kill-chains/KCXKNfnJuUUU", json=mock_response_killchain)
     requests_mock.get(MOCK_URL + "/v1/sic/alerts/ALL1A4SKUiU2", json=mock_response)
-    requests_mock.post(
-        MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response_query_events
-    )
+    requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response_query_events)
     requests_mock.get(
         MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
         json=mock_response_query_events_status,
@@ -659,4 +695,15 @@ def test_fetch_incidents(
     )
 
     assert results[0]["last_fetch"]
+    assert len(results[1]) == 2
+
+
+def test_fetch_incidents_with_same_time(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_same_time.json")
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
+
+    last_run = {"last_fetch": 1714036855}
+    results = SekoiaXDR.fetch_incidents(client, 100, last_run, None, None, None, None, None, None, None, None)
+
+    assert results[0]["last_fetch"] == 1747057948
     assert len(results[1]) == 2

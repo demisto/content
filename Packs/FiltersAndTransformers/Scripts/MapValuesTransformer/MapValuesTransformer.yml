@@ -45,8 +45,9 @@ args:
   required: true
   description: Comma-separated values to map to.
 scripttarget: 0
+isllm: false
 subtype: python3
-dockerimage: demisto/python3:3.11.10.116949
+dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

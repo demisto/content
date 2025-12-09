@@ -1,5 +1,6 @@
 {
   "core_packs_list": [
+    "AggregatedScripts",
     "AutoFocus",
     "Base",
     "CommonDashboards",
@@ -24,11 +25,13 @@
     "ThreatIntelReports",
     "ThreatIntelligenceManagement",
     "Unit42Intel",
+    "Unit42ThreatIntelligencebyPaloAltoNetworks",
     "VirusTotal",
     "Whois",
     "rasterize"
   ],
   "update_core_packs_list": [
+    "AggregatedScripts",
     "AutoFocus",
     "Base",
     "CommonDashboards",
@@ -53,6 +56,7 @@
     "ThreatIntelReports",
     "ThreatIntelligenceManagement",
     "Unit42Intel",
+    "Unit42ThreatIntelligencebyPaloAltoNetworks",
     "VirusTotal",
     "Whois",
     "rasterize"

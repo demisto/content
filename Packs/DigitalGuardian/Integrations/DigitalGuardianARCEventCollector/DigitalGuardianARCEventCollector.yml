@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -29,8 +29,8 @@ configuration:
   type: 16  # Multi Select
   defaultvalue: defaultExportProfile
   options:
-    - defaultExportProfile
-    - demisto
+  - defaultExportProfile
+  - demisto
   section: Collect
 - display: Number of Export Requests per Fetch
   additionalinfo: Number of API calls per fetch to export events for each configured Digital Guardian ARC export profile. Use with extreme caution as this might impact data ingestion quota limits and performance. Consult with the engineering team before changing this value.
@@ -79,7 +79,7 @@ script:
     description: Gets events from the configured Digital Guardian ARC export profiles. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events.
     execution: false
     name: digital-guardian-get-events
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   runonce: false
   script: '-'
@@ -87,6 +87,7 @@ script:
   type: python
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

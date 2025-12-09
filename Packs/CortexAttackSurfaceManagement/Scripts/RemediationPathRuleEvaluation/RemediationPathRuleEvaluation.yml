@@ -11,10 +11,10 @@ args:
 - description: Has a service owner been identified?
   isArray: true
   name: service_owner_identified
-- description: Includes Cloud and Xpanse tags
+- description: Includes Cloud and Xpanse tags.
   isArray: true
   name: tags
-- description: Externally Detected Providers
+- description: Externally Detected Providers.
   isArray: true
   name: providers
 - description: List of remediation path rules for the alert's attack surface rule.
@@ -24,7 +24,7 @@ comment: For a given alert and remediation path rules that are defined for that 
 commonfields:
   id: RemediationPathRuleEvaluation
   version: -1
-dockerimage: demisto/python3:3.11.10.116439
+dockerimage: demisto/python3:3.12.8.3296088
 enabled: true
 name: RemediationPathRuleEvaluation
 script: ''

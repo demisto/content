@@ -1,6 +1,8 @@
 import demistomock as demisto
 import json
 import RedCanary
+from freezegun import freeze_time
+from datetime import datetime
 
 last_run_dict = {"time": "2019-12-13T17:23:22Z", "last_event_ids": []}
 latest_time_of_occurrence_of_incidents1 = "2019-12-30T22:00:50Z"
@@ -48,9 +50,7 @@ def test_fetch_when_last_run_is_time(mocker):
     mocker.patch.object(demisto, "incidents")
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "getLastRun")
-    mocker.patch.object(
-        RedCanary, "get_unacknowledged_detections", return_value=data["data"]
-    )
+    mocker.patch.object(RedCanary, "get_unacknowledged_detections", return_value=data["data"])
     mocker.patch.object(RedCanary, "get_full_timeline", return_value=None)
     last_run, incidents = RedCanary.fetch_incidents(last_run_dict, 2)
 
@@ -72,66 +72,64 @@ def test_get_endpoint_context():
     """
     endpoint = [
         {
-            'id': '1234',
-            'attributes': {
-                'hostname': 'hostname1',
-                'platform': 'OS X',
-                'operating_system': 'Mac OSX 10.14.6',
-                'is_isolated': False,
-                'is_decommissioned': False,
-                'endpoint_network_addresses': [
+            "id": "1234",
+            "attributes": {
+                "hostname": "hostname1",
+                "platform": "OS X",
+                "operating_system": "Mac OSX 10.14.6",
+                "is_isolated": False,
+                "is_decommissioned": False,
+                "endpoint_network_addresses": [
                     {
-                        'attributes': {
-                            'ip_address': {
-                                'attributes': {
-                                    'ip_address_matches_rfc_1918?': True,
-                                    'ip_address_reverse_dns': None,
-                                    'ip_address_defanged': '192.169.1[.]16',
-                                    'ip_address_is_link_local?': False,
-                                    'ip_address_matches_rfc_4193?': False,
-                                    'ip_address': '192.169.1.16'
+                        "attributes": {
+                            "ip_address": {
+                                "attributes": {
+                                    "ip_address_matches_rfc_1918?": True,
+                                    "ip_address_reverse_dns": None,
+                                    "ip_address_defanged": "192.169.1[.]16",
+                                    "ip_address_is_link_local?": False,
+                                    "ip_address_matches_rfc_4193?": False,
+                                    "ip_address": "192.169.1.16",
                                 },
-                                'type': 'primitives.IpAddress'
+                                "type": "primitives.IpAddress",
                             },
-                            'mac_address': {
-                                'attributes': {
-                                    'address': 'g9:gg:c2:0f:3d:5f'
-                                },
-                                'type': 'primitives.MacAddress'
-                            }
+                            "mac_address": {"attributes": {"address": "g9:gg:c2:0f:3d:5f"}, "type": "primitives.MacAddress"},
                         }
                     },
                     {
-                        'attributes': {
-                            'ip_address': {
-                                'attributes': {
-                                    'ip_address_matches_rfc_1918?': False,
-                                    'ip_address_reverse_dns': None,
-                                    'ip_address_defanged': '100.144.153[.]501',
-                                    'ip_address_is_link_local?': False,
-                                    'ip_address_matches_rfc_4193?': False,
-                                    'ip_address': '100.144.153.501'
+                        "attributes": {
+                            "ip_address": {
+                                "attributes": {
+                                    "ip_address_matches_rfc_1918?": False,
+                                    "ip_address_reverse_dns": None,
+                                    "ip_address_defanged": "100.144.153[.]501",
+                                    "ip_address_is_link_local?": False,
+                                    "ip_address_matches_rfc_4193?": False,
+                                    "ip_address": "100.144.153.501",
                                 },
-                                'type': 'primitives.IpAddress'
+                                "type": "primitives.IpAddress",
                             },
-                            'mac_address': None
+                            "mac_address": None,
                         }
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         }
     ]
 
     endpoint_context = RedCanary.get_endpoint_context(endpoint)
-    assert endpoint_context == [{
-        'Hostname': 'hostname1',
-        'ID': '1234',
-        'IPAddress': ['192.169.1.16', '100.144.153.501'],
-        'IsDecommissioned': False,
-        'IsIsolated': False,
-        'MACAddress': ['g9:gg:c2:0f:3d:5f'],
-        'OS': 'OS X',
-        'OSVersion': 'Mac OSX 10.14.6'}]
+    assert endpoint_context == [
+        {
+            "Hostname": "hostname1",
+            "ID": "1234",
+            "IPAddress": ["192.169.1.16", "100.144.153.501"],
+            "IsDecommissioned": False,
+            "IsIsolated": False,
+            "MACAddress": ["g9:gg:c2:0f:3d:5f"],
+            "OS": "OS X",
+            "OSVersion": "Mac OSX 10.14.6",
+        }
+    ]
 
 
 def test_detections_to_entry_without_endpoint(mocker):
@@ -145,52 +143,57 @@ def test_detections_to_entry_without_endpoint(mocker):
     """
     detection_data = [
         {
-            'type': 'Detection',
-            'id': 1,
-            'attributes': {
-                'headline': 'Suspicious Activity',
-                'confirmed_at': '2023-09-18T21:32:52.039Z',
-                'summary': 'A user made a series of API calls to expose instance passwords.',
-                'severity': 'high',
-                'last_activity_seen_at': '2023-09-18T20:47:23.609Z',
-                'classification': {
-                    'superclassification': 'Suspicious Activity',
-                    'subclassification': ['Reconnaissance']
-                },
-                'time_of_occurrence': '2023-09-18T20:47:23.609Z',
-                'last_acknowledged_at': None,
-                'last_acknowledged_by': None,
-                'associated_releasable_intelligence_profiles': []
+            "type": "Detection",
+            "id": 1,
+            "attributes": {
+                "headline": "Suspicious Activity",
+                "confirmed_at": "2023-09-18T21:32:52.039Z",
+                "summary": "A user made a series of API calls to expose instance passwords.",
+                "severity": "high",
+                "last_activity_seen_at": "2023-09-18T20:47:23.609Z",
+                "classification": {"superclassification": "Suspicious Activity", "subclassification": ["Reconnaissance"]},
+                "time_of_occurrence": "2023-09-18T20:47:23.609Z",
+                "last_acknowledged_at": None,
+                "last_acknowledged_by": None,
+                "associated_releasable_intelligence_profiles": [],
             },
-            'hostname': None,
-            'username': 'username',
-            'relationships': {
-                'related_endpoint_user': {
-                    'links': {
-                        'related': 'https://example.com/openapi/v3/endpoint_users/11111111'
-                    },
-                    'data': {'type': 'endpoint_user', 'id': 11111111}
+            "hostname": None,
+            "username": "username",
+            "relationships": {
+                "related_endpoint_user": {
+                    "links": {"related": "https://example.com/openapi/v3/endpoint_users/11111111"},
+                    "data": {"type": "endpoint_user", "id": 11111111},
                 }
             },
-            'links': {
-                'self': {'href': 'https://example.com/openapi/v3/detections/1'},
-                'activity_timeline': {'href': 'https://example.com/openapi/v3/detections/1/timeline'},
-                'detectors': {'href': 'https://example.com/openapi/v3/detections/1/detectors'}
-            }
+            "links": {
+                "self": {"href": "https://example.com/openapi/v3/detections/1"},
+                "activity_timeline": {"href": "https://example.com/openapi/v3/detections/1/timeline"},
+                "detectors": {"href": "https://example.com/openapi/v3/detections/1/detectors"},
+            },
         }
     ]
 
-    expected_result = {'Type': 'RedCanaryDetection', 'ID': 1, 'Headline': 'Suspicious Activity', 'Severity': 'high',
-                       'Summary': 'A user made a series of API calls to expose instance passwords.',
-                       'Classification': 'Suspicious Activity', 'Subclassification': ['Reconnaissance'],
-                       'Time': '2023-09-18T20:47:23Z', 'Acknowledged': True, 'RemediationStatus': '', 'Reason': '',
-                       'EndpointID': '', 'EndpointUserID': 11111111}
+    expected_result = {
+        "Type": "RedCanaryDetection",
+        "ID": 1,
+        "Headline": "Suspicious Activity",
+        "Severity": "high",
+        "Summary": "A user made a series of API calls to expose instance passwords.",
+        "Classification": "Suspicious Activity",
+        "Subclassification": ["Reconnaissance"],
+        "Time": "2023-09-18T20:47:23Z",
+        "Acknowledged": True,
+        "RemediationStatus": "",
+        "Reason": "",
+        "EndpointID": "",
+        "EndpointUserID": 11111111,
+    }
     # Call the function with the sample data
-    endpoint_users = [{'Username': 'username'}]
+    endpoint_users = [{"Username": "username"}]
     mocker.patch.object(RedCanary, "get_endpoint_user_context", return_value=endpoint_users)
     result = RedCanary.detections_to_entry(detection_data)
     # Assert that the result is as expected
-    assert result['Contents'][0] == expected_result
+    assert result["Contents"][0] == expected_result
 
 
 def test_detections_to_entry_without_relationships(mocker):
@@ -203,38 +206,44 @@ def test_detections_to_entry_without_relationships(mocker):
     """
     detection_data = [
         {
-            'type': 'Detection',
-            'id': 1,
-            'attributes': {
-                'headline': 'Suspicious Activity',
-                'confirmed_at': '2023-09-18T21:32:52.039Z',
-                'summary': 'A user made a series of API calls to expose instance passwords.',
-                'severity': 'high',
-                'last_activity_seen_at': '2023-09-18T20:47:23.609Z',
-                'classification': {
-                    'superclassification': 'Suspicious Activity',
-                    'subclassification': ['Reconnaissance']
-                },
-                'time_of_occurrence': '2023-09-18T20:47:23.609Z',
-                'last_acknowledged_at': None,
-                'last_acknowledged_by': None,
-                'associated_releasable_intelligence_profiles': []
-            }
-
+            "type": "Detection",
+            "id": 1,
+            "attributes": {
+                "headline": "Suspicious Activity",
+                "confirmed_at": "2023-09-18T21:32:52.039Z",
+                "summary": "A user made a series of API calls to expose instance passwords.",
+                "severity": "high",
+                "last_activity_seen_at": "2023-09-18T20:47:23.609Z",
+                "classification": {"superclassification": "Suspicious Activity", "subclassification": ["Reconnaissance"]},
+                "time_of_occurrence": "2023-09-18T20:47:23.609Z",
+                "last_acknowledged_at": None,
+                "last_acknowledged_by": None,
+                "associated_releasable_intelligence_profiles": [],
+            },
         }
     ]
 
-    expected_result = {'Type': 'RedCanaryDetection', 'ID': 1, 'Headline': 'Suspicious Activity', 'Severity': 'high',
-                       'Summary': 'A user made a series of API calls to expose instance passwords.',
-                       'Classification': 'Suspicious Activity', 'Subclassification': ['Reconnaissance'],
-                       'Time': '2023-09-18T20:47:23Z', 'Acknowledged': True, 'RemediationStatus': '', 'Reason': '',
-                       'EndpointID': '', 'EndpointUserID': ''}
+    expected_result = {
+        "Type": "RedCanaryDetection",
+        "ID": 1,
+        "Headline": "Suspicious Activity",
+        "Severity": "high",
+        "Summary": "A user made a series of API calls to expose instance passwords.",
+        "Classification": "Suspicious Activity",
+        "Subclassification": ["Reconnaissance"],
+        "Time": "2023-09-18T20:47:23Z",
+        "Acknowledged": True,
+        "RemediationStatus": "",
+        "Reason": "",
+        "EndpointID": "",
+        "EndpointUserID": "",
+    }
     # Call the function with the sample data
-    endpoint_users = [{'Username': 'username'}]
+    endpoint_users = [{"Username": "username"}]
     mocker.patch.object(RedCanary, "get_endpoint_user_context", return_value=endpoint_users)
     result = RedCanary.detections_to_entry(detection_data)
     # Assert that the result is as expected
-    assert result['Contents'][0] == expected_result
+    assert result["Contents"][0] == expected_result
 
 
 def test_fetch_multiple_times_when_already_fetched_incident_keep(mocker):
@@ -321,6 +330,205 @@ def test_def_get_full_timeline(mocker):
     result2 = response.execute()
     # make sure the results are not the same, they are from different pages, but the data is
     assert result1 != result2
-    assert result1['data'] == result2['data']
+    assert result1["data"] == result2["data"]
     # make sure the loop ends
     assert activities
+
+
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def test_get_detection_command_includes_domain(mocker):
+    """
+    Given
+    - Raw response of get_full_timeline function
+    - Response from get_detection command.
+    When
+    - Running the get_detection command
+    Then
+    Make sure that the Domain info exists in the context data under the Domain key.
+    """
+    detection_data = util_load_json("TestData/detection.json")
+    timeline_data = util_load_json("TestData/detection_timeline.json")
+    mocker.patch("RedCanary.demisto.args", return_value={"id": "87"})
+
+    def http_get_side_effect(url, params=None):
+        if url == "/detections/87":
+            return {"data": [detection_data]}
+        elif url.startswith(f"/detections/{detection_data['id']}/timeline"):
+            return timeline_data
+        return {}
+
+    mocker.patch("RedCanary.http_get", side_effect=http_get_side_effect)
+
+    # Call the command
+    result = RedCanary.get_detection_command()
+
+    # Validate the Domain context was returned
+    entry_context = result.get("EntryContext", {})
+    assert "Domain(val.Username == obj.Username)" in entry_context
+    assert isinstance(entry_context["Domain(val.Username == obj.Username)"], list)
+    assert any("example.domain" in json.dumps(d) for d in entry_context["Domain(val.Username == obj.Username)"])
+
+
+def test_get_detection_command_includes_process_and_files(mocker):
+    """
+    Given
+    - Raw response of get_full_timeline function
+    - Response from get_detection command.
+    When
+    - Running the get_detection command
+    Then
+    Make sure that the Process and File info exists in the context data under the Domain key.
+    """
+    detection_data = util_load_json("TestData/detection2.json")
+    timeline_data = util_load_json("TestData/detection_timeline2.json")
+    mocker.patch("RedCanary.demisto.args", return_value={"id": "106"})
+
+    def http_get_side_effect(url, params=None):
+        if url == "/detections/106":
+            return {"data": [detection_data]}
+        elif url.startswith(f"/detections/{detection_data['id']}/timeline"):
+            return timeline_data
+        return {}
+
+    mocker.patch("RedCanary.http_get", side_effect=http_get_side_effect)
+
+    # Call the command
+    result = RedCanary.get_detection_command()
+
+    # Validate the Domain context was returned
+    entry_context = result.get("EntryContext", {})
+    # print(entry_context)
+    assert "Process(val.Username == obj.Username)" in entry_context
+    assert "File(val.Name == obj.Name)" in entry_context
+    # Ensure they are lists
+    processes = entry_context["Process(val.Username == obj.Username)"]
+    files = entry_context["File(val.Name == obj.Name)"]
+    assert isinstance(processes, list)
+    assert isinstance(files, list)
+
+    # Ensure they are not empty
+    assert len(processes) > 0, "Expected at least one process in context, got empty list"
+    assert len(files) > 0, "Expected at least one file in context, got empty list"
+
+
+with open("./TestData/detections.json") as f:
+    detections_data = json.load(f)
+
+
+@freeze_time("2023-10-31 10:00:00")
+def test_get_unacknowledged_detections(mocker):
+    """Unit test
+    Given
+    - a list of detections from the list_detections command
+    When
+    - getting unacknowledged detections
+    Then
+    - make sure only the unacknowledged detections are returned
+    """
+    # Test with only unacknowledged detections
+    mocker.patch.object(RedCanary, "list_detections", side_effect=[detections_data["unacknowledged_detection"]["data"], []])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now()))
+    assert len(results) == 1
+    assert results[0]["id"] == "1"
+
+    # Test with only acknowledged detections
+    mocker.patch.object(RedCanary, "list_detections", side_effect=[detections_data["acknowledged_detection"]["data"], []])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now()))
+    assert len(results) == 0
+
+    # Test with a mix of acknowledged and unacknowledged detections
+    mocker.patch.object(RedCanary, "list_detections", side_effect=[detections_data["mixed_detections"]["data"], []])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now()))
+    assert len(results) == 1
+    assert results[0]["id"] == "1"
+
+    # Test with a mix of detections and is_fetch_acknowledged=True
+    mocker.patch.object(RedCanary, "list_detections", side_effect=[detections_data["mixed_detections"]["data"], []])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now(), is_fetch_acknowledged=True))
+    assert len(results) == 2
+
+    # Test with no detections
+    mocker.patch.object(RedCanary, "list_detections", return_value=[])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now()))
+    assert len(results) == 0
+
+
+def test_process_timeline(mocker):
+    """Unit test
+    Given
+    - a detection ID and mock timeline data containing process execution events
+    When
+    - processing the timeline to extract activities, files, and processes
+    Then
+    - verify that the timeline is correctly parsed and structured data is returned
+    - ensure activities contain proper time, type, and notes information
+    - confirm files and processes are extracted with expected attributes
+    """
+    detection_id = "12345"
+
+    mock_timeline_data = [
+        {
+            "type": "activity_timelines.EventActivityOccurred",
+            "attributes": {
+                "occurred_at": "2023-10-31T10:00:00Z",
+                "analyst_notes": "Process execution detected",
+                "type": "process_activity_occurred",
+                "process_execution": {
+                    "attributes": {
+                        "operating_system_process": {
+                            "attributes": {
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {"md5": None, "sha256": None, "path": None, "file_type": None},
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {"command_line": "", "command_line_decoded": "", "identified_encodings": []},
+                                },
+                                "started_at": "2023-10-31T09:59:00Z",
+                            }
+                        }
+                    }
+                },
+            },
+        }
+    ]
+
+    # Mock the get_full_timeline function
+    mocker.patch.object(RedCanary, "get_full_timeline", return_value=mock_timeline_data)
+
+    # Call the function
+    activities, _, files, _, processes = RedCanary.process_timeline(detection_id)
+
+    # Verify that get_full_timeline was called with correct detection_id
+    RedCanary.get_full_timeline.assert_called_once_with(detection_id)
+
+    # Verify activities
+    assert len(activities) == 1
+
+    # Check first activity (process)
+    assert activities[0]["Time"] == "2023-10-31T10:00:00Z"
+    assert activities[0]["Type"] == "process activity occurred"
+    assert activities[0]["Notes"] == "Process execution detected"
+    assert activities[0]["Activity Details"] == {}
+
+    # Verify files
+    assert len(files) == 1
+    expected_file = {"Name": "", "MD5": None, "SHA256": None, "Path": None, "Extension": ""}
+    assert files[0] == expected_file
+
+    # Verify processes
+    assert len(processes) == 1
+    expected_process = {
+        "Name": "",
+        "Path": None,
+        "MD5": None,
+        "SHA256": None,
+        "StartTime": "2023-10-31T09:59:00Z",
+        "CommandLine": "",
+    }
+    assert processes[0] == expected_process

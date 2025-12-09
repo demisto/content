@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
@@ -12,16 +12,12 @@ def main():
 
         html = f"<p style=text-align:left;>For more information on the Asset, <a href={asset_end_point}><i>click here</i></a></p>"
 
-        demisto.results({
-            "ContentsFormat": formats["html"],
-            "Type": entryTypes["note"],
-            "Contents": html
-        })
+        demisto.results({"ContentsFormat": formats["html"], "Type": entryTypes["note"], "Contents": html})
     except Exception as err:
-        return_error(f'Failed to execute FeedCyCognitoGetAssetEndpoint. Error: {err}', error=err)
+        return_error(f"Failed to execute FeedCyCognitoGetAssetEndpoint. Error: {err}", error=err)
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

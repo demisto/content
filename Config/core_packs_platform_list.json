@@ -1,16 +1,478 @@
 {
-    "core_packs_list": [
-        "Base",
-        "CommonPlaybooks",
-        "CommonScripts",
-        "Core",
-        "FiltersAndTransformers"
-    ],
-    "update_core_packs_list": [
-        "Base",
-        "CommonPlaybooks",
-        "CommonScripts",
-        "Core",
-        "FiltersAndTransformers"
+    "packs": [
+        {
+            "id": "AggregatedScripts",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam",
+                "edr",
+                "cloud_runtime_security",
+                "cloud"
+            ]
+        },
+        {
+            "id": "AutoFocus",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "Base",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "asm",
+                "cloud",
+                "cloud_appsec",
+                "cloud_posture",
+                "cloud_runtime_security",
+                "edr",
+                "exposure_management",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "CommonPlaybooks",
+            "supportedModules": [
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "CommonScripts",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "asm",
+                "exposure_management",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "CommonTypes",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "Core",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "exposure_management",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "CoreAlertFields",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "DemistoLocking",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "DemistoRESTAPI",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "EDL",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "FeedMitreAttackv2",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "FeedUnit42v2",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "FiltersAndTransformers",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "asm",
+                "exposure_management",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "HelloWorld",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "ImageOCR",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam",
+                "edr",
+                "cloud",
+                "cloud_runtime_security"
+            ]
+        },
+        {
+            "id": "Palo_Alto_Networks_WildFire",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "PrismaCloud",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "ThreatIntelligenceManagement",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "Unit42Intel",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "VirusTotal",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "Whois",
+            "supportedModules": [
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "rasterize",
+            "supportedModules": [
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "edr",
+                "cloud",
+                "cloud_runtime_security",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "CortexResponseAndRemediation",
+            "supportedModules": [
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "cloud",
+                "cloud_runtime_security",
+                "agentix",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "Jira",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "MicrosoftTeams",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "Unit42ThreatIntelligencebyPaloAltoNetworks",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "edr",
+                "xsiam",
+                "cloud_runtime_security",
+                "cloud_posture"
+            ]
+        },
+        {
+            "id": "Slack",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "ServiceNow",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "asm",
+                "exposure_management",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "AWS",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X5",
+                "agentix",
+                "cloud_posture",
+                "cloud",
+                "cloud_runtime_security",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "GCP",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X5",
+                "cloud_posture",
+                "cloud",
+                "cloud_runtime_security",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "Azure",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X5",
+                "cloud_posture",
+                "cloud",
+                "cloud_runtime_security",
+                "agentix",
+                "xsiam"
+            ]
+        }
     ]
-  }
+}

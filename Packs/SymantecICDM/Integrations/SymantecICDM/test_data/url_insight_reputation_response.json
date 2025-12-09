@@ -1,0 +1,15 @@
+{
+    "network": "elblogdeloscachanillas.com.mx%2Fs3sy8rq10%2Fophn.png",
+    "threatRiskLevel": {
+        "level": 10
+    },
+    "categorization": {
+        "categories": [
+            {
+                "id": 43,
+                "name": "Malicious Sources/Malnets"
+            }
+        ]
+    },
+    "reputation": "BAD"
+}

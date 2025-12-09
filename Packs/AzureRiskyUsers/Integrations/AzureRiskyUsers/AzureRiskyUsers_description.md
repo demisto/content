@@ -24,9 +24,9 @@ Follow these steps for a **self-deployed configuration**:
 
 In order to connect to Microsoft Risky User using either **Cortex XSOAR App** or the **Self-Deployed App**:
 1. Fill in the required parameters.
-2. Run the ***!msgraph-identity-auth-start*** command.
+2. Run the ***!azure-risky-users-auth-start*** command.
 3. Follow the instructions that appear.
-4. Run the ***!msgraph-identity-auth-complete*** command.
+4. Run the ***!azure-risky-users-auth-complete*** command.
 
 At the end of the process you'll see a message that you've logged in successfully.
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.

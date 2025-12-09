@@ -553,7 +553,7 @@ inputs:
   description: |-
     The predefined IP list. If the type is predefined_ip, a value must be provided.
     Possible values: panw-bulletproof-ip-list,panw-highrisk-ip-list,panw-known-ip-list,panw-torexit-ip-list.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: URLListName
   value: {}
   required: false
@@ -634,3 +634,10 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam

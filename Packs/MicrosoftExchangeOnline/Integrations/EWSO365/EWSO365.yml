@@ -57,7 +57,7 @@ configuration:
 - defaultvalue: Inbox
   display: Name of the folder from which to fetch incidents
   name: folder
-  required: true
+  required: false
   type: 0
   additionalinfo: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing.
   section: Collect
@@ -106,6 +106,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: When 'Mark fetched emails as read' is enabled and emails are fetched by modification time, emails will be re-fetched in the next cycle after being marked as read (due to metadata changes). This is expected behavior.
 - display: Timeout (in seconds) for HTTP requests to Exchange Server
   name: request_timeout
   type: 0
@@ -339,6 +340,8 @@ script:
     - contextPath: EWS.Items.action
       description: The action taken. The value will be "moved".
       type: string
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: The item IDs to delete.
       name: item-ids
@@ -361,6 +364,8 @@ script:
     - contextPath: EWS.Items.action
       description: The deletion action. Can be 'trash-deleted', 'soft-deleted', or 'hard-deleted'.
       type: string
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: 'The search query string. For more information about the query syntax, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/ee693615.aspx'
       name: query
@@ -777,6 +782,8 @@ script:
     - contextPath: EWS.Items.action
       description: The action taken on the item. The value will be "moved".
       type: string
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: The mailbox on which to run the search.
       name: target-mailbox
@@ -992,15 +999,24 @@ script:
     - name: attachCIDs
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
+    - description: Whether to handle inline images in the HTML body. When set to 'True', inline images are extracted from the HTML body and attached to the email as an inline attachment object.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+      name: handle_inline_image
     description: Replies to an email using EWS.
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ews-auth-reset
     arguments: []
-  dockerimage: demisto/py3ews:5.5.0.118099
+  dockerimage: demisto/py3ews:5.6.0.5331241
   isfetch: true
   script: ''
   subtype: python3
   type: python
 tests:
 - EWS search-mailbox test
+- EWS_O365_send_mail_test
+- EWS_O365_test
 fromversion: 5.0.0

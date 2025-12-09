@@ -12,7 +12,7 @@
         "packs": [
           {
             "name": "Jira",
-            "display_name": "Atlassian Jira v2"
+            "display_name": "Atlassian Jira"
           },
           {
             "name": "ServiceNow",
@@ -49,12 +49,12 @@
           "description": "Configure 'ServiceNow v2' to open a ticket for a true positive incident."
         },
         {
-        "name": "jira-v2",
+        "name": "Jira V3",
         "action": {
-          "existing": "Configure 'jira-v2' to open a ticket for a true positive incident.",
-          "new": "Configure 'jira-v2' to open a ticket for a true positive incident."
+          "existing": "Configure 'Jira V3' to open a ticket for a true positive incident.",
+          "new": "Configure 'Jira V3' to open a ticket for a true positive incident."
           },
-        "description": "Configure 'jira-v2' to open a ticket for a true positive incident."
+        "description": "Configure 'Jira V3' to open a ticket for a true positive incident."
         }
       ],
       "next": [

@@ -1,7 +1,7 @@
 This is the NucleonCyber Feed  integration
 This integration was integrated and tested with version 6.0.0 of NucleonCyberFeed
-## Configure NucleonCyberFeed in Cortex
 
+## Configure NucleonCyberFeed in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -24,36 +24,39 @@ This integration was integrated and tested with version 6.0.0 of NucleonCyberFee
 | Incremental feed | Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### nucleon-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 #### Base Command
 
 `nucleon-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The indicator type (ip, url or hash). Default is ip. | Required | 
-| limit | The maximum number of results to return. Default is 10. | Optional | 
-
+| type | The indicator type (ip, url or hash). Default is ip. | Required |
+| limit | The maximum number of results to return. Default is 10. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NucleonCyber.Indicators.value | String | IP/HASH/URL. | 
-| NucleonCyber.Indicators.exp | String | Indicators exp. | 
-
+| NucleonCyber.Indicators.value | String | IP/HASH/URL. |
+| NucleonCyber.Indicators.exp | String | Indicators exp. |
 
 #### Command Example
+
 ```!nucleon-get-indicators```
 
 #### Context Example
+
 ```json
 {
     "NucleonCyber": {
@@ -114,7 +117,8 @@ Gets indicators from the feed.
 
 #### Human Readable Output
 
->### IP indicators from NucleonCyberFeed: 
+>### IP indicators from NucleonCyberFeed
+>
 >|Value|Type|
 >|---|---|
 >| 4.4.4.4 | IP |

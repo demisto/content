@@ -776,7 +776,7 @@ outputs:
   type: unknown
 quiet: false
 tests:
-  - No tests
+- No tests
 fromversion: 6.5.0
 contentitemexportablefields:
   contentitemfields: {}
