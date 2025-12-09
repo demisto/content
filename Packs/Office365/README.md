@@ -17,7 +17,6 @@ Office 365 is a subscription-based service that provides a comprehensive suite o
 * Exchange Online &rarr; `msft_o365_exchange_online_raw`
 * SharePoint Online &rarr; `msft_o365_sharepoint_online_raw`
 * DLP &rarr; `msft_o365_dlp_raw`
-* Azure AD &rarr; `msft_o365_azure_ad_raw`
 
 ## Supported Log Category
 
