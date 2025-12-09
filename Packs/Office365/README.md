@@ -13,10 +13,10 @@ Office 365 is a subscription-based service that provides a comprehensive suite o
 * Data modeling rules to normalize Microsoft Office 365 logs that are ingested via the _Office 365_ integration into Cortex XSIAM.
 * Querying ingested logs in XQL Search using the datasets below:
 
-* General &rarr; `msft_o365_general_raw`
-* Exchange Online &rarr; `msft_o365_exchange_online_raw`
-* SharePoint Online &rarr; `msft_o365_sharepoint_online_raw`
-* DLP &rarr; `msft_o365_dlp_raw`
+  * General &rarr; `msft_o365_general_raw`
+  * Exchange Online &rarr; `msft_o365_exchange_online_raw`
+  * SharePoint Online &rarr; `msft_o365_sharepoint_online_raw`
+  * DLP &rarr; `msft_o365_dlp_raw`
 
 ## Supported Log Category
 
@@ -65,10 +65,10 @@ In order to normalize **Azure AD** (`msft_azure_ad_raw`) and **Azure AD Audit** 
 
 #### Office 365 collector
 
-![Office_365_Collector_Settings](./././doc_files/office365_image1.png)
+![Office365_Collector_Settings](./././doc_files/office365_collector_image1.png)
 
 #### Microsoft 365 collector
 
-![Microsoft_365_Collector_Settings](./././doc_files/microsoft365_image1.png)
+![Microsoft365_Collector_Settings](./././doc_files/microsoft365_collector_image1.png)
 
 </~XSIAM>
