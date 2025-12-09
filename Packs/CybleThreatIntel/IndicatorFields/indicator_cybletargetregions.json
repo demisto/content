@@ -49,7 +49,7 @@
 			"systemAssociatedTypes": null,
 			"associatedToAll": true,
 			"unmapped": false,
-			"unsearchable": false,
+			"unsearchable": true,
 			"caseInsensitive": true,
 			"columns": null,
 			"defaultRows": null,
