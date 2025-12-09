@@ -8,7 +8,7 @@ category: Data Enrichment & Threat Intelligence
 sectionorder:
 - Connect
 - Collect
-description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
+description: Integrates with Cyware Threat Intelligence eXchange (CTIX) to enrich indicators, manage tags and notes, view related objects, perform vulnerability lookups, and run generic API requests.
 configuration:
 - display: Endpoint URL
   name: base_url
