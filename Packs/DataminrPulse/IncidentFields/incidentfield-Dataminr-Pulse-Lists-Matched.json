@@ -1,0 +1,103 @@
+{
+    "id": "incident_dataminrpulselistsmatched",
+    "version": -1,
+    "modified": "2025-09-03T19:48:21.823524238+05:30",
+    "name": "Dataminr Pulse Lists Matched",
+    "ownerOnly": false,
+    "cliName": "dataminrpulselistsmatched",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse ReGenAI Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "id",
+            "displayName": "ID",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "name",
+            "displayName": "Name",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 200,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "subType",
+            "displayName": "Sub Type",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "topicIds",
+            "displayName": "Topic IDs",
+            "type": "longText",
+            "orgType": "longText",
+            "required": false,
+            "script": "",
+            "width": 200,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "locationGroups",
+            "displayName": "Location Groups",
+            "type": "longText",
+            "orgType": "longText",
+            "required": false,
+            "script": "",
+            "width": 200,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

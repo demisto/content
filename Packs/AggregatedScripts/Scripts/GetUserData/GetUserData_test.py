@@ -1055,6 +1055,32 @@ class TestGetUserData:
         assert isinstance(result[0], list)
         assert result[1] == expected_account
 
+    def test_msgraph_user_with_properties(self, mocker: MockerFixture):
+        """
+        Given:
+            msgraph_user_get is called and demisto.args() contains a 'properties' key.
+        When:
+            The function runs and modifies command.args.
+        Then:
+            The 'properties' key from demisto.args() is injected into command.args
+            and passed to run_execute_command.
+        """
+        mocker.patch("GetUserData.demisto.args", return_value={"properties": "DisplayName,JobTitle"})
+        command = Command("Microsoft Graph User", "msgraph-user-get", {"user": "graph_user"})
+
+        mocker_run = mocker.patch("GetUserData.run_execute_command", return_value=([{}], "Human readable", []))
+
+        mocker.patch("GetUserData.get_output_key", return_value="Account")
+        mocker.patch("GetUserData.get_outputs", return_value={})
+        mocker.patch("GetUserData.prepare_human_readable", return_value=[])
+
+        msgraph_user_get(command, additional_fields=False)
+
+        mocker_run.assert_called_once()
+        called_name, called_args = mocker_run.call_args[0]
+
+        assert called_args["properties"] == "DisplayName,JobTitle,ID,Mail"
+
     def test_msgraph_user_get_manager(self, mocker: MockerFixture):
         """
         Given:
