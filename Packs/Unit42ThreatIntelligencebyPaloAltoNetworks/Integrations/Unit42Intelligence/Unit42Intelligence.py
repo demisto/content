@@ -823,7 +823,7 @@ def create_threat_object_indicators(
     return indicators
 
 
-def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
+def create_context_data(response_data: dict[str, Any], indicator_value: str | None = None) -> dict[str, Any]:
     """
     Create context data for indicators
 
@@ -834,7 +834,7 @@ def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
         Dictionary containing context data
     """
     return {
-        "Value": response_data["indicator_value"],
+        "Value": indicator_value or response_data["indicator_value"],
         "Type": INDICATOR_TYPE_MAPPING.get(response_data["indicator_type"]),
         "Verdict": string_to_table_header(response_data["verdict"]),
         "VerdictCategories": list({string_to_table_header(item) for item in response_data["verdict_categories"]}),
@@ -1065,8 +1065,8 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
         if threat_indicators:
             demisto.createIndicators(threat_indicators)
 
-    # Create context data
-    context_data = create_context_data(response_data)
+    # Create context data, Use the original URL in the indicator value since the returned URL is encoded.
+    context_data = create_context_data(response_data, indicator_value=url)
 
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for URL: {url}",
