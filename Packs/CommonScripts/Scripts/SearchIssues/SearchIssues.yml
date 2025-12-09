@@ -173,13 +173,13 @@ outputs:
     type: String
   - contextPath: Core.Issue.case_id
     description: The case IDs associated with the issue.
-    type: List
+    type: String
   - contextPath: Core.Issue.issue_source
     description: The source of the issue.
     type: String
-  - contextPath: Core.Issue.agent_id
-    description: A unique identifier per agent.
-    type: String
+  - contextPath: Core.Issue.agentsid
+    description: The agent (endpoint) IDs associated with the issue.
+    type: List
   - contextPath: Core.Issue.status.progress
     description: The progress status of the issue.
     type: String
