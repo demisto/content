@@ -39,10 +39,19 @@
                             },
                             {
                                 "endCol": 6,
+                                "fieldId": "bitsightaffectsratingreason",
+                                "height": 22,
+                                "id": "1afce300-cf66-11f0-96f0-1578010bc41b",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
                                 "fieldId": "bitsightassets",
                                 "height": 44,
                                 "id": "de163600-769e-11eb-b547-b75a1233ac03",
-                                "index": 2,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -51,7 +60,7 @@
                                 "fieldId": "details",
                                 "height": 44,
                                 "id": "e62c5ef0-769e-11eb-b547-b75a1233ac03",
-                                "index": 3,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -60,7 +69,7 @@
                                 "fieldId": "bitsightevidencekey",
                                 "height": 22,
                                 "id": "ed95cd20-769e-11eb-b547-b75a1233ac03",
-                                "index": 4,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -69,7 +78,7 @@
                                 "fieldId": "bitsightrelatedfindings",
                                 "height": 22,
                                 "id": "020c99f0-769f-11eb-b547-b75a1233ac03",
-                                "index": 5,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -78,7 +87,7 @@
                                 "fieldId": "bitsightriskcategory",
                                 "height": 22,
                                 "id": "088e4030-769f-11eb-b547-b75a1233ac03",
-                                "index": 6,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -87,7 +96,7 @@
                                 "fieldId": "bitsightriskvector",
                                 "height": 22,
                                 "id": "108b14c0-769f-11eb-b547-b75a1233ac03",
-                                "index": 7,
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -97,7 +106,7 @@
                                 "fieldId": "bitsightriskvectorlabel",
                                 "height": 22,
                                 "id": "17a55180-769f-11eb-b547-b75a1233ac03",
-                                "index": 8,
+                                "index": 10,
                                 "listId": "hkzismdwjw-a4c86940-769e-11eb-b547-b75a1233ac03",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -107,7 +116,7 @@
                                 "fieldId": "bitsightrolledupobservationid",
                                 "height": 22,
                                 "id": "1fdc9700-769f-11eb-b547-b75a1233ac03",
-                                "index": 9,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -116,7 +125,7 @@
                                 "fieldId": "severity",
                                 "height": 22,
                                 "id": "258653d0-769f-11eb-b547-b75a1233ac03",
-                                "index": 10,
+                                "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -125,7 +134,7 @@
                                 "fieldId": "bitsightseveritycategory",
                                 "height": 22,
                                 "id": "26d5de40-769f-11eb-b547-b75a1233ac03",
-                                "index": 11,
+                                "index": 13,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -134,7 +143,7 @@
                                 "fieldId": "bitsighttags",
                                 "height": 22,
                                 "id": "2da3f6d0-769f-11eb-b547-b75a1233ac03",
-                                "index": 12,
+                                "index": 14,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -144,7 +153,7 @@
                                 "fieldId": "bitsightcomments",
                                 "height": 22,
                                 "id": "380a9f70-769f-11eb-b547-b75a1233ac03",
-                                "index": 13,
+                                "index": 15,
                                 "listId": "hkzismdwjw-a4c86940-769e-11eb-b547-b75a1233ac03",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -155,7 +164,7 @@
                                 "fieldId": "bitsightremainingdecay",
                                 "height": 22,
                                 "id": "3d286ff0-769f-11eb-b547-b75a1233ac03",
-                                "index": 14,
+                                "index": 16,
                                 "listId": "hkzismdwjw-a4c86940-769e-11eb-b547-b75a1233ac03",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -165,7 +174,7 @@
                                 "fieldId": "bitsightremediationstatus",
                                 "height": 22,
                                 "id": "ab68b780-92e8-11f0-961c-59b5f1937369",
-                                "index": 15,
+                                "index": 17,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

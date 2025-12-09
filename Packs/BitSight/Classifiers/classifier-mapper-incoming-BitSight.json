@@ -123,6 +123,13 @@
                     },
                     "simple": ""
                 },
+                "Bitsight Affects Rating Reason": {
+                    "complex": {
+                        "filters": [],
+                        "root": "impacts_risk_vector_details",
+                        "transformers": []
+                    }
+                },
                 "Bitsight Remediation Status": {
                     "complex": {
                         "filters": [],

@@ -20,6 +20,8 @@ DEFAULT_OFFSET = 0
 MAX_FINDINGS_MIRRORING_LIMIT = 5000
 OUTGOING_MIRROR_DIRECTION = "outgoing"
 INCOMING_AND_OUTGOING_MIRROR_DIRECTION = "incoming and outgoing"
+DEFAULT_CLOSE_STATUS_OF_BITSIGHT = "Resolved"
+DEFAULT_OPEN_STATUS_OF_BITSIGHT = "Open"
 
 ERROR_MESSAGES = {
     "GUID_REQUIRED": "Must provide a GUID.",
@@ -41,6 +43,13 @@ ASSET_CATEGORY_MAPPING = {
     "medium": "medium,high,critical",
     "high": "high,critical",
     "critical": "critical",
+}
+
+VALID_AFFECT_RATING_REASON = ["Yes", "No: Grace Period", "No: Incubation Period"]
+AFFECT_RATING_REASON_MAPPING = {
+    "yes": "AFFECTS_RATING",
+    "no: grace period": "GRACE_PERIOD",
+    "no: incubation period": "INCUBATION_PERIOD",
 }
 
 RISK_VECTOR_MAPPING = {
@@ -324,7 +333,24 @@ def prepare_and_validate_fetch_findings_args(client, args):
     if limit and (limit < 1 or limit > MAX_FETCH_LIMIT):  # type: ignore
         raise ValueError(ERROR_MESSAGES["INVALID_MAX_FETCH"])
 
-    return guid, severity, grade, asset_category, risk_vector_list, limit
+    affect_rating_reason_list = argToList(args.get("findings_affect_rating_reason", ""))
+    valid_affect_rating_reasons = []
+    for affect_rating_reason in affect_rating_reason_list:
+        affect_rating_reason = affect_rating_reason.strip()
+        if affect_rating_reason and affect_rating_reason.lower() not in AFFECT_RATING_REASON_MAPPING:
+            raise ValueError(
+                ERROR_MESSAGES["INVALID_SELECT"].format(
+                    affect_rating_reason, "Findings Affect Rating Reason", ", ".join(VALID_AFFECT_RATING_REASON)
+                )
+            )
+
+        if affect_rating_reason:
+            valid_affect_rating_reasons.append(AFFECT_RATING_REASON_MAPPING.get(affect_rating_reason.lower()))
+
+    valid_affect_rating_reasons: list = list(set(valid_affect_rating_reasons))
+    affect_rating_reason = ",".join(valid_affect_rating_reasons)
+
+    return guid, severity, grade, asset_category, risk_vector_list, limit, affect_rating_reason
 
 
 def close_in_xsoar(entries: list, rolledup_observation_id: str, remidiation_status: str):
@@ -374,6 +400,66 @@ def reopen_in_xsoar(entries: list, rolledup_observation_id: str, remidiation_sta
     entries.append({"Type": EntryType.NOTE, "Contents": {"dbotIncidentReopen": True}, "ContentsFormat": EntryFormat.JSON})
 
 
+def add_comments_to_finding(
+    client: Client, company_guid: str, rolledup_observation_id: str, user_guid: Any, comments_to_add: list[dict]
+):
+    """
+    Add comments to a BitSight finding. Handles thread creation and comment addition.
+
+    :type client: Client
+    :param client: BitSight API client instance
+
+    :type company_guid: str
+    :param company_guid: GUID of the company
+
+    :type rolledup_observation_id: str
+    :param rolledup_observation_id: Rolled up observation ID of the finding
+
+    :type user_guid: Any
+    :param user_guid: GUID of the user adding comments
+
+    :type comments_to_add: list[dict]
+    :param comments_to_add: List of comment dictionaries with 'message' key
+
+    :return: None
+    """
+    if not user_guid:
+        demisto.debug("Skipping the comment(s) because User GUID is not found.")
+        return
+    # Fetch existing comments to check if thread exists
+    comments_response = client.get_finding_comments(company_guid=company_guid, rolledup_observation_id=rolledup_observation_id)
+    existing_comments = comments_response.get("results", [])
+    thread_guid = ""
+
+    if existing_comments and isinstance(existing_comments, list):
+        demisto.debug(f"Found {len(existing_comments)} existing comments for finding {rolledup_observation_id}.")
+        thread_guid = existing_comments[0].get("thread_guid", "")
+
+    # If thread exists, add comments individually; otherwise, batch create
+    if thread_guid:
+        # Add each comment to the existing thread
+        for comment_data in comments_to_add:
+            comment_info = {"author_guid": user_guid, "message": comment_data.get("message", ""), "public": False}
+            client.create_finding_comment(
+                company_guid=company_guid,
+                rolledup_observation_id=rolledup_observation_id,
+                thread_guid=thread_guid,
+                body=comment_info,
+            )
+    else:
+        # Create new thread with all comments
+        new_comments = [
+            {"author_guid": user_guid, "message": comment.get("message", ""), "public": False} for comment in comments_to_add
+        ]
+        comments_body = {"comments": new_comments}
+        client.create_finding_comment(
+            company_guid=company_guid,
+            rolledup_observation_id=rolledup_observation_id,
+            thread_guid=thread_guid,
+            body=comments_body,
+        )
+
+
 """COMMAND FUNCTIONS"""
 
 
@@ -401,36 +487,42 @@ def fetch_incidents(client, last_run, params):
         report_entries = []
         findings_res = company_findings_get_command(client, params, last_run_date, True)
         report_entries.extend(findings_res.get("results", []))
-        not_affects_rating_findings = []
+
         duplicate_findings = []
         ingested_findings = []
 
         for entry in report_entries:
-            if entry.get("rolledup_observation_id") in already_fetched_findings:
-                duplicate_findings.append(entry.get("rolledup_observation_id"))
+            key_field = entry.get("rolledup_observation_id", "") + "-#-" + entry.get("first_seen", "")
+            if key_field in already_fetched_findings:
+                duplicate_findings.append(key_field)
                 continue
-            if not entry.get("affects_rating", ""):
-                not_affects_rating_findings.append(entry.get("rolledup_observation_id"))
-                continue
+
             # Updating mirroring fields
             mirroring_fields = get_mirroring()
-            mirroring_fields.update({"mirror_id": entry.get("rolledup_observation_id")})
+            mirroring_fields.update({"mirror_id": key_field})
             entry.update(mirroring_fields)
+
+            incident_name = "Bitsight Finding"
+
+            risk_vector_label = entry.get("risk_vector_label", "")
+            evidence_key = entry.get("evidence_key", "")
+            rollup_start_date = entry.get("details", {}).get("rollup_start_date", "")
+
+            incident_detail_name = " - ".join([x for x in [risk_vector_label, evidence_key, rollup_start_date] if x])
+            if incident_detail_name:
+                incident_name += " - " + incident_detail_name
 
             # Set the Raw JSON to the event. Mapping will be done at the classification and mapping
             event = {
-                "name": "Bitsight Finding - " + entry.get("rolledup_observation_id"),
+                "name": incident_name,
                 "occurred": entry.get("first_seen") + "T00:00:00Z",
                 "rawJSON": json.dumps(entry),
             }
             events.append(event)
-            ingested_findings.append(entry.get("rolledup_observation_id"))
-            already_fetched_findings.append(entry.get("rolledup_observation_id"))
+            ingested_findings.append(key_field)
+            already_fetched_findings.append(key_field)
 
         demisto.debug(f"Skipped {len(duplicate_findings)} duplicate findings: {duplicate_findings}")
-        demisto.debug(
-            f"Skipped {len(not_affects_rating_findings)} findings that do not affect rating: {not_affects_rating_findings}"
-        )
         demisto.debug(f"Fetched {len(ingested_findings)} findings: {ingested_findings}")
         last_run = {
             "first_fetch": last_run_date,
@@ -586,8 +678,11 @@ def company_findings_get_command(client, args, first_seen=None, fetch_incidents=
     :param fetch_incidents: whether the command is called from fetch_incidents
     """
     last_seen = None
+    affect_rating_reason = ""
     if fetch_incidents:
-        guid, severity, grade, asset_category, risk_vector_list, limit = prepare_and_validate_fetch_findings_args(client, args)
+        guid, severity, grade, asset_category, risk_vector_list, limit, affect_rating_reason = (
+            prepare_and_validate_fetch_findings_args(client, args)
+        )
         offset = arg_to_number(args.get("offset", DEFAULT_OFFSET), "offset")
     else:
         guid = args.get("guid")
@@ -622,6 +717,7 @@ def company_findings_get_command(client, args, first_seen=None, fetch_incidents=
             "risk_vector": risk_vector,
             "limit": limit,
             "offset": offset,
+            "impacts_risk_vector_details": affect_rating_reason,
         },
     )
 
@@ -741,8 +837,10 @@ def get_modified_remote_data_command(client: Client, args: Dict) -> GetModifiedR
     findings = response.get("results", [])
     for finding in findings:
         rolledup_observation_id = finding.get("rolledup_observation_id")
+        first_seen = finding.get("first_seen")
+        key_field = f"{rolledup_observation_id}-#-{first_seen}"
 
-        modified_findings_ids.append(rolledup_observation_id)
+        modified_findings_ids.append(key_field)
 
     modified_findings_ids: List[str] = list(filter(None, modified_findings_ids))  # type: ignore
     demisto.debug(
@@ -770,9 +868,12 @@ def get_remote_data_command(client: Client, args: Dict) -> GetRemoteDataResponse
     """
     new_entries_to_return: list = []
 
-    finding_rolledup_observation_id: str = args.get("id")  # type: ignore
-    demisto.debug(f"dbot_mirror_id:{finding_rolledup_observation_id}")
+    dbot_mirror_id: str = args.get("id")  # type: ignore
+    demisto.debug(f"dbot_mirror_id:{dbot_mirror_id}")
 
+    dbot_mirror_id_parts = dbot_mirror_id.split("-#-")
+    finding_rolledup_observation_id: str = dbot_mirror_id_parts[0] if len(dbot_mirror_id_parts) > 0 else ""
+    first_seen: str = dbot_mirror_id_parts[1] if len(dbot_mirror_id_parts) > 1 else ""
     demisto.debug(f"Bitsight finding with rolledup_observation_id:{finding_rolledup_observation_id}")
     demisto.debug(f"Getting update for remote {finding_rolledup_observation_id}.")
 
@@ -782,14 +883,15 @@ def get_remote_data_command(client: Client, args: Dict) -> GetRemoteDataResponse
         f"The time when the last time get-remote-data command is called for current incident is {command_last_run_timestamp}."
     )
     integration_params = demisto.params()
-    close_status_of_bitsight = integration_params.get("close_status_of_bitsight", "")
-    open_status_of_bitsight = integration_params.get("open_status_of_bitsight", "")
+    close_status_of_bitsight = integration_params.get("close_status_of_bitsight") or DEFAULT_CLOSE_STATUS_OF_BITSIGHT
+    open_status_of_bitsight = integration_params.get("open_status_of_bitsight") or DEFAULT_OPEN_STATUS_OF_BITSIGHT
     close_active_incident = integration_params.get("close_active_incident", False)
     reopen_closed_incident = integration_params.get("reopen_closed_incident", False)
 
     company_guid = args.get("guid", "")
     params = {
         "rolledup_observation_id": finding_rolledup_observation_id,
+        "first_seen": first_seen,
         "sort": "-last_seen",
     }
 
@@ -801,10 +903,13 @@ def get_remote_data_command(client: Client, args: Dict) -> GetRemoteDataResponse
     for f in findings:
         if f.get("affects_rating", ""):
             finding = f
+            break
 
-    finding = finding if finding else findings[:1]  # Handle the scenario where all findings have affects_rating as false
+    # Handle the scenario where all findings have affects_rating as false
     if not finding:
-        return "Incident was not found."  # type: ignore
+        finding = findings[0] if findings else {}
+    if not finding:
+        return GetRemoteDataResponse({}, [])
 
     params = {
         "company_guid": company_guid,
@@ -822,22 +927,16 @@ def get_remote_data_command(client: Client, args: Dict) -> GetRemoteDataResponse
             remidiation_status = remidiations[0].get("status", {}).get("value", "")
             finding.update({"remediation_status": remidiation_status})
 
-        if (
-            remidiation_status == close_status_of_bitsight
-            and finding_rolledup_observation_id in processed_findings
-            and close_active_incident
-        ):
+        if remidiation_status == close_status_of_bitsight and dbot_mirror_id in processed_findings and close_active_incident:
             close_in_xsoar(new_entries_to_return, finding_rolledup_observation_id, remidiation_status)
-            processed_findings.remove(finding_rolledup_observation_id)
-            demisto.debug(f"Removed {finding_rolledup_observation_id} finding from processed findings.")
+            processed_findings.remove(dbot_mirror_id)
+            demisto.debug(f"Removed {dbot_mirror_id} finding from processed findings.")
         elif (
-            remidiation_status == open_status_of_bitsight
-            and finding_rolledup_observation_id not in processed_findings
-            and reopen_closed_incident
+            remidiation_status == open_status_of_bitsight and dbot_mirror_id not in processed_findings and reopen_closed_incident
         ):
             reopen_in_xsoar(new_entries_to_return, finding_rolledup_observation_id, remidiation_status)
-            processed_findings.append(finding_rolledup_observation_id)
-            demisto.debug(f"Added {finding_rolledup_observation_id} finding to processed findings.")
+            processed_findings.append(dbot_mirror_id)
+            demisto.debug(f"Added {dbot_mirror_id} finding to processed findings.")
     except DemistoException as e:
         demisto.debug(
             f"Failed to fetch remediation status for finding {finding_rolledup_observation_id}: {str(e)}. "
@@ -914,8 +1013,12 @@ def update_remote_system_command(client: Client, args: Dict, close_status_of_bit
     :rtype: str
     """
     company_guid = args.get("guid", "")
-    user_email = args.get("user_email", "")
-    user_guid = get_current_user_guid(client, user_email)
+    user_email = args.get("user_email", "").strip()
+    user_guid = None
+    if user_email:
+        user_guid = get_current_user_guid(client, user_email)
+    else:
+        demisto.debug(ERROR_MESSAGES["USER_EMAIL_REQUIRED"])
     parsed_args = UpdateRemoteSystemArgs(args)
 
     # Get remote incident ID
@@ -931,13 +1034,8 @@ def update_remote_system_command(client: Client, args: Dict, close_status_of_bit
     new_entries = parsed_args.entries or []
     if new_entries:
         demisto.debug(f"Updating remote system with {len(new_entries)} new entries for incident {remote_incident_id}.")
-        comments = client.get_finding_comments(company_guid=company_guid, rolledup_observation_id=rolledup_observation_id)
-        comments = comments.get("results")
-        thread_guid = ""
-        new_comments = []
-        if comments and isinstance(comments, list):
-            demisto.debug(f"Found {len(comments)} existing comments for finding {rolledup_observation_id}.")
-            thread_guid = comments[0].get("thread_guid")
+        # Prepare comments from entries
+        comments_to_add = []
         for entry in new_entries:
             entry_id = entry.get("id")
             demisto.debug(f"Sending the entry with ID: {entry_id} and Type: {entry.get('type')}")
@@ -948,26 +1046,11 @@ def update_remote_system_command(client: Client, args: Dict, close_status_of_bit
             note_str = (
                 f"[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n\nNote: {entry_content}\n\nAdded By: {entry_user}"
             )
-            # API request for adding notes
-            comment_info = {"author_guid": user_guid, "message": note_str, "public": False}
-            # If thread_guid is not empty, add comment to existing thread else create new thread with all new comments
-            if thread_guid:
-                client.create_finding_comment(
-                    company_guid=company_guid,
-                    rolledup_observation_id=rolledup_observation_id,
-                    thread_guid=thread_guid,
-                    body=comment_info,
-                )
-            else:
-                new_comments.append(comment_info)
-        if new_comments:
-            comments_body = {"comments": new_comments}
-            client.create_finding_comment(
-                company_guid=company_guid,
-                rolledup_observation_id=rolledup_observation_id,
-                thread_guid=thread_guid,
-                body=comments_body,
-            )
+            comments_to_add.append({"message": note_str})
+
+        # Add all comments using the helper function
+        add_comments_to_finding(client, company_guid, rolledup_observation_id, user_guid, comments_to_add)
+
     # Get integration context to track processed findings
     integration_context = demisto.getIntegrationContext()
     processed_findings = integration_context.get("processed_findings") or []
@@ -978,10 +1061,10 @@ def update_remote_system_command(client: Client, args: Dict, close_status_of_bit
         demisto.debug(f"Incident {xsoar_incident_id} is reopened.")
         incident_reopened = True
 
-    if (incident_status == IncidentStatus.ACTIVE and rolledup_observation_id in processed_findings) or (
-        incident_status == IncidentStatus.DONE and rolledup_observation_id not in processed_findings
+    if (incident_status == IncidentStatus.ACTIVE and remote_incident_id in processed_findings) or (
+        incident_status == IncidentStatus.DONE and remote_incident_id not in processed_findings
     ):
-        demisto.debug(f"Skipping status update for finding {rolledup_observation_id} to prevent mirroring loop.")
+        demisto.debug(f"Skipping status update for finding {remote_incident_id} to prevent mirroring loop.")
         return remote_incident_id
 
     # Update external status when incident is closed or when incident is active with no changes
@@ -997,7 +1080,7 @@ def update_remote_system_command(client: Client, args: Dict, close_status_of_bit
         company_guid = args.get("guid", "")
         # Set status value based on incident status (closed if DONE, opened otherwise)
         status_value = close_status_of_bitsight if incident_status == IncidentStatus.DONE else open_status_of_bitsight
-        demisto.debug(f"Updating remediation status of finding {rolledup_observation_id} to {status_value}")
+        demisto.debug(f"Updating remediation status of finding {remote_incident_id} to {status_value}")
 
         body = {
             "rolledup_observation_id": rolledup_observation_id,
@@ -1007,12 +1090,12 @@ def update_remote_system_command(client: Client, args: Dict, close_status_of_bit
         }
         client.update_external_status(company_guid=company_guid, body=body)
         if incident_status == IncidentStatus.ACTIVE:
-            processed_findings.append(rolledup_observation_id)
-            demisto.debug(f"Added {rolledup_observation_id} finding to processed findings.")
+            processed_findings.append(remote_incident_id)
+            demisto.debug(f"Added {remote_incident_id} finding to processed findings.")
         elif incident_status == IncidentStatus.DONE:
-            if rolledup_observation_id in processed_findings:
-                processed_findings.remove(rolledup_observation_id)
-                demisto.debug(f"Removed {rolledup_observation_id} finding from processed findings.")
+            if remote_incident_id in processed_findings:
+                processed_findings.remove(remote_incident_id)
+                demisto.debug(f"Removed {remote_incident_id} finding from processed findings.")
 
     processed_findings = processed_findings[-MAX_FINDINGS_MIRRORING_LIMIT:]
     integration_context["processed_findings"] = processed_findings
@@ -1034,25 +1117,8 @@ def update_remote_system_command(client: Client, args: Dict, close_status_of_bit
         )
         demisto.debug(f"Closing Comment: {closing_note}")
 
-        comments_response = client.get_finding_comments(
-            company_guid=company_guid, rolledup_observation_id=rolledup_observation_id
-        )
-        are_comments = comments_response.get("results")
-        thread_guid_new = ""
-        if are_comments and isinstance(are_comments, list):
-            demisto.debug(f"Found {len(are_comments)} existing comments for finding {rolledup_observation_id}.")
-            thread_guid_new = are_comments[0].get("thread_guid")
-            close_comment_info = {"author_guid": user_guid, "message": closing_note, "public": False}
-        else:
-            new_comment = {"author_guid": user_guid, "message": closing_note, "public": False}
-            close_comment_info = {"comments": [new_comment]}
-
-        client.create_finding_comment(
-            company_guid=company_guid,
-            rolledup_observation_id=rolledup_observation_id,
-            thread_guid=thread_guid_new,
-            body=close_comment_info,
-        )
+        # Add closing comment using the helper function
+        add_comments_to_finding(client, company_guid, rolledup_observation_id, user_guid, [{"message": closing_note}])
 
     return remote_incident_id
 
@@ -1084,8 +1150,8 @@ def main():
         args = demisto.args()
         args.update({"guid": params.get("guid")})
         args.update({"user_email": params.get("user_email")})
-        close_status_of_bitsight = params.get("close_status_of_bitsight", "")
-        open_status_of_bitsight = params.get("open_status_of_bitsight", "")
+        close_status_of_bitsight = params.get("close_status_of_bitsight") or DEFAULT_CLOSE_STATUS_OF_BITSIGHT
+        open_status_of_bitsight = params.get("open_status_of_bitsight") or DEFAULT_OPEN_STATUS_OF_BITSIGHT
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client, params))

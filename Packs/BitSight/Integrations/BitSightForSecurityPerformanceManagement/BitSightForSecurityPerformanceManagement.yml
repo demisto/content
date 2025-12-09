@@ -89,6 +89,16 @@ configuration:
   type: 0
   required: false
   section: Collect
+- additionalinfo: Filter by the affect rating reason of the findings to fetch.
+  display: Findings Affect Rating Reason
+  name: findings_affect_rating_reason
+  options:
+  - "Yes"
+  - "No: Grace Period"
+  - "No: Incubation Period"
+  type: 16
+  required: false
+  section: Collect
 - additionalinfo: Minimum severity of the findings to fetch.
   defaultvalue: Material
   display: Findings Minimum Severity

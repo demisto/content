@@ -28,3 +28,6 @@ programmatically
 
 [file:incidentfield-Bitsight_Remediation_Status.json]
 ignore=IF115
+
+[file:incidentfield-Bitsight_Affects_Rating_Reason.json]
+ignore=IF115

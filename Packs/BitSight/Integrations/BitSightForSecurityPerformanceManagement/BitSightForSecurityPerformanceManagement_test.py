@@ -179,6 +179,7 @@ def test_fetch_incidents_success_without_last_run(mocker):
         "findings_grade": DEFAULT_FINDINGS_GRADE,
         "findings_asset_category": "low",
         "risk_vector": RISK_VECTOR_INPUT,
+        "findings_affect_rating_reason": " ",
     }
     client = bitsight.Client(base_url=BASE_URL)
     mocker.patch.object(demisto, "params", return_value=inp_args)
@@ -203,6 +204,7 @@ def test_fetch_incidents_success_with_last_run(mocker):
         "findings_grade": DEFAULT_FINDINGS_GRADE,
         "findings_asset_category": "low",
         "risk_vector": RISK_VECTOR_INPUT,
+        "findings_affect_rating_reason": "Yes,No: Grace Period,No: Incubation Period",
     }
     client = bitsight.Client(base_url=BASE_URL)
     mocker.patch.object(demisto, "params", return_value=inp_args)
@@ -240,7 +242,9 @@ def test_fetch_incidents_with_duplicate_findings(mocker):
     last_run_with_duplicates = {
         "first_fetch": "2025-10-05",
         "offset": 1,
-        "already_fetched_findings": ["dummy_rolledup_observation_id_1"],  # dummy_rolledup_observation_id_1 is already fetched
+        "already_fetched_findings": [
+            "dummy_rolledup_observation_id_1-#-2022-03-27"
+        ],  # dummy_rolledup_observation_id_1 is already fetched
     }
 
     last_run, events = bitsight.fetch_incidents(client=client, last_run=last_run_with_duplicates, params=inp_args)
@@ -248,13 +252,13 @@ def test_fetch_incidents_with_duplicate_findings(mocker):
     # Assertions
     # Should only create 1 event for dummy_rolledup_observation_id_2
     assert len(events) == 1
-    assert events[0]["name"] == "Bitsight Finding - dummy_rolledup_observation_id_2"
+    assert events[0]["name"] == "Bitsight Finding - SSL Certificates - dummy.com - 2022-03-27"
 
     # Verify last_run is updated correctly
     assert last_run["first_fetch"] == "2025-10-05"
     assert last_run["offset"] == 3
-    assert "dummy_rolledup_observation_id_1" in last_run["already_fetched_findings"]
-    assert "dummy_rolledup_observation_id_2" in last_run["already_fetched_findings"]
+    assert "dummy_rolledup_observation_id_1-#-2022-03-27" in last_run["already_fetched_findings"]
+    assert "dummy_rolledup_observation_id_2-#-2022-03-27" in last_run["already_fetched_findings"]
     assert len(last_run["already_fetched_findings"]) == 2
 
 
@@ -278,6 +282,29 @@ def test_fetch_incidents_when_empty_response(mocker):
 
     assert last_run["offset"] == 3
     assert last_run["first_fetch"] == "2022-03-27"
+
+
+def test_fetch_incidents_with_invalid_affect_rating_reason(mocker, capfd):
+    """Tests for fetch_incidents when invalid findings_affect_rating_reason is provided."""
+    inp_args = {
+        "guid": "123",
+        "first_fetch": "2",
+        "findings_min_severity": "severe",
+        "findings_grade": DEFAULT_FINDINGS_GRADE,
+        "findings_asset_category": "low",
+        "risk_vector": RISK_VECTOR_INPUT,
+        "findings_affect_rating_reason": "Invalid Reason",
+    }
+    client = bitsight.Client(base_url=BASE_URL)
+    mocker.patch.object(demisto, "params", return_value=inp_args)
+
+    with capfd.disabled():
+        with pytest.raises(ValueError) as e:
+            bitsight.fetch_incidents(client=client, last_run={}, params=inp_args)
+
+        assert str(e.value) == bitsight.ERROR_MESSAGES["INVALID_SELECT"].format(
+            "Invalid Reason", "Findings Affect Rating Reason", ", ".join(bitsight.VALID_AFFECT_RATING_REASON)
+        )
 
 
 @patch("BitSightForSecurityPerformanceManagement.return_results")  # noqa: F821
@@ -314,8 +341,8 @@ def test_get_modified_remote_command_successful_retrieval(mocker, requests_mock)
     # Mock the HTTP request using requests_mock
     mock_response = {
         "results": [
-            {"temporary_id": "A9jq", "rolledup_observation_id": "dummy_id_1"},
-            {"temporary_id": "A9jr", "rolledup_observation_id": "dummy_id_2"},
+            {"temporary_id": "A9jq", "rolledup_observation_id": "dummy_id_1", "first_seen": "2025-09-14"},
+            {"temporary_id": "A9jr", "rolledup_observation_id": "dummy_id_2", "first_seen": "2025-09-14"},
         ]
     }
     requests_mock.get(
@@ -332,8 +359,8 @@ def test_get_modified_remote_command_successful_retrieval(mocker, requests_mock)
     assert requests_mock.called
 
     bitsight.dateparser.parse.assert_called_with("2025-09-14T10:00:00+00:00", settings={"TIMEZONE": "UTC"})
-    assert "dummy_id_1" in result.modified_incident_ids
-    assert "dummy_id_2" in result.modified_incident_ids
+    assert "dummy_id_1-#-2025-09-14" in result.modified_incident_ids
+    assert "dummy_id_2-#-2025-09-14" in result.modified_incident_ids
 
 
 def test_get_modified_remote_command_with_empty_results(mocker):
@@ -390,9 +417,9 @@ def test_get_modified_remote_data_command_with_duplicate_findings(mocker):
         "get_company_findings",
         return_value={
             "results": [
-                {"temporary_id": "A9jq", "rolledup_observation_id": "dummy_id_1"},
-                {"temporary_id": "A9jq", "rolledup_observation_id": "dummy_id_1"},  # Duplicate
-                {"temporary_id": "A9jr", "rolledup_observation_id": "dummy_id_2"},
+                {"temporary_id": "A9jq", "rolledup_observation_id": "dummy_id_1", "first_seen": "2025-09-14"},
+                {"temporary_id": "A9jq", "rolledup_observation_id": "dummy_id_1", "first_seen": "2025-09-14"},  # Duplicate
+                {"temporary_id": "A9jr", "rolledup_observation_id": "dummy_id_2", "first_seen": "2025-09-14"},
             ]
         },
     )
@@ -409,8 +436,8 @@ def test_get_modified_remote_data_command_with_duplicate_findings(mocker):
     )
     # Should have unique IDs only
     assert len(result.modified_incident_ids) == 2
-    assert "dummy_id_1" in result.modified_incident_ids
-    assert "dummy_id_2" in result.modified_incident_ids
+    assert "dummy_id_1-#-2025-09-14" in result.modified_incident_ids
+    assert "dummy_id_2-#-2025-09-14" in result.modified_incident_ids
 
 
 def test_get_remote_data_command_successful_retrieval(requests_mock, mocker):
@@ -444,12 +471,13 @@ def test_get_remote_data_command_successful_retrieval(requests_mock, mocker):
         "evidence_key": "test.com",
         "risk_vector": "ssl_certificates",
         "severity": 5.0,
+        "first_seen": "2025-09-14",
     }
 
     # Mock HTTP requests using requests_mock
     # Mock get_company_findings request
     requests_mock.get(
-        f"{BASE_URL}/v1/companies/test-guid/findings?rolledup_observation_id=dummy_id_1&sort=-last_seen",
+        f"{BASE_URL}/v1/companies/test-guid/findings?rolledup_observation_id=dummy_id_1&sort=-last_seen&first_seen=2025-09-14",
         json={"results": [finding_data]},
         status_code=200,
     )
@@ -483,7 +511,7 @@ def test_get_remote_data_command_successful_retrieval(requests_mock, mocker):
         status_code=200,
     )
 
-    args = {"id": "dummy_id_1", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
+    args = {"id": "dummy_id_1-#-2025-09-14", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
 
     result = bitsight.get_remote_data_command(client, args)
 
@@ -509,17 +537,18 @@ def test_get_remote_data_command_finding_not_found(mocker):
     - Mocking the 'get_company_findings' function to return empty results.
 
     Then:
-    - Calling the 'get_remote_data_command' function should return "Incident was not found."
+    - Calling the 'get_remote_data_command' function should return empty GetRemoteDataResponse object.
     """
     client = bitsight.Client(base_url=BASE_URL)
 
     mocker.patch.object(client, "get_company_findings", return_value={"results": []})
 
-    args = {"id": "dummy_id_1", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
+    args = {"id": "dummy_id_1-#-2025-09-14", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
 
     result = bitsight.get_remote_data_command(client, args)
 
-    assert result == "Incident was not found."
+    assert result.mirrored_object == {}
+    assert result.entries == []
 
 
 def test_get_remote_data_command_with_remediations_error(mocker):
@@ -550,7 +579,7 @@ def test_get_remote_data_command_with_remediations_error(mocker):
     mocker.patch.object(client, "get_remediations", side_effect=DemistoException("API Error"))
     mocker.patch.object(client, "get_finding_comments", return_value={"results": []})
 
-    args = {"id": "dummy_id_1", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
+    args = {"id": "dummy_id_1-#-2025-09-14", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
 
     result = bitsight.get_remote_data_command(client, args)
 
@@ -593,7 +622,7 @@ def test_get_remote_data_command_with_comments_error(mocker):
     mocker.patch.object(client, "get_remediations", return_value={"results": []})
     mocker.patch.object(client, "get_finding_comments", side_effect=DemistoException("API Error"))
 
-    args = {"id": "dummy_id_1", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
+    args = {"id": "dummy_id_1-#-2025-09-14", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
 
     result = bitsight.get_remote_data_command(client, args)
 
@@ -667,7 +696,7 @@ def test_get_remote_data_command_with_old_comments_filtered(mocker):
         },
     )
 
-    args = {"id": "dummy_id_1", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
+    args = {"id": "dummy_id_1-#-2025-09-14", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
 
     result = bitsight.get_remote_data_command(client, args)
 
@@ -701,7 +730,8 @@ def test_get_remote_data_command_with_invalid_mirror_id(mocker):
 
     result = bitsight.get_remote_data_command(client, args)
 
-    assert result == "Incident was not found."
+    assert result.mirrored_object == {}
+    assert result.entries == []
 
 
 @pytest.mark.parametrize(
@@ -734,7 +764,7 @@ def test_get_remote_data_command_with_incident_closure(mocker, close_active_inci
         "reopen_closed_incident": False,
     }
     mocker.patch.object(demisto, "params", return_value=inp_args)
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_findings": ["dummy_id_1"]})
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_findings": ["dummy_id_1-#-2025-09-14"]})
     mocker.patch.object(demisto, "setIntegrationContext")
 
     finding_data = {
@@ -749,7 +779,7 @@ def test_get_remote_data_command_with_incident_closure(mocker, close_active_inci
     mocker.patch.object(client, "get_remediations", return_value={"results": [{"status": {"value": "Resolved"}}]})
     mocker.patch.object(client, "get_finding_comments", return_value={"results": []})
 
-    args = {"id": "dummy_id_1", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
+    args = {"id": "dummy_id_1-#-2025-09-14", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
 
     result = bitsight.get_remote_data_command(client, args)
 
@@ -805,7 +835,7 @@ def test_get_remote_data_command_with_incident_reopen(mocker, reopen_closed_inci
     mocker.patch.object(client, "get_remediations", return_value={"results": [{"status": {"value": "Open"}}]})
     mocker.patch.object(client, "get_finding_comments", return_value={"results": []})
 
-    args = {"id": "dummy_id_1", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
+    args = {"id": "dummy_id_1-#-2025-09-14", "lastUpdate": "2025-09-14T10:00:00Z", "guid": "test-guid"}
 
     result = bitsight.get_remote_data_command(client, args)
 
@@ -834,7 +864,7 @@ def test_update_remote_system_command_incident_closed(mocker):
 
     # Mock UpdateRemoteSystemArgs
     mock_parsed_args = mocker.MagicMock()
-    mock_parsed_args.remote_incident_id = "remote-123"
+    mock_parsed_args.remote_incident_id = "dummy_id_1-#-2025-09-14"
     mock_parsed_args.data = {
         "bitsightrolledupobservationid": "obs-123",
         "bitsightriskvector": "ssl_certificates",
@@ -847,7 +877,7 @@ def test_update_remote_system_command_incident_closed(mocker):
     mock_parsed_args.entries = []
 
     mocker.patch("BitSightForSecurityPerformanceManagement.UpdateRemoteSystemArgs", return_value=mock_parsed_args)
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_findings": ["obs-123"]})
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_findings": ["dummy_id_1-#-2025-09-14"]})
     mocker.patch.object(client, "update_external_status")
     mocker.patch("BitSightForSecurityPerformanceManagement.get_current_user_guid", return_value="user-123")
 
@@ -865,7 +895,7 @@ def test_update_remote_system_command_incident_closed(mocker):
         "status": {"value": "Closed", "public": False},
     }
     client.update_external_status.assert_called_once_with(company_guid="company-guid", body=expected_body)
-    assert result == "remote-123"
+    assert result == "dummy_id_1-#-2025-09-14"
 
 
 def test_update_remote_system_command_with_comments(mocker):
@@ -887,7 +917,7 @@ def test_update_remote_system_command_with_comments(mocker):
 
     # Mock UpdateRemoteSystemArgs with new entries
     mock_parsed_args = mocker.MagicMock()
-    mock_parsed_args.remote_incident_id = "remote-456"
+    mock_parsed_args.remote_incident_id = "dummy_id_1-#-2025-09-14"
     mock_parsed_args.data = {
         "bitsightrolledupobservationid": "obs-456",
         "bitsightriskvector": "ssl_certificates",
@@ -913,7 +943,7 @@ def test_update_remote_system_command_with_comments(mocker):
     ]
 
     mocker.patch("BitSightForSecurityPerformanceManagement.UpdateRemoteSystemArgs", return_value=mock_parsed_args)
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_findings": ["obs-456"]})
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_findings": ["dummy_id_1-#-2025-09-14"]})
     mocker.patch.object(demisto, "setIntegrationContext")
 
     # Mock existing comments response
@@ -962,7 +992,7 @@ def test_update_remote_system_command_with_comments(mocker):
     assert body_2["message"] == expected_message_2
     assert body_2["public"] is False
 
-    assert result == "remote-456"
+    assert result == "dummy_id_1-#-2025-09-14"
 
 
 def test_update_remote_system_command_with_comments_no_existing_thread(mocker):
@@ -982,7 +1012,7 @@ def test_update_remote_system_command_with_comments_no_existing_thread(mocker):
 
     # Mock UpdateRemoteSystemArgs with new entries
     mock_parsed_args = mocker.MagicMock()
-    mock_parsed_args.remote_incident_id = "remote-789"
+    mock_parsed_args.remote_incident_id = "dummy_id_1-#-2025-09-14"
     mock_parsed_args.data = {
         "bitsightrolledupobservationid": "obs-789",
         "bitsightriskvector": "ssl_certificates",
@@ -1028,7 +1058,7 @@ def test_update_remote_system_command_with_comments_no_existing_thread(mocker):
     assert body["comments"][0]["message"] == expected_message
     assert body["comments"][0]["public"] is False
 
-    assert result == "remote-789"
+    assert result == "dummy_id_1-#-2025-09-14"
 
 
 def test_update_remote_system_command_incident_active_no_delta(mocker):
@@ -1050,7 +1080,7 @@ def test_update_remote_system_command_incident_active_no_delta(mocker):
 
     # Mock UpdateRemoteSystemArgs
     mock_parsed_args = mocker.MagicMock()
-    mock_parsed_args.remote_incident_id = "remote-456"
+    mock_parsed_args.remote_incident_id = "dummy_id_1-#-2025-09-14"
     mock_parsed_args.data = {
         "bitsightrolledupobservationid": "obs-456",
         "bitsightriskvector": "open_ports",
@@ -1080,7 +1110,7 @@ def test_update_remote_system_command_incident_active_no_delta(mocker):
         "status": {"value": "Open", "public": False},
     }
     client.update_external_status.assert_called_once_with(company_guid="company-guid", body=expected_body)
-    assert result == "remote-456"
+    assert result == "dummy_id_1-#-2025-09-14"
 
 
 def test_update_remote_system_command_incident_active_with_delta(mocker):
@@ -1102,7 +1132,7 @@ def test_update_remote_system_command_incident_active_with_delta(mocker):
 
     # Mock UpdateRemoteSystemArgs
     mock_parsed_args = mocker.MagicMock()
-    mock_parsed_args.remote_incident_id = "remote-789"
+    mock_parsed_args.remote_incident_id = "dummy_id_1-#-2025-09-14"
     mock_parsed_args.data = {
         "bitsightrolledupobservationid": "obs-789",
         "bitsightriskvector": "malware",
@@ -1126,7 +1156,7 @@ def test_update_remote_system_command_incident_active_with_delta(mocker):
 
     # Assertions - should NOT call update_external_status
     client.update_external_status.assert_not_called()
-    assert result == "remote-789"
+    assert result == "dummy_id_1-#-2025-09-14"
 
 
 def test_update_remote_system_command_incident_not_changed(mocker):
@@ -1426,7 +1456,7 @@ def test_update_remote_system_command_adds_closing_note_existing_thread(mocker):
         "closingUserId": "admin",
     }
 
-    mock_parsed_args.remote_incident_id = "Bitsight Finding - rolledup-123"
+    mock_parsed_args.remote_incident_id = "dummy_id_1-#-2025-09-14"
     mock_parsed_args.data = closing_args
     mock_parsed_args.inc_status = bitsight.IncidentStatus.DONE
     mock_parsed_args.delta = {"closingUserId": "admin"}
@@ -1435,7 +1465,7 @@ def test_update_remote_system_command_adds_closing_note_existing_thread(mocker):
 
     mocker.patch("BitSightForSecurityPerformanceManagement.UpdateRemoteSystemArgs", return_value=mock_parsed_args)
     mocker.patch("BitSightForSecurityPerformanceManagement.get_current_user_guid", return_value="user-123")
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_findings": ["rolledup-123"]})
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_findings": ["dummy_id_1-#-2025-09-14"]})
     mocker.patch.object(demisto, "setIntegrationContext")
     mocker.patch.object(client, "update_external_status")
     mocker.patch.object(client, "get_finding_comments", return_value={"results": [{"thread_guid": "thread-456"}]})
@@ -1457,7 +1487,7 @@ def test_update_remote_system_command_adds_closing_note_existing_thread(mocker):
         thread_guid="thread-456",
         body={"author_guid": "user-123", "message": closing_note, "public": False},
     )
-    assert result == "Bitsight Finding - rolledup-123"
+    assert result == "dummy_id_1-#-2025-09-14"
 
 
 def test_update_remote_system_command_adds_closing_note_new_thread(mocker):
@@ -1486,7 +1516,7 @@ def test_update_remote_system_command_adds_closing_note_new_thread(mocker):
         "closingUserId": "analyst",
     }
 
-    mock_parsed_args.remote_incident_id = "Bitsight Finding - rolledup-456"
+    mock_parsed_args.remote_incident_id = "dummy_id_2-#-2025-11-25"
     mock_parsed_args.data = closing_args
     mock_parsed_args.inc_status = bitsight.IncidentStatus.DONE
     mock_parsed_args.delta = {"closingUserId": "analyst"}
@@ -1495,7 +1525,7 @@ def test_update_remote_system_command_adds_closing_note_new_thread(mocker):
 
     mocker.patch("BitSightForSecurityPerformanceManagement.UpdateRemoteSystemArgs", return_value=mock_parsed_args)
     mocker.patch("BitSightForSecurityPerformanceManagement.get_current_user_guid", return_value="user-456")
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_findings": ["rolledup-456"]})
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_findings": ["dummy_id_2-#-2025-11-25"]})
     mocker.patch.object(demisto, "setIntegrationContext")
     mocker.patch.object(client, "update_external_status")
     mocker.patch.object(client, "get_finding_comments", return_value={})
@@ -1517,7 +1547,7 @@ def test_update_remote_system_command_adds_closing_note_new_thread(mocker):
         thread_guid="",
         body={"comments": [{"author_guid": "user-456", "message": closing_note, "public": False}]},
     )
-    assert result == "Bitsight Finding - rolledup-456"
+    assert result == "dummy_id_2-#-2025-11-25"
 
 
 def test_update_remote_system_command_does_not_add_closing_note_when_status_not_done(mocker):

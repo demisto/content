@@ -36,11 +36,13 @@ Bitsight Remediation Status for Incident Closure: Remediation status to set in B
 
 Close incident based on Bitsight Remediation Status: If selected, active incidents will be closed in XSOAR when finding remediation status on Bitsight platform matches the configured 'Remediation Status for Incident Closure'. This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'.
 
+Findings Affect Rating Reason: This parameter helps to filter the record based on Affect Rating Reason. You can choose multiple affect rating reasons listed.
+
 Findings Grade: This parameter helps to filter the record based on Grade. You can choose multiple grades listed.
 
 Risk Vector: Parameter helps to filter the record based on Risk Vector. By default, 'All' will be selected, if you need only particular values you can unselect 'All' and select the required values listed.
 
-Note: Please be sure to click on 'Reset the "last run" timestamp', when changing the values of parameters 'First fetch time in days', 'Findings Minimum Severity', 'Findings Minimum Asset Category', 'Findings Grade' or 'Risk Vector' after fetching has started to avoid dropping of findings.
+Note: Please be sure to click on 'Reset the "last run" timestamp', when changing the values of parameters 'First fetch time in days', 'Findings Affect Rating Reason','Findings Minimum Severity', 'Findings Minimum Asset Category', 'Findings Grade' or 'Risk Vector' after fetching has started to avoid dropping of findings.
 
 ### Notes for mirroring
 
