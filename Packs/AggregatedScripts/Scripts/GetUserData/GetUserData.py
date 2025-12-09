@@ -103,6 +103,7 @@ def create_user(
     id: Optional[str] = None,
     username: Optional[str] = None,
     email_address: Optional[str] = None,
+    sid: Optional[str] = None,
     risk_level: Optional[int] = None,
     additional_fields=False,
     **kwargs,
@@ -126,6 +127,7 @@ def create_user(
         "ID": id,
         "Username": username,
         "Email": email_address,
+        "SID": sid,
         "RiskLevel": risk_level,
     }
     if additional_fields:
@@ -305,10 +307,14 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
     readable_outputs_list = []
     command.args["attributes"] = demisto.args().get("attributes")
 
-    sid = command.args.get("custom-field-data")
-    if sid:
-        demisto.debug(f"Using a user sid {sid}, inserting the custom-field-type args")
+    user_sid = command.args.get("custom-field-data")
+    if user_sid:
+        demisto.debug(f"Using a user sid {user_sid}, inserting the custom-field-type args")
         command.args["custom-field-type"] = "objectSid"
+
+        # Adding the objectSid to attributes in order to get back this field
+        current_attr = command.args.get("attributes")
+        command.args["attributes"] = ",".join(filter(None, [current_attr, "objectSid"]))
 
     demisto.debug(f"Those are the args for the ad-get-user command {command.args}")
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
@@ -320,6 +326,7 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
         output_key = get_output_key("ActiveDirectory.Users", output)
         outputs = get_outputs(output_key, output)
 
+        demisto.debug(f"This is the {outputs=}")
         username = outputs.pop("sAMAccountName", None)
         if isinstance(username, list) and len(username) == 1:
             username = username[0]
@@ -329,11 +336,15 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
         for k, v in outputs.items():
             if isinstance(v, list) and len(v) == 1:
                 outputs[k] = v[0]
+        sid = outputs.pop("objectSid", None)
+        if isinstance(sid, list) and len(sid) == 1:
+            sid = sid[0]
         user_outputs.append(
             create_user(
                 source=command.brand,
                 username=username,
                 email_address=mail,
+                sid=sid,
                 additional_fields=additional_fields,
                 instance=output.get("instance"),
                 **outputs,
@@ -1202,7 +1213,7 @@ def main():
                 readable_output=tableToMarkdown(
                     name="User(s) data",
                     t=users_outputs,
-                    headers=["Source", "Instance", "ID", "Username", "Email", "Status"],
+                    headers=["Source", "Instance", "ID", "Username", "SID", "Email", "Status"],
                     removeNull=True,
                 ),
             )
