@@ -2273,15 +2273,27 @@ script:
           description: The backlog status of the issue.
           type: String
     - arguments: 
-      - description: A comma-separated list of endpoint IDs.
-        name: endpoint_ids
+      - description: ID of the endpoint for which to retrieve the available update version.
+        name: endpoint_id
         isArray: true
+        required: true
       name: core-get-endpoint-update-version
-      description: Retrieves endpoint update versions for the provided endpoints IDs.
+      description: Retrieves endpoint update versions for the provided endpoint ID.
       outputs:
       - contextPath: Core.EndpointUpdate.distributions
         description: The distributions of the endpoint update.
         type: Dictionary
+    - arguments: 
+      - description: ID of the endpoint for which to retrieve the available update version.
+        name: endpoint_id
+        isArray: true
+        required: true
+      - description: A JSON dictionary that contains key:value pairs that represent the "os":"version-number".
+        name: versions
+        required: true
+      name: core-update-endpoint-version
+      description: Update the version of the provided endpoint.
+      outputs: []
   runonce: false
   script: "-"
   subtype: python3

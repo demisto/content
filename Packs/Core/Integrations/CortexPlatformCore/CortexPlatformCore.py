@@ -598,6 +598,14 @@ class Client(CoreClient):
         )
         return reply
 
+    def update_endpoint_version(self, request_data):
+        reply = self._http_request(
+            method="POST",
+            json_data={"request_data": request_data},
+            url_suffix="/agents/upgrade",
+        )
+        return reply
+
 
 def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
     """
@@ -1833,8 +1841,8 @@ def get_endpoint_update_version_command(client, args):
         CommandResults: Formatted results of endpoint update versions.
     """
     filter_builder = FilterBuilder()
-    endpoint_ids = argToList(args.get("endpoint_ids", ""))
-    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_ids)
+    endpoint_id = args.get("endpoint_id", "")
+    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_id)
     filter_data = {
         "filter": filter_builder.to_dict(),
     }
@@ -1846,6 +1854,26 @@ def get_endpoint_update_version_command(client, args):
         outputs=response,
         outputs_prefix="Core.EndpointUpdate",
     )
+
+def update_endpoint_version_command(client, args):
+    filter_builder = FilterBuilder()
+    endpoint_id = args.get("endpoint_id", "")
+    versions = json.loads(args.get("versions", {}))
+    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_id)
+    filter_data = {
+        "filter": filter_builder.to_dict(),
+    }
+    request_data = {"filter_data": filter_data, "filter_type": "static", "versions": versions, "upgrade_to_pkg_manager": False, 
+                    "schedule_data":{"START_TIME":None,"END_TIME":None,"DAYS":None}}
+    demisto.debug(f"{request_data=}")
+    response = client.update_endpoint_version(request_data)
+    demisto.debug(f"{response=}")
+    return CommandResults(
+        readable_output=tableToMarkdown("Endpoint Update Versions", response, headerTransform=string_to_table_header),
+        outputs=response,
+        outputs_prefix="Core.EndpointUpdate",
+    )
+
 
 def main():  # pragma: no cover
     """
@@ -1963,6 +1991,9 @@ def main():  # pragma: no cover
             
         elif command == "core-get-endpoint-update-version":
             return_results(get_endpoint_update_version_command(client, args))
+            
+        elif command == "core-update-endpoint-version":
+            return_results(update_endpoint_version_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
