@@ -48,7 +48,7 @@ Configure Cortex XSIAM Office 365 Native Collector on your Cortex XSIAM tenant:
 
 To create or configure the Office 365 collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Ingest-Logs-from-Microsoft-Office-365).
 
-To ingest _email logs and data_ from Microsoft Office 365, use the [Microsoft 365 email collector](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-Microsoft-365).
+To ingest _email logs and data_ from Microsoft Office 365, use the [Microsoft 365 email collector](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-Microsoft-365).  
 The Microsoft 365 collector ingests data into the following datasets:
 
 * `msft_o365_emails_raw`
@@ -59,11 +59,17 @@ The Microsoft 365 collector ingests data into the following datasets:
 * `msft_o365_rules_raw`
 * `msft_o365_contacts_raw`
 
-For more detailed configuration instructions, follow the guide under section _Configure ingestion into Cortex XSIAM_ [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-Microsoft-365).
+For more detailed configuration instructions, follow the guide under section [Configure ingestion into Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-Microsoft-365).
 
 **Pay Attention**:
-In order to normalize **Azure AD** (`msft_azure_ad_raw`) and **Azure AD Audit** (`msft_azure_ad_audit_raw`) logs, install the Microsoft Entra ID pack.
+In order to normalize **Azure AD** (`msft_azure_ad_raw`) and **Azure AD Audit** (`msft_azure_ad_audit_raw`) logs, install the Microsoft Entra ID pack.  
+
+#### Office 365 collector
 
 ![Office_365_Collector_Settings](./././doc_files/office365_image1.png)
+
+#### Microsoft 365 collector
+
+![Microsoft_365_Collector_Settings](./././doc_files/microsoft365_image1.png)
 
 </~XSIAM>
