@@ -311,10 +311,10 @@ def elasticsearch_builder(proxies):
 
         connection_args["node_class"] = CustomHttpNode  # type: ignore[assignment]
 
-    if AUTH_TYPE == API_KEY_AUTH:
+    if AUTH_TYPE == API_KEY_AUTH and API_KEY:
         connection_args["api_key"] = API_KEY
 
-    elif AUTH_TYPE == BASIC_AUTH:
+    elif AUTH_TYPE == BASIC_AUTH and USERNAME and PASSWORD:
         if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
             connection_args["basic_auth"] = (USERNAME, PASSWORD)
         else:  # Elasticsearch version v7 and below or OpenSearch (BC)
