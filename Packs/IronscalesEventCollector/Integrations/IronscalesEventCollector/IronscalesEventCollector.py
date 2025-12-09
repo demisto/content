@@ -230,7 +230,7 @@ def enrich_events_with_mailbox_details(client: Client, events: list[dict[str, An
         return
 
     incident_ids = list({event.get("incident_id") for event in events})
-    demisto.debug(f"Starting mailbox enrichment on {len(incident_ids)} incident IDs.")
+    demisto.debug(f"Starting mailbox enrichment on {len(incident_ids)} incident IDs: {incident_ids}.")
 
     per_incident_mitigations = defaultdict(list)  # To group mailbox mitigations per incidentID
     current_page = 1
@@ -243,7 +243,7 @@ def enrich_events_with_mailbox_details(client: Client, events: list[dict[str, An
         demisto.debug(f"Got {len(mitigations)} mailbox mitigation details using {current_page=}.")
 
         # Group mitigations from the current page
-        for mitigation in response.get("mitigations", []):
+        for mitigation in mitigations:
             incident_id = mitigation.pop("incidentID")
             per_incident_mitigations[incident_id].append(snakify(mitigation))
 
@@ -254,7 +254,7 @@ def enrich_events_with_mailbox_details(client: Client, events: list[dict[str, An
     for event in events:
         incident_id = event.get("incident_id")
         event["mitigations"] = per_incident_mitigations.get(incident_id, [])
-    demisto.debug(f"Finished running mailbox enrichment on {len(incident_ids)} incident IDs.")
+    demisto.debug(f"Finished running mailbox enrichment on {len(incident_ids)} incident IDs: {incident_ids}.")
 
 
 def incident_to_events(incident: dict[str, Any]) -> List[dict[str, Any]]:

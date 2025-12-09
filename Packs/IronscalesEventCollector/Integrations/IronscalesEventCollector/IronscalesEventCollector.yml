@@ -52,7 +52,7 @@ configuration:
   type: 8
   section: Collect
   required: false
-  additionalinfo: Fetch the affected mailbox mitigation details as part of the event data.
+  additionalinfo: Whether to fetch the affected mailbox mitigation details as part of the event data.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
