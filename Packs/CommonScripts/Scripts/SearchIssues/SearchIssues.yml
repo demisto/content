@@ -172,7 +172,7 @@ outputs:
     description: The internal ID of the issue.
     type: String
   - contextPath: Core.Issue.case_id
-    description: The case IDs associated with the issue.
+    description: The case ID associated with the issue.
     type: String
   - contextPath: Core.Issue.issue_source
     description: The source of the issue.
