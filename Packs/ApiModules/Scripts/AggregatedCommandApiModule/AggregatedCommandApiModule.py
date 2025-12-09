@@ -459,14 +459,14 @@ class ContextBuilder:
 
         The Context will be constructed as follows:
         {
-            self.final_context_path(val.Value && val.Value == obj.Value): [
+            self.final_context_path(val.Value && val.Value == obj.Value):[
                 {
-                    "Value": "Example",
-                    "MaxScore": 1,              # Enriched
-                    "MaxVerdict": "Malicious",  # Enriched
-                    "TIMScore": 1,              # From TIM
-                    "TIMCVSS": 5.5,             # From TIM
-                    "Status": "Fresh",          # From TIM/Logic
+                    "Value":"Example",
+                    "MaxScore":1, //Optional
+                    "MaxVerdict":"Malicious", //Optional
+                    "TIMScore":1, //Optional
+                    "TIMCVSS":1, //Optional
+                    "Status": "Stale"/"Fresh"/"Manual",
                     "ModifiedTime": "2022-01-01T00:00:00Z",
                     "Results": [                # From Enrichment Brands
                         {
@@ -559,7 +559,7 @@ class ContextBuilder:
 
         # TIM section
         if tim_obj := self._get_tim_entry(instance):
-            # Extract File hashing if file is hash
+            # Extract File hashing if the indicator is file
             if self.indicator_schema.type == "file":
                 current_indicator["Hashes"] = self._get_file_hashes(instance, tim_obj)
             # Main Indicator Fields
@@ -1531,7 +1531,6 @@ def _process_single_input(
             invalid_set.add(raw)
         return instances, hr_fragment
 
-    # No indicators at all -> invalid
     expected_indicators, has_other_types = _split_expected_and_other_types(extracted_ctx, expected_type_lower)
     demisto.debug(f"expected for '{raw}': {expected_indicators}, other types exits={has_other_types}")
 
