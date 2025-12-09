@@ -483,6 +483,7 @@ def content_records_to_incidents(content_records, start_time, end_time, last_run
     start_time_datetime = datetime.strptime(start_time, DATE_FORMAT)
     latest_creation_time_datetime = start_time_datetime
     current_batch_ids: Set = set()
+    records = []
 
     for content_record in content_records:
         incident_creation_time_str = content_record["CreationTime"]
@@ -510,6 +511,7 @@ def content_records_to_incidents(content_records, start_time, end_time, last_run
             "rawJSON": json.dumps(content_record),
         }
         incidents.append(incident)
+        records.append(record_id)
 
         if incident_creation_time_datetime > latest_creation_time_datetime:
             latest_creation_time_datetime = incident_creation_time_datetime
@@ -524,7 +526,7 @@ def content_records_to_incidents(content_records, start_time, end_time, last_run
         # If we advanced to end_time, we don't need to dedup IDs anymore
         new_incidents_id_dedup = set()
 
-    return incidents, latest_creation_time_str, list(new_incidents_id_dedup)
+    return incidents, latest_creation_time_str, list(new_incidents_id_dedup), records
 
 
 def fetch_incidents(client, last_run, first_fetch_datetime):
@@ -533,10 +535,10 @@ def fetch_incidents(client, last_run, first_fetch_datetime):
     content_types_to_fetch = get_content_types_to_fetch(client)
     content_records = get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time)
     filtered_content_records = filter_records(content_records, demisto.params())
-    incidents, last_fetch, incidents_id_dedup = content_records_to_incidents(
+    incidents, last_fetch, incidents_id_dedup, records = content_records_to_incidents(
         filtered_content_records, start_time, end_time, last_run
     )
-    next_run = {"last_fetch": last_fetch, "incidents_id_dedup": incidents_id_dedup}
+    next_run = {"last_fetch": last_fetch, "incidents_id_dedup": incidents_id_dedup, "records": records}
     demisto.debug(f"fetch_incidents: {next_run=}")
     return next_run, incidents
 
