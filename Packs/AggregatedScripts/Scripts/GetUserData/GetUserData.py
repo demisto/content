@@ -326,7 +326,6 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
         output_key = get_output_key("ActiveDirectory.Users", output)
         outputs = get_outputs(output_key, output)
 
-        demisto.debug(f"This is the {outputs=}")
         username = outputs.pop("sAMAccountName", None)
         if isinstance(username, list) and len(username) == 1:
             username = username[0]
@@ -791,7 +790,7 @@ def main():
             raise ValueError("When specifying the domain argument, the user_name argument must also be provided.")
         if not any((users_ids, users_names, users_emails, users_sid)):
             raise ValueError(
-                "At least one of the following arguments must be specified:" " user_id, user_name, user_email or users_sid."
+                "At least one of the following arguments must be specified:" " user_id, user_name, user_email or user_sid."
             )
 
         command_results_list: list[CommandResults] = []
