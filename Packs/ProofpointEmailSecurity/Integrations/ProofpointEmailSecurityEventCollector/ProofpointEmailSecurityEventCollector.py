@@ -449,7 +449,7 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
         event_types (List[str]): The list of event types to collect.
     """
     support_multithreading()
-    demisto.info("starting long running execution.")
+    demisto.info(f"Starting long running execution. Fetching {event_types=}.")
     while True:
         try:
             with websocket_connections(
