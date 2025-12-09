@@ -1077,7 +1077,7 @@ def main():  # pragma: nocover
         elif command in commands:
             return_results(commands[command](client, args))  # type: ignore
         else:
-            raise NotImplementedError(f"{command} command is not implemented.")
+            raise NotImplementedError(f"{command} command is not test implemented.")
 
     except Exception as e:
         return_error(str(e))
