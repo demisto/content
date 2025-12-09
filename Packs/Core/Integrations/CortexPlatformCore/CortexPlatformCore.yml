@@ -1409,6 +1409,14 @@ script:
         - Resolved - Dismissed
         - Resolved - Fixed
         - Resolved - Risk Accepted
+      - name: link_cases
+        description: Comma-separated list of case IDs to link the issue to.
+        type: string
+        isArray: true
+      - name: unlink_cases
+        description: Comma-separated list of case IDs to unlink the issue from.
+        type: string
+        isArray: true
       name: core-update-issue
       description: Updates the properties of an issue. This command does not provide an explicit indication of success.
     - arguments:
