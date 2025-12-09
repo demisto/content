@@ -315,7 +315,7 @@ marketplaces:
 - xsoar
 - marketplacev2
 - platform
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.12.6204436
 fromversion: 6.10.0
 tests:
 - FileEnrichment - Test
