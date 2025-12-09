@@ -19,82 +19,40 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 
 
 RES_EXAMPLE = {
+    "ContinuationToken": "ContinuationToken",
     "Items": [
         {
-            "Id": "abcd1",
-            "Text": "Shutdown Machine ",
-            "User": "string",
-            "UserIdentity": "string",
-            "Source": "string",
-            "AdminMachineIP": "string",
-            "EndTime": "2024-01-02T13:22:36.848+00:00",
-            "FormattedEndTime": "2024-01-02T13:22:36Z",
-            "StartTime": "2024-01-02T13:22:36.614+00:00",
-            "FormattedStartTime": "2025-12-04T16:44:35.470Z",
-            "IsSuccessful": True,
-            "TargetTypes": ["string"],
-            "OperationType": "Unknown",
-            "Labels": ["string"],
-            "Metadata": [{"Name": "Name", "Value": "Value"}],
-            "Parameters": [{"Name": "Name", "Value": "Value"}],
+            "FormattedStartTime": "2025-12-06T16:44:35.470Z",
+            "Id": "id5",
+            "OperationType": "ConfigurationChange",
+            "Text": "Shutdown Machine",
         },
         {
-            "Id": "abcd2",
-            "Text": "Shutdown Machine ",
-            "User": "string",
-            "UserIdentity": "string",
-            "Source": "string",
-            "AdminMachineIP": "string",
-            "EndTime": "2024-01-02T13:22:36.848+00:00",
-            "FormattedEndTime": "2024-01-02T13:22:36Z",
-            "StartTime": "2024-01-02T13:22:36.614+00:00",
-            "FormattedStartTime": "2025-12-04T13:44:35.470Z",
-            "IsSuccessful": True,
-            "TargetTypes": ["string"],
-            "OperationType": "Unknown",
-            "Labels": ["string"],
-            "Metadata": [{"Name": "Name", "Value": "Value"}],
-            "Parameters": [{"Name": "Name", "Value": "Value"}],
+            "FormattedStartTime": "2025-12-03T16:44:35.470Z",
+            "Id": "id4",
+            "OperationType": "ConfigurationChange",
+            "Text": "Shutdown Machine",
         },
         {
-            "Id": "abcd3",
-            "Text": "Shutdown Machine ",
-            "User": "string",
-            "UserIdentity": "string",
-            "Source": "string",
-            "AdminMachineIP": "string",
-            "EndTime": "2024-01-02T13:22:36.848+00:00",
-            "FormattedEndTime": "2024-01-02T13:22:36Z",
-            "StartTime": "2024-01-02T13:22:36.614+00:00",
-            "FormattedStartTime": "2025-12-04T11:44:35.470Z",
-            "IsSuccessful": True,
-            "TargetTypes": ["string"],
-            "OperationType": "Unknown",
-            "Labels": ["string"],
-            "Metadata": [{"Name": "Name", "Value": "Value"}],
-            "Parameters": [{"Name": "Name", "Value": "Value"}],
+            "FormattedStartTime": "2025-12-02T16:44:35.470Z",
+            "Id": "id3",
+            "OperationType": "ConfigurationChange",
+            "Text": "Shutdown Machine",
         },
         {
-            "Id": "abcd4",
-            "Text": "Shutdown Machine ",
-            "User": "string",
-            "UserIdentity": "string",
-            "Source": "string",
-            "AdminMachineIP": "string",
-            "EndTime": "2024-01-02T13:22:36.848+00:00",
-            "FormattedEndTime": "2024-01-02T13:22:36Z",
-            "StartTime": "2024-01-02T13:22:36.614+00:00",
-            "FormattedStartTime": "2025-12-04T10:44:34.373Z",
-            "IsSuccessful": True,
-            "TargetTypes": ["string"],
-            "OperationType": "Unknown",
-            "Labels": ["string"],
-            "Metadata": [{"Name": "Name", "Value": "Value"}],
-            "Parameters": [{"Name": "Name", "Value": "Value"}],
+            "FormattedStartTime": "2025-12-01T16:44:35.470Z",
+            "Id": "id2",
+            "OperationType": "ConfigurationChange",
+            "Text": "Shutdown Machine",
         },
-    ],
-    "ContinuationToken": "ContinuationToken",
-    "TotalItems": 4,
+        {
+            "FormattedStartTime": "2025-12-01T10:44:35.470Z",
+            "Id": "id1",
+            "OperationType": "ConfigurationChange",
+            "Text": "Shutdown Machine",
+        },
+
+    ]
 }
 
 
@@ -230,13 +188,13 @@ class Client(BaseClient):
             )
 
             items = raw_res.get("Items", [])
+            items.reverse()
 
             # get the items after the last fetched record id to avoid duplicates
             if items and last_operation_id:
                 for idx, item in enumerate(items):
                     if item.get("Id") == last_operation_id:
-                        # DESCENDING ORDER → items AFTER this record are those BEFORE its index
-                        items = items[:idx]
+                        items = items[idx+1:]
                         break
 
             operations.extend(items)
@@ -245,10 +203,11 @@ class Client(BaseClient):
             if not continuation_token:
                 break
 
+        operations = operations[:limit]
+
         for operation in operations:
             operation["_time"] = operation.get("FormattedStartTime")
-        #TODO: fix the limit issue to take the first items
-        return operations[:limit], raw_res
+        return operations, raw_res
 
 
 """ HELPER FUNCTIONS """
@@ -302,10 +261,8 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
 
     operations, _ = client.get_operations_with_pagination(limit=max_fetch, last_operation_id=last_run.get("Id"), days=days)
 
-    # take the last record time because the response sort data in descending order,
-    # the first value is the latest date
     if operations:
-        last_run = {"LastRun": operations[0]["_time"], "Id": operations[0]["Id"]}
+        last_run = {"LastRun": operations[-1]["_time"], "Id": operations[-1]["Id"]}
 
     return operations, last_run
 
