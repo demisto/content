@@ -1924,7 +1924,7 @@ def rasterize_extract_command():  # pragma: no cover
     wait_time = int(args.get("wait_time", DEFAULT_WAIT_TIME))
     navigation_timeout = int(args.get("max_page_load_time", DEFAULT_PAGE_LOAD_TIME))
 
-    demisto.info(f"Starting rasterize-extract for URLs: {urls}")
+    demisto.debug(f"Starting rasterize-extract for URLs: {urls}")
 
     rasterize_output = perform_rasterize(
         path=urls,
