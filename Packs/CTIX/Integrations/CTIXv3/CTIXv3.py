@@ -1862,7 +1862,7 @@ def make_request(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     type = args["type"]
     body = json.loads(args.get("body", "{}"))
     params = json.loads(args.get("params", "{}"))
-    client_url = client.base_url + args["endpoint"]
+    client_url = client.base_url + args["endpoint"].lstrip("/")
     response = {}
 
     if type == "GET":

@@ -1,0 +1,5 @@
+{
+  "id": "ctix-delete-tag",
+  "type": "command",
+  "description": "The 'ctix-delete-tag' command has been removed. Any playbooks or automations using this command may break and need to be updated."
+}
