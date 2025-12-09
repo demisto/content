@@ -430,6 +430,8 @@ def build_fetch_query(params):
             field_trimmed = field.strip()
             fetch_query = f"{fetch_query} | eval {field_trimmed}={field_trimmed}"
 
+    if "| expandtoken" not in fetch_query:
+        demisto.info('**WARNING**: Could not find "expandtoken" in fetch query.')
     return fetch_query
 
 
@@ -1239,7 +1241,24 @@ def get_drilldown_searches(notable_data):
     # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
     # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
 
-    if drilldown_search := notable_data.get("drilldown_search"):
+    fill_null_value = None
+    fetch_query = demisto.params().get("fetchQuery", "")
+
+    # --- Extract fillnull value if present ---
+    # Matches patterns like: fillnull value=0, fillnull value="N/A", fillnull value='unknown'
+    match = re.search(r'fillnull\s+value\s*=\s*("[^"]*"|\'[^\']*\'|\S+)', fetch_query)
+    if match:
+        raw_value = match.group(1)
+
+        # Strip quotes if needed
+        if (raw_value.startswith('"') and raw_value.endswith('"')) or (raw_value.startswith("'") and raw_value.endswith("'")):
+            raw_value = raw_value[1:-1]
+
+        fill_null_value = raw_value
+        demisto.info(f"Found fillnull command in drilldown search with value: {fill_null_value}")
+
+    drilldown_search = notable_data.get("drilldown_search")
+    if drilldown_search and drilldown_search != fill_null_value:
         # The drilldown_searches are in 'old' format a simple string query.
         return [drilldown_search]
     if drilldown_search := notable_data.get("drilldown_searches", []):
@@ -1250,6 +1269,18 @@ def get_drilldown_searches(notable_data):
             # The drilldown_searches are a dict/list of the search data in a JSON string representation.
             return parse_drilldown_searches([drilldown_search])
     return []
+
+
+def earliest_time_exists_in_query(query: str) -> bool:
+    """
+    Returns True if the query contains 'earliest=' or 'earliest ='
+    (any amount of whitespace around the equals sign).
+    """
+    if query is None:
+        return False
+
+    pattern = r"earliest\s*=\s*"
+    return re.search(pattern, query) is not None
 
 
 def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> list[tuple[str, str, client.Job]]:
@@ -1275,6 +1306,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
         for i in range(total_searches):
             # Iterates over the drilldown searches of the given notable to enrich each one of them
             search = searches[i]
+            demisto.debug(f"notable drilldown search = {search}")
             demisto.debug(f"Enriches drilldown search number {i+1} out of {total_searches} for notable {notable_data[EVENT_ID]}")
 
             if isinstance(search, dict):
@@ -1304,7 +1336,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
             if searchable_query := build_drilldown_search(notable_data, query_search, raw_dict):
                 demisto.debug(f"Search Query was build successfully for notable {notable_data[EVENT_ID]}")
 
-                if earliest_offset and latest_offset:
+                if (earliest_offset and latest_offset) or earliest_time_exists_in_query(searchable_query):
                     kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
                     if latest_offset:
                         kwargs["latest_time"] = latest_offset
