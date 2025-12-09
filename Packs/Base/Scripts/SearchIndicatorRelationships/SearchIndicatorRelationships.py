@@ -8,7 +8,7 @@ from CommonServerUserPython import *
 # --------------------------------------------------- Helper functions---------------------------------------------
 
 
-def to_context(relationships: list, verbose: bool) -> List[dict]:
+def to_context(relationshipsData: dict, verbose: bool) -> dict:
     """
     Create context entries from the relationships returned from the searchRelationships command.
 
@@ -21,7 +21,13 @@ def to_context(relationships: list, verbose: bool) -> List[dict]:
     :return: list of context for each relationship.
     :rtype: ``list``
     """
-    context_list = []
+    demisto.debug(f"{relationshipsData=}")
+    searchAfter = relationshipsData.get("SearchAfter", None)
+    relationships = relationshipsData.get("data", []) or []
+    context_dict: dict = {
+        "Relationships": [],
+        "RelationshipsPagination": [],
+    }
     for relationship in relationships:
         relationships_context = {
             "EntityA": relationship["entityA"],
@@ -47,9 +53,10 @@ def to_context(relationships: list, verbose: bool) -> List[dict]:
                 relationships_context["LastSeenBySource"] = custom_fields.get("lastseenbysource", "")
                 relationships_context["Description"] = custom_fields.get("description", "")
 
-        context_list.append(relationships_context)
+        context_dict["Relationships"].append(relationships_context)
 
-    return context_list
+    context_dict["RelationshipsPagination"].append(searchAfter) if searchAfter else []
+    return context_dict
 
 
 def handle_stix_types(entities_types: str) -> str:
@@ -59,20 +66,18 @@ def handle_stix_types(entities_types: str) -> str:
     return ",".join(str(x) for x in entities_types).replace(", ", ",")
 
 
-def search_relationships_fromversion_6_6_0(args: dict) -> List[dict]:
+def search_relationships_fromversion_6_6_0(args: dict) -> dict:
     for list_arg in ["entities", "entityTypes", "relationshipNames"]:
         args[list_arg] = argToList(args[list_arg]) if args[list_arg] else None
-    demisto.debug(f"searchRelationships args: {args}")
     res = demisto.searchRelationships(args)
-    demisto.debug(f"searchRelationships response: {res}")
-    return res.get("data", [])
+    return res
 
 
-def search_relationships_toversion_6_5_0(args: dict) -> List[dict]:
+def search_relationships_toversion_6_5_0(args: dict) -> dict:
     res = demisto.executeCommand("searchRelationships", args)
     if is_error(res[0]):
         raise Exception("Error in searchRelationships command - {}".format(res[0]["Contents"]))
-    return res[0].get("Contents", {}).get("data", [])
+    return res[0].get("Contents", {})
 
 
 def search_relationships(
@@ -82,14 +87,14 @@ def search_relationships(
     limit: Optional[int] = None,
     query: Optional[str] = None,
     searchAfter: Optional[List[str]] = None,
-) -> List[dict]:
+) -> dict:
     args = {
         "entities": entities,
         "entityTypes": entities_types,
         "relationshipNames": relationships,
         "size": limit,
         "query": query,
-        "searchAfter": searchAfter
+        "searchAfter": searchAfter,
     }
     if is_demisto_version_ge("6.6.0"):
         return search_relationships_fromversion_6_6_0(args)
@@ -112,18 +117,24 @@ def main():  # pragma: no cover
         searchAfter = argToList(args.get("searchAfter", ""))
         handle_stix_types(entities_types)
 
-        if relationships := search_relationships(entities, entities_types, relationships, limit, query, searchAfter):
-            context = to_context(relationships, verbose)
+        if relationship_search_results := search_relationships(
+            entities, entities_types, relationships, limit, query, searchAfter
+        ):
+            context = to_context(relationship_search_results, verbose)
         else:
-            context = []
+            context = {}
         hr = tableToMarkdown(
             "Relationships",
-            context,
+            context.get("Relationships", []),
             headers=["EntityA", "EntityAType", "EntityB", "EntityBType", "Relationship"],
             headerTransform=lambda header: re.sub(r"\B([A-Z])", r" \1", header),
         )
         return_results(
-            CommandResults(readable_output=hr, outputs_prefix="Relationships", outputs=context, outputs_key_field="ID")
+            CommandResults(
+                readable_output=hr,
+                outputs=context,
+                outputs_key_field="ID",
+            )
         )
 
     except Exception as e:
