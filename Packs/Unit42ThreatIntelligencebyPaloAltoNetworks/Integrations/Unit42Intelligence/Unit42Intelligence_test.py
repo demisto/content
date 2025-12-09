@@ -1550,7 +1550,7 @@ def test_url_command_with_special_characters(client, mocker):
     """
 
     # URL with < and > characters
-    test_url = "https://sanjose-photography.com/?token=<REDACTED>"
+    test_url = "https://example.com/?token=<REDACTED>"
 
     mock_response = {
         "indicator_value": test_url,
