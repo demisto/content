@@ -46,7 +46,7 @@ configuration:
   section: Collect
   required: false
   additionalinfo: Fetch all events instead of only open events.
-- display: Fetch Mailbox
+- display: Fetch mailbox mitigation details
   name: mailbox_enrichment
   defaultvalue: 'false'
   type: 8

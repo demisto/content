@@ -11,7 +11,7 @@ Use this integration to fetch email security incidents from Ironscales as XSIAM 
 | Maximum number of events per fetch |  | False |
 | First fetch |  | False |
 | Collect all events | Fetch all events instead of only open events. | False |
-| Fetch Mailbox | Whether to fetch the affected mailbox mitigation details as part of the event data. | False |
+| Fetch mailbox mitigation details | Whether to fetch the affected mailbox mitigation details as part of the event data. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
