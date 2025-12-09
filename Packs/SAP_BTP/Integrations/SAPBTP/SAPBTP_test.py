@@ -15,6 +15,7 @@ from SAPBTP import (  # noqa: E402
     Client,
     Config,
     ContextKeys,
+    add_time_to_events,
     create_mtls_cert_files,
     fetch_events_command,
     fetch_events_with_pagination,
@@ -1027,6 +1028,108 @@ def test_fetch_events_with_pagination_discards_newer_events(mocker, client_non_m
 
 
 # ========================================
+# Tests: add_time_to_events
+# ========================================
+
+
+@pytest.mark.parametrize(
+    "input_events,expected_results",
+    [
+        # Success case with Z suffix
+        (
+            [
+                {"uuid": "1", "time": "2024-01-01T00:00:00Z", "user": "test@example.com"},
+                {"uuid": "2", "time": "2024-01-02T12:30:45Z", "action": "login"},
+            ],
+            [
+                {"uuid": "1", "time": "2024-01-01T00:00:00Z", "user": "test@example.com", "_time": "2024-01-01T00:00:00"},
+                {"uuid": "2", "time": "2024-01-02T12:30:45Z", "action": "login", "_time": "2024-01-02T12:30:45"},
+            ],
+        ),
+        # SAP BTP format (no Z suffix)
+        (
+            [
+                {"uuid": "1", "time": "2024-01-01T00:00:00", "user": "test@example.com"},
+                {"uuid": "2", "time": "2024-01-02T12:30:45", "action": "login"},
+            ],
+            [
+                {"uuid": "1", "time": "2024-01-01T00:00:00", "user": "test@example.com", "_time": "2024-01-01T00:00:00"},
+                {"uuid": "2", "time": "2024-01-02T12:30:45", "action": "login", "_time": "2024-01-02T12:30:45"},
+            ],
+        ),
+        # Missing time field
+        (
+            [
+                {"uuid": "1", "user": "test@example.com"},
+                {"uuid": "2", "action": "login"},
+            ],
+            [
+                {"uuid": "1", "user": "test@example.com"},
+                {"uuid": "2", "action": "login"},
+            ],
+        ),
+        # Invalid time format (fallback to original)
+        (
+            [{"uuid": "1", "time": "invalid-time-format", "user": "test@example.com"}],
+            [{"uuid": "1", "time": "invalid-time-format", "user": "test@example.com", "_time": "invalid-time-format"}],
+        ),
+        # Empty list
+        ([], []),
+        # Time with microseconds
+        (
+            [{"uuid": "1", "time": "2024-01-01T00:00:00.123456Z"}],
+            [{"uuid": "1", "time": "2024-01-01T00:00:00.123456Z", "_time": "2024-01-01T00:00:00"}],
+        ),
+        # Multiple events with mixed scenarios
+        (
+            [
+                {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
+                {"uuid": "2", "time": "2024-01-02T00:00:00Z"},
+                {"uuid": "3", "time": "2024-01-03T00:00:00Z"},
+                {"uuid": "4"},  # Missing time
+                {"uuid": "5", "time": "invalid"},  # Invalid time
+            ],
+            [
+                {"uuid": "1", "time": "2024-01-01T00:00:00Z", "_time": "2024-01-01T00:00:00"},
+                {"uuid": "2", "time": "2024-01-02T00:00:00Z", "_time": "2024-01-02T00:00:00"},
+                {"uuid": "3", "time": "2024-01-03T00:00:00Z", "_time": "2024-01-03T00:00:00"},
+                {"uuid": "4"},
+                {"uuid": "5", "time": "invalid", "_time": "invalid"},
+            ],
+        ),
+    ],
+)
+def test_add_time_to_events(input_events, expected_results):
+    """Tests add_time_to_events handles various scenarios correctly."""
+    add_time_to_events(input_events)
+    assert input_events == expected_results
+
+
+def test_add_time_to_events_preserves_all_fields():
+    """Tests add_time_to_events preserves all other event fields."""
+    events = [
+        {
+            "uuid": "123",
+            "time": "2024-01-01T00:00:00Z",
+            "user": "test@example.com",
+            "action": "login",
+            "ip": "192.168.1.1",
+        }
+    ]
+
+    add_time_to_events(events)
+
+    # All original fields should be preserved
+    assert events[0]["uuid"] == "123"
+    assert events[0]["time"] == "2024-01-01T00:00:00Z"
+    assert events[0]["user"] == "test@example.com"
+    assert events[0]["action"] == "login"
+    assert events[0]["ip"] == "192.168.1.1"
+    # _time should be added
+    assert events[0]["_time"] == "2024-01-01T00:00:00"
+
+
+# ========================================
 # Tests: test_module Command
 # ========================================
 
@@ -1093,6 +1196,7 @@ def test_get_events_command_with_push_events(mocker, client_non_mtls):
     mock_events = [{"uuid": "123", "user": "test@example.com", "time": "2024-01-01T00:00:00Z"}]
 
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(SAPBTP, "add_time_to_events")
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
     args = {"from_time": "3 days ago", "limit": "10", "should_push_events": "true"}
@@ -1100,6 +1204,7 @@ def test_get_events_command_with_push_events(mocker, client_non_mtls):
 
     assert isinstance(result, str)
     assert "1 events" in result
+    SAPBTP.add_time_to_events.assert_called_once_with(mock_events)  # type: ignore[attr-defined]
     SAPBTP.send_events_to_xsiam.assert_called_once_with(events=mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)  # type: ignore[attr-defined]
 
 
@@ -1146,11 +1251,13 @@ def test_fetch_events_command_first_run(mocker, client_non_mtls):
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(SAPBTP, "add_time_to_events")
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
     fetch_events_command(client_non_mtls)
 
     demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T01:00:00Z"})  # type: ignore[attr-defined]
+    SAPBTP.add_time_to_events.assert_called_once_with(mock_events)  # type: ignore[attr-defined]
     SAPBTP.send_events_to_xsiam.assert_called_once_with(events=mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)  # type: ignore[attr-defined]
 
 
@@ -1162,11 +1269,13 @@ def test_fetch_events_command_with_last_run(mocker, client_non_mtls):
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(SAPBTP, "add_time_to_events")
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
     fetch_events_command(client_non_mtls)
 
     demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-02T00:00:00Z"})  # type: ignore[attr-defined]
+    SAPBTP.add_time_to_events.assert_called_once_with(mock_events)  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_no_events(mocker, client_non_mtls):
@@ -1191,12 +1300,14 @@ def test_fetch_events_command_events_without_time(mocker, client_non_mtls):
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "params", return_value={})
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(SAPBTP, "add_time_to_events")
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
     fetch_events_command(client_non_mtls)
 
     # Should not update last_run if events have no time field
     demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
+    SAPBTP.add_time_to_events.assert_called_once_with(mock_events)  # type: ignore[attr-defined]
     SAPBTP.send_events_to_xsiam.assert_called_once()  # type: ignore[attr-defined]
 
 
@@ -1209,6 +1320,7 @@ def test_fetch_events_command_with_first_fetch_configured(mocker, client_non_mtl
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "params", return_value={"first_fetch": "7 days"})
     mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(SAPBTP, "add_time_to_events")
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
     fetch_events_command(client_non_mtls)
@@ -1226,6 +1338,7 @@ def test_fetch_events_command_with_first_fetch_not_configured(mocker, client_non
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "params", return_value={})
     mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(SAPBTP, "add_time_to_events")
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
     fetch_events_command(client_non_mtls)
@@ -1243,6 +1356,7 @@ def test_fetch_events_command_with_empty_first_fetch(mocker, client_non_mtls):
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "params", return_value={"first_fetch": ""})
     mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(SAPBTP, "add_time_to_events")
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
     fetch_events_command(client_non_mtls)

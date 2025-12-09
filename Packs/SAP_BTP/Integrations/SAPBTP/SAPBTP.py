@@ -8,6 +8,7 @@ from typing import Any
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401, F403
+from dateutil import parser
 
 urllib3.disable_warnings()
 
@@ -206,6 +207,30 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "certificate": certificate,
         "private_key": private_key,
     }
+
+
+def add_time_to_events(events: list[dict[str, Any]]) -> None:
+    """Add _time field to events for XSIAM ingestion.
+
+    Maps the event's 'time' field to '_time' for proper XSIAM indexing.
+    SAP BTP events have a 'time' field in format: %Y-%m-%dT%H:%M:%S
+
+    Args:
+        events: List of events to process
+    """
+    for event in events:
+        event_time = event.get("time")
+        if event_time:
+            try:
+                # Parse the time string and format it for XSIAM
+                parsed_time = parser.parse(event_time)
+                event["_time"] = parsed_time.strftime(Config.DATE_FORMAT)
+                demisto.debug(f"[Event Time] Mapped time field: {event_time} -> _time: {event['_time']}")
+            except Exception as error:
+                demisto.debug(f"[Event Time] Failed to parse time '{event_time}': {str(error)}")
+                event["_time"] = event_time
+        else:
+            demisto.debug(f"[Event Time] WARNING: Event missing 'time' field: {event.get('uuid', 'unknown')}")
 
 
 # endregion
@@ -553,6 +578,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults |
     events = fetch_events_with_pagination(client, created_after, limit, created_before)
 
     if should_push_events and events:
+        add_time_to_events(events)
         send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Command] Pushed {len(events)} events to XSIAM")
         return f"Successfully retrieved and pushed {len(events)} events to XSIAM"
@@ -598,6 +624,7 @@ def fetch_events_command(client: Client) -> None:
     events = fetch_events_with_pagination(client, created_after, max_events_to_fetch)
 
     if events:
+        add_time_to_events(events)
         send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
 
         # State Protection: Only update Last Run after successful send
