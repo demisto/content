@@ -1,34 +1,52 @@
-## SplunkPy v3
-Use the SplunkPy v3 integration to fetch incidents from Splunk ES, and query results by SID.
+## SplunkPy v2
+
+Use the SplunkPy v2 integration to:
+
+- Fetch events (logs) from Splunk as Cortex XSOAR incidents
+- Push events from Cortex XSOAR to Splunk
+- Fetch Splunk Enterprise Security events (Findings) as Cortex XSOAR incidents.
 ***
 
- - To use Splunk token authentication, enter the text: *_token* in the **Username** field and your token value in the **Password** field.
-To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens).
- - In case of inconsistent authentication issues when using username & password, try to use **\<USERNAME\>@_basic** as the username.
-this will set the integration to use basic authentication when connecting to the Splunk server.
-For example:
-TestUser@_basic
+## Authentication Configuration
 
-There are two main use cases for the SplunkPy v3 integration.
+This integration uses **Splunk's token-based authentication**.
+### How to Configure Authentication
+1. Enter your Splunk authentication token in the **Splunk Token** field in the integration configuration
+
+### How to Create a Splunk Authentication Token
+1. Log in to your Splunk instance as an administrator
+2. Navigate to **Settings** > **Tokens** (or **Settings** > **Users and Authentication** > **Tokens**)
+3. Click **New Token** or **Enable Token Authentication** (if not already enabled)
+4. Provide a name for the token and set an expiration time (optional)
+5. Click **Create** and copy the generated token immediately (it will only be shown once)
+6. Use this token value in the integration's **Splunk Token** field
+
+For detailed instructions, refer to the official Splunk documentation:
+- [Create authentication tokens in Splunk Cloud](https://docs.splunk.com/Documentation/SplunkCloud/latest/Security/CreateAuthTokens)
+- [Create authentication tokens in Splunk Enterprise](https://docs.splunk.com/Documentation/Splunk/latest/Security/UseAuthTokens)
+
+**Note:** Token authentication provides secure API access and is the standard method for integrations with Splunk.
+
+
+There are two main use cases for the SplunkPy v2 integration.
 - [Splunk Enterprise Security Users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#splunk-enterprise-security-users)
   - [Fetching finding events](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#fetching-finding-events)
   - [Enriching Finding Events](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#enriching-finding-events)
   - [Incident Mirroring](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#incident-mirroring)
-  - [Existing users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#existing-users)
 - [Splunk non-Enterprise Security Users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#splunk-non-enterprise-security-users)
-  - [Configure Splunk to Produce Alerts for SplunkPy v3 for non-ES Splunk Users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#configure-splunk-to-produce-alerts-for-splunkpy-for-non-es-splunk-users)
+  - [Configure Splunk to Produce Alerts for SplunkPy v2 for non-ES Splunk Users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#configure-splunk-to-produce-alerts-for-splunkpy-for-non-es-splunk-users)
   - [Constraints](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#constraints)
 
 ***
 # Splunk Enterprise Security Users
 
 ## Fetching finding events
-The integration allows for fetching Splunk finding events using a default query. The query can be changed and modified to support different Splunk use cases. (See [Existing users](#existing-users)).
+The integration allows for fetching Splunk finding events using a default query. The query can be changed and modified to support different Splunk use cases.
 Palo Alto highly recommends reading the [Ingest Incidents from a SIEM Using Splunk article](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Tutorials-6.x/Ingest-Incidents-from-a-SIEM-Using-Splunk) before starting to use this integration.
-This article will help you configure your Splunk v3 integration, set up a basic flow, and start ingesting incidents from Splunk to Cortex XSOAR.
+This article will help you configure your Splunk v2 integration, set up a basic flow, and start ingesting incidents from Splunk to Cortex XSOAR.
 
 ### How to configure
-1. Select __Settings__>__Integrations__>__Servers & Services__>__SplunkPy v3__.
+1. Select __Settings__>__Integrations__>__Servers & Services__>__SplunkPy v2__.
 2. Click **Add Instance**.
 3. Select **Fetches incidents**.
 4. Under Classifier, select N/A.
@@ -44,7 +62,8 @@ You do not need to specify the classifier as all Splunk incidents are ingested a
 Outgoing mirroring is recommended for Cortex XSOAR version 6.2 and above. If you enable mirroring, you need to add the timezone of the Splunk server (in minutes). For example, if using GMT and the timezone is GMT +3 hours, set the timezone to +180. For UTC, set the timezone to 0. Set this only if the Splunk server is different than the Cortex XSOAR server. This is relevant only for fetching finding events.
 13. Select *Close Mirrored XSOAR Incident* and *Close Mirrored Splunk Finding Event*, so when closing in one environment, it closes in the other.
 14. In the Enrichment Types field, select *Asset*, *Drilldown* and *Identity*.
-This enrichment provides additional information about assets, drilldown, and identities that are related to the finding events you ingest. Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more information, see [Enriching Finding Events](#enriching-finding-events).
+This enrichment provides additional information about assets, drilldown, and identities that are related to the finding events you ingest. 
+For more information, see [Enriching Finding Events](#enriching-finding-events).
 15. Fetch backwards window - this backward window is for cases where there is a gap between the event occurrence time and the event index time on the Splunk server.
 In Splunk, there is often a delay between the time an incident is created (the event's "occurrence time") and the time it is actually searchable in Splunk and visible in the index (the event's "index time").
 This delay can be caused by an inefficient Splunk architecture, causing higher event indexing latency. However, it can also be "by design", e.g., if some endpoints / machines that generate Splunk events are usually offline.
@@ -65,19 +84,18 @@ Use this parameter with careful consideration.
 This integration allows 3 types of enrichments for fetched findings: Drilldown, Asset, and Identity.
 
 #### Enrichment types
-1. **Drilldown search enrichment**: Fetches the drilldown search configured by the user in the rule name that triggered the finding event and performs this search. The results are stored in the context of the incident under the **Drilldown** field as follow: [{result1}, {result2}, {result3}].
-Getting results from multiple drilldown searches is supported from Enterprise Security v7.2.0. In that case, the results are stored in the context of the incident under the **Drilldown** field as follow: [{'query_name':<query_name>, 'query_search': <query_search>, 'query_results': [{result1}, {result2}, {result3}], 'enrichment_status': <enrichment_status>}].
+1. **Drilldown search enrichment**: Fetches the drilldown searches configured by the user in the rule name that triggered the finding event and performs this search. The results are stored in the context of the incident under the **Drilldown** field as follows: [{'query_name':<query_name>, 'query_search': <query_search>, 'query_results': [{result1}, {result2}, {result3}], 'enrichment_status': <enrichment_status>}].
 2. **Asset search enrichment**: Runs the following query:
-*| inputlookup append=T asset_lookup_by_str where asset=$ASSETS_VALUE | inputlookup append=t asset_lookup_by_cidr where asset=$ASSETS_VALUE | rename _key as asset_id | stats values(*) as * by asset_id*
+*`| inputlookup append=T asset_lookup_by_str where asset=$ASSETS_VALUE | inputlookup append=t asset_lookup_by_cidr where asset=$ASSETS_VALUE | rename _key as asset_id | stats values(*) as * by asset_id`*
 where the **$ASSETS_VALUE** is replaced with the **src**, **dest**, **src_ip** and **dst_ip** from the fetched finding. The results are stored in the context of the incident under the **Asset** field.
 3. **Identity search enrichment**: Runs the following query
-*`| inputlookup identity_lookup_expanded where identity=$IDENTITY_VALUE*
+*`| inputlookup identity_lookup_expanded where identity=$IDENTITY_VALUE`*
 where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** from the fetched finding event. The results are stored in the context of the incident under the **Identity** field.
 
 #### How to configure
 1. Configure the integration to fetch incidents (see the Integration documentation for details).
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched finding with. If none are selected, the integration will fetch findings as usual (without enrichment).
-3. *Fetch finding events ES query*: The query for the finding events enrichment (defined by default). If you decide to edit this, make sure to provide a query that uses the \`finding\` macro. See the default query as an example.
+3. *Fetch finding events ES query*: The query for the finding events enrichment (defined by default). If you decide to edit this, make sure to provide a query that uses the \`notable\` macro. See the default query as an example.
 4. *Enrichment Timeout (Minutes)*:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, finding events that were not enriched will be saved without the enrichment.
 5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (Drilldown, Asset, and Identity). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. (default to 20).
 
@@ -88,7 +106,8 @@ Each enriched incident contains the following fields in the incident context:
 - **successful_identity_enrichment**: whether the identity enrichment was successful.
 
 #### Resetting the enriching fetch mechanism
-Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism will be reset to the initial configuration. (No need to use the **Last Run** button).
+- Run the **Last Run** button
+- Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism will be reset to the initial configuration.
 
 #### Limitations
 - As the enrichment process is asynchronous, fetching enriched incidents takes longer. The integration was tested with 20+ notables simultaneously that were fetched and enriched after approximately ~4min.
@@ -106,9 +125,9 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 You can enable incident mirroring between Cortex XSOAR incidents and Splunk findings.
 To set up mirroring:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for SplunkPy v3 and select your integration instance.
+2. Search for SplunkPy v2 and select your integration instance.
 3. Enable **Fetches incidents**.
-4. You can go to the *Fetch finding events ES enrichment query* parameter and select the query to fetch the findings from Splunk. Make sure to provide a query which uses the \`finding\` macro, See the default query as an example.
+4. You can go to the *Fetch finding events ES enrichment query* parameter and select the query to fetch the findings from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
 4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
     - Incoming - Any changes in Splunk findings (finding's status, status_label, urgency, comments, and owner) will be reflected in Cortex XSOAR incidents.
     - Outgoing - Any changes in Cortex XSOAR incidents (finding's status (not status_label), urgency, comments, and owner) will be reflected in Splunk findings.
@@ -126,17 +145,17 @@ Newly fetched incidents will be mirrored in the chosen direction.
 This implies that new fetched events might have a slightly different structure than old events fetched so far.
 Users who wish to enrich or mirror fetched findings and have already used the integration in the past:
 - Might have to slightly change the existing logic for some of their custom entities configured for Splunk (Playbooks, Mappers, Pre-Processing Rules, Scripts, Classifiers, etc.) in order for them to work with the modified structure of the fetched events.
-- Will need to change the *Fetch finding events ES enrichment query* integration parameter to the following query (or a fetch query of their own that uses the \`finding\` macro):
+- Will need to change the *Fetch finding events ES enrichment query* integration parameter to the following query (or a fetch query of their own that uses the \`noatble\` macro):
 
 ```
-search `finding` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
+search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
 ```
 
 # Splunk non-Enterprise Security Users
 
-### Configure Splunk to Produce Alerts for SplunkPy for non-ES Splunk Users
+### Configure Splunk to Produce Alerts for SplunkPy v2 for non-ES Splunk Users
 
-Palo Alto recommends that you configure Splunk to produce basic alerts that the SplunkPy integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
+Palo Alto recommends that you configure Splunk to produce basic alerts that the SplunkPy v2 integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy v2 integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
 
 1. Create a summary index in Splunk. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Indexer/Setupmultipleindexes#Create_events_indexes_2).
 2. Build a query to return relevant alerts.

@@ -25,7 +25,7 @@ def display_json_parsing_error(title: str, error_msg: str, raw_data: str) -> dic
     """Display detailed error message for JSON parsing issues from Splunk."""
     markdown = f"#### {title}\n\n"
     markdown += "⚠️ **Note:** The drilldown_searches data received from Splunk contains invalid JSON formatting.\n\n"
-    markdown += "This is not a parsing error on XSOAR's side - the data from Splunk itself has JSON syntax issues (such as unescaped quotes or malformed structure).\n\n"
+    markdown += "The data from Splunk has JSON syntax issues (such as unescaped quotes or malformed structure).\n\n"
     markdown += f"**Error Details:** {error_msg}\n\n"
     
     if raw_data:
@@ -48,8 +48,11 @@ def main():
     custom_fields = incident.get('CustomFields', {})
     drilldown_searches = custom_fields.get("splunkdrilldown", "") or custom_fields.get("notabledrilldown", "")
     
+    # Check if enrichment is configured
+    has_enrichment_status = False
     for label in labels:
         if label.get("type") == "successful_drilldown_enrichment":
+            has_enrichment_status = True
             is_successful = label.get("value")
             if is_successful == "false":
                 return display_error_with_raw_data(
@@ -71,24 +74,55 @@ def main():
                 )
 
     if not drilldown_results:
-        # Try to get drilldown_searches from custom fields
-        if drilldown_searches:
-            try:
-                # Try to parse as JSON to check if it's valid
-                parsed_json = json.loads(drilldown_searches)
-                # If parsing succeeds, display formatted JSON with explanation
-                markdown = ("#### Drilldown Results Not Available\n"
-                           "The drilldown results could not be retrieved from the context, but the drilldown searches configuration was found.\n\n"
-                           f"{tableToMarkdown('Drilldown Searches Configuration', parsed_json)}")
-                return {"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": markdown}
-            except Exception as e:
-                return display_json_parsing_error(
-                    "Drilldown Searches (Invalid JSON)",
-                    f"JSON Parsing Error: {str(e)}",
-                    drilldown_searches
-                )
+        # No enrichment results found in labels
+        
+        # Case 1: Enrichment is NOT configured at all
+        if not has_enrichment_status:
+            markdown = "#### Drilldown Configuration Status\n\n"
+            markdown += ("⚠️ **Drilldown enrichment is not configured for this integration instance.**\n\n"
+                       "Enrichment is not enabled, so drilldown results are not available.\n\n"
+                       "**To enable drilldown enrichment:**\n"
+                       "1. Go to the integration instance settings\n"
+                       "2. In the 'Enrichment Types' parameter, select 'Drilldown'\n"
+                       "3. Save the configuration and fetch new incidents\n\n")
+            
+            # Try to show raw configuration if available
+            if drilldown_searches:
+                try:
+                    parsed_json = json.loads(drilldown_searches)
+                    markdown += "**Raw Drilldown Searches Configuration (from Splunk):**\n\n"
+                    markdown += f"{tableToMarkdown('Drilldown Searches Configuration', parsed_json)}"
+                except Exception as e:
+                    # Failed to parse raw configuration
+                    markdown += "**Raw Drilldown Searches Data (Failed to Parse):**\n\n"
+                    markdown += f"⚠️ Failed to parse the raw drilldown configuration. Error: {str(e)}\n\n"
+                    markdown += "**Raw Data:**\n```\n"
+                    markdown += format_raw_data(drilldown_searches) + "\n```"
+            
+            return {"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": markdown}
+        
+        # Case 2: Enrichment IS configured but no results found
         else:
-            return CommandResults(readable_output="Drilldown was not configured.")
+            markdown = "#### Drilldown Enrichment Results\n\n"
+            markdown += ("⚠️ **Drilldown enrichment results not found.**\n\n"
+                       "Enrichment is configured, but the results could not be retrieved from the incident context.\n\n")
+            
+            # Try to show raw configuration if available
+            if drilldown_searches:
+                try:
+                    parsed_json = json.loads(drilldown_searches)
+                    markdown += "**Drilldown Searches Configuration:**\n\n"
+                    markdown += f"{tableToMarkdown('Drilldown Searches Configuration', parsed_json)}"
+                except Exception as e:
+                    # Failed to parse raw configuration
+                    markdown += "**Raw Drilldown Searches Data (Failed to Parse):**\n\n"
+                    markdown += f"⚠️ Failed to parse the drilldown configuration. Error: {str(e)}\n\n"
+                    markdown += "**Raw Data:**\n```\n"
+                    markdown += format_raw_data(drilldown_searches) + "\n```"
+            else:
+                markdown += "*No drilldown searches configuration data found.*"
+            
+            return {"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": markdown}
 
     if isinstance(drilldown_results, list):
         if "query_name" in drilldown_results[0]:

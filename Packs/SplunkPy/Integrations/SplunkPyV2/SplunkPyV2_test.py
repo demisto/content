@@ -4,13 +4,13 @@ from unittest.mock import MagicMock, patch
 
 import demistomock as demisto
 import pytest
-import SplunkPy as splunk
+import SplunkPyV2 as splunk
 from CommonServerPython import *
 from pytest_mock import MockerFixture
 from splunklib import client, results
 from splunklib.binding import AuthenticationError, HTTPError
 
-RETURN_ERROR_TARGET = "SplunkPy.return_error"
+RETURN_ERROR_TARGET = "SplunkPyV2.return_error"
 
 DICT_RAW_RESPONSE = (
     '"1528755951, url="https://test.url.com", search_name="NG_SIEM_UC25- High number of hits against '
@@ -104,7 +104,7 @@ RAW_WITH_MESSAGE = (
 SAMPLE_RESPONSE = [
     results.Message("INFO-TEST", "test message"),
     {
-        "_bkt": "notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
+        "_bkt": "finding~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
         "_cd": "668:17198",
         "_indextime": "1596545116",
         "_raw": '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
@@ -112,7 +112,7 @@ SAMPLE_RESPONSE = [
         'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
         'signature="Trojan.Gen.2"',
         "_serial": "50",
-        "_si": ["ip-172-31-44-193", "notable"],
+        "_si": ["ip-172-31-44-193", "finding"],
         "_sourcetype": "stash",
         "_time": "2020-08-04T05:45:16.000-07:00",
         "dest": "ACME-workstation-012",
@@ -137,7 +137,7 @@ SAMPLE_RESPONSE = [
         "host": "ip-172-31-44-193",
         "host_risk_object_type": "system",
         "host_risk_score": "0",
-        "index": "notable",
+        "index": "finding",
         "linecount": "1",
         "priorities": "medium",
         "priority": "medium",
@@ -153,10 +153,10 @@ SAMPLE_RESPONSE = [
         "splunk_server": "ip-172-31-44-193",
         "urgency": "low",
         "owner": "unassigned",
-        "event_id": "66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@5aa44496ec8e5cf45c78ab230189a4ca",
+        "event_id": "66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@finding@@5aa44496ec8e5cf45c78ab230189a4ca",
     },
     {
-        "_bkt": "notable~3252~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
+        "_bkt": "finding~3252~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
         "_cd": "3252:4913",
         "_eventtype_color": "none",
         "_indextime": "1737544322",
@@ -165,7 +165,7 @@ SAMPLE_RESPONSE = [
         'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
         'signature="Trojan.Gen.2"',
         "_serial": "12",
-        "_si": ["ip-1-1-1-1", "notable"],
+        "_si": ["ip-1-1-1-1", "finding"],
         "_sourcetype": "stash",
         "_time": "2025-01-22T11:12:02.000+00:00",
         "comment": [
@@ -182,13 +182,13 @@ SAMPLE_RESPONSE = [
         "drilldown_search": '| from datamodel:"Malware"."Malware_Attacks" | search dest="ACME-code-001"',
         "event_hash": "734b6c7bcd700ccd0449575164772230",
         "event_id": "test_id",
-        "eventtype": "modnotable_results notable modnotable_results notable",
+        "eventtype": "modfinding_results finding modfinding_results finding",
         "extract_assets": '["src", "dest", "dvc", "orig_host"]',
         "extract_identities": '["src_user", "user"]',
         "host": "ip-172-31-44-193",
         "host_risk_object_type": "system",
         "host_risk_score": "0",
-        "index": "notable",
+        "index": "finding",
         "indexer_guid": "66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
         "info_max_time": "+Infinity",
         "info_min_time": "0.000",
@@ -196,7 +196,7 @@ SAMPLE_RESPONSE = [
         "investigation_profiles": "{}",
         "lastTime": "1737544072",
         "linecount": "2",
-        "orig_action_name": "notable",
+        "orig_action_name": "finding",
         "orig_rid": "0.6979",
         "owner": "test_owner",
         "owner_realname": "test_owner",
@@ -227,15 +227,14 @@ SAMPLE_RESPONSE = [
         "tag::eventtype": "modaction_result",
         "timestamp": "none",
         "urgency": "informational",
-        "last_modified_timestamp": "1737547610.488234",
+        "review_time": "1737547610.488234",
     },
 ]
 
-SAMPLE_INCIDENT_REVIEW_RESPONSE = [
+SAMPLE_AUDIT_INDEX_RESPONSE = [
     {
         "_key": "test_id_1737547610.49",
-        "comment": "test comment",
-        "last_modified_timestamp": "1737547610.488234",
+        "review_time": "1737547610.488234",
         "owner": "test_owner",
         "owner_realname": "test_owner",
         "reviewer": "test_owner",
@@ -437,23 +436,6 @@ def test_replace_keys(dict_in, dict_out):
     assert out == dict_out, f"replace_keys({dict_in}) got: {out} instead: {dict_out}"
 
 
-def test_parse_time_to_minutes_no_error():
-    splunk.FETCH_TIME = "3 hours"
-    res = splunk.parse_time_to_minutes()
-    assert res == 180
-
-
-def test_parse_time_to_minutes_invalid_time_integer(mocker):
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-
-    splunk.FETCH_TIME = "abc hours"
-    splunk.parse_time_to_minutes()
-    err_msg = return_error_mock.call_args[0][0]
-    assert (
-        err_msg == "Error: Invalid fetch time, need to be a positive integer with the time unit afterwards "
-        "e.g '2 months, 4 days'."
-    )
-
 
 def test_splunk_submit_event_hec_command(mocker):
     text = "a msg with a failure."
@@ -522,14 +504,6 @@ def test_splunk_submit_event_hec_command_without_request_channel(mocker):
     assert err_msg == 'Could not send event to Splunk {"text":"Data channel is missing","code":10}'
 
 
-def test_parse_time_to_minutes_invalid_time_unit(mocker):
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-
-    splunk.FETCH_TIME = "3 hoursss"
-    splunk.parse_time_to_minutes()
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == "Error: Invalid time unit."
-
 
 SEARCH_RESULT = [
     {"But": {"This": "is"}, "Very": "Unique"},
@@ -553,7 +527,7 @@ NON_EXISTING_FIELDS = ["SDFAFSD", "ASBLFKDJK"]
     ],
 )
 def test_commands(search_result, chosen_fields, expected_result):
-    from SplunkPy import update_headers_from_field_names
+    from SplunkPyV2 import update_headers_from_field_names
 
     headers = update_headers_from_field_names(search_result, chosen_fields)
 
@@ -615,7 +589,7 @@ data_test_build_kv_store_query = [
 
 @pytest.mark.parametrize("args, expected_query", data_test_build_kv_store_query)
 def test_build_kv_store_query(args, expected_query, mocker):
-    mocker.patch("SplunkPy.get_key_type", return_value=None)
+    mocker.patch("SplunkPyV2.get_key_type", return_value=None)
     output = splunk.build_kv_store_query(None, args)
     assert output == expected_query, f"build_kv_store_query({args})\n\treturns: {output}\n\tinstead: {expected_query}"
 
@@ -629,7 +603,7 @@ data_test_build_kv_store_query_with_key_val = [
 
 @pytest.mark.parametrize("args, _type, expected_query", data_test_build_kv_store_query_with_key_val)
 def test_build_kv_store_query_with_key_val(args, _type, expected_query, mocker):
-    mocker.patch("SplunkPy.get_key_type", return_value=_type)
+    mocker.patch("SplunkPyV2.get_key_type", return_value=_type)
     output = splunk.build_kv_store_query(None, args)
     assert output == expected_query, f"build_kv_store_query({args})\n\treturns: {output}\n\tinstead: {expected_query}"
 
@@ -644,7 +618,7 @@ def test_build_kv_store_query_with_key_val(args, _type, expected_query, mocker):
 
     @pytest.mark.parametrize("keys_and_types, expected_type", test_test_get_key_type)
     def test_get_key_type(keys_and_types, expected_type, mocker):
-        mocker.patch("SplunkPy.get_keys_and_types", return_value=keys_and_types)
+        mocker.patch("SplunkPyV2.get_keys_and_types", return_value=keys_and_types)
 
         output = splunk.get_key_type(None, "key")
         assert output == expected_type, f"get_key_type(kv_store, key)\n\treturns: {output}\n\tinstead: {expected_type}"
@@ -692,59 +666,25 @@ def test_get_kv_store_config(fields, expected_output, mocker):
         def __init__(self):
             self.name = "name"
 
-    mocker.patch("SplunkPy.get_keys_and_types", return_value=fields)
+    mocker.patch("SplunkPyV2.get_keys_and_types", return_value=fields)
     output = splunk.get_kv_store_config(Name())
     expected_output = f"{START_OUTPUT}{expected_output}"
     assert output == expected_output
 
 
 class TestFetchRemovingIrrelevantIncidents:
-    notable1 = {"status": "5", "event_id": "3"}
-    notable2 = {"status": "6", "event_id": "4"}
+    finding1 = {"status": "5", "event_id": "3"}
+    finding2 = {"status": "6", "event_id": "4"}
 
-    # In order to mock the service.jobs.oneshot() call in the fetch_notables function, we need to create
+    # In order to mock the service.jobs.oneshot() call in the fetch_findings function, we need to create
     # the following two classes
     class Jobs:
         def __init__(self):
-            self.oneshot = lambda x, **kwargs: TestFetchForLateIndexedEvents.notable1
+            self.oneshot = lambda x, **kwargs: TestFetchForLateIndexedEvents.finding1
 
     class Service:
         def __init__(self):
             self.jobs = TestFetchForLateIndexedEvents.Jobs()
-
-    def test_backwards_compatible(self, mocker: MockerFixture):
-        """
-        Given
-        - Incident IDs that were fetched in the last fetch round with the epoch time of their occurrence
-
-        When
-        - Fetching notables
-
-        Then
-        - Make sure that the last fetched IDs now hold the start of the fetch window, and not the epoch time
-        """
-        from SplunkPy import UserMappingObject
-
-        mocker.patch.object(demisto, "setLastRun")
-        mock_last_run = {
-            "time": "2024-02-12T10:00:00",
-            "latest_time": "2024-02-19T10:00:00",
-            "found_incidents_ids": {"1": 1700497516},
-        }
-        mock_params = {"fetchQuery": "`notable` is cool", "fetch_limit": 2}
-        mocker.patch("demistomock.getLastRun", return_value=mock_last_run)
-        mocker.patch("demistomock.params", return_value=mock_params)
-        mocker.patch("splunklib.results.JSONResultsReader", return_value=[self.notable1, self.notable2])
-        service = self.Service()
-        set_last_run_mocker = mocker.patch("demistomock.setLastRun")
-        mapper = UserMappingObject(service, False)
-        splunk.fetch_incidents(service, mapper, "from_xsoar", "from_splunk")
-        last_fetched_ids = set_last_run_mocker.call_args_list[0][0][0]["found_incidents_ids"]
-        assert last_fetched_ids == {
-            "1": {"occurred_time": "2024-02-19T10:00:00"},
-            "3": {"occurred_time": "2024-02-19T10:00:00"},
-            "4": {"occurred_time": "2024-02-19T10:00:00"},
-        }
 
     def test_remove_irrelevant_fetched_incident_ids(self, mocker: MockerFixture):
         """
@@ -752,44 +692,44 @@ class TestFetchRemovingIrrelevantIncidents:
         - Incident IDs that were fetched in the last fetch round
 
         When
-        - Fetching notables
+        - Fetching findings
 
         Then
         - Make sure that the fetched IDs that are no longer in the fetch window are removed
         """
-        from SplunkPy import UserMappingObject
-
+        from SplunkPyV2 import UserMappingObject
+        mocker.patch.object(splunk, "get_current_splunk_time", return_value="2024-02-19T10:00:00.000000+0000")
         mocker.patch.object(demisto, "setLastRun")
         mock_last_run = {
-            "time": "2024-02-12T10:00:00",
-            "latest_time": "2024-02-19T10:00:00",
-            "found_incidents_ids": {"1": {"occurred_time": "2024-02-12T09:59:59"}, "2": {"occurred_time": "2024-02-18T10:00:00"}},
+            "next_run_earliest_time": "2024-02-12T10:00:00.000000+0000",
+            "late_indexed_pagination": False,
+            "next_run_found_incidents_ids": {"1": {"occurred_time": "2024-02-12T09:59:59.000000+0000"}, "2": {"occurred_time": "2024-02-18T10:00:00.000000+0000"}},
         }
         mock_params = {"fetchQuery": "`notable` is cool", "fetch_limit": 2}
         mocker.patch("demistomock.getLastRun", return_value=mock_last_run)
         mocker.patch("demistomock.params", return_value=mock_params)
-        mocker.patch("splunklib.results.JSONResultsReader", return_value=[self.notable1, self.notable2])
+        mocker.patch("splunklib.results.JSONResultsReader", return_value=[self.finding1, self.finding2])
         service = self.Service()
         set_last_run_mocker = mocker.patch("demistomock.setLastRun")
         mapper = UserMappingObject(service, False)
-        splunk.fetch_incidents(service, mapper, "from_xsoar", "from_splunk")
-        last_fetched_ids = set_last_run_mocker.call_args_list[0][0][0]["found_incidents_ids"]
+        splunk.fetch_incidents(service, mapper)
+        last_fetched_ids = set_last_run_mocker.call_args_list[0][0][0]["next_run_found_incidents_ids"]
         assert last_fetched_ids == {
-            "2": {"occurred_time": "2024-02-18T10:00:00"},
-            "3": {"occurred_time": "2024-02-19T10:00:00"},
-            "4": {"occurred_time": "2024-02-19T10:00:00"},
+            "2": {"occurred_time": "2024-02-18T10:00:00.000000+0000"},
+            "3": {"occurred_time": "2024-02-19T10:00:00.000000+0000"},
+            "4": {"occurred_time": "2024-02-19T10:00:00.000000+0000"},
         }
 
 
 class TestFetchForLateIndexedEvents:
-    notable1 = {"status": "5", "event_id": "id_1"}
-    notable2 = {"status": "6", "event_id": "id_2"}
+    finding1 = {"status": "5", "event_id": "id_1"}
+    finding2 = {"status": "6", "event_id": "id_2"}
 
-    # In order to mock the service.jobs.oneshot() call in the fetch_notables function, we need to create
+    # In order to mock the service.jobs.oneshot() call in the fetch_findings function, we need to create
     # the following two classes
     class Jobs:
         def __init__(self):
-            self.oneshot = lambda x, **kwargs: TestFetchForLateIndexedEvents.notable1
+            self.oneshot = lambda x, **kwargs: TestFetchForLateIndexedEvents.finding1
 
     class Service:
         def __init__(self):
@@ -805,28 +745,28 @@ class TestFetchForLateIndexedEvents:
         - Some incident IDs that were fetched in the last fetch round
 
         When
-        - Fetching notables
+        - Fetching findings
 
         Then
         - Make sure that last fetched incident IDs are specified to be excluded from the fetch query
         - Make sure that the offset of the fetch query is set to 0
         """
-        from SplunkPy import UserMappingObject
-
+        from SplunkPyV2 import UserMappingObject
+        mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
         mocker.patch.object(demisto, "setLastRun")
         mock_last_run = {
-            "time": "2018-10-24T14:13:20",
+            "next_run_earliest_time": "2018-10-24T14:13:20.000+00:00",
             "late_indexed_pagination": True,
-            "found_incidents_ids": {"1234": 1700497516, "5678": 1700497516},
+            "next_run_found_incidents_ids": {"1234": {"occurred_time": "2018-10-24T14:10:20.000+00:00"}, "5678": {"occurred_time": "2018-10-24T14:10:20.000+00:00"}},
         }
         mock_params = {"fetchQuery": "something"}
         mocker.patch("demistomock.getLastRun", return_value=mock_last_run)
         mocker.patch("demistomock.params", return_value=mock_params)
-        mocker.patch("splunklib.results.JSONResultsReader", return_value=[self.notable1])
+        mocker.patch("splunklib.results.JSONResultsReader", return_value=[self.finding1])
         service = self.Service()
         oneshot_mocker = mocker.patch.object(service.jobs, "oneshot", side_effect=service.jobs.oneshot)
         mapper = UserMappingObject(service, False)
-        splunk.fetch_incidents(service, mapper, "from_xsoar", "from_splunk")
+        splunk.fetch_incidents(service, mapper)
         assert oneshot_mocker.call_args_list[0][0][0] == 'something | where not event_id in ("1234","5678")'
         assert oneshot_mocker.call_args_list[0][1]["offset"] == 0
 
@@ -839,25 +779,30 @@ class TestFetchForLateIndexedEvents:
         - `notable` is in the fetch query
 
         When
-        - Fetching notables
+        - Fetching findings
 
         Then
         - Make sure that the key "late_indexed_pagination" in last run object is set to True
         """
-        from SplunkPy import UserMappingObject
+        from SplunkPyV2 import UserMappingObject
 
         # MonkeyPatch can be used to patch global variables
         monkeypatch.setattr(splunk, "FETCH_LIMIT", 2)
         mocker.patch.object(demisto, "setLastRun")
-        mock_last_run = {"time": "2018-10-24T14:13:20", "found_incidents_ids": {"id_1": 1700497516, "id_2": 1700497516}}
+        mock_last_run = {
+            "next_run_earliest_time": "2018-10-24T14:13:20.000+00:00",
+            "late_indexed_pagination": True,
+            "next_run_found_incidents_ids": {"id_1": {"occurred_time": "2018-10-24T14:10:20.000+00:00"}, "id_2": {"occurred_time": "2018-10-24T14:1:20.000+00:00"}},
+        }
+        mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
         mock_params = {"fetchQuery": "`notable` is cool", "fetch_limit": 2}
         mocker.patch("demistomock.getLastRun", return_value=mock_last_run)
         mocker.patch("demistomock.params", return_value=mock_params)
-        mocker.patch("splunklib.results.JSONResultsReader", return_value=[self.notable1, self.notable2])
+        mocker.patch("splunklib.results.JSONResultsReader", return_value=[self.finding1, self.finding2])
         set_last_run_mocker = mocker.patch("demistomock.setLastRun")
         service = self.Service()
         mapper = UserMappingObject(service, False)
-        splunk.fetch_incidents(service, mapper, "from_xsoar", "from_splunk")
+        splunk.fetch_incidents(service, mapper)
         assert set_last_run_mocker.call_args_list[0][0][0]["late_indexed_pagination"] is True
 
     # If (len(incidents) == FETCH_LIMIT and late_indexed_pagination), then late_indexed_pagination should be set to True
@@ -869,29 +814,30 @@ class TestFetchForLateIndexedEvents:
         - The key "late_indexed_pagination" in the last run object is set to True
 
         When
-        - Fetching notables
+        - Fetching findings
 
         Then
         - Make sure that the key "late_indexed_pagination" in last run object is set to True
         """
-        from SplunkPy import UserMappingObject
+        from SplunkPyV2 import UserMappingObject
 
         # MonkeyPatch can be used to patch global variables
         monkeypatch.setattr(splunk, "FETCH_LIMIT", 2)
         mocker.patch.object(demisto, "setLastRun")
         mock_last_run = {
-            "time": "2018-10-24T14:13:20",
+            "next_run_earliest_time": "2018-10-24T14:13:20.000+00:00",
             "late_indexed_pagination": True,
-            "found_incidents_ids": {"1234": 1700497516, "5678": 1700497516},
+            "next_run_found_incidents_ids": {"1234": {"occurred_time": "2018-10-24T14:10:20.000+00:00"}, "5678": {"occurred_time": "2018-10-24T14:1:20.000+00:00"}},
         }
+        mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
         mock_params = {"fetchQuery": "`notable` is cool", "fetch_limit": 2}
         mocker.patch("demistomock.getLastRun", return_value=mock_last_run)
         mocker.patch("demistomock.params", return_value=mock_params)
-        mocker.patch("splunklib.results.JSONResultsReader", return_value=[self.notable1, self.notable2])
+        mocker.patch("splunklib.results.JSONResultsReader", return_value=[self.finding1, self.finding2])
         set_last_run_mocker = mocker.patch("demistomock.setLastRun")
         service = self.Service()
         mapper = UserMappingObject(service, False)
-        splunk.fetch_incidents(service, mapper, "from_xsoar", "from_splunk")
+        splunk.fetch_incidents(service, mapper)
         assert set_last_run_mocker.call_args_list[0][0][0]["late_indexed_pagination"] is True
 
 
@@ -908,8 +854,9 @@ def test_fetch_incidents(mocker):
     - make sure the incident response is valid.
     - make sure that the owner is not part of the incident response
     """
-    from SplunkPy import UserMappingObject
+    from SplunkPyV2 import UserMappingObject
 
+    mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
     mocker.patch.object(demisto, "incidents")
     mocker.patch.object(demisto, "setLastRun")
     mock_last_run = {"time": "2018-10-24T14:13:20"}
@@ -919,7 +866,7 @@ def test_fetch_incidents(mocker):
     service = mocker.patch("splunklib.client.connect", return_value=None)
     mocker.patch("splunklib.results.JSONResultsReader", return_value=deepcopy(SAMPLE_RESPONSE))
     mapper = UserMappingObject(service, False)
-    splunk.fetch_incidents(service, mapper, "from_xsoar", "from_splunk")
+    splunk.fetch_incidents(service, mapper)
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 2
@@ -945,19 +892,20 @@ def test_create_mapping_dict():
     assert mapping_dict == EXPECTED_OUTPUT
 
 
-def test_fetch_notables(mocker):
+def test_fetch_findings(mocker):
     """
     Given
     - mocked incidents api response
     - a mapper which should not map the user owner into the incident response
 
     When
-    - executing the fetch notables flow
+    - executing the fetch findings flow
 
     Then
     - make sure the incident response is valid.
     - make sure that the owner is not part of the incident response
     """
+    mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
     mocker.patch.object(splunk.client.Job, "is_done", return_value=True)
     mocker.patch.object(splunk.client.Job, "results", return_value=None)
     mocker.patch.object(
@@ -972,13 +920,11 @@ def test_fetch_notables(mocker):
     service = Service("DONE")
     mocker.patch("splunklib.results.JSONResultsReader", return_value=deepcopy(SAMPLE_RESPONSE))
     mapper = splunk.UserMappingObject(service, False)
-    splunk.fetch_incidents(
-        service, mapper=mapper, comment_tag_to_splunk="comment_tag_to_splunk", comment_tag_from_splunk="comment_tag_from_splunk"
-    )
+    splunk.fetch_incidents(service, mapper=mapper)
     cache_object = splunk.Cache.load_from_integration_context(get_integration_context())
-    assert cache_object.submitted_notables
-    notable = cache_object.submitted_notables[0]
-    incident_from_cache = notable.to_incident(mapper, "comment_tag_to_splunk", "comment_tag_from_splunk")
+    assert cache_object.submitted_findings
+    finding = cache_object.submitted_findings[0]
+    incident_from_cache = finding.to_incident(mapper)
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 0
@@ -989,27 +935,25 @@ def test_fetch_notables(mocker):
     assert not incident_from_cache.get("owner")
 
     # now call second time to make sure that the incident fetched
-    splunk.fetch_incidents(
-        service, mapper=mapper, comment_tag_to_splunk="comment_tag_to_splunk", comment_tag_from_splunk="comment_tag_from_splunk"
-    )
+    splunk.fetch_incidents(service, mapper=mapper)
     incidents = demisto.incidents.call_args[0][0]
     assert len(incidents) == 2
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - Recurring Malware Infection - Rule"
     assert not incidents[0].get("owner")
 
 
-def test_fetch_notables_with_creation_time1(mocker: MockerFixture):
+def test_fetch_findings_with_creation_time1(mocker: MockerFixture):
     """
-    Given: A configuration using "creation time" as the notable time source in demisto parameters.
-    When: The fetch_notables function is called.
+    Given: A configuration using "creation time" as the finding time source in demisto parameters.
+    When: The fetch_findings function is called.
     Then: The function should query Splunk using the earliest_time and latest_time fields in the search kwargs.
     """
     mocker.patch.object(
         demisto,
         "params",
-        return_value={"notable_time_source": "creation time", "fetchQuery": "something", "occurrence_look_behind": "0"},
+        return_value={"finding_time_source": "creation time", "fetchQuery": "something", "occurrence_look_behind": "0"},
     )
-    mocker.patch.object(splunk, "parse_time_to_minutes", return_value=10)
+    mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
     mocker.patch.object(results, "JSONResultsReader", return_value=[])
     # Mock the service object
     mock_service = mocker.MagicMock()
@@ -1026,13 +970,11 @@ def test_fetch_notables_with_creation_time1(mocker: MockerFixture):
     mock_cache = mocker.MagicMock()
 
     # Call the function
-    splunk.fetch_notables(
+    splunk.fetch_findings(
         service=mock_service,
         mapper=mock_mapper,
-        comment_tag_to_splunk="comment_to_splunk",
-        comment_tag_from_splunk="comment_from_splunk",
         cache_object=mock_cache,
-        enrich_notables=False,
+        enrich_findings=False,
     )
 
     # Verify that the service.jobs.oneshot was called with "creation time" in the kwargs
@@ -1045,18 +987,19 @@ def test_fetch_notables_with_creation_time1(mocker: MockerFixture):
     assert "index_latest" not in call_args
 
 
-def test_fetch_notables_with_index_time1(mocker: MockerFixture):
+def test_fetch_findings_with_index_time1(mocker: MockerFixture):
     """
-    Given: A configuration using "index time" as the notable time source in demisto parameters.
-    When: The fetch_notables function is called.
+    Given: A configuration using "index time" as the finding time source in demisto parameters.
+    When: The fetch_findings function is called.
     Then: The function should query Splunk using the index_earliest and index_latest fields in the search kwargs.
     """
     mocker.patch.object(
         demisto,
         "params",
-        return_value={"notable_time_source": "index time", "fetchQuery": "something", "occurrence_look_behind": "0"},
+        return_value={"finding_time_source": "index time", "fetchQuery": "something", "occurrence_look_behind": "0"},
     )
-    mocker.patch.object(splunk, "parse_time_to_minutes", return_value=10)
+    mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
+    mocker.patch.object(splunk.client.Job, "is_done", return_value=True)
     mocker.patch.object(results, "JSONResultsReader", return_value=[])
     # Mock the service object
     mock_service = mocker.MagicMock()
@@ -1073,13 +1016,11 @@ def test_fetch_notables_with_index_time1(mocker: MockerFixture):
     mock_cache = mocker.MagicMock()
 
     # Call the function
-    splunk.fetch_notables(
+    splunk.fetch_findings(
         service=mock_service,
         mapper=mock_mapper,
-        comment_tag_to_splunk="comment_to_splunk",
-        comment_tag_from_splunk="comment_from_splunk",
         cache_object=mock_cache,
-        enrich_notables=False,
+        enrich_findings=False,
     )
 
     # Verify that the service.jobs.oneshot was called with "creation time" in the kwargs
@@ -1134,28 +1075,23 @@ def test_reset_enriching_fetch_mechanism(mocker):
     Then:
     - Check that the integration context does not contain this fields
     """
-    integration_context = {splunk.CACHE: "cache_string", splunk.INCIDENTS: ["i1", "i2"], "wow": "wow"}
-    mocker.patch("SplunkPy.get_integration_context", return_value=integration_context)
-    mocker.patch("SplunkPy.set_integration_context")
+    set_mocker = mocker.patch("SplunkPyV2.set_integration_context")
     splunk.reset_enriching_fetch_mechanism()
-    assert integration_context == {"wow": "wow"}
+    assert set_mocker.call_args[0][0] == {}
 
 
 @pytest.mark.parametrize(
     "drilldown_creation_time, asset_creation_time, enrichment_timeout, output",
     [
-        (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
-        (
-            (datetime.utcnow() - timedelta(minutes=6)).isoformat(),
-            datetime.utcnow().isoformat(),
-            5,
-            True,
-        ),
+        # Case 1: Both enrichments are recent (within timeout)
+        ("2025-12-09T20:00:00.000000+00:00", "2025-12-09T20:00:00.000000+00:00", 5, False),
+        # Case 2: Drilldown enrichment is older than timeout, asset enrichment is recent
+        ("2025-12-09T19:54:00.000000+00:00", "2025-12-09T20:00:00.000000+00:00", 5, True),
     ],
 )
 def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout, output):
     """
-    Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident with all
+    Scenario: When one of the finding's enrichments is exceeding the timeout, we want to create an incident with all
      the data gathered so far.
 
     Given:
@@ -1168,11 +1104,14 @@ def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_
     Then:
     - Return the expected result
     """
+    mocked_dt = mocker.patch('SplunkPyV2.datetime')
+    mocked_dt.now.return_value=datetime.strptime("2025-12-09T20:01:00.000000+00:00", splunk.ISO_FORMAT_TZ_AWARE)
+    mocked_dt.strptime.side_effect = datetime.strptime
     mocker.patch.object(splunk, "ENABLED_ENRICHMENTS", return_value=[splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT])
-    notable = splunk.Notable({splunk.EVENT_ID: "id"})
-    notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
-    notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
-    assert notable.is_enrichment_process_exceeding_timeout(enrichment_timeout) is output
+    finding = splunk.Finding({splunk.EVENT_ID: "id"})
+    finding.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
+    finding.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
+    assert finding.is_enrichment_process_exceeding_timeout(enrichment_timeout) is output
 
 
 INCIDENT_1 = {"name": "incident1", "rawJSON": json.dumps({})}
@@ -1201,7 +1140,7 @@ def test_store_incidents_for_mapping(incidents, output):
 
 
 @pytest.mark.parametrize(
-    "notable_data, raw, earliest, latest",
+    "finding_data, raw, earliest, latest",
     [
         ({}, {}, "", ""),
         (
@@ -1221,14 +1160,14 @@ def test_store_incidents_for_mapping(incidents, output):
         ),
     ],
 )
-def test_get_drilldown_timeframe(notable_data, raw, earliest, latest, mocker):
+def test_get_drilldown_timeframe(finding_data, raw, earliest, latest, mocker):
     """
-    Scenario: Trying to get the drilldown's timeframe from the notable's data
+    Scenario: Trying to get the drilldown's timeframe from the finding's data
 
     Given:
-    - An empty notable's data
-    - An notable's data that the info of the timeframe is in the raw field
-    - An notable's data that the info is in the data dict
+    - An empty finding's data
+    - An finding's data that the info of the timeframe is in the raw field
+    - An finding's data that the info is in the data dict
 
     When:
     - get_drilldown_timeframe is called
@@ -1237,13 +1176,13 @@ def test_get_drilldown_timeframe(notable_data, raw, earliest, latest, mocker):
     - Return the expected result
     """
     mocker.patch.object(demisto, "info")
-    earliest_offset, latest_offset = splunk.get_drilldown_timeframe(notable_data, raw)
+    earliest_offset, latest_offset = splunk.get_drilldown_timeframe(finding_data, raw)
     assert earliest_offset == earliest
     assert latest_offset == latest
 
 
 @pytest.mark.parametrize(
-    "raw_field, notable_data, expected_field, expected_value",
+    "raw_field, finding_data, expected_field, expected_value",
     [
         ("field|s", {"field": "1"}, "field", "1"),
         ("field", {"field": "1"}, "field", "1"),
@@ -1251,32 +1190,32 @@ def test_get_drilldown_timeframe(notable_data, raw, earliest, latest, mocker):
         ("x", {"y": "2"}, "", ""),
     ],
 )
-def test_get_notable_field_and_value(raw_field, notable_data, expected_field, expected_value, mocker):
+def test_get_finding_field_and_value(raw_field, finding_data, expected_field, expected_value, mocker):
     """
     Scenario: When building the drilldown search query, we search for the field in the raw search query
-     and search for its real name in the notable's data or in the notable's raw data.
+     and search for its real name in the finding's data or in the finding's raw data.
      We also ignore Splunk advanced syntax such as "|s, |h, ..."
 
     Given:
-    - A raw field that has the same name in the notable's data
-    - A raw field that has "|s" as a suffix in the raw search query and its value is in the notable's data
-    - A raw field that has "|s" as a suffix in the raw search query and its value is in the notable's raw data
-    - A raw field that is not is the notable's data or in the notable's raw data
+    - A raw field that has the same name in the finding's data
+    - A raw field that has "|s" as a suffix in the raw search query and its value is in the finding's data
+    - A raw field that has "|s" as a suffix in the raw search query and its value is in the finding's raw data
+    - A raw field that is not is the finding's data or in the finding's raw data
 
     When:
-    - get_notable_field_and_value is called
+    - get_finding_field_and_value is called
 
     Then:
     - Return the expected result
     """
     mocker.patch.object(demisto, "error")
-    field, value = splunk.get_notable_field_and_value(raw_field, notable_data)
+    field, value = splunk.get_finding_field_and_value(raw_field, finding_data)
     assert field == expected_field
     assert value == expected_value
 
 
 @pytest.mark.parametrize(
-    "notable_data, search, raw, is_query_name, expected_search",
+    "finding_data, search, raw, is_query_name, expected_search",
     [
         ({"a": "1", "_raw": "c=3"}, "search a=$a|s$ c=$c$ suffix", {"c": "3"}, False, 'search a="1" c="3" suffix'),
         ({"a": ["1", "2"], "b": "3"}, "search a=$a|s$ b=$b|s$ suffix", {}, False, 'search (a="1" OR a="2") b="3" suffix'),
@@ -1320,29 +1259,29 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
         ({"test": "test_user"}, "search countryA=\\$this is a test\\$", {}, False, "search countryA=\\$this is a test\\$"),
     ],
     ids=[
-        "search query fields in notables data and raw data",
-        "search query fields in notable data more than one value",
-        "search query fields don't exist in notable data and raw data",
-        "query name fields in notables data and raw data",
+        "search query fields in findings data and raw data",
+        "search query fields in finding data more than one value",
+        "search query fields don't exist in finding data and raw data",
+        "query name fields in findings data and raw data",
         "query name fields in raw data",
         "query name without fields to replace",
         "search query with a user field that contains a backslash",
         "search query with a user field that is surrounded by quotation marks and contains a backslash",
-        "search query fields in notable data more than one value, with one empty value",
+        "search query fields in finding data more than one value, with one empty value",
         "search query with $ as part of the search - no need to replace",
     ],
 )
-def test_build_drilldown_search(notable_data, search, raw, is_query_name, expected_search, mocker):
+def test_build_drilldown_search(finding_data, search, raw, is_query_name, expected_search, mocker):
     """
     Scenario: When building the drilldown search query, we replace every field in between "$" sign with its
      corresponding query part (key & value).
 
     Given:
-    - A raw search query with fields both in the notable's data and in the notable's raw data
-    - A raw search query with fields in the notable's data that has more than one value
-    - A raw search query with fields that does not exist in the notable's data or in the notable's raw data
-    - A raw query name with fields both in the notable's data and in the notable's raw data
-    - A raw query name with fields in the notable's raw data
+    - A raw search query with fields both in the finding's data and in the finding's raw data
+    - A raw search query with fields in the finding's data that has more than one value
+    - A raw search query with fields that does not exist in the finding's data or in the finding's raw data
+    - A raw query name with fields both in the finding's data and in the finding's raw data
+    - A raw query name with fields in the finding's raw data
     - A raw query name without any fields to replace.
     - A raw query search with a user field that contains a backslash
     - A raw query search with a user field that is surrounded by quotation marks and contains a backslash
@@ -1356,12 +1295,12 @@ def test_build_drilldown_search(notable_data, search, raw, is_query_name, expect
     """
     mocker.patch.object(demisto, "error")
     mocker.patch.object(demisto, "params", return_value={})
-    parsed_query = splunk.build_drilldown_search(notable_data, search, raw, is_query_name)
+    parsed_query = splunk.build_drilldown_search(finding_data, search, raw, is_query_name)
     assert parsed_query == expected_search
 
 
 @pytest.mark.parametrize(
-    "notable_data, prefix, fields, query_part",
+    "finding_data, prefix, fields, query_part",
     [
         ({"user": ["u1", "u2"]}, "identity", ["user"], '(identity="u1" OR identity="u2")'),
         ({"_raw": "1233, user=u1"}, "user", ["user"], 'user="u1"'),
@@ -1374,16 +1313,16 @@ def test_build_drilldown_search(notable_data, search, raw, is_query_name, expect
         ({}, "prefix", ["field"], ""),
     ],
 )
-def test_get_fields_query_part(notable_data, prefix, fields, query_part):
+def test_get_fields_query_part(finding_data, prefix, fields, query_part):
     """
-    Scenario: When building an enrichment search query, we search for values in the notable's data / notable's raw data
+    Scenario: When building an enrichment search query, we search for values in the finding's data / finding's raw data
      and fill them in the raw search query to create a searchable query.
 
     Given:
     - One field with multiple values, values in the data
     - One field, value is in the raw data
     - Two fields with multiple values, values in both the data and the raw data
-    - An empty notable data, field does not exists
+    - An empty finding data, field does not exists
 
     When:
     - get_fields_query_part is called
@@ -1391,60 +1330,8 @@ def test_get_fields_query_part(notable_data, prefix, fields, query_part):
     Then:
     - Return the expected result
     """
-    assert splunk.get_fields_query_part(notable_data, prefix, fields) == query_part
+    assert splunk.get_fields_query_part(finding_data, prefix, fields) == query_part
 
-
-@pytest.mark.parametrize(
-    "enrichments, expected_result",
-    [
-        (
-            [
-                splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id="1"),
-                splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id="2"),
-                splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id="3"),
-            ],
-            3,
-        ),
-        (
-            [
-                splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id="1"),
-                splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id="2"),
-                splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id="3"),
-            ],
-            1,
-        ),
-        (
-            [
-                splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id="1"),
-                splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id="2"),
-                splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id="3"),
-            ],
-            0,
-        ),
-    ],
-    ids=[
-        "A Notable with 3 drilldown enrichments",
-        "A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment",
-        "A Notable with 2 asset enrichments and 1 identity enrichment",
-    ],
-)
-def test_drilldown_searches_counter(enrichments, expected_result):
-    """
-     Tests the drilldown searches enrichment counter.
-
-    Given:
-    - A Notable with 3 drilldown enrichments.
-    - A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment.
-    - A Notable with 2 asset enrichments and 1 identity enrichment.
-
-    When:
-    - drilldown_searches_counter function is called
-
-    Then:
-    - Return the expected result - number of drilldown enrichments.
-    """
-    notable = splunk.Notable({}, notable_id="id", enrichments=enrichments)
-    assert notable.drilldown_searches_counter() == expected_result
 
 
 @pytest.mark.parametrize(
@@ -1543,39 +1430,46 @@ def test_drilldown_searches_counter(enrichments, expected_result):
                     data=[{"result1": "a"}, {"result2": "b"}],
                 )
             ],
-            [{"result1": "a"}, {"result2": "b"}],
+            [
+                {
+                    "query_name": "query_name1",
+                    "query_search": "query_search1",
+                    "query_results": [{"result1": "a"}, {"result2": "b"}],
+                    "enrichment_status": splunk.Enrichment.SUCCESSFUL,
+                }
+            ],
         ),
         ([], None),
     ],
     ids=[
-        "A Notable with 3 drilldown enrichments, 1 asset enrichment and 1 identity enrichment",
-        "A Notable with 2 drilldown enrichment, 1 asset enrichment and 1 identity enrichment",
-        "A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment",
-        "A Notable without drilldown enrichments, 1 asset enrichments and 1 identity enrichment",
+        "A Finding with 3 drilldown enrichments, 1 asset enrichment and 1 identity enrichment",
+        "A Finding with 2 drilldown enrichment, 1 asset enrichment and 1 identity enrichment",
+        "A Finding with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment",
+        "A Finding without drilldown enrichments, 1 asset enrichments and 1 identity enrichment",
     ],
 )
-def test_to_incident_notable_enrichments_data(enrichments, expected_data):
+def test_to_incident_finding_enrichments_data(enrichments, expected_data):
     """
-     Tests the logic of the Notable.to_incident() function, regarding the results data of multiple drilldown enrichments.
+     Tests the logic of the Finding.to_incident() function, regarding the results data of multiple drilldown enrichments.
 
     Given:
-        1. A Notable with 3 drilldown enrichments, 1 asset enrichment and 1 identity enrichment.
-        2. A Notable with 2 drilldown enrichment, 1 asset enrichment and 1 identity enrichment.
-        3. A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment.
-        4. A Notable without drilldown enrichments, 1 asset enrichments and 1 identity enrichment.
+        1. A Finding with 3 drilldown enrichments, 1 asset enrichment and 1 identity enrichment.
+        2. A Finding with 2 drilldown enrichment, 1 asset enrichment and 1 identity enrichment.
+        3. A Finding with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment.
+        4. A Finding without drilldown enrichments, 1 asset enrichments and 1 identity enrichment.
 
     When:
-    - Notable.to_incident() function is called
+    - Finding.to_incident() function is called
 
     Then:
-    - Verify that the data of the notable includes the expected enrichements result as follow:
+    - Verify that the data of the finding includes the expected enrichements result as follow:
         1. A dictionary with the results of the 3 drilldown searches by query names.
         2. A dictionary with the results of the 2 drilldown searches by query names.
         3. A list of the drilldown searches results (backwards competability).
-        4. No 'Drilldown' key in the notables data.
+        4. No 'Drilldown' key in the findings data.
 
     """
-    notable = splunk.Notable({}, notable_id="id", enrichments=enrichments)
+    finding = splunk.Finding({}, finding_id="id", enrichments=enrichments)
     enrichments_to_add = [
         splunk.Enrichment(
             splunk.ASSET_ENRICHMENT,
@@ -1590,15 +1484,15 @@ def test_to_incident_notable_enrichments_data(enrichments, expected_data):
             data=[{"result1": "a"}, {"result2": "b"}],
         ),
     ]
-    notable.enrichments.extend(enrichments_to_add)
+    finding.enrichments.extend(enrichments_to_add)
 
     service = Service("DONE")
     mapper = splunk.UserMappingObject(service, False)
-    notable.to_incident(mapper, "comment_tag_to_splunk", "comment_tag_from_splunk")
+    finding.to_incident(mapper)
 
-    assert notable.data.get(splunk.ASSET_ENRICHMENT) == [{"result1": "a"}, {"result2": "b"}]
-    assert notable.data.get(splunk.IDENTITY_ENRICHMENT) == [{"result1": "a"}, {"result2": "b"}]
-    assert notable.data.get(splunk.DRILLDOWN_ENRICHMENT) == expected_data
+    assert finding.data.get(splunk.ASSET_ENRICHMENT) == [{"result1": "a"}, {"result2": "b"}]
+    assert finding.data.get(splunk.IDENTITY_ENRICHMENT) == [{"result1": "a"}, {"result2": "b"}]
+    assert finding.data.get(splunk.DRILLDOWN_ENRICHMENT) == expected_data
 
 
 @pytest.mark.parametrize(
@@ -1778,42 +1672,42 @@ def test_to_incident_notable_enrichments_data(enrichments, expected_data):
         ),
     ],
     ids=[
-        "A Notable with 1 successful Asset enrichment",
-        "A Notable with 1 failed Asset enrichment",
-        "A Notable with 1 successful Identity enrichment",
-        "A Notable with 1 failed Identity enrichment",
-        "A Notable with 1 successful Drilldown enrichment",
-        "A Notable with 1 failed Drilldown enrichment",
-        "A Notable with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the first is successful)",
-        "A Notable with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the second is successful)",
-        "A Notable with 2 Drilldown enrichments [failed, failed]",
-        "A Notable with 2 Drilldown enrichments [successful, successful]",
-        "A Notable with 3 Drilldown enrichments [failed, successful, failed]",
+        "A Finding with 1 successful Asset enrichment",
+        "A Finding with 1 failed Asset enrichment",
+        "A Finding with 1 successful Identity enrichment",
+        "A Finding with 1 failed Identity enrichment",
+        "A Finding with 1 successful Drilldown enrichment",
+        "A Finding with 1 failed Drilldown enrichment",
+        "A Finding with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the first is successful)",
+        "A Finding with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the second is successful)",
+        "A Finding with 2 Drilldown enrichments [failed, failed]",
+        "A Finding with 2 Drilldown enrichments [successful, successful]",
+        "A Finding with 3 Drilldown enrichments [failed, successful, failed]",
     ],
 )
-def test_to_incident_notable_enrichments_status(enrichments, enrichment_type, expected_stauts_result):
+def test_to_incident_finding_enrichments_status(enrichments, enrichment_type, expected_stauts_result):
     """
-     Tests the logic of the Notable.to_incident() function, regarding the statuses of enrichments.
+     Tests the logic of the Finding.to_incident() function, regarding the statuses of enrichments.
 
     Given:
-        1. A Notable with 1 successful Asset enrichment.
-        2. A Notable with 1 failed Asset enrichment.
-        3. A Notable with 1 successful Identity enrichment.
-        4. A Notable with 1 failed Identity enrichment.
-        5. A Notable with 1 successful Drilldown enrichment.
-        6. A Notable with 1 failed Drilldown enrichment.
-        7. A Notable with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the first is successful).
-        8. A Notable with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the second is successful).
-        9. A Notable with 2 Drilldown enrichments [failed, failed].
-        10. A Notable with 2 Drilldown enrichments [successful, successful].
-        11. A Notable with 3 Drilldown enrichments [failed, successful, failed].
+        1. A Finding with 1 successful Asset enrichment.
+        2. A Finding with 1 failed Asset enrichment.
+        3. A Finding with 1 successful Identity enrichment.
+        4. A Finding with 1 failed Identity enrichment.
+        5. A Finding with 1 successful Drilldown enrichment.
+        6. A Finding with 1 failed Drilldown enrichment.
+        7. A Finding with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the first is successful).
+        8. A Finding with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the second is successful).
+        9. A Finding with 2 Drilldown enrichments [failed, failed].
+        10. A Finding with 2 Drilldown enrichments [successful, successful].
+        11. A Finding with 3 Drilldown enrichments [failed, successful, failed].
 
 
     When:
-    - Notable.to_incident() function is called
+    - Finding.to_incident() function is called
 
     Then:
-    - Verify that the status of the notable enrichments is as follow:
+    - Verify that the status of the finding enrichments is as follow:
         1. Asset Enrichment status is: successful_asset_enrichment = True.
         2. Asset Enrichment status is: successful_asset_enrichment = False.
         3. Identity Enrichment status is: successful_identity_enrichment = True.
@@ -1829,12 +1723,12 @@ def test_to_incident_notable_enrichments_status(enrichments, enrichment_type, ex
         11. Drilldown Enrichment status is: successful_drilldown_enrichment = True.
 
     """
-    notable = splunk.Notable({}, notable_id="id", enrichments=enrichments)
+    finding = splunk.Finding({}, finding_id="id", enrichments=enrichments)
     service = Service("DONE")
     mapper = splunk.UserMappingObject(service, False)
-    notable.to_incident(mapper, "comment_tag_to_splunk", "comment_tag_from_splunk")
+    finding.to_incident(mapper)
 
-    assert notable.data[splunk.ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[enrichment_type]] == expected_stauts_result
+    assert finding.data[splunk.ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[enrichment_type]] == expected_stauts_result
 
 
 def test_parse_drilldown_searches():
@@ -1877,29 +1771,29 @@ def test_parse_drilldown_searches():
 
 
 @pytest.mark.parametrize(
-    "notable_data, expected_call_count",
+    "finding_data, expected_call_count",
     [
         ({"event_id": "test_id", "drilldown_search": "test_search", "drilldown_searches": ["test_search1", "test_search2"]}, 0),
         ({"event_id": "test_id", "drilldown_search": "", "drilldown_searches": ["test_search1", "test_search2"]}, 1),
         ({"event_id": "test_id", "drilldown_searches": ["test_search1", "test_search2"]}, 1),
     ],
     ids=[
-        "A notable data with both 'drilldown_search' and 'drilldown_searches' keys with values",
-        "A notable data with both 'drilldown_search' and 'drilldown_searches' keys but 'drilldown_search' has no value",
-        "A notable data with 'drilldown_searches' key only",
+        "A finding data with both 'drilldown_search' and 'drilldown_searches' keys with values",
+        "A finding data with both 'drilldown_search' and 'drilldown_searches' keys but 'drilldown_search' has no value",
+        "A finding data with 'drilldown_searches' key only",
     ],
 )
-def test_drilldown_enrichment_main_condition(mocker, notable_data, expected_call_count):
+def test_drilldown_enrichment_main_condition(mocker, finding_data, expected_call_count):
     """
     Tests the logic of the first (main) condition in the drilldown_enrichment() function.
-    We want to make sure that in a case that the notable data include both 'drilldown_search' and 'drilldown_searches'
+    We want to make sure that in a case that the finding data include both 'drilldown_search' and 'drilldown_searches'
     keys (happens when there is only one drilldown search to enrich) the 'drilldown_search' value will be taken to maintain
     backwards cometability. In any other case the value of the 'drilldown_searches' key will be used.
 
     Given:
-        1. A notable data that includes both 'drilldown_search' and 'drilldown_searches' keys with values.
-        2. A notable data that includes both 'drilldown_search' and 'drilldown_searches' keys but 'drilldown_search' has no value.
-        3. A notable data that includes 'drilldown_searches' key only.
+        1. A finding data that includes both 'drilldown_search' and 'drilldown_searches' keys with values.
+        2. A finding data that includes both 'drilldown_search' and 'drilldown_searches' keys but 'drilldown_search' has no value.
+        3. A finding data that includes 'drilldown_searches' key only.
 
     When:
     - Running the  splunk.drilldown_enrichment function
@@ -1912,14 +1806,14 @@ def test_drilldown_enrichment_main_condition(mocker, notable_data, expected_call
         3. The value of the 'drilldown_searches' key is taken, and therefore we call the parse_drilldown_searches function.
 
     """
-    mock_parse_drilldown_searches = mocker.patch("SplunkPy.parse_drilldown_searches", return_value=[])
+    mock_parse_drilldown_searches = mocker.patch("SplunkPyV2.parse_drilldown_searches", return_value=[])
     service = Service("DONE")
-    splunk.drilldown_enrichment(service, notable_data, 5)
+    splunk.drilldown_enrichment(service, finding_data, 5)
     assert mock_parse_drilldown_searches.call_count == expected_call_count
 
 
 @pytest.mark.parametrize(
-    "notable_data, expected_call_count",
+    "finding_data, expected_call_count",
     [
         ({"event_id": "test_id", "drilldown_search": "test_search", "drilldown_searches": [{}], "_raw": "{'test':1}"}, 1),
         (
@@ -1936,17 +1830,17 @@ def test_drilldown_enrichment_main_condition(mocker, notable_data, expected_call
             0,
         ),
     ],
-    ids=["A notable data with one drilldown search", "A notable data with multiple drilldown searches"],
+    ids=["A finding data with one drilldown search", "A finding data with multiple drilldown searches"],
 )
-def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_count):
+def test_drilldown_enrichment_get_timeframe(mocker, finding_data, expected_call_count):
     """
-    Tests that in a case of one drildown search we extract the search timeframe from the notable data by calling the
+    Tests that in a case of one drildown search we extract the search timeframe from the finding data by calling the
     get_drilldown_timeframe() function, and in a case of multiple drilldown searches, we get the timeframe from the drilldown
     search data dictionary without calling the get_drilldown_timeframe() function.
 
     Given:
-        1. A notable data with one drilldown search.
-        2. A notable data with multiple drilldown searches.
+        1. A finding data with one drilldown search.
+        2. A finding data with multiple drilldown searches.
 
 
     When:
@@ -1954,20 +1848,20 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
 
     Then:
     - Verify that:
-        1. The timeframe is determined according to fields in the notable data and raw data by using the
+        1. The timeframe is determined according to fields in the finding data and raw data by using the
            get_drilldown_timeframe function.
         2. The timeframe is determined according to fields of each drilldown search data dict.
 
     """
-    mock_get_drilldown_timeframe = mocker.patch("SplunkPy.get_drilldown_timeframe", return_value=("", ""))
-    mocker.patch("SplunkPy.build_drilldown_search", return_value="")
+    mock_get_drilldown_timeframe = mocker.patch("SplunkPyV2.get_drilldown_timeframe", return_value=("", ""))
+    mocker.patch("SplunkPyV2.build_drilldown_search", return_value="")
     service = Service("DONE")
-    splunk.drilldown_enrichment(service, notable_data, 5)
+    splunk.drilldown_enrichment(service, finding_data, 5)
     assert mock_get_drilldown_timeframe.call_count == expected_call_count
 
 
 @pytest.mark.parametrize(
-    "notable_data, expected_result",
+    "finding_data, expected_result",
     [
         (
             {
@@ -2028,18 +1922,18 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
         ),
     ],
     ids=[
-        "A notable data with one drilldown search enrichment",
-        "A notable data with two drilldown searches which contained the earlies in 'earliest' key ",
-        "A notable data with two drilldown searches which contained the earlies in 'earliest_offset' key ",
+        "A finding data with one drilldown search enrichment",
+        "A finding data with two drilldown searches which contained the earlies in 'earliest' key ",
+        "A finding data with two drilldown searches which contained the earlies in 'earliest_offset' key ",
     ],
 )
-def test_drilldown_enrichment(notable_data, expected_result):
+def test_drilldown_enrichment(finding_data, expected_result):
     """
     Tests the logic of the drilldown_enrichment function.
 
     Given:
-        1. A notable data with one drilldown search enrichment.
-        2. A notable data with multiple (two) drilldown searches to enrich.
+        1. A finding data with one drilldown search enrichment.
+        2. A finding data with multiple (two) drilldown searches to enrich.
 
 
     When:
@@ -2052,7 +1946,7 @@ def test_drilldown_enrichment(notable_data, expected_result):
     from splunklib import client
 
     service = Service("DONE")
-    jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
+    jobs_and_queries = splunk.drilldown_enrichment(service, finding_data, 5)
     for i in range(len(jobs_and_queries)):
         job_and_queries = jobs_and_queries[i]
         assert job_and_queries[0] == expected_result[i][0]
@@ -2061,9 +1955,9 @@ def test_drilldown_enrichment(notable_data, expected_result):
 
 
 @pytest.mark.parametrize(
-    "notable_data, debug_log_message",
+    "finding_data, debug_log_message",
     [
-        ({"event_id": "test_id"}, "drill-down was not properly configured for notable test_id"),
+        ({"event_id": "test_id"}, "drill-down was not properly configured for finding test_id"),
         (
             {
                 "event_id": "test_id",
@@ -2073,7 +1967,7 @@ def test_drilldown_enrichment(notable_data, expected_result):
                 "drilldown_latest": "",
                 "drilldown_earliest": "",
             },
-            "Failed getting the drilldown timeframe for notable test_id",
+            "Failed getting the drilldown timeframe for finding test_id",
         ),
         (
             {
@@ -2084,7 +1978,7 @@ def test_drilldown_enrichment(notable_data, expected_result):
                 "drilldown_latest": "00101",
                 "drilldown_earliest": "00001",
             },
-            "Couldn't build search query for notable test_id with the following drilldown search ",
+            "Couldn't build search query for finding test_id with the following drilldown search ",
         ),
         (
             {
@@ -2097,7 +1991,7 @@ def test_drilldown_enrichment(notable_data, expected_result):
                 ],
                 "_raw": "src='test_src', user='test_user'",
             },
-            "Failed getting the drilldown timeframe for notable test_id",
+            "Failed getting the drilldown timeframe for finding test_id",
         ),
         (
             {
@@ -2110,27 +2004,27 @@ def test_drilldown_enrichment(notable_data, expected_result):
                 ],
                 "_raw": "",
             },
-            "Couldn't build search query for notable test_id with the following drilldown search",
+            "Couldn't build search query for finding test_id with the following drilldown search",
         ),
     ],
     ids=[
-        "A notable data without drilldown enrichment data",
-        "A notable data with a single drilldown enrichment without search timeframe data",
-        "A notable data with a single drilldown enrichment with an invalid search query",
-        "A notable data with multiple drilldown enrichments without search timeframe data",
-        "A notable data with multiple drilldown enrichments with invalid search queries",
+        "A finding data without drilldown enrichment data",
+        "A finding data with a single drilldown enrichment without search timeframe data",
+        "A finding data with a single drilldown enrichment with an invalid search query",
+        "A finding data with multiple drilldown enrichments without search timeframe data",
+        "A finding data with multiple drilldown enrichments with invalid search queries",
     ],
 )
-def test_drilldown_enrichment_no_enrichement_cases(mocker, notable_data, debug_log_message):
+def test_drilldown_enrichment_no_enrichement_cases(mocker, finding_data, debug_log_message):
     """
     Tests the logic of the drilldown_enrichment function when for some reason the enrichments raw data is invalid.
 
     Given:
-        1. A notable data without drilldown enrichment data.
-        2. A notable data with a single drilldown enrichment without search timeframe data.
-        3. A notable data with a single drilldown enrichment with an invalid search query.
-        4. A notable data with multiple drilldown enrichments without search timeframe data.
-        5. A notable data with multiple drilldown enrichments with invalid search queries.
+        1. A finding data without drilldown enrichment data.
+        2. A finding data with a single drilldown enrichment without search timeframe data.
+        3. A finding data with a single drilldown enrichment with an invalid search query.
+        4. A finding data with multiple drilldown enrichments without search timeframe data.
+        5. A finding data with multiple drilldown enrichments with invalid search queries.
 
     When:
     - Running the splunk.drilldown_enrichment function.
@@ -2142,7 +2036,7 @@ def test_drilldown_enrichment_no_enrichement_cases(mocker, notable_data, debug_l
     debug_log = mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
     service = Service("DONE")
-    jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
+    jobs_and_queries = splunk.drilldown_enrichment(service, finding_data, 5)
     for i in range(len(jobs_and_queries)):
         assert jobs_and_queries[i] == (None, None, None)
         assert debug_log_message in debug_log.call_args.args[0]
@@ -2151,41 +2045,11 @@ def test_drilldown_enrichment_no_enrichement_cases(mocker, notable_data, debug_l
 """ ========== Mirroring Mechanism Tests ========== """
 
 
-@pytest.mark.parametrize(
-    "last_update, demisto_params, splunk_time_timestamp",
-    [
-        ("2021-02-22T18:39:47.753+00:00", {"timezone": "0"}, 1614019187.753),
-        ("2021-02-22T18:39:47.753+02:00", {"timezone": "+120"}, 1614019187.753),
-        ("2021-02-22T20:39:47.753+02:00", {"timezone": "0"}, 1614019187.753),
-        ("2021-02-09T16:41:30.589575+02:00", {}, ""),
-    ],
-)
-def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time_timestamp, mocker):
-    """Tests the conversion of the Demisto server time into timestamp in Splunk Server time
-
-    Given:
-        - The last update time in the Demisto server
-        - The timezone in the Splunk Server
-    When:
-        Converting the time in the Demisto server into timestamp in Splunk Server time
-    Then:
-        - Conversion is correct
-        - An Exception is raised in case that Splunk Server timezone is not specified in Demisto params
-    """
-    mocker.patch.object(demisto, "params", return_value=demisto_params)
-    if demisto_params:
-        assert splunk.get_last_update_in_splunk_time(last_update) == splunk_time_timestamp
-    else:
-        error_msg = "Cannot mirror incidents when timezone is not configured. Please enter the "
-        "timezone of the Splunk server being used in the integration configuration."
-        with pytest.raises(Exception, match=error_msg):
-            splunk.get_last_update_in_splunk_time(last_update)
-
 
 @pytest.mark.parametrize(
-    "notable_data, func_call_kwargs, expected_closure_data",
+    "finding_data, func_call_kwargs, expected_closure_data",
     [
-        # A Notable with a "Closed" status label
+        # A Finding with a "Closed" status label
         (
             [
                 results.Message("INFO-TEST", "test message"),
@@ -2194,7 +2058,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                     "event_id": "id",
                     "rule_id": "id",
                     "status_end": "true",
-                    "last_modified_timestamp": "1737547610.49",
+                    "review_time": "1737547610.49",
                 },
             ],
             {
@@ -2207,12 +2071,12 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": 'Notable event was closed on Splunk with status "Closed".',
+                    "closeReason": 'Finding event was closed on Splunk with status "Closed".',
                 },
                 "ContentsFormat": EntryFormat.JSON,
             },
         ),
-        # A Notable with a "New" status label (shouldn't close)
+        # A Finding with a "New" status label (shouldn't close)
         (
             [
                 results.Message("INFO-TEST", "test message"),
@@ -2221,7 +2085,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                     "event_id": "id",
                     "rule_id": "id",
                     "status_end": "false",
-                    "last_modified_timestamp": "1737547610.50",
+                    "review_time": "1737547610.50",
                 },
             ],
             {
@@ -2231,7 +2095,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
             },
             None,
         ),
-        # A Notable with a custom status label that is on close_extra_labels (should close)
+        # A Finding with a custom status label that is on close_extra_labels (should close)
         (
             [
                 results.Message("INFO-TEST", "test message"),
@@ -2240,7 +2104,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                     "event_id": "id",
                     "rule_id": "id",
                     "status_end": "false",
-                    "last_modified_timestamp": "1737547610.51",
+                    "review_time": "1737547610.51",
                 },
             ],
             {
@@ -2253,12 +2117,12 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": 'Notable event was closed on Splunk with status "Custom".',
+                    "closeReason": 'Finding event was closed on Splunk with status "Custom".',
                 },
                 "ContentsFormat": EntryFormat.JSON,
             },
         ),
-        # A Notable with close_extra_labels that don't include status_label (shouldn't close)
+        # A Finding with close_extra_labels that don't include status_label (shouldn't close)
         (
             [
                 results.Message("INFO-TEST", "test message"),
@@ -2267,7 +2131,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                     "event_id": "id",
                     "rule_id": "id",
                     "status_end": "false",
-                    "last_modified_timestamp": "1737547610.52",
+                    "review_time": "1737547610.52",
                 },
             ],
             {
@@ -2277,7 +2141,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
             },
             None,
         ),
-        # A Notable that has status_end as true with close_end_statuses as true (should close)
+        # A Finding that has status_end as true with close_end_statuses as true (should close)
         (
             [
                 results.Message("INFO-TEST", "test message"),
@@ -2286,7 +2150,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                     "event_id": "id",
                     "rule_id": "id",
                     "status_end": "true",
-                    "last_modified_timestamp": "1737547610.53",
+                    "review_time": "1737547610.53",
                 },
             ],
             {
@@ -2299,12 +2163,12 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": 'Notable event was closed on Splunk with status "Custom".',
+                    "closeReason": 'Finding event was closed on Splunk with status "Custom".',
                 },
                 "ContentsFormat": EntryFormat.JSON,
             },
         ),
-        # A Notable that has status_end as true with close_end_statuses as false (shouldn't close)
+        # A Finding that has status_end as true with close_end_statuses as false (shouldn't close)
         (
             [
                 results.Message("INFO-TEST", "test message"),
@@ -2313,7 +2177,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                     "event_id": "id",
                     "rule_id": "id",
                     "status_end": "true",
-                    "last_modified_timestamp": "1737547610.54",
+                    "review_time": "1737547610.54",
                 },
             ],
             {
@@ -2323,7 +2187,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
             },
             None,
         ),
-        # A Notable that is both on close_extra_labels,
+        # A Finding that is both on close_extra_labels,
         # and has status_end as true with close_end_statuses as true (should close)
         (
             [
@@ -2333,7 +2197,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                     "event_id": "id",
                     "rule_id": "id",
                     "status_end": "true",
-                    "last_modified_timestamp": "1737547610.55",
+                    "review_time": "1737547610.55",
                 },
             ],
             {
@@ -2346,7 +2210,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": 'Notable event was closed on Splunk with status "Custom".',
+                    "closeReason": 'Finding event was closed on Splunk with status "Custom".',
                 },
                 "ContentsFormat": EntryFormat.JSON,
             },
@@ -2354,12 +2218,12 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
     ],
 )
 def test_get_modified_remote_data_command_close_incident(
-    mocker, notable_data: list[results.Message | dict], func_call_kwargs: dict, expected_closure_data: dict
+    mocker, finding_data: list[results.Message | dict], func_call_kwargs: dict, expected_closure_data: dict
 ):
     class Jobs:
         def oneshot(self, **kwargs):
             assert kwargs["output_mode"] == splunk.OUTPUT_MODE_JSON
-            return notable_data
+            return finding_data
 
     class Service:
         def __init__(self):
@@ -2370,19 +2234,18 @@ def test_get_modified_remote_data_command_close_incident(
     mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "info")
-    mocker.patch("SplunkPy.results.JSONResultsReader", return_value=notable_data)
+    mocker.patch("SplunkPyV2.results.JSONResultsReader", return_value=finding_data)
     mocker.patch.object(demisto, "results")
     service = Service()
     splunk.get_modified_remote_data_command(
         service,
         args,
         mapper=splunk.UserMappingObject(service, False),
-        comment_tag_from_splunk="comment_tag_from_splunk",
         **func_call_kwargs,
     )
     results = demisto.results.call_args[0][0]
 
-    expected_entries["Contents"] = notable_data[1]
+    expected_entries["Contents"] = finding_data[1]
     expected_results = [expected_entries]
 
     if expected_closure_data:
@@ -2407,17 +2270,16 @@ def test_get_remote_data_command_with_message(mocker):
     """
     service = mocker.patch.object(client, "Service")
     mocker.patch.object(demisto, "info")
-    mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
+    mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
     func_call_kwargs = {
         "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
         "close_incident": True,
         "close_end_statuses": True,
         "close_extra_labels": ["Custom"],
         "mapper": splunk.UserMappingObject(service, False),
-        "comment_tag_from_splunk": "from_splunk",
     }
 
-    mocker.patch("SplunkPy.results.JSONResultsReader", return_value=[results.Message("INFO-test", "test message")])
+    mocker.patch("SplunkPyV2.results.JSONResultsReader", return_value=[results.Message("INFO-test", "test message")])
 
     splunk.get_modified_remote_data_command(service, **func_call_kwargs)
     assert demisto.info.call_args[0][0] == "Splunk-SDK message: test message"
@@ -2430,7 +2292,9 @@ def test_fetch_with_error_in_message(mocker):
     Then - assert DemistoException is raised
     """
 
-    mock_params = {"fetchQuery": "something", "parseNotableEventsRaw": True}
+    mock_params = {"fetchQuery": "something", "parseFindingEventsRaw": True}
+    mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
+    mocker.patch.object(splunk.client.Job, "is_done", return_value=True)
     mocker.patch("demistomock.getLastRun", return_value={"time": "2018-10-24T14:13:20"})
     mocker.patch("demistomock.params", return_value=mock_params)
     mocker.patch("splunklib.results.JSONResultsReader", return_value=[results.Message("FATAL", "Error")])
@@ -2438,71 +2302,17 @@ def test_fetch_with_error_in_message(mocker):
     # run
     service = mocker.patch("splunklib.client.connect")
     with pytest.raises(DemistoException) as e:
-        splunk.fetch_incidents(service, None, None, None)
+        splunk.fetch_incidents(service, None)
     assert "Failed to fetch incidents, check the provided query in Splunk web search" in e.value.message
-
-
-def test_get_modified_remote_data_command_add_comment(mocker):
-    """
-    Test case for get_modified_remote_data_command with comment addition.
-    Given:
-        - notable data with new comment
-    When:
-        new comment added in splunk
-    Then:
-        - ensure the comment added as a new note
-        - ensure the event was updated
-
-    """
-    test_id = "test_event_id"
-    notable_data = {
-        "status_label": "New",
-        "rule_id": test_id,
-        "event_id": test_id,
-        "status_end": "false",
-        "comment": "new comment from splunk",
-        "reviewer": "admin",
-        "last_modified_timestamp": "1737547610.56",
-        "review_time": "1612881691.589575",
-    }
-    entry_tempale = {"EntryContext": {"mirrorRemoteId": test_id}, "Type": 1}
-    expected_comment_entry = entry_tempale | {
-        "Contents": "new comment from splunk",
-        "ContentsFormat": "text",
-        "Tags": ["from_splunk"],
-        "Note": True,
-    }
-    expected_notable_entry = entry_tempale | {"Contents": notable_data, "ContentsFormat": "json"}
-
-    mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
-    mocker.patch("SplunkPy.results.JSONResultsReader", return_value=[notable_data])
-    mocker.patch.object(demisto, "results")
-    service = mocker.patch.object(client, "Service")
-
-    func_call_kwargs = {
-        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
-        "close_incident": True,
-        "close_end_statuses": True,
-        "close_extra_labels": ["Custom"],
-        "mapper": splunk.UserMappingObject(service, False),
-        "comment_tag_from_splunk": "from_splunk",
-    }
-    splunk.get_modified_remote_data_command(service, **func_call_kwargs)
-    results = demisto.results.call_args[0][0][0]
-    notable_data.update({"SplunkComments": [{"Comment": "new comment from splunk"}]})
-    note_results = demisto.results.call_args[0][0][1]
-
-    assert demisto.results.call_count == 1
-    assert results == expected_notable_entry
-    assert note_results == expected_comment_entry
 
 
 def test_get_modified_remote_data_command(mocker):
     updated_incidet_review = {
         "rule_id": "id",
         "event_id": "id",
-        "last_modified_timestamp": "1737547610.56",
+        "review_time": "1737547610.56",
     }
+    mocker.patch("SplunkPyV2.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
     service = mocker.patch.object(client, "Service")
     func_call_kwargs = {
         "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
@@ -2510,10 +2320,9 @@ def test_get_modified_remote_data_command(mocker):
         "close_end_statuses": True,
         "close_extra_labels": ["Custom"],
         "mapper": splunk.UserMappingObject(service, False),
-        "comment_tag_from_splunk": "from_splunk",
     }
     mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
-    mocker.patch("SplunkPy.results.JSONResultsReader", return_value=[updated_incidet_review])
+    mocker.patch("SplunkPyV2.results.JSONResultsReader", return_value=[updated_incidet_review])
     mocker.patch.object(demisto, "results")
     splunk.get_modified_remote_data_command(service, **func_call_kwargs)
     results = demisto.results.call_args[0][0][0]["Contents"]
@@ -2521,10 +2330,10 @@ def test_get_modified_remote_data_command(mocker):
     assert results == updated_incidet_review
 
 
-def test_edit_notable_event__failed_to_update(mocker, requests_mock):
+def test_edit_finding_event__failed_to_update(mocker):
     """
     Given
-    - notable event with id ID100
+    - finding event with id ID100
 
     When
     - updating the event with invalid owner 'dbot'
@@ -2533,294 +2342,241 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
     Then
     - ensure the error message parsed correctly and returned to the user
     """
-    test_base_url = "https://test.url.com:8089/"
-    test_token = "token12345"
-    test_args = {"eventIDs": "ID100", "owner": "dbot"}
+    
+    test_args = {"event_ids": "ID100", "owner": "dbot"}
     mocker.patch.object(splunk, "return_error")
 
-    requests_mock.post(f"{test_base_url}services/notable_update", json="ValueError: Invalid owner value.")
+    mocker.patch.object(splunk, "update_investigation_or_finding", side_effect=Exception("ValueError: Invalid owner value."))
 
-    splunk.splunk_edit_notable_event_command(base_url=test_base_url, token=test_token, auth_token=None, args=test_args)
+    splunk.splunk_edit_finding_command(service=MagicMock(), args=test_args)
 
     assert splunk.return_error.call_count == 1
     error_message = splunk.return_error.call_args[0][0]
-    assert error_message == "Could not update notable events: ID100: ValueError: Invalid owner value."
+    assert "Failed to update finding ID100: ValueError: Invalid owner value." in error_message
 
-
-@pytest.mark.parametrize(
-    "args, params, call_count, success",
-    [
-        (
-            {"delta": {"status": "2"}, "remoteId": "12345", "status": 2, "incidentChanged": True},
-            {"host": "ec.com", "port": "8089", "authentication": {"identifier": "i", "password": "p"}},
-            4,
-            True,
-        ),
-        (
-            {"delta": {"status": "2"}, "remoteId": "12345", "status": 2, "incidentChanged": True},
-            {"host": "ec.com", "port": "8089", "authentication": {"identifier": "i", "password": "p"}},
-            3,
-            False,
-        ),
-        (
-            {"delta": {"status": "2"}, "remoteId": "12345", "status": 2, "incidentChanged": True},
-            {"host": "ec.com", "port": "8089", "authentication": {"identifier": "i", "password": "p"}, "close_notable": True},
-            5,
-            True,
-        ),
-    ],
-)
-def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
-    class Service:
-        def __init__(self):
-            self.token = "fake_token"
-            self.basic = True
-            self._auth_headers = [("Authentication", self.token)]
-
-    mocker.patch.object(demisto, "info")
-    mocker.patch.object(demisto, "debug")
-    base_url = "https://" + params["host"] + ":" + params["port"] + "/"
-    requests_mock.post(f"{base_url}services/auth/login", json={"sessionKey": "session_key"})
-    requests_mock.post(
-        f"{base_url}services/notable_update",
-        json={"success": success, "message": "wow"},
-    )
-    if not success:
-        mocker.patch.object(demisto, "error")
-    service = Service()
-    mapper = splunk.UserMappingObject(service, False)
-    assert (
-        splunk.update_remote_system_command(
-            args, params, service, None, mapper=mapper, comment_tag_to_splunk="comment_tag_to_splunk"
-        )
-        == args["remoteId"]
-    )
-    assert demisto.debug.call_count == call_count
-    if not success:
-        assert demisto.error.call_count == 1
 
 
 NOTABLE = {
-    "rule_name": "string",
-    "rule_title": "string",
-    "security_domain": "string",
-    "index": "string",
-    "rule_description": "string",
-    "risk_score": "string",
-    "host": "string",
-    "host_risk_object_type": "string",
-    "dest_risk_object_type": "string",
-    "dest_risk_score": "string",
-    "splunk_server": "string",
-    "_sourcetype": "string",
-    "_indextime": "string",
-    "_time": "string",
-    "src_risk_object_type": "string",
-    "src_risk_score": "string",
-    "_raw": "string",
-    "urgency": "string",
-    "owner": "string",
-    "info_min_time": "string",
-    "info_max_time": "string",
-    "comment": "string",
-    "reviewer": "string",
-    "rule_id": "string",
-    "action": "string",
-    "app": "string",
-    "authentication_method": "string",
-    "authentication_service": "string",
-    "bugtraq": "string",
-    "bytes": "string",
-    "bytes_in": "string",
-    "bytes_out": "string",
-    "category": "string",
-    "cert": "string",
-    "change": "string",
-    "change_type": "string",
-    "command": "string",
-    "comments": "string",
-    "cookie": "string",
-    "creation_time": "string",
-    "cve": "string",
-    "cvss": "string",
-    "date": "string",
-    "description": "string",
-    "dest": "string",
-    "dest_bunit": "string",
-    "dest_category": "string",
-    "dest_dns": "string",
-    "dest_interface": "string",
-    "dest_ip": "string",
-    "dest_ip_range": "string",
-    "dest_mac": "string",
-    "dest_nt_domain": "string",
-    "dest_nt_host": "string",
-    "dest_port": "string",
-    "dest_priority": "string",
-    "dest_translated_ip": "string",
-    "dest_translated_port": "string",
-    "dest_type": "string",
-    "dest_zone": "string",
-    "direction": "string",
-    "dlp_type": "string",
-    "dns": "string",
-    "duration": "string",
-    "dvc": "string",
-    "dvc_bunit": "string",
-    "dvc_category": "string",
-    "dvc_ip": "string",
-    "dvc_mac": "string",
-    "dvc_priority": "string",
-    "dvc_zone": "string",
-    "file_hash": "string",
-    "file_name": "string",
-    "file_path": "string",
-    "file_size": "string",
-    "http_content_type": "string",
-    "http_method": "string",
-    "http_referrer": "string",
-    "http_referrer_domain": "string",
-    "http_user_agent": "string",
-    "icmp_code": "string",
-    "icmp_type": "string",
-    "id": "string",
-    "ids_type": "string",
-    "incident": "string",
-    "ip": "string",
-    "mac": "string",
-    "message_id": "string",
-    "message_info": "string",
-    "message_priority": "string",
-    "message_type": "string",
-    "mitre_technique_id": "string",
-    "msft": "string",
-    "mskb": "string",
-    "name": "string",
-    "orig_dest": "string",
-    "orig_recipient": "string",
-    "orig_src": "string",
-    "os": "string",
-    "packets": "string",
-    "packets_in": "string",
-    "packets_out": "string",
-    "parent_process": "string",
-    "parent_process_id": "string",
-    "parent_process_name": "string",
-    "parent_process_path": "string",
-    "password": "string",
-    "payload": "string",
-    "payload_type": "string",
-    "priority": "string",
-    "problem": "string",
-    "process": "string",
-    "process_hash": "string",
-    "process_id": "string",
-    "process_name": "string",
-    "process_path": "string",
-    "product_version": "string",
-    "protocol": "string",
-    "protocol_version": "string",
-    "query": "string",
-    "query_count": "string",
-    "query_type": "string",
-    "reason": "string",
-    "recipient": "string",
-    "recipient_count": "string",
-    "recipient_domain": "string",
-    "recipient_status": "string",
-    "record_type": "string",
-    "registry_hive": "string",
-    "registry_key_name": "string",
-    "registry_path": "string",
-    "registry_value_data": "string",
-    "registry_value_name": "string",
-    "registry_value_text": "string",
-    "registry_value_type": "string",
-    "request_sent_time": "string",
-    "request_payload": "string",
-    "request_payload_type": "string",
-    "response_code": "string",
-    "response_payload_type": "string",
-    "response_received_time": "string",
-    "response_time": "string",
-    "result": "string",
-    "return_addr": "string",
-    "rule": "string",
-    "rule_action": "string",
-    "sender": "string",
-    "service": "string",
-    "service_hash": "string",
-    "service_id": "string",
-    "service_name": "string",
-    "service_path": "string",
-    "session_id": "string",
-    "sessions": "string",
-    "severity": "string",
-    "severity_id": "string",
-    "sid": "string",
-    "signature": "string",
-    "signature_id": "string",
-    "signature_version": "string",
-    "site": "string",
-    "size": "string",
-    "source": "string",
-    "sourcetype": "string",
-    "src": "string",
-    "src_bunit": "string",
-    "src_category": "string",
-    "src_dns": "string",
-    "src_interface": "string",
-    "src_ip": "string",
-    "src_ip_range": "string",
-    "src_mac": "string",
-    "src_nt_domain": "string",
-    "src_nt_host": "string",
-    "src_port": "string",
-    "src_priority": "string",
-    "src_translated_ip": "string",
-    "src_translated_port": "string",
-    "src_type": "string",
-    "src_user": "string",
-    "src_user_bunit": "string",
-    "src_user_category": "string",
-    "src_user_domain": "string",
-    "src_user_id": "string",
-    "src_user_priority": "string",
-    "src_user_role": "string",
-    "src_user_type": "string",
-    "src_zone": "string",
-    "state": "string",
-    "status": "string",
-    "status_code": "string",
-    "status_description": "string",
-    "subject": "string",
-    "tag": "string",
-    "ticket_id": "string",
-    "time": "string",
-    "time_submitted": "string",
-    "transport": "string",
-    "transport_dest_port": "string",
-    "type": "string",
-    "uri": "string",
-    "uri_path": "string",
-    "uri_query": "string",
-    "url": "string",
-    "url_domain": "string",
-    "url_length": "string",
-    "user": "string",
-    "user_agent": "string",
-    "user_bunit": "string",
-    "user_category": "string",
-    "user_id": "string",
-    "user_priority": "string",
-    "user_role": "string",
-    "user_type": "string",
-    "vendor_account": "string",
-    "vendor_product": "string",
-    "vlan": "string",
-    "xdelay": "string",
-    "xref": "string",
-}
+        "rule_name": "string",
+        "rule_title": "string",
+        "security_domain": "string",
+        "index": "string",
+        "rule_description": "string",
+        "risk_score": "string",
+        "host": "string",
+        "host_risk_object_type": "string",
+        "dest_risk_object_type": "string",
+        "dest_risk_score": "string",
+        "splunk_server": "string",
+        "_sourcetype": "string",
+        "_indextime": "string",
+        "_time": "string",
+        "src_risk_object_type": "string",
+        "src_risk_score": "string",
+        "_raw": "string",
+        "urgency": "string",
+        "owner": "string",
+        "info_min_time": "string",
+        "info_max_time": "string",
+        "note": "string",
+        "reviewer": "string",
+        "rule_id": "string",
+        "action": "string",
+        "app": "string",
+        "authentication_method": "string",
+        "authentication_service": "string",
+        "bugtraq": "string",
+        "bytes": "string",
+        "bytes_in": "string",
+        "bytes_out": "string",
+        "category": "string",
+        "cert": "string",
+        "change": "string",
+        "change_type": "string",
+        "command": "string",
+        "comments": "string",
+        "cookie": "string",
+        "creation_time": "string",
+        "cve": "string",
+        "cvss": "string",
+        "date": "string",
+        "description": "string",
+        "dest": "string",
+        "dest_bunit": "string",
+        "dest_category": "string",
+        "dest_dns": "string",
+        "dest_interface": "string",
+        "dest_ip": "string",
+        "dest_ip_range": "string",
+        "dest_mac": "string",
+        "dest_nt_domain": "string",
+        "dest_nt_host": "string",
+        "dest_port": "string",
+        "dest_priority": "string",
+        "dest_translated_ip": "string",
+        "dest_translated_port": "string",
+        "dest_type": "string",
+        "dest_zone": "string",
+        "direction": "string",
+        "dlp_type": "string",
+        "dns": "string",
+        "duration": "string",
+        "dvc": "string",
+        "dvc_bunit": "string",
+        "dvc_category": "string",
+        "dvc_ip": "string",
+        "dvc_mac": "string",
+        "dvc_priority": "string",
+        "dvc_zone": "string",
+        "file_hash": "string",
+        "file_name": "string",
+        "file_path": "string",
+        "file_size": "string",
+        "http_content_type": "string",
+        "http_method": "string",
+        "http_referrer": "string",
+        "http_referrer_domain": "string",
+        "http_user_agent": "string",
+        "icmp_code": "string",
+        "icmp_type": "string",
+        "id": "string",
+        "ids_type": "string",
+        "incident": "string",
+        "ip": "string",
+        "mac": "string",
+        "message_id": "string",
+        "message_info": "string",
+        "message_priority": "string",
+        "message_type": "string",
+        "mitre_technique_id": "string",
+        "msft": "string",
+        "mskb": "string",
+        "name": "string",
+        "orig_dest": "string",
+        "orig_recipient": "string",
+        "orig_src": "string",
+        "os": "string",
+        "packets": "string",
+        "packets_in": "string",
+        "packets_out": "string",
+        "parent_process": "string",
+        "parent_process_id": "string",
+        "parent_process_name": "string",
+        "parent_process_path": "string",
+        "password": "string",
+        "payload": "string",
+        "payload_type": "string",
+        "priority": "string",
+        "problem": "string",
+        "process": "string",
+        "process_hash": "string",
+        "process_id": "string",
+        "process_name": "string",
+        "process_path": "string",
+        "product_version": "string",
+        "protocol": "string",
+        "protocol_version": "string",
+        "query": "string",
+        "query_count": "string",
+        "query_type": "string",
+        "reason": "string",
+        "recipient": "string",
+        "recipient_count": "string",
+        "recipient_domain": "string",
+        "recipient_status": "string",
+        "record_type": "string",
+        "registry_hive": "string",
+        "registry_key_name": "string",
+        "registry_path": "string",
+        "registry_value_data": "string",
+        "registry_value_name": "string",
+        "registry_value_text": "string",
+        "registry_value_type": "string",
+        "request_sent_time": "string",
+        "request_payload": "string",
+        "request_payload_type": "string",
+        "response_code": "string",
+        "response_payload_type": "string",
+        "response_received_time": "string",
+        "response_time": "string",
+        "result": "string",
+        "return_addr": "string",
+        "rule": "string",
+        "rule_action": "string",
+        "sender": "string",
+        "service": "string",
+        "service_hash": "string",
+        "service_id": "string",
+        "service_name": "string",
+        "service_path": "string",
+        "session_id": "string",
+        "sessions": "string",
+        "severity": "string",
+        "severity_id": "string",
+        "sid": "string",
+        "signature": "string",
+        "signature_id": "string",
+        "signature_version": "string",
+        "site": "string",
+        "size": "string",
+        "source": "string",
+        "sourcetype": "string",
+        "src": "string",
+        "src_bunit": "string",
+        "src_category": "string",
+        "src_dns": "string",
+        "src_interface": "string",
+        "src_ip": "string",
+        "src_ip_range": "string",
+        "src_mac": "string",
+        "src_nt_domain": "string",
+        "src_nt_host": "string",
+        "src_port": "string",
+        "src_priority": "string",
+        "src_translated_ip": "string",
+        "src_translated_port": "string",
+        "src_type": "string",
+        "src_user": "string",
+        "src_user_bunit": "string",
+        "src_user_category": "string",
+        "src_user_domain": "string",
+        "src_user_id": "string",
+        "src_user_priority": "string",
+        "src_user_role": "string",
+        "src_user_type": "string",
+        "src_zone": "string",
+        "state": "string",
+        "status": "string",
+        "status_code": "string",
+        "status_description": "string",
+        "subject": "string",
+        "tag": "string",
+        "ticket_id": "string",
+        "time": "string",
+        "time_submitted": "string",
+        "transport": "string",
+        "transport_dest_port": "string",
+        "type": "string",
+        "uri": "string",
+        "uri_path": "string",
+        "uri_query": "string",
+        "url": "string",
+        "url_domain": "string",
+        "url_length": "string",
+        "user": "string",
+        "user_agent": "string",
+        "user_bunit": "string",
+        "user_category": "string",
+        "user_id": "string",
+        "user_priority": "string",
+        "user_role": "string",
+        "user_type": "string",
+        "vendor_account": "string",
+        "vendor_product": "string",
+        "vlan": "string",
+        "xdelay": "string",
+        "xref": "string",
+    }
 
 DRILLDOWN = {
     "Drilldown": {
@@ -3072,7 +2828,7 @@ IDENTITY = {
 def test_get_cim_mapping_field_command(mocker):
     """Scenario: When the mapping is based on Splunk CIM."""
     fields = splunk.get_cim_mapping_field_command()
-    assert fields == {"Notable Data": NOTABLE, "Drilldown Data": DRILLDOWN, "Asset Data": ASSET, "Identity Data": IDENTITY}
+    assert fields == {"Finding Data": NOTABLE, "Drilldown Data": DRILLDOWN, "Asset Data": ASSET, "Identity Data": IDENTITY}
 
 
 def test_build_search_human_readable(mocker):
@@ -3089,7 +2845,7 @@ def test_build_search_human_readable(mocker):
             * support commas and spaces inside header values (if surrounded with parenthesis)
             * rename headers
     """
-    func_patch = mocker.patch("SplunkPy.update_headers_from_field_names")
+    func_patch = mocker.patch("SplunkPyV2.update_headers_from_field_names")
     results = [
         {
             "ID": 1,
@@ -3361,7 +3117,7 @@ def test_labels_with_non_str_values(mocker):
     Then:
         - Validate the Labels created in the incident are well formatted to avoid server errors on json.Unmarshal
     """
-    from SplunkPy import UserMappingObject
+    from SplunkPyV2 import UserMappingObject
 
     # prepare
     raw = {
@@ -3376,9 +3132,10 @@ def test_labels_with_non_str_values(mocker):
     mocked_response: list[results.Message | dict] = deepcopy(SAMPLE_RESPONSE)
     mocked_response[1]["_raw"] = json.dumps(raw)
     mock_last_run = {"time": "2018-10-24T14:13:20"}
-    mock_params = {"fetchQuery": "something", "parseNotableEventsRaw": True}
+    mock_params = {"fetchQuery": "something", "parseFindingEventsRaw": True}
     mocker.patch.object(demisto, "incidents")
     mocker.patch.object(demisto, "setLastRun")
+    mocker.patch("SplunkPyV2.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
     mocker.patch("demistomock.getLastRun", return_value=mock_last_run)
     mocker.patch("demistomock.params", return_value=mock_params)
     mocker.patch("splunklib.results.JSONResultsReader", return_value=mocked_response)
@@ -3386,9 +3143,7 @@ def test_labels_with_non_str_values(mocker):
     # run
     service = mocker.patch("splunklib.client.connect", return_value=None)
     mapper = UserMappingObject(service, False)
-    splunk.fetch_incidents(
-        service, mapper, comment_tag_to_splunk="comment_tag_to_splunk", comment_tag_from_splunk="comment_tag_from_splunk"
-    )
+    splunk.fetch_incidents(service, mapper)
     incidents = demisto.incidents.call_args[0][0]
 
     # validate
@@ -3419,30 +3174,6 @@ def test_empty_string_as_app_param_value(mocker):
     # validate
     assert connection_args.get("app") == "-"
 
-
-@pytest.mark.parametrize(
-    argnames="host, expected_host",
-    argvalues=[
-        ("8.8.8.8", "8.8.8.8"),
-        ("8.8.8.8/", "8.8.8.8"),
-        ("https://www.test.com", "www.test.com"),
-        ("https://www.test.com/", "www.test.com"),
-    ],
-)
-def test_host_param(host, expected_host):
-    """
-    Given:
-        - Different host values
-    When:
-        - Run get_connection_args() function
-    Then:
-        - Ensure the host is as expected
-    """
-    params = {"host": host, "port": "111"}
-
-    actuall_host = splunk.get_connection_args(params)["host"]
-
-    assert actuall_host == expected_host
 
 
 OWNER_MAPPING = [
@@ -3605,63 +3336,55 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
     assert res.outputs == expected_outputs
 
 
-@pytest.mark.parametrize(
-    argnames="username, expected_username, basic_auth",
-    argvalues=[("test_user", "test_user", False), ("test@_basic", "test", True)],
-)
-def test_basic_authentication_param(mocker, username, expected_username, basic_auth):
+def test_authentication_params(mocker):
     """
-    Given: - the username contain '@_basic' suffix
+    Given: - the splunkToken 
     When:  - connecting to Splunk server
     Then:  - validate the connection args was sent as expected
 
     """
+    splunk_token = "splunk_token"
     mocked_params = {
-        "host": "test_host",
-        "port": "8089",
+        "server_url": "test_host",
         "proxy": "false",
-        "authentication": {"identifier": username, "password": "test_password"},
+        "authentication": {"identifier": 'identifier', "password": splunk_token},
     }
     mocker.patch.object(client, "connect")
     mocker.patch.object(demisto, "params", return_value=mocked_params)
-    mocker.patch.object(demisto, "command", return_value="not_impl_command")
 
     with pytest.raises(NotImplementedError):
         splunk.main()
 
-    assert client.connect.call_args[1]["username"] == expected_username
-    assert ("basic" in client.connect.call_args[1]) == basic_auth
+    assert client.connect.call_args[1]["splunkToken"] == splunk_token
 
 
 @pytest.mark.parametrize(
-    argnames="host, expected_base_url",
+    argnames="host, expected_connect_args",
     argvalues=[
-        ("8.8.8.8", "https://8.8.8.8:8089/"),
-        ("https://www.test.com", "https://www.test.com:8089/"),
-        ("http://www.test.com", "https://http://www.test.com:8089/"),  # we don't want to silently replace http with https
+        ("8.8.8.8", {"host": "8.8.8.8", "port": 8089}),
+        ("https://www.test.com", {"host": "www.test.com", "port": 8089}),
+        ("www.test.com:9000/", {"host": "www.test.com", "port": 9000}), 
     ],
 )
-def test_base_url(mocker, host, expected_base_url):
+def test_server_url(mocker, host, expected_connect_args):
     """
-    Given: - Different host values
-    When:  - Running the splunk-notable-event-edit command
-    Then:  - Ensure the base URL is built as expected
+    Given: - Different server url values
+    When:  - Running the test-module command
+    Then:  - Ensure the connection args sent as expected
 
     """
     mocked_params = {
-        "host": host,
-        "port": "8089",
+        "server_url": host,
         "proxy": "false",
-        "authentication": {"identifier": "username", "password": "test_password"},
+        "authentication": {"identifier": "username", "password": "splunk_token"},
     }
-    mocker.patch.object(demisto, "command", return_value="splunk-notable-event-edit")
+    mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(demisto, "params", return_value=mocked_params)
-    mocker.patch.object(client, "connect")
-
-    cmd = mocker.patch.object(splunk, "splunk_edit_notable_event_command")
+    mocked_connect = mocker.patch.object(client, "connect")
+    mocker.patch.object(splunk, "test_module")
     splunk.main()
 
-    assert cmd.call_args[0][0] == expected_base_url
+    assert all([mocked_connect.call_args[1][k] == expected_connect_args[k] for k in expected_connect_args.keys()])
 
 
 @pytest.mark.parametrize(
@@ -3676,7 +3399,7 @@ def test_handle_message(item: dict | results.Message, expected: bool):
 
 def test_single_drilldown_searches(mocker):
     """
-    Given: - notable with single string represent dict, in the drilldown_searches key.
+    Given: - finding with single string represent dict, in the drilldown_searches key.
     When:  - call to drilldown_enrichment.
     Then:  - validate there is no errors in the process.
 
@@ -3689,7 +3412,7 @@ def test_single_drilldown_searches(mocker):
     mocker.patch.object(splunk, "build_drilldown_search", return_value=None)
 
     splunk.drilldown_enrichment(
-        service=None, notable_data={"drilldown_searches": drilldown_searches, "event_id": "test_id"}, num_enrichment_events=1
+        service=None, finding_data={"drilldown_searches": drilldown_searches, "event_id": "test_id"}, num_enrichment_events=1
     )
 
     assert demisto.error.call_count == 0, "Something was wrong in the drilldown_enrichment process"
@@ -3714,11 +3437,11 @@ def test_single_drilldown_searches(mocker):
 def test_get_drilldown_searches(drilldown_data, expected):
     """
     Given:  -
-        1. A notable data with a single 'old' (string value in the 'drilldown_search' key) drilldown enrichment data .
-        2. A notable data with a single drilldown enrichments as json string in the 'new' key (drilldown_searches).
-        3. A notable data with multiple drilldown enrichments as json string in the 'new' key (drilldown_searches).
-        4. A notable data with a single drilldown enrichments as json list string in the 'new' key (drilldown_searches).
-        5. A notable data with a multiple drilldown enrichments as json list string in the 'new' key (drilldown_searches).
+        1. A finding data with a single 'old' (string value in the 'drilldown_search' key) drilldown enrichment data .
+        2. A finding data with a single drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        3. A finding data with multiple drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        4. A finding data with a single drilldown enrichments as json list string in the 'new' key (drilldown_searches).
+        5. A finding data with a multiple drilldown enrichments as json list string in the 'new' key (drilldown_searches).
     When:   - call to get_drilldown_searches.
     Then:   - validate the result are as expected.
     """
@@ -3788,7 +3511,7 @@ def test_parse_fields(fields, expected):
     Then: If the string is valid JSON, the function returns a dictionary of the parsed fields. If the string is not valid JSON,
     the function returns a dictionary with a single key-value pair, where the entire input string is the key.
     """
-    from SplunkPy import parse_fields
+    from SplunkPyV2 import parse_fields
 
     result = parse_fields(fields)
     assert result == expected
@@ -3825,8 +3548,8 @@ def test_parse_fields(fields, expected):
     ],
 )
 @patch("requests.post")
-@patch("SplunkPy.get_events_from_file")
-@patch("SplunkPy.parse_fields")
+@patch("SplunkPyV2.get_events_from_file")
+@patch("SplunkPyV2.parse_fields")
 def test_splunk_submit_event_hec(
     mock_parse_fields,
     mock_get_events_from_file,
@@ -3841,7 +3564,7 @@ def test_splunk_submit_event_hec(
     When: Calling splunk_submit_event_hec.
     Then: Ensure a POST request is sent with the correct data and headers.
     """
-    from SplunkPy import splunk_submit_event_hec
+    from SplunkPyV2 import splunk_submit_event_hec
 
     # Arrange
     hec_token = "valid_token"
@@ -3892,7 +3615,7 @@ def test_splunk_submit_event_hec_command_no_required_arguments():
     When: Runing splunk-submit-event-hec command
     Then: An exception is thrown
     """
-    from SplunkPy import splunk_submit_event_hec_command
+    from SplunkPyV2 import splunk_submit_event_hec_command
 
     with pytest.raises(
         DemistoException,
@@ -3911,34 +3634,32 @@ def test_get_modified_remote_data_command_with_user_mapping(mocker, should_map_u
     Then:
     - Verify the correct owner are returned.
     """
-    notable_without_owner = deepcopy(SAMPLE_RESPONSE[2])
-    del notable_without_owner["owner"]
+    finding_without_owner = deepcopy(SAMPLE_RESPONSE[2])
+    del finding_without_owner["owner"]
 
     mapped_user = "mapped_splunk_user"
 
     mocker.patch.object(demisto, "results")
     mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
     mocker.patch.object(splunk.UserMappingObject, "get_xsoar_user_by_splunk", return_value=mapped_user)
-    mocker.patch("SplunkPy.results.JSONResultsReader", side_effect=lambda res: res)
-    mocked_service = mocker.patch("SplunkPy.client.Service")
-    mocker.patch("SplunkPy.get_integration_context")
+    mocker.patch("SplunkPyV2.results.JSONResultsReader", side_effect=lambda res: res)
+    mocked_service = mocker.patch("SplunkPyV2.client.Service")
+    mocker.patch("SplunkPyV2.get_integration_context")
     mocked_service.jobs.oneshot = (
-        lambda query, **kwargs: [SAMPLE_INCIDENT_REVIEW_RESPONSE[0]] if "`incident_review`" in query else [notable_without_owner]
+        lambda query, **kwargs: [SAMPLE_AUDIT_INDEX_RESPONSE[0]] if "index=_audit" in query else [finding_without_owner]
     )
 
     splunk.get_modified_remote_data_command(
         mocked_service,
         args={"lastUpdate": "2021-02-09T16:41:30.589575+02:00"},
         mapper=splunk.UserMappingObject(mocked_service, should_map_user),
-        comment_tag_from_splunk="comment_tag_from_splunk",
         close_incident=True,
         close_end_statuses=False,
         close_extra_labels=[],
     )
 
     contents = demisto.results.call_args[0][0][0]["Contents"]
-    expected_owner = mapped_user if should_map_user else SAMPLE_INCIDENT_REVIEW_RESPONSE[0]["owner"]
-    assert len(contents["SplunkComments"]) == 3
+    expected_owner = mapped_user if should_map_user else SAMPLE_AUDIT_INDEX_RESPONSE[0]["owner"]
     assert contents["owner"] == expected_owner
 
 
@@ -3955,43 +3676,36 @@ def test_mirror_in_with_enrichment_enabled(mocker):
     # create an integration context in order to simulate the context in a normal run.
     integration_context = {
         splunk.CACHE: json.dumps(
-            {splunk.SUBMITTED_NOTABLES: [splunk.Notable(SAMPLE_RESPONSE[2])]}, default=lambda obj: obj.__dict__
+            {splunk.SUBMITTED_FINDINGS: [splunk.Finding(SAMPLE_RESPONSE[2])]}, default=lambda obj: obj.__dict__
         ),
     }
-    mocker.patch("SplunkPy.set_integration_context")
-    mocker.patch("SplunkPy.get_integration_context", return_value=integration_context)
-    mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
+    mocker.patch("SplunkPyV2.set_integration_context")
+    mocker.patch("SplunkPyV2.get_integration_context", return_value=integration_context)
+    mocker.patch.object(demisto, "params")
     mocker.patch.object(splunk, "ENABLED_ENRICHMENTS", new=[splunk.DRILLDOWN_ENRICHMENT])
-    mocker.patch("SplunkPy.results.JSONResultsReader", side_effect=lambda res: res)
+    mocker.patch("SplunkPyV2.results.JSONResultsReader", side_effect=lambda res: res)
     mocker.patch.object(splunk.UserMappingObject, "get_xsoar_user_by_splunk", return_value="after_mirror_owner")
-    mocked_service = mocker.patch("SplunkPy.client.Service")
-    # the get_modified_remote_data send two queries to Splunk,
-    # the first one used the  `incident_review` macro and the second used the `notable`
-    notable_delta = {"status_label": "after_mirror_status", "urgency": "after_mirror_urgency"}
-    updated_notable = SAMPLE_RESPONSE[2] | notable_delta
-    mocked_service.jobs.oneshot = (
-        lambda query, **kwargs: [SAMPLE_INCIDENT_REVIEW_RESPONSE[0]] if "`incident_review`" in query else [updated_notable]
-    )
+    mocked_service = mocker.patch("SplunkPyV2.client.Service")
+    finding_delta = {"status_label": "after_mirror_status", "urgency": "after_mirror_urgency"}
+    updated_finding = SAMPLE_RESPONSE[2] | finding_delta
+    mocked_service.jobs.oneshot.return_value = [updated_finding]
+    
 
     splunk.get_modified_remote_data_command(
         mocked_service,
         args={"lastUpdate": "2021-02-09T16:41:30.589575+02:00"},
         mapper=splunk.UserMappingObject(mocked_service, True),
-        comment_tag_from_splunk="comment_tag_from_splunk",
         close_incident=True,
         close_end_statuses=False,
         close_extra_labels=[],
     )
 
-    notable_id = SAMPLE_RESPONSE[2]["event_id"]
-    mirrored_enriching_natables = splunk.set_integration_context.call_args[0][0][splunk.MIRRORED_ENRICHING_NOTABLES]
-    actual_mirrored_notable_delta = mirrored_enriching_natables[notable_id]
+    finding_id = SAMPLE_RESPONSE[2]["event_id"]
+    mirrored_enriching_natables = splunk.set_integration_context.call_args[0][0][splunk.MIRRORED_ENRICHING_FINDINGS]
+    actual_mirrored_finding_delta = mirrored_enriching_natables[finding_id]
 
-    # 'SplunkComments' is calculated and added in the mirror process and not returned from Splunk
-    assert "SplunkComments" not in updated_notable
-    assert len(actual_mirrored_notable_delta["SplunkComments"]) == 3
-    assert actual_mirrored_notable_delta["owner"] == "after_mirror_owner"
-    assert all(actual_mirrored_notable_delta[k] == v for k, v in notable_delta.items())
+    assert actual_mirrored_finding_delta["owner"] == "after_mirror_owner"
+    assert all(actual_mirrored_finding_delta[k] == v for k, v in finding_delta.items())
 
 
 def test_format_splunk_note_for_xsoar_basic():
@@ -4003,8 +3717,8 @@ def test_format_splunk_note_for_xsoar_basic():
     Then:
         - The title and content are URL-decoded and separated by a blank line, ending with a newline.
     """
-    note = {"title": "My%20Title", "content": "Line%201%0ALine%202"}
-    expected = "My Title\n\nLine 1\nLine 2\n"
+    note = {"title": "My%20Title", "content": "Line%201%0ALine%202", "author":{"username": "test user"}}
+    expected = '**test user**\n\nMy Title\nLine 1\nLine 2'
     assert splunk.format_splunk_note_for_xsoar(note) == expected
 
 
@@ -4017,22 +3731,8 @@ def test_format_splunk_note_for_xsoar_empty_content():
     Then:
         - The title is URL-decoded and followed by two newlines (current implementation behavior).
     """
-    note = {"title": "Only%20Title", "content": ""}
-    expected = "Only Title\n\n"
-    assert splunk.format_splunk_note_for_xsoar(note) == expected
-
-
-def test_format_splunk_note_for_xsoar_missing_fields():
-    """
-    Given:
-        - A Splunk note missing both title and content.
-    When:
-        - Formatting the note for XSOAR.
-    Then:
-        - Returns two newlines as per current implementation.
-    """
-    note = {}
-    expected = "\n\n"
+    note = {"title": "Only%20Title", "content": "", "author":{"username": "test user"}}
+    expected = "**test user**\n\nOnly Title"
     assert splunk.format_splunk_note_for_xsoar(note) == expected
 
 
@@ -4046,7 +3746,7 @@ def test_user_mapping_used_cache(mocker):
     - Validate that the function use cache to store the mapped values and called only once.
     """
     mocker.patch.object(demisto, "error")
-    mocked_service = mocker.patch("SplunkPy.client.Service")
+    mocked_service = mocker.patch("SplunkPyV2.client.Service")
     mapper = splunk.UserMappingObject(mocked_service, True)
     for _ in range(5):
         mapper.get_xsoar_user_by_splunk("test_splunk_user")
@@ -4062,10 +3762,10 @@ def test_user_mapping_used_cache(mocker):
     ],
 )
 def test_splunk_job_create_command(mocker, query, expected_query):
-    mocked_service = mocker.patch("SplunkPy.client.Service")
+    mocked_service = mocker.patch("SplunkPyV2.client.Service")
     mocked_create_job = MagicMock()
     mocked_service.jobs.create = mocked_create_job
-    mocker.patch("SplunkPy.return_results")
+    mocker.patch("SplunkPyV2.return_results")
     args = {"query": query}
     splunk.splunk_job_create_command(mocked_service, args)
     mocked_create_job.assert_called_once_with(expected_query, exec_mode="normal", app="")
@@ -4101,7 +3801,7 @@ def mock_service_job(sid):
         raise HTTPError(MockResponse("404", "Not Found", MockBody("Unknown sid.")))
 
 
-@patch("SplunkPy.client.Service")
+@patch("SplunkPyV2.client.Service")
 def test_splunk_job_status_valid(mock_service):
     mock_service.job.side_effect = mock_service_job
 
@@ -4114,7 +3814,7 @@ def test_splunk_job_status_valid(mock_service):
     assert "Splunk Job Status" in result[0].readable_output
 
 
-@patch("SplunkPy.client.Service")
+@patch("SplunkPyV2.client.Service")
 def test_splunk_job_status_running(mock_service):
     mock_service.job.side_effect = mock_service_job
 
@@ -4127,7 +3827,7 @@ def test_splunk_job_status_running(mock_service):
     assert "Splunk Job Status" in result[0].readable_output
 
 
-@patch("SplunkPy.client.Service")
+@patch("SplunkPyV2.client.Service")
 def test_splunk_job_status_not_found(mock_service):
     mock_service.job.side_effect = mock_service_job
 
@@ -4139,7 +3839,7 @@ def test_splunk_job_status_not_found(mock_service):
     assert result[0].readable_output == "Not found job for SID: invalid_sid"
 
 
-@patch("SplunkPy.client.Service")
+@patch("SplunkPyV2.client.Service")
 def test_splunk_job_status_418_error(mock_service):
     mock_service.job.side_effect = mock_service_job
 
@@ -4154,7 +3854,7 @@ def test_splunk_job_status_418_error(mock_service):
     )
 
 
-@patch("SplunkPy.client.Service")
+@patch("SplunkPyV2.client.Service")
 def test_splunk_job_status_multiple_sids(mock_service):
     mock_service.job.side_effect = mock_service_job
 
@@ -4246,10 +3946,10 @@ def test_splunk_submit_event_hec_command_invalid_index(mocker, requests_mock, ar
     Then:
         - The function should not raise an exception - as we don't check for invalid indexes.
     """
-    from SplunkPy import splunk_submit_event_hec_command
+    from SplunkPyV2 import splunk_submit_event_hec_command
     from splunklib.client import Service
 
-    mocker.patch("SplunkPy.get_events_from_file", return_value=[{"event": "test", "index": "invalid_index"}])
+    mocker.patch("SplunkPyV2.get_events_from_file", return_value=[{"event": "test", "index": "invalid_index"}])
     mocker.patch(RETURN_ERROR_TARGET)
     requests_mock.post("https://splunk.test.com/services/collector/event")
 
@@ -4259,7 +3959,7 @@ def test_splunk_submit_event_hec_command_invalid_index(mocker, requests_mock, ar
     service_mock.indexes = [index_mock]
 
     splunk_submit_event_hec_command(
-        params={"hec_token": "token", "hec_url": "https://splunk.test.com"}, service=service_mock, args=args
+        params={"cred_hec_token": {"password":"token"}, "hec_url": "https://splunk.test.com"}, service=service_mock, args=args
     )
 
 
@@ -4272,7 +3972,7 @@ def test_get_modified_remote_data_skips_cached_events(mocker):
     Then:
         - Ensure the event from the second run is skipped because its key (event_id:timestamp) is already in the cache.
     """
-    from SplunkPy import get_modified_remote_data_command
+    from SplunkPyV2 import get_modified_remote_data_command
 
     test_id = "event_123"
     timestamp = "1737547610.49"
@@ -4283,25 +3983,23 @@ def test_get_modified_remote_data_skips_cached_events(mocker):
         "close_end_statuses": False,
         "close_extra_labels": ["Custom"],
         "mapper": splunk.UserMappingObject(MagicMock(), False),
-        "comment_tag_from_splunk": "from_splunk",
     }
 
     # Mock Splunk API responses
-    incident_review_response = [
+    audit_index_response = [
         {
             "rule_id": test_id,
-            "last_modified_timestamp": timestamp,
+            "review_time": timestamp,
             "event_id": test_id,
         }
     ]
 
     # === First Run: Process and cache the event ===
-    mocker.patch("splunklib.results.JSONResultsReader", return_value=incident_review_response)
-    mocker.patch("SplunkPy.get_integration_context", return_value={})
-    mocker.patch("SplunkPy.demisto.results")
-    mocker.patch("SplunkPy.demisto.params", return_value={"timezone": "0"})
-    set_context_mock = mocker.patch("SplunkPy.set_integration_context")
-    extensive_log_mock = mocker.patch("SplunkPy.extensive_log")
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=audit_index_response)
+    mocker.patch("SplunkPyV2.get_integration_context", return_value={})
+    mocker.patch("SplunkPyV2.demisto.results")
+    set_context_mock = mocker.patch("SplunkPyV2.set_integration_context")
+    extensive_log_mock = mocker.patch("SplunkPyV2.extensive_log")
 
     get_modified_remote_data_command(MagicMock(), **func_call_kwargs)
     results = demisto.results.call_args[0][0][0]["Contents"]
@@ -4314,7 +4012,7 @@ def test_get_modified_remote_data_skips_cached_events(mocker):
     assert cached_context.get("processed_mirror_in_events_cache") == [event_key]
 
     # === Second Run: Should skip the cached event ===
-    mocker.patch("SplunkPy.get_integration_context", return_value=cached_context)
+    mocker.patch("SplunkPyV2.get_integration_context", return_value=cached_context)
     set_context_mock.reset_mock()
     demisto.results.reset_mock()
     extensive_log_mock.reset_mock()
@@ -4324,7 +4022,7 @@ def test_get_modified_remote_data_skips_cached_events(mocker):
     # Assert no new events were processed
     results = demisto.results.call_args[0][0]
     assert len(results) == 0
-    assert extensive_log_mock.call_args_list[0].contains("mirror-in: no notables was changed since")
+    assert extensive_log_mock.call_args_list[0].contains("mirror-in: no findings was changed since")
 
 
 # ============================================================================================
@@ -4332,118 +4030,23 @@ def test_get_modified_remote_data_skips_cached_events(mocker):
 # ============================================================================================
 
 
-def test_get_modified_remote_data_legacy_comment_mechanism(mocker):
+def test_get_modified_remote_data_with_multiple_notes(mocker):
     """
-    Test the legacy comment mechanism for Splunk ES versions below 8.0.0.
-
-    Given:
-        - Splunk ES version is below 8.0.0
-        - A notable with comments in the 'comment' field from incident_review
-    When:
-        - get_modified_remote_data_command is called
-    Then:
-        - Comments are extracted from the 'comment' field in the notable data
-        - Comment entries are created with proper tags
-        - The notable search is performed to get full event details
-    """
-    from SplunkPy import get_modified_remote_data_command
-
-    test_id = "legacy_comment_test"
-    timestamp = "1737547610.49"
-    comment_text = "This is a legacy comment from Splunk"
-
-    func_call_kwargs = {
-        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
-        "close_incident": False,
-        "close_end_statuses": False,
-        "close_extra_labels": ["Custom"],
-        "mapper": splunk.UserMappingObject(MagicMock(), False),
-        "comment_tag_from_splunk": "from_splunk",
-    }
-
-    # Mock incident_review response
-    incident_review_response = [
-        {
-            "rule_id": test_id,
-            "last_modified_timestamp": timestamp,
-            "event_id": test_id,
-            "comment": comment_text,
-        }
-    ]
-
-    # Mock notable search response with full event details
-    notable_search_response = [
-        {
-            "rule_id": test_id,
-            "event_id": test_id,
-            "comment": [comment_text, "Additional comment"],
-            "status": "new",
-        }
-    ]
-
-    # Mock Splunk ES version check to return False (legacy version)
-    mocker.patch("SplunkPy.is_splunk_es_version_or_higher", return_value=False)
-    mocker.patch("splunklib.results.JSONResultsReader", side_effect=[incident_review_response, notable_search_response])
-    mocker.patch("SplunkPy.get_integration_context", return_value={})
-    mocker.patch("SplunkPy.set_integration_context")
-    mocker.patch("SplunkPy.demisto.params", return_value={"timezone": "0"})
-    results_mock = mocker.patch("SplunkPy.demisto.results")
-
-    get_modified_remote_data_command(MagicMock(), **func_call_kwargs)
-
-    # Verify results structure
-    results = results_mock.call_args[0][0]
-    assert len(results) == 2  # 1 notable entry + 1 comment entry
-
-    # Verify notable entry
-    notable_entry = results[0]
-    assert notable_entry["EntryContext"]["mirrorRemoteId"] == test_id
-    assert notable_entry["Contents"]["rule_id"] == test_id
-
-    # Verify comment entry
-    comment_entry = results[1]
-    assert comment_entry["Type"] == 1  # EntryType.NOTE
-    assert comment_entry["Tags"] == ["from_splunk"]
-    assert comment_entry["Note"] is True
-    assert comment_entry["EntryContext"]["mirrorRemoteId"] == test_id
-
-    # Verify that all comments are stored under SplunkComments in the notable data
-    notable_data = notable_entry["Contents"]
-    assert "SplunkComments" in notable_data
-    assert isinstance(notable_data["SplunkComments"], list)
-    assert len(notable_data["SplunkComments"]) == 2  # Both comments from notable search
-
-    # Verify comment structure and content
-    splunk_comments = notable_data["SplunkComments"]
-    comment_texts = [comment["Comment"] for comment in splunk_comments]
-    assert comment_text in comment_texts
-    assert "Additional comment" in comment_texts
-
-    # Verify each comment has the correct structure
-    for comment in splunk_comments:
-        assert isinstance(comment, dict)
-        assert "Comment" in comment
-        assert isinstance(comment["Comment"], str)
-
-
-def test_get_modified_remote_data_new_comment_mechanism_es8(mocker):
-    """
-    Test the new comment mechanism for Splunk ES version 8.0.0 and above.
+    Test handling multiple Splunk note correctly.
 
     Given:
         - Splunk ES version is 8.0.0 or higher
-        - A notable that was modified
-        - Comments are stored in mc_notes KV store
+        - Multiple notes exist for a finding in mc_notes
     When:
         - get_modified_remote_data_command is called
     Then:
-        - Comments are fetched from mc_notes KV store via get_comments_data_new
-        - Comment entries are created with proper structure
-        - No additional notable search is performed
+        - All notes are fetched and processed
+        - Multiple notes entries are created
+        - notes are properly tagged and formatted
     """
-    from SplunkPy import get_modified_remote_data_command
+    from SplunkPyV2 import get_modified_remote_data_command
 
-    test_id = "new_comment_test"
+    test_id = "multi_notes_test"
     timestamp = "1737547610.49"
 
     func_call_kwargs = {
@@ -4452,257 +4055,93 @@ def test_get_modified_remote_data_new_comment_mechanism_es8(mocker):
         "close_end_statuses": False,
         "close_extra_labels": ["Custom"],
         "mapper": splunk.UserMappingObject(MagicMock(), False),
-        "comment_tag_from_splunk": "from_splunk",
     }
 
     # Mock incident_review response
-    incident_review_response = [
+    audit_index_response = [
         {
             "rule_id": test_id,
-            "last_modified_timestamp": timestamp,
-            "event_id": test_id,
-        }
-    ]
-
-    # Mock KV store response with comments data
-    # Note: create_time needs to be greater than lastUpdate (1612874490.589575) to create entry
-    mock_comments_data = [
-        {
-            "notable_id": test_id,
-            "comment": "New comment from mc_notes",
-            "update_time": 1757409703.589575,  # Greater than lastUpdate
-            "create_time": 1757409703,  # Greater than lastUpdate
-        }
-    ]
-
-    # Mock Splunk ES version check to return True (ES 8.0+)
-    mocker.patch("SplunkPy.is_splunk_es_version_or_higher", return_value=True)
-    mocker.patch("splunklib.results.JSONResultsReader", return_value=incident_review_response)
-
-    # Mock KV store operations instead of get_comments_data_new
-    mock_service = MagicMock()
-    mock_kv_store = MagicMock()
-    mock_kv_store.data.query.return_value = mock_comments_data
-    mock_service.kvstore.__getitem__.return_value = mock_kv_store
-
-    # Mock the helper functions used by get_comments_data_new
-    mocker.patch("SplunkPy.get_comments_data_old", return_value=[])
-    mocker.patch("SplunkPy.format_splunk_note_for_xsoar", return_value="New comment from mc_notes")
-
-    mocker.patch("SplunkPy.get_integration_context", return_value={})
-    mocker.patch("SplunkPy.set_integration_context")
-    mocker.patch("SplunkPy.demisto.params", return_value={"timezone": "0"})
-    results_mock = mocker.patch("SplunkPy.demisto.results")
-
-    get_modified_remote_data_command(mock_service, **func_call_kwargs)
-
-    # Verify results structure
-    results = results_mock.call_args[0][0]
-    assert len(results) == 2  # 1 notable entry + 1 comment entry
-
-    # Verify notable entry
-    notable_entry = results[0]
-    assert notable_entry["EntryContext"]["mirrorRemoteId"] == test_id
-
-    # Verify comment entry from new mechanism
-    comment_entry = results[1]
-    assert comment_entry["Type"] == 1  # EntryType.NOTE
-    assert comment_entry["Tags"] == ["from_splunk"]
-    assert comment_entry["Contents"] == "New comment from mc_notes"
-    assert comment_entry["ContentsFormat"] == "markdown"  # Verify MD format
-
-
-def test_get_modified_remote_data_new_mechanism_with_multiple_comments(mocker):
-    """
-    Test the new comment mechanism handles multiple comments correctly.
-
-    Given:
-        - Splunk ES version is 8.0.0 or higher
-        - Multiple comments exist for a notable in mc_notes
-    When:
-        - get_modified_remote_data_command is called
-    Then:
-        - All comments are fetched and processed
-        - Multiple comment entries are created
-        - Comments are properly tagged and formatted
-    """
-    from SplunkPy import get_modified_remote_data_command
-
-    test_id = "multi_comment_test"
-    timestamp = "1737547610.49"
-
-    func_call_kwargs = {
-        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
-        "close_incident": False,
-        "close_end_statuses": False,
-        "close_extra_labels": ["Custom"],
-        "mapper": splunk.UserMappingObject(MagicMock(), False),
-        "comment_tag_from_splunk": "from_splunk",
-    }
-
-    # Mock incident_review response
-    incident_review_response = [
-        {
-            "rule_id": test_id,
-            "last_modified_timestamp": timestamp,
+            "review_time": timestamp,
             "event_id": test_id,
         }
     ]
 
     # Mock KV store response with multiple comments data
-    mock_comments_data = [
+    mock_notes_data = [
         {
             "notable_id": test_id,
-            "comment": "First comment from mc_notes",
+            "note_id": "note_id_1",
+            "content": "First note from mc_notes",
             "update_time": 1757409703.589575,
             "create_time": 1757409703,
         },
         {
             "notable_id": test_id,
-            "comment": "Second comment from mc_notes",
+            "note_id": "note_id_2",
+            "content": "Second note from mc_notes",
             "update_time": 1757409704.589575,
             "create_time": 1757409704,
         },
     ]
-
-    # Mock Splunk ES version check to return True (ES 8.0+)
-    mocker.patch("SplunkPy.is_splunk_es_version_or_higher", return_value=True)
-    mocker.patch("splunklib.results.JSONResultsReader", return_value=incident_review_response)
+    mocker.patch("SplunkPyV2.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
+    mocker.patch("SplunkPyV2.results.JSONResultsReader", side_effect=lambda res: res)
 
     # Mock KV store operations
     mock_service = MagicMock()
     mock_kv_store = MagicMock()
-    mock_kv_store.data.query.return_value = mock_comments_data
+    mock_service.jobs.oneshot = (
+        lambda query, *args, **kwargs: audit_index_response if "source=notable_update_rest_handler" in query else mock_notes_data
+    )
+    mock_kv_store.data.query.return_value = mock_notes_data
     mock_service.kvstore.__getitem__.return_value = mock_kv_store
 
-    # Mock the helper functions used by get_comments_data_new
-    mocker.patch("SplunkPy.get_comments_data_old", return_value=[])
-    mocker.patch("SplunkPy.format_splunk_note_for_xsoar", side_effect=lambda note: note["comment"])
+    mocker.patch("SplunkPyV2.format_splunk_note_for_xsoar", side_effect=lambda note, _: note["content"])
 
-    mocker.patch("SplunkPy.get_integration_context", return_value={})
-    mocker.patch("SplunkPy.set_integration_context")
-    mocker.patch("SplunkPy.demisto.params", return_value={"timezone": "0"})
-    results_mock = mocker.patch("SplunkPy.demisto.results")
+    mocker.patch("SplunkPyV2.get_integration_context", return_value={})
+    mocker.patch("SplunkPyV2.set_integration_context")
+    results_mock = mocker.patch("SplunkPyV2.demisto.results")
 
     get_modified_remote_data_command(mock_service, **func_call_kwargs)
 
     # Verify results structure
     results = results_mock.call_args[0][0]
-    assert len(results) == 3  # 1 notable entry + 2 comment entries
+    assert len(results) == 3  # 1 finding entry + 2 comment entries
 
-    # Verify notable entry
-    notable_entry = results[0]
-    assert notable_entry["EntryContext"]["mirrorRemoteId"] == test_id
+    # Verify finding entry
+    finding_entry = results[0]
+    assert finding_entry["EntryContext"]["mirrorRemoteId"] == test_id
 
-    # Verify both comment entries
-    comment_entries = results[1:]
-    assert len(comment_entries) == 2
-    for comment_entry in comment_entries:
-        assert comment_entry["Type"] == 1
-        assert comment_entry["Tags"] == ["from_splunk"]
-        assert comment_entry["ContentsFormat"] == "markdown"
-        assert "comment from mc_notes" in comment_entry["Contents"]
+    # Verify both note entries
+    note_entries = results[1:]
+    assert len(note_entries) == 2
+    for note_entry in note_entries:
+        assert note_entry["Type"] == 1
+        assert note_entry["Tags"] == ["FROM SPLUNK"]
+        assert note_entry["ContentsFormat"] == "markdown"
+        assert "note from mc_notes" in note_entry["Contents"]
 
 
-def test_get_modified_remote_data_legacy_vs_new_mechanism_behavior(mocker):
+def test_fetch_findings_with_notes(mocker):
     """
-    Test that the correct comment mechanism is used based on Splunk ES version.
-
-    Given:
-        - Same notable data and test conditions
-    When:
-        - get_modified_remote_data_command is called with different ES versions
-    Then:
-        - Legacy mechanism (< 8.0.0) uses get_comments_data_old and notable search
-        - New mechanism (>= 8.0.0) uses get_comments_data_new and mc_notes
-    """
-    from SplunkPy import get_modified_remote_data_command
-
-    test_id = "version_comparison_test"
-    timestamp = "1737547610.49"
-
-    func_call_kwargs = {
-        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
-        "close_incident": False,
-        "close_end_statuses": False,
-        "close_extra_labels": ["Custom"],
-        "mapper": splunk.UserMappingObject(MagicMock(), False),
-        "comment_tag_from_splunk": "from_splunk",
-    }
-
-    incident_review_response = [
-        {
-            "rule_id": test_id,
-            "last_modified_timestamp": timestamp,
-            "event_id": test_id,
-            "comment": "Legacy comment",
-        }
-    ]
-
-    notable_search_response = [
-        {
-            "rule_id": test_id,
-            "event_id": test_id,
-            "comment": "Legacy comment",
-        }
-    ]
-
-    # Test Legacy Mechanism (ES < 8.0.0)
-    mocker.patch("splunklib.results.JSONResultsReader", side_effect=[incident_review_response, notable_search_response])
-    mocker.patch("SplunkPy.get_integration_context", side_effect=[{}, {}])
-    mocker.patch("SplunkPy.set_integration_context")
-    mocker.patch("SplunkPy.demisto.params", return_value={"timezone": "0"})
-
-    mocker.patch("SplunkPy.is_splunk_es_version_or_higher", return_value=False)
-    get_comments_data_old_mock = mocker.patch("SplunkPy.get_comments_data_old", return_value=[])
-    get_comments_data_new_mock = mocker.patch("SplunkPy.get_comments_data_new", return_value=[])
-    results_mock = mocker.patch("SplunkPy.demisto.results")
-
-    mock_service_legacy = MagicMock()
-    get_modified_remote_data_command(mock_service_legacy, **func_call_kwargs)
-
-    # Verify legacy mechanism was used
-    get_comments_data_old_mock.assert_called_once()
-    get_comments_data_new_mock.assert_not_called()
-
-    # Reset mocks for new mechanism test
-    get_comments_data_old_mock.reset_mock()
-    get_comments_data_new_mock.reset_mock()
-    results_mock.reset_mock()
-
-    # Test New Mechanism (ES >= 8.0.0)
-    mocker.patch("SplunkPy.is_splunk_es_version_or_higher", return_value=True)
-    mocker.patch("splunklib.results.JSONResultsReader", return_value=incident_review_response)
-
-    mock_service_new = MagicMock()
-    get_modified_remote_data_command(mock_service_new, **func_call_kwargs)
-
-    # Verify new mechanism was used
-    get_comments_data_new_mock.assert_called_once()
-    get_comments_data_old_mock.assert_not_called()
-
-
-def test_fetch_notables_with_comments_es8_mechanism(mocker):
-    """
-    Test that fetch brings comments even when they're not part of the main fetch query results in ES 8.0+.
+    Test that fetch brings notes even when they're not part of the main fetch query results in ES 8.0+.
 
     Given:
         - Splunk ES version is 8.0.0 or higher
         - Fetch operation is running
-        - Comments exist in mc_notes but not in the main notable search results
+        - Notes exist in mc_notes but not in the main finding search results
     When:
-        - fetch_notables is called
+        - fetch_findings is called
     Then:
-        - Comments are fetched via get_comments_data_new with is_fetch=True
-        - Comments are stored in the notable under 'comment' key for incident creation
-        - The fetch process includes comments even if they weren't in the original search
+        - Notes are fetched via enrich_findings_with_splunk_notes with is_fetch=True
+        - Notes are stored in the finding under 'splunk_notes' key for incident creation
+        - The fetch process includes notes even if they weren't in the original search
     """
-    from SplunkPy import fetch_notables
+    from SplunkPyV2 import fetch_findings
 
     test_id = "fetch_comment_test"
 
-    # Mock notable data without comments in the main search
-    notable_data = {
+    # Mock finding data without comments in the main search
+    finding_data = {
         "rule_id": test_id,
         "event_id": test_id,
         "_time": "2021-02-09T16:41:30.589575+02:00",
@@ -4711,153 +4150,55 @@ def test_fetch_notables_with_comments_es8_mechanism(mocker):
     }
 
     # Mock search results (no comments in main search)
-    search_results = [notable_data]
-
-    # Mock that ES version check returns True
-    mocker.patch("SplunkPy.is_splunk_es_version_or_higher", return_value=True)
-
-    # Mock the search execution
-    mocker.patch("splunklib.results.JSONResultsReader", return_value=search_results)
+    search_results = [finding_data]
 
     # Mock KV store operations for get_comments_data_new
-    mock_comments_data = [
+    mock_notes_data = [
         {
             "notable_id": test_id,
-            "comment": "Comment from fetch",
+            "note_id": "note_id",
+            "content": "notes from fetch",
             "update_time": 1757409703.589575,
             "create_time": 1757409703,
         }
     ]
 
     mock_kv_store = MagicMock()
-    mock_kv_store.data.query.return_value = mock_comments_data
+    mock_kv_store.data.query.return_value = mock_notes_data
 
     # Mock helper functions
-    mocker.patch("SplunkPy.get_comments_data_old", return_value=[])
-    mocker.patch("SplunkPy.get_fetch_start_times", return_value=("", ""))
-    mocker.patch("SplunkPy.remove_irrelevant_incident_ids")
-    mocker.patch("SplunkPy.format_splunk_note_for_xsoar", return_value="Comment from fetch")
+    mocker.patch("SplunkPyV2.get_fetch_time_window", return_value=("", ""))
+    mocker.patch("SplunkPyV2.remove_irrelevant_incident_ids")
+    mocker.patch("SplunkPyV2.format_splunk_note_for_xsoar", return_value="Note from fetch")
 
     # Mock other dependencies
-    mocker.patch("SplunkPy.demisto.getLastRun", return_value={})
+    mocker.patch("SplunkPyV2.demisto.getLastRun", return_value={})
     mocker.patch(
-        "SplunkPy.demisto.params",
+        "SplunkPyV2.demisto.params",
         return_value={
-            "timezone": "0",
-            "fetchQuery": "|`notable`",
+            "fetchQuery": "search `notable`",
             "earliest_fetch_time_fieldname": "_time",
             "latest_fetch_time_fieldname": "_time",
         },
     )
-    mocker.patch("SplunkPy.demisto.setLastRun")
-    mocker.patch("SplunkPy.demisto.incidents")
-    mocker.patch("SplunkPy.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
+    mocker.patch("SplunkPyV2.demisto.setLastRun")
+    mocker.patch("SplunkPyV2.demisto.incidents")
+    mocker.patch("SplunkPyV2.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
 
     # Create mock service and mapper
     mock_service = MagicMock()
-    mock_service.jobs.oneshot.return_value = MagicMock()
+    mock_service.jobs.oneshot = (
+        lambda query, **kwargs: search_results if "search `notable`" in query else mock_notes_data
+    )
+    mocker.patch("SplunkPyV2.results.JSONResultsReader", side_effect=lambda res: res)
     mock_service.kvstore.__getitem__.return_value = mock_kv_store
     mock_mapper = splunk.UserMappingObject(MagicMock(), False)
 
-    # Call fetch_notables
-    fetch_notables(
+    # Call fetch_findings
+    fetch_findings(
         service=mock_service,
-        mapper=mock_mapper,
-        comment_tag_to_splunk="to_splunk",
-        comment_tag_from_splunk="from_splunk",
+        mapper=mock_mapper
     )
 
     # Verify that KV store was accessed (indicating get_comments_data_new was called)
     mock_service.kvstore.__getitem__.assert_called_with("mc_notes")
-
-
-def test_fetch_vs_mirror_comment_storage_difference(mocker):
-    """
-    Test that comments are stored differently in fetch vs mirror-in operations.
-
-    Given:
-        - Same notable and comment data
-        - ES version 8.0.0 or higher
-    When:
-        - get_comments_data_new is called with is_fetch=True vs is_fetch=False
-    Then:
-        - In fetch (is_fetch=True): comments stored under 'comment' key as list of strings
-        - In mirror-in (is_fetch=False): comments stored under 'SplunkComments' key as list of dicts
-    """
-    from SplunkPy import get_comments_data_new
-
-    test_id = "comment_storage_test"
-
-    # Mock notable map
-    id_to_notable_map = {
-        test_id: {
-            "rule_id": test_id,
-            "event_id": test_id,
-        }
-    }
-
-    # Mock KV store response with comments
-    mock_comments_data = [
-        {
-            "notable_id": test_id,
-            "comment": "First comment",
-            "update_time": 1612874490.589575,
-            "create_time": 1612874490,
-        },
-        {
-            "notable_id": test_id,
-            "comment": "Second comment",
-            "update_time": 1612874500.589575,
-            "create_time": 1612874500,
-        },
-    ]
-
-    # Mock service and KV store
-    mock_service = MagicMock()
-    mock_kv_store = MagicMock()
-    mock_kv_store.data.query.return_value = mock_comments_data
-    mock_service.kvstore.__getitem__.return_value = mock_kv_store
-
-    # Mock helper functions
-    mocker.patch("SplunkPy.get_comments_data_old", return_value=[])
-    mocker.patch("SplunkPy.format_splunk_note_for_xsoar", side_effect=lambda note: note["comment"])
-
-    # Test fetch mode (is_fetch=True)
-    fetch_notable_map = id_to_notable_map.copy()
-    get_comments_data_new(
-        service=mock_service,
-        id_to_notable_map=fetch_notable_map,
-        comment_tag_from_splunk="from_splunk",
-        last_update_splunk_timestamp=1612874430.589575,
-        is_fetch=True,
-    )
-
-    # Verify fetch storage format
-    assert "comment" in fetch_notable_map[test_id]
-    assert isinstance(fetch_notable_map[test_id]["comment"], list)
-    assert all(isinstance(comment, str) for comment in fetch_notable_map[test_id]["comment"])
-    assert "Second comment" in fetch_notable_map[test_id]["comment"]  # Most recent first
-    assert "First comment" in fetch_notable_map[test_id]["comment"]
-
-    # Test mirror-in mode (is_fetch=False)
-    mirror_notable_map = {
-        test_id: {
-            "rule_id": test_id,
-            "event_id": test_id,
-        }
-    }
-
-    get_comments_data_new(
-        service=mock_service,
-        id_to_notable_map=mirror_notable_map,
-        comment_tag_from_splunk="from_splunk",
-        last_update_splunk_timestamp=1612874430.589575,
-        is_fetch=False,
-    )
-
-    # Verify mirror-in storage format
-    assert "SplunkComments" in mirror_notable_map[test_id]
-    assert isinstance(mirror_notable_map[test_id]["SplunkComments"], list)
-    assert all(isinstance(comment, dict) and "Comment" in comment for comment in mirror_notable_map[test_id]["SplunkComments"])
-    assert mirror_notable_map[test_id]["SplunkComments"][0]["Comment"] == "Second comment"  # Most recent first
-    assert mirror_notable_map[test_id]["SplunkComments"][1]["Comment"] == "First comment"

@@ -18,11 +18,10 @@ from splunklib import client, results
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 from splunklib.data import Record
 
-INTEGRATION_LOG = "SplunkPyV3- "
+INTEGRATION_LOG = "SplunkPyV2- "
 OUTPUT_MODE_JSON = "json"  # type of response from splunk-sdk query (json/csv/xml)
 # Define utf8 as default encoding
 params = demisto.params()
-SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 DEFAULT_ASSET_ENRICH_TABLES = "asset_lookup_by_str,asset_lookup_by_cidr"
 DEFAULT_IDENTITY_ENRICH_TABLE = "identity_lookup_expanded"
 VERIFY_CERTIFICATE = not bool(params.get("unsecure"))
@@ -33,16 +32,8 @@ SPLUNK_INDEXING_TIME = 60
 PROBLEMATIC_CHARACTERS = [".", "(", ")", "[", "]"]
 REPLACE_WITH = "_"
 REPLACE_FLAG = params.get("replaceKeys", False)
-FETCH_TIME = params.get("fetch_time")
+FIRST_FETCH_TIME = params.get("first_fetch_time", "10 minutes")
 PROXIES = handle_proxy()
-TIME_UNIT_TO_MINUTES = {
-    "minute": 1,
-    "hour": 60,
-    "day": 24 * 60,
-    "week": 7 * 24 * 60,
-    "month": 30 * 24 * 60,
-    "year": 365 * 24 * 60,
-}
 DEFAULT_DISPOSITIONS = {
     "Unassigned": "disposition:0",
     "True Positive - Suspicious Activity": "disposition:1",
@@ -79,7 +70,7 @@ IDENTITY_ENRICHMENT = "Identity"
 SUBMITTED_FINDINGS = "submitted_findings"
 EVENT_ID = "event_id"
 RULE_ID = "rule_id"
-JOB_CREATION_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
+ISO_FORMAT_TZ_AWARE = "%Y-%m-%dT%H:%M:%S.%f%z"  # e.g '2025-12-03T11:53:45.138540+00:00
 NOT_YET_SUBMITTED_FINDINGS = "not_yet_submitted_findings"
 INFO_MIN_TIME = "info_min_time"
 INFO_MAX_TIME = "info_max_time"
@@ -87,7 +78,6 @@ INCIDENTS = "incidents"
 MIRRORED_ENRICHING_FINDINGS = "MIRRORED_ENRICHING_FINDINGS"
 PROCESSED_MIRRORED_EVENTS = "processed_mirror_in_events_cache"
 DUMMY = "dummy"
-FINDING = "finding"
 ENRICHMENTS = "enrichments"
 MAX_HANDLE_FINDINGS = 20
 MAX_SUBMIT_FINDINGS = 30
@@ -263,29 +253,160 @@ class SplunkGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
         return findings_entries + self.entries
 
 
-# =========== Regular Fetch Mechanism ===========
+# =========== Time & Date Utilities ===========
 
 
-def splunk_time_to_datetime(incident_ocurred_time):
-    incident_time_without_timezone = incident_ocurred_time.split(".")[0]
-    return datetime.strptime(incident_time_without_timezone, SPLUNK_TIME_FORMAT)
+def get_current_splunk_time(splunk_service: client.Service):
+
+    get_time_query = f'| gentimes start=-1 | eval clock = strftime(time(), "{ISO_FORMAT_TZ_AWARE}") | sort 1 -_time | table clock'
+    search_results = splunk_service.jobs.oneshot(get_time_query, count=1, output_mode=OUTPUT_MODE_JSON)
+
+    reader = results.JSONResultsReader(search_results)
+    for item in reader:
+        if isinstance(item, dict):
+            return item["clock"]
+        if handle_message(item):
+            continue
+
+    raise ValueError("Error: Could not fetch Splunk time")
 
 
-def get_latest_incident_time(incidents):
-    def get_incident_time_datetime(incident):
-        incident_time = incident["occurred"]
-        incident_time_datetime = splunk_time_to_datetime(incident_time)
-        return incident_time_datetime
+def extract_timezone_offset_from_splunk_time(splunk_time_str: str) -> str:
+    """Extract timezone offset from Splunk time string.
+    
+    Args:
+        splunk_time_str: Time string in ISO_FORMAT_TZ_AWARE format
+                        (e.g., '2025-12-03T11:53:45.138540+02:00')
+    
+    Returns:
+        Timezone offset string (e.g., '+02:00', '-05:00')
+        Returns '+00:00' if extraction fails
+    """
+    try:
+        # Parse the datetime string to extract timezone
+        dt = datetime.strptime(splunk_time_str, ISO_FORMAT_TZ_AWARE)
+        # Get the timezone offset
+        tz_offset = dt.strftime('%z')
+        # Format as +HH:MM
+        return f"{tz_offset[:3]}:{tz_offset[3:]}"
+    except Exception as e:
+        demisto.error(f"Failed to extract timezone from '{splunk_time_str}': {e}")
+        return '+00:00'  # Default to UTC
 
-    latest_incident = max(incidents, key=get_incident_time_datetime)
-    return latest_incident["occurred"]
+
+def get_splunk_timezone_offset(service: client.Service) -> str:
+    """Get Splunk server timezone offset with caching.
+    
+    Retrieves the timezone offset from integration context cache.
+    If not cached, queries Splunk server and caches the result.
+    
+    Args:
+        service: Splunk service object
+    
+    Returns:
+        Timezone offset string (e.g., '+02:00')
+    """
+    TIMEZONE_CACHE_KEY = 'splunk_timezone_offset'
+    
+    # Try to get from cache
+    integration_context = get_integration_context()
+    cached_timezone = integration_context.get(TIMEZONE_CACHE_KEY)
+    
+    if cached_timezone:
+        demisto.debug(f"Using cached Splunk timezone: {cached_timezone}")
+        return cached_timezone
+    
+    # Not cached - query Splunk
+    demisto.debug("Timezone not cached, querying Splunk server")
+    try:
+        splunk_time = get_current_splunk_time(service)
+        timezone_offset = extract_timezone_offset_from_splunk_time(splunk_time)
+        
+        # Cache the timezone
+        integration_context[TIMEZONE_CACHE_KEY] = timezone_offset
+        set_integration_context(integration_context)
+        
+        demisto.debug(f"Cached Splunk timezone: {timezone_offset}")
+        return timezone_offset
+        
+    except Exception as e:
+        demisto.error(f"Failed to get Splunk timezone: {e}")
+        return '+00:00'  # Default to UTC on error
 
 
-def get_next_start_time(latests_incident_fetched_time, latest_time, were_new_incidents_found=True):
-    if not were_new_incidents_found:
-        return latest_time
-    latest_incident_datetime = splunk_time_to_datetime(latests_incident_fetched_time)
-    return latest_incident_datetime.strftime(SPLUNK_TIME_FORMAT)
+def enforce_look_behind_time(fetch_window_start_time, fetch_window_end_time, look_behind_time):
+    """Verifies that the start time of the fetch is at X minutes before
+    the end time, X being the number of minutes specified in the look_behind parameter.
+    The reason this is needed is to ensure that events that have a significant difference
+    between their index time and occurrence time in Splunk are still fetched and are not missed.
+
+    Args:
+        fetch_window_start_time (str): The current start time of the fetch.
+        fetch_window_end_time (str): The current end time of the fetch.
+        look_behind_time (int): The minimal difference (in minutes) that should be enforced between
+                                the start time and end time.
+
+    Returns:
+        fetch_window_start_time (str): The new start time for the fetch.
+    """
+    start_time_datetime = datetime.strptime(fetch_window_start_time, ISO_FORMAT_TZ_AWARE)
+    end_time_datetime = datetime.strptime(fetch_window_end_time, ISO_FORMAT_TZ_AWARE)
+    if end_time_datetime - start_time_datetime < timedelta(minutes=look_behind_time):
+        start_time_datetime = end_time_datetime - timedelta(minutes=look_behind_time)
+        return datetime.strftime(start_time_datetime, ISO_FORMAT_TZ_AWARE)
+    return fetch_window_start_time
+
+
+def get_fetch_time_window(params, service, last_run_fetch_window_start_time: str, last_run_fetch_window_end_time: str):
+    """Calculate the time window (start and end times) for fetching incidents from Splunk.
+    
+    This function determines the boundaries of the fetch query time window, handling first-time fetches,
+    enforcing look-behind periods for late-indexed events, and supporting both Splunk server time and local system time.
+    
+    Args:
+        params: Integration parameters
+        service: Splunk service object
+        last_run_fetch_window_start_time: The earliest time from the last run (string in ISO_FORMAT_TZ_AWARE)
+        last_run_fetch_window_end_time: The latest time from the last run (string in ISO_FORMAT_TZ_AWARE)
+        
+    Returns:
+        tuple: (fetch_window_start_time, fetch_window_end_time) - both as strings in ISO_FORMAT_TZ_AWARE
+    """
+    fetch_window_start_time = last_run_fetch_window_start_time
+    fetch_window_end_time = last_run_fetch_window_end_time
+
+    # If this is the first fetch (no last run time), calculate it based on first_fetch_time parameter
+    if not fetch_window_start_time:
+        demisto.debug(f"[SplunkPy] First fetch - calculated earliest time: {fetch_window_start_time}")
+        parse_setting = {"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
+        fetch_window_start_time = dateparser.parse(FIRST_FETCH_TIME, settings=parse_setting).strftime(ISO_FORMAT_TZ_AWARE)
+
+
+    # if fetch_window_end_time is not None it's mean we are in a batch fetch iteration with offset
+    # if it's none - take the current time
+    if not fetch_window_end_time:
+        # Get current time string - either from Splunk server or local system
+        # Use Splunk server time to avoid timezone issues
+        current_time_from_splunk = get_current_splunk_time(service)
+        datatime_from_splunk_as_utc = dateparser.parse(current_time_from_splunk, settings={"TIMEZONE": "UTC"})
+        fetch_window_end_time = datatime_from_splunk_as_utc.strftime(ISO_FORMAT_TZ_AWARE)
+
+
+
+    occurrence_time_look_behind_minutes = arg_to_number(params.get("occurrence_look_behind") or 15)
+    extensive_log(f"[SplunkPy] occurrence look behind is: {occurrence_time_look_behind_minutes}")
+
+    # Enforce look-behind time to ensure we don't miss late-indexed events
+    fetch_window_start_time = enforce_look_behind_time(
+        fetch_window_start_time,
+        fetch_window_end_time,
+        occurrence_time_look_behind_minutes
+    )
+
+    return fetch_window_start_time, fetch_window_end_time
+
+
+# =========== Helper Utilities ===========
 
 
 def create_incident_custom_id(incident: dict[str, Any]):
@@ -299,9 +420,6 @@ def create_incident_custom_id(incident: dict[str, Any]):
     """
     incident_raw_data = json.loads(incident["rawJSON"])
     fields_to_add = ["_cd", "index", "_time", "_indextime", "_raw"]
-    fields_supplied_by_user = demisto.params().get("unique_id_fields", "")
-    fields_supplied_by_user = fields_supplied_by_user or ""
-    fields_to_add.extend(fields_supplied_by_user.split(","))
 
     incident_custom_id = "___"
     for field_name in fields_to_add:
@@ -337,93 +455,41 @@ def remove_irrelevant_incident_ids(
         dict[str, Any]: The updated list of IDs, without irrelevant IDs.
     """
     new_last_run_fetched_ids: dict[str, dict[str, str]] = {}
-    window_start_datetime = datetime.strptime(window_start_time, SPLUNK_TIME_FORMAT)
+    window_start_datetime = datetime.strptime(window_start_time, ISO_FORMAT_TZ_AWARE)
     demisto.debug(f"Beginning to filter irrelevant IDs with respect to window {window_start_time} - {window_end_time}")
     for incident_id, incident_occurred_time in last_run_fetched_ids.items():
         # We divided the handling of the last fetched IDs since we changed the handling of them
         # The first implementation caused IDs to be removed from the cache, even though they were still relevant
         # The second implementation now only removes the cached IDs that are not relevant to the fetch window
         extensive_log(f"[SplunkPy] Checking if {incident_id} is relevant to fetch window")
-        if isinstance(incident_occurred_time, dict):
-            # To handle last fetched IDs
-            # Last fetched IDs hold the occurred time that they were seen, which is basically the end time of the fetch window
-            # they were fetched in, and will be deleted from the last fetched IDs once they pass the fetch window
-            incident_window_end_datetime = datetime.strptime(incident_occurred_time.get("occurred_time", ""), SPLUNK_TIME_FORMAT)
-            if incident_window_end_datetime >= window_start_datetime:
-                # We keep the incident, since it is still in the fetch window
-                extensive_log(
-                    f"[SplunkPy] Keeping {incident_id} as part of the last fetched IDs. {incident_window_end_datetime=}"
-                )
-                new_last_run_fetched_ids[incident_id] = incident_occurred_time
-            else:
-                extensive_log(f"[SplunkPy] Removing {incident_id} from the last fetched IDs. {incident_window_end_datetime=}")
-        else:
-            # To handle last fetched IDs before version 3_1_20
-            # Last fetched IDs held the epoch time of their appearance, they will now hold the
-            # new format, with an occurred time equal to the end of the window
+        # To handle last fetched IDs
+        # Last fetched IDs hold the occurred time that they were seen, which is basically the end time of the fetch window
+        # they were fetched in, and will be deleted from the last fetched IDs once they pass the fetch window
+        incident_window_end_time_str = incident_occurred_time.get("occurred_time", "")
+        incident_window_end_datetime = datetime.strptime(incident_window_end_time_str, ISO_FORMAT_TZ_AWARE)
+        if incident_window_end_datetime >= window_start_datetime:
+            # We keep the incident, since it is still in the fetch window
             extensive_log(
-                f"[SplunkPy] {incident_id} was saved using old implementation, with value {incident_occurred_time}, keeping"
+                f"[SplunkPy] Keeping {incident_id} as part of the last fetched IDs. {incident_window_end_time_str=}"
             )
-            new_last_run_fetched_ids[incident_id] = {"occurred_time": window_end_time}
+            new_last_run_fetched_ids[incident_id] = incident_occurred_time
+        else:
+            extensive_log(f"[SplunkPy] Removing {incident_id} from the last fetched IDs. {incident_window_end_time_str=}")
+
     return new_last_run_fetched_ids
 
 
-def enforce_look_behind_time(last_run_time, now, look_behind_time):
-    """Verifies that the start time of the fetch is at X minutes before
-    the end time, X being the number of minutes specified in the look_behind parameter.
-    The reason this is needed is to ensure that events that have a significant difference
-    between their index time and occurrence time in Splunk are still fetched and are not missed.
-
-    Args:
-        last_run_time (str): The current start time of the fetch.
-        now (str): The current end time of the fetch.
-        look_behind_time (int): The minimal difference (in minutes) that should be enforced between
-                                the start time and end time.
-
-    Returns:
-        last_run (str): The new start time for the fetch.
-    """
-    last_run_datetime = datetime.strptime(last_run_time, SPLUNK_TIME_FORMAT)
-    now_datetime = datetime.strptime(now, SPLUNK_TIME_FORMAT)
-    if now_datetime - last_run_datetime < timedelta(minutes=look_behind_time):
-        time_before_given_look_behind_datetime = now_datetime - timedelta(minutes=look_behind_time)
-        return datetime.strftime(time_before_given_look_behind_datetime, SPLUNK_TIME_FORMAT)
-    return last_run_time
-
-
-def get_fetch_start_times(params, service, last_run_earliest_time, occurence_time_look_behind):
-    current_time_for_fetch = datetime.utcnow()
-    if timezone_ := params.get("timezone"):
-        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone_))
-
-    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    if params.get("useSplunkTime"):
-        now = get_current_splunk_time(service)
-        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
-        current_time_for_fetch = current_time_in_splunk
-
-    if not last_run_earliest_time:
-        fetch_time_in_minutes = parse_time_to_minutes()
-        start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
-        last_run_earliest_time = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-        extensive_log(f"[SplunkPy] SplunkPy last run is None. Last run earliest time is: {last_run_earliest_time}")
-
-    occured_start_time = enforce_look_behind_time(last_run_earliest_time, now, occurence_time_look_behind)
-
-    return occured_start_time, now
-
-
 def build_fetch_kwargs(
-    occured_start_time, latest_time, search_offset, occurred_start_time_fieldname, occurred_end_time_fieldname
+    fetch_window_start_time, fetch_window_end_time, search_offset, fetch_window_start_time_fieldname, fetch_window_end_time_fieldname
 ):
-    extensive_log(f"[SplunkPy] occurred_start_time_fieldname: {occurred_start_time_fieldname}")
-    extensive_log(f"[SplunkPy] occured_start_time: {occured_start_time}")
-    extensive_log(f"[SplunkPy] occurred_end_time_fieldname: {occurred_end_time_fieldname}")
-    extensive_log(f"[SplunkPy] occured_start_time: {latest_time}")
+    extensive_log(f"[SplunkPy] fetch_window_start_time_fieldname: {fetch_window_start_time_fieldname}")
+    extensive_log(f"[SplunkPy] fetch_window_start_time: {fetch_window_start_time}")
+    extensive_log(f"[SplunkPy] fetch_window_end_time_fieldname: {fetch_window_end_time_fieldname}")
+    extensive_log(f"[SplunkPy] fetch_window_end_time: {fetch_window_end_time}")
 
     return {
-        occurred_start_time_fieldname: occured_start_time,
-        occurred_end_time_fieldname: latest_time,
+        fetch_window_start_time_fieldname: fetch_window_start_time,
+        fetch_window_end_time_fieldname: fetch_window_end_time,
         "count": FETCH_LIMIT,
         "offset": search_offset,
         "output_mode": OUTPUT_MODE_JSON,
@@ -452,39 +518,34 @@ def fetch_findings(
     if not last_run_data:
         extensive_log("[SplunkPy] SplunkPy first run")
 
-    last_run_earliest_time = last_run_data and last_run_data.get("time")
-    last_run_latest_time = last_run_data and last_run_data.get("latest_time")
+    earliest_time_from_last_run = last_run_data and last_run_data.get("next_run_earliest_time")
+    latest_time_from_last_run = last_run_data and last_run_data.get("next_run_latest_time")
+    search_offset = last_run_data.get("offset", 0)
     extensive_log(f"[SplunkPy] SplunkPy last run is:\n {last_run_data}")
 
-    search_offset = last_run_data.get("offset", 0)
 
-    occurred_look_behind = arg_to_number(params.get("occurrence_look_behind"))
-    if occurred_look_behind is None:
-        occurred_look_behind = 15
-    extensive_log(f"[SplunkPy] occurrence look behind is: {occurred_look_behind}")
+    fetch_window_start_time, fetch_window_end_time = get_fetch_time_window(
+        params, service, earliest_time_from_last_run, latest_time_from_last_run
+    )
 
-    occured_start_time, now = get_fetch_start_times(params, service, last_run_earliest_time, occurred_look_behind)
-
-    # if last_run_latest_time is not None it's mean we are in a batch fetch iteration with offset
-    latest_time = last_run_latest_time or now
     finding_time_filter_type: str = params.get("finding_time_source") or "creation time"
     if finding_time_filter_type.startswith("index time"):
         # BETA: For index time based time calculations
-        occurred_start_time_fieldname = "index_earliest"
-        occurred_end_time_fieldname = "index_latest"
+        fetch_window_start_time_fieldname = "index_earliest"
+        fetch_window_end_time_fieldname = "index_latest"
     else:
         # Finding filter time type defaults to "creation time"
-        occurred_start_time_fieldname = "earliest_time"
-        occurred_end_time_fieldname = "latest_time"
+        fetch_window_start_time_fieldname = "earliest_time"
+        fetch_window_end_time_fieldname = "latest_time"
     kwargs_oneshot = build_fetch_kwargs(
-        occured_start_time, latest_time, search_offset, occurred_start_time_fieldname, occurred_end_time_fieldname
+        fetch_window_start_time, fetch_window_end_time, search_offset, fetch_window_start_time_fieldname, fetch_window_end_time_fieldname
     )
     fetch_query = build_fetch_query(params)
-    last_run_fetched_ids: dict[str, Any] = last_run_data.get("found_incidents_ids", {})
+    last_run_fetched_ids: dict[str, Any] = last_run_data.get("next_run_found_incidents_ids", {})
     if late_indexed_pagination := last_run_data.get("late_indexed_pagination"):
         # This is for handling the case when events get indexed late, and inserted in pages
         # that we have already went through
-        window = f"{kwargs_oneshot.get(occurred_start_time_fieldname)}-{kwargs_oneshot.get(occurred_end_time_fieldname)}"
+        window = f"{kwargs_oneshot.get(fetch_window_start_time_fieldname)}-{kwargs_oneshot.get(fetch_window_end_time_fieldname)}"
         demisto.debug(f"[SplunkPy] additional fetch for the window {window} to check for late indexed incidents")
         if last_run_fetched_ids:
             ids_to_exclude = [f'"{fetched_id}"' for fetched_id in last_run_fetched_ids]
@@ -512,9 +573,6 @@ def fetch_findings(
     if fetched_items:
         # enrich the fetched items with splunk notes
         finding_id_to_item = {item.get(EVENT_ID, ""): item for item in fetched_items if item.get(EVENT_ID)}
-        # dt = datetime.fromisoformat(occured_start_time.replace("T", " "))
-        # occured_start_time_timestamp = datetime.fromisoformat(occured_start_time).timestamp()
-        # enrich_findings_with_splunk_notes(service, finding_id_to_item, comment_tag_to_splunk, dt.strftime("%m/%d/%Y:%H:%M:%S"), is_fetch=True)
         enrich_findings_with_splunk_notes(service, finding_id_to_item, is_fetch=True)
 
     for item in fetched_items:
@@ -522,10 +580,9 @@ def fetch_findings(
         finding_incident = Finding(data=item)
         inc = finding_incident.to_incident(mapper)
         extensive_log(f"[SplunkPy] Incident data after parsing to finding: {inc}")
-        custom_inc_id = create_incident_custom_id(inc)
-        incident_id = finding_incident.id or custom_inc_id
+        incident_id = finding_incident.id or create_incident_custom_id(inc)
 
-        if incident_id not in last_run_fetched_ids and custom_inc_id not in last_run_fetched_ids:
+        if incident_id not in last_run_fetched_ids:
             incident_ids_to_add.append(incident_id)
             incidents.append(inc)
             findings.append(finding_incident)
@@ -538,11 +595,11 @@ def fetch_findings(
         raise DemistoException(f"Failed to fetch incidents, check the provided query in Splunk web search - {error_message}")
     extensive_log(f"[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {len(last_run_fetched_ids)}")
     for incident_id in incident_ids_to_add:
-        last_run_fetched_ids[incident_id] = {"occurred_time": latest_time}
+        last_run_fetched_ids[incident_id] = {"occurred_time": fetch_window_end_time}
     extensive_log(f"[SplunkPy] Size of last_run_fetched_ids after adding new IDs: {len(last_run_fetched_ids)}")
 
     # New way to remove IDs
-    last_run_fetched_ids = remove_irrelevant_incident_ids(last_run_fetched_ids, occured_start_time, latest_time)
+    last_run_fetched_ids = remove_irrelevant_incident_ids(last_run_fetched_ids, fetch_window_start_time, fetch_window_end_time)
     extensive_log(f"[SplunkPy] Size of last_run_fetched_ids after removing old IDs: {len(last_run_fetched_ids)}")
     extensive_log(f"[SplunkPy] SplunkPy - incidents fetched on last run = {last_run_fetched_ids}")
 
@@ -560,31 +617,30 @@ def fetch_findings(
             last_run_data.update({DUMMY: DUMMY})
 
     # We didn't get any new incidents or got less than limit,
-    # so the next run's earliest time will be the latest_time from this iteration
+    # so the next run's earliest time will be the fetch_window_end_time from this iteration
     if (len(incidents) + num_of_dropped) < FETCH_LIMIT:
         demisto.debug(
             f"[SplunkPy] Number of fetched incidents = {len(incidents)}, dropped = {num_of_dropped}. Sum is less"
             f" than {FETCH_LIMIT=}. Starting new fetch"
         )
-        next_run_earliest_time = latest_time
         new_last_run = {
-            "time": next_run_earliest_time,
-            "latest_time": None,
+            "next_run_earliest_time": fetch_window_end_time,
+            "next_run_latest_time": None,
             "offset": 0,
-            "found_incidents_ids": last_run_fetched_ids,
+            "next_run_found_incidents_ids": last_run_fetched_ids,
         }
     # we get limit findings from splunk
-    # we should fetch the entire queue with offset - so set the offset, time and latest_time for the next run
+    # we should fetch the entire queue with offset - so set the offset, next_run_earliest_time and next_run_latest_time for the next run
     else:
         demisto.debug(
             f"[SplunkPy] Number of fetched incidents = {len(incidents)}, dropped = {num_of_dropped}. Sum is"
             f" equal/greater than {FETCH_LIMIT=}. Continue pagination"
         )
         new_last_run = {
-            "time": occured_start_time,
-            "latest_time": latest_time,
+            "next_run_earliest_time": fetch_window_start_time,
+            "next_run_latest_time": fetch_window_end_time,
             "offset": search_offset + FETCH_LIMIT,
-            "found_incidents_ids": last_run_fetched_ids,
+            "next_run_found_incidents_ids": last_run_fetched_ids,
         }
     new_last_run["late_indexed_pagination"] = False
     # Need to fetch again this "window" to be sure no "late" indexed events are missed
@@ -594,17 +650,16 @@ def fetch_findings(
     # If we are in the process of checking late indexed events, and len(fetch_incidents) == FETCH_LIMIT,
     # that means we need to continue the process of checking late indexed events
     if len(incidents) == FETCH_LIMIT and late_indexed_pagination:
-        if len(incidents) == FETCH_LIMIT:
-            demisto.debug(
-                f"Number of valid incidents equals {FETCH_LIMIT=}, and current fetch checked for late indexed events."
-                " Continue checking for late events"
-            )
-            new_last_run["late_indexed_pagination"] = True
         demisto.debug(
-            f'SplunkPy set last run - {new_last_run["time"]=}, {new_last_run["latest_time"]=}, {new_last_run["offset"]=}'
-            f', late_indexed_pagination={new_last_run.get("late_indexed_pagination")}'
+            f"Number of valid incidents equals {FETCH_LIMIT=}, and current fetch checked for late indexed events."
+            " Continue checking for late events"
         )
-
+        new_last_run["late_indexed_pagination"] = True
+    
+    demisto.debug(
+        f'SplunkPy set last run - {new_last_run["next_run_earliest_time"]=}, {new_last_run["next_run_latest_time"]=}, {new_last_run["offset"]=}'
+        f', late_indexed_pagination={new_last_run.get("late_indexed_pagination")}'
+    )
     last_run_data.update(new_last_run)
     demisto.setLastRun(last_run_data)
     extensive_log(f"[SplunkPy] last run was updated with: {last_run_data}")
@@ -613,13 +668,23 @@ def fetch_findings(
 def fetch_incidents(service: client.Service, mapper: UserMappingObject):
     if ENABLED_ENRICHMENTS:
         integration_context = get_integration_context()
-        if not demisto.getLastRun() and integration_context:
+        last_run = demisto.getLastRun()
+        
+        if not last_run and integration_context:
             # In "Pull from instance" in Classification & Mapping the last run object is empty, integration context
             # will not be empty because of the enrichment mechanism. In regular enriched fetch, we use dummy data
             # in the last run object to avoid entering this case
+            demisto.debug(
+                "fetch_incidents: last_run is empty but integration_context exists. "
+                "This could be 'Pull from instance' or after 'reset last run'. "
+                "If this message appears repeatedly, consider running the 'splunk-reset-enriching-fetch-mechanism' command "
+                "to clear stale data and reset the enrichment mechanism."
+            )
             demisto.debug("running fetch_incidents_for_mapping")
 
             fetch_incidents_for_mapping(integration_context)
+            # Set DUMMY in last_run to prevent this path from being triggered again if incorrectly called 
+            demisto.setLastRun({DUMMY: DUMMY})
         else:
             demisto.debug("running run_enrichment_mechanism")
             run_enrichment_mechanism(service, integration_context, mapper)
@@ -664,7 +729,7 @@ class Enrichment:
         self.type = enrichment_type
         self.id = enrichment_id
         self.data = data or []
-        self.creation_time = creation_time if creation_time else datetime.utcnow().isoformat()
+        self.creation_time = creation_time if creation_time else datetime.now(pytz.UTC).isoformat()
         self.status = status or Enrichment.IN_PROGRESS
         self.query_name = query_name
         self.query_search = query_search
@@ -796,12 +861,6 @@ class Finding:
                 labels.append({"type": key, "value": value})
         if demisto.get(finding_data, "security_domain"):
             labels.append({"type": "security_domain", "value": finding_data["security_domain"]})
-            # splunk_notes = argToList(finding_data.get("comment", []))
-            # splunk_note_entries = argToList(finding_data.get("comment", []))
-            # demisto.debug(f"data to update {splunk_notes=}")
-            # for note in splunk_notes:
-            #     # Creating a note
-            #     splunk_note_entries.append({"Note": note})
         splunk_note_entries = demisto.get(finding_data, "splunk_notes", [])
         incident["splunk_notes"] = splunk_note_entries
         labels.append({"type": "splunk_notes", "value": str(splunk_note_entries)})
@@ -817,10 +876,8 @@ class Finding:
         """Gathers all data from all finding's enrichments and return an incident"""
         self.incident_created = True
 
-        total_drilldown_searches = self.drilldown_searches_counter()
-
         for e in self.enrichments:
-            if e.type == DRILLDOWN_ENRICHMENT and total_drilldown_searches > 1:
+            if e.type == DRILLDOWN_ENRICHMENT:
                 # A finding can have more than one drilldown search enrichment, in that case we keep the searches results in
                 # a list of dictionaries - each dict contains the query detail and the search results of a drilldown search
 
@@ -841,8 +898,7 @@ class Finding:
                     # Drilldown enrichment is successful if at least one drilldown search was successful
                     self.data["successful_drilldown_enrichment"] = e.status == Enrichment.SUCCESSFUL
 
-            else:  # asset enrichment, identity enrichment or a single drilldown enrichment
-                # (return a list to maintain Backwards compatibility)
+            else:  # asset enrichment or identity enrichment
                 self.data[e.type] = e.data
                 self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
 
@@ -851,16 +907,6 @@ class Finding:
             self.occurred,
             mapper=mapper,
         )
-
-    def drilldown_searches_counter(self):
-        """Counts the drilldown searches of a finding"""
-        drilldown_search_cnt = 0
-
-        for e in self.enrichments:
-            if e.type == DRILLDOWN_ENRICHMENT:
-                drilldown_search_cnt += 1
-
-        return drilldown_search_cnt
 
     def submitted(self) -> bool:
         """Returns an indicator on whether any of the finding's enrichments was submitted or not"""
@@ -912,7 +958,8 @@ class Finding:
             finding_occurred = self.data["_time"]
         else:
             # Use-cases where fetching non-findings from Splunk
-            finding_occurred = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
+            
+            finding_occurred = datetime.now(pytz.UTC).strftime(ISO_FORMAT_TZ_AWARE)
             self.time_is_missing = True
             demisto.debug(f"\n\n occurred time in else: {finding_occurred} \n\n")
 
@@ -942,12 +989,12 @@ class Finding:
 
         Returns (bool): True if the enrichment process exceeded the given timeout, False otherwise
         """
-        now = datetime.utcnow()
+        now = datetime.now(pytz.UTC)
         exceeding_timeout = False
 
         for enrichment in self.enrichments:
             if enrichment.status == Enrichment.IN_PROGRESS:
-                creation_time_datetime = datetime.strptime(enrichment.creation_time, JOB_CREATION_TIME_FORMAT)
+                creation_time_datetime = datetime.strptime(enrichment.creation_time, ISO_FORMAT_TZ_AWARE)
                 if now - creation_time_datetime > timedelta(minutes=enrichment_timeout):
                     exceeding_timeout = True
                     enrichment.status = Enrichment.EXCEEDED_TIMEOUT
@@ -1698,48 +1745,21 @@ def fetch_incidents_for_mapping(integration_context):
 def reset_enriching_fetch_mechanism():
     """Resets all the fields regarding the enriching fetch mechanism & the last run object"""
 
-    integration_context = get_integration_context()
-    for field in (INCIDENTS, CACHE, MIRRORED_ENRICHING_FINDINGS, PROCESSED_MIRRORED_EVENTS):
-        if field in integration_context:
-            del integration_context[field]
-    set_integration_context(integration_context)
+    # keys: INCIDENTS, CACHE, MIRRORED_ENRICHING_FINDINGS, PROCESSED_MIRRORED_EVENTS may exist in context
+    set_integration_context({})
     demisto.setLastRun({})
     return_results("Enriching fetch mechanism was reset successfully.")
-
-
-# =========== Enriching Fetch Mechanism ===========
 
 
 # =========== Mirroring Mechanism ===========
 
 
-def get_last_update_in_splunk_time(last_update):
-    """Transforms the time to the corresponding time on the Splunk server
-
+def format_splunk_note_for_xsoar(note: dict, timezone_offset: str = '+00:00') -> str:
+    """Formats a Splunk note with author and timestamp in user's timezone.
+    
     Args:
-        last_update (str): The time to be transformed, E.g 2021-02-09T16:41:30.589575+02:00
-
-    Returns (int): The corresponding timestamp on the Splunk server
-    """
-    last_update_utc_datetime = dateparser.parse(last_update, settings={"TIMEZONE": "UTC"})
-    if not last_update_utc_datetime:
-        raise Exception(f"Could not parse the last update time: {last_update}")
-    params = demisto.params()
-
-    try:
-        splunk_timezone = int(params["timezone"])
-    except (KeyError, ValueError, TypeError) as e:
-        raise Exception(
-            "Cannot mirror incidents when timezone is not configured. Please enter the "
-            "timezone of the Splunk server being used in the integration configuration."
-        ) from e
-
-    dt = last_update_utc_datetime + timedelta(minutes=splunk_timezone)
-    return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
-
-
-def format_splunk_note_for_xsoar(note: dict) -> str:
-    """Formats a Splunk note with author and timestamp, similar to Splunk's display.
+        note: The note dictionary from Splunk
+        timezone_offset: Timezone offset string (e.g., '+02:00', '-05:00')
     
     Format:
     **author**  timestamp
@@ -1751,15 +1771,25 @@ def format_splunk_note_for_xsoar(note: dict) -> str:
     # Extract author information - handle nested author object
     author = demisto.get(note, "author.username", "Unknown")
     
-    # Extract and format timestamp
+    # Extract and format timestamp with timezone
     timestamp = ""
     if time_value := note.get("update_time"):
         try:
-            # Convert epoch timestamp to readable format
-            dt = datetime.fromtimestamp(float(time_value))
-            timestamp = dt.strftime("%b %d, %I:%M %p")
-        except (ValueError, TypeError):
-            # If conversion fails, use empty string
+            # Create timezone-aware datetime from epoch timestamp
+            dt_utc = datetime.fromtimestamp(float(time_value), tz=pytz.UTC)
+            
+            # Parse timezone offset (e.g., '+02:00' -> hours=2, minutes=0)
+            sign = 1 if timezone_offset[0] == '+' else -1
+            hours = int(timezone_offset[1:3])
+            minutes = int(timezone_offset[4:6])
+            offset_minutes = sign * (hours * 60 + minutes)
+            
+            # Apply timezone offset
+            dt_local = dt_utc + timedelta(minutes=offset_minutes)
+            timestamp = dt_local.strftime("%b %d, %I:%M %p")
+            
+        except (ValueError, TypeError) as e:
+            demisto.error(f"Failed to format timestamp {time_value}: {e}")
             timestamp = ""
     
     # Extract note content
@@ -1806,7 +1836,7 @@ def enrich_findings_with_splunk_notes(
     last_update_splunk_timestamp=None,
     is_fetch: bool = False,
 ):
-    """Get finding notes from Splunk.
+    """Get finding notes from Splunk with timezone-aware timestamps.
     
     This implementation uses a search query to find note IDs associated with findings from the _audit index,
     then retrieves the actual notes from mc_notes KV store.
@@ -1823,6 +1853,10 @@ def enrich_findings_with_splunk_notes(
     
     if not id_to_finding_map:
         return []
+    
+    # Get timezone offset (cached or from Splunk)
+    timezone_offset = get_splunk_timezone_offset(service)
+    demisto.debug(f"enrich_findings_with_splunk_notes: Using timezone offset: {timezone_offset} for note timestamps")
 
     # Build the OR clause for the search query with all finding IDs
     finding_ids = list(id_to_finding_map.keys())
@@ -1833,9 +1867,9 @@ def enrich_findings_with_splunk_notes(
     # to avoid performance issues with large audit logs
     search_query = (
         f'search index=_audit source=mc_notes earliest=-7d ({or_clause_str}) '
-        # '| rex "(?<timestamp>[\\d.]+),(?<note_id>[\\w-]+),(?<user>[\\w_]+),(?<model>[\\w]+),(?<command>[\\w]+),(?<diff>.+)" '
-        '| rex "(?<timestamp>[\\d.]+),(?<note_id>[\\w-]+),"'
-        '| dedup note_id '
+        '| rex "(?<timestamp>[\\d.]+),(?<note_id>[\\w-]+),(?<user>[\\w_]+),(?<model>[\\w]+),(?<command>[\\w]+),(?<diff>.+)" '
+        '| dedup note_id sortby -update_time'
+        '| where command!="D"' # filter out the deleted notes
         # '| table note_id, command, diff'
         '| table note_id'
     )
@@ -1893,7 +1927,7 @@ def enrich_findings_with_splunk_notes(
 
         # Collect note with update time for sorting
         if finding_id in id_to_finding_map:
-            markdown_content = format_splunk_note_for_xsoar(note)
+            markdown_content = format_splunk_note_for_xsoar(note, timezone_offset)
             finding_notes[finding_id].append(
                 {"content": markdown_content, "update_time": float(note.get("update_time", 0))}
             )
@@ -2020,23 +2054,27 @@ def get_modified_remote_data_command(
     # 3. This cache is stored in the integration context and loaded at the start of the next run.
     # 4. Any fetched event whose key exists in the cache is skipped as a duplicate.
     integration_context = get_integration_context()
-    processed_events_cache = set(integration_context.get("processed_mirror_in_events_cache", []))
+    processed_events_cache = set(integration_context.get(PROCESSED_MIRRORED_EVENTS, []))
     demisto.debug(f"Loaded {len(processed_events_cache)} processed events from cache.")
 
     # Build the query with the 60-second look-behind buffer.
-    original_last_update = get_last_update_in_splunk_time(remote_args.last_update)
-    last_update_splunk_timestamp = original_last_update - SPLUNK_INDEXING_TIME
+    last_update_dt = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"})
+    original_last_update_timestamp = last_update_dt.timestamp()
+    demisto.debug(f"mirror-in: {remote_args.last_update=}, {original_last_update_timestamp=}")
+    last_update_splunk_timestamp = original_last_update_timestamp - SPLUNK_INDEXING_TIME
     
     # Query the audit index to get modified findings
     # This query extracts last_modified_timestamp and rule_id and other findings keys from the audit logs,
     # sorts by timestamp (descending), deduplicates by rule_id
     mirror_in_search = (
         f'search index=_audit source=notable_update_rest_handler earliest={last_update_splunk_timestamp} '
-        f'| eval last_modified_timestamp = _time '
-        f'| sort last_modified_timestamp DESC '
-        f'| dedup rule_id '
-        f'| `get_current_status` '
-        f'| table last_modified_timestamp, rule_id, owner, status, status_label, status_end, disposition, disposition_label, urgency, sensitivity'
+        '| eval last_modified_timestamp = _time '
+        '| sort last_modified_timestamp DESC '
+        '| dedup rule_id '
+        '| `get_current_status` '
+        '| eval review_time = last_modified_timestamp'
+        '| table review_time, rule_id, owner, '
+        'status, status_label, status_end, disposition, disposition_label, urgency, sensitivity'
     )
 
     modified_findings_map = {}
@@ -2058,7 +2096,7 @@ def get_modified_remote_data_command(
         # Deduplication Mechanism:
         # Create a unique key for the event and check against the cache of previously processed events.
         finding_id = updated_finding.get("rule_id")
-        last_modified = updated_finding.get("last_modified_timestamp")
+        last_modified = updated_finding.get("review_time")
         if not finding_id or not last_modified:
             continue
         event_key = f"{finding_id}:{last_modified}"
@@ -2071,14 +2109,14 @@ def get_modified_remote_data_command(
         current_run_processed_events.add(event_key)
 
     # Persist the cache of events processed in this run for the next iteration.
-    integration_context["processed_mirror_in_events_cache"] = list(current_run_processed_events)
+    integration_context[PROCESSED_MIRRORED_EVENTS] = list(current_run_processed_events)
     set_integration_context(integration_context)
 
     if modified_findings_map:
         # Since ES version is 8.2+, notes are in the mc_notes KV Store
         # We use the query-based approach to fetch notes
         war_room_notes = enrich_findings_with_splunk_notes(
-            service, modified_findings_map, original_last_update
+            service, modified_findings_map, original_last_update_timestamp
         )
         entries.extend(war_room_notes)
 
@@ -2156,10 +2194,10 @@ def update_remote_system_command(args, params, service: client.Service, mapper):
                 demisto.debug(f"update-remote-system for finding {finding_id} via v2 API: {response_info}")
                 
                 # Handle notes separately using the new add_investigation_note function
-                if changed_data.get("comment"):
+                if changed_data.get("note"):
                     demisto.debug(f"Adding note to finding {finding_id} via add_investigation_note")
                     try:
-                        note_content = f"{changed_data['comment']}\n{COMMENT_MIRRORED_FROM_XSOAR}"
+                        note_content = f"{changed_data['note']}\n{COMMENT_MIRRORED_FROM_XSOAR}"
                         add_investigation_note(
                             service=service,
                             investigation_or_finding_id=finding_id,
@@ -2201,9 +2239,6 @@ def update_remote_system_command(args, params, service: client.Service, mapper):
     return finding_id
 
 
-# =========== Mirroring Mechanism ===========
-
-
 # =========== Mapping Mechanism ===========
 
 
@@ -2228,30 +2263,19 @@ def get_mapping_fields_command(
 ):
     # Create the query to get unique objects
     # The logic is identical to the 'fetch_incidents' command
-    type_field = params.get("type_field", "source")
+    type_field = "source"
     total_parsed_results = []
-    search_offset = demisto.getLastRun().get("offset", 0)
 
-    current_time_for_fetch = datetime.utcnow()
-
-    if timezone_ := params.get("timezone"):
-        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone_))
-
-    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    if params.get("useSplunkTime"):
-        now = get_current_splunk_time(service)
-        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
-        current_time_for_fetch = current_time_in_splunk
-
-    fetch_time_in_minutes = parse_time_to_minutes()
-    start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
-    last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-
+    # Use get_fetch_time_window to calculate the time window
+    fetch_window_start_time, fetch_window_end_time = get_fetch_time_window(
+        params, service, "", ""
+    )
+    
     kwargs_oneshot = {
-        "earliest_time": last_run,
-        "latest_time": now,
+        "earliest_time": fetch_window_start_time,
+        "latest_time": fetch_window_end_time,
         "count": FETCH_LIMIT,
-        "offset": search_offset,
+        "offset": 0,
         "output_mode": OUTPUT_MODE_JSON,
     }
 
@@ -2748,9 +2772,6 @@ def get_cim_mapping_field_command():
     return {"Finding Data": finding, "Drilldown Data": drilldown, "Asset Data": asset, "Identity Data": identity}
 
 
-# =========== Mapping Mechanism ===========
-
-
 # =========== Integration Functions & Classes ===========
 
 
@@ -2787,28 +2808,6 @@ class ResponseReaderWrapper(io.RawIOBase):
             b[idx] = ch
 
         return len(cleaned_data)
-
-
-def get_current_splunk_time(splunk_service: client.Service):
-    t = datetime.utcnow() - timedelta(days=3)
-    time = t.strftime(SPLUNK_TIME_FORMAT)
-    kwargs_oneshot = {
-        "count": 1,
-        "earliest_time": time,
-        "output_mode": OUTPUT_MODE_JSON,
-    }
-    searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S") | sort 1 -_time | table clock'
-
-    oneshotsearch_results = splunk_service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
-
-    reader = results.JSONResultsReader(oneshotsearch_results)
-    for item in reader:
-        if isinstance(item, dict):
-            return item["clock"]
-        if handle_message(item):
-            continue
-
-    raise ValueError("Error: Could not fetch Splunk time")
 
 
 def quote_group(text):
@@ -3110,8 +3109,8 @@ def requests_handler(url, message, **kwargs):
 
 
 def build_search_kwargs(args, polling=False):
-    t = datetime.utcnow() - timedelta(days=7)
-    time_str = t.strftime(SPLUNK_TIME_FORMAT)
+    t = datetime.now(pytz.UTC) - timedelta(days=7)
+    time_str = t.strftime(ISO_FORMAT_TZ_AWARE)
 
     kwargs_normalsearch: dict[str, Any] = {
         "earliest_time": time_str,
@@ -3378,28 +3377,6 @@ def splunk_results_command(service: client.Service, args: dict):
         )
 
 
-def parse_time_to_minutes():
-    """
-    Calculate how much time to fetch back in minutes
-    Returns (int): Time to fetch back in minutes
-    """
-    number_of_times, time_unit = FETCH_TIME.split(" ")
-    if str(number_of_times).isdigit():
-        number_of_times = int(number_of_times)
-    else:
-        return_error(
-            "Error: Invalid fetch time, need to be a positive integer with the time unit afterwards e.g '2 months, 4 days'."
-        )
-    # If the user input contains a plural of a time unit, for example 'hours', we remove the 's' as it doesn't
-    # impact the minutes in that time unit
-    if time_unit[-1] == "s":
-        time_unit = time_unit[:-1]
-    if time_unit_value_in_minutes := TIME_UNIT_TO_MINUTES.get(time_unit.lower()):
-        return number_of_times * time_unit_value_in_minutes
-
-    return_error("Error: Invalid time unit.")
-    return None
-
 
 def splunk_get_indexes_command(service: client.Service):
     indexes = service.indexes
@@ -3524,7 +3501,7 @@ def splunk_submit_event_hec(
 
 
 def splunk_submit_event_hec_command(params: dict, service, args: dict):
-    hec_token = params.get("cred_hec_token", {}).get("password") or params.get("hec_token")
+    hec_token = params.get("cred_hec_token", {}).get("password")
     baseurl = params.get("hec_url")
     if baseurl is None:
         raise Exception("The HEC URL was not provided.")
@@ -3638,10 +3615,10 @@ def splunk_edit_finding_command(service: client.Service, args: dict) -> None:
     
     # Prepare the output message
     if results and not errors:
-        return_results(f"Splunk ES Finding events updated successfully:\n" + "\n".join(results))
+        return_results(f"Splunk Finding events updated successfully:\n" + "\n".join(results))
     elif results and errors:
         return_results(
-            f"Splunk ES Finding events partially updated:\n"
+            f"Splunk Finding events partially updated:\n"
             f"Successes:\n" + "\n".join(results) + "\n"
             f"Errors:\n" + "\n".join(errors)
         )
@@ -3750,17 +3727,12 @@ def test_module(service: client.Service, params: dict) -> None:
 
     # validate fetch
     if params.get("isFetch"):
-        t = datetime.utcnow() - timedelta(hours=1)
-        time = t.strftime(SPLUNK_TIME_FORMAT)
+        t = datetime.now(pytz.UTC) - timedelta(days=3)
+        time = t.strftime(ISO_FORMAT_TZ_AWARE)
         kwargs = {"count": 1, "earliest_time": time, "output_mode": OUTPUT_MODE_JSON}
         query = params["fetchQuery"]
         try:
-            if MIRROR_DIRECTION.get(params.get("mirror_direction", "")) and not params.get("timezone"):
-                return_error(
-                    "Cannot mirror incidents when timezone is not configured. Please enter the "
-                    "timezone of the Splunk server being used in the integration configuration."
-                )
-
+            has_event_id = False
             for item in results.JSONResultsReader(service.jobs.oneshot(query, **kwargs)):
                 if isinstance(item, results.Message):
                     continue
@@ -3776,9 +3748,39 @@ def test_module(service: client.Service, params: dict) -> None:
                             "the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and "
                             "run the fetch again."
                         )
+                else:
+                    has_event_id = True
 
         except HTTPError as error:
             return_error(str(error))
+        
+        # Validate custom ID generation for queries without `notable` macro
+        if not has_event_id and "`notable`" not in query:
+            try:
+                demisto.debug("Running duplicate incident ID validation test")
+                test_kwargs = {"count": 10, "earliest_time": time, "output_mode": OUTPUT_MODE_JSON}
+                test_items = [item for item in results.JSONResultsReader(service.jobs.oneshot(query, **test_kwargs))
+                             if not isinstance(item, results.Message)]
+                
+                if len(test_items) >= 2:
+                    custom_ids = [create_incident_custom_id(Finding(data=item).to_incident(
+                        UserMappingObject(service, False, "splunk_xsoar_users", "xsoar_user", "splunk_user")))
+                        for item in test_items]
+                    
+                    if len(set(custom_ids)) < len(custom_ids):
+                        return_error(
+                            f"Duplicate incident IDs detected in test ({len(custom_ids) - len(set(custom_ids))} duplicates).\n\n"
+                            "IMPACT: Incidents with duplicate IDs will be incorrectly identified as already fetched during the fetch process.\n"
+                            "This means these incidents will be dropped and will NOT be created in XSOAR, resulting in missing incidents.\n\n"
+                            "CAUSE: The integration generates incident IDs from fields: _cd, index, _time, _indextime, _raw.\n"
+                            "These fields may not provide unique values in your fetch query.\n\n"
+                            "SOLUTION: Add fields with unique values to your query output.\n"
+                            "Choose fields that will create unique combinations for each incident.\n"
+                            "Example: your_search | table _time, _raw, source, host, [unique_field]."
+                        )
+                    demisto.debug(f"Duplicate ID validation passed: {len(set(custom_ids))} unique IDs from {len(custom_ids)} incidents")
+            except Exception as e:
+                demisto.debug(f"Could not complete duplicate ID validation: {e!s}")
     if params.get("hec_url"):
         headers = {"Content-Type": "application/json"}
         try:
@@ -3990,13 +3992,6 @@ def get_kv_store_config(kv_store: client.KVStoreCollection) -> str:
     return "\n".join(readable)
 
 
-def get_auth_session_key(service: client.Service) -> str:
-    """
-    Get the session key or token for POST request based on whether the Splunk basic auth are true or not
-    """
-    return (service and service.basic and service._auth_headers[0][1]) or service.token
-
-
 def extract_indicator(indicator_path: str, _dict_objects: list[dict]) -> list[str]:
     indicators = []
     indicator_paths = indicator_path.split(".")
@@ -4023,13 +4018,27 @@ def get_store_data(service: client.Service):
 def get_connection_args(params: dict) -> dict:
     """
     This function gets the connection arguments: host, port, app, and verify.
+    Parses the server_url parameter to extract host and port, with port 8089 as default.
 
     Returns: connection args
     """
+    server_url = params.get("server_url", "")
+    # If URL doesn't have a scheme, add one for proper parsing
+    if not server_url.startswith(('http://', 'https://')):
+        server_url = f'https://{server_url}'
+    parsed = urllib.parse.urlparse(server_url)
+    
+    # Extract host (hostname or netloc without port)
+    host = parsed.hostname or parsed.netloc.split(':')[0]
+    host = host.rstrip("/")
+    
+    # Extract port or use default 8089
+    port = parsed.port if parsed.port else 8089
+    
     app = params.get("app", "-")
     return {
-        "host": params["host"].replace("https://", "").rstrip("/"),
-        "port": params["port"],
+        "host": host,
+        "port": port,
         "app": app or "-",
         "verify": VERIFY_CERTIFICATE,
         "retries": 3,
@@ -4068,18 +4077,9 @@ def main():  # pragma: no cover
     proxy = argToBoolean(params.get("proxy", False))
 
     connection_args = get_connection_args(params)
-
-    username = params["authentication"]["identifier"]
     password = params["authentication"]["password"]
-    if username == "_token":
-        connection_args["splunkToken"] = password
-    else:
-        if "@_basic" in username:
-            username = username.split("@_basic")[0]
-            connection_args["basic"] = True
-        connection_args["username"] = username
-        connection_args["password"] = password
-        connection_args["autologin"] = True
+    connection_args["splunkToken"] = password
+    connection_args["autologin"] = True
 
     if proxy:
         handle_proxy()
@@ -4155,10 +4155,7 @@ def main():  # pragma: no cover
             kv_store_collection_delete_entry(service, args)
 
     elif command == "get-mapping-fields":
-        if argToBoolean(params.get("use_cim", False)):
-            return_results(get_cim_mapping_field_command())
-        else:
-            return_results(get_mapping_fields_command(service, mapper, params))
+        return_results(get_mapping_fields_command(service, mapper, params))
     elif command == "get-remote-data":
         raise NotImplementedError(f"the {command} command is not implemented, use get-modified-remote-data instead.")
     elif command == "get-modified-remote-data":

@@ -24,25 +24,6 @@
                 "Splunk Drilldown": {
                     "simple": "drilldown_searches"
                 },
-                "Splunk Drilldown 1": {
-                    "complex": {
-                        "filters": [],
-                        "root": "drilldown_searches",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "headers": {
-                                        "isContext": false,
-                                        "value": {
-                                            "simple": "name,search"
-                                        }
-                                    }
-                                },
-                                "operator": "JsonToTable"
-                            }
-                        ]
-                    }
-                },
                 "Event Type": {
                     "simple": "eventtype"
                 },
@@ -160,7 +141,18 @@
                     "simple": "tag"
                 },
                 "Last Update Time": {
-                    "simple": "update_time"
+                    "complex": {
+                        "filters": [],
+                        "root": "review_time",
+                        "transformers": [
+                            {
+                                "operator": "FirstArrayElement"
+                            },
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
                 },
                 "Splunk Urgency": {
                     "simple": "urgency"

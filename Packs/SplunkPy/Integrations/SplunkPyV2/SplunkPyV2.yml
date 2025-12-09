@@ -1,28 +1,25 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy v3
+  id: SplunkPy v2
   version: -1
 sectionorder:
 - Connect
 - Collect
 configuration:
 - display: Server URL
-  name: host
+  name: server_url
   required: true
   type: 0
   section: Connect
-- display: Username
+  defaultvalue: 'https://splunk.example.com'
+  additionalinfo: "The Splunk server URL. Port 8089 (Splunk's default REST API port) is used automatically. Only include the port in the URL if using a non-default port. Examples: 'https://splunk.example.com' (uses default port 8089) or 'https://splunk.example.com:8090' (uses custom port 8090)."
+- display: ""
+  displaypassword: Splunk Token
+  hiddenusername: true
   name: authentication
   required: true
   type: 9
   section: Connect
-- defaultvalue: '8089'
-  display: Port
-  name: port
-  required: true
-  type: 0
-  section: Connect
-  additionalinfo: The port in Splunk server which is open to the REST API calls.
 - additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES finding events. You can edit this query to fetch other types of events. Note, that to fetch ES finding events, make sure to include the \`notable\` macro in your query.
   defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
   display: Fetch events query
@@ -44,16 +41,8 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
-  required: false
-- defaultvalue: 'true'
-  display: Use Splunk Clock Time For Fetch
-  name: useSplunkTime
-  type: 8
   section: Collect
-  advanced: true
   required: false
-  additionalinfo: Whether to use the Splunk clock time from the Splunk server for fetch, or not.
 - defaultvalue: 'false'
   display: Parse Raw Part of Finding Events
   name: parseFindingEventsRaw
@@ -70,38 +59,16 @@ configuration:
   advanced: true
   required: false
   additionalinfo: Whether to replace special characters to underscore when parsing the raw data of the Findings, or not.
-- display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. When the Splunk server and the integration instance are on the same timezone, set the timezone to 0. This is relevant only for fetching and mirroring finding events. It must be specified when mirroring is enabled.
-  name: timezone
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
 - additionalinfo: The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option.
   defaultvalue: 10 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
-  name: fetch_time
+  name: first_fetch_time
   type: 0
   section: Collect
   required: false
 - display: Extract Fields - CSV fields that will be parsed out of _raw finding events
   name: extractFields
-  type: 12
-  section: Collect
-  advanced: true
-  required: false
-- additionalinfo: Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for finding events. However, you may choose any custom field.
-  defaultvalue: source
-  display: Event Type Field
-  name: type_field
   type: 0
-  section: Collect
-  advanced: true
-  required: false
-- additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (supported from Cortex XSOAR V6.0), the Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more information.
-  defaultvalue: 'false'
-  display: Use CIM Schemas for Mapping
-  name: use_cim
-  type: 8
   section: Collect
   advanced: true
   required: false
@@ -135,6 +102,7 @@ configuration:
   name: close_extra_labels
   type: 0
   section: Collect
+  advanced: true
   additionalinfo: "A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident (Example: Resolved,False-Positive)."
   required: false
 - additionalinfo: When selected, Splunk Finding Events with a status that is marked as "End Status" will close the Cortex XSOAR incident.
@@ -174,33 +142,12 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- name: cred_hec_token
-  type: 9
-  section: Collect
-  advanced: true
-  displaypassword: HEC Token (HTTP Event Collector)
-  hiddenusername: true
-  required: false
-  display: ''
-- display: 'HEC Token (HTTP Event Collector)'
-  name: hec_token
-  type: 4
-  section: Collect
-  advanced: true
-  hidden: true
-  required: false
-- display: 'HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/).'
-  name: hec_url
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
 - display: 'Enrichment Types'
   name: enabled_enrichments
   type: 16
   section: Collect
   advanced: true
-  additionalinfo: Enrichment types to enrich each fetched finding. If none are selected, the integration will fetch findings as usual (without enrichment). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see the integration additional info.
+  additionalinfo: Enrichment types to enrich each fetched finding. If none are selected, the integration will fetch findings as usual (without enrichment). For more info about enrichment types see the integration additional info.
   options:
   - Drilldown
   - Asset
@@ -213,6 +160,7 @@ configuration:
   type: 0
   required: false
   section: Collect
+  advanced: true
 - additionalinfo: CSV of the Splunk lookup tables from which to take the Identity enrichment data.
   defaultvalue: identity_lookup_expanded
   display: Identity enrichment lookup tables
@@ -220,6 +168,7 @@ configuration:
   type: 0
   required: false
   section: Collect
+  advanced: true
 - display: 'Enrichment Timeout (Minutes)'
   name: enrichment_timeout
   type: 0
@@ -235,6 +184,20 @@ configuration:
   section: Collect
   advanced: true
   defaultvalue: '20'
+  required: false
+- name: cred_hec_token
+  type: 9
+  section: Collect
+  advanced: true
+  displaypassword: HEC Token (HTTP Event Collector)
+  hiddenusername: true
+  required: false
+  display: ''
+- display: 'HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/).'
+  name: hec_url
+  type: 0
+  section: Collect
+  advanced: true
   required: false
 - display: 'Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise.'
   name: extensive_logs
@@ -267,13 +230,6 @@ configuration:
   advanced: true
   additionalinfo: The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment.
   required: false
-- additionalinfo: A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents.
-  display: 'Advanced: Unique ID fields'
-  name: unique_id_fields
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
 - defaultvalue: 'false'
   display: Enable user mapping
   name: userMapping
@@ -286,7 +242,7 @@ configuration:
   display: Users Lookup table name
   name: user_map_lookup_name
   type: 0
-  section: Connect
+  section: Collect
   advanced: true
   additionalinfo: The name of the lookup table in Splunk, containing the username's mapping data.
   required: false
@@ -294,7 +250,7 @@ configuration:
   display: XSOAR user key
   name: xsoar_user_field
   type: 0
-  section: Connect
+  section: Collect
   advanced: true
   additionalinfo: The name of the lookup column containing the Cortex XSOAR username.
   required: false
@@ -302,22 +258,16 @@ configuration:
   display: SPLUNK user key
   name: splunk_user_field
   type: 0
-  section: Connect
-  advanced: true
-  additionalinfo: The name of the lookup table containing the Splunk username.
-  required: false
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  type: 19
   section: Collect
   advanced: true
+  additionalinfo: The name of the lookup table containing the Splunk username.
   required: false
 - display: Note tag from Splunk
   name: note_tag_from_splunk
   defaultvalue: FROM SPLUNK
   type: 0
   section: Collect
+  advanced: true
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a note from Splunk.
 - display: Note tag to Splunk
@@ -325,11 +275,19 @@ configuration:
   defaultvalue: FROM XSOAR
   type: 0
   section: Collect
+  advanced: true
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a note to Splunk.
-description: Runs queries on Splunk servers.
-display: SplunkPy v3
-name: SplunkPy v3
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+description: Run queries on Splunk servers and fetch Finding Events (Splunk ES 8.2+).
+display: SplunkPy v2
+name: SplunkPy v2
 script:
   commands:
   - arguments:

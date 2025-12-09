@@ -1,6 +1,11 @@
-Use the SplunkPy v3 integration to:
+Use the SplunkPy v2 integration to:
 
+- Fetch events (logs) from Splunk as Cortex XSOAR incidents
+- Push events from Cortex XSOAR to Splunk
 - Fetch Splunk Enterprise Security events (Findings) as Cortex XSOAR incidents.
+
+**Important: This integration is designed specifically for Splunk Enterprise Security version 8.2 and above.**
+For Splunk ES versions prior to 8.2, please use the legacy SplunkPy integration.
 
 This integration was integrated and tested with Splunk Enterprise v10.0.0 and Enterprise Security v8.2.3.
 
@@ -21,7 +26,7 @@ Define a custom role and include all necessary capabilities: (permissions)
 ![image](../../doc_files/edit-role-non-admin-capabilities.png)
 Define the indexes configuration for the custom role:
 ![image](../../doc_files/edit-role-non-admin-indexes.png)
-At the end of the process, the Splunk user (not admin user) should receive the previously created role. Following is the list of capabilities that covers both the Splunk UI access and using the SplunkPy integration including Enterprise security:  
+At the end of the process, the Splunk user (not admin user) should receive the previously created role. Following is the list of capabilities that covers both the Splunk UI access and using the SplunkPy v2 integration including Enterprise security:  
 
 <ul class="bullet-list">
   <li>accelerate_search</li>
@@ -65,9 +70,9 @@ At the end of the process, the Splunk user (not admin user) should receive the p
   <li>upload_lookup_files</li>
 </ul>
 
-#### SplunkPy command permissions by example
+#### SplunkPy v2 command permissions by example
 
-`splunk-notable-event-edit`
+`splunk-finding-event-edit`
 
 custom roles required: (at least one)  
 ess_analyst, ess_admin  
@@ -82,13 +87,13 @@ Write: Ability to modify existing resources or create new ones.
 #### Mirroring
 
 When mirroring in enabled, 2-3 simultaneous queries are expected.
-Each query can have more that one API call. On mirror out - API call for updating each notable event that changed. This also includes User mapping queries and mirroring queries.
+Each query can have more that one API call. On mirror out - API call for updating each finding event that changed. This also includes User mapping queries and mirroring queries.
 
 #### Enrichment
 
-Fetching notable event - for each fetch iteration 2 queries.  
-For each notable event that fetched - we have 3 enrichments(max).  
-`<Amount of fetched notables> * <amount of defined enrichments>`  
+Fetching finding event - for each fetch iteration 2 queries.  
+For each finding event that fetched - we have 3 enrichments(max).  
+`<Amount of fetched findings> * <amount of defined enrichments>`  
 In case of more that one drilldown - number of drilldown queries.  
 Each query can have more that one API call.
 
@@ -96,26 +101,21 @@ Each query can have more that one API call.
 
 Configured by the instance configuration fetch_limit (behind the scenes an query can made few API calls).
 
-## Configure SplunkPy in Cortex
+## Configure SplunkPy v2 in Cortex
+
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL |  | True |
-| Username |  | True |
-| Password |  | True |
-| Port | The port in Splunk server which is open to the REST API calls. | True |
-| Fetch events query | The Splunk search query by which to fetch events. The default query fetches ES finding events. You can edit this query to fetch other types of events. Note, that to fetch ES finding events, make sure to include the \\\`notable\\\` macro in your query. | False |
+| Server URL | The Splunk server URL. Port 8089 \(Splunk's default REST API port\) is used automatically. Only include the port in the URL if using a non-default port. Examples: 'https://splunk.example.com' \(uses default port 8089\) or 'https://splunk.example.com:8090' \(uses custom port 8090\). | True |
+| Splunk Token |  | True |
+| Fetch events query | The Splunk search query by which to fetch events. The default query fetches ES finding events. You can edit this query to fetch other types of events. Note, that to fetch ES finding events, make sure to include the \`notable\` macro in your query. | False |
 | Fetch Limit (Max.- 200, Recommended less than 50) |  | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
-| Use Splunk Clock Time For Fetch | Whether to use the Splunk clock time from the Splunk server for fetch, or not. | False |
 | Parse Raw Part of Finding Events | Whether to parse the raw part of the Findings, or not. | False |
 | Replace with Underscore in Incident Fields | Whether to replace special characters to underscore when parsing the raw data of the Findings, or not. | False |
-| Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. When the Splunk server and the integration instance are on the same timezone, set the timezone to 0. This is relevant only for fetching and mirroring finding events. It must be specified when mirroring is enabled. |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option. | False |
 | Extract Fields - CSV fields that will be parsed out of _raw finding events |  | False |
-| Event Type Field | Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for finding events. However, you may choose any custom field. | False |
-| Use CIM Schemas for Mapping | If selected, when creating a mapper using the \`Select Schema\` feature \(supported from Cortex XSOAR V6.0\), the Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more information. | False |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Splunk to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Splunk\), or Incoming and Outgoing \(from/to Cortex XSOAR and Splunk\). | False |
 | Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Splunk finding event with a "Closed" status will close the Cortex XSOAR incident. | False |
 | Additional Splunk status labels to close on mirror (Incoming Mirroring) | A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident \(Example: Resolved,False-Positive\). | False |
@@ -126,33 +126,35 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | The app context of the namespace |  | False |
 | HEC Token (HTTP Event Collector) |  | False |
 | HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/). |  | False |
-| Enrichment Types | Enrichment types to enrich each fetched finding. If none are selected, the integration will fetch findings as usual \(without enrichment\). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see [Enriching Finding Events](#enriching-finding-events). | False |
+| Enrichment Types | Enrichment types to enrich each fetched finding. If none are selected, the integration will fetch findings as usual \(without enrichment\). 
+For more info about enrichment types see [Enriching Finding Events](#enriching-finding-events). | False |
 | Asset enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Asset enrichment data. | False |
 | Identity enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Identity enrichment data. | False |
-| Enrichment Timeout (Minutes) | When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False |
+| Enrichment Timeout (Minutes) | When the selected timeout was reached, Finding events that were not enriched will be saved without the enrichment. | False |
 | Number of Events Per Enrichment Type | The limit of how many events to retrieve per each one of the enrichment types \(Drilldown, Asset, and Identity\). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. To retrieve all events, enter "0" \(not recommended\). | False |
 | Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |
 | Advanced: Time type to use when fetching events | Defines which timestamp will be used to filter the events:<br/>- creation time: Filters based on when the event actually occurred.<br/>- index time \(Beta\): \*Beta feature\* – Filters based on when the event was ingested into Splunk.  <br/>  This option is still in testing and may not behave as expected in all scenarios.  <br/>  When using this mode, the parameter "Fetch backwards window for the events occurrence time \(minutes\)" should be set to \`0\`\`, as indexing time ensures there are no delay-based gaps.<br/>  The default is "creation time".<br/> |  |
 | Advanced: Fetch backwards window for the events occurrence time (minutes) | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment. | False |
-| Advanced: Unique ID fields | A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents. | False |
 | Enable user mapping | Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py\#configure-user-mapping-between-splunk-and-cortex-xsoar | False |
 | Users Lookup table name | The name of the lookup table in Splunk, containing the username's mapping data. | False |
 | XSOAR user key | The name of the lookup column containing the Cortex XSOAR username. | False |
 | SPLUNK user key | The name of the lookup table containing the Splunk username. | False |
+| Note tag from Splunk | Add this tag to an entry to mirror it as a note from Splunk. | False |
+| Note tag to Splunk | Add this tag to an entry to mirror it as a note to Splunk. | False |
 | Incidents Fetch Interval |  | False |
-| Comment tag from Splunk | Add this tag to an entry to mirror it as a comment from Splunk. | False |
-| Comment tag to Splunk | Add this tag to an entry to mirror it as a comment to Splunk. | False |
 
 **Note:** To use a Splunk Cloud instance, contact Splunk support to request API access. Use a non-SAML account to access the API.
 
 ## Splunk Enterprise Security Users
 
-**Note:** The following information is for Splunk Enterprise Security Users.  
+**Note:** The following information is for Splunk Enterprise Security version 8.2+ users.
+This integration requires Splunk ES 8.2 or higher due to the new Finding Events API and terminology changes (Notable Events → Finding Events, Comments → Notes).
+For Splunk ES versions prior to 8.2, use the legacy SplunkPy integration.
 For Splunk non-Enterprise Security Users, see [Splunk non-Enterprise Security Users](#splunk-non-enterprise-security-users).
 
 ### Fetching finding events
 
-The integration allows for fetching Splunk finding events using a default query. The query can be changed and modified to support different Splunk use cases. (See [Existing users](#existing-users)).
+The integration allows for fetching Splunk Finding events using a default query. The query can be changed and modified to support different Splunk use cases.
 
 ### Enriching finding events
 
@@ -160,13 +162,12 @@ This integration allows 3 types of enrichments for fetched findings: Drilldown, 
 
 #### Enrichment types
 
-1. **Drilldown search enrichment**: Fetches the drilldown searches configured by the user in the rule name that triggered the finding event and performs this search. The results are stored in the context of the incident under the **Drilldown** field as follows: [{result1}, {result2}, {result3}].
-Getting results from multiple drilldown searches is supported from Enterprise Security v7.2.0. In that case, the results are stored in the context of the incident under the **Drilldown** field as follows: [{'query_name':<query_name>, 'query_search': <query_search>, 'query_results': [{result1}, {result2}, {result3}], 'enrichment_status': <enrichment_status>}].
+1. **Drilldown search enrichment**: Fetches the drilldown searches configured by the user in the rule name that triggered the finding event and performs this search. The results are stored in the context of the incident under the **Drilldown** field as follows: [{'query_name':<query_name>, 'query_search': <query_search>, 'query_results': [{result1}, {result2}, {result3}], 'enrichment_status': <enrichment_status>}].
 2. **Asset search enrichment**: Runs the following query:
-*| inputlookup append=T asset_lookup_by_str where asset=$ASSETS_VALUE | inputlookup append=t asset_lookup_by_cidr where asset=$ASSETS_VALUE | rename _key as asset_id | stats values(*) as *by asset_id*
+*`| inputlookup append=T asset_lookup_by_str where asset=$ASSETS_VALUE | inputlookup append=t asset_lookup_by_cidr where asset=$ASSETS_VALUE | rename _key as asset_id | stats values(*) as * by asset_id`*
 where the **$ASSETS_VALUE** is replaced with the **src**, **dest**, **src_ip** and **dst_ip** from the fetched finding. The results are stored in the context of the incident under the **Asset** field.
 3. **Identity search enrichment**: Runs the following query
-*`| inputlookup identity_lookup_expanded where identity=$IDENTITY_VALUE*
+*`| inputlookup identity_lookup_expanded where identity=$IDENTITY_VALUE`*
 where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** from the fetched finding event. The results are stored in the context of the incident under the **Identity** field.
 
 #### How to configure
@@ -177,10 +178,29 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 4. *Enrichment Timeout (Minutes)*:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, finding events that were not enriched will be saved without the enrichment.
 5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (Drilldown, Asset, and Identity). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. (default to 20).
 
+#### Troubleshooting enrichment status
+
+Each enriched incident contains the following fields in the incident context:
+
+- **successful_drilldown_enrichment**: whether the drilldown enrichment was successful. In a case of multiple drilldown enrichments, the status is successful if at least one drilldown search enrichment was successful.
+- **successful_asset_enrichment**: whether the asset enrichment was successful.
+- **successful_identity_enrichment**: whether the identity enrichment was successful.
+
+#### Resetting the enriching fetch mechanism
+- Run the **Last Run** button
+- Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism will be reset to the initial configuration.
+
+#### Enrichment Limitations
+
+- As the enrichment process is asynchronous, fetching enriched incidents takes longer. The integration was tested with 20+ findings simultaneously that were fetched and enriched after approximately ~4min.
+- If you wish to configure a mapper, wait for the integration to perform the first fetch successfully. This is to make the fetch mechanism logic stable.
+- The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)
+
+
 #### Configure User Mapping between Splunk and Cortex XSOAR  
 
 When fetching incidents from Splunk to Cortex XSOAR and when mirroring incidents between Splunk and Cortex XSOAR, the Splunk Owner Name (user) associated with an incident needs to be mapped to the relevant Cortex XSOAR Owner Name (user).  
-You can use Splunk to define a user lookup table and then configure the SplunkPy integration instance to enable the user mapping. Alternatively, you can map the users with a script or a transformer.  
+You can use Splunk to define a user lookup table and then configure the SplunkPy v2 integration instance to enable the user mapping. Alternatively, you can map the users with a script or a transformer.  
 
 **Note:**
 
@@ -198,21 +218,20 @@ You can use Splunk to define a user lookup table and then configure the SplunkPy
 
       ![image](../../doc_files/kv-store-lookup.png)  
 
-   3. Enter the **Name** for the table. For example, **splunk_xsoar_users** is the default lookup table name defined in the SplunkPy integration settings.
+   3. Enter the **Name** for the table. For example, **splunk_xsoar_users** is the default lookup table name defined in the SplunkPy v2 integration settings.
    4. Under **App**, select **Enterprise Security**.
-   5. Assign two **Key-value collection schema** fields, one for the Cortex XSOAR usernames and one for the corresponding Splunk usernames. For example, **xsoar_user** and **splunk_user** are the default field values defined in the SplunkPy integration settings.
+   5. Assign two **Key-value collection schema** fields, one for the Cortex XSOAR usernames and one for the corresponding Splunk usernames. For example, **xsoar_user** and **splunk_user** are the default field values defined in the SplunkPy v2 integration settings.
    6. Click **Create Lookup**.
-
       ![image](../../doc_files/new-lookup-table.png)
 
-     **Note:**  
-    If the user keys are defined already in another table, you can use that table name and relevant key names in the SplunkPy integration settings.
     7. Add values to the table to map Cortex XSOAR users to the Splunk users.  
-
       ![image](../../doc_files/add-values-to-lookup-table.png)
-2. Configure the Splunk integration instance.  
-Define the lookup table in Splunk.  
-   1. Under **Settings** > **Integrations**, search for the SplunkPy integration and create an instance.
+
+    **Note:**  
+    If the user keys are defined already in another table, you can use that table name and relevant key names in the SplunkPy integration settings.
+    
+2. Configure the SplunkPy v2 integration instance.  
+   1. Under **Settings** > **Integrations**, search for the SplunkPy v2 integration and create an instance.
    2. In the Integration Settings:  
        1. Select **Enable user mapping**.
        2. Set **Users Lookup table name** to the name of the lookup table defined in Splunk. By default it is **splunk_xsoar_users**.
@@ -221,30 +240,10 @@ Define the lookup table in Splunk.
 
           ![image](../../doc_files/user-mapping-settings-configuration.png)
 
-#### Troubleshooting enrichment status
-
-Each enriched incident contains the following fields in the incident context:
-
-- **successful_drilldown_enrichment**: whether the drilldown enrichment was successful. In a case of multiple drilldown enrichments, the status is successful if at least one drilldown search enrichment was successful.
-- **successful_asset_enrichment**: whether the asset enrichment was successful.
-- **successful_identity_enrichment**: whether the identity enrichment was successful.
-
-#### Resetting the enriching fetch mechanism
-
-Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism will be reset to the initial configuration. (No need to use the **Last Run** button).
-
-#### Limitations
-
-- As the enrichment process is asynchronous, fetching enriched incidents takes longer. The integration was tested with 20+ notables simultaneously that were fetched and enriched after approximately ~4min.
-- If you wish to configure a mapper, wait for the integration to perform the first fetch successfully. This is to make the fetch mechanism logic stable.
-- The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)
-- **Splunk ES 8+ Upgrade Limitations**: After upgrading to Splunk Enterprise Security version 8 and later, the following comment handling limitations apply:
-  1. **Notes Updates/Deletions** - Editing or deleting existing notes will NOT trigger mirroring to XSOAR. Changes will only appear in the Splunk Notes field when another finding field (status, owner, etc.) is modified.
-
 
 ### Incident Mirroring
 
-**Important Notes***
+**Important Notes**
 
 - Mirroring-in is not supported when multiple Splunk integration instances are connected to the same Splunk server.
 - This feature is available from Cortex XSOAR version 6.0.0.
@@ -253,13 +252,19 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Splunk.
 - For mirroring the *owner* field, the usernames need to be transformed to the corresponding in Cortex XSOAR and Splunk.
 
+#### Splunk Notes Mirroring
+
+- **Splunk Notes Updates/Deletions** - Editing or deleting existing Finding notes will NOT trigger mirroring to XSOAR on their own. Notes changes will only appear in the *Splunk Notes* field when a "real" change occurs in another finding field (such as status, owner, urgency, etc.), which triggers the mirror-in process.
+- **Notes Display Behavior** - The *Splunk Notes* field will display notes from the past week only. However, all notes that were mirrored via mirror-in will appear in the War Room notes.
+
 You can enable incident mirroring between Cortex XSOAR incidents and Splunk findings.
+
 To set up mirroring:
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SplunkPy v3 and select your integration instance.
+2. Search for SplunkPy v2 and select your integration instance.
 3. Enable **Fetches incidents**.
-4. You can go to the *Fetch finding events ES enrichment query* parameter and select the query to fetch the findings from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
+4. You can go to the *Fetch events query* parameter and select the query to fetch the findings from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
 4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
     - Incoming - Any changes in Splunk findings (finding's status, status_label, urgency, notes, and owner) will be reflected in Cortex XSOAR incidents.
     - Outgoing - Any changes in Cortex XSOAR incidents (finding's status, urgency, notes, and owner) will be reflected in Splunk findings.
@@ -268,27 +273,12 @@ To set up mirroring:
 5. Optional: Check the *Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)* integration parameter to close the Cortex XSOAR incident when the corresponding finding is closed on the Splunk side.
    By default, only Findings closed with a "Closed" label will be mirrored. You can specify specific statuses (comma-separated) in the *Additional Splunk status labels to close on mirror (Incoming Mirroring)*, and enable the *Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)* option to add statuses marked as "End Status" in Splunk, and to add additional statuses to the mirroring process.
 6. Optional: Check the *Close Mirrored Splunk Finding Event* integration parameter to close the Splunk finding when the corresponding Cortex XSOAR incident is closed.
-7. Fill in the **timezone** integration parameter with the timezone the Splunk server is using.
-Newly fetched incidents will be mirrored in the chosen direction.
-**Note: This will not affect existing incidents.**
 
-### Existing users
-
-**NOTE: The enrichment and mirroring mechanisms use a new default fetch query.**
-This implies that new fetched events might have a slightly different structure than old events fetched so far.
-Users who wish to enrich or mirror fetched findings and have already used the integration in the past:
-
-1. Might have to slightly change the existing logic for some of their custom entities configured for Splunk (Playbooks, Mappers, Pre-Processing Rules, Scripts, Classifiers, etc.) in order for them to work with the modified structure of the fetched events.
-2. Will need to change the *Fetch events query* integration parameter to the following query (or a fetch query of their own that uses the \`notable\` macro):
-
-```
-search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
-```
 
 ### Mapping fetched incidents using Select Schema
 
 This integration supports the *Select Schema* feature of XSOAR 6.0 by providing the ***get-mapping-fields*** command.
-When creating a new field mapping for fetched incidents, the *Pull Instances* option retrieves current alerts which can be clicked to visually map fields.
+When creating a new field mapping for fetched incidents, the *Pull Instances* option retrieves current incidents which can be clicked to visually map fields.
 The *Select Schema* option retrieves possible objects, even if they are not the next objects to be fetched, or have not been triggered in the past 24 hours.
 This enables you to map fields for an incident without having to generate a new alert or incident just for the sake of mapping.
 The ***get-mapping-fields*** command can be executed in the Playground to test and review the list of sample objects that are returned under the current configuration.
@@ -296,33 +286,24 @@ The ***get-mapping-fields*** command can be executed in the Playground to test a
 To use this feature, you must set several integration instance parameters:
 
 - *Fetch events query* - The query used for fetching new incidents. *Select Schema* will run a modified version of this query to get the object samples, so it is important to have the correct query here.
-- *Event Type Field* - The name of the field that contains the type of the event or alert. The default value is *source* which for *Finding Events* will contains the rule name. However, you may choose any custom field that suits this purpose.
 - *First fetch timestamp* - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
-
-### Mapping Splunk CIM fields using Select Schema
-
-This integration supports the *Select Schema* feature of XSOAR 6.0 by providing the ***get-mapping-fields*** command.
-When creating a new field mapping for fetched incidents, the *Pull Instances* option retrieves current alerts which can be clicked to visually map fields.
-If the user has configured the *Use CIM Schemas for Mapping* parameter then the *Select Schema* option retrieves fields based on Splunk CIM.
-For more information see: https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview.
-The CIM mapping fields implemented in this integration are of 4.18.0 version.
 
 ## Splunk non-Enterprise Security Users
 
-### Configure Splunk to Produce Alerts for SplunkPy for non-ES Splunk Users
+### Configure Splunk to Produce Alerts for SplunkPy v2 for non-ES Splunk Users
 
-It is recommended that Splunk is configured to produce basic alerts that the SplunkPy integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
+It is recommended that Splunk is configured to produce basic alerts that the SplunkPy v2 integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy v2 integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
 
-1. Create a summary index in Splunk. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Indexer/Setupmultipleindexes#Create_events_indexes_2).
+1. Create a summary index in Splunk. For more information, click [here](https://help.splunk.com/en/splunk-enterprise/administer/manage-indexers-and-indexer-clusters/10.0/manage-indexes/create-custom-indexes#Create_events_indexes_2).
 2. Build a query to return relevant alerts.
 ![image](./../../doc_files/build-query.png)
 3. Identify the fields list from the Splunk query and save it to a local file.
 ![image](./../../doc_files/identify-fields-list.png)
-4. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
+4. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://help.splunk.com/en/splunk-enterprise/manage-knowledge-objects/knowledge-management-manual/10.0/search-macros/define-search-macros-in-settings).
 Use the following naming convention: (demisto_fields_{type}).
 ![image](./../../doc_files/micro-name.png)
 ![image](./../../doc_files/macro.png)
-5. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
+5. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://help.splunk.com/en/splunk-enterprise/manage-knowledge-objects/knowledge-management-manual/10.0/search-macros/define-search-macros-in-settings).
 ![image](./../../doc_files/scheduled-search.png)
 6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
 ![image](./../../doc_files/summary-index.png)
@@ -355,7 +336,7 @@ The following features are not supported in non-ES (Enterprise Security) Splunk.
 
 ## Create KV Store
 
-KV Store stores your data as key-value pairs in collections.  It provides a way to save and retrieve data within your Splunk apps. The following is an example for how to create a KV Store.
+KV Store stores your data as key-value pairs in collections. It provides a way to save and retrieve data within your Splunk apps. The following is an example for how to create a KV Store.
 
 1. In Cortex XSOAR, create a new KV Store.
 
@@ -724,7 +705,7 @@ There is no context output for this command.
 
 ##### Command Example
 
-```!get-mapping-fields using="SplunkPy_7.2" raw-response="true"```
+```!get-mapping-fields using="SplunkPy_v2_instance" raw-response="true"```
 
 ##### Human Readable Output
 
@@ -1239,6 +1220,26 @@ Creates the KV store collection transform.
 
 There is no context output for this command.
 
+### splunk-job-share
+
+***
+Change job settings to share its results to all Splunk users, and change its TTL.
+
+#### Base Command
+
+`splunk-job-share`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sid | Comma-separated list of job IDs to share. | Required | 
+| ttl | Time in seconds for the job's expiry time. Default is 1800. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ## Additional Information
 
 To get the HEC token
@@ -1267,9 +1268,6 @@ In some cases, the Splunk API may not return a complete list of all available in
 1. Verify that the index name is spelled correctly in your request.
 2. If the index exists and is accessible in Splunk but is not found by the integration, please contact Splunk support for assistance, as this is a known limitation with the Splunk API.
 
-### HTTP Errors
-
-In case you encounter HTTP errors (e.g., IncompleteRead), we recommend using Python requests handler.
 
 ### Connectivity Issues
 
