@@ -534,7 +534,7 @@ def main():  # pragma: no cover
     cluster_id = params.get("cluster_id", "")
     api_key = params.get("api_key", {}).get("password", "")
     fetch_interval = int(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
-    event_types = params.get("event_types", EVENT_TYPES)
+    event_types = argToList(params.get("event_types")) or EVENT_TYPES
     try:
         if command == "long-running-execution":
             if params.get("isFetchEvents", False):
