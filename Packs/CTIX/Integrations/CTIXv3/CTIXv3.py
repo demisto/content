@@ -521,7 +521,7 @@ class Client(BaseClient):
         version and params.update({"version": version})
         params.update({"page": page})
         params.update({"page_size": page_size})
-        params.update({"label_name": label_name})
+        label_name and params.update({"label_name": label_name})
         return self.get_http_request(client_url, {}, params=params)
 
     def tag_indicator_updation(
@@ -1335,7 +1335,7 @@ def saved_result_set_command(client: Client, args: dict[str, Any]) -> CommandRes
     page_size = args["page_size"]
     version = args.get("version")
     page_size = check_for_empty_variable(page_size, 10)
-    label_name = args.get("label_name", "test")
+    label_name = args.get("label_name")
     response = client.saved_result_set(page, page_size, label_name, version)
     data = response.get("data", {})
     data_list = data.get("results", [])
