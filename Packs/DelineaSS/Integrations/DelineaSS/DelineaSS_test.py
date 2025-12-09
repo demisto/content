@@ -118,7 +118,7 @@ PLATFORM_USER_SEARCH_TEXT_ARGS = {"pageSize": "2"}
 ])
 def test_delinea_commands(command, args, http_response, context, mocker):
     ss_model = AuthenticationModel("username", "password", "https://test.example.com")
-    ss_model.set_platform_login(False)
+    ss_model.set_platform_login(True)
     mocker.patch("DelineaSS.is_platform_or_ss", return_value=ss_model)
 
     mocker.patch.object(Client, "_generate_token", return_value="Bearer TEST_TOKEN")

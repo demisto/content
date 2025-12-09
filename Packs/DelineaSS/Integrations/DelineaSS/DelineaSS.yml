@@ -58,7 +58,7 @@ script:
     - description: Search for secret using secret name.
       name: search_name
       required: true
-    description: Search a secret by its name.
+    description: Search a secret by name.
     name: delinea-secret-search-name
     outputs:
     - contextPath: Delinea.Secret.Id
@@ -84,7 +84,7 @@ script:
     - description: Secret ID
       name: secret_id
       required: true
-    description: Check Out a Secret
+    description: Check out a secret
     name: delinea-secret-checkout
     outputs:
     - contextPath: Delinea.Secret.Checkout
@@ -94,7 +94,7 @@ script:
     - description: Secret ID
       name: secret_id
       required: true
-    description: Check In a secret
+    description: Check in a secret
     name: delinea-secret-checkin
     outputs:
     - contextPath: Delinea.Secret.Checkin
@@ -127,7 +127,7 @@ script:
       - 'false'
     - description: Secret policy ID
       name: secretpolicyid
-    description: Create a new Secret folder
+    description: Create a new folder
     name: delinea-folder-create
     outputs:
     - contextPath: Delinea.Folder.Create
@@ -159,7 +159,7 @@ script:
       required: true
     - description: Notes to get a secret
       name: autoComment
-    description: Get secret object by ID secret
+    description: Get secret object by secret ID
     name: delinea-secret-get
     outputs:
     - contextPath: Delinea.Secret
@@ -267,7 +267,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Search secret ID by multiply parameters
+    description: Search secret by multiply parameters
     name: delinea-secret-search
     outputs:
     - contextPath: Delinea.Secret.Secret
@@ -365,7 +365,6 @@ script:
     - defaultValue: '1'
       description: ' The id of the distributed engine site that is used by this secret for operations such as password changing.'
       name: siteid
-      required: true
     - description: |-
         sshKeyArgs options. generateSshKeys (bool) – Whether to generate an SSH private key.
         generatePassphrase (bool) – Whether to generate an SSH private key passphrase.  Only applicable when the Secret template has a password changer with the Private Key Passphrase field mapped.  If it is not mapped, this setting is ignored.
@@ -388,7 +387,7 @@ script:
       - 'false'
     - description: The id of the mapping entity that associates this secret to a specific access request workflow.
       name: accessRequestWorkflowMapId
-    description: Create a new Secret
+    description: Create a new secret
     name: delinea-secret-create
     outputs:
     - contextPath: Delinea.Secret.Create
@@ -400,7 +399,7 @@ script:
       required: true
     - description: Notes to Delete the secret
       name: autoComment
-    description: Delete secret
+    description: Delete secret by id
     name: delinea-secret-delete
     outputs:
     - contextPath: Delinea.Secret.Delete
@@ -496,7 +495,7 @@ script:
       name: sortBy_priority
     - description: Maximum number of records to include in results(integer)
       name: take
-    description: Search, filter, sort, and page users in Secret Server
+    description: User search, filter and sort in Secret Server
     name: delinea-secret-server-user-search
     outputs:
     - contextPath: Delinea.Secret.Server.User.Search
@@ -602,7 +601,7 @@ script:
       type: String
   - arguments:
     deprecated: false
-    description: Get users list
+    description: Get Secret Server users list
     execution: false
     name: delinea-secret-server-user-get
     outputs:
@@ -618,7 +617,7 @@ script:
       required: true
     - description: Notes to change the password
       name: autoComment
-    description: Remote Password Changing
+    description: Remote password changing
     name: delinea-secret-rpc-changepassword
     outputs:
     - contextPath: Delinea.Secret.ChangePassword
@@ -668,7 +667,7 @@ script:
       name: Description
     - description: The user home number.
       name: HomeNumber
-    description: Create a new service user in Platform
+    description: Create a new user in Platform
     name: delinea-platform-user-create
     outputs:
     - contextPath: Delinea.Platform.User.Create
@@ -737,7 +736,7 @@ script:
     - description: Fetches a platform user by uuid or upn (User Principal Name).
       name: userUuidOrUpn
       required: true
-    description: Fetches a Platform user by uuid or upn
+    description: Fetch a Platform user by uuid or upn
     name: delinea-platform-user-get
     outputs:
     - contextPath: Delinea.Platform.User.Get
@@ -750,7 +749,7 @@ script:
     - description: Page size. Default 1000.
       name: pageSize
       required: false
-    description: Fetches all platform user.
+    description: Fetch all Platform user.
     name: delinea-platform-get-all-users
     outputs:
       - contextPath: Delinea.Platform.Get.All.Users
@@ -762,7 +761,7 @@ script:
         required: true
       - description: Page size. Default 1000.
         name: pageSize
-    description: Retrieve Platform Users by Search Text.
+    description: Retrieve Platform users by search text.
     name: delinea-platform-get-user-searchbytext
     outputs:
       - contextPath: Delinea.Platform.Get.User.Searchbytext

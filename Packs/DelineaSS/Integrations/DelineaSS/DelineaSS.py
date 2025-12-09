@@ -344,6 +344,11 @@ class Client(BaseClient):
         return self._http_request("PUT", url_suffix="/api/v1/folders/" + str(id), json_data=response)
 
     def userCreate(self, **kwargs) -> str:
+        if self._platform_url:
+            raise DemistoException(
+                "Secret Server commands cannot run against a Delinea Platform tenant URL."
+                "Please configure a Secret Server instance URL (cloud or on-prem) to use Secret Server operations"
+            )
         bodyJSON = {}
 
         for key, value in kwargs.items():
@@ -352,6 +357,11 @@ class Client(BaseClient):
         return self._http_request("POST", url_suffix="/api/v1/users", json_data=bodyJSON)
 
     def userSearch(self, **kwargs) -> str:
+        if self._platform_url:
+            raise DemistoException(
+                "Secret Server commands cannot run against a Delinea Platform tenant URL."
+                "Please configure a Secret Server instance URL (cloud or on-prem) to use Secret Server operations"
+            )
         params = {}
         count_params = len(kwargs)
         if count_params > 0:
@@ -363,6 +373,11 @@ class Client(BaseClient):
         return (self._http_request("GET", url_suffix="/api/v1/users", params=params)).get('records')
 
     def userUpdate(self, id: str, **kwargs) -> str:
+        if self._platform_url:
+            raise DemistoException(
+                "Secret Server commands cannot run against a Delinea Platform tenant URL."
+                "Please configure a Secret Server instance URL (cloud or on-prem) to use Secret Server operations"
+            )
         # 2 method
         response = self._http_request("GET", url_suffix="/api/v1/users/" + str(id))
 
@@ -372,13 +387,28 @@ class Client(BaseClient):
         return self._http_request("PUT", url_suffix="/api/v1/users/" + str(id), json_data=response)
 
     def userDelete(self, id: str) -> str:
+        if self._platform_url:
+            raise DemistoException(
+                "Secret Server commands cannot run against a Delinea Platform tenant URL."
+                "Please configure a Secret Server instance URL (cloud or on-prem) to use Secret Server operations"
+            )
         return self._http_request("DELETE", url_suffix="/api/v1/users/" + str(id))
 
     def getuser(self) -> str:
+        if self._platform_url:
+            raise DemistoException(
+                "Secret Server commands cannot run against a Delinea Platform tenant URL."
+                "Please configure a Secret Server instance URL (cloud or on-prem) to use Secret Server operations"
+            )
         url_suffix = "/api/v1/users"
         return self._http_request("GET", url_suffix)
 
     def platform_user_create(self, **kwargs) -> str:
+        if not self._platform_url:
+            raise DemistoException(
+                "Platform commands cannot run against a Secret Server URL."
+                "Please configure a valid Delinea Platform tenant URL to use Platform operations"
+            )
         bodyJSON = {}
 
         for key, value in kwargs.items():
@@ -387,6 +417,11 @@ class Client(BaseClient):
                                   full_url=f"{self._platform_url}/identity/api/CDirectoryService/CreateUser")
 
     def platform_user_update(self, **kwargs) -> str:
+        if not self._platform_url:
+            raise DemistoException(
+                "Platform commands cannot run against a Secret Server URL."
+                "Please configure a valid Delinea Platform tenant URL to use Platform operations"
+            )
         bodyJSON = {}
 
         for key, value in kwargs.items():
@@ -395,10 +430,20 @@ class Client(BaseClient):
                                   full_url=f"{self._platform_url}/identity/api/CDirectoryService/ChangeUser")
 
     def platform_user_delete(self, id: str) -> str:
+        if not self._platform_url:
+            raise DemistoException(
+                "Platform commands cannot run against a Secret Server URL."
+                "Please configure a valid Delinea Platform tenant URL to use Platform operations"
+            )
         return self._http_request("POST", full_url=f"{self._platform_url}/identity/api/UserMgmt/RemoveUser",
                                   params={"id": str(id)})
 
     def get_platform_user(self, user_id: str) -> dict:
+        if not self._platform_url:
+            raise DemistoException(
+                "Platform commands cannot run against a Secret Server URL."
+                "Please configure a valid Delinea Platform tenant URL to use Platform operations"
+            )
         full_url = f"{self._platform_url}/identity/api/users/{user_id}"
         return self._http_request(
             "GET",
@@ -407,6 +452,11 @@ class Client(BaseClient):
         )
 
     def get_all_platform_users(self, **kwargs) -> dict:
+        if not self._platform_url:
+            raise DemistoException(
+                "Platform commands cannot run against a Secret Server URL."
+                "Please configure a valid Delinea Platform tenant URL to use Platform operations"
+            )
         params = {}
         params["pageSize"] = kwargs.get("pageSize", 1000)
         for key, value in kwargs.items():
@@ -418,6 +468,11 @@ class Client(BaseClient):
         return self._http_request("GET", full_url=f"{self._platform_url}/identity/api/users", params=params)
 
     def get_platform_user_searchbytext(self, **kwargs) -> dict:
+        if not self._platform_url:
+            raise DemistoException(
+                "Platform commands cannot run against a Secret Server URL."
+                "Please configure a valid Delinea Platform tenant URL to use Platform operations"
+            )
         params = {}
         params["pageSize"] = kwargs.get("pageSize", 1000)
         for key, value in kwargs.items():
@@ -508,7 +563,14 @@ def secret_search_name_command(client, search_name: str = ''):
 
 def secret_search_command(client, **kwargs):
     search_result = client.searchSecret(**kwargs)
-    markdown = tableToMarkdown('Search secret', search_result, headers=['id'])
+    if not search_result:
+        markdown = "No secrets found matching the provided search criteria."
+    else:
+        markdown = tableToMarkdown(
+            'Secret Search Results',
+            search_result,
+            headers=['id''name']
+        )
 
     return CommandResults(
         readable_output=markdown,
@@ -521,7 +583,7 @@ def secret_search_command(client, **kwargs):
 
 def secret_password_update_command(client, secret_id: str = '', newpassword: str = '', autoComment: str = ''):
     secret_newpassword = client.updateSecretPassword(secret_id, newpassword, autoComment)
-    markdown = tableToMarkdown('Set new password for secret',
+    markdown = tableToMarkdown('New password is set for secret',
                                {'Secret ID': secret_id, 'New password': newpassword})
 
     return CommandResults(
@@ -538,7 +600,7 @@ def secret_checkout_command(client, secret_id: str = ''):
     if len(secret_checkout.get('responseCodes')) == 0:
         markdown = 'Checkout Success\n'
     else:
-        markdown = tableToMarkdown('Check Out Secret', secret_checkout)
+        markdown = tableToMarkdown('Check out secret', secret_checkout)
     return CommandResults(
         readable_output=markdown,
         outputs_prefix="Delinea.Secret.Checkout",
@@ -550,7 +612,7 @@ def secret_checkout_command(client, secret_id: str = ''):
 
 def secret_checkin_command(client, secret_id: str = ''):
     secret_checkin = client.secret_checkin(secret_id)
-    markdown = tableToMarkdown('Check In Secret', secret_checkin)
+    markdown = tableToMarkdown('Check in secret detail', secret_checkin)
 
     return CommandResults(
         readable_output=markdown,
@@ -563,7 +625,7 @@ def secret_checkin_command(client, secret_id: str = ''):
 
 def secret_create_command(client, name: str = '', secretTemplateId: int = 0, **kwargs):
     secret = client.secretCreate(name, secretTemplateId, **kwargs)
-    markdown = tableToMarkdown('Created new secret', secret)
+    markdown = tableToMarkdown('New secret created', secret)
     return CommandResults(
         readable_output=markdown,
         outputs_prefix="Delinea.Secret.Create",
@@ -575,7 +637,7 @@ def secret_create_command(client, name: str = '', secretTemplateId: int = 0, **k
 
 def secret_delete_command(client, id: int = 0, autoComment: str = ''):
     delete = client.secretDelete(id, autoComment)
-    markdown = tableToMarkdown('Deleted secret', delete)
+    markdown = tableToMarkdown('Secret deleted', delete)
 
     return CommandResults(
         readable_output=markdown,
@@ -588,7 +650,7 @@ def secret_delete_command(client, id: int = 0, autoComment: str = ''):
 
 def folder_create_command(client, foldername: str = '', foldertypeid: int = 1, parentfolderid: int = 1, **kwargs):
     folder = client.folderCreate(foldername, foldertypeid, parentfolderid, **kwargs)
-    markdown = tableToMarkdown('Created new folder', folder)
+    markdown = tableToMarkdown('New folder created', folder)
 
     return CommandResults(
         readable_output=markdown,
@@ -601,7 +663,7 @@ def folder_create_command(client, foldername: str = '', foldertypeid: int = 1, p
 
 def folder_search_command(client, foldername: str = ''):
     folder_id = client.searchFolder(foldername)
-    markdown = tableToMarkdown('Search folder', folder_id, headers=['id'])
+    markdown = tableToMarkdown('Folder Search Results', folder_id, headers=['id'])
 
     return CommandResults(
         readable_output=markdown,
@@ -614,7 +676,7 @@ def folder_search_command(client, foldername: str = ''):
 
 def folder_update_command(client, id: str = '', **kwargs):
     folder = client.folderUpdate(id, **kwargs)
-    markdown = tableToMarkdown('Updated folder', folder)
+    markdown = tableToMarkdown('Folder Updated', folder)
 
     return CommandResults(
         readable_output=markdown,
@@ -627,7 +689,7 @@ def folder_update_command(client, id: str = '', **kwargs):
 
 def folder_delete_command(client, folder_id: str = ''):
     folder = client.folderDelete(folder_id)
-    markdown = tableToMarkdown('Deleted folder', folder)
+    markdown = tableToMarkdown('Folder deleted', folder)
 
     return CommandResults(
         readable_output=markdown,
@@ -640,7 +702,7 @@ def folder_delete_command(client, folder_id: str = ''):
 
 def secret_server_user_create_command(client, **kwargs):
     user = client.userCreate(**kwargs)
-    markdown = tableToMarkdown('Created new user', user)
+    markdown = tableToMarkdown('New user created in Secret Server', user)
 
     return CommandResults(
         readable_output=markdown,
@@ -653,7 +715,7 @@ def secret_server_user_create_command(client, **kwargs):
 
 def secret_server_user_search_command(client, **kwargs):
     user = client.userSearch(**kwargs)
-    markdown = tableToMarkdown('Search user', user)
+    markdown = tableToMarkdown('Search Secret Server user', user)
 
     return CommandResults(
         readable_output=markdown,
@@ -666,7 +728,7 @@ def secret_server_user_search_command(client, **kwargs):
 
 def secret_server_user_update_command(client, id: str = '', **kwargs):
     user = client.userUpdate(id, **kwargs)
-    markdown = tableToMarkdown('Updated user', user)
+    markdown = tableToMarkdown('Updated Secret Server user', user)
 
     return CommandResults(
         readable_output=markdown,
@@ -679,7 +741,12 @@ def secret_server_user_update_command(client, id: str = '', **kwargs):
 
 def platform_user_create_command(client, **kwargs):
     user = client.platform_user_create(**kwargs)
-    markdown = tableToMarkdown('Created new Platform service user', user)
+    success = user.get("success", False)
+    if success:
+        markdown = tableToMarkdown('New user created in Platform', user)
+    else:
+        error_message = user.get("Message") or "Unknown error occurred."
+        markdown = f"user creation failed.\n**Reason:** {error_message}"
 
     return CommandResults(
         readable_output=markdown,
@@ -692,7 +759,7 @@ def platform_user_create_command(client, **kwargs):
 
 def platform_user_get_command(client, userUuidOrUpn: str = ""):
     user = client.get_platform_user(userUuidOrUpn)
-    markdown = tableToMarkdown('Platform User Details', user)
+    markdown = tableToMarkdown('User details', user)
 
     return CommandResults(
         readable_output=markdown,
@@ -734,7 +801,12 @@ def platform_get_user_searchbytext_command(client, **kwargs):
 
 def platform_user_delete_command(client, id: str = ''):
     user = client.platform_user_delete(id)
-    markdown = tableToMarkdown('Deleted user', user)
+    success = user.get("success", False)
+    if success:
+        markdown = tableToMarkdown('Deleted user from Platform', user)
+    else:
+        error_message = user.get("Message") or "Unknown error occurred."
+        markdown = f"Failed to delete platform user.\n**Reason:** {error_message}"
 
     return CommandResults(
         readable_output=markdown,
@@ -747,7 +819,12 @@ def platform_user_delete_command(client, id: str = ''):
 
 def platform_user_update_command(client, **kwargs):
     user = client.platform_user_update(**kwargs)
-    markdown = tableToMarkdown('Updated Platform Service user', user)
+    success = user.get("success", False)
+    if success:
+        markdown = tableToMarkdown('Updated Platform user', user)
+    else:
+        error_message = user.get("Message") or "Unknown error occurred."
+        markdown = f"Failed to update platform user.\n**Reason:** {error_message}"
 
     return CommandResults(
         readable_output=markdown,
@@ -760,7 +837,7 @@ def platform_user_update_command(client, **kwargs):
 
 def secret_server_user_delete_command(client, id: str = ''):
     user = client.userDelete(id)
-    markdown = tableToMarkdown('Deleted user', user)
+    markdown = tableToMarkdown('Deleted user from Secret Server', user)
 
     return CommandResults(
         readable_output=markdown,
