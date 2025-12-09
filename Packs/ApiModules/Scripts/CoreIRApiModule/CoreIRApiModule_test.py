@@ -4370,7 +4370,8 @@ def test_create_filter_from_args():
         ]
     }
     assert expected_result == query
-    
+
+
 def test_update_endpoints_tags_command_with_both_add_and_remove():
     """
     Given:
@@ -4385,26 +4386,24 @@ def test_update_endpoints_tags_command_with_both_add_and_remove():
     client = Mock()
     client.add_tag_endpoint.return_value = {"reply": "true"}
     client.remove_tag_endpoint.return_value = {"reply": "true"}
-    
-    args = {
-        'endpoint_ids': ['endpoint1', 'endpoint2'],
-        'tags_to_add': ['tag1', 'tag2'],
-        'tags_to_remove': ['tag3', 'tag4']
-    }
-    
-    with patch('CoreIRApiModule.filter_invalid_tags', return_value=[]):
+
+    args = {"endpoint_ids": ["endpoint1", "endpoint2"], "tags_to_add": ["tag1", "tag2"], "tags_to_remove": ["tag3", "tag4"]}
+
+    with patch("CoreIRApiModule.filter_invalid_tags", return_value=[]):
         from CoreIRApiModule import update_endpoints_tags_command
+
         results = update_endpoints_tags_command(client, args)
-    
+
     assert len(results) == 1
     assert "Successfully updated tags for endpoint(s)" in results[0].readable_output
     assert "Added tags: ['tag1', 'tag2']" in results[0].readable_output
     assert "Removed tags: ['tag3', 'tag4']" in results[0].readable_output
-    
-    client.add_tag_endpoint.assert_any_call(endpoint_ids=['endpoint1', 'endpoint2'], tag='tag1', args=args)
-    client.add_tag_endpoint.assert_any_call(endpoint_ids=['endpoint1', 'endpoint2'], tag='tag2', args=args)
-    client.remove_tag_endpoint.assert_any_call(endpoint_ids=['endpoint1', 'endpoint2'], tag='tag3', args=args)
-    client.remove_tag_endpoint.assert_any_call(endpoint_ids=['endpoint1', 'endpoint2'], tag='tag4', args=args)
+
+    client.add_tag_endpoint.assert_any_call(endpoint_ids=["endpoint1", "endpoint2"], tag="tag1", args=args)
+    client.add_tag_endpoint.assert_any_call(endpoint_ids=["endpoint1", "endpoint2"], tag="tag2", args=args)
+    client.remove_tag_endpoint.assert_any_call(endpoint_ids=["endpoint1", "endpoint2"], tag="tag3", args=args)
+    client.remove_tag_endpoint.assert_any_call(endpoint_ids=["endpoint1", "endpoint2"], tag="tag4", args=args)
+
 
 def test_update_endpoints_tags_command_with_invalid_tags():
     """
@@ -4419,21 +4418,19 @@ def test_update_endpoints_tags_command_with_invalid_tags():
     """
     client = Mock()
     client.add_tag_endpoint.return_value = {"reply": "true"}
-    
-    args = {
-        'endpoint_ids': ['endpoint1'],
-        'tags_to_add': ['valid_tag', 'invalid_tag_that_is_too_long'],
-        'tags_to_remove': []
-    }
-    
-    with patch('CoreIRApiModule.filter_invalid_tags', side_effect=[['invalid_tag_that_is_too_long'], []]):
+
+    args = {"endpoint_ids": ["endpoint1"], "tags_to_add": ["valid_tag", "invalid_tag_that_is_too_long"], "tags_to_remove": []}
+
+    with patch("CoreIRApiModule.filter_invalid_tags", side_effect=[["invalid_tag_that_is_too_long"], []]):
         from CoreIRApiModule import update_endpoints_tags_command
+
         results = update_endpoints_tags_command(client, args)
-    
+
     assert len(results) == 2
     assert "Successfully updated tags" in results[0].readable_output
     assert "Invalid tags detected: invalid_tag_that_is_too_long" in results[1].readable_output
     assert results[1].entry_type == 4
+
 
 def test_update_endpoints_tags_command_no_tags_provided():
     """
@@ -4446,15 +4443,12 @@ def test_update_endpoints_tags_command_no_tags_provided():
         - A DemistoException is raised indicating tags must be specified
     """
     client = Mock()
-    
-    args = {
-        'endpoint_ids': ['endpoint1'],
-        'tags_to_add': [],
-        'tags_to_remove': []
-    }
-    
+
+    args = {"endpoint_ids": ["endpoint1"], "tags_to_add": [], "tags_to_remove": []}
+
     from CoreIRApiModule import update_endpoints_tags_command
+
     with pytest.raises(DemistoException) as exc_info:
         update_endpoints_tags_command(client, args)
-    
+
     assert "At least one tag to add or remove must be specified" in str(exc_info.value)
