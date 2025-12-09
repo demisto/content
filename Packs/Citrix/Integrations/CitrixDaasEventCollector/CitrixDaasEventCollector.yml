@@ -68,7 +68,6 @@ script:
     - name: limit
       description: The maximum number of logs to return.
       defaultValue: 10
-
     - name: search_date_option
       auto: PREDEFINED
       description: Specific time filters for searching operations.
