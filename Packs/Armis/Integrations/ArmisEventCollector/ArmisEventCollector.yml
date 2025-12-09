@@ -75,10 +75,10 @@ configuration:
   required: false
 - section: Collect
   advanced: true
-  display: Enable Multithreading
-  additionalinfo: Enable parallel fetching of event types in a single instance. This improves performance and prevents access token collisions when fetching multiple event types. Recommended to keep enabled.
+  display: Enable parallel event fetching
+  additionalinfo: Enable parallel fetching of multiple event types in a single integration instance. This option optimizes performance and mitigates potential authentication issues when retrieving events across multiple integration instances that utilize the same credentials.
   name: enable_multithreading
-  defaultvalue: "true"
+  defaultvalue: "false"
   type: 8
   required: false
 description: Collects alerts, devices and activities from Armis resources.

@@ -983,7 +983,7 @@ def main():  # pragma: no cover
     parsed_interval = dateparser.parse(params.get("deviceFetchInterval", "24 hours")) or dateparser.parse("24 hours")
     device_fetch_interval: timedelta = datetime.now() - parsed_interval  # type: ignore[operator]
     fetch_delay = arg_to_number(params.get("fetch_delay")) or DEFAULT_FETCH_DELAY
-    use_multithreading = argToBoolean(params.get("enable_multithreading", True))
+    use_multithreading = argToBoolean(params.get("enable_multithreading", False))
 
     demisto.debug(f"Command being called is {command}")
 
