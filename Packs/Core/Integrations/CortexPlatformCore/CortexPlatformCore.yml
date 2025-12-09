@@ -2500,6 +2500,78 @@ script:
           description: The IDs of the issues to process with the playbook.
           required: true
           isArray: true
+    - arguments:
+        - description: The unique ID of the exception rule. Accepts a comma-separated list.
+          name: id
+          isArray: true
+        - description: The name of the exception rule. Accepts a comma-separated list.
+          name: rule_name
+          isArray: true
+        - description: The platform the rule applies to. Accepts a comma-separated list.
+          isArray: true
+          name: platform
+          auto: PREDEFINED
+          predefined:
+            - AGENT_OS_WINDOWS
+            - AGENT_OS_MAC
+            - AGENT_OS_LINUX
+            - AGENT_OS_ANDROID
+            - AGENT_OS_IOS
+            - AGENT_OS_CAAS_LINUX
+            - AGENT_OS_SERVERLESS
+        - description: The conditions defined in the rule. Accepts a comma-separated list.
+          isArray: true
+          name: conditions
+        - description: The user who created the rule. Accepts a comma-separated list.
+          isArray: true
+          name: created_by
+        - description: The email of the user associated with the rule. Accepts a comma-separated list.
+          isArray: true
+          name: user_email
+        - description: "The start time for filtering according to rule modification time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+          name: start_modification_time
+        - description: "The end time for filtering according to rule modification time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+          name: end_modification_time
+        - description: The status of the exception rule.
+          name: status
+          auto: PREDEFINED
+          predefined:
+            - ENABLED
+            - DISABLED
+        - description: The type of the exception rule (e.g., policy, BIOC). Accepts a comma-separated list.
+          isArray: true
+          name: rule_type
+        - description: The type of the exception rule. If not specified, both are returned.
+          name: type
+          auto: PREDEFINED
+          predefined:
+            - legacy_agent_exceptions
+            - disable_prevention_rules
+        - auto: PREDEFINED
+          defaultValue: MODIFICATION_TIME
+          description: The field by which to sort the results.
+          name: sort_field
+          predefined:
+            - MODIFICATION_TIME
+        - auto: PREDEFINED
+          defaultValue: DESC
+          description: The order in which to sort the results.
+          name: sort_order
+          predefined:
+            - DESC
+            - ASC
+        - defaultValue: "0"
+          description: The page number to retrieve issues from.
+          name: page
+        - defaultValue: "100"
+          description: The page size.
+          name: page_size
+        - defaultValue: "50"
+          description: Number of exception rules to return.
+          name: limit
+      name: core-get-exception-rules
+      description: "Returns a list of exception rules and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      outputs:
   runonce: false
   script: "-"
   subtype: python3

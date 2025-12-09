@@ -5,6 +5,8 @@ import dateparser
 from enum import Enum
 import copy
 
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import return_results
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -47,6 +49,7 @@ WEBAPP_COMMANDS = [
     "core-create-appsec-policy",
     "core-get-appsec-issues",
     "core-update-case",
+    "core-get-exception-rules"
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -57,7 +60,8 @@ ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
-
+DISABLE_PREVENTION_RULES_TABLE = "AGENT_EXCEPTION_RULES_TABLE_ADVANCED"
+LEGACY_AGENT_EXCEPTIONS_TABLE = "AGENT_EXCEPTION_RULES_TABLE_LEGACY"
 
 class CaseManagement:
     STATUS_RESOLVED_REASON = {
@@ -282,6 +286,7 @@ class FilterBuilder:
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
         IS_EMPTY = ("IS_EMPTY", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
+        RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
 
     AND = "AND"
     OR = "OR"
@@ -1875,7 +1880,21 @@ def build_asset_coverage_filter(args: dict) -> FilterBuilder:
 
     return filter_builder
 
+def build_exception_rules_filter(args: dict) -> FilterBuilder:
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("ID" , FilterType.CONTAINS, argToList(args.get("id")))
+    filter_builder.add_field("NAME" , FilterType.CONTAINS, argToList(args.get("rule_name")))
+    filter_builder.add_field("PLATFORM" , FilterType.EQ, argToList(args.get("platform")))
+    filter_builder.add_field("CONDITIONS_PRETTY" , FilterType.CONTAINS, argToList(args.get("conditions")))
+    filter_builder.add_field("CREATED_BY" , FilterType.CONTAINS, argToList(args.get("created_by")))
+    filter_builder.add_field("USER_EMAIL" , FilterType.CONTAINS, argToList(args.get("user_email")))
+    filter_builder.add_field("MODIFICATION_TIME" , FilterType.CONTAINS, argToList(args.get("id")))
+    filter_builder.add_field("ID" , FilterType.CONTAINS, argToList(args.get("id")))
+    filter_builder.add_field("ID" , FilterType.CONTAINS, argToList(args.get("id")))
+    filter_builder.add_field("ID" , FilterType.CONTAINS, argToList(args.get("id")))
 
+
+    return filter_builder
 def get_asset_coverage_command(client: Client, args: dict):
     """
     Retrieves ASPM assets coverage using the generic /api/webapp/get_data endpoint.
@@ -2595,6 +2614,10 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
+def get_exception_rules(client, args):
+    pass
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -2714,6 +2737,8 @@ def main():  # pragma: no cover
             return_results(update_case_command(client, args))
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
+        elif command == "core-get-exception-rules":
+            return_results(get_exception_rules(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
