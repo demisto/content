@@ -45,24 +45,18 @@ configuration:
   section: Connect
   hiddenusername: true
   additionalinfo: For Non-mTLS authentication. SAP Service Key field 'uaa.clientsecret'.
-  hidden:
-  - auth_type: mTLS
 - name: certificate
   display: Certificate
   required: false
   type: 12
   section: Connect
   additionalinfo: For mTLS authentication (recommended). Body of certificate.pem file in PEM format.
-  hidden:
-  - auth_type: Non-mTLS
 - name: private_key
   display: Private Key
   required: false
   type: 14
   section: Connect
   additionalinfo: For mTLS authentication (recommended). Body of key.pem file in PEM format.
-  hidden:
-  - auth_type: Non-mTLS
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
