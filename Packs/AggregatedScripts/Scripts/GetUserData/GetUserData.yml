@@ -8,7 +8,7 @@ args:
 - description: List of emails of the users to retrieve.
   name: user_email
   isArray: true
-- description: list of AD user's attributes to retrieve, separated by comma.
+- description: list of AD user's attributes to retrieve, separated by comma. Relevant only when 'additional_fields' argument is set to True. Support for Active Directory v2 only.
   name: attributes
 - description: "list of Microsoft user's properties to retrieve, separated by comma. Relevant only when 'additional_fields' argument is set to True. Support for Microsoft Graph User only. Example: displayName,jobTitle,mobilePhone,createdDateTime."
   name: properties
