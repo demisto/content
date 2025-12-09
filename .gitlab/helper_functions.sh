@@ -62,9 +62,9 @@ section_end() {
 
 job-done() {
     mkdir -p "${PIPELINE_JOBS_FOLDER}"
-    echo "creating file ${PIPELINE_JOBS_FOLDER}/${CI_JOB_NAME//\//_}.txt"
-    echo "done" > "${PIPELINE_JOBS_FOLDER}/${CI_JOB_NAME//\//_}.txt"
-    echo "finished writing to file ${PIPELINE_JOBS_FOLDER}/${CI_JOB_NAME//\//_}.txt"
+    echo "creating file ${PIPELINE_JOBS_FOLDER}/${CI_JOB_NAME}.txt"
+    echo "done" > "${PIPELINE_JOBS_FOLDER}/${CI_JOB_NAME}.txt"
+    echo "finished writing to file ${PIPELINE_JOBS_FOLDER}/${CI_JOB_NAME}.txt"
 }
 
 sleep-with-progress() {
