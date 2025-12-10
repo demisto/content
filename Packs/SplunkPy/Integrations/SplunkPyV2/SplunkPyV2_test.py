@@ -4202,3 +4202,516 @@ def test_fetch_findings_with_notes(mocker):
 
     # Verify that KV store was accessed (indicating get_comments_data_new was called)
     mock_service.kvstore.__getitem__.assert_called_with("mc_notes")
+
+
+# =========== update_remote_system_command Tests ===========
+
+
+@pytest.mark.parametrize(
+    "delta, user_mapping_enabled, expected_owner, mapper_should_map",
+    [
+        # Test case 1: Owner change with user mapping enabled and successful mapping
+        ({"owner": "xsoar_user"}, True, "splunk_user", True),
+        # Test case 2: Owner change with user mapping enabled but mapper returns None
+        ({"owner": "xsoar_user"}, True, None, True),
+        # Test case 3: Owner change with user mapping disabled
+        ({"owner": "xsoar_user"}, False, None, False),
+        # Test case 4: No owner change
+        ({"status": "2"}, False, None, False),
+    ],
+)
+def test_update_remote_system_command_owner_mapping(mocker, delta, user_mapping_enabled, expected_owner, mapper_should_map):
+    """
+    Test update_remote_system_command with different owner mapping scenarios.
+    
+    Given:
+        - Different delta configurations with owner field
+        - User mapping enabled/disabled
+        - Mapper returning different values
+    
+    When:
+        - update_remote_system_command is called
+    
+    Then:
+        - Verify correct owner is passed to update_investigation_or_finding
+        - Verify user mapping is called when enabled
+    """
+    # Setup
+    finding_id = "test_finding_123"
+    args = {
+        "remoteId": finding_id,
+        "delta": delta,
+        "data": {},
+        "entries": [],
+        "incidentChanged": True,
+        "status": 1,
+    }
+    params = {"userMapping": user_mapping_enabled, "close_finding": False}
+    
+    mock_service = MagicMock()
+    mock_mapper = MagicMock()
+    mock_mapper.should_map = mapper_should_map
+    mock_mapper.get_splunk_user_by_xsoar.return_value = expected_owner
+    
+    mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+    
+    # Execute
+    result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
+    
+    # Verify
+    assert result == finding_id
+    
+    if "owner" in delta and user_mapping_enabled and mapper_should_map:
+        mock_mapper.get_splunk_user_by_xsoar.assert_called_once_with("xsoar_user")
+        if expected_owner:
+            mock_update.assert_called_once()
+            call_kwargs = mock_update.call_args[1]
+            assert call_kwargs["owner"] == expected_owner
+        else:
+            # When mapping returns None, error should be logged
+            assert demisto.error.called
+
+
+@pytest.mark.parametrize(
+    "delta, inc_status, close_finding_param, expected_status",
+    [
+        # Test case 1: Incident closed and close_finding enabled
+        ({"status": "2"}, 2, True, "5"),  # IncidentStatus.DONE = 2
+        # Test case 2: Incident closed but close_finding disabled
+        ({"status": "2"}, 2, False, "2"),
+        # Test case 3: Incident not closed
+        ({"status": "2"}, 1, True, "2"),
+        # Test case 4: No status in delta but incident closed
+        ({"urgency": "high"}, 2, True, "5"),
+    ],
+)
+def test_update_remote_system_command_close_finding(mocker, delta, inc_status, close_finding_param, expected_status):
+    """
+    Test update_remote_system_command closing finding functionality.
+    
+    Given:
+        - Different incident statuses
+        - close_finding parameter enabled/disabled
+        - Different delta configurations
+    
+    When:
+        - update_remote_system_command is called
+    
+    Then:
+        - Verify status is set to "5" (closed) when appropriate
+    """
+    # Setup
+    finding_id = "test_finding_456"
+    args = {
+        "remoteId": finding_id,
+        "delta": delta,
+        "data": {},
+        "entries": [],
+        "incidentChanged": True,
+        "status": inc_status,
+    }
+    params = {"userMapping": False, "close_finding": close_finding_param}
+    
+    mock_service = MagicMock()
+    mock_mapper = MagicMock()
+    mock_mapper.should_map = False
+    
+    mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
+    mocker.patch.object(demisto, "debug")
+    
+    # Execute
+    result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
+    
+    # Verify
+    assert result == finding_id
+    
+    if mock_update.called:
+        call_kwargs = mock_update.call_args[1]
+        assert call_kwargs.get("status") == expected_status
+
+
+def test_update_remote_system_command_multiple_fields(mocker):
+    """
+    Test update_remote_system_command with multiple field updates.
+    
+    Given:
+        - Delta with multiple mirrored fields (status, urgency, disposition)
+    
+    When:
+        - update_remote_system_command is called
+    
+    Then:
+        - All fields are passed to update_investigation_or_finding
+    """
+    # Setup
+    finding_id = "test_finding_789"
+    delta = {
+        "status": "2",
+        "urgency": "high",
+        "disposition": "disposition:1",
+        "reviewer": "test_reviewer",
+    }
+    args = {
+        "remoteId": finding_id,
+        "delta": delta,
+        "data": {},
+        "entries": [],
+        "incidentChanged": True,
+        "status": 1,
+    }
+    params = {"userMapping": False, "close_finding": False}
+    
+    mock_service = MagicMock()
+    mock_mapper = MagicMock()
+    mock_mapper.should_map = False
+    
+    mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
+    mocker.patch.object(demisto, "debug")
+    
+    # Execute
+    result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
+    
+    # Verify
+    assert result == finding_id
+    mock_update.assert_called_once()
+    call_kwargs = mock_update.call_args[1]
+    assert call_kwargs["status"] == "2"
+    assert call_kwargs["urgency"] == "high"
+    assert call_kwargs["disposition"] == "disposition:1"
+
+
+def test_update_remote_system_command_with_note_in_delta(mocker):
+    """
+    Test update_remote_system_command with note in delta.
+    
+    Given:
+        - Delta containing a note field
+    
+    When:
+        - update_remote_system_command is called
+    
+    Then:
+        - add_investigation_note is called with the note content
+        - Note includes COMMENT_MIRRORED_FROM_XSOAR marker
+    """
+    # Setup
+    finding_id = "test_finding_note"
+    note_content = "This is a test note"
+    delta = {"note": note_content}
+    args = {
+        "remoteId": finding_id,
+        "delta": delta,
+        "data": {},
+        "entries": [],
+        "incidentChanged": True,
+        "status": 1,
+    }
+    params = {"userMapping": False, "close_finding": False}
+    
+    mock_service = MagicMock()
+    mock_mapper = MagicMock()
+    mock_mapper.should_map = False
+    
+    mocker.patch("SplunkPyV2.update_investigation_or_finding")
+    mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note")
+    mocker.patch.object(demisto, "debug")
+    
+    # Execute
+    result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
+    
+    # Verify
+    assert result == finding_id
+    mock_add_note.assert_called_once()
+    call_args = mock_add_note.call_args
+    assert call_args[1]["investigation_or_finding_id"] == finding_id
+    assert note_content in call_args[1]["content"]
+    assert splunk.COMMENT_MIRRORED_FROM_XSOAR in call_args[1]["content"]
+
+
+def test_update_remote_system_command_with_entries(mocker):
+    """
+    Test update_remote_system_command with entries containing notes.
+    
+    Given:
+        - Entries with NOTE_TAG_TO_SPLUNK tag
+    
+    When:
+        - update_remote_system_command is called
+    
+    Then:
+        - add_investigation_note is called for each tagged entry
+    """
+    # Setup
+    finding_id = "test_finding_entries"
+    entry1_content = "Entry 1 content"
+    entry2_content = "Entry 2 content"
+    entries = [
+        {"tags": [splunk.NOTE_TAG_TO_SPLUNK], "contents": entry1_content},
+        {"tags": ["OTHER_TAG"], "contents": "Should not be added"},
+        {"tags": [splunk.NOTE_TAG_TO_SPLUNK], "contents": entry2_content},
+    ]
+    args = {
+        "remoteId": finding_id,
+        "delta": {},
+        "data": {},
+        "entries": entries,
+        "incidentChanged": False,
+        "status": 1,
+    }
+    params = {"userMapping": False, "close_finding": False}
+    
+    mock_service = MagicMock()
+    mock_mapper = MagicMock()
+    
+    mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note")
+    mocker.patch.object(demisto, "debug")
+    
+    # Execute
+    result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
+    
+    # Verify
+    assert result == finding_id
+    assert mock_add_note.call_count == 2
+    
+    # Verify first call
+    first_call = mock_add_note.call_args_list[0]
+    assert entry1_content in first_call[1]["content"]
+    assert splunk.COMMENT_MIRRORED_FROM_XSOAR in first_call[1]["content"]
+    
+    # Verify second call
+    second_call = mock_add_note.call_args_list[1]
+    assert entry2_content in second_call[1]["content"]
+    assert splunk.COMMENT_MIRRORED_FROM_XSOAR in second_call[1]["content"]
+
+
+def test_update_remote_system_command_no_changes(mocker):
+    """
+    Test update_remote_system_command when incident hasn't changed.
+    
+    Given:
+        - incidentChanged is False
+    
+    When:
+        - update_remote_system_command is called
+    
+    Then:
+        - No API calls are made
+        - Finding ID is still returned
+    """
+    # Setup
+    finding_id = "test_finding_no_change"
+    args = {
+        "remoteId": finding_id,
+        "delta": {"status": "2"},
+        "data": {},
+        "entries": [],
+        "incidentChanged": False,
+        "status": 1,
+    }
+    params = {"userMapping": False, "close_finding": False}
+    
+    mock_service = MagicMock()
+    mock_mapper = MagicMock()
+    
+    mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
+    mocker.patch.object(demisto, "debug")
+    
+    # Execute
+    result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
+    
+    # Verify
+    assert result == finding_id
+    mock_update.assert_not_called()
+
+
+def test_update_remote_system_command_empty_delta(mocker):
+    """
+    Test update_remote_system_command with empty delta.
+    
+    Given:
+        - Empty delta dictionary
+        - incidentChanged is True
+    
+    When:
+        - update_remote_system_command is called
+    
+    Then:
+        - No API calls are made (no changed data)
+    """
+    # Setup
+    finding_id = "test_finding_empty_delta"
+    args = {
+        "remoteId": finding_id,
+        "delta": {},
+        "data": {},
+        "entries": [],
+        "incidentChanged": True,
+        "status": 1,
+    }
+    params = {"userMapping": False, "close_finding": False}
+    
+    mock_service = MagicMock()
+    mock_mapper = MagicMock()
+    
+    mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
+    mocker.patch.object(demisto, "debug")
+    
+    # Execute
+    result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
+    
+    # Verify
+    assert result == finding_id
+    mock_update.assert_not_called()
+
+
+def test_update_remote_system_command_api_error(mocker):
+    """
+    Test update_remote_system_command when API call fails.
+    
+    Given:
+        - Valid delta with changes
+        - update_investigation_or_finding raises an exception
+    
+    When:
+        - update_remote_system_command is called
+    
+    Then:
+        - Error is logged
+        - Finding ID is still returned
+    """
+    # Setup
+    finding_id = "test_finding_error"
+    delta = {"status": "2"}
+    args = {
+        "remoteId": finding_id,
+        "delta": delta,
+        "data": {},
+        "entries": [],
+        "incidentChanged": True,
+        "status": 1,
+    }
+    params = {"userMapping": False, "close_finding": False}
+    
+    mock_service = MagicMock()
+    mock_mapper = MagicMock()
+    mock_mapper.should_map = False
+    
+    error_message = "API Error: Connection failed"
+    mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding", side_effect=Exception(error_message))
+    mock_error = mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "debug")
+    
+    # Execute
+    result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
+    
+    # Verify
+    assert result == finding_id
+    mock_update.assert_called_once()
+    mock_error.assert_called()
+    error_call_args = mock_error.call_args[0][0]
+    assert finding_id in error_call_args
+    assert error_message in error_call_args
+
+
+def test_update_remote_system_command_note_api_error(mocker):
+    """
+    Test update_remote_system_command when add_investigation_note fails.
+    
+    Given:
+        - Delta with note field
+        - add_investigation_note raises an exception
+    
+    When:
+        - update_remote_system_command is called
+    
+    Then:
+        - Error is logged
+        - Finding ID is still returned
+    """
+    # Setup
+    finding_id = "test_finding_note_error"
+    delta = {"note": "Test note"}
+    args = {
+        "remoteId": finding_id,
+        "delta": delta,
+        "data": {},
+        "entries": [],
+        "incidentChanged": True,
+        "status": 1,
+    }
+    params = {"userMapping": False, "close_finding": False}
+    
+    mock_service = MagicMock()
+    mock_mapper = MagicMock()
+    mock_mapper.should_map = False
+    
+    mocker.patch("SplunkPyV2.update_investigation_or_finding")
+    error_message = "Note API Error"
+    mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note", side_effect=Exception(error_message))
+    mock_error = mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "debug")
+    
+    # Execute
+    result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
+    
+    # Verify
+    assert result == finding_id
+    mock_add_note.assert_called_once()
+    mock_error.assert_called()
+    error_call_args = mock_error.call_args[0][0]
+    assert finding_id in error_call_args
+
+
+def test_update_remote_system_command_non_mirrored_fields_ignored(mocker):
+    """
+    Test that non-mirrored fields in delta are ignored.
+    
+    Given:
+        - Delta with both mirrored and non-mirrored fields
+    
+    When:
+        - update_remote_system_command is called
+    
+    Then:
+        - Only mirrored fields are passed to the API
+    """
+    # Setup
+    finding_id = "test_finding_filtered"
+    delta = {
+        "status": "2",  # Mirrored
+        "urgency": "high",  # Mirrored
+        "custom_field": "value",  # Not mirrored
+        "another_field": "test",  # Not mirrored
+    }
+    args = {
+        "remoteId": finding_id,
+        "delta": delta,
+        "data": {},
+        "entries": [],
+        "incidentChanged": True,
+        "status": 1,
+    }
+    params = {"userMapping": False, "close_finding": False}
+    
+    mock_service = MagicMock()
+    mock_mapper = MagicMock()
+    mock_mapper.should_map = False
+    
+    mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
+    mocker.patch.object(demisto, "debug")
+    
+    # Execute
+    result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
+    
+    # Verify
+    assert result == finding_id
+    mock_update.assert_called_once()
+    call_kwargs = mock_update.call_args[1]
+    
+    # Verify only mirrored fields are present
+    assert call_kwargs["status"] == "2"
+    assert call_kwargs["urgency"] == "high"
+    assert "custom_field" not in str(call_kwargs)
+    assert "another_field" not in str(call_kwargs)

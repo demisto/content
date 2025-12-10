@@ -55,7 +55,7 @@ DEFAULT_STATUSES = {
 
 # =========== Mirroring Mechanism Globals ===========
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
-OUTGOING_MIRRORED_FIELDS = ["comment", "status", "owner", "urgency", "reviewer", "disposition"]
+OUTGOING_MIRRORED_FIELDS = ["note", "status", "owner", "urgency", "reviewer", "disposition"]
 
 # === Note Tag Globals ===
 NOTE_TAG_TO_SPLUNK = params.get("note_tag_to_splunk", "FROM XSOAR")
