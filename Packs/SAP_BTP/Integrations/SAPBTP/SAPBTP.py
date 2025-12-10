@@ -233,6 +233,43 @@ def add_time_to_events(events: list[dict[str, Any]]) -> None:
             demisto.debug(f"[Event Time] WARNING: Event missing 'time' field: {event.get('uuid', 'unknown')}")
 
 
+def deduplicate_events(events: list[dict[str, Any]], last_event_uuid: str | None) -> list[dict[str, Any]]:
+    """Remove already-processed events based on the last event UUID.
+
+    When multiple events share the same timestamp, we need to track which event
+    was the last one processed to avoid duplicates on the next fetch.
+
+    Args:
+        events: List of events sorted by time (oldest first)
+        last_event_uuid: UUID of the last event processed in the previous fetch
+
+    Returns:
+        List of new events (excluding already-processed ones)
+    """
+    if not last_event_uuid or not events:
+        demisto.debug("[Dedup] No deduplication needed (first run or no events)")
+        return events
+
+    demisto.debug(f"[Dedup] Starting deduplication. Total events: {len(events)}, Last UUID: {last_event_uuid}")
+
+    # Find the last processed event in the current batch
+    skip_count = 0
+    for i, event in enumerate(events):
+        if event.get("uuid") == last_event_uuid:
+            skip_count = i + 1  # Skip this event and all before it
+            demisto.debug(f"[Dedup] Found last processed event at index {i}")
+            break
+
+    if skip_count > 0:
+        new_events = events[skip_count:]
+        demisto.debug(f"[Dedup] Skipped {skip_count} already-processed events, {len(new_events)} new events remain")
+        return new_events
+    else:
+        # Last UUID not found - this means all events are new (time window moved forward)
+        demisto.debug(f"[Dedup] Last processed UUID not found in current batch, all {len(events)} events are new")
+        return events
+
+
 # endregion
 
 # region Client
@@ -594,10 +631,13 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults |
 
 
 def fetch_events_command(client: Client) -> None:
-    """Scheduled command to fetch events.
+    """Scheduled command to fetch events with deduplication.
 
     Implements state protection: Only updates set_last_run on successful completion.
     If an error occurs, the state is not updated, ensuring the failed window is retried.
+
+    Deduplication strategy: Stores the UUID of the last processed event to prevent
+    duplicate ingestion when multiple events share the same timestamp.
     """
     demisto.debug("[Command] fetch-events triggered")
 
@@ -607,10 +647,11 @@ def fetch_events_command(client: Client) -> None:
 
     last_run = demisto.getLastRun()
     last_fetch_timestamp = last_run.get("last_fetch")
+    last_event_uuid = last_run.get("last_event_uuid")
 
     if last_fetch_timestamp:
         time_input = last_fetch_timestamp
-        demisto.debug(f"[Fetch Logic] Continuing from Last Run. Fetching from: {time_input}")
+        demisto.debug(f"[Fetch Logic] Continuing from Last Run. Fetching from: {time_input}, Last UUID: {last_event_uuid}")
     elif first_fetch_param:
         time_input = first_fetch_param
         demisto.debug(f"[Fetch Logic] First Run with configured first_fetch. Fetching from: {time_input}")
@@ -624,22 +665,32 @@ def fetch_events_command(client: Client) -> None:
     events = fetch_events_with_pagination(client, created_after, None, max_events_to_fetch)
 
     if events:
-        add_time_to_events(events)
-        send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
+        demisto.debug(f"[Fetch] Fetched {len(events)} events from API")
 
-        # State Protection: Only update Last Run after successful send
-        last_event = events[-1]
-        new_last_run_time = last_event.get("time")
+        # Deduplicate events based on last processed UUID
+        new_events = deduplicate_events(events, last_event_uuid)
 
-        if new_last_run_time:
-            demisto.setLastRun({"last_fetch": new_last_run_time})
-            demisto.debug(f"[Last Run] Updated to: {new_last_run_time}")
+        if new_events:
+            add_time_to_events(new_events)
+            send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
+
+            # State Protection: Only update Last Run after successful send
+            # Use the last event from the original events list (not filtered) for state tracking
+            last_event = events[-1]
+            new_last_run_time = last_event.get("time")
+            new_last_event_uuid = last_event.get("uuid")
+
+            if new_last_run_time:
+                demisto.setLastRun({"last_fetch": new_last_run_time, "last_event_uuid": new_last_event_uuid})
+                demisto.debug(f"[Last Run] Updated to: {new_last_run_time}, UUID: {new_last_event_uuid}")
+            else:
+                demisto.debug("[Last Run] WARNING: Last event missing 'time' field. Not updating.")
+
+            demisto.debug(f"[Command] Sent {len(new_events)} new events to XSIAM")
         else:
-            demisto.debug("[Last Run] WARNING: Last event missing 'time' field. Not updating.")
-
-        demisto.debug(f"[Command] Sent {len(events)} events to XSIAM")
+            demisto.debug("[Command] All fetched events were duplicates, nothing new to send.")
     else:
-        demisto.debug("[Command] No new events found.")
+        demisto.debug("[Command] No events found in the specified time range.")
 
 
 # endregion
