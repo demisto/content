@@ -159,12 +159,18 @@ script:
   - arguments:
     - description: User ID or userPrincipalName.
       name: user
+      prettyname: User
+      prettypredefined:
+        UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
       required: true
     description: |-
-      Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+      Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables the user 
       but does not terminate an existing session. Supported only in a self deployed app flow with the
       Permission: Directory.AccessAsUser.All(Delegated).
     name: msgraph-user-account-disable
+    prettyname: Disable User Account [EntraID]
+    quickaction: false
+    quickaction:platform: true
     compliantpolicies:
     - User Hard Remediation
   - arguments:
@@ -173,6 +179,9 @@ script:
       required: true
     description: Unblock a user.
     name: msgraph-user-unblock
+    prettyname: Enable User Account [EntraID]
+    quickaction: false
+    quickaction:platform: true
     compliantpolicies:
     - User Soft Remediation
   - arguments:
@@ -667,14 +676,38 @@ script:
   - arguments:
     - description: User ID or userPrincipalName.
       name: user
+      prettyname: User
+      prettypredefined:
+        UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
       required: true
     description: |-
       Revoke a user session by invalidating all refresh tokens issued to applications for a user.
       This command requires an administrator role.
       Permission required: Directory.AccessAsUser.All (Delegated).
     name: msgraph-user-session-revoke
+    prettyname: Terminate Existing Sessions [EntraID]
+    quickaction: false
+    quickaction:platform: true
     compliantpolicies:
     - User Soft Remediation
+  - arguments:
+      - description: User ID or userPrincipalName.
+        name: user
+        prettyname: User
+        prettypredefined:
+          UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
+        required: true
+    description: |-
+      Forces a user to reset their password the next time they log in.
+      Note that this action does not terminate the user’s current session.
+      If you also want to force the user to sign in again, use the msgraph-user-session-revoke command.
+      This operation is supported only when using a self-deployed app flow with the Directory.AccessAsUser.All delegated permission.
+    name: msgraph-user-force-reset-password
+    prettyname: Force Reset Password [EntraID]
+    quickaction: false
+    quickaction:platform: true
+    compliantpolicies:
+      - User Soft Remediation
   - arguments:
     - description: The Azure AD user ID.
       name: user_id
@@ -785,3 +818,4 @@ script:
 tests:
 - Microsoft Graph User - Test
 fromversion: 5.0.0
+supportsquickactions: true
