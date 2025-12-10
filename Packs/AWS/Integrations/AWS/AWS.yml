@@ -7372,6 +7372,94 @@ script:
       - contextPath: AWS.SSM.Inventory.EntriesNextPageToken
         description: A list of inventory items on the managed nodes.
         type: object
+  - name: aws-ssm-command-run
+    description: Runs commands on one or more managed nodes.
+    polling: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: instance_ids
+        description: The IDs of the managed nodes where the command should run. Maximum of 50 IDs.
+      - name: targets
+        description: "One or more targets separated by ';' (for example, key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>,<value4>). An array of search criteria that targets managed nodes using a Key,Value combination"
+      - name: document_name
+        description: The name of the Amazon Web Services Systems Manager document (SSM document) to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN).
+        required: true
+      - name: document_version
+        description: The SSM document version to use in the request. You can specify $DEFAULT, $LATEST, or a specific version number. If you run commands by using the Command Line Interface (Amazon Web Services CLI), then you must escape the first two options by using a backslash. If you specify a version number, then you don’t need to use the backslash.
+        required: false
+      - name: document_hash
+        description: The Sha256 hash created by the system when the document was created.
+        required: false
+      - name: command_timeout
+        description: If this time (in seconds) is reached and the command hasn’t already started running, it won’t run. Minimum value of 30. Maximum value of 2592000.
+        required: false
+      - name: comment
+        description: User-specified information about the command, such as a brief description of what the command should do.
+        required: false
+      - name: parameters
+        description: "The required and optional parameters specified in the document being run. The template is 'key=<key1>,values=<value>,<value>;key=<key2>,values=<value>,<value>'"
+        required: false
+      - name: output_s3_bucket_name
+        description: The name of the S3 bucket where command execution responses should be stored.
+        required: false
+      - name: output_s3_key_prefix
+        description: The directory structure within the S3 bucket where the responses should be stored.
+        required: false
+      - name: max_concurrency
+        description: The maximum number of managed nodes that are allowed to run the command at the same time. You can specify a number such as 10 or a percentage such as 10%. The default value is 50.
+        required: false
+      - name: max_errors
+        description: The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. You can specify a number like 10 or a percentage like 10%. The default value is 0.
+        required: false
+      - description: A unique identifier for this command. This is for the polling to work, not for the user.
+        name: command_id
+        hidden: true
+      - description: The timeout in seconds until polling ends.
+        name: polling_timeout
+        defaultValue: '600'
+      - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
+        name: hide_polling_output
+        hidden: true
+    outputs:
 
   - name: aws-ec2-security-group-create
     execution: true

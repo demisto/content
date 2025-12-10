@@ -19,9 +19,29 @@ DEFAULT_REGION = "us-east-1"
 MAX_FILTERS = 50
 MAX_TAGS = 50
 MAX_FILTER_VALUES = 200
+MAX_TARGET_VALUES = 50
 MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
 MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
+MAXIMUM_COMMAND_TIMEOUT = 2592000  # Maximum timeout for running commands in ssm (30 days).
+MINIMUM_COMMAND_TIMEOUT = 30  # Minimum timeout for running commands in ssm.
+DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
+DEFAULT_TIMEOUT = 600  # Default timeout for polling commands.
+TERMINAL_COMMAND_STATUSES = {  # the status for run command command
+    "Success": "The command completed successfully.",
+    "Failed": "The command wasn't successfully on the managed node.",
+    "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
+    "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations "
+    "doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
+    "Cancelled": "The command was canceled before it was completed.",
+    "Canceled": "The command was canceled before it was completed.",  # AWS typo, British English (canceled)
+    "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. "
+    "The system has canceled the command before executing it on any node.",
+    "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied "
+    "doesn't count against the parent command's max-errors limit, "
+    "but does contribute to whether the parent command status is Success or Failed.",
+    "No Instances In Tag": "The tag key-pair value or resource group targeted by the command doesn't match any managed nodes. ",
+}
 
 
 def handle_port_range(args: dict) -> tuple:
@@ -206,6 +226,60 @@ def parse_filter_field(filter_string: str | None):
     return filters
 
 
+def parse_target_field(target_string: str | None):
+    """
+    Parses a list representation of key and values with the form of 'key=<key>,values=<values>.
+    the maximum number of values for a key might be lower than the global maximum of 50.
+    Key minimum length of 1, maximum length of 163.
+
+    Args:
+        target_string (str): The key and values list
+    Returns:
+        A list of dicts with the form {"Key": <key>, "Values": [<value>]}
+    """
+    targets = []
+    list_targets = argToList(target_string, separator=";")
+    regex = re.compile(
+        r"^key=(^[\p{L}\p{Z}\p{N}_.:/=\-@]*$|resource-groups:ResourceTypeFilters|resource-groups:Name),values=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
+    for target in list_targets:
+        match_target = regex.match(target)
+        if match_target is None:
+            raise ValueError(
+                f"Could not parse target: {target}. Please make sure you provided "
+                "like so: key=<key>,values=<values>;name=<name>,values=<value1>,<value2>..."
+            )
+        demisto.debug(
+            f'Number of target values for {match_target.group(1)} is {len(match_target.group(2).split(","))}'
+            f' if larger than {MAX_TARGET_VALUES},'
+            f' parsing only first {MAX_TARGET_VALUES} values.'
+        )
+        targets.append({"Key": match_target.group(1), "Values": match_target.group(2).split(",")[0:MAX_TARGET_VALUES]})
+
+    return targets
+
+
+def parse_parameters_arg(parameters_str: str) -> dict:
+    """
+    Parses a list representation of key and values 'key=<key1>,values=<value>,<value>;key=<key2>,values=<value>,<value>.
+
+    Args:
+        parameters_str (str): The key and values list
+    Returns:
+        A dictionary containing the parameters
+        {"key1" : [ "string", "string"], "key2" : [ "string", "string"]}
+    """
+    parameters = {}
+    list_parameters = argToList(parameters_str, separator=";")
+    for param in list_parameters:
+        first_split = param.split(",values=")
+        key = first_split[0][4:]  # remove 'key='
+        values = first_split[1].split(',')
+        parameters[key] = values
+    return parameters
+
+
 def parse_triple_filter(filter_string: str | None):
     """
     Parses a list representation of name and values and type with the form of 'name=<name>,values=<values>,type=<type>'.
@@ -281,6 +355,50 @@ def convert_datetimes_to_iso_safe(data):
     """
     json_string = json.dumps(data, cls=ISOEncoder)
     return json.loads(json_string)
+
+
+def build_kwargs_network_interface_attribute(args: dict, network_interface_id: str) -> dict:
+    """
+    Build the kwargs for network_interface_attribute_modify_command.
+    Args:
+        args (dict): The command arguments.
+        network_interface_id (str): the network interface id.
+    Returns:
+        A dictionary with the relevant values.
+    """
+    kwargs = {
+        "EnaSrdSpecification": arg_to_bool_or_none(args.get("ena_srd_enabled")),
+        "EnablePrimaryIpv6": arg_to_bool_or_none(args.get("enable_primary_ipv6")),
+        "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("associate_public_ip_address")),
+        "AssociatedSubnetIds": argToList(args.get("associated_subnet_ids")),
+        "NetworkInterfaceId": network_interface_id,
+        "Groups": argToList(args.get("groups")),
+    }
+    if ena_srd_udp_enabled := arg_to_bool_or_none(args.get("ena_srd_udp_enabled")):
+        kwargs["EnaSrdUdpSpecification"] = {"EnaSrdUdpEnabled": ena_srd_udp_enabled}
+    if tcp_established_timeout := arg_to_number(args.get("tcp_established_timeout")):
+        kwargs["ConnectionTrackingSpecification"]["TcpEstablishedTimeout"] = tcp_established_timeout
+    if udp_stream_timeout := arg_to_number(args.get("udp_stream_timeout")):
+        kwargs["ConnectionTrackingSpecification"]["UdpStreamTimeout"] = udp_stream_timeout
+    if udp_timeout := arg_to_number(args.get("udp_timeout")):
+        kwargs["ConnectionTrackingSpecification"]["UdpTimeout"] = udp_timeout
+    if description := args.get("description"):
+        kwargs["Description"] = {"Value": description}
+    if source_dest_check := arg_to_bool_or_none(args.get("source_dest_check")):
+        kwargs["SourceDestCheck"] = {"Value": source_dest_check}
+    if default_ena_queue_count := arg_to_bool_or_none(args.get("default_ena_queue_count")):
+        kwargs["Attachment"]["DefaultEnaQueueCount"] = default_ena_queue_count
+    if ena_queue_count := arg_to_number(args.get("ena_queue_count")):
+        kwargs["Attachment"]["EnaQueueCount"] = ena_queue_count
+    if attachment_id := args.get("attachment_id"):
+        kwargs["Attachment"]["AttachmentId"] = attachment_id
+    if delete_on_termination := arg_to_bool_or_none(args.get("delete_on_termination")):
+        kwargs["Attachment"]["DeleteOnTermination"] = delete_on_termination
+
+    if (attachment_id and not delete_on_termination) or (not attachment_id and delete_on_termination):
+        raise DemistoException(
+            "If one of the arguments 'attachment_id' or 'delete_on_termination' is given, the other one must be given as well.")
+    return kwargs
 
 
 class AWSErrorHandler:
@@ -2483,35 +2601,15 @@ class EC2:
             CommandResults: A success message in case the modification was successful.
         """
         network_interface_id = args.get("network_interface_id")
-        kwargs = {
-            "EnaSrdSpecification": arg_to_bool_or_none(args.get("ena_srd_enabled")),
-            "EnaSrdUdpSpecification": {"EnaSrdUdpEnabled": arg_to_bool_or_none(args.get("ena_srd_udp_enabled"))},
-            "EnablePrimaryIpv6": arg_to_bool_or_none(args.get("enable_primary_ipv6")),
-            "ConnectionTrackingSpecification": {
-                "TcpEstablishedTimeout": arg_to_number(args.get("tcp_established_timeout")),
-                "UdpStreamTimeout": arg_to_number(args.get("udp_stream_timeout")),
-                "UdpTimeout": arg_to_number(args.get("udp_timeout")),
-            },
-            "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("associate_public_ip_address")),
-            "AssociatedSubnetIds": argToList(args.get("associated_subnet_ids")),
-            "NetworkInterfaceId": network_interface_id,
-            "Description": {"Value": args.get("description")},
-            "SourceDestCheck": {"Value": arg_to_bool_or_none(args.get("source_dest_check"))},
-            "Groups": argToList(args.get("groups")),
-            "Attachment": {
-                "DefaultEnaQueueCount": arg_to_bool_or_none(args.get("default_ena_queue_count")),
-                "EnaQueueCount": arg_to_number(args.get("ena_queue_count")),
-                "AttachmentId": args.get("attachment_id"),
-                "DeleteOnTermination": arg_to_bool_or_none(args.get("delete_on_termination")),
-            },
-        }
-        remove_empty_elements(kwargs)
+        kwargs = build_kwargs_network_interface_attribute(args, network_interface_id)
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
         response = client.modify_network_interface_attribute(**kwargs)
 
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        return CommandResults(f"The Network Interface attribute {network_interface_id} was modified successfully.")
+        return CommandResults(readable_output=f"The Network Interface attribute {network_interface_id} was modified successfully.")
 
     @staticmethod
     def regions_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -4194,30 +4292,108 @@ class SSM:
             "Filters": parse_triple_filter(args.get("filters")),
         }
         kwargs.update(build_pagination_kwargs(args, 1, 50))
-        remove_empty_elements(kwargs)
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
         response = client.list_inventory_entries(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        data = {
-            "TypeName": response.get("TypeName"),
-            "InstanceId": response.get("InstanceId"),
-            "Entries": response.get("Entries"),
-        }
-        headers = ["InstanceId", "TypeName", "Entries"]
-        readable_output = tableToMarkdown(
-            f"The inventory item {instance_id} and it's entries", data, headers, headerTransform=pascalToSpace, removeNull=True
-        )
-        response["EntriesNextPageToken"] = response.pop("NextToken")
-        return CommandResults(
-            outputs_prefix="AWS.SSM.Inventory",
-            outputs_key_field="InstanceId",
-            outputs=response,
-            readable_output=readable_output,
-            raw_response=response,
-        )
+        if response.get('Entries'):
+            data = {
+                "TypeName": response.get("TypeName"),
+                "InstanceId": response.get("InstanceId"),
+                "Entries": response.get("Entries"),
+            }
+            headers = ["InstanceId", "TypeName", "Entries"]
+            readable_output = tableToMarkdown(
+                f"The inventory item {instance_id} and it's entries", data, headers, headerTransform=pascalToSpace, removeNull=True
+            )
+            if response.get("NextToken"):
+                response["EntriesNextPageToken"] = response.pop("NextToken")
+            return CommandResults(
+                outputs_prefix="AWS.SSM.Inventory",
+                outputs_key_field="InstanceId",
+                outputs=response,
+                readable_output=readable_output,
+                raw_response=response,
+            )
+        else:
+            return CommandResults(readable_output=f"No entries found for the item {instance_id}.")
 
+    @polling_function(
+        name="aws-ssm-command-run",
+        interval=arg_to_number(
+            demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS),
+        ),
+        timeout=arg_to_number(demisto.args().get("polling_timeout", DEFAULT_TIMEOUT)),
+        requires_polling_arg=False,  # means it will always be default to poll, poll=true,
+    )
+    def command_run_command(client: BotoClient, args: Dict[str, Any]) -> PollResult | None:
+        """
+        Runs commands on one or more managed nodes.
+        Args:
+            client: The AWS ACM boto3 client used to perform the update request.
+            args (dict): A dictionary containing the command arguments.
+
+        Returns:
+            CommandResults: An object containing an inventory item, and it's list of entries.
+        """
+        if command_id := args.get("command_id"):
+            response_command_list = client.list_commands(CommandId=command_id)
+            status = response_command_list.get("Commands", {}.get("Status"))
+            if status in TERMINAL_COMMAND_STATUSES:
+                return PollResult(
+                    response=CommandResults(
+                        readable_output=f"The command status is {status}, {TERMINAL_COMMAND_STATUSES[status]}",
+                    ),
+                    continue_to_poll=False,
+                )
+            #  if command not in TERMINAL_COMMAND_STATUSES, continue polling
+            return PollResult(
+                continue_to_poll=True,
+                args_for_next_run=args,
+                response=None,
+            )
+        kwargs = {
+            "InstanceIds": argToList(args.get("instance_ids")),
+            "DocumentName": args.get("document_name"),
+            "DocumentVersion": args.get("document_version"),
+            "DocumentHash": args.get("document_hash"),
+            "Comment": args.get("comment"),
+            "OutputS3BucketName": args.get("output_s3_bucket_name"),
+            "OutputS3KeyPrefix": args.get("output_s3_key_prefix"),
+            "MaxConcurrency": args.get("max_concurrency"),
+            "MaxErrors": args.get("max_errors"),
+        }
+        if targets := args.get("Targets"):
+            kwargs["Targets"] = parse_target_field(targets)
+        if args.get("document_hash"):
+            kwargs["DocumentHashType"] = "Sha256"
+        if parameters := args.get("parameters"):
+            kwargs["Parameters"] = parse_parameters_arg(parameters)
+        if command_timeout := arg_to_number(args.get("command_timeout")):
+            if MAXIMUM_COMMAND_TIMEOUT < command_timeout < MINIMUM_COMMAND_TIMEOUT:
+                raise DemistoException(
+                    f"Command timeout must be between {MINIMUM_COMMAND_TIMEOUT} and {MAXIMUM_COMMAND_TIMEOUT} seconds."
+                )
+            kwargs["TimeoutSeconds"] = command_timeout
+        remove_nulls_from_dictionary(kwargs)
+        response_command_run = client.send_command(**kwargs)
+        command_id = response_command_run.get('Command', {}).get('CommandId', '')
+        args["command_id"] = command_id
+        command_response = serialize_response_with_datetime_encoding(response_command_run.get('Command', {}))
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run=args,
+            partial_result=CommandResults(
+                readable_output=f"Command {command_id} was sent successfully.",
+                outputs=command_response,
+                outputs_prefix="AWS.SSM.Command",
+                outputs_key_field="CommandId",
+            ),
+        )
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -4326,6 +4502,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
+    "aws-ssm-inventory-entries-list": SSM.inventory_entries_list,
+    "aws-ssm-command-run": SSM.command_run_command
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -4343,6 +4521,8 @@ REQUIRED_ACTIONS: list[str] = [
     "rds:ModifyDBClusterSnapshotAttribute",
     "rds:ModifyDBInstance",
     "rds:ModifyDBSnapshotAttribute",
+    "s3:CreateBucket",
+    "s3:ListAllMyBuckets",
     "s3:PutBucketAcl",
     "s3:PutBucketLogging",
     "s3:PutBucketVersioning",
@@ -4408,6 +4588,8 @@ REQUIRED_ACTIONS: list[str] = [
     "ce:GetCostForecast",
     "budgets:DescribeBudgets",
     "budgets:DescribeNotificationsForBudget",
+    "ssm:SendCommand",
+    "ssm:ListCommands",
 ]
 
 COMMAND_SERVICE_MAP = {
