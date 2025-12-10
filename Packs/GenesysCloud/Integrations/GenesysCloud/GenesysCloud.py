@@ -417,7 +417,7 @@ async def fetch_events_command(
         tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of the next run object and a list of fetched events.
     """
     demisto.debug(f"Starting fetching events with {last_run=}.")
-    default_from_date = (datetime.now(tz=UTC) - timedelta(hours=1)).strftime(DATE_FORMAT)
+    default_from_date = (datetime.now(tz=UTC) - timedelta(minutes=1)).strftime(DATE_FORMAT)
     to_date = datetime.now(tz=UTC).strftime(DATE_FORMAT)
 
     service_tasks = []
