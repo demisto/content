@@ -1072,6 +1072,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     if not issue_data:
         raise DemistoException(f"No issues found with IDs: {issue_ids}")
 
+    # Call the endpoint here to avoid calling it for each issue.
     pbs_metadata = client.get_playbooks_metadata() or []
     qas_metadata = client.get_quick_actions_metadata() or []
     pb_id_to_data = map_pb_id_to_data(pbs_metadata)
