@@ -1326,8 +1326,8 @@ def test_main_no_user_info_provided(mocker: MockerFixture):
 
     # Assert that return_error was called with the correct error message
     mock_return_error.assert_called_once_with(
-        "Failed to execute get-user-data. Error: At least one of the following arguments must be specified: "
-        "user_id, user_name or user_email."
+        "Failed to execute get-user-data. Error: At least one of the following arguments must"
+        " be specified: user_id, user_name, user_email or user_sid."
     )
 
 
