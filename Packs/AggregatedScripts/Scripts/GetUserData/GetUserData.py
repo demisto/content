@@ -103,6 +103,7 @@ def create_user(
     id: Optional[str] = None,
     username: Optional[str] = None,
     email_address: Optional[str] = None,
+    sid: Optional[str] = None,
     risk_level: Optional[int] = None,
     additional_fields=False,
     **kwargs,
@@ -126,6 +127,7 @@ def create_user(
         "ID": id,
         "Username": username,
         "Email": email_address,
+        "SID": sid,
         "RiskLevel": risk_level,
     }
     if additional_fields:
@@ -163,7 +165,12 @@ def prepare_human_readable(
         command = f"!{command_name} {' '.join(formatted_args)}"
         if not is_error:
             result_message = f"#### Result for {command}\n{human_readable}"
-            result.append(CommandResults(readable_output=result_message, mark_as_note=True))
+            result.append(
+                CommandResults(
+                    readable_output=result_message,
+                    mark_as_note=True,
+                )
+            )
         else:
             result_message = f"#### Error for {command}\n{human_readable}"
             result.append(
@@ -299,6 +306,17 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[d
 def ad_get_user(command: Command, additional_fields=False) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
     command.args["attributes"] = demisto.args().get("attributes")
+
+    user_sid = command.args.get("custom-field-data")
+    if user_sid:
+        demisto.debug(f"Using a user sid {user_sid}, inserting the custom-field-type args")
+        command.args["custom-field-type"] = "objectSid"
+
+        # Adding the objectSid to attributes in order to get back this field
+        current_attr = command.args.get("attributes")
+        command.args["attributes"] = ",".join(filter(None, [current_attr, "objectSid"]))
+
+    demisto.debug(f"Those are the args for the ad-get-user command {command.args}")
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
 
     readable_outputs_list.extend(readable_errors)
@@ -317,11 +335,15 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
         for k, v in outputs.items():
             if isinstance(v, list) and len(v) == 1:
                 outputs[k] = v[0]
+        sid = outputs.pop("objectSid", None)
+        if isinstance(sid, list) and len(sid) == 1:
+            sid = sid[0]
         user_outputs.append(
             create_user(
                 source=command.brand,
                 username=username,
                 email_address=mail,
+                sid=sid,
                 additional_fields=additional_fields,
                 instance=output.get("instance"),
                 **outputs,
@@ -765,6 +787,7 @@ def main():
         users_ids = argToList(args.get("user_id", []))
         users_names = argToList(args.get("user_name", []))
         users_emails = argToList(args.get("user_email", []))
+        users_sid = argToList(args.get("user_sid", []))
         domain = args.get("domain", "")
         verbose = argToBoolean(args.get("verbose", False))
         brands_to_run = argToList(args.get("brands", []))
@@ -774,8 +797,10 @@ def main():
 
         if domain and not users_names:
             raise ValueError("When specifying the domain argument, the user_name argument must also be provided.")
-        if not any((users_ids, users_names, users_emails)):
-            raise ValueError("At least one of the following arguments must be specified: user_id, user_name or user_email.")
+        if not any((users_ids, users_names, users_emails, users_sid)):
+            raise ValueError(
+                "At least one of the following arguments must be specified:" " user_id, user_name, user_email or user_sid."
+            )
 
         command_results_list: list[CommandResults] = []
         users_outputs: list[dict] = []
@@ -1040,6 +1065,28 @@ def main():
                 users_readables.extend(readable_output)
 
         #################################
+        ### Running for Users SID ###
+        #################################
+        for user_sid in users_sid:
+            demisto.debug(f"Start getting user data for {user_sid=}")
+
+            #################################
+            ### Running for Active Directory Query v2 ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="Active Directory Query v2",
+                command_name="ad-get-user",
+                arg_name="custom-field-data",
+                arg_value=user_sid,
+                cmd=ad_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
+
+        #################################
         ### Running for Users Emails ###
         #################################
         for user_email in users_emails:
@@ -1174,8 +1221,8 @@ def main():
                 readable_output=tableToMarkdown(
                     name="User(s) data",
                     t=users_outputs,
-                    headers=["Source", "Instance", "ID", "Username", "Email", "Status"],
-                    removeNull=False,
+                    headers=["Source", "Instance", "ID", "Username", "SID", "Email", "Status"],
+                    removeNull=True,
                 ),
             )
         )
