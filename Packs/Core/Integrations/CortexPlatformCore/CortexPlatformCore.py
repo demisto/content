@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -973,7 +973,6 @@ def build_webapp_request_data(
     sort_field: str | None,
     on_demand_fields: list | None = None,
     sort_order: str | None = "DESC",
-
     start_page: int = 0,
 ) -> dict:
     """
@@ -2667,7 +2666,7 @@ def combine_pretty_names(list_of_criteria: List[List[Dict[str, Any]]]) -> List[s
     """
     result_strings = []
     for criterion in list_of_criteria:
-        if isinstance(criterion, dict):
+        if isinstance(criterion, list):
             combined_string = "".join(item.get("pretty_name", "") for item in criterion)
             result_strings.append(combined_string)
         else:
@@ -2678,75 +2677,124 @@ def combine_pretty_names(list_of_criteria: List[List[Dict[str, Any]]]) -> List[s
 def postprocess_exception_rules_response(view_def, data):
     view_def_data = view_def[0]
     mappings = extract_mappings_from_view_def(view_def_data, EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP)
-    print(mappings)
-    modified_data = []
     for record in data:
-        new_record = record.copy()  # to preserve raw response
         for field in EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP:
-            new_record[field] = [mappings.get(field, {}).get(val, val) for val in new_record.get(field, [])]
-        print(new_record)
-        new_record["ASSOCIATED_TARGETS"] = combine_pretty_names(record.get("ASSOCIATED_TARGETS", []))
-        new_record["CONDITIONS_RAW"] = new_record.get("CONDITIONS")
-        new_record["CONDITIONS"] = new_record.get("CONDITIONS_PRETTY")
-        new_record["RULE_TYPE"] = new_record.get("SUBTYPE")
-        new_record["CREATION_TIMESTAMP"] = new_record.get("CREATION_TIME")
-        new_record["MODIFICATION_TIMESTAMP"] = new_record.get("MODIFICATION_TIME")
-        new_record["MODIFICATION_TIME"] = timestamp_to_datestring(new_record["MODIFICATION_TIMESTAMP"])
-        new_record["CREATION_TIME"] = timestamp_to_datestring(new_record["CREATION_TIMESTAMP"])
-        new_record.pop("CONDITIONS_PRETTY")
-        new_record.pop("SUBTYPE")
+            record[field] = [mappings.get(field, {}).get(val, val) for val in record.get(field, [])]
+        record["ASSOCIATED_TARGETS"] = combine_pretty_names(record.get("ASSOCIATED_TARGETS", []))
+        record["CONDITIONS"] = record.get("CONDITIONS_PRETTY")
+        record["RULE_TYPE"] = record.get("SUBTYPE")
+        record["CREATION_TIMESTAMP"] = record.get("CREATION_TIME")
+        record["MODIFICATION_TIMESTAMP"] = record.get("MODIFICATION_TIME")
+        record["MODIFICATION_TIME"] = timestamp_to_datestring(record["MODIFICATION_TIMESTAMP"])
+        record["CREATION_TIME"] = timestamp_to_datestring(record["CREATION_TIMESTAMP"])
+        record.pop("CONDITIONS_PRETTY")
+        record.pop("SUBTYPE")
 
 
     readable_output = tableToMarkdown(
             view_def_data.get("TABLE_NAME"),
-            modified_data,
+            data,
             headerTransform=string_to_table_header,
             sort_headers=False,
         )
-    return modified_data , readable_output
+    return readable_output
 
 
-def get_exception_rules(client, args):
+def get_webapp_data(client, table_name: str, filter_dict: Any,
+                       sort_field: str, sort_order: str, retrieve_all: bool,
+                       base_limit: int, max_limit : int, offset: int = 0) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """
-        Retrieves Disable Prevention Rules and Legacy Agent Exceptions using the generic /api/webapp/get_data endpoint.
+    Helper function to iteratively fetch records for a single table with optional pagination.
     """
+    all_records = []
+    raw_responses = []
 
+    current_limit = max_limit if retrieve_all else base_limit
+    current_offset = offset
+
+    while True:
+        request_data = build_webapp_request_data(
+            table_name=table_name,
+            filter_dict=filter_dict.to_dict(),
+            sort_field=sort_field,
+            sort_order=sort_order,
+            limit=current_limit,
+            start_page=current_offset
+        )
+
+        response = client.get_webapp_data(request_data)
+        raw_responses.append(copy.deepcopy(response))
+
+        reply = response.get("reply", {})
+        data = reply.get("DATA", [])
+
+        all_records.extend(data)
+
+        if not retrieve_all or len(data) < current_limit:
+            break
+
+        current_offset += current_limit
+
+    return all_records, raw_responses
+
+
+def get_exception_rules(client, args: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], str, List[Dict[str, Any]]]:
+    """
+    Retrieves Disable Prevention Rules and Legacy Agent Exceptions using the
+    generic /api/webapp/get_data endpoint, handling pagination elegantly.
+    """
     exception_rule_type = args.get('type')
     sort_field = args.get('sort_field')
     sort_order = args.get('sort_order')
-    limit = arg_to_number(args.get("limit")) or 100
+
+    default_limit = arg_to_number(args.get("limit")) or MAX_GET_EXCEPTION_RULES_LIMIT
+    offset = arg_to_number(args.get("page")) * default_limit if args.get("page") else 0
+    retrieve_all = argToBoolean(args.get("retrieve_all", False))
+
+    base_limit = MAX_GET_EXCEPTION_RULES_LIMIT if retrieve_all else default_limit
+
     exception_rule_filter = build_exception_rules_filter(args)
-    table_names = [EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING.get(exception_rule_type)] if exception_rule_type else [LEGACY_AGENT_EXCEPTIONS_TABLE , DISABLE_PREVENTION_RULES_TABLE]
-    readable_output = ""
-    raw_responses = []
-    outputs = []
+
+    if exception_rule_type:
+        table_names = [EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING.get(exception_rule_type)]
+    else:
+        table_names = [LEGACY_AGENT_EXCEPTIONS_TABLE, DISABLE_PREVENTION_RULES_TABLE]
+
+    all_outputs = []
+    all_raw_responses = []
+    readable_output_lines = []
+
     for table_name in table_names:
-        request_data = build_webapp_request_data(
+        records, raw_responses = get_webapp_data(
+            client=client,
             table_name=table_name,
-            filter_dict=exception_rule_filter.to_dict(),
+            filter_dict=exception_rule_filter,
             sort_field=sort_field,
             sort_order=sort_order,
-            limit=limit
+            retrieve_all=retrieve_all,
+            base_limit=base_limit,
+            max_limit=MAX_GET_EXCEPTION_RULES_LIMIT,
+            offset=offset
         )
-        response = client.get_webapp_data(request_data)
-        print(response)
-        raw_responses.append(response)
-        reply = response.get("reply", {})
-        data = reply.get("DATA", [])
-        if data:
-            view_def = client.get_webapp_view_def({"table_name": table_name})
-            print(view_def)
-            output , hr  = postprocess_exception_rules_response(view_def, data)
-            outputs.extend(output)
-            readable_output += hr #todo: add hr when there is no data
 
+        all_raw_responses.extend(raw_responses)
+
+        if records:
+            view_def = client.get_webapp_view_def({"table_name": table_name})
+            hr_output = postprocess_exception_rules_response(view_def, records)
+            all_outputs.extend(records)
+            readable_output_lines.append(hr_output)
+        else:
+            readable_output_lines.append(f"No data found for {table_name} matching the filter.")
+
+    final_readable_output = "\n".join(readable_output_lines)
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=final_readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ExceptionRules",
         outputs_key_field="ID",
-        outputs=outputs,
-        raw_response=raw_responses,
+        outputs=all_outputs,
+        raw_response=all_raw_responses,
     )
 
 
