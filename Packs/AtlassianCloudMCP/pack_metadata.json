@@ -1,0 +1,24 @@
+{
+    "name": "Atlassian Cloud MCP",
+    "description": "Integrate Cortex XSOAR with Atlassian Cloud via the Management Control Plane (MCP) server to automate Atlassian operations.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "serverMinVersion": "8.13.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "cloud_posture",
+        "xsiam"
+    ]
+}
