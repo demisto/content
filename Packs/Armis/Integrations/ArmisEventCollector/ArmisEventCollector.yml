@@ -75,7 +75,7 @@ configuration:
   required: false
 - section: Collect
   advanced: true
-  display: Enable parallel event fetching
+  display: Enable Concurrent Event Fetching
   additionalinfo: Enable parallel fetching of multiple event types in a single integration instance. This option optimizes performance and mitigates potential authentication issues when retrieving events across multiple integration instances that utilize the same credentials.
   name: enable_multithreading
   defaultvalue: "false"
