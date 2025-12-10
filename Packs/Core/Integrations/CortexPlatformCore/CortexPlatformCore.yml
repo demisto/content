@@ -2544,7 +2544,7 @@ script:
         - android
         - ios
         - serverless
-      - description: A comma-separated list of operating system names (e.g., Windows, macOS, Linux).
+      - description: A comma-separated list of operating system names (e.g., Windows 10, Ubuntu 24.04).
         name: operating_system
         isArray: true
       - description: A comma-separated list of agent versions (e.g., 8.9.0.14028).
@@ -2613,10 +2613,11 @@ script:
         description: Page number for pagination. Default is 0.
         name: page
       - defaultValue: '100'
-        description: Maximum number of results per page. Default and maximum is 100.
-        name: limit
+        description: The number of endpoints to return per page. Default and maximum is 100.
+        name: page_size
       name: core-list-endpoints
       description: Retrieves endpoints based on the provided filters.
+      hidden: true
       outputs:
       - contextPath: Core.Endpoint.endpoint_name
         description: The endpoint name.
@@ -2669,6 +2670,11 @@ script:
       - contextPath: Core.Endpoint.cloud_region
         description: The cloud region of the endpoint.
         type: String
+      - contextPath: Core.EndpointsMetadata.returned_count
+        description: The actual number of endpoints that match all filter criteria and returned in this specific response.
+        type: String
+      - contextPath: Core.EndpointsMetadata.filtered_count
+        description: The total number of endpoints in the system that match all filter criteria.
   runonce: false
   script: "-"
   subtype: python3
