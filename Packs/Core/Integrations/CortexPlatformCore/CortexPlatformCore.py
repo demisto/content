@@ -47,7 +47,8 @@ WEBAPP_COMMANDS = [
     "core-create-appsec-policy",
     "core-get-appsec-issues",
     "core-update-case",
-    "core-get-endpoint-update-version"
+    "core-get-endpoint-update-version",
+    "core-update-endpoint-version"
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -251,6 +252,17 @@ POLICY_CATEGORY_MAPPING = {
     "CI/CD Pipeline": "CICD_PIPELINE",
     "VCS Collaborator": "VCS_COLLABORATOR",
     "VCS Organization": "VCS_ORGANIZATION",
+}
+
+
+DAYS_MAPPING = {
+    "sunday": 1,
+    "monday": 2,
+    "tuesday": 3,
+    "wednesday": 4,
+    "thursday": 5,
+    "friday": 6,
+    "saturday": 7,
 }
 
 
@@ -2612,6 +2624,21 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
+def validate_start_end_times(start_time, end_time):
+    if (start_time and not end_time) or (end_time and not start_time):
+        raise DemistoException("Both start_time and end_time must be provided together.")
+    
+    if start_time and end_time:
+        start_dt = datetime.strptime(start_time, "%H:%M")
+        end_dt = datetime.strptime(end_time, "%H:%M")
+        diff = (end_dt - start_dt).total_seconds()
+        if diff < 0:
+            diff += 86400
+
+        if diff < 7200:
+            raise DemistoException("A minimum of two hours is required between the start time and the end time.")
+
+
 def get_endpoint_update_version_command(client, args):
     """
     Get the endpoint update version for specified endpoints.
@@ -2624,8 +2651,8 @@ def get_endpoint_update_version_command(client, args):
         CommandResults: Formatted results of endpoint update versions.
     """
     filter_builder = FilterBuilder()
-    endpoint_id = args.get("endpoint_id", "")
-    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_id)
+    endpoint_ids = argToList(args.get("endpoint_ids", ""))
+    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_ids)
     filter_data = {
         "filter": filter_builder.to_dict(),
     }
@@ -2640,20 +2667,36 @@ def get_endpoint_update_version_command(client, args):
 
 def update_endpoint_version_command(client, args):
     filter_builder = FilterBuilder()
-    endpoint_id = args.get("endpoint_id", "")
-    versions = json.loads(args.get("versions", {}))
-    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_id)
+    endpoint_ids = argToList(args.get("endpoint_ids", ""))
+    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_ids)
+    versions = {args.get("platform"): args.get("version")}
+    days = [DAYS_MAPPING.get(day.lower()) for day in argToList(args.get("days", ""))] or None
+    start_time = args.get("start_time")
+    end_time = args.get("end_time")
+    validate_start_end_times(start_time, end_time)
+
     filter_data = {
         "filter": filter_builder.to_dict(),
     }
-    request_data = {"filter_data": filter_data, "filter_type": "static", "versions": versions, "upgrade_to_pkg_manager": False, 
-                    "schedule_data":{"START_TIME":None,"END_TIME":None,"DAYS":None}}
+    request_data = {
+        "filter_data": filter_data,
+        "filter_type": "static",
+        "versions": versions,
+        "upgrade_to_pkg_manager": False,
+        "schedule_data": {"START_TIME": start_time, "END_TIME": end_time, "DAYS": days},
+    }
     demisto.debug(f"{request_data=}")
     response = client.update_endpoint_version(request_data)
     demisto.debug(f"{response=}")
+    group_action_id = response.get("reply", {}).get("group_action_id")
+    if not group_action_id:
+        summary = "Failed to update to the target versions."
+    else:
+        summary = "Successfully updated to the target versions."
+
     return CommandResults(
-        readable_output=tableToMarkdown("Endpoint Update Versions", response, headerTransform=string_to_table_header),
-        outputs=response,
+        readable_output=summary,
+        outputs={"endpoint_ids": endpoint_ids, "action_id": group_action_id},
         outputs_prefix="Core.EndpointUpdate",
     )
 

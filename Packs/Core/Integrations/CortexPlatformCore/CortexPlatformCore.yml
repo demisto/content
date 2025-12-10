@@ -2501,10 +2501,10 @@ script:
           required: true
           isArray: true
     - arguments: 
-      - description: ID of the endpoint for which to retrieve the available update version.
-        name: endpoint_id
-        isArray: true
+      - description: A comma-separated list of endpoint IDs.
+        name: endpoint_ids
         required: true
+        isArray: true
       name: core-get-endpoint-update-version
       description: Retrieves endpoint update versions for the provided endpoint ID.
       outputs:
@@ -2512,16 +2512,46 @@ script:
         description: The distributions of the endpoint update.
         type: Dictionary
     - arguments: 
-      - description: ID of the endpoint for which to retrieve the available update version.
-        name: endpoint_id
+      - description: A comma-separated list of endpoint IDs.
+        name: endpoint_ids
+        required: true
         isArray: true
+      - description: The platform of the endpoints.
+        name: platform
         required: true
-      - description: A JSON dictionary that contains key:value pairs that represent the "os":"version-number".
-        name: versions
+        auto: PREDEFINED
+        predefined:
+        - windows
+        - macos
+        - linux
+      - description: The target version for updating the endpoints.
+        name: version
         required: true
+      - description: From which time to apply the update. In format of "HH:MM". A minimum of two hours is required between the start time and the end time.
+        name: start_time
+      - description: Until which time the update may run. In format of "HH:MM".
+        name: end_time
+      - description: Comma-separated list of days the update may run.
+        name: days
+        isArray: true
+        auto: PREDEFINED
+        predefined:
+        - sunday
+        - monday
+        - tuesday
+        - wednesday
+        - thursday
+        - friday
+        - saturday
       name: core-update-endpoint-version
-      description: Update the version of the provided endpoint.
-      outputs: []
+      description: Updates the version of the given endpoint to the target version supplied.
+      outputs: 
+      - contextPath: Core.EndpointUpdate.endpoint_ids
+        description: The IDs of the endpoints on which the update run.
+        type: String
+      - contextPath: Core.EndpointUpdate.action_id
+        description: The ID of the update action.
+        type: String
   runonce: false
   script: "-"
   subtype: python3
