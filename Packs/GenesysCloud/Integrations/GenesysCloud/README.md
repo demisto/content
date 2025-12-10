@@ -3,16 +3,16 @@ This integration was integrated and tested with version 2 of the Genesys Cloud P
 
 ## Configure Genesys Cloud in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL | False |
-| Client ID | True |
-| Client Secret | True |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
-| Fetch Events | False |
-| Service names | True |
-| Maximum Number of Events Per Service | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Default value is https://api.mypurecloud.com/. | False |
+| Client ID | | True |
+| Client Secret | | True |
+| Trust any certificate (not secure) | | False |
+| Use system proxy settings | | False |
+| Fetch Events | | False |
+| Service names | Possible values are: Architect, PeoplePermissions, ContactCenter, Groups, Telephony, Outbound, Routing, Integrations, AnalyticsReporting. | False |
+| Maximum Number of Events Per Service | Default value is 2500. | False |
 
 ## Commands
 
@@ -33,7 +33,7 @@ Gets audit events from Genesys Cloud from the past 14 days. This command is inte
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Optional |
-| service_name | Filter by alert status. Possible values are: Architect, PeoplePermissions, ContactCenter, Groups, Telephony, Outbound, Routing, Integrations, AnalyticsReporting. | Required |
+| service_name | Filter by the Genesys Cloud service name. Possible values are: Architect, PeoplePermissions, ContactCenter, Groups, Telephony, Outbound, Routing, Integrations, AnalyticsReporting. | Required |
 | limit | Maximum number of audit events to return. | Optional |
 | from_date | The start date from which to get events. Must be within the last 14 days. Default value is 1 hour ago. | Optional |
 | to_date | The end date till which to get events. Must be within the last 14 days. Default value is now. | Optional |
