@@ -1,4 +1,5 @@
 # Citrix Cloud
+
 Citrix Cloud is a cloud-based management platform that provides the centralized control plane for delivering and managing all Citrix digital workspace services, including virtual apps and desktops. It allows organizations to deploy and scale workloads on any infrastructure be it on-premises or public cloud while simplifying IT operations and ensuring secure access for a distributed workforce.
 
 ## What does this pack contain?

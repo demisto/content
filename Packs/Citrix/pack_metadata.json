@@ -10,9 +10,13 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT",
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": ["citrix"],
+    "keywords": [],
     "marketplaces": [
         "marketplacev2",
         "platform"
