@@ -1,0 +1,60 @@
+{
+  "raw_response": {
+    "lists": {
+      "TOPIC": [
+        {
+          "id": 1,
+          "name": "Attack Vendor",
+          "type": "TOPIC",
+          "subType": "CYBER"
+        },
+        {
+          "id": 2,
+          "name": "Cyber-Physical",
+          "type": "TOPIC",
+          "subType": "VULNERABILITY"
+        },
+        {
+          "id": 3,
+          "name": "Data Security",
+          "type": "TOPIC",
+          "subType": "CYBER"
+        }
+      ],
+      "COMPANY": [
+        {
+          "id": 4,
+          "name": "My List",
+          "type": "COMPANY",
+          "subType": "CYBER"
+        }
+      ]
+    }
+  },
+  "outputs": [
+    {
+      "id": 1,
+      "name": "Attack Vendor",
+      "type": "TOPIC",
+      "subType": "CYBER"
+    },
+    {
+      "id": 2,
+      "name": "Cyber-Physical",
+      "type": "TOPIC",
+      "subType": "VULNERABILITY"
+    },
+    {
+      "id": 3,
+      "name": "Data Security",
+      "type": "TOPIC",
+      "subType": "CYBER"
+    },
+    {
+      "id": 4,
+      "name": "My List",
+      "type": "COMPANY",
+      "subType": "CYBER"
+    }
+  ]
+}

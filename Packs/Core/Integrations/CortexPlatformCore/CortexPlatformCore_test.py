@@ -5206,3 +5206,178 @@ def test_run_playbook_command_client_call_parameters():
     run_playbook_command(mock_client, args)
 
     mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
+
+
+def test_update_issue_command_link_cases_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with issue_id and a list of case_ids to link.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        client.link_issue_to_cases is called once with the correct issue_id and case_ids,
+        and client.update_issue is NOT called (since no other update args are provided).
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases", return_value={"success": True})
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "link_cases": "901,902"}
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_link_issue_to_cases.assert_called_once_with(12345, [901, 902])
+    mock_unlink_issue_from_cases.assert_not_called()
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_unlink_cases_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with issue_id and a list of case_ids to unlink.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        client.unlink_issue_from_cases is called once with the correct issue_id and case_ids,
+        and client.update_issue is NOT called.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases")
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases", return_value={"success": True})
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "unlink_cases": "903,904"}
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_unlink_issue_from_cases.assert_called_once_with(12345, [903, 904])
+    mock_link_issue_to_cases.assert_not_called()
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_link_and_unlink_cases_mixed_with_update_fields(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments including link_cases, unlink_cases, and other update fields.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        All three methods (link, unlink, update_issue) are called once with the correct parameters.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases", return_value={"success": True})
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases", return_value={"success": True})
+    mocker.patch.object(demisto, "debug")
+
+    args = {
+        "id": "12345",
+        "link_cases": "901",
+        "unlink_cases": "904,905",
+        "name": "Updated Name",
+        "severity": "high",
+    }
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_link_issue_to_cases.assert_called_once_with(12345, [901])
+    mock_unlink_issue_from_cases.assert_called_once_with(12345, [904, 905])
+    mock_update_issue.assert_called_once()
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert update_data["name"] == "Updated Name"
+    assert update_data["severity"] == "SEV_040_HIGH"
+
+
+def test_update_issue_command_only_link_and_unlink_fields(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with only link_cases and unlink_cases (no other fields).
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        client.link_issue_to_cases and client.unlink_issue_from_cases are called,
+        and client.update_issue is NOT called, and the function returns "done".
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases", return_value={"success": True})
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases", return_value={"success": True})
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "link_cases": "901", "unlink_cases": "904"}
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_link_issue_to_cases.assert_called_once_with(12345, [901])
+    mock_unlink_issue_from_cases.assert_called_once_with(12345, [904])
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_link_case_ids_arg_to_list(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments where link_cases is a single string of comma-separated IDs.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        The link_cases argument is correctly parsed into a list of integers and passed to the client.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases", return_value={"success": True})
+    mocker.patch.object(client, "unlink_issue_from_cases")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "link_cases": "901, 902,1000"}
+
+    update_issue_command(client, args)
+
+    mock_link_issue_to_cases.assert_called_once_with(12345, [901, 902, 1000])
+
+
+def test_update_issue_command_link_cases_empty_list_no_other_updates(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with empty link_cases and empty unlink_cases, and no other updates.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        DemistoException is raised because no updates are provided.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import DemistoException
+    import pytest
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases")
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "link_cases": "", "unlink_cases": None}
+
+    with pytest.raises(DemistoException, match="Please provide arguments to update the issue."):
+        update_issue_command(client, args)
+
+    mock_link_issue_to_cases.assert_not_called()
+    mock_unlink_issue_from_cases.assert_not_called()
+    mock_update_issue.assert_not_called()
