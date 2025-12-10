@@ -410,7 +410,7 @@
                 "CrowdStrike Falcon Scan Id": {
                     "simple": "scan_id"
                 },
-                "CrowdStrike Falcon Pattern ID":{ 
+                "CrowdStrike Falcon Pattern ID":{
                     "simple": "pattern_id"
                 },
                 "Tactic ID": {
@@ -452,7 +452,7 @@
                 "Last Update Time": {
                     "simple": "timestamp"
                 },
-                "Display Name":{ 
+                "Display Name":{
                     "simple": "display_name"
                 },
                 "Device Id": {
@@ -1436,7 +1436,7 @@
 					}
 				}
 			}
-		}, 
+		},
         "CrowdStrike Falcon Third Party Detection": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
@@ -1602,6 +1602,9 @@
 				},
 				"Detection ID": {
 					"simple": "xdr_detection_id"
+				},
+                "Display Name": {
+					"simple": "name"
 				},
 				"End Time": {
 					"simple": "end_time"
