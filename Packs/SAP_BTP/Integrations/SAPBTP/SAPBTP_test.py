@@ -1213,14 +1213,177 @@ def test_get_events_command_with_end_time(mocker, client_non_mtls):
 # ========================================
 
 
-def test_fetch_events_command_first_run(mocker, client_non_mtls):
-    """Tests fetch_events_command on first run (no last_run)."""
-    mock_events = [
-        {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
-        {"uuid": "2", "time": "2024-01-01T01:00:00Z"},
+@pytest.mark.parametrize(
+    "test_case,last_run,params,mock_events,expected_last_run,expected_events_sent",
+    [
+        (
+            "first_run_no_config",
+            {},
+            {"max_fetch": 100},
+            [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}, {"uuid": "2", "time": "2024-01-01T01:00:00Z"}],
+            {"last_fetch": "2024-01-01T01:00:00Z", "last_event_uuid": "2"},
+            [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}, {"uuid": "2", "time": "2024-01-01T01:00:00Z"}],
+        ),
+        (
+            "with_last_run",
+            {"last_fetch": "2024-01-01T00:00:00Z"},
+            {"max_fetch": 100},
+            [{"uuid": "3", "time": "2024-01-02T00:00:00Z"}],
+            {"last_fetch": "2024-01-02T00:00:00Z", "last_event_uuid": "3"},
+            [{"uuid": "3", "time": "2024-01-02T00:00:00Z"}],
+        ),
+        (
+            "first_run_with_first_fetch",
+            {},
+            {"first_fetch": "7 days", "max_fetch": 100},
+            [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}],
+            {"last_fetch": "2024-01-01T00:00:00Z", "last_event_uuid": "1"},
+            [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}],
+        ),
+        (
+            "first_run_empty_first_fetch",
+            {},
+            {"first_fetch": ""},
+            [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}],
+            {"last_fetch": "2024-01-01T00:00:00Z", "last_event_uuid": "1"},
+            [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}],
+        ),
+    ],
+)
+def test_fetch_events_command_scenarios(
+    mocker, client_non_mtls, test_case, last_run, params, mock_events, expected_last_run, expected_events_sent
+):
+    """Tests fetch_events_command under various scenarios."""
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(SAPBTP, "add_time_to_events")
+    mocker.patch.object(SAPBTP, "send_events_to_xsiam")
+
+    fetch_events_command(client_non_mtls)
+
+    demisto.setLastRun.assert_called_once_with(expected_last_run)  # type: ignore[attr-defined]
+    SAPBTP.add_time_to_events.assert_called_once_with(expected_events_sent)  # type: ignore[attr-defined]
+    SAPBTP.send_events_to_xsiam.assert_called_once_with(  # type: ignore[attr-defined]
+        events=expected_events_sent, vendor=Config.VENDOR, product=Config.PRODUCT
+    )
+
+
+# ========================================
+# Tests: deduplicate_events
+# ========================================
+
+
+@pytest.mark.parametrize(
+    "events,last_uuid,expected_count,expected_first_uuid,description",
+    [
+        # No deduplication needed - first run
+        (
+            [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}, {"uuid": "2", "time": "2024-01-01T01:00:00Z"}],
+            None,
+            2,
+            "1",
+            "first_run_no_last_uuid",
+        ),
+        # No deduplication needed - empty events
+        ([], "last_uuid", 0, None, "empty_events"),
+        # Deduplication - last UUID found at beginning
+        (
+            [
+                {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
+                {"uuid": "2", "time": "2024-01-01T01:00:00Z"},
+                {"uuid": "3", "time": "2024-01-01T02:00:00Z"},
+            ],
+            "1",
+            2,
+            "2",
+            "last_uuid_at_start",
+        ),
+        # Deduplication - last UUID found in middle
+        (
+            [
+                {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
+                {"uuid": "2", "time": "2024-01-01T01:00:00Z"},
+                {"uuid": "3", "time": "2024-01-01T02:00:00Z"},
+            ],
+            "2",
+            1,
+            "3",
+            "last_uuid_in_middle",
+        ),
+        # Deduplication - last UUID found at end (all duplicates)
+        (
+            [
+                {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
+                {"uuid": "2", "time": "2024-01-01T01:00:00Z"},
+                {"uuid": "3", "time": "2024-01-01T02:00:00Z"},
+            ],
+            "3",
+            0,
+            None,
+            "last_uuid_at_end",
+        ),
+        # Deduplication - last UUID not found (all new events)
+        (
+            [
+                {"uuid": "4", "time": "2024-01-01T03:00:00Z"},
+                {"uuid": "5", "time": "2024-01-01T04:00:00Z"},
+            ],
+            "3",
+            2,
+            "4",
+            "last_uuid_not_found",
+        ),
+    ],
+)
+def test_deduplicate_events(events, last_uuid, expected_count, expected_first_uuid, description):
+    """Tests deduplicate_events function with various scenarios."""
+    from SAPBTP import deduplicate_events
+
+    result = deduplicate_events(events, last_uuid)
+
+    assert len(result) == expected_count, f"Failed for {description}: expected {expected_count} events, got {len(result)}"
+    if expected_first_uuid:
+        assert result[0]["uuid"] == expected_first_uuid, f"Failed for {description}: expected first UUID {expected_first_uuid}"
+
+
+def test_deduplicate_events_preserves_order():
+    """Tests that deduplicate_events preserves event order."""
+    from SAPBTP import deduplicate_events
+
+    events = [
+        {"uuid": "1", "time": "2024-01-01T00:00:00Z", "data": "first"},
+        {"uuid": "2", "time": "2024-01-01T01:00:00Z", "data": "second"},
+        {"uuid": "3", "time": "2024-01-01T02:00:00Z", "data": "third"},
+        {"uuid": "4", "time": "2024-01-01T03:00:00Z", "data": "fourth"},
     ]
 
-    mocker.patch.object(demisto, "getLastRun", return_value={})
+    result = deduplicate_events(events, "2")
+
+    assert len(result) == 2
+    assert result[0]["uuid"] == "3"
+    assert result[0]["data"] == "third"
+    assert result[1]["uuid"] == "4"
+    assert result[1]["data"] == "fourth"
+
+
+# ========================================
+# Tests: fetch_events_command with deduplication
+# ========================================
+
+
+def test_fetch_events_command_with_deduplication(mocker, client_non_mtls):
+    """Tests fetch_events_command deduplicates events based on last_event_uuid."""
+    # Simulate fetching events where some are duplicates
+    mock_events = [
+        {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
+        {"uuid": "2", "time": "2024-01-01T00:00:00Z"},  # Same timestamp as event 1
+        {"uuid": "3", "time": "2024-01-01T01:00:00Z"},  # New event
+    ]
+
+    # Last run has UUID "2" - so we should skip events 1 and 2
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00Z", "last_event_uuid": "2"})
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
@@ -1229,16 +1392,24 @@ def test_fetch_events_command_first_run(mocker, client_non_mtls):
 
     fetch_events_command(client_non_mtls)
 
-    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T01:00:00Z"})  # type: ignore[attr-defined]
-    SAPBTP.add_time_to_events.assert_called_once_with(mock_events)  # type: ignore[attr-defined]
-    SAPBTP.send_events_to_xsiam.assert_called_once_with(events=mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)  # type: ignore[attr-defined]
+    # Should only send event 3 (new event after UUID "2")
+    SAPBTP.add_time_to_events.assert_called_once_with([{"uuid": "3", "time": "2024-01-01T01:00:00Z"}])  # type: ignore[attr-defined]
+    SAPBTP.send_events_to_xsiam.assert_called_once_with(  # type: ignore[attr-defined]
+        events=[{"uuid": "3", "time": "2024-01-01T01:00:00Z"}], vendor=Config.VENDOR, product=Config.PRODUCT
+    )
+    # Last run should be updated to the last event in the original list (not filtered)
+    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T01:00:00Z", "last_event_uuid": "3"})  # type: ignore[attr-defined]
 
 
-def test_fetch_events_command_with_last_run(mocker, client_non_mtls):
-    """Tests fetch_events_command with existing last_run."""
-    mock_events = [{"uuid": "3", "time": "2024-01-02T00:00:00Z"}]
+def test_fetch_events_command_all_duplicates(mocker, client_non_mtls):
+    """Tests fetch_events_command when all fetched events are duplicates."""
+    mock_events = [
+        {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
+        {"uuid": "2", "time": "2024-01-01T00:00:00Z"},
+    ]
 
-    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00Z"})
+    # Last run has UUID "2" - all events are duplicates
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00Z", "last_event_uuid": "2"})
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
@@ -1247,8 +1418,11 @@ def test_fetch_events_command_with_last_run(mocker, client_non_mtls):
 
     fetch_events_command(client_non_mtls)
 
-    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-02T00:00:00Z"})  # type: ignore[attr-defined]
-    SAPBTP.add_time_to_events.assert_called_once_with(mock_events)  # type: ignore[attr-defined]
+    # Should not send any events
+    SAPBTP.add_time_to_events.assert_not_called()  # type: ignore[attr-defined]
+    SAPBTP.send_events_to_xsiam.assert_not_called()  # type: ignore[attr-defined]
+    # Last run should not be updated when no new events
+    demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_no_events(mocker, client_non_mtls):
@@ -1282,61 +1456,6 @@ def test_fetch_events_command_events_without_time(mocker, client_non_mtls):
     demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
     SAPBTP.add_time_to_events.assert_called_once_with(mock_events)  # type: ignore[attr-defined]
     SAPBTP.send_events_to_xsiam.assert_called_once()  # type: ignore[attr-defined]
-
-
-def test_fetch_events_command_with_first_fetch_configured(mocker, client_non_mtls):
-    """Tests fetch_events_command uses configured first_fetch time string."""
-
-    mock_events = [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}]
-
-    mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(demisto, "setLastRun")
-    mocker.patch.object(demisto, "params", return_value={"first_fetch": "7 days"})
-    mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
-    mocker.patch.object(SAPBTP, "add_time_to_events")
-    mocker.patch.object(SAPBTP, "send_events_to_xsiam")
-
-    fetch_events_command(client_non_mtls)
-
-    # Verify it was called and last_run was updated
-    mock_fetch.assert_called_once()
-    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T00:00:00Z"})  # type: ignore[attr-defined]
-
-
-def test_fetch_events_command_with_first_fetch_not_configured(mocker, client_non_mtls):
-    """Tests fetch_events_command uses default (current time) when first_fetch is not provided."""
-    mock_events = [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}]
-
-    mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(demisto, "setLastRun")
-    mocker.patch.object(demisto, "params", return_value={})
-    mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
-    mocker.patch.object(SAPBTP, "add_time_to_events")
-    mocker.patch.object(SAPBTP, "send_events_to_xsiam")
-
-    fetch_events_command(client_non_mtls)
-
-    # Verify it was called and last_run was updated
-    mock_fetch.assert_called_once()
-    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T00:00:00Z"})  # type: ignore[attr-defined]
-
-
-def test_fetch_events_command_with_empty_first_fetch(mocker, client_non_mtls):
-    """Tests fetch_events_command uses current time when first_fetch is empty string."""
-    mock_events = [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}]
-
-    mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(demisto, "setLastRun")
-    mocker.patch.object(demisto, "params", return_value={"first_fetch": ""})
-    mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
-    mocker.patch.object(SAPBTP, "add_time_to_events")
-    mocker.patch.object(SAPBTP, "send_events_to_xsiam")
-
-    fetch_events_command(client_non_mtls)
-
-    # Verify it was called (with current time, not historical)
-    mock_fetch.assert_called_once()
-    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T00:00:00Z"})  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_state_protection_on_error(mocker, client_non_mtls):
