@@ -1,12 +1,7 @@
-The AI Agents pack provides the core intelligent agents for Cortex Agentix, enabling autonomous security operations across your enterprise.
+The AI Agents pack provides core intelligent agents that come preinstalled with the Cortex Platform, enabling AI-powered assistance across your security operations.
 
 ## What does this pack do?
 
-This pack contains specialized AI agents that come preinstalled with Cortex Agentix to automate security operations:
+This pack contains specialized AI agents designed to help you with investigations and security operations across different disciplines. The specific agents and capabilities available depend on your system configuration and license.
 
-- Provide intelligent assistance and product support through conversational interfaces.
-- Investigate and respond to threats across endpoints, email, network, and cloud environments.
-- Enrich and analyze threat intelligence, vulnerabilities, and security posture issues.
-- Execute remediation actions including containment, blocking, and policy enforcement.
-- Manage security configurations and compliance across infrastructure and applications.
-- Coordinate incident workflows and integrate with ticketing systems like Jira and ServiceNow.
+These agents can assist with various security operations tasks, working autonomously to help streamline your workflows and enhance your team's effectiveness.
