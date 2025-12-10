@@ -8,11 +8,10 @@ import asyncio
 from urllib.parse import unquote
 
 
-
 CLOUDFLARE_BASE_URL = "https://{server}.mcp.cloudflare.com/mcp"
 CLOUDFLARE_AUTH_TYPE = AuthMethods.DYNAMIC_CLIENT_REGISTRATION.value
 COMMAND_PREFIX = "cloudflare-mcp"
-SERVERS_NO_AUTHORIZATION = ("docs")
+SERVERS_NO_AUTHORIZATION = ["docs"]
 
 
 async def main() -> None:  # pragma: no cover
