@@ -30,6 +30,7 @@ MOBILE_DETECTION = "MOBILE detection"
 ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
 OFP_DETECTION = "OFP detection"
 NGSIEM_DETECTION = "ngsiem_detection"
+NGSIEM_INCIDENT = "ngsiem_incident"
 THIRD_PARTY_DETECTION = "thirdparty_detection"
 
 # Fetch type names as they appear in the .yml instance configurations
@@ -53,6 +54,7 @@ SUPPORTED_DETECTIONS_TYPES = [
     ON_DEMAND_SCANS_DETECTION_TYPE,
     OFP_DETECTION_TYPE,
     NGSIEM_DETECTION_FETCH_TYPE,
+    NGSIEM_INCIDENT_FETCH_TYPE,
     THIRD_PARTY_DETECTION_FETCH_TYPE,
 ]
 
@@ -383,9 +385,8 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
     "monthly": 30,
 }
 
-TOTAL_FETCH_TYPE_XSOAR = 10  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
+TOTAL_FETCH_TYPE_XSOAR = 11  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
 TOTAL_FETCH_TYPE_XSIAM = 6  # Matches the total number of fetch types for XSIAM in the LastRunIndex class
-
 
 class LastRunIndex(IntEnum):
     """
@@ -955,7 +956,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     """
     add_mirroring_fields(detection)
     demisto.debug(f"detection_to_incident_context, {detection_type=}")
-    if detection_type in (IDP_DETECTION_FETCH_TYPE, NGSIEM_DETECTION_FETCH_TYPE, THIRD_PARTY_DETECTION_FETCH_TYPE, ):
+    if detection_type in (IDP_DETECTION_FETCH_TYPE, NGSIEM_DETECTION_FETCH_TYPE, THIRD_PARTY_DETECTION_FETCH_TYPE, NGSIEM_INCIDENT_FETCH_TYPE):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
 
@@ -3502,7 +3503,7 @@ def fetch_items(command="fetch-incidents"):
             ngsiem_incident_last_run,
             look_back=look_back,
             fetch_query=params.get("ngsiem_incident_fetch_query", ""),
-            detections_type=NGSIEM_INCIDENT_FETCH_TYPE,
+            detections_type=NGSIEM_INCIDENT,
             product_type="xdr",
             detection_name_prefix=NGSIEM_INCIDENT_FETCH_TYPE,
             start_time_key="created_timestamp",

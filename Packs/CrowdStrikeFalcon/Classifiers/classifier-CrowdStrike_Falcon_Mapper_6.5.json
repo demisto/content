@@ -1575,7 +1575,63 @@
                     "simple": "in_mirror_error"
                 }
             }
-        }
+        },
+        "CrowdStrike Falcon NGSIEM Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Agents ID": {
+					"simple": "entities.agent_ids"
+				},
+				"CrowdStrike Falcon Crawled Timestamp": {
+					"simple": "crawled_timestamp"
+				},
+				"CrowdStrike Falcon Data Domains": {
+					"simple": "data_domains"
+				},
+				"CrowdStrike Falcon Pattern ID": {
+					"simple": "pattern_id"
+				},
+				"CrowdStrike Falcon Platform Name": {
+					"simple": "platform"
+				},
+				"CrowdStrike Falcon System Product Name": {
+					"simple": "product"
+				},
+				"Detected External Hosts": {
+					"simple": "entities.host"
+				},
+				"Detection ID": {
+					"simple": "xdr_detection_id"
+				},
+				"End Time": {
+					"simple": "end_time"
+				},
+				"Last Update Time": {
+					"simple": "updated_timestamp"
+				},
+				"Mitre Attack": {
+					"simple": "mitre_attack"
+				},
+				"Source IPs": {
+					"simple": "entities.ip_source"
+				},
+				"Start Time": {
+					"simple": "start_time"
+				},
+				"State": {
+					"simple": "status"
+				},
+				"name": {
+					"simple": "composite_id"
+				},
+				"occurred": {
+					"simple": "created_timestamp"
+				},
+				"severity": {
+					"simple": "severity"
+				}
+			}
+		}
     },
     "name": "CrowdStrike Falcon Mapper",
     "type": "mapping-incoming",

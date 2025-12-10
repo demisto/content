@@ -43,7 +43,8 @@
         "CrowdStrike Falcon On-Demand Scans Detection",
         "CrowdStrike Falcon OFP Detection",
         "CrowdStrike Falcon Third Party Detection",
-        "CrowdStrike Falcon NGSIEM Detection"
+        "CrowdStrike Falcon NGSIEM Detection",
+        "CrowdStrike Falcon NGSIEM Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,

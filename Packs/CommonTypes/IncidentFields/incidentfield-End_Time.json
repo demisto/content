@@ -5,7 +5,8 @@
         "Graph Security Alert",
         "CrowdStrike Falcon IDP Detection",
         "Exabeam Notable User",
-        "CrowdStrike Falcon NGSIEM Detection"
+        "CrowdStrike Falcon NGSIEM Detection",
+        "CrowdStrike Falcon NGSIEM Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,
