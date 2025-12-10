@@ -80,11 +80,6 @@ configuration:
   additionalinfo: >-
       Time range to fetch events from on first run. Leave empty to start from current time (recommended).
       Only use this to fetch historical data if specifically needed (e.g., "3 days", "1 hour").
-- name: incidentType
-  display: Incident type
-  required: false
-  type: 13
-  section: Collect
 - name: max_fetch
   display: The maximum number of audit logs per fetch
   required: false
