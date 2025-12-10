@@ -808,7 +808,7 @@ def fetch_events(
             demisto.debug(f"Completed {event_type} fetch: {type_count} events in {type_duration:.2f}s")
     else:
         # Parallel processing with ThreadPoolExecutor
-        max_workers = min(len(event_types_to_fetch), 3)  # Max 3 threads
+        max_workers = min(len(event_types_to_fetch), len(EVENT_TYPES))
         parallel_start = datetime.now()
         demisto.debug(f"=== Starting parallel processing with {max_workers} worker(s) ===")
         demisto.debug(f"Event types for parallel fetch: {event_types_to_fetch}")
