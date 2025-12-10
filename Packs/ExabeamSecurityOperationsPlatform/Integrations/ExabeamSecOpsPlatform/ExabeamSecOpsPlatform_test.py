@@ -165,6 +165,12 @@ def test_transform_string(input_str, expected_output):
         ("key1:true", "key1:true"),
         ("", ""),
         ("key1:true AND key2:some value OR key3:another value", 'key1:true AND key2:"some value" OR key3:"another value"'),
+        ("rules.rule_id:WTC-HT-TOW-A", 'rules.rule_id:"WTC-HT-TOW-A"'),
+        ("hostname:TORONTO-SERVER", 'hostname:"TORONTO-SERVER"'),
+        ("user:ACTOR-123", 'user:"ACTOR-123"'),
+        ("device:AUTO-DEPLOY", 'device:"AUTO-DEPLOY"'),
+        ("timestamp:* TO *", 'timestamp:"*" TO *'),
+        ("value:100 TO value:200", 'value:"100" TO value:"200"'),
     ],
 )
 def test_process_string(input_str, expected_output):
@@ -176,6 +182,10 @@ def test_process_string(input_str, expected_output):
     THEN:
         It should correctly process the input string, splitting it based on logical operators and transforming each part using
         the 'transform_string' function.
+        
+    NOTE:
+        This test includes cases for XSUP-60309 to ensure that substrings like "TO" within field values
+        (e.g., "WTC-HT-TOW-A", "TORONTO", "ACTOR", "AUTO") are not incorrectly treated as logical operators.
     """
     from ExabeamSecOpsPlatform import process_string
 
