@@ -292,6 +292,7 @@ def process_string(input_str: str) -> str:
     """
     # Use word boundaries to match operators only as standalone words, not as substrings
     pattern = r"\b(AND|OR|NOT|TO)\b"
+    logical_operators = {"AND", "OR", "NOT", "TO"}
 
     # Split the input string by logical operators while keeping the operators
     parts = re.split(pattern, input_str)
@@ -301,8 +302,8 @@ def process_string(input_str: str) -> str:
         part = part.strip()
         if not part:
             continue
-        # Check if the part is a logical operator
-        if re.match(r"^(AND|OR|NOT|TO)$", part):
+        # Check if the part is a logical operator using set membership (O(1) lookup)
+        if part in logical_operators:
             transformed_parts.append(part)
         else:
             # Transform non-operator parts
