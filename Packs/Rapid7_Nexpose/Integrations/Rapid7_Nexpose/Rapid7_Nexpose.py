@@ -138,7 +138,7 @@ aggregated_details AS (
         ) AS finding_details_json
     FROM
         fact_asset_scan_vulnerability_instance fasvi
-    INNER JOIN
+    INNER JOIN 
         fact_asset_vulnerability_finding favf
         ON fasvi.asset_id = favf.asset_id
         AND fasvi.vulnerability_id = favf.vulnerability_id
@@ -157,6 +157,24 @@ SELECT
     ad.finding_details_json,
     dv.nexpose_id AS vulnerability_name,
     dv.severity AS vulnerability_severity,
+    dv.title,
+    dv.description,
+    dv.date_published,
+    dv.date_added,
+    dv.severity_score,
+    dv.riskscore,
+    dv.cvss_authentication_id,
+    dv.cvss_exploit_score,
+    dv.cvss_impact_score,
+    dv.cvss_v2_score,
+    dv.cvss_v2_exploit_score,
+    dv.cvss_v2_impact_score,
+    dv.cvss_v3_score,
+    dv.cvss_v3_exploit_score,
+    dv.denial_of_service,
+    dv.exploits,
+    dv.malware_kits,
+    dv.date_modified,
     ac.vuln_categories,
     cef.aggregated_cves
 FROM
@@ -165,7 +183,7 @@ LEFT JOIN dim_vulnerability AS dv
     ON ad.vulnerability_id = dv.vulnerability_id
 LEFT JOIN aggregated_categories AS ac
     ON ad.vulnerability_id = ac.vulnerability_id
-LEFT JOIN cve_references cef
+LEFT JOIN cve_references cef 
     ON ad.vulnerability_id = cef.vulnerability_id
 ORDER BY
     ad.asset_id, ad.vulnerability_id, ad.scan_date DESC
