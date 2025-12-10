@@ -32,11 +32,6 @@ configuration:
     type: 9
     section: Connect
     additionalinfo: 'The Client ID (identifier) and Client Secret (password) for OAuth 2.0 authentication.'
-  - name: isFetch
-    display: Fetch events
-    required: false
-    type: 8
-    section: Collect
   - name: max_fetch
     display: Maximum number of events per fetch
     required: false
@@ -64,7 +59,7 @@ script:
   runonce: false
   commands:
     - name: liveperson-get-events
-      description: 'Manually fetches LivePerson audit events for debugging. Use caution: set "should_push_events" to false to prevent event duplication.'
+      description: 'Manually fetches LivePerson audit events for debugging. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.'
       arguments:
         - name: limit
           default: true
@@ -85,7 +80,7 @@ script:
         - contextPath: LivePerson.Event.accountId
           description: Account ID associated with the event.
           type: String
-        - contextPath: LiveType.Event.objectType
+        - contextPath: LivePerson.Event.objectType
           description: The type of object that was changed (e.g., 'USER', 'SKILL').
           type: String
         - contextPath: LivePerson.Event.element
