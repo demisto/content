@@ -1,5 +1,5 @@
-!sap-btp-get-events from_time="3 days ago" limit=50
-!sap-btp-get-events from_time="2024-01-01T00:00:00Z" end_time="2024-01-02T00:00:00Z" limit=100
-!sap-btp-get-events from_time="1 hour ago" end_time="now" limit=10
-!sap-btp-get-events from_time="1 week ago" limit=200 should_push_events=true
-!sap-btp-get-events from_time="1 minute ago" should_push_events=false
+!sap-btp-get-events start_time="3 days ago" limit=50
+!sap-btp-get-events start_time="2024-01-01T00:00:00Z" end_time="2024-01-02T00:00:00Z" limit=100
+!sap-btp-get-events start_time="1 hour ago" end_time="now" limit=10
+!sap-btp-get-events start_time="1 week ago" limit=200 should_push_events=true
+!sap-btp-get-events start_time="1 minute ago" should_push_events=false

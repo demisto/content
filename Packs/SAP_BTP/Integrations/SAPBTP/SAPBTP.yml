@@ -96,7 +96,7 @@ script:
       Note: This command is not supported in XSOAR.
     deprecated: false
     arguments:
-    - name: from_time
+    - name: start_time
       description: >-
         The start time to fetch events from.
         Supports relative time (e.g., "3 days ago", "2 hours", "now")
@@ -110,7 +110,6 @@ script:
       description: Maximum number of events to retrieve.
     - name: should_push_events
       description: Set to true to push events to XSIAM (use with caution to avoid duplicates).
-      required: false
       defaultValue: 'false'
       auto: PREDEFINED
       predefined:
@@ -169,7 +168,6 @@ triggers:
         action:
           required: true
 marketplaces:
-- xsoar
 - marketplacev2
 tests:
 - No tests (auto formatted)

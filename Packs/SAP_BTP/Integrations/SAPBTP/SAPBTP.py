@@ -497,7 +497,7 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events_with_pagination(
-    client: Client, created_after: str, max_events: int, created_before: str | None = None
+    client: Client, created_after: str, created_before: str | None = None, max_events: int = Config.DEFAULT_LIMIT
 ) -> list[dict[str, Any]]:
     """Fetch, Sort (Oldest First), and Slice events.
 
@@ -565,17 +565,17 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults |
     """Manual command to get events."""
     demisto.debug("[Command] get-events triggered")
 
-    from_time_input = args.get("from_time", DefaultValues.FROM_TIME.value)
+    start_time_input = args.get("start_time", DefaultValues.FROM_TIME.value)
     end_time_input = args.get("end_time")
     limit = int(args.get("limit", DefaultValues.MAX_FETCH.value))
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
-    created_after = get_formatted_utc_time(from_time_input)
+    created_after = get_formatted_utc_time(start_time_input)
     created_before = get_formatted_utc_time(end_time_input) if end_time_input else None
 
     demisto.debug(f"[Command Params] From: {created_after}, To: {created_before}, Limit: {limit}, Push: {should_push_events}")
 
-    events = fetch_events_with_pagination(client, created_after, limit, created_before)
+    events = fetch_events_with_pagination(client, created_after, created_before, limit)
 
     if should_push_events and events:
         add_time_to_events(events)
@@ -621,7 +621,7 @@ def fetch_events_command(client: Client) -> None:
     created_after = get_formatted_utc_time(time_input)
 
     # Fetch events
-    events = fetch_events_with_pagination(client, created_after, max_events_to_fetch)
+    events = fetch_events_with_pagination(client, created_after, None, max_events_to_fetch)
 
     if events:
         add_time_to_events(events)

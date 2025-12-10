@@ -798,7 +798,7 @@ def test_fetch_events_with_pagination_single_page(mocker, client_non_mtls):
 
     mocker.patch.object(client_non_mtls, "get_audit_log_events", return_value=(mock_events, None))
 
-    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 10)
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", None, 10)
 
     assert len(events) == 3
     assert events[0]["uuid"] == "event1"
@@ -815,7 +815,7 @@ def test_fetch_events_with_pagination_multiple_pages(mocker, client_non_mtls):
         side_effect=[(page1, "handle1"), (page2, None)],
     )
 
-    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 10)
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", None, 10)
 
     assert len(events) == 10
     assert client_non_mtls.get_audit_log_events.call_count == 2
@@ -832,7 +832,7 @@ def test_fetch_events_with_pagination_stops_at_max(mocker, client_non_mtls):
         side_effect=[(page1, "handle1"), (page2, None)],
     )
 
-    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 8)
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", None, 8)
 
     # Should get all 8 events (5 from page1 + 3 from page2)
     assert len(events) == 8
@@ -842,7 +842,7 @@ def test_fetch_events_with_pagination_empty_page(mocker, client_non_mtls):
     """Tests fetch_events_with_pagination handles empty page."""
     mocker.patch.object(client_non_mtls, "get_audit_log_events", return_value=([], None))
 
-    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 10)
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", None, 10)
 
     assert len(events) == 0
 
@@ -859,7 +859,7 @@ def test_fetch_events_with_pagination_created_before_parameter(mocker, client_no
     mock_events = [{"uuid": "event1", "time": "2024-01-01T00:00:00Z"}]
     mock_get_events = mocker.patch.object(client_non_mtls, "get_audit_log_events", return_value=(mock_events, None))
 
-    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 10, created_before=created_before)
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", created_before, 10)
 
     assert len(events) == 1
     call_args = mock_get_events.call_args
@@ -949,7 +949,7 @@ def test_fetch_events_with_pagination_stopping_conditions(mocker, client_non_mtl
 
     mocker.patch.object(client_non_mtls, "get_audit_log_events", side_effect=side_effect_data)
 
-    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 100)
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", None, 100)
 
     assert len(events) == expected_count
     assert client_non_mtls.get_audit_log_events.call_count == expected_calls
@@ -967,7 +967,7 @@ def test_fetch_events_with_pagination_exact_limit_reached(mocker, client_non_mtl
     )
 
     # Request exactly 10 events
-    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 10)
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", None, 10)
 
     # Should get exactly 10 events and stop (not fetch next page)
     assert len(events) == 10
@@ -988,7 +988,7 @@ def test_fetch_events_with_pagination_discards_newer_events(mocker, client_non_m
     )
 
     # Request only 12 events (should discard 3 newest)
-    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 12)
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", None, 12)
 
     # Should get exactly 12 events (oldest ones)
     assert len(events) == 12
@@ -1153,7 +1153,7 @@ def test_get_events_command_success(mocker, client_non_mtls):
 
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
 
-    args = {"from_time": "3 days ago", "limit": "10", "should_push_events": "false"}
+    args = {"start_time": "3 days ago", "limit": "10", "should_push_events": "false"}
     result = get_events_command(client_non_mtls, args)
 
     assert isinstance(result, CommandResults)
@@ -1172,7 +1172,7 @@ def test_get_events_command_with_push_events(mocker, client_non_mtls):
     mocker.patch.object(SAPBTP, "add_time_to_events")
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
-    args = {"from_time": "3 days ago", "limit": "10", "should_push_events": "true"}
+    args = {"start_time": "3 days ago", "limit": "10", "should_push_events": "true"}
     result = get_events_command(client_non_mtls, args)
 
     assert isinstance(result, str)
@@ -1197,7 +1197,7 @@ def test_get_events_command_with_end_time(mocker, client_non_mtls):
     """Tests get_events_command handles end_time parameter."""
     mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
 
-    args = {"from_time": "1 hour ago", "end_time": "now", "should_push_events": "false"}
+    args = {"start_time": "1 hour ago", "end_time": "now", "should_push_events": "false"}
     result = get_events_command(client_non_mtls, args)
 
     assert isinstance(result, CommandResults)

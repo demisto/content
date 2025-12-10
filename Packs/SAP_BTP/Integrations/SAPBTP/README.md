@@ -123,7 +123,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### sap-btp-get-events
 
 ***
-Retrieve audit log events from SAP BTP manually. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and API request limitation exceeding.
+Retrieve audit log events from SAP BTP manually. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
 
 **Note**: This command is not supported in XSOAR.
 
@@ -135,7 +135,7 @@ Retrieve audit log events from SAP BTP manually. This command is used for develo
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from_time | Time to fetch events from. Supports natural language (e.g., "1 minute ago", "3 days", "2 hours", "1 month") or ISO 8601 format (e.g., "2024-01-01T00:00:00Z"). Default is "1 minute ago". | Optional |
+| start_time | Time to fetch events from. Supports natural language (e.g., "1 minute ago", "3 days", "2 hours", "1 month") or ISO 8601 format (e.g., "2024-01-01T00:00:00Z"). Default is "1 minute ago". | Optional |
 | end_time | Time to fetch events until. Supports natural language (e.g., "now", "1 hour ago") or ISO 8601 format (e.g., "2024-01-01T00:00:00Z"). If not specified, fetches until now. | Optional |
 | limit | Maximum number of events to retrieve. Default is 5000. | Optional |
 | should_push_events | Whether to push the collected events to your Cortex environment. Set to true to send events for ingestion (use with caution to avoid duplicates), false to only return them in the War Room. Default is false. | Optional |
