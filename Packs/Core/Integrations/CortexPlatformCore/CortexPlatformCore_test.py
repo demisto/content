@@ -6,8 +6,18 @@ from unittest.mock import call
 import demistomock as demisto
 
 from unittest.mock import Mock, patch
-from CortexPlatformCore import get_issue_recommendations_command, Client
-
+import unittest
+from CortexPlatformCore import (
+    get_appsec_suggestion,
+    populate_playbook_and_quick_action_suggestions,
+    map_qa_name_to_data,
+    get_issue_recommendations_command,
+    map_pb_id_to_data,
+    create_issue_recommendations_readable_output,
+    Client,
+    CommandResults,
+    DemistoException,
+)
 
 MAX_GET_INCIDENTS_LIMIT = 100
 
@@ -377,80 +387,14 @@ def test_get_cases_command_case_id_as_int(mocker: MockerFixture):
     from CortexPlatformCore import get_cases_command
 
     client = mocker.Mock()
-    client.get_incidents.return_value = [{"case_id": "1"}]
+    client.get_webapp_data.return_value = {"reply": {"DATA": [{"CASE_ID": 1}]}}  # Changed to int
+    client.map_case_format.return_value = [{"case_id": "1"}]  # Mapped to string
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
     args = {"case_id_list": 1}
     result = get_cases_command(client, args)
-    assert result.outputs == [{"case_id": "1"}]
-    client.get_incidents.assert_called_once()
-    assert result.readable_output.startswith("table")
-
-
-def test_get_cases_command_limit_enforced(mocker: MockerFixture):
-    """
-    Given:
-        - limit greater than MAX_GET_INCIDENTS_LIMIT
-    When:
-        - Calling get_cases_command
-    Then:
-        - Limit is set to MAX_GET_INCIDENTS_LIMIT
-        - client.get_incidents is called with limit=MAX_GET_INCIDENTS_LIMIT
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    client.get_incidents.return_value = [{"case_id": str(i)} for i in range(MAX_GET_INCIDENTS_LIMIT + 1)]
-    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
-    args = {"limit": MAX_GET_INCIDENTS_LIMIT + 10, "case_id_list": "1"}
-    result = get_cases_command(client, args)
-    assert len(result.outputs) == MAX_GET_INCIDENTS_LIMIT + 1
-    client.get_incidents.assert_called_with(
-        incident_id_list=["1"],
-        lte_modification_time=None,
-        gte_modification_time=None,
-        lte_creation_time=None,
-        gte_creation_time=None,
-        sort_by_creation_time=None,
-        sort_by_modification_time=None,
-        page_number=0,
-        limit=MAX_GET_INCIDENTS_LIMIT,
-        starred=None,
-        starred_incidents_fetch_window=mocker.ANY,
-    )
-
-
-def test_get_cases_command_no_filters_error(mocker: MockerFixture):
-    """
-    Given:
-        - No filters provided
-    When:
-        - Calling get_cases_command
-    Then:
-        - ValueError is raised
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    args = {}
-    with pytest.raises(ValueError, match="Specify a query for the incidents"):
-        get_cases_command(client, args)
-
-
-def test_get_cases_command_conflicting_time_filters(mocker: MockerFixture):
-    """
-    Given:
-        - since_modification_time and gte_modification_time both set
-    When:
-        - Calling get_cases_command
-    Then:
-        - ValueError is raised
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    args = {"since_modification_time": "1 day", "gte_modification_time": "2022-01-01"}
-    with pytest.raises(ValueError):
-        get_cases_command(client, args)
+    assert result[1].outputs[0].get("case_id") == "1"
+    assert result[1].readable_output.startswith("table")
 
 
 def test_replace_substring_string():
@@ -2723,289 +2667,6 @@ def test_update_issue_command_only_issue_id(mocker):
     mock_update_issue.assert_not_called()
 
 
-def test_get_issue_recommendations_command(mocker):
-    """
-    Given:
-        - Valid issue_id for get_issue_recommendations command
-    When:
-        - Running get_issue_recommendations command
-    Then:
-        - Ensure the command returns the expected results with issue data and playbook suggestions
-    """
-    from CortexPlatformCore import get_issue_recommendations_command, Client
-
-    # Mock the webapp API response
-    mock_webapp_response = {
-        "reply": {
-            "DATA": [
-                {
-                    "internal_id": "issue_123",
-                    "alert_name": "Critical Security Vulnerability",
-                    "severity": "HIGH",
-                    "alert_description": "SQL injection vulnerability detected",
-                    "remediation": "Update to latest version and apply security patches",
-                }
-            ]
-        }
-    }
-
-    # Mock the playbook suggestions response
-    mock_playbook_response = {
-        "reply": [{"playbook_name": "Security Incident Response", "playbook_id": "pb_001", "confidence": 0.95}]
-    }
-
-    client = Client(base_url="https://test.com", headers={})
-    mocker.patch.object(client, "get_webapp_data", return_value=mock_webapp_response)
-    mocker.patch.object(client, "get_playbook_suggestion_by_issue", return_value=mock_playbook_response)
-
-    args = {"issue_id": "issue_123"}
-
-    result = get_issue_recommendations_command(client, args)
-
-    # Assertions
-    assert result.outputs_prefix == "Core.IssueRecommendations"
-    assert result.outputs_key_field == "issue_id"
-    assert result.outputs["issue_id"] == "issue_123"
-    assert result.outputs["issue_name"] == "Critical Security Vulnerability"
-    assert result.outputs["severity"] == "HIGH"
-    assert result.outputs["remediation"] == "Update to latest version and apply security patches"
-    assert result.outputs["playbook_suggestions"] == mock_playbook_response["reply"]
-    assert "Issue Recommendations for issue_123" in result.readable_output
-    assert "Playbook Suggestions" in result.readable_output
-
-
-def test_get_issue_recommendations_command_no_playbook_suggestions(mocker):
-    """
-    Given:
-        - Valid issue_id with no playbook suggestions available
-    When:
-        - Running get_issue_recommendations command
-    Then:
-        - Ensure the command returns recommendations without playbook suggestions section
-    """
-    from CortexPlatformCore import get_issue_recommendations_command, Client
-
-    # Mock the webapp API response
-    mock_webapp_response = {
-        "reply": {
-            "DATA": [
-                {
-                    "internal_id": "issue_456",
-                    "alert_name": "Configuration Issue",
-                    "severity": "MEDIUM",
-                    "alert_description": "Misconfigured firewall rule",
-                    "remediation": "Review and update firewall configuration",
-                }
-            ]
-        }
-    }
-
-    # Mock empty playbook suggestions
-    mock_playbook_response = {"reply": []}
-
-    client = Client(base_url="https://test.com", headers={})
-    mocker.patch.object(client, "get_webapp_data", return_value=mock_webapp_response)
-    mocker.patch.object(client, "get_playbook_suggestion_by_issue", return_value=mock_playbook_response)
-
-    args = {"issue_id": "issue_456"}
-
-    result = get_issue_recommendations_command(client, args)
-
-    assert result.outputs["issue_id"] == "issue_456"
-    assert result.outputs["playbook_suggestions"] == []
-    assert "Issue Recommendations for issue_456" in result.readable_output
-
-
-def test_get_issue_recommendations_command_api_calls(mocker):
-    """
-    Given:
-        - Valid issue_id for get_issue_recommendations command
-    When:
-        - Running get_issue_recommendations command
-    Then:
-        - Ensure the correct API calls are made with proper parameters
-    """
-    from CortexPlatformCore import get_issue_recommendations_command, Client
-
-    mock_webapp_response = {
-        "reply": {
-            "DATA": [
-                {
-                    "internal_id": "issue_789",
-                    "alert_name": "Test Issue",
-                    "severity": "LOW",
-                    "alert_description": "Test description",
-                    "remediation": "Test remediation",
-                }
-            ]
-        }
-    }
-
-    mock_playbook_response = {"reply": []}
-
-    client = Client(base_url="https://test.com", headers={})
-    webapp_mock = mocker.patch.object(client, "get_webapp_data", return_value=mock_webapp_response)
-    playbook_mock = mocker.patch.object(client, "get_playbook_suggestion_by_issue", return_value=mock_playbook_response)
-
-    args = {"issue_id": "issue_789"}
-
-    get_issue_recommendations_command(client, args)
-
-    # Verify API calls were made
-    webapp_mock.assert_called_once()
-    playbook_mock.assert_called_once_with("issue_789")
-
-    # Verify the webapp call was made with correct request data
-    call_args = webapp_mock.call_args[0][0]
-    assert call_args["table_name"] == "ALERTS_VIEW_TABLE"
-    assert call_args["type"] == "grid"
-    assert "filter_data" in call_args
-
-
-class TestGetIssueRecommendationsCommand:
-    """Test cases for the AppSec fix suggestion logic in get_issue_recommendations_command"""
-
-    def setup_method(self):
-        """Setup method to initialize common test data"""
-        self.mock_client = Mock(spec=Client)
-        self.issue_id = "test_issue_123"
-        self.base_args = {"issue_id": self.issue_id}
-
-        self.base_issue = {
-            "internal_id": self.issue_id,
-            "alert_name": "Test Security Issue",
-            "severity": "HIGH",
-            "alert_description": "Test description",
-            "remediation": "Base remediation steps",
-        }
-
-        self.base_webapp_response = {"reply": {"DATA": [self.base_issue]}}
-        self.base_playbook_response = {"reply": {"suggested_playbooks": ["Playbook1", "Playbook2"]}}
-
-    @patch("CortexPlatformCore.build_webapp_request_data")
-    def test_appsec_issue_with_fix_suggestion(self, mock_build_request):
-        """Test AppSec issue with successful fix suggestion retrieval"""
-        appsec_issue = self.base_issue.copy()
-        appsec_issue.update({"alert_source": "CAS_CVE_SCANNER", "extended_fields": {"action": "Manual fix instructions"}})
-
-        webapp_response = {"reply": {"DATA": [appsec_issue]}}
-
-        fix_suggestion = {"existingCodeBlock": "vulnerable_code_here()", "suggestedCodeBlock": "secure_code_here()"}
-
-        mock_build_request.return_value = {"mock": "request_data"}
-        self.mock_client.get_webapp_data.return_value = webapp_response
-        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
-        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
-
-        result = get_issue_recommendations_command(self.mock_client, self.base_args)
-
-        self.mock_client.get_appsec_suggested_fix.assert_called_once_with(self.issue_id)
-
-        expected_recommendation = {
-            "issue_id": self.issue_id,
-            "issue_name": "Test Security Issue",
-            "severity": "HIGH",
-            "description": "Test description",
-            "remediation": "Manual fix instructions",  # Should use manual_fix
-            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
-            "existing_code_block": "vulnerable_code_here()",
-            "suggested_code_block": "secure_code_here()",
-        }
-
-        assert result.outputs == expected_recommendation
-        assert "Existing Code Block" in result.readable_output
-        assert "Suggested Code Block" in result.readable_output
-
-    @patch("CortexPlatformCore.build_webapp_request_data")
-    def test_appsec_issue_without_manual_fix(self, mock_build_request):
-        """Test AppSec issue without manual fix, should use base remediation"""
-        appsec_issue = self.base_issue.copy()
-        appsec_issue.update(
-            {
-                "alert_source": "CAS_IAC_SCANNER",
-                "extended_fields": {},  # No manual fix
-            }
-        )
-
-        webapp_response = {"reply": {"DATA": [appsec_issue]}}
-
-        fix_suggestion = {"existingCodeBlock": "terraform_issue_here", "suggestedCodeBlock": "terraform_fix_here"}
-
-        mock_build_request.return_value = {"mock": "request_data"}
-        self.mock_client.get_webapp_data.return_value = webapp_response
-        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
-        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
-
-        result = get_issue_recommendations_command(self.mock_client, self.base_args)
-
-        expected_recommendation = {
-            "issue_id": self.issue_id,
-            "issue_name": "Test Security Issue",
-            "severity": "HIGH",
-            "description": "Test description",
-            "remediation": "Base remediation steps",  # Should use base remediation
-            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
-            "existing_code_block": "terraform_issue_here",
-            "suggested_code_block": "terraform_fix_here",
-        }
-
-        assert result.outputs == expected_recommendation
-
-    @patch("CortexPlatformCore.build_webapp_request_data")
-    def test_appsec_issue_no_fix_suggestion(self, mock_build_request):
-        """Test AppSec issue when fix suggestion API returns None"""
-        appsec_issue = self.base_issue.copy()
-        appsec_issue.update({"alert_source": "CAS_SECRET_SCANNER", "extended_fields": {"action": "Manual secret remediation"}})
-
-        webapp_response = {"reply": {"DATA": [appsec_issue]}}
-
-        mock_build_request.return_value = {"mock": "request_data"}
-        self.mock_client.get_webapp_data.return_value = webapp_response
-        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
-        self.mock_client.get_appsec_suggested_fix.return_value = None  # No fix suggestion
-        result = get_issue_recommendations_command(self.mock_client, self.base_args)
-
-        self.mock_client.get_appsec_suggested_fix.assert_called_once_with(self.issue_id)
-
-        expected_recommendation = {
-            "issue_id": self.issue_id,
-            "issue_name": "Test Security Issue",
-            "severity": "HIGH",
-            "description": "Test description",
-            "remediation": "Manual secret remediation",
-            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
-        }
-
-        assert result.outputs == expected_recommendation
-        assert "Existing Code Block" not in result.outputs
-        assert "Suggested Code Block" not in result.outputs
-
-    @patch("CortexPlatformCore.build_webapp_request_data")
-    def test_appsec_sources_coverage(self, mock_build_request):
-        """Test all AppSec sources are handled correctly"""
-        appsec_sources = ["CAS_CVE_SCANNER", "CAS_IAC_SCANNER", "CAS_SECRET_SCANNER"]
-
-        for source in appsec_sources:
-            appsec_issue = self.base_issue.copy()
-            appsec_issue["alert_source"] = source
-
-            webapp_response = {"reply": {"DATA": [appsec_issue]}}
-
-            fix_suggestion = {"existingCodeBlock": f"issue_in_{source}", "suggestedCodeBlock": f"fix_for_{source}"}
-
-            mock_build_request.return_value = {"mock": "request_data"}
-            self.mock_client.get_webapp_data.return_value = webapp_response
-            self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
-            self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
-
-            result = get_issue_recommendations_command(self.mock_client, self.base_args)
-
-            assert result.outputs["existing_code_block"] == f"issue_in_{source}"
-            assert result.outputs["suggested_code_block"] == f"fix_for_{source}"
-
-            self.mock_client.reset_mock()
-
-
 def test_enable_scanners_command_single_repository(mocker: MockerFixture):
     """
     Given:
@@ -4840,3 +4501,1601 @@ def test_create_appsec_issues_filter_and_tables_no_matching_table():
 
     with pytest.raises(DemistoException, match="No matching issue type found for the given filter combination"):
         create_appsec_issues_filter_and_tables(args)
+
+
+@pytest.mark.parametrize("input_data", ["not a list", [], None])
+def test_map_case_format_invalid_input(input_data):
+    """
+    Given:
+        Invalid input data (not a list, empty list, or None).
+    When:
+        The map_case_format function is called.
+    Then:
+        An empty dictionary should be returned.
+    """
+    from CortexPlatformCore import map_case_format
+
+    result = map_case_format(input_data)
+    assert result == {}
+
+
+def test_map_case_format_complete_mapping():
+    """
+    Given:
+        Valid case data in raw format.
+    When:
+        The map_case_format function is called.
+    Then:
+        The case data should be correctly mapped to the expected format.
+    """
+    from CortexPlatformCore import map_case_format
+
+    case_data = [load_test_data("./TestData/case_raw_format.json")]
+    result = sorted(map_case_format(case_data))
+    expected = sorted([load_test_data("./TestData/case_expected_format.json")])
+
+    assert result == expected
+
+
+@pytest.mark.parametrize("case_extra_data", [{}, None])
+def test_extract_ids_empty_case_extra_data(case_extra_data):
+    """
+    Given:
+        Empty or None case extra data.
+    When:
+        The extract_ids function is called.
+    Then:
+        An empty list should be returned.
+    """
+    from CortexPlatformCore import extract_ids
+
+    result = extract_ids(case_extra_data)
+    assert result == []
+
+
+def test_extract_ids_multiple_valid_issues():
+    """
+    Given:
+        Case extra data containing multiple valid issues with issue_ids.
+    When:
+        The extract_ids function is called.
+    Then:
+        A list containing all issue_ids should be returned.
+    """
+
+    from CortexPlatformCore import extract_ids
+
+    case_extra_data: dict = {
+        "issues": {
+            "data": [
+                {"issue_id": "12345", "title": "Test Issue 1"},
+                {"issue_id": "67890", "title": "Test Issue 2"},
+                {"issue_id": "11111", "title": "Test Issue 3"},
+            ]
+        }
+    }
+    result = extract_ids(case_extra_data)
+    assert result == ["12345", "67890", "11111"]
+
+
+def test_get_case_extra_data_with_all_fields_present(mocker):
+    """
+    Given:
+        A mock client and case data with all possible fields present.
+    When:
+        The get_case_extra_data function is called.
+    Then:
+        All fields should be correctly extracted and returned in the result.
+    """
+    from CortexPlatformCore import get_case_extra_data
+
+    mock_client = mocker.Mock()
+    mock_client._base_url = "original_url"
+
+    mock_case_data = {
+        "case": {
+            "notes": "Test notes",
+            "xdr_url": "https://example.com/xdr",
+            "starred_manually": True,
+            "manual_description": "Case manual description",
+            "detection_time": "2023-01-01T00:00:00Z",
+        },
+        "manual_description": "Global manual description",
+        "network_artifacts": [{"id": "net1", "type": "ip"}],
+        "file_artifacts": [{"id": "file1", "hash": "abc123"}],
+    }
+
+    mock_command_result = mocker.Mock()
+    mock_command_result.outputs = mock_case_data
+
+    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
+    mocker.patch("CortexPlatformCore.extract_ids", return_value=["issue1", "issue2"])
+
+    args = {"case_id": "123"}
+    result = get_case_extra_data(mock_client, args)
+
+    assert mock_client._base_url == "api/webapp/public_api/v1"
+    assert result["issue_ids"] == ["issue1", "issue2"]
+    assert result["network_artifacts"] == [{"id": "net1", "type": "ip"}]
+    assert result["file_artifacts"] == [{"id": "file1", "hash": "abc123"}]
+    assert result["notes"] == "Test notes"
+    assert result["xdr_url"] == "https://example.com/xdr"
+    assert result["starred_manually"] is True
+    assert result["manual_description"] == "Global manual description"
+    assert result["detection_time"] == "2023-01-01T00:00:00Z"
+
+
+def test_get_case_extra_data_client_base_url_modification(mocker):
+    """
+    Given:
+        A mock client with an original base URL.
+    When:
+        The get_case_extra_data function is called.
+    Then:
+        The client's base URL should be modified to "api/webapp/public_api/v1".
+    """
+    from CortexPlatformCore import get_case_extra_data
+
+    mock_client = mocker.Mock()
+    original_url = "https://original.api.endpoint"
+    mock_client._base_url = original_url
+
+    mock_command_result = mocker.Mock()
+    mock_command_result.outputs = {}
+
+    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
+    mocker.patch("CortexPlatformCore.extract_ids", return_value=[])
+
+    args = {"case_id": "url_test"}
+    get_case_extra_data(mock_client, args)
+
+    assert mock_client._base_url == "api/webapp/public_api/v1"
+
+
+def test_add_cases_extra_data_single_case(mocker):
+    """
+    Given:
+        A mock client and a list containing a single case.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        A list with one case containing extra data should be returned and get_case_extra_data should be called once.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+    mock_get_case_extra_data.return_value = {"extra_field": "extra_value"}
+
+    case_data: list[dict] = [{"case_id": "123", "title": "Test Case"}]
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert len(result) == 1
+    assert result[0]["case_id"] == "123"
+    assert result[0]["CaseExtraData"] == {"extra_field": "extra_value"}
+    mock_get_case_extra_data.assert_called_once_with(mock_client, {"case_id": "123", "limit": 1000})
+
+
+def test_add_cases_extra_data_multiple_cases(mocker):
+    """
+    Given:
+        A mock client and a list containing multiple cases.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        A list with all cases containing their respective extra data should be
+        returned and get_case_extra_data should be called for each case.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+    mock_get_case_extra_data.side_effect = [{"extra_field1": "value1"}, {"extra_field2": "value2"}, {"extra_field3": "value3"}]
+
+    case_data = [
+        {"case_id": "123", "title": "Case 1"},
+        {"case_id": "456", "title": "Case 2"},
+        {"case_id": "789", "title": "Case 3"},
+    ]
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert len(result) == 3
+    assert result[0]["CaseExtraData"] == {"extra_field1": "value1"}
+    assert result[1]["CaseExtraData"] == {"extra_field2": "value2"}
+    assert result[2]["CaseExtraData"] == {"extra_field3": "value3"}
+    assert mock_get_case_extra_data.call_count == 3
+
+
+def test_add_cases_extra_data_empty_list(mocker):
+    """
+    Given:
+        A mock client and an empty case list.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        An empty list should be returned and get_case_extra_data should not be called.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+
+    case_data = []
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert result == []
+    mock_get_case_extra_data.assert_not_called()
+
+    def test_determine_assignee_filter_field_none(self):
+        from CortexPlatformCore import determine_assignee_filter_field, CaseManagement
+
+        result = determine_assignee_filter_field([])
+        assert result == CaseManagement.FIELDS["assignee"]
+
+    def test_determine_assignee_filter_field_with_email(self):
+        from CortexPlatformCore import determine_assignee_filter_field, CaseManagement
+
+        result = determine_assignee_filter_field(["user@example.com"])
+        assert result == CaseManagement.FIELDS["assignee_email"]
+
+    def test_determine_assignee_filter_field_with_pretty_name(self):
+        from CortexPlatformCore import determine_assignee_filter_field, CaseManagement
+
+        result = determine_assignee_filter_field(["John Doe"])
+        assert result == CaseManagement.FIELDS["assignee"]
+
+
+@pytest.mark.parametrize(
+    "custom_fields_json,expected",
+    [
+        (
+            '[{"field1": "value1"}, {"field2": "value2"}, {"field3": "value3"}]',
+            {"field1": "value1", "field2": "value2", "field3": "value3"},
+        ),
+        (
+            '[{"field-1": "value1", "field_2": "value2", "field@3": "value3"}]',
+            {"field1": "value1", "field2": "value2", "field3": "value3"},
+        ),
+        ('[{"field-1": "first"}, {"field_1": "second"}]', {"field1": "first"}),
+        ("[]", {}),
+        ('[{"---": "value1", "@#$": "value2"}]', {}),
+        ('[{"123": "value1", "456field": "value2"}]', {"123": "value1", "456field": "value2"}),
+        ('[{"": "value1", "field2": "value2"}]', {"field2": "value2"}),
+    ],
+)
+def test_parse_custom_fields(custom_fields_json, expected):
+    """
+    Given:
+        A JSON string containing custom fields and expected parsed result.
+    When:
+        The parse_custom_fields function is called with the JSON string.
+    Then:
+        The function should return a dictionary with normalized field names matching the expected result.
+    """
+    from CortexPlatformCore import parse_custom_fields
+
+    result = parse_custom_fields(custom_fields_json)
+    assert result == expected
+
+
+def test_process_case_response_removes_specified_fields():
+    """
+    Given:
+        A case response containing fields that should be removed (layoutId, layoutRuleName, sourcesList,
+        previous_score, previous_score_source).
+    When:
+        The process_case_response function is called.
+    Then:
+        The specified fields should be removed from the response while preserving other fields.
+    """
+    from CortexPlatformCore import process_case_response
+
+    resp = {
+        "reply": {
+            "layoutId": "layout123",
+            "layoutRuleName": "rule456",
+            "sourcesList": ["source1", "source2"],
+            "caseId": "case789",
+            "status": "open",
+            "score": {"current_score": 85, "previous_score": 70, "previous_score_source": "manual", "max_score": 100},
+        }
+    }
+    result = process_case_response(resp)
+    assert "layoutId" not in result
+    assert "layoutRuleName" not in result
+    assert "sourcesList" not in result
+    assert result["caseId"] == "case789"
+    assert result["status"] == "open"
+    assert "previous_score" not in result["score"]
+    assert "previous_score_source" not in result["score"]
+    assert result["score"]["current_score"] == 85
+    assert result["score"]["max_score"] == 100
+
+
+def test_process_case_response_renames_incident_domain_to_case_domain():
+    """
+    Given:
+        A case response containing an incidentDomain field.
+    When:
+        The process_case_response function is called.
+    Then:
+        The incidentDomain field should be renamed to caseDomain and the original field should be removed.
+    """
+    from CortexPlatformCore import process_case_response
+
+    resp = {"reply": {"incidentDomain": "security", "caseId": "case101"}}
+    result = process_case_response(resp)
+    assert "incidentDomain" not in result
+    assert result["caseDomain"] == "security"
+    assert result["caseId"] == "case101"
+
+
+def test_run_playbook_command_empty_response_success():
+    """
+    Given:
+        A mock client that returns an empty response and valid playbook arguments.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The function should return a successful result with appropriate readable output.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "executed successfully" in result.readable_output
+    assert "test_playbook_123" in result.readable_output
+    assert "issue_1, issue_2" in result.readable_output
+
+
+def test_run_playbook_command_multiple_errors_response():
+    """
+    Given:
+        A mock client that returns error responses for multiple issues.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        A ValueError should be raised containing all error messages for the issues.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {
+        "issue_1": "Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert",
+        "issue_2": "Skipping execution of playbook multi_fail_playbook for alert issue_2, failed creating investigation playbook",
+        "issue_3": "Skipping execution of playbook multi_fail_playbook for alert issue_3, failed creating investigation playbook",
+    }
+
+    args = {"playbook_id": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
+
+    with pytest.raises(ValueError) as exc_info:
+        run_playbook_command(mock_client, args)
+
+    error_message = str(exc_info.value)
+    assert "multi_fail_playbook" in error_message
+    assert (
+        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert"
+        in error_message
+    )
+    assert (
+        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for alert issue_2, "
+        "failed creating investigation playbook" in error_message
+    )
+    assert (
+        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for alert issue_3, "
+        "failed creating investigation playbook" in error_message
+    )
+
+
+def test_run_playbook_command_string_issue_ids():
+    """
+    Given:
+        A mock client and arguments with string issue IDs that need to be converted to a list.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The function should successfully process the string issue IDs and return the expected output.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "issue_1, issue_2, issue_3" in result.readable_output
+    mock_client.run_playbook.assert_called_once()
+
+
+def test_run_playbook_command_client_call_parameters():
+    """
+    Given:
+        A mock client and valid playbook arguments.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The client.run_playbook method should be called with the correct parameters.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
+
+    run_playbook_command(mock_client, args)
+
+    mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
+
+
+def test_update_issue_command_link_cases_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with issue_id and a list of case_ids to link.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        client.link_issue_to_cases is called once with the correct issue_id and case_ids,
+        and client.update_issue is NOT called (since no other update args are provided).
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases", return_value={"success": True})
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "link_cases": "901,902"}
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_link_issue_to_cases.assert_called_once_with(12345, [901, 902])
+    mock_unlink_issue_from_cases.assert_not_called()
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_unlink_cases_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with issue_id and a list of case_ids to unlink.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        client.unlink_issue_from_cases is called once with the correct issue_id and case_ids,
+        and client.update_issue is NOT called.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases")
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases", return_value={"success": True})
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "unlink_cases": "903,904"}
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_unlink_issue_from_cases.assert_called_once_with(12345, [903, 904])
+    mock_link_issue_to_cases.assert_not_called()
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_link_and_unlink_cases_mixed_with_update_fields(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments including link_cases, unlink_cases, and other update fields.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        All three methods (link, unlink, update_issue) are called once with the correct parameters.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases", return_value={"success": True})
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases", return_value={"success": True})
+    mocker.patch.object(demisto, "debug")
+
+    args = {
+        "id": "12345",
+        "link_cases": "901",
+        "unlink_cases": "904,905",
+        "name": "Updated Name",
+        "severity": "high",
+    }
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_link_issue_to_cases.assert_called_once_with(12345, [901])
+    mock_unlink_issue_from_cases.assert_called_once_with(12345, [904, 905])
+    mock_update_issue.assert_called_once()
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert update_data["name"] == "Updated Name"
+    assert update_data["severity"] == "SEV_040_HIGH"
+
+
+def test_update_issue_command_only_link_and_unlink_fields(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with only link_cases and unlink_cases (no other fields).
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        client.link_issue_to_cases and client.unlink_issue_from_cases are called,
+        and client.update_issue is NOT called, and the function returns "done".
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases", return_value={"success": True})
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases", return_value={"success": True})
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "link_cases": "901", "unlink_cases": "904"}
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_link_issue_to_cases.assert_called_once_with(12345, [901])
+    mock_unlink_issue_from_cases.assert_called_once_with(12345, [904])
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_link_case_ids_arg_to_list(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments where link_cases is a single string of comma-separated IDs.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        The link_cases argument is correctly parsed into a list of integers and passed to the client.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases", return_value={"success": True})
+    mocker.patch.object(client, "unlink_issue_from_cases")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "link_cases": "901, 902,1000"}
+
+    update_issue_command(client, args)
+
+    mock_link_issue_to_cases.assert_called_once_with(12345, [901, 902, 1000])
+
+
+def test_update_issue_command_link_cases_empty_list_no_other_updates(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with empty link_cases and empty unlink_cases, and no other updates.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        DemistoException is raised because no updates are provided.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import DemistoException
+    import pytest
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_link_issue_to_cases = mocker.patch.object(client, "link_issue_to_cases")
+    mock_unlink_issue_from_cases = mocker.patch.object(client, "unlink_issue_from_cases")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "link_cases": "", "unlink_cases": None}
+
+    with pytest.raises(DemistoException, match="Please provide arguments to update the issue."):
+        update_issue_command(client, args)
+
+    mock_link_issue_to_cases.assert_not_called()
+    mock_unlink_issue_from_cases.assert_not_called()
+    mock_update_issue.assert_not_called()
+
+
+class TestGetAppsecSuggestion(unittest.TestCase):
+    def setUp(self):
+        self.mock_client = Mock(spec=Client)
+        self.issue_id = "test-issue-123"
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_appsec_suggestion_with_manual_fix_and_code_blocks(self, mock_demisto):
+        """Test get_appsec_suggestion with manual fix and code blocks"""
+        issue = {
+            "alert_source": "CAS_CVE_SCANNER",  # Valid AppSec source
+            "extended_fields": {"action": "Manual fix required: Update dependency"},
+        }
+        fix_suggestion = {"existingCodeBlock": "old code", "suggestedCodeBlock": "new code"}
+        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+        result = get_appsec_suggestion(self.mock_client, issue, self.issue_id)
+
+        expected = {
+            "remediation": "Manual fix required: Update dependency",
+            "existing_code_block": "old code",
+            "suggested_code_block": "new code",
+        }
+        assert result == expected
+        self.mock_client.get_appsec_suggested_fix.assert_called_once_with(self.issue_id)
+        assert mock_demisto.debug.call_count == 2  # Called twice in the function
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_appsec_suggestion_without_manual_fix(self, mock_demisto):
+        """Test get_appsec_suggestion without manual fix but with code blocks"""
+        issue = {
+            "alert_source": "CAS_SAST_SCANNER",  # Valid AppSec source
+            "extended_fields": {},
+        }
+        fix_suggestion = {"existingCodeBlock": "existing code", "suggestedCodeBlock": "suggested code"}
+        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+        result = get_appsec_suggestion(self.mock_client, issue, self.issue_id)
+
+        expected = {"existing_code_block": "existing code", "suggested_code_block": "suggested code"}
+        assert result == expected
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_appsec_suggestion_empty_fix_suggestion(self, mock_demisto):
+        """Test get_appsec_suggestion with empty fix suggestion"""
+        issue = {
+            "alert_source": "CAS_SECRET_SCANNER",  # Valid AppSec source
+            "extended_fields": {"action": "manual fix"},
+        }
+        self.mock_client.get_appsec_suggested_fix.return_value = None
+
+        result = get_appsec_suggestion(self.mock_client, issue, self.issue_id)
+
+        expected = {"remediation": "manual fix"}
+        assert result == expected
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_appsec_suggestion_no_suggested_code_block(self, mock_demisto):
+        """Test get_appsec_suggestion when suggestedCodeBlock is missing"""
+        issue = {
+            "alert_source": "CAS_IAC_SCANNER",  # Valid AppSec source
+            "extended_fields": {"action": "manual fix"},
+        }
+        fix_suggestion = {"existingCodeBlock": "old code"}  # Missing suggestedCodeBlock
+        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+        result = get_appsec_suggestion(self.mock_client, issue, self.issue_id)
+
+        expected = {"remediation": "manual fix"}
+        assert result == expected
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_appsec_suggestion_missing_existing_code_block(self, mock_demisto):
+        """Test get_appsec_suggestion when existingCodeBlock is missing"""
+        issue = {
+            "alert_source": "CAS_LICENSE_SCANNER",  # Valid AppSec source
+        }
+        fix_suggestion = {"suggestedCodeBlock": "new code"}
+        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+        result = get_appsec_suggestion(self.mock_client, issue, self.issue_id)
+
+        expected = {"existing_code_block": "", "suggested_code_block": "new code"}
+        assert result == expected
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_appsec_suggestion_non_appsec_source(self, mock_demisto):
+        """Test get_appsec_suggestion with non-AppSec source returns empty dict"""
+        issue = {
+            "alert_source": "XDR",  # Non-AppSec source
+            "extended_fields": {"action": "manual fix"},
+        }
+
+        result = get_appsec_suggestion(self.mock_client, issue, self.issue_id)
+
+        expected = {}
+        assert result == expected
+        # Should not call the API for non-AppSec sources
+        self.mock_client.get_appsec_suggested_fix.assert_not_called()
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_appsec_suggestion_missing_alert_source(self, mock_demisto):
+        """Test get_appsec_suggestion when alert_source is missing"""
+        issue = {"extended_fields": {"action": "manual fix"}}
+
+        result = get_appsec_suggestion(self.mock_client, issue, self.issue_id)
+
+        expected = {}
+        assert result == expected
+        # Should not call the API when alert_source is missing
+        self.mock_client.get_appsec_suggested_fix.assert_not_called()
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_appsec_suggestion_invalid_fix_suggestion_type(self, mock_demisto):
+        """Test get_appsec_suggestion when fix_suggestion is not a dict"""
+        issue = {
+            "alert_source": "CAS_OPERATIONAL_RISK_SCANNER",  # Valid AppSec source
+            "extended_fields": {"action": "manual fix"},
+        }
+        self.mock_client.get_appsec_suggested_fix.return_value = "invalid_response"
+
+        result = get_appsec_suggestion(self.mock_client, issue, self.issue_id)
+
+        expected = {"remediation": "manual fix"}
+        assert result == expected
+
+    @patch("CortexPlatformCore.demisto")
+    def test_get_appsec_suggestion_empty_manual_fix_with_code_blocks(self, mock_demisto):
+        """Test get_appsec_suggestion with no manual fix but valid code blocks"""
+        issue = {
+            "alert_source": "CAS_CI_CD_RISK_SCANNER",  # Valid AppSec source
+            "extended_fields": {"action": ""},  # Empty action
+        }
+        fix_suggestion = {"existingCodeBlock": "old code", "suggestedCodeBlock": "new code"}
+        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+        result = get_appsec_suggestion(self.mock_client, issue, self.issue_id)
+
+        expected = {
+            "existing_code_block": "old code",
+            "suggested_code_block": "new code",
+        }
+        assert result == expected
+
+
+class TestPopulatePlaybookAndQuickActionSuggestions(unittest.TestCase):
+    def setUp(self):
+        self.mock_client = Mock(spec=Client)
+        self.issue_id = "test-issue-123"
+        self.pb_id_to_data = {
+            "pb-1": {"name": "Security Playbook", "comment": "Main security playbook"},
+            "pb-2": {"name": "Incident Response", "comment": "IR playbook"},
+        }
+        self.qa_name_to_data = {
+            "isolate_endpoint": {
+                "brand": "CrowdStrike",
+                "category": "endpoint",
+                "description": "Isolate endpoint",
+                "pretty_name": "Isolate Endpoint",
+            }
+        }
+
+    @patch("CortexPlatformCore.demisto")
+    def test_populate_suggestions_with_both_playbook_and_quick_action(self, mock_demisto):
+        """Test with both playbook and quick action suggestions"""
+        response = {
+            "reply": {
+                "playbook_id": "pb-1",
+                "suggestion_rule_id": "rule-123",
+                "quick_action_id": "isolate_endpoint",
+                "quick_action_suggestion_rule_id": "qa-rule-456",
+            }
+        }
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = response
+
+        recommendation = populate_playbook_and_quick_action_suggestions(
+            self.mock_client, self.issue_id, self.pb_id_to_data, self.qa_name_to_data
+        )
+
+        expected_recommendation = {
+            "playbook_suggestions": {
+                "playbook_id": "pb-1",
+                "suggestion_rule_id": "rule-123",
+                "name": "Security Playbook",
+                "comment": "Main security playbook",
+            },
+            "quick_action_suggestions": {
+                "name": "isolate_endpoint",
+                "suggestion_rule_id": "qa-rule-456",
+                "brand": "CrowdStrike",
+                "category": "endpoint",
+                "description": "Isolate endpoint",
+                "pretty_name": "Isolate Endpoint",
+            },
+        }
+
+        assert recommendation == expected_recommendation
+
+    @patch("CortexPlatformCore.demisto")
+    def test_populate_suggestions_empty_response(self, mock_demisto):
+        """Test with empty response"""
+        response = {"reply": {}}
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = response
+
+        recommendation = populate_playbook_and_quick_action_suggestions(
+            self.mock_client, self.issue_id, self.pb_id_to_data, self.qa_name_to_data
+        )
+
+        assert recommendation == {}
+
+    @patch("CortexPlatformCore.demisto")
+    def test_populate_suggestions_only_playbook(self, mock_demisto):
+        """Test with only playbook suggestion"""
+        response = {"reply": {"playbook_id": "pb-2", "suggestion_rule_id": "rule-789"}}
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = response
+
+        recommendation = populate_playbook_and_quick_action_suggestions(
+            self.mock_client, self.issue_id, self.pb_id_to_data, self.qa_name_to_data
+        )
+
+        expected_recommendation = {
+            "playbook_suggestions": {
+                "playbook_id": "pb-2",
+                "suggestion_rule_id": "rule-789",
+                "name": "Incident Response",
+                "comment": "IR playbook",
+            }
+        }
+
+        assert recommendation == expected_recommendation
+
+    @patch("CortexPlatformCore.demisto")
+    def test_populate_suggestions_only_quick_action(self, mock_demisto):
+        """Test with only quick action suggestion"""
+        response = {
+            "reply": {
+                "quick_action_id": "isolate_endpoint",
+                "quick_action_suggestion_rule_id": "qa-rule-456",
+            }
+        }
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = response
+
+        recommendation = populate_playbook_and_quick_action_suggestions(
+            self.mock_client, self.issue_id, self.pb_id_to_data, self.qa_name_to_data
+        )
+
+        expected_recommendation = {
+            "quick_action_suggestions": {
+                "name": "isolate_endpoint",
+                "suggestion_rule_id": "qa-rule-456",
+                "brand": "CrowdStrike",
+                "category": "endpoint",
+                "description": "Isolate endpoint",
+                "pretty_name": "Isolate Endpoint",
+            }
+        }
+
+        assert recommendation == expected_recommendation
+
+    @patch("CortexPlatformCore.demisto")
+    def test_populate_suggestions_playbook_not_in_metadata(self, mock_demisto):
+        """Test with playbook ID not found in metadata"""
+        response = {"reply": {"playbook_id": "pb-unknown", "suggestion_rule_id": "rule-999"}}
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = response
+
+        recommendation = populate_playbook_and_quick_action_suggestions(
+            self.mock_client, self.issue_id, self.pb_id_to_data, self.qa_name_to_data
+        )
+
+        expected_recommendation = {"playbook_suggestions": {"playbook_id": "pb-unknown", "suggestion_rule_id": "rule-999"}}
+
+        assert recommendation == expected_recommendation
+
+    @patch("CortexPlatformCore.demisto")
+    def test_populate_suggestions_quick_action_not_in_metadata(self, mock_demisto):
+        """Test with quick action ID not found in metadata"""
+        response = {
+            "reply": {
+                "quick_action_id": "unknown_action",
+                "quick_action_suggestion_rule_id": "qa-rule-999",
+            }
+        }
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = response
+
+        recommendation = populate_playbook_and_quick_action_suggestions(
+            self.mock_client, self.issue_id, self.pb_id_to_data, self.qa_name_to_data
+        )
+
+        expected_recommendation = {
+            "quick_action_suggestions": {
+                "name": "unknown_action",
+                "suggestion_rule_id": "qa-rule-999",
+            }
+        }
+
+        assert recommendation == expected_recommendation
+
+
+class TestMapQaNameToData(unittest.TestCase):
+    def test_map_qa_name_to_data_success(self):
+        """Test successful mapping of QA metadata"""
+        qas_metadata = [
+            {
+                "brand": "CrowdStrike",
+                "category": "endpoint",
+                "commands": [
+                    {"name": "isolate_endpoint", "description": "Isolate an endpoint", "prettyName": "Isolate Endpoint"},
+                    {"name": "quarantine_file", "description": "Quarantine a file", "prettyName": "Quarantine File"},
+                ],
+            },
+            {
+                "brand": "Splunk",
+                "category": "siem",
+                "commands": [{"name": "search_logs", "description": "Search logs", "prettyName": "Search Logs"}],
+            },
+        ]
+
+        result = map_qa_name_to_data(qas_metadata)
+
+        expected = {
+            "isolate_endpoint": {
+                "brand": "CrowdStrike",
+                "category": "endpoint",
+                "description": "Isolate an endpoint",
+                "pretty_name": "Isolate Endpoint",
+            },
+            "quarantine_file": {
+                "brand": "CrowdStrike",
+                "category": "endpoint",
+                "description": "Quarantine a file",
+                "pretty_name": "Quarantine File",
+            },
+            "search_logs": {"brand": "Splunk", "category": "siem", "description": "Search logs", "pretty_name": "Search Logs"},
+        }
+
+        assert result == expected
+
+    def test_map_qa_name_to_data_empty_metadata(self):
+        """Test with empty metadata"""
+        result = map_qa_name_to_data([])
+        assert result == {}
+
+    def test_map_qa_name_to_data_missing_commands(self):
+        """Test with missing commands field"""
+        qas_metadata = [
+            {
+                "brand": "TestBrand",
+                "category": "test",
+                # Missing commands field
+            }
+        ]
+
+        result = map_qa_name_to_data(qas_metadata)
+        assert result == {}
+
+
+class TestGetIssueRecommendationsCommand:
+    def setup_method(self):
+        self.mock_client = Mock(spec=Client)
+
+    @patch("CortexPlatformCore.demisto")
+    @patch("CortexPlatformCore.get_appsec_suggestion")
+    @patch("CortexPlatformCore.populate_playbook_and_quick_action_suggestions")
+    @patch("CortexPlatformCore.map_qa_name_to_data")
+    @patch("CortexPlatformCore.map_pb_id_to_data")
+    @patch("CortexPlatformCore.argToList")
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    @patch("CortexPlatformCore.create_issue_recommendations_readable_output")
+    def test_get_issue_recommendations_command_success(
+        self,
+        mock_create_readable_output,
+        mock_build_webapp_request_data,
+        mock_filter_builder,
+        mock_arg_to_list,
+        mock_map_pb_id_to_data,
+        mock_map_qa_name_to_data,
+        mock_populate_pb_qa,
+        mock_get_appsec_suggestion,
+        mock_demisto,
+    ):
+        """Test successful execution of get_issue_recommendations_command"""
+        # Setup mocks
+        mock_arg_to_list.return_value = ["issue-1", "issue-2"]
+        mock_filter_builder_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_builder_instance
+        mock_filter_builder_instance.to_dict.return_value = {}
+        mock_build_webapp_request_data.return_value = {}
+
+        issue_data = [
+            {
+                "internal_id": "issue-1",
+                "alert_name": "SQL Injection",
+                "severity": "High",
+                "alert_description": "SQL injection vulnerability",
+                "remediation": "Use parameterized queries",
+                "alert_source": "CAS_SAST_SCANNER",  # Valid AppSec source
+            },
+            {
+                "internal_id": "issue-2",
+                "alert_name": "Malware Detection",
+                "severity": "Critical",
+                "alert_description": "Malware detected",
+                "remediation": "Isolate endpoint",
+                "alert_source": "XDR",
+            },
+        ]
+
+        self.mock_client.get_webapp_data.return_value = {"reply": {"DATA": issue_data}}
+        self.mock_client.get_playbooks_metadata.return_value = []
+        self.mock_client.get_quick_actions_metadata.return_value = []
+        mock_map_pb_id_to_data.return_value = {}
+        mock_map_qa_name_to_data.return_value = {}
+
+        # Updated to return only recommendation dict
+        mock_populate_pb_qa.return_value = {}
+        mock_get_appsec_suggestion.return_value = {"existing_code_block": "old code", "suggested_code_block": "new code"}
+        mock_create_readable_output.return_value = "Mock table output"
+
+        args = {"issue_ids": "issue-1,issue-2"}
+
+        # Execute
+        result = get_issue_recommendations_command(self.mock_client, args)
+
+        # Verify
+        assert isinstance(result, CommandResults)
+        assert result.readable_output == "Mock table output"
+        self.mock_client.get_webapp_data.assert_called_once()
+        self.mock_client.get_playbooks_metadata.assert_called_once()
+        self.mock_client.get_quick_actions_metadata.assert_called_once()
+        assert mock_get_appsec_suggestion.call_count == 2  # Called for both issues
+        mock_create_readable_output.assert_called_once()
+
+    @patch("CortexPlatformCore.argToList")
+    def test_get_issue_recommendations_command_too_many_issues(self, mock_arg_to_list):
+        """Test error when more than 10 issue IDs provided"""
+        mock_arg_to_list.return_value = [f"issue-{i}" for i in range(11)]
+        args = {"issue_ids": ",".join([f"issue-{i}" for i in range(11)])}
+
+        with pytest.raises(DemistoException, match="maximum of 10 issue IDs"):
+            get_issue_recommendations_command(self.mock_client, args)
+
+    @patch("CortexPlatformCore.argToList")
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_get_issue_recommendations_command_no_issues_found(
+        self, mock_build_webapp_request_data, mock_filter_builder, mock_arg_to_list
+    ):
+        """Test error when no issues found"""
+        mock_arg_to_list.return_value = ["nonexistent-issue"]
+        mock_filter_builder_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_builder_instance
+        mock_filter_builder_instance.to_dict.return_value = {}
+        mock_build_webapp_request_data.return_value = {}
+
+        self.mock_client.get_webapp_data.return_value = {"reply": {"DATA": []}}
+
+        args = {"issue_ids": "nonexistent-issue"}
+
+        with pytest.raises(DemistoException, match="No issues found with IDs"):
+            get_issue_recommendations_command(self.mock_client, args)
+
+    @patch("CortexPlatformCore.demisto")
+    @patch("CortexPlatformCore.get_appsec_suggestion")
+    @patch("CortexPlatformCore.populate_playbook_and_quick_action_suggestions")
+    @patch("CortexPlatformCore.map_qa_name_to_data")
+    @patch("CortexPlatformCore.map_pb_id_to_data")
+    @patch("CortexPlatformCore.argToList")
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    @patch("CortexPlatformCore.create_issue_recommendations_readable_output")
+    def test_get_issue_recommendations_command_with_all_headers(
+        self,
+        mock_create_readable_output,
+        mock_build_webapp_request_data,
+        mock_filter_builder,
+        mock_arg_to_list,
+        mock_map_pb_id_to_data,
+        mock_map_qa_name_to_data,
+        mock_populate_pb_qa,
+        mock_get_appsec_suggestion,
+        mock_demisto,
+    ):
+        """Test command with all types of suggestions to verify recommendations content"""
+        # Setup mocks
+        mock_arg_to_list.return_value = ["issue-1"]
+        mock_filter_builder_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_builder_instance
+        mock_filter_builder_instance.to_dict.return_value = {}
+        mock_build_webapp_request_data.return_value = {}
+
+        issue_data = [
+            {
+                "internal_id": "issue-1",
+                "alert_name": "Test Issue",
+                "severity": "High",
+                "alert_description": "Test description",
+                "remediation": "Test remediation",
+                "alert_source": "CAS_CVE_SCANNER",  # Valid AppSec source
+            }
+        ]
+
+        self.mock_client.get_webapp_data.return_value = {"reply": {"DATA": issue_data}}
+        self.mock_client.get_playbooks_metadata.return_value = []
+        self.mock_client.get_quick_actions_metadata.return_value = []
+        mock_map_pb_id_to_data.return_value = {}
+        mock_map_qa_name_to_data.return_value = {}
+
+        # Return both playbook and quick action suggestions
+        mock_populate_pb_qa.return_value = {
+            "playbook_suggestions": {"playbook_id": "pb-1", "name": "Test Playbook"},
+            "quick_action_suggestions": {"name": "qa-1", "pretty_name": "Test QA"},
+        }
+
+        # Return AppSec suggestions
+        mock_get_appsec_suggestion.return_value = {
+            "existing_code_block": "old code",
+            "suggested_code_block": "new code",
+        }
+
+        def capture_recommendations(issue_ids, all_recommendations):
+            # Verify the recommendations contain all expected data
+            assert len(all_recommendations) == 1
+            rec = all_recommendations[0]
+            assert "issue_id" in rec
+            assert "playbook_suggestions" in rec
+            assert "quick_action_suggestions" in rec
+            assert "existing_code_block" in rec
+            assert "suggested_code_block" in rec
+            return "Mock table with all headers"
+
+        mock_create_readable_output.side_effect = capture_recommendations
+
+        args = {"issue_ids": "issue-1"}
+
+        # Execute
+        result = get_issue_recommendations_command(self.mock_client, args)
+
+        # Verify
+        assert isinstance(result, CommandResults)
+        mock_create_readable_output.assert_called_once()
+
+    @patch("CortexPlatformCore.demisto")
+    @patch("CortexPlatformCore.get_appsec_suggestion")
+    @patch("CortexPlatformCore.populate_playbook_and_quick_action_suggestions")
+    @patch("CortexPlatformCore.map_qa_name_to_data")
+    @patch("CortexPlatformCore.map_pb_id_to_data")
+    @patch("CortexPlatformCore.argToList")
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    @patch("CortexPlatformCore.create_issue_recommendations_readable_output")
+    def test_get_issue_recommendations_command_non_appsec_source(
+        self,
+        mock_create_readable_output,
+        mock_build_webapp_request_data,
+        mock_filter_builder,
+        mock_arg_to_list,
+        mock_map_pb_id_to_data,
+        mock_map_qa_name_to_data,
+        mock_populate_pb_qa,
+        mock_get_appsec_suggestion,
+        mock_demisto,
+    ):
+        """Test command with non-AppSec source (should call AppSec suggestions but return empty)"""
+        # Setup mocks
+        mock_arg_to_list.return_value = ["issue-1"]
+        mock_filter_builder_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_builder_instance
+        mock_filter_builder_instance.to_dict.return_value = {}
+        mock_build_webapp_request_data.return_value = {}
+
+        issue_data = [
+            {
+                "internal_id": "issue-1",
+                "alert_name": "Test Issue",
+                "severity": "High",
+                "alert_description": "Test description",
+                "remediation": "Test remediation",
+                "alert_source": "XDR",  # Non-AppSec source
+            }
+        ]
+
+        self.mock_client.get_webapp_data.return_value = {"reply": {"DATA": issue_data}}
+        self.mock_client.get_playbooks_metadata.return_value = []
+        self.mock_client.get_quick_actions_metadata.return_value = []
+        mock_map_pb_id_to_data.return_value = {}
+        mock_map_qa_name_to_data.return_value = {}
+
+        mock_populate_pb_qa.return_value = {}
+        mock_get_appsec_suggestion.return_value = {}  # Empty AppSec suggestions
+        mock_create_readable_output.return_value = "Mock table output"
+
+        args = {"issue_ids": "issue-1"}
+
+        # Execute
+        result = get_issue_recommendations_command(self.mock_client, args)
+
+        # Verify AppSec suggestion was called but returned empty
+        mock_get_appsec_suggestion.assert_called_once()
+        assert isinstance(result, CommandResults)
+
+    @patch("CortexPlatformCore.demisto")
+    @patch("CortexPlatformCore.get_appsec_suggestion")
+    @patch("CortexPlatformCore.populate_playbook_and_quick_action_suggestions")
+    @patch("CortexPlatformCore.map_qa_name_to_data")
+    @patch("CortexPlatformCore.map_pb_id_to_data")
+    @patch("CortexPlatformCore.argToList")
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    @patch("CortexPlatformCore.create_issue_recommendations_readable_output")
+    def test_get_issue_recommendations_command_empty_metadata(
+        self,
+        mock_create_readable_output,
+        mock_build_webapp_request_data,
+        mock_filter_builder,
+        mock_arg_to_list,
+        mock_map_pb_id_to_data,
+        mock_map_qa_name_to_data,
+        mock_populate_pb_qa,
+        mock_get_appsec_suggestion,
+        mock_demisto,
+    ):
+        """Test command when playbooks/quick actions metadata is None"""
+        # Setup mocks
+        mock_arg_to_list.return_value = ["issue-1"]
+        mock_filter_builder_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_builder_instance
+        mock_filter_builder_instance.to_dict.return_value = {}
+        mock_build_webapp_request_data.return_value = {}
+
+        issue_data = [
+            {
+                "internal_id": "issue-1",
+                "alert_name": "Test Issue",
+                "severity": "High",
+                "alert_description": "Test description",
+                "remediation": "Test remediation",
+                "alert_source": "XDR",
+            }
+        ]
+
+        self.mock_client.get_webapp_data.return_value = {"reply": {"DATA": issue_data}}
+
+        # Return None for metadata
+        self.mock_client.get_playbooks_metadata.return_value = None
+        self.mock_client.get_quick_actions_metadata.return_value = None
+        mock_map_pb_id_to_data.return_value = {}
+        mock_map_qa_name_to_data.return_value = {}
+
+        mock_populate_pb_qa.return_value = {}
+        mock_get_appsec_suggestion.return_value = {}
+        mock_create_readable_output.return_value = "Mock table output"
+
+        args = {"issue_ids": "issue-1"}
+
+        # Execute - should not raise exception
+        result = get_issue_recommendations_command(self.mock_client, args)
+
+        # Verify
+        assert isinstance(result, CommandResults)
+        # Verify map functions were called with empty lists due to the `or []` fallback
+        mock_map_pb_id_to_data.assert_called_with([])
+        mock_map_qa_name_to_data.assert_called_with([])
+
+
+class TestMapPbIdToData(unittest.TestCase):
+    @patch("CortexPlatformCore.remove_empty_elements")
+    def test_map_pb_id_to_data_valid_input(self, mock_remove_empty_elements):
+        """Test map_pb_id_to_data with valid playbook metadata"""
+        mock_remove_empty_elements.side_effect = lambda x: x  # Return input unchanged
+
+        pbs_metadata = [
+            {"id": "pb-1", "name": "Security Playbook", "comment": "Main security playbook"},
+            {"id": "pb-2", "name": "Incident Response", "comment": "IR playbook"},
+            {"id": "pb-3", "name": "Investigation", "comment": None},  # Will be filtered out
+        ]
+
+        result = map_pb_id_to_data(pbs_metadata)
+
+        expected = {
+            "pb-1": {"name": "Security Playbook", "comment": "Main security playbook"},
+            "pb-2": {"name": "Incident Response", "comment": "IR playbook"},
+            "pb-3": {"name": "Investigation", "comment": None},
+        }
+
+        assert result == expected
+        assert mock_remove_empty_elements.call_count == 3
+
+    @patch("CortexPlatformCore.remove_empty_elements")
+    def test_map_pb_id_to_data_missing_id(self, mock_remove_empty_elements):
+        """Test map_pb_id_to_data with playbooks missing ID"""
+        mock_remove_empty_elements.side_effect = lambda x: x
+
+        pbs_metadata = [
+            {"id": "pb-1", "name": "Valid Playbook", "comment": "Valid"},
+            {"name": "No ID Playbook", "comment": "Missing ID"},  # No ID
+            {"id": "", "name": "Empty ID", "comment": "Empty ID"},  # Empty ID
+            {"id": None, "name": "None ID", "comment": "None ID"},  # None ID
+        ]
+
+        result = map_pb_id_to_data(pbs_metadata)
+
+        expected = {
+            "pb-1": {"name": "Valid Playbook", "comment": "Valid"},
+        }
+
+        assert result == expected
+        assert mock_remove_empty_elements.call_count == 1
+
+    def test_map_pb_id_to_data_empty_list(self):
+        """Test map_pb_id_to_data with empty list"""
+        result = map_pb_id_to_data([])
+        assert result == {}
+
+    def test_map_pb_id_to_data_none_input(self):
+        """Test map_pb_id_to_data with None input"""
+        result = map_pb_id_to_data(None)
+        assert result == {}
+
+    def test_map_pb_id_to_data_invalid_input_types(self):
+        """Test map_pb_id_to_data with invalid input types"""
+        invalid_inputs = ["string", 123, {"dict": "value"}, True]
+
+        for invalid_input in invalid_inputs:
+            result = map_pb_id_to_data(invalid_input)
+            assert result == {}
+
+    @patch("CortexPlatformCore.remove_empty_elements")
+    def test_map_pb_id_to_data_missing_name_and_comment(self, mock_remove_empty_elements):
+        """Test map_pb_id_to_data with playbooks missing name and comment"""
+        mock_remove_empty_elements.side_effect = lambda x: x
+
+        pbs_metadata = [
+            {"id": "pb-1"},  # Only ID
+            {"id": "pb-2", "name": "Only Name"},  # Only name
+            {"id": "pb-3", "comment": "Only Comment"},  # Only comment
+        ]
+
+        result = map_pb_id_to_data(pbs_metadata)
+
+        expected = {
+            "pb-1": {"name": None, "comment": None},
+            "pb-2": {"name": "Only Name", "comment": None},
+            "pb-3": {"name": None, "comment": "Only Comment"},
+        }
+
+        assert result == expected
+
+    @patch("CortexPlatformCore.remove_empty_elements")
+    def test_map_pb_id_to_data_duplicate_ids(self, mock_remove_empty_elements):
+        """Test map_pb_id_to_data with duplicate IDs (last one wins)"""
+        mock_remove_empty_elements.side_effect = lambda x: x
+
+        pbs_metadata = [
+            {"id": "pb-1", "name": "First Playbook", "comment": "First"},
+            {"id": "pb-1", "name": "Second Playbook", "comment": "Second"},  # Duplicate ID
+        ]
+
+        result = map_pb_id_to_data(pbs_metadata)
+
+        expected = {
+            "pb-1": {"name": "Second Playbook", "comment": "Second"},  # Last one overwrites
+        }
+
+        assert result == expected
+
+
+class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
+    @patch("CortexPlatformCore.tableToMarkdown")
+    @patch("CortexPlatformCore.string_to_table_header")
+    def test_create_readable_output_base_headers_only(self, mock_string_to_table_header, mock_table_to_markdown):
+        """Test with recommendations containing only base fields"""
+        mock_table_to_markdown.return_value = "Mock table output"
+
+        issue_ids = ["issue-1", "issue-2"]
+        all_recommendations = [
+            {
+                "issue_id": "issue-1",
+                "issue_name": "Test Issue 1",
+                "severity": "High",
+                "description": "Test description 1",
+                "remediation": "Test remediation 1",
+            },
+            {
+                "issue_id": "issue-2",
+                "issue_name": "Test Issue 2",
+                "severity": "Medium",
+                "description": "Test description 2",
+                "remediation": "Test remediation 2",
+            },
+        ]
+
+        result = create_issue_recommendations_readable_output(issue_ids, all_recommendations)
+
+        assert result == "Mock table output"
+
+        # Verify tableToMarkdown was called with correct parameters
+        mock_table_to_markdown.assert_called_once()
+        call_args = mock_table_to_markdown.call_args
+
+        assert call_args[0][0] == "Issue Recommendations for ['issue-1', 'issue-2']"
+        assert len(call_args[0][1]) == 2  # readable_recommendations
+        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+
+    @patch("CortexPlatformCore.tableToMarkdown")
+    @patch("CortexPlatformCore.string_to_table_header")
+    def test_create_readable_output_with_all_headers(self, mock_string_to_table_header, mock_table_to_markdown):
+        """Test with recommendations containing all types of suggestions"""
+        mock_table_to_markdown.return_value = "Mock comprehensive table"
+
+        issue_ids = ["issue-1"]
+        all_recommendations = [
+            {
+                "issue_id": "issue-1",
+                "issue_name": "Comprehensive Issue",
+                "severity": "Critical",
+                "description": "Test description",
+                "remediation": "Test remediation",
+                "existing_code_block": "old code",
+                "suggested_code_block": "new code",
+                "playbook_suggestions": {"playbook_id": "pb-1", "name": "Security Playbook", "description": "Full description"},
+                "quick_action_suggestions": {
+                    "name": "isolate_endpoint",
+                    "pretty_name": "Isolate Endpoint",
+                    "brand": "CrowdStrike",
+                },
+            }
+        ]
+
+        result = create_issue_recommendations_readable_output(issue_ids, all_recommendations)
+
+        assert result == "Mock comprehensive table"
+
+        # Verify headers include all types
+        call_args = mock_table_to_markdown.call_args
+        expected_headers = [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "existing_code_block",
+            "suggested_code_block",
+            "playbook_suggestions",
+            "quick_action_suggestions",
+        ]
+        assert call_args[1]["headers"] == expected_headers
+
+        # Verify readable recommendations are simplified
+        readable_recs = call_args[0][1]
+        assert len(readable_recs) == 1
+
+        pb_suggestions = readable_recs[0]["playbook_suggestions"]
+        assert pb_suggestions == {"name": "Security Playbook", "playbook_id": "pb-1"}
+
+        qa_suggestions = readable_recs[0]["quick_action_suggestions"]
+        assert qa_suggestions == {"name": "isolate_endpoint", "pretty_name": "Isolate Endpoint"}
+
+    @patch("CortexPlatformCore.tableToMarkdown")
+    @patch("CortexPlatformCore.string_to_table_header")
+    def test_create_readable_output_partial_appsec_headers(self, mock_string_to_table_header, mock_table_to_markdown):
+        """Test with only some AppSec headers present"""
+        mock_table_to_markdown.return_value = "Mock partial table"
+
+        issue_ids = ["issue-1", "issue-2"]
+        all_recommendations = [
+            {
+                "issue_id": "issue-1",
+                "issue_name": "Issue 1",
+                "existing_code_block": "old code",  # Only existing code block
+            },
+            {
+                "issue_id": "issue-2",
+                "issue_name": "Issue 2",
+                "suggested_code_block": "new code",  # Only suggested code block
+            },
+        ]
+
+        create_issue_recommendations_readable_output(issue_ids, all_recommendations)
+
+        # Should still add both AppSec headers if any AppSec content is found
+        call_args = mock_table_to_markdown.call_args
+        headers = call_args[1]["headers"]
+        assert "existing_code_block" in headers
+        assert "suggested_code_block" in headers
+
+    @patch("CortexPlatformCore.tableToMarkdown")
+    @patch("CortexPlatformCore.string_to_table_header")
+    def test_create_readable_output_empty_recommendations(self, mock_string_to_table_header, mock_table_to_markdown):
+        """Test with empty recommendations list"""
+        mock_table_to_markdown.return_value = "Empty table"
+
+        issue_ids = ["issue-1"]
+        all_recommendations = []
+
+        result = create_issue_recommendations_readable_output(issue_ids, all_recommendations)
+
+        assert result == "Empty table"
+
+        # Should only have base headers
+        call_args = mock_table_to_markdown.call_args
+        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+
+    @patch("CortexPlatformCore.tableToMarkdown")
+    @patch("CortexPlatformCore.string_to_table_header")
+    def test_create_readable_output_non_dict_suggestions(self, mock_string_to_table_header, mock_table_to_markdown):
+        """Test with non-dict suggestion values"""
+        mock_table_to_markdown.return_value = "Mock table"
+
+        issue_ids = ["issue-1"]
+        all_recommendations = [
+            {
+                "issue_id": "issue-1",
+                "playbook_suggestions": "not a dict",  # Should be ignored
+                "quick_action_suggestions": None,  # Should be ignored
+            }
+        ]
+
+        create_issue_recommendations_readable_output(issue_ids, all_recommendations)
+
+        # Should still detect headers but not modify the values
+        call_args = mock_table_to_markdown.call_args
+        headers = call_args[1]["headers"]
+        assert "playbook_suggestions" in headers
+        assert "quick_action_suggestions" in headers
+
+        # Values should remain unchanged
+        readable_recs = call_args[0][1]
+        assert readable_recs[0]["playbook_suggestions"] == "not a dict"
+        assert readable_recs[0]["quick_action_suggestions"] is None
+
+    @patch("CortexPlatformCore.tableToMarkdown")
+    @patch("CortexPlatformCore.string_to_table_header")
+    def test_create_readable_output_missing_suggestion_fields(self, mock_string_to_table_header, mock_table_to_markdown):
+        """Test with suggestion dicts missing expected fields"""
+        mock_table_to_markdown.return_value = "Mock table"
+
+        issue_ids = ["issue-1"]
+        all_recommendations = [
+            {
+                "issue_id": "issue-1",
+                "playbook_suggestions": {"description": "Only description"},  # Missing name and playbook_id
+                "quick_action_suggestions": {"brand": "Only brand"},  # Missing name and pretty_name
+            }
+        ]
+
+        create_issue_recommendations_readable_output(issue_ids, all_recommendations)
+
+        call_args = mock_table_to_markdown.call_args
+        readable_recs = call_args[0][1]
+
+        # Should use empty strings for missing fields
+        assert readable_recs[0]["playbook_suggestions"] == {"name": "", "playbook_id": ""}
+        assert readable_recs[0]["quick_action_suggestions"] == {"name": "", "pretty_name": ""}
+
+    @patch("CortexPlatformCore.tableToMarkdown")
+    @patch("CortexPlatformCore.string_to_table_header")
+    def test_create_readable_output_mixed_recommendations(self, mock_string_to_table_header, mock_table_to_markdown):
+        """Test with mixed recommendations (some with suggestions, some without)"""
+        mock_table_to_markdown.return_value = "Mock mixed table"
+
+        issue_ids = ["issue-1", "issue-2", "issue-3"]
+        all_recommendations = [
+            {
+                "issue_id": "issue-1",
+                "issue_name": "Basic Issue",
+            },
+            {
+                "issue_id": "issue-2",
+                "issue_name": "AppSec Issue",
+                "existing_code_block": "old code",
+            },
+            {
+                "issue_id": "issue-3",
+                "issue_name": "Playbook Issue",
+                "playbook_suggestions": {"playbook_id": "pb-1", "name": "Test PB"},
+            },
+        ]
+
+        create_issue_recommendations_readable_output(issue_ids, all_recommendations)
+
+        # Should include headers for the types that exist
+        call_args = mock_table_to_markdown.call_args
+        headers = call_args[1]["headers"]
+        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+
+        assert all(h in headers for h in base_headers)
+        assert "existing_code_block" in headers
+        assert "suggested_code_block" in headers
+        assert "playbook_suggestions" in headers
