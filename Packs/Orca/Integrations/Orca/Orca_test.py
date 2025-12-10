@@ -3,9 +3,20 @@ from datetime import datetime
 import pytest
 import json
 import requests
-from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents, STEP_FETCH, \
-    set_alert_severity, get_alert_event_log, set_alert_status, verify_alert, API_QUERY_ALERTS_URL, \
-    get_incident_from_alert, get_incidents_from_alerts
+from Orca import (
+    OrcaClient,
+    BaseClient,
+    DEMISTO_OCCURRED_FORMAT,
+    fetch_incidents,
+    STEP_FETCH,
+    set_alert_severity,
+    get_alert_event_log,
+    set_alert_status,
+    verify_alert,
+    API_QUERY_ALERTS_URL,
+    get_incident_from_alert,
+    get_incidents_from_alerts,
+)
 
 from CommonServerPython import DemistoException
 
@@ -44,7 +55,7 @@ mock_alerts_response = {
             "CommentsCount": 0,
             "CreatedAt": "2025-10-13T14:33:27+00:00",
             "Description": "Azure Network Security Group have rule that allow unrestricted access from the Internet",
-            "Details": "Network security group contains rules that allow unrestricted access from the Internet - including all protocols (TCP,UDP,ICMP) ",
+            "Details": "Network security group contains rules that allow unrestricted access from the Internet",
             "IsLive": True,
             "Labels": ["mitre: discovery", "CSPM", "source: Orca Scan"],
             "LastSeen": "2025-10-24T13:37:01+00:00",
@@ -54,7 +65,7 @@ mock_alerts_response = {
             "OrcaScore": 4.7,
             "Recommendation": "Configure networking rules to allow incoming traffic from allowed IP addresses only.",
             "RemediationConsole": [
-                ">1. Sign in to **[Azure Portal](https://portal.azure.com/)**.",
+                ">1. Sign in to **[Test Portal](https://test.test/)**.",
                 ">2. Navigate to the **Network security groups** service.",
                 ">8. Click **Save**.",
             ],
@@ -94,7 +105,7 @@ mock_alerts_response = {
                             "display_name": "Required Access",
                             "effect_level": 3,
                             "impact_level": 1.6,
-                            "feature_description": "The network access type required by the attacker to take advantage of this risk",
+                            "feature_description": "The network access type required by attacker to take risk",
                         },
                     ],
                     "display_name": "Alert Base Score",
@@ -154,7 +165,7 @@ mock_alerts_response = {
                 "**`az storage account update --name <storage account name",
             ],
             "RemediationConsole": [
-                ">1. Sign in to **[Azure Portal](https://portal.azure.com/)**.",
+                ">1. Sign in to **[Test Portal](https://test.test/)**.",
                 ">2. Click **Save**.",
             ],
             "RiskFindings": {
@@ -163,8 +174,8 @@ mock_alerts_response = {
                     "Kind": {"model": "AzureStorageAccount", "value": "Storage"},
                     "Encryption": {
                         "model": "AzureStorageAccount",
-                        "value": '',
-                    }
+                        "value": "",
+                    },
                 },
                 "name": "test-storage-001",
                 "type": "AzureStorageAccount",
@@ -188,7 +199,7 @@ mock_alerts_response = {
                             "display_name": "Required Access",
                             "effect_level": 3,
                             "impact_level": 1.6,
-                            "feature_description": "The network access type required by the attacker to take advantage of this risk",
+                            "feature_description": "The network access type required by attacker to take risk",
                         },
                     ],
                     "display_name": "Alert Base Score",
@@ -203,7 +214,7 @@ mock_alerts_response = {
             "Last_sync": "2025-11-06T09:35:40+00:00",
         },
     ],
-    "total_items": 2657
+    "total_items": 2657,
 }
 
 
@@ -211,34 +222,20 @@ mock_alerts_response = {
 def orca_client() -> OrcaClient:
     api_token = "dummy api key"
     client = BaseClient(
-        base_url=DUMMY_ORCA_API_DNS_NAME,
-        verify=True,
-        headers={
-            'Authorization': f'Token {api_token}'
-        },
-        proxy=True)
+        base_url=DUMMY_ORCA_API_DNS_NAME, verify=True, headers={"Authorization": f"Token {api_token}"}, proxy=True
+    )
     return OrcaClient(client=client)
 
 
 def test_get_alerts_by_type_malware_should_succeed(requests_mock, orca_client: OrcaClient) -> None:
-    mock_response = {
-        "status": "success",
-        "total_items": 1,
-        "data": [
-            mock_alerts_response["data"][0]
-        ]
-    }
+    mock_response = {"status": "success", "total_items": 1, "data": [mock_alerts_response["data"][0]]}
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     res = orca_client.get_alerts_by_filter(alert_type="Malware")
-    assert res[0] == mock_response['data'][0]
+    assert res[0] == mock_response["data"][0]
 
 
 def test_get_alerts_by_non_existent_type_should_return_empty_list(requests_mock, orca_client: OrcaClient) -> None:
-    mock_response = {
-        "status": "success",
-        "total_items": 1,
-        "data": []
-    }
+    mock_response = {"status": "success", "total_items": 1, "data": []}
 
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     res = orca_client.get_alerts_by_filter(alert_type="non_existent_alert_type")
@@ -248,18 +245,14 @@ def test_get_alerts_by_non_existent_type_should_return_empty_list(requests_mock,
 def test_fetch_incidents_first_run_should_succeed(requests_mock, orca_client: OrcaClient) -> None:
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_alerts_response)
     last_run, fetched_incidents = fetch_incidents(
-        orca_client,
-        last_run={'lastRun': None},
-        max_fetch=20,
-        pull_existing_alerts=True,
-        first_fetch_time=None
+        orca_client, last_run={"lastRun": None}, max_fetch=20, pull_existing_alerts=True, first_fetch_time=None
     )
-    assert fetched_incidents[0]['name'] == 'orca-1003'
-    loaded_raw_alert = json.loads(fetched_incidents[0]['rawJSON'])
-    assert loaded_raw_alert['demisto_score'] == 1
-    assert fetched_incidents[1]['name'] == 'orca-1108'
-    loaded_raw_alert = json.loads(fetched_incidents[1]['rawJSON'])
-    assert loaded_raw_alert['demisto_score'] == 2
+    assert fetched_incidents[0]["name"] == "orca-1003"
+    loaded_raw_alert = json.loads(fetched_incidents[0]["rawJSON"])
+    assert loaded_raw_alert["demisto_score"] == 1
+    assert fetched_incidents[1]["name"] == "orca-1108"
+    loaded_raw_alert = json.loads(fetched_incidents[1]["rawJSON"])
+    assert loaded_raw_alert["demisto_score"] == 2
     assert last_run["lastRun"] is not None
 
 
@@ -269,19 +262,16 @@ def test_fetch_incidents_not_first_run_return_empty(requests_mock, orca_client: 
     # validates that fetch-incidents is returning an a empty list when it is not the first run
     last_run, fetched_incidents = fetch_incidents(
         orca_client,
-        last_run={'step': "fetch", 'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)},
+        last_run={"step": "fetch", "lastRun": datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)},
         max_fetch=20,
         pull_existing_alerts=True,
-        first_fetch_time=None
+        first_fetch_time=None,
     )
     assert fetched_incidents == []
 
 
 def test_test_module_success(requests_mock, orca_client: OrcaClient) -> None:
-    mock_response = {
-        "status": "success",
-        "data": []
-    }
+    mock_response = {"status": "success", "data": []}
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     res = orca_client.validate_api_key()
     assert res == "ok"
@@ -310,55 +300,43 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
 
     # Get first page
     last_run, fetched_incidents = fetch_incidents(
-        orca_client, {'lastRun': None},
-        max_fetch=20,
-        pull_existing_alerts=True,
-        first_fetch_time=None
+        orca_client, {"lastRun": None}, max_fetch=20, pull_existing_alerts=True, first_fetch_time=None
     )
     assert len(fetched_incidents) == 2
-    assert last_run['fetch_page'] == 2
-    assert last_run['step'] == STEP_FETCH
+    assert last_run["fetch_page"] == 2
+    assert last_run["step"] == STEP_FETCH
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
 
     # Get next page
     last_run, fetched_incidents = fetch_incidents(
-        orca_client, last_run,
-        max_fetch=20,
-        pull_existing_alerts=True,
-        first_fetch_time=None
+        orca_client, last_run, max_fetch=20, pull_existing_alerts=True, first_fetch_time=None
     )
     assert len(fetched_incidents) == 2
-    assert last_run['step'] == STEP_FETCH
-    assert last_run['fetch_page'] == 3
+    assert last_run["step"] == STEP_FETCH
+    assert last_run["fetch_page"] == 3
 
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json={"status": "success", "data": []})
     # No pages and no updates
     last_run, fetched_incidents = fetch_incidents(
-        orca_client, last_run,
-        max_fetch=20,
-        pull_existing_alerts=True,
-        first_fetch_time=None
+        orca_client, last_run, max_fetch=20, pull_existing_alerts=True, first_fetch_time=None
     )
-    assert last_run['step'] == STEP_FETCH
+    assert last_run["step"] == STEP_FETCH
     assert len(fetched_incidents) == 0
 
 
 def test_orca_set_alert_severity(requests_mock, orca_client: OrcaClient) -> None:
     alert_id = "orca-52"
 
-    requests_mock.put(f"{DUMMY_ORCA_API_DNS_NAME}/alerts/{alert_id}/severity", json={
-        "user_email": "test@test.com",
-        "alert_id": alert_id,
-        "details": {
-            "description": "Alert risk level changed",
-            "severity": "Hazardous"
-        }
-    })
+    requests_mock.put(
+        f"{DUMMY_ORCA_API_DNS_NAME}/alerts/{alert_id}/severity",
+        json={
+            "user_email": "test@test.com",
+            "alert_id": alert_id,
+            "details": {"description": "Alert risk level changed", "severity": "Hazardous"},
+        },
+    )
 
-    response = set_alert_severity(orca_client=orca_client, args={
-        "alert_id": alert_id,
-        "score": 6
-    })
+    response = set_alert_severity(orca_client=orca_client, args={"alert_id": alert_id, "score": 6})
     assert response.to_context()["Contents"]["details"]["severity"] == "Hazardous"
 
 
@@ -377,23 +355,14 @@ def test_orca_get_alert_event_log(requests_mock, orca_client: OrcaClient) -> Non
                     "create_time": "2020-01-01T01:01:01+00:00",
                     "type": "set_status",
                     "sub_type": "open",
-                    "details": {
-                        "description": "Alert status changed",
-                        "from": None,
-                        "to": "open"
-                    }
+                    "details": {"description": "Alert status changed", "from": None, "to": "open"},
                 }
             ],
-            "total_count": 1
-        }
+            "total_count": 1,
+        },
     )
 
-    args = {
-        "alert_id": "orca-1",
-        "limit": 20,
-        "start_at_index": 0,
-        "type": "dismiss"
-    }
+    args = {"alert_id": "orca-1", "limit": 20, "start_at_index": 0, "type": "dismiss"}
     result = get_alert_event_log(orca_client, args)
 
     content = result.to_context()["Contents"]
@@ -416,33 +385,19 @@ def test_orca_set_alert_status(requests_mock, orca_client: OrcaClient) -> None:
                 "create_time": "2020-01-01T01:01:01+00:00",
                 "type": "set_status",
                 "sub_type": "open",
-                "details": {
-                    "description": "Alert status changed",
-                    "from": "snoozed",
-                    "to": "open"
-                }
-            }
-        }
+                "details": {"description": "Alert status changed", "from": "snoozed", "to": "open"},
+            },
+        },
     )
-    args = {
-        "alert_id": "orca-1",
-        "status": "open"
-    }
+    args = {"alert_id": "orca-1", "status": "open"}
     result = set_alert_status(orca_client, args)
     content = result.to_context()["Contents"]
     assert content["status"] == "open"
 
 
 def test_orca_verify_alert(requests_mock, orca_client: OrcaClient) -> None:
-    requests_mock.put(
-        f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/verify",
-        json={
-            "status": "scanning"
-        }
-    )
-    args = {
-        "alert_id": "orca-1"
-    }
+    requests_mock.put(f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/verify", json={"status": "scanning"})
+    args = {"alert_id": "orca-1"}
     result = verify_alert(orca_client, args)
     content = result.to_context()["Contents"]
     assert content["status"] == "scanning"
@@ -452,31 +407,27 @@ def test_orca_download_malicious_file(requests_mock, orca_client) -> None:
     requests_mock.get(
         f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/download_malicious_file",
         json={
-            "status": "success", "malicious_file.png": "malicious_file.png",
-            "link": "https://aws.com/download/malicious_file.png"
-        }
+            "status": "success",
+            "malicious_file.png": "malicious_file.png",
+            "link": "https://aws.com/download/malicious_file.png",
+        },
     )
 
-    requests_mock.get(
-        "https://aws.com/download/malicious_file.png",
-        text="Hello World"
-    )
+    requests_mock.get("https://aws.com/download/malicious_file.png", text="Hello World")
     response = orca_client.download_malicious_file(alert_id="orca-1")
-    assert response == {'filename': 'malicious_file.png', 'file': b'Hello World'}
+    assert response == {"filename": "malicious_file.png", "file": b"Hello World"}
 
 
 def test_orca_download_malicious_file__error(requests_mock, orca_client):
     requests_mock.get(
         f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/download_malicious_file",
         json={
-            "status": "success", "malicious_file.png": "malicious_file.png",
-            "link": "https://aws.com/download/malicious_file.png"
-        }
+            "status": "success",
+            "malicious_file.png": "malicious_file.png",
+            "link": "https://aws.com/download/malicious_file.png",
+        },
     )
-    requests_mock.get(
-        "https://aws.com/download/malicious_file.png",
-        status_code=404
-    )
+    requests_mock.get("https://aws.com/download/malicious_file.png", status_code=404)
     with pytest.raises(DemistoException):
         orca_client.download_malicious_file("orca-1")
 
@@ -495,46 +446,30 @@ def test_pagination_with_remainder(requests_mock, orca_client: OrcaClient) -> No
         }
         for i in range(1, 11)
     ]
-    
+
     # Page 1: items 1-3
-    mock_response_page1 = {
-        "status": "success",
-        "total_items": 10,
-        "data": mock_alerts[0:3]
-    }
+    mock_response_page1 = {"status": "success", "total_items": 10, "data": mock_alerts[0:3]}
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_page1)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=1, limit=3)
     assert len(alerts) == 3
     assert is_last_page is False  # Should not be last page (4 pages total)
-    
+
     # Page 2: items 4-6
-    mock_response_page2 = {
-        "status": "success",
-        "total_items": 10,
-        "data": mock_alerts[3:6]
-    }
+    mock_response_page2 = {"status": "success", "total_items": 10, "data": mock_alerts[3:6]}
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_page2)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=2, limit=3)
     assert len(alerts) == 3
     assert is_last_page is False
-    
+
     # Page 3: items 7-9
-    mock_response_page3 = {
-        "status": "success",
-        "total_items": 10,
-        "data": mock_alerts[6:9]
-    }
+    mock_response_page3 = {"status": "success", "total_items": 10, "data": mock_alerts[6:9]}
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_page3)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=3, limit=3)
     assert len(alerts) == 3
     assert is_last_page is False
-    
+
     # Page 4: item 10 (last page)
-    mock_response_page4 = {
-        "status": "success",
-        "total_items": 10,
-        "data": mock_alerts[9:10]
-    }
+    mock_response_page4 = {"status": "success", "total_items": 10, "data": mock_alerts[9:10]}
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_page4)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=4, limit=3)
     assert len(alerts) == 1
@@ -545,18 +480,14 @@ def test_missing_alert_id() -> None:
     """
     Test behavior when AlertId is missing from alert
     """
-    alert_without_id = {
-        "LastSeen": "2025-10-24T13:37:01+00:00",
-        "RiskLevel": "high",
-        "Title": "Test Alert"
-    }
-    
+    alert_without_id = {"LastSeen": "2025-10-24T13:37:01+00:00", "RiskLevel": "high", "Title": "Test Alert"}
+
     incident = get_incident_from_alert(alert_without_id)
     # Should still create incident with empty name
-    assert incident['name'] == ""
-    assert incident['severity'] == 3  # high maps to 3
-    assert 'occurred' in incident
-    assert 'rawJSON' in incident
+    assert incident["name"] == ""
+    assert incident["severity"] == 3  # high maps to 3
+    assert "occurred" in incident
+    assert "rawJSON" in incident
 
 
 def test_invalid_risk_level() -> None:
@@ -567,33 +498,26 @@ def test_invalid_risk_level() -> None:
     alert_with_int_risk = {
         "AlertId": "orca-test-1",
         "LastSeen": "2025-10-24T13:37:01+00:00",
-        "RiskLevel": 5  # Invalid: should be string
+        "RiskLevel": 5,  # Invalid: should be string
     }
-    
+
     incident = get_incident_from_alert(alert_with_int_risk)
-    assert incident['name'] == "orca-test-1"
-    assert incident['severity'] == 0  # Should map to 0 (unknown) for invalid RiskLevel
-    
+    assert incident["name"] == "orca-test-1"
+    assert incident["severity"] == 0  # Should map to 0 (unknown) for invalid RiskLevel
+
     # Test with None RiskLevel
-    alert_with_none_risk = {
-        "AlertId": "orca-test-2",
-        "LastSeen": "2025-10-24T13:37:01+00:00",
-        "RiskLevel": None
-    }
-    
+    alert_with_none_risk = {"AlertId": "orca-test-2", "LastSeen": "2025-10-24T13:37:01+00:00", "RiskLevel": None}
+
     incident = get_incident_from_alert(alert_with_none_risk)
-    assert incident['name'] == "orca-test-2"
-    assert incident['severity'] == 0  # Should map to 0 (unknown) for None RiskLevel
-    
+    assert incident["name"] == "orca-test-2"
+    assert incident["severity"] == 0  # Should map to 0 (unknown) for None RiskLevel
+
     # Test with missing RiskLevel
-    alert_without_risk = {
-        "AlertId": "orca-test-3",
-        "LastSeen": "2025-10-24T13:37:01+00:00"
-    }
-    
+    alert_without_risk = {"AlertId": "orca-test-3", "LastSeen": "2025-10-24T13:37:01+00:00"}
+
     incident = get_incident_from_alert(alert_without_risk)
-    assert incident['name'] == "orca-test-3"
-    assert incident['severity'] == 0  # Should map to 0 (unknown) for missing RiskLevel
+    assert incident["name"] == "orca-test-3"
+    assert incident["severity"] == 0  # Should map to 0 (unknown) for missing RiskLevel
 
 
 def test_empty_data_response(requests_mock, orca_client: OrcaClient) -> None:
@@ -603,12 +527,12 @@ def test_empty_data_response(requests_mock, orca_client: OrcaClient) -> None:
     mock_response_null_data = {
         "status": "success",
         "total_items": 0,
-        "data": None  # API returns null instead of empty list
+        "data": None,  # API returns null instead of empty list
     }
-    
+
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_null_data)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=1, limit=10)
-    
+
     # Should return empty list and mark as last page
     assert alerts == []
     assert is_last_page is True
@@ -622,12 +546,12 @@ def test_page_beyond_total(requests_mock, orca_client: OrcaClient) -> None:
     mock_response = {
         "status": "success",
         "total_items": 5,
-        "data": []  # Empty because page 3 doesn't exist
+        "data": [],  # Empty because page 3 doesn't exist
     }
-    
+
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=3, limit=3)
-    
+
     # Should return empty list
     assert alerts == []
     # total_pages = (5 + 3 - 1) // 3 = 2, so page 3 >= 2 = True (is_last_page)
@@ -638,24 +562,20 @@ def test_get_alerts_with_invalid_page(requests_mock, orca_client: OrcaClient) ->
     """
     Test get_alerts with invalid page parameter (None, 0, negative)
     """
-    mock_response = {
-        "status": "success",
-        "total_items": 10,
-        "data": mock_alerts_response["data"][:2]
-    }
-    
+    mock_response = {"status": "success", "total_items": 10, "data": mock_alerts_response["data"][:2]}
+
     # Test with None page
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=None, limit=10)
     assert len(alerts) == 2
     # Page should default to 1
-    
+
     # Test with 0 page
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=0, limit=10)
     assert len(alerts) == 2
     # Page should default to 1
-    
+
     # Test with negative page
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=-1, limit=10)
@@ -667,18 +587,14 @@ def test_get_alerts_with_invalid_limit(requests_mock, orca_client: OrcaClient) -
     """
     Test get_alerts with invalid limit parameter (0, negative)
     """
-    mock_response = {
-        "status": "success",
-        "total_items": 10,
-        "data": mock_alerts_response["data"][:2]
-    }
-    
+    mock_response = {"status": "success", "total_items": 10, "data": mock_alerts_response["data"][:2]}
+
     # Test with 0 limit
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=1, limit=0)
     assert len(alerts) == 2
     # Limit should default to ORCA_API_LIMIT (500)
-    
+
     # Test with negative limit
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=1, limit=-5)
@@ -690,14 +606,11 @@ def test_get_alerts_error_response(requests_mock, orca_client: OrcaClient) -> No
     """
     Test get_alerts when API returns error status
     """
-    mock_error_response = {
-        "status": "failure",
-        "error": "Invalid API token"
-    }
-    
+    mock_error_response = {"status": "failure", "error": "Invalid API token"}
+
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_error_response)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=1, limit=10)
-    
+
     # Should return empty list and mark as last page on error
     assert alerts == []
     assert is_last_page is True
@@ -708,12 +621,11 @@ def test_get_alerts_read_timeout(requests_mock, orca_client: OrcaClient) -> None
     Test get_alerts when API request times out
     """
     requests_mock.post(
-        f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}",
-        exc=requests.exceptions.ReadTimeout("Connection timeout")
+        f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", exc=requests.exceptions.ReadTimeout("Connection timeout")
     )
-    
+
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=1, limit=10)
-    
+
     # Should return empty list and mark as last page on timeout
     assert alerts == []
     assert is_last_page is True
@@ -724,53 +636,45 @@ def test_get_incidents_from_alerts_with_invalid_data() -> None:
     Test get_incidents_from_alerts with alerts containing invalid data
     """
     alerts_with_invalid_data = [
-        {
-            "AlertId": "orca-valid-1",
-            "LastSeen": "2025-10-24T13:37:01+00:00",
-            "RiskLevel": "high"
-        },
+        {"AlertId": "orca-valid-1", "LastSeen": "2025-10-24T13:37:01+00:00", "RiskLevel": "high"},
         {
             # Missing AlertId
             "LastSeen": "2025-10-24T13:37:01+00:00",
-            "RiskLevel": "medium"
+            "RiskLevel": "medium",
         },
         {
             "AlertId": "orca-valid-2",
             # Missing LastSeen
-            "RiskLevel": "low"
+            "RiskLevel": "low",
         },
         {
             "AlertId": "orca-invalid-risk",
             "LastSeen": "2025-10-24T13:37:01+00:00",
-            "RiskLevel": 123  # Invalid: integer instead of string
-        }
+            "RiskLevel": 123,  # Invalid: integer instead of string
+        },
     ]
-    
+
     incidents = get_incidents_from_alerts(alerts_with_invalid_data)
-    
+
     # Should process all alerts, handling invalid data gracefully
     assert len(incidents) == 4
-    assert incidents[0]['name'] == "orca-valid-1"
-    assert incidents[0]['severity'] == 3  # high
-    assert incidents[1]['name'] == ""  # Missing AlertId
-    assert incidents[2]['name'] == "orca-valid-2"
-    assert incidents[3]['name'] == "orca-invalid-risk"
-    assert incidents[3]['severity'] == 0  # Invalid RiskLevel maps to 0
+    assert incidents[0]["name"] == "orca-valid-1"
+    assert incidents[0]["severity"] == 3  # high
+    assert incidents[1]["name"] == ""  # Missing AlertId
+    assert incidents[2]["name"] == "orca-valid-2"
+    assert incidents[3]["name"] == "orca-invalid-risk"
+    assert incidents[3]["severity"] == 0  # Invalid RiskLevel maps to 0
 
 
 def test_get_alerts_with_total_items_zero(requests_mock, orca_client: OrcaClient) -> None:
     """
     Test get_alerts when total_items is 0
     """
-    mock_response = {
-        "status": "success",
-        "total_items": 0,
-        "data": []
-    }
-    
+    mock_response = {"status": "success", "total_items": 0, "data": []}
+
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=1, limit=10)
-    
+
     # Should return empty list and mark as last page
     assert alerts == []
     assert is_last_page is True
@@ -784,26 +688,26 @@ def test_get_alerts_with_non_list_data_type(requests_mock, orca_client: OrcaClie
     mock_response_dict = {
         "status": "success",
         "total_items": 1,
-        "data": {"alert": "data"}  # Should be a list
+        "data": {"alert": "data"},  # Should be a list
     }
-    
+
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_dict)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=1, limit=10)
-    
+
     # Should return empty list and mark as last page due to invalid data type
     assert alerts == []
     assert is_last_page is True
-    
+
     # Test with string instead of list
     mock_response_string = {
         "status": "success",
         "total_items": 1,
-        "data": "invalid"  # Should be a list
+        "data": "invalid",  # Should be a list
     }
-    
+
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_string)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=1, limit=10)
-    
+
     # Should return empty list and mark as last page due to invalid data type
     assert alerts == []
     assert is_last_page is True
@@ -814,14 +718,11 @@ def test_get_alerts_with_demisto_exception(requests_mock, orca_client: OrcaClien
     Test get_alerts when DemistoException is raised
     """
     from CommonServerPython import DemistoException
-    
-    requests_mock.post(
-        f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}",
-        exc=DemistoException("API Error")
-    )
-    
+
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", exc=DemistoException("API Error"))
+
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=1, limit=10)
-    
+
     # Should return empty list and mark as last page on exception
     assert alerts == []
     assert is_last_page is True
@@ -834,19 +735,19 @@ def test_get_incident_from_alert_with_missing_last_seen() -> None:
     """
     alert_without_last_seen = {
         "AlertId": "orca-test-1",
-        "RiskLevel": "high"
+        "RiskLevel": "high",
         # Missing LastSeen
     }
-    
+
     incident = get_incident_from_alert(alert_without_last_seen)
-    
+
     # Should create incident with current time as occurred
-    assert incident['name'] == "orca-test-1"
-    assert incident['severity'] == 3  # high
-    assert 'occurred' in incident
-    assert incident['occurred'] is not None
+    assert incident["name"] == "orca-test-1"
+    assert incident["severity"] == 3  # high
+    assert "occurred" in incident
+    assert incident["occurred"] is not None
     # Should be a valid ISO format timestamp
-    assert 'T' in incident['occurred'] or 'Z' in incident['occurred']
+    assert "T" in incident["occurred"] or "Z" in incident["occurred"]
 
 
 def test_fetch_incidents_pagination_edge_cases(requests_mock, orca_client: OrcaClient) -> None:
@@ -858,55 +759,36 @@ def test_fetch_incidents_pagination_edge_cases(requests_mock, orca_client: OrcaC
         "status": "success",
         "total_items": 2,
         "data": [
-            {
-                "AlertId": "orca-1",
-                "LastSeen": "2025-10-24T13:37:01+00:00",
-                "RiskLevel": "high"
-            },
-            {
-                "AlertId": "orca-2",
-                "LastSeen": "2025-10-24T13:37:01+00:00",
-                "RiskLevel": "medium"
-            }
-        ]
+            {"AlertId": "orca-1", "LastSeen": "2025-10-24T13:37:01+00:00", "RiskLevel": "high"},
+            {"AlertId": "orca-2", "LastSeen": "2025-10-24T13:37:01+00:00", "RiskLevel": "medium"},
+        ],
     }
-    
+
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_one_page)
     last_run, incidents = fetch_incidents(
-        orca_client,
-        last_run={'lastRun': None},
-        max_fetch=10,
-        pull_existing_alerts=True,
-        first_fetch_time=None
+        orca_client, last_run={"lastRun": None}, max_fetch=10, pull_existing_alerts=True, first_fetch_time=None
     )
-    
+
     # Should fetch all items and mark as last page
     assert len(incidents) == 2
-    assert last_run['fetch_page'] == 1  # Reset to 1 on last page
-    assert 'lastRun' in last_run
-    
+    assert last_run["fetch_page"] == 1  # Reset to 1 on last page
+    assert "lastRun" in last_run
+
     # Test pagination with remainder - fetch page 1 of 2 pages (5 items, limit 3)
     mock_response_page1 = {
         "status": "success",
         "total_items": 5,
-        "data": [
-            {"AlertId": f"orca-{i}", "LastSeen": "2025-10-24T13:37:01+00:00", "RiskLevel": "low"}
-            for i in range(1, 4)
-        ]
+        "data": [{"AlertId": f"orca-{i}", "LastSeen": "2025-10-24T13:37:01+00:00", "RiskLevel": "low"} for i in range(1, 4)],
     }
-    
+
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_page1)
     last_run, incidents = fetch_incidents(
-        orca_client,
-        last_run={'lastRun': None},
-        max_fetch=3,
-        pull_existing_alerts=True,
-        first_fetch_time=None
+        orca_client, last_run={"lastRun": None}, max_fetch=3, pull_existing_alerts=True, first_fetch_time=None
     )
-    
+
     assert len(incidents) == 3
-    assert last_run['fetch_page'] == 2  # Should increment to next page
-    assert last_run['step'] == STEP_FETCH
+    assert last_run["fetch_page"] == 2  # Should increment to next page
+    assert last_run["step"] == STEP_FETCH
 
 
 def test_get_incident_from_alert_with_all_risk_levels() -> None:
@@ -915,18 +797,14 @@ def test_get_incident_from_alert_with_all_risk_levels() -> None:
     """
     risk_levels = ["critical", "high", "medium", "low", "informational"]
     expected_severities = [4, 3, 2, 1, 0.5]
-    
+
     for risk_level, expected_severity in zip(risk_levels, expected_severities):
-        alert = {
-            "AlertId": f"orca-{risk_level}",
-            "LastSeen": "2025-10-24T13:37:01+00:00",
-            "RiskLevel": risk_level
-        }
-        
+        alert = {"AlertId": f"orca-{risk_level}", "LastSeen": "2025-10-24T13:37:01+00:00", "RiskLevel": risk_level}
+
         incident = get_incident_from_alert(alert)
-        
-        assert incident['name'] == f"orca-{risk_level}"
-        assert incident['severity'] == expected_severity
+
+        assert incident["name"] == f"orca-{risk_level}"
+        assert incident["severity"] == expected_severity
 
 
 def test_get_incident_from_alert_with_unknown_risk_level() -> None:
@@ -936,14 +814,14 @@ def test_get_incident_from_alert_with_unknown_risk_level() -> None:
     alert = {
         "AlertId": "orca-unknown",
         "LastSeen": "2025-10-24T13:37:01+00:00",
-        "RiskLevel": "unknown_level"  # Not in mapping
+        "RiskLevel": "unknown_level",  # Not in mapping
     }
-    
+
     incident = get_incident_from_alert(alert)
-    
+
     # Should map to 0 (unknown)
-    assert incident['name'] == "orca-unknown"
-    assert incident['severity'] == 0
+    assert incident["name"] == "orca-unknown"
+    assert incident["severity"] == 0
 
 
 def test_get_alerts_with_empty_string_risk_level(requests_mock, orca_client: OrcaClient) -> None:
@@ -957,17 +835,17 @@ def test_get_alerts_with_empty_string_risk_level(requests_mock, orca_client: Orc
             {
                 "AlertId": "orca-empty-risk",
                 "LastSeen": "2025-10-24T13:37:01+00:00",
-                "RiskLevel": ""  # Empty string
+                "RiskLevel": "",  # Empty string
             }
-        ]
+        ],
     }
-    
+
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page = orca_client.get_alerts(time_from=None, page=1, limit=10)
-    
+
     assert len(alerts) == 1
-    
+
     # Test incident creation with empty string RiskLevel
     incident = get_incident_from_alert(alerts[0])
-    assert incident['name'] == "orca-empty-risk"
-    assert incident['severity'] == 0  # Empty string should map to 0
+    assert incident["name"] == "orca-empty-risk"
+    assert incident["severity"] == 0  # Empty string should map to 0
