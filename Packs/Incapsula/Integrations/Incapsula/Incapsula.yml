@@ -2,6 +2,8 @@ commonfields:
   id: Incapsula
   version: -1
 name: Incapsula
+sectionorder:
+- Connect
 display: Imperva Incapsula
 category: Network Security
 description: Uses incapsula to manage sites and IPs.
@@ -1401,6 +1403,22 @@ script:
       - "false"
       description: Default is false (basic policy details). Set to true for full policy data, including configuration.
     description: Retrieves all policies associated with the account or a specific policy if policy_id is provided.
+    outputs:
+    - contextPath: Incapsula.Policies.policy_id
+      description: The policy ID.
+      type: string
+    - contextPath: Incapsula.Policies.policy_name
+      description: The policy name.
+      type: string
+    - contextPath: Incapsula.Policies.enabled
+      description: Whether the policy is enabled.
+      type: boolean
+    - contextPath: Incapsula.Policies.setting_action
+      description: The action to take when the policy is triggered.
+      type: string
+    - contextPath: Incapsula.Policies.policy_setting_type
+      description: The type of policy setting.
+      type: string
   - name: incap-policy-create
     arguments:
     - name: policy_name
@@ -1481,6 +1499,22 @@ script:
     - name: policy_data_exceptions_json_entry_id
       description: Entry ID for policy data exceptions JSON.
     description: Add a new policy or copy an existing policy.
+    outputs:
+    - contextPath: Incapsula.Policies.policy_id
+      description: The policy ID.
+      type: string
+    - contextPath: Incapsula.Policies.policy_name
+      description: The policy name.
+      type: string
+    - contextPath: Incapsula.Policies.enabled
+      description: Whether the policy is enabled.
+      type: boolean
+    - contextPath: Incapsula.Policies.setting_action
+      description: The action to take when the policy is triggered.
+      type: string
+    - contextPath: Incapsula.Policies.policy_setting_type
+      description: The type of policy setting.
+      type: string
   - name: incap-policy-update
     arguments:
     - name: policy_name
@@ -1567,6 +1601,22 @@ script:
     - name: policy_data_exceptions_json_entry_id
       description: Entry ID for policy data exceptions JSON.
     description: Modify an existing policy (partial or full update).
+    outputs:
+    - contextPath: Incapsula.Policies.policy_id
+      description: The policy ID.
+      type: string
+    - contextPath: Incapsula.Policies.policy_name
+      description: The policy name.
+      type: string
+    - contextPath: Incapsula.Policies.enabled
+      description: Whether the policy is enabled.
+      type: boolean
+    - contextPath: Incapsula.Policies.setting_action
+      description: The action to take when the policy is triggered.
+      type: string
+    - contextPath: Incapsula.Policies.policy_setting_type
+      description: The type of policy setting.
+      type: string
   - name: incap-policy-delete
     arguments:
     - name: policy_id
@@ -1589,6 +1639,16 @@ script:
     - name: account_id
       description: Optional account ID for different sub-account.
     description: Check whether the policy is applied on the asset.
+    outputs:
+    - contextPath: Incapsula.AssetOnPolicy.asset_id
+      description: The asset ID.
+      type: string
+    - contextPath: Incapsula.AssetOnPolicy.policy_id
+      description: The policy ID.
+      type: string
+    - contextPath: Incapsula.AssetOnPolicy.asset_type
+      description: Type of asset on which the policy is applied.
+      type: string
   - name: incap-asset-on-policy-apply
     arguments:
     - name: asset_id
@@ -1603,6 +1663,16 @@ script:
     - name: account_id
       description: Optional account ID for different sub-account.
     description: Overwrite applied assets in a policy.
+    outputs:
+    - contextPath: Incapsula.AssetOnPolicy.asset_id
+      description: The asset ID.
+      type: string
+    - contextPath: Incapsula.AssetOnPolicy.policy_id
+      description: The policy ID.
+      type: string
+    - contextPath: Incapsula.AssetOnPolicy.asset_type
+      description: Type of asset on which the policy is applied.
+      type: string
 system: true
 tests:
 - No test
