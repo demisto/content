@@ -99,7 +99,9 @@ async def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command == f"{COMMAND_PREFIX}-generate-login-url":
-            result = await generate_login_url(client._oauth_handler, auth_type, authorization_endpoint, redirect_uri)
+            result = await generate_login_url(
+                client._oauth_handler, auth_type, authorization_endpoint, redirect_uri, troubleshooting_redirect=True
+            )
             return_results(result)
 
         else:
