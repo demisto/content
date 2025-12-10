@@ -1,0 +1,18 @@
+[MODEL: dataset=citrix_cloud_raw]
+/* XDM fields mapping for system logs:
+https://docs.citrix.com/en-us/citrix-cloud/citrix-cloud-management/system-log/platform-events
+https://developer-docs.citrix.com/en-us/citrix-cloud/citrix-cloud-systemlog/apis/#/Records/GetRecords
+*/
+alter
+    xdm.event.type = eventType,
+    xdm.target.resource.id = targetId,
+    xdm.target.user.identifier = targetUserId,
+    xdm.target.user.upn = targetEmail,
+    xdm.target.user.username = targetDisplayName,
+    xdm.target.resource_before.value = to_json_string(beforeChanges),
+    xdm.target.resource.value = to_json_string(afterChanges),
+    xdm.source.user.identifier = actorId,
+    xdm.source.user.username = actorDisplayName,
+    xdm.event.description =  json_extract_scalar(message, "$['en-US']"),
+    xdm.observer.unique_identifier = customerId,
+    xdm.auth.privilege_level = if(actorType = "administrator", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, actorType = "system", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM, actorType);
