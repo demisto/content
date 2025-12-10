@@ -5,8 +5,6 @@ import dateparser
 from enum import Enum
 import copy
 
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import return_results
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
