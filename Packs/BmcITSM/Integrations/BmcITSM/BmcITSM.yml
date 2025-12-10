@@ -7,6 +7,7 @@ sectionorder:
 name: BmcITSM
 display: BMC Helix ITSM
 category: Utilities
+provider: BmcHelixItsm
 description: BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation, known error and work order tickets.
 configuration:
 - name: url

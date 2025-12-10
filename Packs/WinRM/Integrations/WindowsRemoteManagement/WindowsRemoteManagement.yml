@@ -4,6 +4,7 @@ commonfields:
 name: Windows Remote Management
 display: Windows Remote Management (Beta)
 category: Endpoint
+provider: WindowsRemoteManagement
 description: Uses the Python pywinrm library and commands to execute either a process or using Powershell scripts.
 configuration:
 - display: Credentials

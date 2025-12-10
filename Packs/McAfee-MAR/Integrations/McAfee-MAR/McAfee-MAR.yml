@@ -4,6 +4,7 @@ commonfields:
 name: McAfee Active Response
 display: McAfee Active Response
 category: Endpoint
+provider: McAfee
 description: Connect to MAR using its DXL client
 configuration:
 - display: Broker CA certificates content (see `brokercerts.crt` in instructions)

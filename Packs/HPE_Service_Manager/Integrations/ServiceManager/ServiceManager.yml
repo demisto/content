@@ -4,6 +4,7 @@ commonfields:
 name: Service Manager
 display: Micro Focus Service Manager
 category: Case Management
+provider: MicroFocusService
 description: Service Manager By Micro Focus (Formerly HPE Software).
 configuration:
 - display: Server URL (e.g. https://192.168.0.1:13080)

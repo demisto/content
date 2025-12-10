@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: TruSTAR
 category: Data Enrichment & Threat Intelligence
+provider: TruSTAR
 description: Deprecated. Not supported since TrueSTAR was acquired by Splunk, No available replacement.
 display: TruSTAR (Deprecated)
 deprecated: true

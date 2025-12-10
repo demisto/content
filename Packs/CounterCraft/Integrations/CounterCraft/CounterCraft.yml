@@ -4,6 +4,7 @@ commonfields:
 name: CounterCraft Deception Director
 display: CounterCraft Deception Director
 category: Deception & Breach Simulation
+provider: CountercraftDeceptionDirector
 description: CounterCraft Deception Solution detects advanced adversaries. Automate counterintelligence campaigns to discover targeted attacks with real-time active response.
 configuration:
 - display: Deception Director Domain or IP Address

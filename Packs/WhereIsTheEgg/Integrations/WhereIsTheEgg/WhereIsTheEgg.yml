@@ -5,6 +5,7 @@ name: Where is the egg?
 display: Where is the egg?
 fromversion: 5.0.0
 category: Utilities
+provider: WhereIsThe
 description: Don't ask, just try.
 configuration: []
 scriptNotVisible: true

@@ -4,6 +4,7 @@ commonfields:
 name: MetaDefender Sandbox
 display: MetaDefender Sandbox
 category: Forensics & Malware Analysis
+provider: MetadefenderSandbox
 description: Unique adaptive threat analysis technology, enabling zero-day malware detection and more Indicator of Compromise (IOCs) extraction (previously known as OPSWAT Filescan Sandbox).
 configuration:
 - name: url

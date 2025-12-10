@@ -6,6 +6,7 @@ commonfields:
 name: Core REST API
 display: Core REST API
 category: Utilities
+provider: CortexRestApi
 description: Use Core REST APIs.
 configuration:
 - display: Core Server URL

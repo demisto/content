@@ -1,4 +1,5 @@
 category: Vulnerability Management
+provider: CortexAttackSurface
 commonfields:
   id: Cortex Attack Surface Management
   version: -1

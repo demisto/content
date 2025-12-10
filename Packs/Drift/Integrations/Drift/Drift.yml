@@ -4,6 +4,7 @@ commonfields:
 name: Drift
 display: Drift
 category: Utilities
+provider: Drift
 description: Drift integration to fetch, modify, create and delete contacts within the Drift Plattform's Contact API.
 configuration:
 - display: Access Token

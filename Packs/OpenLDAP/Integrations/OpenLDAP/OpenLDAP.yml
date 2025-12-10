@@ -2,6 +2,7 @@ sectionorder:
 - Connect
 - Collect
 category: Authentication & Identity Management
+provider: LdapAuthentication
 commonfields:
   id: OpenLDAP
   version: -1

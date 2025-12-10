@@ -4,6 +4,7 @@ commonfields:
 name: Threat Grid
 display: Cisco Threat Grid (Deprecated)
 category: Forensics & Malware Analysis
+provider: Cisco
 description: Deprecated. Use Cisco Secure Malware Analytics (Threat Grid) v2 instead.
 detaileddescription: |-
   1. In your threat grid instance, click your user name at the right top corner.

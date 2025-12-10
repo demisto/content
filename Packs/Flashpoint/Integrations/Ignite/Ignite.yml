@@ -7,6 +7,7 @@ commonfields:
 name: Ignite
 display: Flashpoint Ignite
 category: Data Enrichment & Threat Intelligence
+provider: Flashpoint
 description: Use the Ignite integration to reduce business risk. Ignite allows users to ingest alerts and compromised credentials as incident alerts and executes commands such as search intelligence report, ip, url, get events, and more.
 configuration:
 - display: Fetch incidents

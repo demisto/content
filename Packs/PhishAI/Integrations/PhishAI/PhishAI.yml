@@ -5,6 +5,7 @@ name: Phish.AI
 display: Phish.AI (Deprecated)
 deprecated: true
 category: Data Enrichment & Threat Intelligence
+provider: Phish.AI
 description: "Deprecated. Vendor has declared end of life for this integration. No available replacement."
 fromversion: "5.0.0"
 configuration:

@@ -1,4 +1,5 @@
 category: Network Security
+provider: Symantec
 commonfields:
   id: Symantec Data Loss Prevention
   version: -1

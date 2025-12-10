@@ -4,6 +4,7 @@ commonfields:
 name: Farsight DNSDB
 display: Farsight DNSDB
 category: Data Enrichment & Threat Intelligence
+provider: FarsightDnsdb
 description: Query Farsight DNSDB service
 configuration:
 - display: DNSDB Service URL

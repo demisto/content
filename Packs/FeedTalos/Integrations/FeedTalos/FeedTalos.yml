@@ -4,6 +4,7 @@ commonfields:
 name: Talos Feed
 display: Talos Feed
 category: Data Enrichment & Threat Intelligence
+provider: TalosFeed
 description: Use the Talos Feed integration to get indicators from the feed.
 configuration:
 - display: Fetch indicators

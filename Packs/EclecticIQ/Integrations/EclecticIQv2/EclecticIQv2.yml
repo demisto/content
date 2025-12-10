@@ -5,6 +5,7 @@ name: EclecticIQ Platform v2
 display: EclecticIQ Platform v2 (Deprecated)
 deprecated: true
 category: Data Enrichment & Threat Intelligence
+provider: EclecticiqPlatform
 description: Deprecated. Use EclecticIQ Intelligence Center v3 instead.
 configuration:
 - display: Server URL (e.g. https://ic-playground.eclecticiq.com/api/v1)

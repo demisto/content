@@ -4,6 +4,7 @@ commonfields:
 name: Vectra v2
 display: Vectra v2 (Deprecated)
 category: Network Security
+provider: Vectra
 description: Deprecated. Use Vectra Detect instead.
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)

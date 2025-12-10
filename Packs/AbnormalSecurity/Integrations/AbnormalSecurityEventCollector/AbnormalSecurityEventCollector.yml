@@ -4,6 +4,7 @@ commonfields:
 name: Abnormal Security Event Collector
 display: Abnormal Security Event Collector
 category: Analytics & SIEM
+provider: AbnormalSecurity
 sectionorder:
 - Connect
 - Collect

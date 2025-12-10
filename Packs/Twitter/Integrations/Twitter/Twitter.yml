@@ -4,6 +4,7 @@ commonfields:
 name: Twitter
 display: Twitter (Deprecated)
 category: Utilities
+provider: Twitter
 description: 'Deprecated. Use Twitter v2 instead.'
 configuration:
 - display: API Key

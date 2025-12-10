@@ -4,6 +4,7 @@ commonfields:
 name: Dell Secureworks
 display: Dell Secureworks
 category: Case Management
+provider: Secureworks
 description: Provides access to the Secureworks CTP ticketing system
 configuration:
 - display: Server URL (e.g. https://api.secureworks.com)

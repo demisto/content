@@ -4,6 +4,7 @@ commonfields:
 name: Infocyte
 display: Infocyte
 category: Endpoint
+provider: Infocyte
 description: Infocyte can pivot off incidents to automate triage, validate events with forensic data and enabling dynamic response actions against any or all host using both agentless or agented endpoint access.
 configuration:
 - display: Instance Name (e.g., https://<cname>.infocyte.com)

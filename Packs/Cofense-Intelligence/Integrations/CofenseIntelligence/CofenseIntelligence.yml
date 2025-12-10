@@ -4,6 +4,7 @@ commonfields:
 name: Cofense Intelligence
 display: Cofense Intelligence (Deprecated)
 category: Data Enrichment & Threat Intelligence
+provider: CofenseIntelligence
 description: Deprecated. Use Cofense Intelligence v2 instead. Use the Cofense Intelligence integration to check the reputation of URLs, IP addresses, file hashes, and email addresses.
 configuration:
 - display: Server URL (e.g., https://www.threathq.com/apiv1)

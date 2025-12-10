@@ -8,6 +8,7 @@ sectionorder:
 name: OPSWAT-Metadefender V2
 display: OPSWAT-Metadefender v2
 category: Data Enrichment & Threat Intelligence
+provider: OPSWAT
 description: multi-scanning engine uses 30+ anti-malware engines to scan files for threats, significantly increasing malware detection.
 configuration:
 - display: Server URL (e.g. http://localhost:8008/metascan_rest/)

@@ -4,6 +4,7 @@ commonfields:
 name: xMatters
 display: xMatters
 category: Utilities
+provider: xMatters
 description: This is an integration for using xMatters.
 configuration:
 - display: Your xmatters instance base URL. (i.e. acme.xmatters.com)

@@ -4,6 +4,7 @@ commonfields:
 name: LogRhythm
 display: LogRhythm (Deprecated)
 category: Analytics & SIEM
+provider: LogRhythm
 description: Deprecated. Use the LogRhythmRest v2 integration instead.
 configuration:
 - display: Hostname, IP address or Server URL

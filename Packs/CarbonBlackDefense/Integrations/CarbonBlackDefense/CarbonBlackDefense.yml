@@ -5,6 +5,7 @@ name: Carbon Black Defense
 display: VMware Carbon Black Endpoint Standard (Deprecated)
 deprecated: true
 category: Endpoint
+provider: CarbonBlackEndpoint
 description: Deprecated. Use Carbon Black Endpoint Standard instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

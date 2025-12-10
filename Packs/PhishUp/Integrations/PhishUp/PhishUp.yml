@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: PhishUp
 commonfields:
   id: 6437c006-1d86-4cdc-89d5-23305f207e3a
   version: -1

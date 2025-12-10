@@ -6,6 +6,7 @@ display: VirusTotal (Deprecated)
 deprecated: true
 fromversion: 5.5.0
 category: Data Enrichment & Threat Intelligence
+provider: VirusTotal
 description: Deprecated. Use VirusTotalV3 integration instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

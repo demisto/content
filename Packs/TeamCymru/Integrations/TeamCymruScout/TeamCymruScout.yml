@@ -4,6 +4,7 @@ commonfields:
 name: Team Cymru Scout
 display: Team Cymru Scout
 category: Data Enrichment & Threat Intelligence
+provider: TeamCymru
 description: Team Cymru's Scout integration with Palo Alto XSOAR helps streamline incident triage and accelerate threat response by providing domain and threat intelligence data.
 sectionorder:
 - Connect

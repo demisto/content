@@ -2,6 +2,7 @@ name: VersaDirector
 display: Versa Director
 description: Versa Director is a virtualization and service creation platform that simplifies the design, automation, and delivery of SASE services. Versa Director provides the essential management, monitoring, and orchestration capabilities needed to deliver all of the networking and security capabilities within Versa SASE.
 category: Network Security
+provider: VersaDirector
 sectionorder:
   - Connect
   - Collect

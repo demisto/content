@@ -5,6 +5,7 @@ name: fireeye
 fromversion: 5.0.0
 display: FireEye (AX Series)
 category: Forensics & Malware Analysis
+provider: FireEye
 description: Perform malware dynamic analysis
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

@@ -7,6 +7,7 @@ sectionorder:
 name: McAfee ePO v2
 display: McAfee ePO v2
 category: Endpoint
+provider: McAfee
 description: McAfee ePolicy Orchestrator.
 configuration:
 - display: McAfee ePO Server URI

@@ -4,6 +4,7 @@ commonfields:
 name: Cyber Triage
 display: Cyber Triage
 category: Endpoint
+provider: CyberTriage
 description: 'Allows you to conduct a mini-forensic investigation on an endpoint. It pushes a collection tool to the remote endpoint, collects volatile and file system data, and analyzes the data. '
 configuration:
 - display: Hostname of Cyber Triage server (e.g. 192.168.1.2)

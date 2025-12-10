@@ -4,6 +4,7 @@ commonfields:
 name: RSA NetWitness Packets and Logs
 display: RSA NetWitness Packets and Logs
 category: Analytics & SIEM
+provider: RsaNetwitnessPackets
 description: RSA NetWitness Logs and Packets decoders are responsible for the real-time collection of network data. The decode captures data in real time and can normalize and reconstruct data for full session analysis. In addition, the decoder can collect flow and endpoint data.
 configuration:
 - display: Server URL (e.g. http(s)://192.168.0.1)

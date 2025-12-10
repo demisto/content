@@ -4,6 +4,7 @@ commonfields:
 name: CyberTotal
 display: CyberTotal
 category: Data Enrichment & Threat Intelligence
+provider: CyberTotal
 description: CyberTotal is a cloud-based threat intelligence service developed by CyCraft.
 configuration:
 - display: CyberTotal URL

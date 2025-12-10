@@ -4,6 +4,7 @@ commonfields:
 name: MaxMind GeoIP2
 display: MaxMind GeoIP2
 category: Data Enrichment & Threat Intelligence
+provider: MaxmindGeoip2
 description: Enriches IP addresses.
 configuration:
 - defaultvalue: https://geoip.maxmind.com/

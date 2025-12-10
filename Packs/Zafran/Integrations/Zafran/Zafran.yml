@@ -4,6 +4,7 @@ commonfields:
 name: Zafran API
 display: Zafran API
 category: Utilities
+provider: Zafran
 description: 'The Zafran API provides a programmatic way to interact with the Zafran Exposure Management Platform for various use cases.'
 configuration:
 - name: url

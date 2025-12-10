@@ -4,6 +4,7 @@ commonfields:
 name: Zoom Mail
 display: Zoom Mail
 category: Email
+provider: ZoomMail
 description: Enables interaction with the Zoom Mail API.
 sectionorder:
 - Connect

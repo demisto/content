@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: MajesticMillionFeed
 commonfields:
   id: Majestic Million
   version: -1

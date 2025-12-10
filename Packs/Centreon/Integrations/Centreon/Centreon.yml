@@ -4,6 +4,7 @@ commonfields:
 name: Centreon
 display: Centreon
 category: Case Management
+provider: Centreon
 description: IT & Network Monitoring.
 configuration:
 - display: Server URL (e.g. http://147.75.33.100:20016/)

@@ -4,6 +4,7 @@ commonfields:
 name: Luminate
 display: Luminate (Deprecated)
 category: Network Security
+provider: Luminate
 description: Deprecated. No available replacement. Enrich your report and Respond to incidents with Luminate
 configuration:
 - display: Api Key

@@ -7,6 +7,7 @@ sectionorder:
 - Connect
 - Collect
 category: Data Enrichment & Threat Intelligence
+provider: ThreatMon
 description: Integration with Threatmon for vulnerability threat intelligence.
 configuration:
   - display: API URL

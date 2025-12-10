@@ -4,6 +4,7 @@ commonfields:
 name: Gigamon ThreatINSIGHT
 display: Gigamon ThreatINSIGHT
 category: Network Security
+provider: GigamonThreatinsight
 sectionorder:
 - Connect
 - Collect

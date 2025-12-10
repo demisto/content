@@ -1,4 +1,5 @@
 category: Utilities
+provider: RemoteAccess
 sectionorder:
 - Connect
 - Collect

@@ -5,6 +5,7 @@ deprecated: true
 name: Cisco Email Security Appliance (IronPort)
 display: Cisco Email Security Appliance (IronPort) (Deprecated)
 category: Network Security
+provider: Cisco
 description: Deprecated. Use Cisco Email Security Appliance (IronPort) V2 instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

@@ -1,5 +1,6 @@
 name: GoogleDrive
 category: IT Services
+provider: Google
 display: Google Drive
 sectionorder:
 - Connect

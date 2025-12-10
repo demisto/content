@@ -4,6 +4,7 @@ commonfields:
 name: SecurityAdvisor
 display: SecurityAdvisor (Deprecated)
 category: Messaging and Conferencing
+provider: SecurityAdvisor
 description: Deprecated. No available replacement.
 deprecated: true
 configuration:

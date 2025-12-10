@@ -5,6 +5,7 @@ name: malwr
 display: malwr (Deprecated)
 fromversion: 5.0.0
 category: Forensics & Malware Analysis
+provider: Malwr
 description: Deprecated. The site at malwr.com is no longer available. No available replacement.
 configuration:
 - display: URL

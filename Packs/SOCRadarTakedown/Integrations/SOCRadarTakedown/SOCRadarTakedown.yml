@@ -7,6 +7,7 @@ sectionorder:
 name: SOCRadar Takedown
 display: SOCRadar Takedown
 category: Data Enrichment & Threat Intelligence
+provider: SOCRadarTakedown
 description: Submit and track takedown requests for phishing domains, social media impersonation, source code leaks, and rogue mobile apps through SOCRadar platform.
 configuration:
 - name: credentials

@@ -6,6 +6,7 @@ name: DomainTools
 fromversion: 5.0.0
 display: DomainTools (Deprecated)
 category: Data Enrichment & Threat Intelligence
+provider: DomaintoolsEnterprise
 description: Deprecated. Use DomainTools Iris Pack instead.
 configuration:
 - display: DomainTools API URL

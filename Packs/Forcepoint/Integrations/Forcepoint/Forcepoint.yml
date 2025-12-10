@@ -6,6 +6,7 @@ sectionorder:
 name: Forcepoint
 display: Forcepoint Web Security
 category: Network Security
+provider: ForcepointWebSecurity
 description: Advanced threat protection with added local management controls.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

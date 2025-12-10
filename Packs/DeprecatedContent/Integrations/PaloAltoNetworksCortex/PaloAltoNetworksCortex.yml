@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: DeprecatedContent
 commonfields:
   id: Palo Alto Networks Cortex
   version: -1

@@ -5,6 +5,7 @@ commonfields:
 name: Check Point Sandblast Appliance
 display: Check Point Sandblast Appliance (Deprecated)
 category: Forensics & Malware Analysis
+provider: CheckPointSandblast
 description: Deprecated. Use Check Point Threat Emulation (SandBlast) instead. Query, upload and download data using Check Point Sandblast on local gateway.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

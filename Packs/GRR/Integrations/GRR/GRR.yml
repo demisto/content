@@ -4,6 +4,7 @@ commonfields:
 name: GRR
 display: GRR
 category: Endpoint
+provider: GRR
 description: Use GRR Rapid Response framework
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

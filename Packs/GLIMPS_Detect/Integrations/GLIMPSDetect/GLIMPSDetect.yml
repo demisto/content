@@ -2,6 +2,7 @@ commonfields:
   id: GLIMPS_Detect
   version: -1
 category: Forensics & Malware Analysis
+provider: GlimpsDetect
 name: GLIMPS_Detect
 display: GLIMPS Detect
 fromversion: 6.0.0

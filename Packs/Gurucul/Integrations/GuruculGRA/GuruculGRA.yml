@@ -4,6 +4,7 @@ commonfields:
 name: Gurucul-GRA
 display: Gurucul-GRA
 category: Data Enrichment & Threat Intelligence
+provider: GuruculRiskAnalytics
 description: Gurucul Risk Analytics (GRA) is a Unified Security and Risk Analytics platform.
 configuration:
 - display: Server URL (e.g. https://example.net)

@@ -4,6 +4,7 @@ commonfields:
 name: Prisma Access
 display: Prisma Access
 category: Network Security
+provider: PaloAltoNetworks
 description: |+
   Integrate with Prisma Access to monitor the status of the Service, alert and take actions.
 

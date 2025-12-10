@@ -5,6 +5,7 @@ name: Koodous
 system: true
 display: Koodous
 category: Forensics & Malware Analysis
+provider: Koodous
 description: Check Android app samples (APK) against Koodous API
 configuration:
 - display: Server URL

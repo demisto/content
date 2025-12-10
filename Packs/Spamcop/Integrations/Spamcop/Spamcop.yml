@@ -4,6 +4,7 @@ commonfields:
 name: Spamcop
 display: Spamcop
 category: Data Enrichment & Threat Intelligence
+provider: Spamcop
 description: SpamCop is an email spam reporting service, integration allow checking the reputation of an IP address.
 configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.

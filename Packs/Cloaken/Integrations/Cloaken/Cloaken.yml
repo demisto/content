@@ -4,6 +4,7 @@ commonfields:
 name: Cloaken
 display: Cloaken
 category: Data Enrichment & Threat Intelligence
+provider: Cloaken
 description: Unshorten URLs onsite using the power of a Tor proxy server to prevent leaking IP addresses to adversaries.
 configuration:
 - display: Server URL (e.g., https://cloaken.cypherint.com)

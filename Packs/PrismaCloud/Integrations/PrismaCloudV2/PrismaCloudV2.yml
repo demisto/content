@@ -7,6 +7,7 @@ commonfields:
 name: PrismaCloud v2
 display: Prisma Cloud v2
 category: Network Security
+provider: PrismaCloudBy
 description: Prisma Cloud secures infrastructure, workloads and applications, across the entire cloud-native technology stack.
 configuration:
 - additionalinfo: 'Prisma Cloud service tenant admin console URL. The URL for the Prisma Cloud service varies depending on the cluster on which your tenant is deployed. For more information see: https://pan.dev/prisma-cloud/api/cspm/api-urls/.'

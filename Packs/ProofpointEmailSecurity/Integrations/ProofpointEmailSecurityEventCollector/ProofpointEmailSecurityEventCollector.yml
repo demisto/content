@@ -4,6 +4,7 @@ commonfields:
 name: Proofpoint Email Security Event Collector
 display: Proofpoint Email Security Event Collector
 category: Analytics & SIEM
+provider: Proofpoint
 description: Collects events for Proofpoint Email Security using the streaming API.
 sectionorder:
 - Connect

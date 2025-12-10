@@ -4,6 +4,7 @@ commonfields:
 name: RSA NetWitness Endpoint
 display: RSA NetWitness Endpoint
 category: Endpoint
+provider: RsaNetwitnessEndpoint
 description: 'RSA NetWitness Endpoint provides deep visibility beyond basic endpoint security solutions by monitoring and collecting activity across all of your endpoints on and off your network. The RSA Demisto integration provides access to information about endpoints, modules and indicators. '
 configuration:
 - display: Server URL (e.g. https://192.168.0.1:30022)

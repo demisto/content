@@ -1,4 +1,5 @@
 category: Deception & Breach Simulation
+provider: GuardiCore
 commonfields:
   id: GuardiCore v2
   version: -1

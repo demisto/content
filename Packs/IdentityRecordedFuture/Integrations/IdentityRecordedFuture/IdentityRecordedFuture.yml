@@ -4,6 +4,7 @@ commonfields:
 name: Recorded Future Identity
 display: Recorded Future Identity
 category: Data Enrichment & Threat Intelligence
+provider: RecordedFutureIdentity
 defaultmapperin: Recorded Future Identity - Incoming Mapper
 description: Fetch & triage | Search & Lookup | Access Recorded Future Identity data and Playbook Alerts.
 configuration:

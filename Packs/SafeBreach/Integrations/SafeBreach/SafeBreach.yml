@@ -1,4 +1,5 @@
 category: Deception & Breach Simulation
+provider: SafeBreach
 description: For enterprises using SafeBreach and XSOAR, integrating this package streamlines operations by allowing you to operate SafeBreach through XSOAR, making SafeBreach an integral part of the enterprise workflows. This integration includes commands for managing tests, insight indicators, simulators and deployments, users, API keys, integration issues, and more.
 sectionorder:
 - Connect

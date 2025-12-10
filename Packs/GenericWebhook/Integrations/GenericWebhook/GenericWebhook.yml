@@ -1,4 +1,5 @@
 category: Utilities
+provider: GenericWebhook
 sectionorder:
 - Connect
 - Result

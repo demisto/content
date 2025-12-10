@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: IpqualityscorethreatRiskScoring
 commonfields:
   id: IPQualityScore
   version: -1

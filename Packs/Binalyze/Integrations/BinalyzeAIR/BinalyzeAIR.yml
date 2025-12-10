@@ -4,6 +4,7 @@ commonfields:
 name: Binalyze AIR
 display: Binalyze AIR
 category: Forensics & Malware Analysis
+provider: BinalyzeAir
 description: Collect your forensics data under 10 minutes.
 configuration:
 - display: Binalyze AIR Server URL

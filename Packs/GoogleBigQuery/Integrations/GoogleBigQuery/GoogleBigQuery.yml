@@ -4,6 +4,7 @@ commonfields:
 name: Google BigQuery
 display: Google BigQuery
 category: Database
+provider: Google
 sectionorder:
 - Connect
 - Collect

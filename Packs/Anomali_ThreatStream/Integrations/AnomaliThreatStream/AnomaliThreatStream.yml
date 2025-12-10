@@ -4,6 +4,7 @@ commonfields:
 name: Anomali ThreatStream
 display: Anomali ThreatStream (Deprecated)
 category: Data Enrichment & Threat Intelligence
+provider: AnomaliThreatstream
 description: Deprecated. Use Anomali ThreatStream v3 instead. Use Anomali ThreatStream to query and submit threats
 deprecated: true
 configuration:

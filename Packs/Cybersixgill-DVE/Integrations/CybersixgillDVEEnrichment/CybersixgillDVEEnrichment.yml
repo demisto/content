@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Cybersixgill
 commonfields:
   id: Cybersixgill_DVE_Enrichment
   version: -1

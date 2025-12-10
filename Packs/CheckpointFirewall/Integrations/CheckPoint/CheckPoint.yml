@@ -5,6 +5,7 @@ name: Check Point
 display: Check Point Firewall (Deprecated)
 deprecated: true
 category: Network Security
+provider: CheckPointFirewall
 description: Deprecated. Use the Check Point Firewall v2 integration instead. Manage Check Point firewall via API
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

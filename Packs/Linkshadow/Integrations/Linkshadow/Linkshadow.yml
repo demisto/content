@@ -4,6 +4,7 @@ commonfields:
 name: Linkshadow
 display: Linkshadow
 category: Data Enrichment & Threat Intelligence
+provider: Linkshadow
 description: Fetch Network Anomalies data from LinkShadow and execute the remediation Actions.
 detaileddescription: "\n## Linkshadow\n\nLinkshadow is a Next Generation Enterprise Security Analytics platform designed to manage threats in real-time with attacker behavior analytics, LinkShadow enhances organization's defenses against advanced cyber-attacks, zero-day malware and ransomware, while simultaneously gaining rapid insight into the effectiveness of their existing security investments. \n\nThis integration was integrated and tested with version 4.5.8 of Linkshadow.\nEnables LinkShadow to integrate with PaloAlto Cortex XSOAR Platform, It pushes Linkshadow Anomaly events to XSOAR to create a new Incident and trigger the relevant Playbook Actions.This pack includes configurations to combine the world-class threat detection of Linkshadow with the synchrony and automation abilities of XSOAR, allowing security teams to investigate and manage security events before they have time to escalate.\n\nThis section explains how to configure the instance of Linkshadow in Cortex XSOAR.\n - API Key               : `Use API Token`\n - API Username  : `Use API Username`\n - Plugin ID            : `xsoar_integration_1604211382`\n - Action                 : `fetch_entity_anomalies`\n\n---\n"
 configuration:

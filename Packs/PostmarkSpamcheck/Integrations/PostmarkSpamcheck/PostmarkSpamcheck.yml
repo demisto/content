@@ -4,6 +4,7 @@ commonfields:
 name: Postmark Spamcheck
 display: Postmark Spamcheck
 category: Messaging and Conferencing
+provider: PostmarkSpamcheck
 description: Postmark's spam API, Spamcheck, is a RESTfull interface to the Spam filter tool SpamAssassin.
 configuration:
 - display: URL

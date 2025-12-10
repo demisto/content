@@ -5,6 +5,7 @@ name: OpsGenie
 display: OpsGenie (Deprecated)
 deprecated: true
 category: Messaging and Conferencing
+provider: OpsGenie
 description: Deprecated. Use the OpsGenie v3 integration instead
 configuration:
 - display: Base URL

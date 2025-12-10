@@ -1,4 +1,5 @@
 category: Email
+provider: GmailSingleUser
 sectionorder:
 - Connect
 - Collect

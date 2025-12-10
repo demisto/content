@@ -5,6 +5,7 @@ name: Giphy
 display: Giphy
 system: true
 category: Utilities
+provider: Giphy
 description: Display random GIF in the War Room (e.g. !giphy hello). Powered By Giphy.
 configuration:
 - display: Giphy URL

@@ -5,6 +5,7 @@ fromversion: 5.0.0
 name: CTIX
 display: Cyware Threat Intelligence eXchange
 category: Data Enrichment & Threat Intelligence
+provider: CTIX
 description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
 configuration:
 - display: Endpoint URL

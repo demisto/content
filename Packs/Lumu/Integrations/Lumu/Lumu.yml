@@ -4,6 +4,7 @@ commonfields:
 name: Lumu
 display: Lumu
 category: Utilities
+provider: Lumu
 description: SecOps operations - Reflect and manage the Lumu Incidents either from XSOAR Cortex or viceversa using the mirroring integration flow, https://lumu.io/
 configuration:
 - defaultvalue: '50'

@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: FireEye
 commonfields:
   id: FireEye Central Management
   version: -1

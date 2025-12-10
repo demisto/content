@@ -4,6 +4,7 @@ commonfields:
 name: CyrenThreatInDepth
 display: Cyren Threat InDepth Threat Intelligence Feed
 category: Data Enrichment & Threat Intelligence
+provider: CyrenThreatIndepth
 description: Threat InDepth's actionable and contextualized intelligence helps enterprises improve their threat detection and response by providing unprecedented visibility into new email-borne security threats faster than other security vendors.
 fromversion: 6.0.0
 defaultmapperin: Cyren Threat InDepth Indicator Mapper

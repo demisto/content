@@ -5,6 +5,7 @@ deprecated: true
 name: McAfee NSM
 display: McAfee NSM (Deprecated)
 category: Network Security
+provider: McAfee
 description: Deprecated. Use McAfee NSM v2 integration instead.
 configuration:
 - display: 'URL (for example: https://192.168.0.1:5000)'

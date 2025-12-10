@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: AccentureCtiFeed
 commonfields:
   id: ACTI Indicator Feed
   version: -1

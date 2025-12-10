@@ -4,6 +4,7 @@ commonfields:
 name: Zabbix
 display: Zabbix
 category: Utilities
+provider: Zabbix
 description: Allow integration with Zabbix api.
 configuration:
 - display: Url

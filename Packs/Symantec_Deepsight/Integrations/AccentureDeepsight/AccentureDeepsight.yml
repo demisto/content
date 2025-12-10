@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: AccentureDeepsightIntelligence
 commonfields:
   id: Symantec Deepsight Intelligence
   version: -1

@@ -1,4 +1,5 @@
 category: Endpoint
+provider: TrendMicroDeep
 commonfields:
   id: Trend Micro Deep Security
   version: -1

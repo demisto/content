@@ -4,6 +4,7 @@ commonfields:
 name: NTT Cyber Threat Sensor
 display: NTT Cyber Threat Sensor
 category: Network Security
+provider: NttCyberThreat
 description: Retrieve alerts and recommendations from NTT CTS
 configuration:
 - display: 'The API key for accessing CTS over AWS '

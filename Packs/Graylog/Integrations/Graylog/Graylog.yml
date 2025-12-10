@@ -7,6 +7,7 @@ sectionorder:
 name: Graylog
 display: Graylog
 category: Analytics & SIEM
+provider: Graylog
 description: Integration with Graylog to search for logs and events
 configuration:
 - display: Server URL (e.g. https://serverurl:9000)

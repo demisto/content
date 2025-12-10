@@ -3,6 +3,7 @@ sectionorder:
 - Collect
 defaultEnabled: true
 category: Endpoint
+provider: Core
 commonfields:
   id: XQL Query Engine
   version: -1

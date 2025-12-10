@@ -4,6 +4,7 @@ commonfields:
 name: Sepio
 display: Sepio
 category: Network Security
+provider: Sepio
 description: Get Agent, Switches and Events from your Sepio Prime
 configuration:
 - display: Server URL (e.g. https://sepio-prime.com)

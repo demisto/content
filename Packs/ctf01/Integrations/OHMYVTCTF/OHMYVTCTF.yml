@@ -4,6 +4,7 @@ commonfields:
 name: OHMYVT_CTF
 display: OHMYVT_CTF
 category: Data Enrichment & Threat Intelligence
+provider: CaptureTheFlag
 description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
 configuration:
 - display: Fetch incidents

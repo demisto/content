@@ -1,4 +1,5 @@
 category: IT Services
+provider: Azure
 commonfields:
   id: Azure Storage Queue
   version: -1

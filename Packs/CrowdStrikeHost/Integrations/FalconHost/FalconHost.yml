@@ -5,6 +5,7 @@ name: FalconHost
 display: FalconHost (Deprecated)
 fromversion: 5.0.0
 category: Endpoint
+provider: FalconHost
 description: Deprecated. Use the CrowdStrike Falcon integration instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

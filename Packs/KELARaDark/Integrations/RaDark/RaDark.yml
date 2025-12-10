@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: KelaRadark
 commonfields:
   id: RaDark
   version: -1

@@ -1,4 +1,5 @@
 category: Utilities
+provider: Discord
 commonfields:
   id: Discord
   version: -1

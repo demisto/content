@@ -4,6 +4,7 @@ commonfields:
 name: OPSWAT Filescan
 display: OPSWAT Filescan Sandbox (Deprecated)
 category: Forensics & Malware Analysis
+provider: OpswatFilescanSandbox
 description: Deprecated. Use MetaDefender Sandbox instead.
 deprecated: true
 configuration:

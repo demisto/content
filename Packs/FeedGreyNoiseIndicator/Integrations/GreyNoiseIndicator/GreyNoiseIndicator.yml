@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: GreynoiseIndicatorFeed
 sectionorder:
 - Connect
 - Collect

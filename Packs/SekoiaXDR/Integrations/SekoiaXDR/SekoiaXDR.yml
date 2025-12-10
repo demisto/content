@@ -4,6 +4,7 @@ commonfields:
 name: Sekoia XDR
 display: Sekoia XDR
 category: Analytics & SIEM
+provider: SekoiaXDR
 sectionorder:
 - Connect
 - Collect

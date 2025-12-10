@@ -4,6 +4,7 @@ commonfields:
 name: ThreatZone
 display: ThreatZone
 category: Forensics & Malware Analysis
+provider: ThreatZone
 description: ThreatZone malware analysis sandboxing.
 configuration:
   - display: Server URL (e.g. https://app.threat.zone)

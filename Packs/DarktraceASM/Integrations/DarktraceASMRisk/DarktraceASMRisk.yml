@@ -4,6 +4,7 @@ commonfields:
 name: Darktrace ASM
 display: Darktrace ASM
 category: Network Security
+provider: DarktraceASM
 description: 'This pack includes configurations to combine the world-class threat
   detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing
   security teams to monitor their attack surface for risks, high-impact vulnerabilities

@@ -5,6 +5,7 @@ name: Blockade.io
 system: true
 display: Blockade.io (Deprecated)
 category: Data Enrichment & Threat Intelligence
+provider: Blockade.io
 description: Deprecated. No available replacement.
 configuration:
 - display: Email

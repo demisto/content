@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: CybleEventsV2
 commonfields:
   id: cybleeventsv2
   version: -1

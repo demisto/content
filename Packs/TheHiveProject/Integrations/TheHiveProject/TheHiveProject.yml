@@ -7,6 +7,7 @@ sectionorder:
 name: TheHive Project
 display: TheHive Project
 category: Case Management
+provider: ThehiveProject
 description: Integration with The Hive Project Security Incident Response Platform.
 configuration:
 - display: Host

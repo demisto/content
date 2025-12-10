@@ -1,4 +1,5 @@
 category: Vulnerability Management
+provider: ReliaquestDigitalRisk
 commonfields:
   id: ReliaquestTakedown
   version: -1

@@ -5,6 +5,7 @@ commonfields:
 name: Cisco CloudLock
 display: Cisco CloudLock
 category: Network Security
+provider: Cisco
 description: Query Cisco CloudLock
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

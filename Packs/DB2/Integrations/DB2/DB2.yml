@@ -1,4 +1,5 @@
 category: Database
+provider: DB2
 commonfields:
   id: DB2
   version: -1

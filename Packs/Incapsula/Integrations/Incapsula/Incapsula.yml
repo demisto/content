@@ -4,6 +4,7 @@ commonfields:
 name: Incapsula
 display: Imperva Incapsula
 category: Network Security
+provider: ImpervaIncapsula
 description: Uses incapsula to manage sites and IPs.
 configuration:
 - display: API ID
