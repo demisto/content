@@ -1429,11 +1429,9 @@ def test_core_get_contributing_event(mocker):
     assert "Contributing events" in result.readable_output
     assert result.outputs[0]["alertID"] == "1"
 
-
-def test_update_endpoints_tags_command_with_both_add_and_remove():
+def test_update_endpoints_tags_command_with_both_add_and_remove(mocker):
     """
     Given:
-        - A client with mock add_tag_endpoint and remove_tag_endpoint methods
         - Endpoint IDs and both tags to add and tags to remove
     When:
         - update_endpoints_tags_command is called
@@ -1441,11 +1439,11 @@ def test_update_endpoints_tags_command_with_both_add_and_remove():
         - Tags are successfully added and removed
         - Results contain success message with added and removed tags
     """
-    from unittest.mock import Mock, patch
+    from CortexCoreIR import update_endpoints_tags_command
 
-    client = Mock()
-    client.add_tag_endpoint.return_value = {"reply": "true"}
-    client.remove_tag_endpoint.return_value = {"reply": "true"}
+    mock_execute_command = mocker.patch("CortexCoreIR.demisto.executeCommand")
+    mock_execute_command.return_value = [{"Contents": {"reply": "true"}}]
+    mocker.patch("CortexCoreIR.filter_invalid_tags", return_value=[])
 
     args = {
         "endpoint_ids": ["endpoint1", "endpoint2"],
@@ -1453,26 +1451,24 @@ def test_update_endpoints_tags_command_with_both_add_and_remove():
         "tags_to_remove": ["tag3", "tag4"],
     }
 
-    with patch("CoreIRApiModule.filter_invalid_tags", return_value=[]):
-        from CortexCoreIR import update_endpoints_tags_command
-
-        results = update_endpoints_tags_command(client, args)
+    results = update_endpoints_tags_command(args)
 
     assert len(results) == 1
     assert "Successfully updated tags for endpoint(s)" in results[0].readable_output
     assert "Added tags: ['tag1', 'tag2']" in results[0].readable_output
     assert "Removed tags: ['tag3', 'tag4']" in results[0].readable_output
+    
+    expected_calls = [
+        mocker.call("core-add-endpoint-tag", {"endpoint_ids": ["endpoint1", "endpoint2"], "tag": "tag1"}),
+        mocker.call("core-add-endpoint-tag", {"endpoint_ids": ["endpoint1", "endpoint2"], "tag": "tag2"}),
+        mocker.call("core-remove-endpoint-tag", {"endpoint_ids": ["endpoint1", "endpoint2"], "tag": "tag3"}),
+        mocker.call("core-remove-endpoint-tag", {"endpoint_ids": ["endpoint1", "endpoint2"], "tag": "tag4"}),
+    ]
+    mock_execute_command.assert_has_calls(expected_calls)
 
-    client.add_tag_endpoint.assert_any_call(endpoint_ids=["endpoint1", "endpoint2"], tag="tag1", args=args)
-    client.add_tag_endpoint.assert_any_call(endpoint_ids=["endpoint1", "endpoint2"], tag="tag2", args=args)
-    client.remove_tag_endpoint.assert_any_call(endpoint_ids=["endpoint1", "endpoint2"], tag="tag3", args=args)
-    client.remove_tag_endpoint.assert_any_call(endpoint_ids=["endpoint1", "endpoint2"], tag="tag4", args=args)
-
-
-def test_update_endpoints_tags_command_with_invalid_tags():
+def test_update_endpoints_tags_command_with_invalid_tags(mocker):
     """
     Given:
-        - A client with mock add_tag_endpoint method
         - Endpoint IDs and tags including invalid ones
     When:
         - update_endpoints_tags_command is called
@@ -1480,10 +1476,11 @@ def test_update_endpoints_tags_command_with_invalid_tags():
         - Valid tags are processed successfully
         - Invalid tags are detected and reported
     """
-    from unittest.mock import Mock, patch
+    from CortexCoreIR import update_endpoints_tags_command
 
-    client = Mock()
-    client.add_tag_endpoint.return_value = {"reply": "true"}
+    mock_execute_command = mocker.patch("CortexCoreIR.demisto.executeCommand")
+    mock_execute_command.return_value = [{"Contents": {"reply": "true"}}]
+    mocker.patch("CortexCoreIR.filter_invalid_tags", side_effect=[["invalid_tag_that_is_too_long"], []])
 
     args = {
         "endpoint_ids": ["endpoint1"],
@@ -1491,39 +1488,28 @@ def test_update_endpoints_tags_command_with_invalid_tags():
         "tags_to_remove": [],
     }
 
-    with patch(
-        "CoreIRApiModule.filter_invalid_tags",
-        side_effect=[["invalid_tag_that_is_too_long"], []],
-    ):
-        from CortexCoreIR import update_endpoints_tags_command
-
-        results = update_endpoints_tags_command(client, args)
+    results = update_endpoints_tags_command(args)
 
     assert len(results) == 2
     assert "Successfully updated tags" in results[0].readable_output
     assert "Invalid tags detected: invalid_tag_that_is_too_long" in results[1].readable_output
     assert results[1].entry_type == 4
 
-
 def test_update_endpoints_tags_command_no_tags_provided():
     """
     Given:
-        - A client and endpoint IDs
-        - No tags to add or remove
+        - Endpoint IDs but no tags to add or remove
     When:
         - update_endpoints_tags_command is called
     Then:
         - A DemistoException is raised indicating tags must be specified
     """
-    from unittest.mock import Mock
-
-    client = Mock()
+    from CortexCoreIR import update_endpoints_tags_command
 
     args = {"endpoint_ids": ["endpoint1"], "tags_to_add": [], "tags_to_remove": []}
 
-    from CortexCoreIR import update_endpoints_tags_command
-
     with pytest.raises(DemistoException) as exc_info:
-        update_endpoints_tags_command(client, args)
+        update_endpoints_tags_command(args)
 
     assert "At least one tag to add or remove must be specified" in str(exc_info.value)
+

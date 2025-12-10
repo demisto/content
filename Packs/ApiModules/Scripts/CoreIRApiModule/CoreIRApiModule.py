@@ -4061,6 +4061,7 @@ def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
         readable_output=f"Successfully removed tag {tag} from endpoint(s) {endpoint_ids}", raw_response=raw_response
     )
 
+
 def parse_risky_users_or_hosts(
     user_or_host_data: dict[str, Any], id_header: str, score_header: str, description_header: str
 ) -> dict[str, Any]:

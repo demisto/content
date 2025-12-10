@@ -4370,4 +4370,3 @@ def test_create_filter_from_args():
         ]
     }
     assert expected_result == query
-
