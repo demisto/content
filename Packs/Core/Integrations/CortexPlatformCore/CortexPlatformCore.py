@@ -2741,7 +2741,7 @@ def get_webapp_data(client, table_name: str, filter_dict: Any,
 def get_exception_rules(client, args: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], str, List[Dict[str, Any]]]:
     """
     Retrieves Disable Prevention Rules and Legacy Agent Exceptions using the
-    generic /api/webapp/get_data endpoint, handling pagination elegantly.
+    generic /api/webapp/get_data endpoint, handling pagination.
     """
     exception_rule_type = args.get('type')
     sort_field = args.get('sort_field')
