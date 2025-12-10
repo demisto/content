@@ -39,7 +39,6 @@ Fill in the parameters as follows:
 | **Client ID and Client Secret** | The Client ID (identifier) and Client Secret (password) for OAuth 2.0 authentication. | True |
 | **Fetch events** | Select this to enable the collection of audit events. | False |
 | **Maximum number of events per fetch** | The maximum number of audit trail events to pull in a single fetch. The API's maximum is 500 per call; the integration will loop to retrieve this total. | False |
-| **First fetch time** | The time to start fetching events from, e.g., '3 days ago' or '2023-01-01T00:00:00Z'. | False |
 | **Trust any certificate (not secure)** | Select this to bypass SSL certificate validation. Not recommended for production environments. | False |
 | **Use system proxy settings** | Select this to route integration traffic through the XSIAM proxy. | False |
 
@@ -52,7 +51,7 @@ You can execute the following command from the XSIAM CLI, as part of an automati
 
 #### `liveperson-get-events`
 
-Manually fetches LivePerson audit events for debugging and investigation. Use caution with this command: set `should_push_events` to `false` to prevent event duplication in your XSIAM dataset.
+Manually fetches LivePerson audit events for debugging and investigation. This command is used for developing/debugging and is to be used with caution as it can create events, leading to event duplication and exceeding API request limits.
 
 ##### Input (Arguments)
 
