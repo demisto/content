@@ -182,7 +182,7 @@ def test_process_string(input_str, expected_output):
     THEN:
         It should correctly process the input string, splitting it based on logical operators and transforming each part using
         the 'transform_string' function.
-        
+
     NOTE:
         This test includes cases for XSUP-60309 to ensure that substrings like "TO" within field values
         (e.g., "WTC-HT-TOW-A", "TORONTO", "ACTOR", "AUTO") are not incorrectly treated as logical operators.
