@@ -3,7 +3,6 @@ commonfields:
   version: -1
 comment: This script is used to convert entities to a table.
 name: MicrosoftSentinelConvertEntitiesToTable
-outputs:
 script: '-'
 tags:
 - dynamic-section
@@ -12,3 +11,5 @@ type: python
 subtype: python3
 dockerimage: demisto/python3:3.12.12.6204436
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

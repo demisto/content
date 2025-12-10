@@ -1,4 +1,4 @@
-comment: Presenting numbers of packs installed
+comment: Presenting numbers of packs installed.
 commonfields:
   id: HealthCheckPacksInstalled
   version: -1

@@ -19,7 +19,7 @@ def get_range_command(indexes: List[str], val: List[Any]) -> List[Any]:
             start, end = index.split("-")
             start = int(start) if start else 0
             end = int(end) if end else len(val)
-            for element in val[start: end + 1]:
+            for element in val[start : end + 1]:
                 result.append(element)
         else:
             result.append(val[int(index)])
