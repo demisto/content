@@ -746,7 +746,7 @@ class Client(CoreClient):
             url_suffix="/get_data",
             json_data=request_data,
         )
-
+        
     def get_webapp_histograms(self, request_data: dict) -> dict:
         return self._http_request(
             method="POST",
@@ -2806,7 +2806,7 @@ def build_endpoint_filters(args: dict):
     return filter_dict
 
 
-def core_list_endpoints_command(client: Client, args: dict) -> list[CommandResults]:
+def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a list of endpoints from the server, applies filters, maps the data, and returns
     it as CommandResults for Cortex XSOAR.
@@ -2840,29 +2840,13 @@ def core_list_endpoints_command(client: Client, args: dict) -> list[CommandResul
     data = map_endpoint_format(data)
     demisto.debug(f"Endpoint data after mapping and formatting: {data}")
 
-    filter_count = int(reply.get("FILTER_COUNT", "0"))
-    returned_count = len(data)
-
-    command_results = []
-
-    command_results.append(
-        CommandResults(
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointsMetadata",
-            outputs={"filtered_count": filter_count, "returned_count": returned_count},
-        )
-    )
-
-    command_results.append(
-        CommandResults(
+    return CommandResults(
             readable_output=tableToMarkdown("Endpoints", data, headerTransform=string_to_table_header),
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Endpoint",
             outputs_key_field="endpoint_id",
             outputs=data,
             raw_response=data,
-        )
     )
-
-    return command_results
 
 
 def main():  # pragma: no cover
