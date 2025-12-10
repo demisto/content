@@ -10,44 +10,16 @@
     "categories": [
         "Email"
     ],
-    "tags": [
-        "Email",
-        "SendGrid",
-        "Twilio",
-        "Event Collector"
-    ],
-    "useCases": [
-        "Email Security",
-        "Email Activity Monitoring",
-        "Email Analytics"
-    ],
-    "keywords": [
-        "email",
-        "sendgrid",
-        "twilio",
-        "email activity",
-        "transactional email",
-        "marketing email"
-    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
-    ],
+        "marketplacev2"
+        ],
     "dependencies": {},
     "displayedImages": [],
     "githubUser": [],
     "certification": "certified",
     "hidden": false,
-    "serverMinVersion": "8.4.0",
-    "modules": [
-        "xsiam",
-        "agentix",
-        "C1",
-        "C3",
-        "X0",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "serverMinVersion": "8.4.0"
 }

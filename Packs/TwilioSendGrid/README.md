@@ -75,6 +75,7 @@ Before using this pack, ensure you have:
 ## Additional Information
 
 For more information about Twilio SendGrid and the Email Activity Feed API, refer to:
+
 - [SendGrid Documentation](https://docs.sendgrid.com/)
 - [Email Activity Feed API](https://docs.sendgrid.com/api-reference/e-mail-activity/filter-all-messages)
 
