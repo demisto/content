@@ -59,7 +59,7 @@ script:
   runonce: false
   commands:
     - name: liveperson-get-events
-      description: 'Manually fetches LivePerson audit events for debugging. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.'
+      description: 'Manually fetches LivePerson audit events for debugging and investigation. This command is used for developing/debugging and is to be used with caution as it can create events, leading to event duplication and exceeding API request limits.'
       arguments:
         - name: limit
           default: true
