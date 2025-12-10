@@ -6,6 +6,18 @@ from CommonServerUserPython import *
 def filter_relationships_by_entity_types(
     entities, entities_types, relationships, limit
 ):
+    """
+    Filters indicator relationships by entity types using pagination.
+    
+    Args:
+        entities: List of entities to search for relationships
+        entities_types: List of entity types to filter by (EntityA or EntityB must match)
+        relationships: List of relationship types to search for
+        limit: Maximum number of filtered relationships to return
+        
+    Returns:
+        list: Filtered relationships where EntityA or EntityB type matches entities_types
+    """
     filtered_relationships: list = []
     searchAfter = None
 
@@ -58,6 +70,20 @@ def get_relationships(
     relationships: Optional[list[str]] = None,
     limit: int = 20,
 ) -> list:
+    """
+    Retrieves indicator relationships based on specified entities, entity types, and relationships.
+
+    Args:
+        entities (Optional[list[str]]): List of entity values to search for relationships
+        entities_types (Optional[list[str]]): List of entity types to filter relationships by
+        relationships (Optional[list[str]]): List of relationship types to search for
+        limit (int): Maximum number of relationships to return (default: 20)
+
+    Returns:
+        list: List of relationships matching the search criteria. If entities_types is provided,
+                returns filtered relationships where EntityA or EntityB type matches entities_types.
+                Returns empty list if no parameters are provided or no relationships found.
+    """
     if not entities and not entities_types and not relationships:
         return []
 
