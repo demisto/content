@@ -101,13 +101,13 @@ class Client(BaseClient):
             )
 
             items = raw_res.get("items", [])
+            items.reverse()
 
             # get the items after the last fetched record id to avoid duplicates
             if items and last_record_id:
                 for idx, item in enumerate(items):
                     if item.get("recordId") == last_record_id:
-                        # DESCENDING ORDER → items AFTER this record are those BEFORE its index
-                        items = items[:idx]
+                        items = items[idx+1:]
                         break
 
             records.extend(items)
@@ -116,10 +116,12 @@ class Client(BaseClient):
             if not continuation_token:
                 break
 
+        records = records[:limit]
+
         for record in records:
             record["_time"] = record.get("utcTimestamp")
 
-        return records[:limit], raw_res
+        return records, raw_res
 
 
 """ HELPER FUNCTIONS """
@@ -163,10 +165,8 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
         limit=max_fetch, start_date_time=start_date_time, last_record_id=last_run.get("RecordId")
     )
 
-    # take the last record time because the response sort data in descending order,
-    # the first value is the latest date
     if records:
-        last_run = {"LastRun": records[0]["_time"], "RecordId": records[0]["recordId"]}
+        last_run = {"LastRun": records[-1]["_time"], "RecordId": records[-1]["recordId"]}
 
     return records, last_run
 
