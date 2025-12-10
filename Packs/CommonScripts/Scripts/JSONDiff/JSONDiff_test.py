@@ -5,6 +5,7 @@ from JSONDiff import compare_jsons
 # Mock demisto
 demisto = MagicMock()
 
+
 def test_compare_jsons_simple():
     """
     When: Comparing two JSON objects with simple key-value pairs.
@@ -20,6 +21,7 @@ def test_compare_jsons_simple():
         "removed": [{"field": "b", "value": 2}]
     }
 
+
 def test_compare_jsons_nested():
     """
     When: Comparing two nested JSON objects.
@@ -34,6 +36,7 @@ def test_compare_jsons_nested():
         "added": [{"field": "a.d", "value": 3}],
         "removed": [{"field": "a.c", "value": 2}]
     }
+
 
 def test_compare_jsons_changed():
     """
@@ -51,6 +54,7 @@ def test_compare_jsons_changed():
         "added": [],
         "removed": []
     }
+
 
 @pytest.mark.parametrize("json1,json2,expected", [
     ({"a": [1, 2]}, {"a": [1, 3]}, {"changed": [{"field": "a", "from": [1, 2], "to": [1, 3]}], "added": [], "removed": []}),
