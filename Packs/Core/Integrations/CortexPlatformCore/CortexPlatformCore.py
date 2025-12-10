@@ -1,3 +1,5 @@
+from typing import List, Dict, Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
@@ -14,6 +16,7 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
+MAX_GET_EXCEPTION_RULES_LIMIT = 100
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -258,6 +261,9 @@ POLICY_CATEGORY_MAPPING = {
     "VCS Collaborator": "VCS_COLLABORATOR",
     "VCS Organization": "VCS_ORGANIZATION",
 }
+
+EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP = {"MODULES" , "PROFILE_IDS"}
+
 
 
 class FilterBuilder:
@@ -967,6 +973,7 @@ def build_webapp_request_data(
     sort_field: str | None,
     on_demand_fields: list | None = None,
     sort_order: str | None = "DESC",
+
     start_page: int = 0,
 ) -> dict:
     """
@@ -2623,20 +2630,80 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
-def extract_mappings_from_view_def(view_def):
-    pass
+def build_column_mapping(column):
+    """
+    (Refactored from previous step) Extracts the mapping of module NAME (ugly name)
+    to PRETTY_NAME from the column definitions metadata.
+    """
+    mapping = {}
+    enum_values = column.get("FILTER_PARAMS", {}).get("ENUM_VALUES", [])
+    for enum in enum_values:
+        mapping[enum.get("NAME")] = enum.get("PRETTY_NAME")
+    return mapping
+
+def extract_mappings_from_view_def(view_def: dict, columns_to_map:set[str]):
+    mapping = {}
+    column_definitions = view_def.get("COLUMN_DEFINITIONS", [])
+    for column in column_definitions:
+        column_name = column.get("FIELD_NAME")
+        if column_name in columns_to_map :
+            mapping[column_name] = build_column_mapping(column)
+    return mapping
+
+
+def combine_pretty_names(list_of_criteria: List[List[Dict[str, Any]]]) -> List[str]:
+    """
+    Takes a list of criteria (where each criterion is a list of dictionaries)
+    and combines the 'pretty_name' values from the dictionaries in each criterion
+    into a single string.
+
+    Args:
+        list_of_criteria: A list of lists, where the inner list contains
+                          dictionaries with a 'pretty_name' key.
+
+    Returns:
+        A list of strings, where each string is the concatenation of the
+        'pretty_name' values for one inner list.
+    """
+    result_strings = []
+    for criterion in list_of_criteria:
+        if isinstance(criterion, dict):
+            combined_string = "".join(item.get("pretty_name", "") for item in criterion)
+            result_strings.append(combined_string)
+        else:
+            result_strings.append(criterion)
+    return result_strings
 
 
 def postprocess_exception_rules_response(view_def, data):
-    mappings = extract_mappings_from_view_def(view_def)
+    view_def_data = view_def[0]
+    mappings = extract_mappings_from_view_def(view_def_data, EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP)
+    print(mappings)
+    modified_data = []
+    for record in data:
+        new_record = record.copy()  # to preserve raw response
+        for field in EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP:
+            new_record[field] = [mappings.get(field, {}).get(val, val) for val in new_record.get(field, [])]
+        print(new_record)
+        new_record["ASSOCIATED_TARGETS"] = combine_pretty_names(record.get("ASSOCIATED_TARGETS", []))
+        new_record["CONDITIONS_RAW"] = new_record.get("CONDITIONS")
+        new_record["CONDITIONS"] = new_record.get("CONDITIONS_PRETTY")
+        new_record["RULE_TYPE"] = new_record.get("SUBTYPE")
+        new_record["CREATION_TIMESTAMP"] = new_record.get("CREATION_TIME")
+        new_record["MODIFICATION_TIMESTAMP"] = new_record.get("MODIFICATION_TIME")
+        new_record["MODIFICATION_TIME"] = timestamp_to_datestring(new_record["MODIFICATION_TIMESTAMP"])
+        new_record["CREATION_TIME"] = timestamp_to_datestring(new_record["CREATION_TIMESTAMP"])
+        new_record.pop("CONDITIONS_PRETTY")
+        new_record.pop("SUBTYPE")
+
 
     readable_output = tableToMarkdown(
-            view_def.get(),
-            data,
+            view_def_data.get("TABLE_NAME"),
+            modified_data,
             headerTransform=string_to_table_header,
             sort_headers=False,
         )
-    return data
+    return modified_data , readable_output
 
 
 def get_exception_rules(client, args):
@@ -2644,31 +2711,34 @@ def get_exception_rules(client, args):
         Retrieves Disable Prevention Rules and Legacy Agent Exceptions using the generic /api/webapp/get_data endpoint.
     """
 
-    type = args.get('type')
+    exception_rule_type = args.get('type')
     sort_field = args.get('sort_field')
     sort_order = args.get('sort_order')
     limit = arg_to_number(args.get("limit")) or 100
-    filter = build_exception_rules_filter(args)
-    table_names = [EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING.get(type)] if type else [LEGACY_AGENT_EXCEPTIONS_TABLE , DISABLE_PREVENTION_RULES_TABLE]
+    exception_rule_filter = build_exception_rules_filter(args)
+    table_names = [EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING.get(exception_rule_type)] if exception_rule_type else [LEGACY_AGENT_EXCEPTIONS_TABLE , DISABLE_PREVENTION_RULES_TABLE]
     readable_output = ""
     raw_responses = []
     outputs = []
     for table_name in table_names:
         request_data = build_webapp_request_data(
             table_name=table_name,
-            filter_dict=filter.to_dict(),
+            filter_dict=exception_rule_filter.to_dict(),
             sort_field=sort_field,
             sort_order=sort_order,
             limit=limit
         )
         response = client.get_webapp_data(request_data)
+        print(response)
         raw_responses.append(response)
         reply = response.get("reply", {})
         data = reply.get("DATA", [])
-        view_def = client.get_webapp_view_def({"table_name": table_name})
-        output , hr  = postprocess_exception_rules_response(view_def, data)
-        outputs.append(output)
-        readable_output += hr
+        if data:
+            view_def = client.get_webapp_view_def({"table_name": table_name})
+            print(view_def)
+            output , hr  = postprocess_exception_rules_response(view_def, data)
+            outputs.extend(output)
+            readable_output += hr #todo: add hr when there is no data
 
 
     return CommandResults(
@@ -2804,6 +2874,7 @@ def main():  # pragma: no cover
 
     except Exception as err:
         demisto.error(traceback.format_exc())
+        print(traceback.format_exc())
         return_error(str(err))
 
 
