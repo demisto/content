@@ -2,7 +2,7 @@ comment: Shows the Rubrik Suspicious File Count.
 commonfields:
   id: RubrikSuspiciousFileCount
   version: -1
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.12.6204436
 enabled: true
 name: RubrikSuspiciousFileCount
 runas: DBotWeakRole

@@ -20,8 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Rubrik Radar",
-        "Rubrik Threat Monitoring Object"
+        "Rubrik Radar"
     ],
     "associatedToAll": false,
     "unmapped": false,
