@@ -6831,7 +6831,7 @@ async def check_status_of_report(client: InsightVMClient, report_id: str, instan
         if status in ["generated", "running", "unknown"]:
             demisto.debug(f"Report {instance_id} for {event_type} still processing/unknown. Waiting 120 seconds")
 
-        await asyncio.sleep(120)
+        await asyncio.sleep(60)
 
 
 async def stream_report(client: "InsightVMClient", report_id: str, instance_id: str) -> AsyncGenerator[str, None]:
@@ -7670,7 +7670,7 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
                 demisto.debug(f"No state found for {event_type}. Starting new report  generation.")
                 if not report_id:
                     raise Exception(f"Report ID for {event_type} is missing from context despite setup phase.")
-                
+
                 # 2. GENERATE REPORT
                 demisto.debug(f"Generation report for {event_type}")
                 instance_id = await generate_report(client, report_id)

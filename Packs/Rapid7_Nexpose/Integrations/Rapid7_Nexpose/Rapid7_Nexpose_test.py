@@ -2356,7 +2356,11 @@ async def test_run_all_collectors_success(mocker):
     mock_client = mocker.AsyncMock()
     
     # Mock create_report_config_from_template to return a string instead of a coroutine
+    # Use a synchronous mock to avoid coroutine warnings
     mocker.patch("Rapid7_Nexpose.create_report_config_from_template", return_value="test-report-id")
+    
+    # Mock ensure_report_config_exists to be a synchronous function
+    mocker.patch("Rapid7_Nexpose.ensure_report_config_exists")
     
     # Mock the run_full_collector_workflow function to return successfully
     run_full_collector_mock = mocker.patch("Rapid7_Nexpose.run_full_collector_workflow", return_value=None)
@@ -2450,12 +2454,7 @@ async def test_run_full_collector_workflow_success(mocker):
     mock_check_status.assert_called_once_with(mock_client, "test-report-id", "test-instance-id", "asset")
     # Update the expected arguments to match what the function actually passes
     mock_download_parse.assert_called_once_with(
-        mock_client,
-        "test-report-id",
-        "test-instance-id",
-        mock_integration_context.get("asset", {}),
-        "asset",
-        500
+        mock_client, "test-report-id", "test-instance-id", mock_integration_context.get("asset", {}), "asset", 500
     )
 
     # Verify cleanup was performed
@@ -2509,7 +2508,7 @@ async def test_run_full_collector_workflow_error_handling(mocker):
 
     # Verify the exception contains the expected error message
     assert "Got the following error: Test error during download and parse" in str(excinfo.value)
-    
+
     # Verify cleanup was still performed despite the error
     # Note: In the actual implementation, cleanup is performed in a finally block
     # which is not reached in the test since we're mocking the functions
