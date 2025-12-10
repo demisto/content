@@ -553,6 +553,8 @@ There is no context output for this command.
 ### incap-modify-site-acl-config
 
 ***
+**Deprecated. Use the new Policy Management commands (incap-get-all-policies, incap-create-policy, incap-modify-policy) instead.**
+
 Use this operation to change the ACL configuration of a site. To modify the configuration for a specific ACL rule, its values are required, as documented below. To delete an entire ACL list, send an empty string as the list values
 
 #### Base Command
@@ -1805,3 +1807,105 @@ Use this operation to view the highest peak values and highest average values fo
 #### Context Output
 
 There is no context output for this command.
+
+### incap-get-all-policies
+
+***
+Retrieves all policies associated with the account or a specific policy if policy_id is provided.
+
+#### Base Command
+
+`incap-get-all-policies`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | Unique identifier of the policy. If provided, retrieves a specific policy. | Optional |
+| account_id | Account ID to retrieve policies for a different sub-account. | Optional |
+| extended | Default is false (basic policy details). Set to true for full policy data, including configuration. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Incapsula.Policies | unknown | The policies information |
+
+### incap-create-policy
+
+***
+Add a new policy or copy an existing policy.
+
+#### Base Command
+
+`incap-create-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_name | The name of the policy. | Required |
+| enabled | Whether the policy is enabled. Possible values are: true, false. | Required |
+| policy_id | The ID of the policy (required for copying an existing policy). | Required |
+| setting_action | The action to take when the policy is triggered. Possible values are: BLOCK, ALLOW, ALERT, BLOCK_USER, BLOCK_IP, IGNORE, HIDDEN_ALERT, MASK. | Required |
+| policy_setting_type | The type of policy setting. Possible values are: IP, GEO, URL, CROSS_SITE_SCRIPTING, ILLEGAL_RESOURCE_ACCESS, REMOTE_FILE_INCLUSION, SQL_INJECTION, RESP_DATA_LEAK. | Required |
+| policy_summary | A summary of the policy. | Required |
+| account_id | Account ID to create the policy for a different sub-account. | Optional |
+| policy_description | A description of the policy. | Optional |
+| policy_type | The type of policy. Possible values are: ACL, WHITELIST, WAF_RULES. | Optional |
+| ips | Comma-separated list of IPs. | Optional |
+| countries | Comma-separated list of countries. | Optional |
+| continents | Comma-separated list of continents. | Optional |
+| urls | Comma-separated list of URLs. | Optional |
+| default_policy_config_raw_json | Raw JSON for default policy configuration. | Optional |
+| default_policy_config_json_entry_id | Entry ID for default policy configuration JSON. | Optional |
+| policy_settings_raw_json | Raw JSON for policy settings. | Optional |
+| policy_settings_entry_id | Entry ID for policy settings JSON. | Optional |
+| policy_data_exceptions_config_raw_json | Raw JSON for policy data exceptions configuration. | Optional |
+| policy_data_exceptions_json_entry_id | Entry ID for policy data exceptions JSON. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Incapsula.Policies | unknown | The created policy information |
+
+### incap-modify-policy
+
+***
+Modify an existing policy (partial or full update).
+
+#### Base Command
+
+`incap-modify-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_name | The name of the policy. | Required |
+| enabled | Whether the policy is enabled. Possible values are: true, false. | Required |
+| policy_id | The ID of the policy to modify. | Required |
+| setting_action | The action to take when the policy is triggered. Possible values are: BLOCK, ALLOW, ALERT, BLOCK_USER, BLOCK_IP, IGNORE, HIDDEN_ALERT, MASK. | Required |
+| policy_setting_type | The type of policy setting. Possible values are: IP, GEO, URL, CROSS_SITE_SCRIPTING, ILLEGAL_RESOURCE_ACCESS, REMOTE_FILE_INCLUSION, SQL_INJECTION, RESP_DATA_LEAK. | Required |
+| policy_summary | A summary of the policy. | Required |
+| update_type | The type of update (Full or Partial). Default is Partial. Possible values are: Full, Partial. | Optional |
+| account_id | Account ID. | Optional |
+| policy_description | A description of the policy. | Optional |
+| policy_type | The type of policy. Possible values are: ACL, WHITELIST, WAF_RULES. | Optional |
+| ips | Comma-separated list of IPs. | Optional |
+| countries | Comma-separated list of countries. | Optional |
+| continents | Comma-separated list of continents. | Optional |
+| urls | Comma-separated list of URLs. | Optional |
+| default_policy_config_raw_json | Raw JSON for default policy configuration. | Optional |
+| default_policy_config_json_entry_id | Entry ID for default policy configuration JSON. | Optional |
+| policy_settings_raw_json | Raw JSON for policy settings. | Optional |
+| policy_settings_entry_id | Entry ID for policy settings JSON. | Optional |
+| policy_data_exceptions_config_raw_json | Raw JSON for policy data exceptions configuration. | Optional |
+| policy_data_exceptions_json_entry_id | Entry ID for policy data exceptions JSON. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Incapsula.Policies | unknown | The modified policy information |

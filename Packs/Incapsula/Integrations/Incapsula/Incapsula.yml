@@ -405,6 +405,7 @@ script:
       description: Consider site to be under DDoS if the request rate is above this threshold. The valid values are 10, 20, 50, 100, 200, 500, 750, 1000, 2000, 3000, 4000, 5000.
     description: Use this operation to change the security configuration of a site.
   - name: incap-modify-site-acl-config
+    deprecated: true
     arguments:
     - name: site_id
       required: true
@@ -423,7 +424,7 @@ script:
       description: "A comma seperated list of continent codes."
     - name: ips
       description: 'A comma seperated list of IPs or IP ranges, e.g: 192.168.1.1, 192.168.1.1-192.168.1.100 or 192.168.1.1/24.'
-    description: Use this operation to change the ACL configuration of a site. To modify the configuration for a specific ACL rule, its values are required, as documented below. To delete an entire ACL list, send an empty string as the list values.
+    description: Deprecated. Use the new Policy Management commands (incap-get-all-policies, incap-create-policy, incap-modify-policy) instead. Use this operation to change the ACL configuration of a site. To modify the configuration for a specific ACL rule, its values are required, as documented below. To delete an entire ACL list, send an empty string as the list values.
   - name: incap-modify-site-wl-config
     arguments:
     - name: site_id
@@ -1387,6 +1388,185 @@ script:
       required: true
     description: Use this operation to view the highest peak values and highest average values for a protected IP range during a selected time period.
     name: incap-get-infra-protection-top-items-table
+  - name: incap-get-all-policies
+    arguments:
+    - name: policy_id
+      description: Unique identifier of the policy. If provided, retrieves a specific policy.
+    - name: account_id
+      description: Account ID to retrieve policies for a different sub-account.
+    - name: extended
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Default is false (basic policy details). Set to true for full policy data, including configuration.
+    description: Retrieves all policies associated with the account or a specific policy if policy_id is provided.
+  - name: incap-create-policy
+    arguments:
+    - name: policy_name
+      required: true
+      description: The name of the policy.
+    - name: enabled
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether the policy is enabled.
+    - name: policy_id
+      required: true
+      description: The ID of the policy (required for copying an existing policy).
+    - name: setting_action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "BLOCK"
+      - "ALLOW"
+      - "ALERT"
+      - "BLOCK_USER"
+      - "BLOCK_IP"
+      - "IGNORE"
+      - "HIDDEN_ALERT"
+      - "MASK"
+      description: The action to take when the policy is triggered.
+    - name: policy_setting_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "IP"
+      - "GEO"
+      - "URL"
+      - "CROSS_SITE_SCRIPTING"
+      - "ILLEGAL_RESOURCE_ACCESS"
+      - "REMOTE_FILE_INCLUSION"
+      - "SQL_INJECTION"
+      - "RESP_DATA_LEAK"
+      description: The type of policy setting.
+    - name: policy_summary
+      required: true
+      description: A summary of the policy.
+    - name: account_id
+      description: Account ID to create the policy for a different sub-account.
+    - name: policy_description
+      description: A description of the policy.
+    - name: policy_type
+      auto: PREDEFINED
+      predefined:
+      - "ACL"
+      - "WHITELIST"
+      - "WAF_RULES"
+      description: The type of policy.
+    - name: ips
+      description: Comma-separated list of IPs.
+      isArray: true
+    - name: countries
+      description: Comma-separated list of countries.
+      isArray: true
+    - name: continents
+      description: Comma-separated list of continents.
+      isArray: true
+    - name: urls
+      description: Comma-separated list of URLs.
+      isArray: true
+    - name: default_policy_config_raw_json
+      description: Raw JSON for default policy configuration.
+    - name: default_policy_config_json_entry_id
+      description: Entry ID for default policy configuration JSON.
+    - name: policy_settings_raw_json
+      description: Raw JSON for policy settings.
+    - name: policy_settings_entry_id
+      description: Entry ID for policy settings JSON.
+    - name: policy_data_exceptions_config_raw_json
+      description: Raw JSON for policy data exceptions configuration.
+    - name: policy_data_exceptions_json_entry_id
+      description: Entry ID for policy data exceptions JSON.
+    description: Add a new policy or copy an existing policy.
+  - name: incap-modify-policy
+    arguments:
+    - name: policy_name
+      required: true
+      description: The name of the policy.
+    - name: enabled
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether the policy is enabled.
+    - name: policy_id
+      required: true
+      description: The ID of the policy to modify.
+    - name: setting_action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "BLOCK"
+      - "ALLOW"
+      - "ALERT"
+      - "BLOCK_USER"
+      - "BLOCK_IP"
+      - "IGNORE"
+      - "HIDDEN_ALERT"
+      - "MASK"
+      description: The action to take when the policy is triggered.
+    - name: policy_setting_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "IP"
+      - "GEO"
+      - "URL"
+      - "CROSS_SITE_SCRIPTING"
+      - "ILLEGAL_RESOURCE_ACCESS"
+      - "REMOTE_FILE_INCLUSION"
+      - "SQL_INJECTION"
+      - "RESP_DATA_LEAK"
+      description: The type of policy setting.
+    - name: policy_summary
+      required: true
+      description: A summary of the policy.
+    - name: update_type
+      auto: PREDEFINED
+      predefined:
+      - "Full"
+      - "Partial"
+      description: The type of update (Full or Partial). Default is Partial.
+    - name: account_id
+      description: Account ID.
+    - name: policy_description
+      description: A description of the policy.
+    - name: policy_type
+      auto: PREDEFINED
+      predefined:
+      - "ACL"
+      - "WHITELIST"
+      - "WAF_RULES"
+      description: The type of policy.
+    - name: ips
+      description: Comma-separated list of IPs.
+      isArray: true
+    - name: countries
+      description: Comma-separated list of countries.
+      isArray: true
+    - name: continents
+      description: Comma-separated list of continents.
+      isArray: true
+    - name: urls
+      description: Comma-separated list of URLs.
+      isArray: true
+    - name: default_policy_config_raw_json
+      description: Raw JSON for default policy configuration.
+    - name: default_policy_config_json_entry_id
+      description: Entry ID for default policy configuration JSON.
+    - name: policy_settings_raw_json
+      description: Raw JSON for policy settings.
+    - name: policy_settings_entry_id
+      description: Entry ID for policy settings JSON.
+    - name: policy_data_exceptions_config_raw_json
+      description: Raw JSON for policy data exceptions configuration.
+    - name: policy_data_exceptions_json_entry_id
+      description: Entry ID for policy data exceptions JSON.
+    description: Modify an existing policy (partial or full update).
 system: true
 tests:
 - No test

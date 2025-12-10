@@ -25,6 +25,160 @@ var sendRequest = function(url, body, queryName) {
     return response;
 }
 
+var sendRequestV2 = function(url, method, body, queryName) {
+    var requestObj = {
+        Method: method,
+        Headers: {'content-type': ['application/json'], 'x-API-Id': [apiid], 'x-API-Key': [apikey]},
+    };
+
+    if (body) {
+        requestObj.Body = JSON.stringify(body);
+    }
+
+    var res = http(
+            url,
+            requestObj,
+            true,
+            proxy
+        );
+
+    if (res.StatusCode < 200 || res.StatusCode >= 300) {
+        throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+    }
+    
+    try {
+        var response = JSON.parse(res.Body);
+        return response;
+    } catch (e) {
+        // In case of empty body or non-json response (like delete success message sometimes)
+        return res.Body;
+    }
+}
+
+var incapGetAllPolicies = function(args) {
+    var url = base + '/v2/policies';
+    if (args.policy_id) {
+        url += '/' + args.policy_id;
+    }
+    
+    var queryParams = [];
+    if (args.account_id) {
+        queryParams.push('account_id=' + args.account_id);
+    }
+    if (args.extended) {
+        queryParams.push('extended=' + args.extended);
+    }
+    
+    if (queryParams.length > 0) {
+        url += '?' + queryParams.join('&');
+    }
+
+    var response = sendRequestV2(url, 'GET', null, 'incap-get-all-policies');
+    
+    return {
+        Type: entryTypes.note,
+        Contents: response,
+        ContentsFormat: formats.json,
+        HumanReadable: tableToMarkdown('Policies', response),
+        EntryContext: {
+            'Incapsula.Policies': response
+        }
+    };
+}
+
+var incapCreatePolicy = function(args) {
+    var url = base + '/v2/policies';
+    
+    // Construct body from args
+    var body = {};
+    
+    // Required fields
+    body.policy_name = args.policy_name;
+    body.enabled = args.enabled === 'true';
+    body.policy_id = parseInt(args.policy_id); // Required for copy, but also seems required by API definition provided
+    body.setting_action = args.setting_action;
+    body.policy_setting_type = args.policy_setting_type;
+    body.policy_summary = args.policy_summary;
+    
+    // Optional fields
+    if (args.account_id) body.account_id = args.account_id;
+    if (args.policy_description) body.policy_description = args.policy_description;
+    if (args.policy_type) body.policy_type = args.policy_type;
+    
+    // Array fields
+    if (args.ips) body.ips = args.ips;
+    if (args.countries) body.countries = args.countries;
+    if (args.continents) body.continents = args.continents;
+    if (args.urls) body.urls = args.urls;
+    
+    // JSON/ID fields
+    if (args.default_policy_config_raw_json) body.default_policy_config_raw_json = args.default_policy_config_raw_json;
+    if (args.default_policy_config_json_entry_id) body.default_policy_config_json_entry_id = parseInt(args.default_policy_config_json_entry_id);
+    if (args.policy_settings_raw_json) body.policy_settings_raw_json = args.policy_settings_raw_json;
+    if (args.policy_settings_entry_id) body.policy_settings_entry_id = parseInt(args.policy_settings_entry_id);
+    if (args.policy_data_exceptions_config_raw_json) body.policy_data_exceptions_config_raw_json = args.policy_data_exceptions_config_raw_json;
+    if (args.policy_data_exceptions_json_entry_id) body.policy_data_exceptions_json_entry_id = parseInt(args.policy_data_exceptions_json_entry_id);
+
+    var response = sendRequestV2(url, 'POST', body, 'incap-create-policy');
+    
+    return {
+        Type: entryTypes.note,
+        Contents: response,
+        ContentsFormat: formats.json,
+        HumanReadable: tableToMarkdown('Policy Created', response),
+        EntryContext: {
+            'Incapsula.Policies': response
+        }
+    };
+}
+
+var incapModifyPolicy = function(args) {
+    var policyId = args.policy_id;
+    var url = base + '/v2/policies/' + policyId;
+    var method = (args.update_type && args.update_type.toLowerCase() === 'full') ? 'PUT' : 'POST';
+    
+    var body = {};
+    
+    // Required fields
+    body.policy_name = args.policy_name;
+    body.enabled = args.enabled === 'true';
+    body.policy_id = parseInt(args.policy_id);
+    body.setting_action = args.setting_action;
+    body.policy_setting_type = args.policy_setting_type;
+    body.policy_summary = args.policy_summary;
+    
+    // Optional fields
+    if (args.account_id) body.account_id = args.account_id;
+    if (args.policy_description) body.policy_description = args.policy_description;
+    if (args.policy_type) body.policy_type = args.policy_type;
+    
+    // Array fields
+    if (args.ips) body.ips = args.ips;
+    if (args.countries) body.countries = args.countries;
+    if (args.continents) body.continents = args.continents;
+    if (args.urls) body.urls = args.urls;
+    
+    // JSON/ID fields
+    if (args.default_policy_config_raw_json) body.default_policy_config_raw_json = args.default_policy_config_raw_json;
+    if (args.default_policy_config_json_entry_id) body.default_policy_config_json_entry_id = parseInt(args.default_policy_config_json_entry_id);
+    if (args.policy_settings_raw_json) body.policy_settings_raw_json = args.policy_settings_raw_json;
+    if (args.policy_settings_entry_id) body.policy_settings_entry_id = parseInt(args.policy_settings_entry_id);
+    if (args.policy_data_exceptions_config_raw_json) body.policy_data_exceptions_config_raw_json = args.policy_data_exceptions_config_raw_json;
+    if (args.policy_data_exceptions_json_entry_id) body.policy_data_exceptions_json_entry_id = parseInt(args.policy_data_exceptions_json_entry_id);
+
+    var response = sendRequestV2(url, method, body, 'incap-modify-policy');
+    
+    return {
+        Type: entryTypes.note,
+        Contents: response,
+        ContentsFormat: formats.json,
+        HumanReadable: tableToMarkdown('Policy Modified', response),
+        EntryContext: {
+            'Incapsula.Policies': response
+        }
+    };
+}
+
 var urlDict = {
     /*
         Account Management
@@ -155,6 +309,12 @@ switch (command) {
             return 'ok';
         }
         return 'not cool';
+    case 'incap-get-all-policies':
+        return incapGetAllPolicies(args);
+    case 'incap-create-policy':
+        return incapCreatePolicy(args);
+    case 'incap-modify-policy':
+        return incapModifyPolicy(args);
     default:
         return sendRequest(base + urlDict[command], encodeToURLQuery(args).substr(1), urlDict[command]);
 }
