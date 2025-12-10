@@ -1,6 +1,7 @@
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+Citrix daas services simplify delivery and management of Citrix technologies.
 
-## Configure Citrix Daas Event Collector in Cortex
+## Configure Citrix Daas in Cortex
+
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

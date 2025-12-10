@@ -30,7 +30,7 @@ configuration:
   defaultvalue: 'masproductio'
   section: Connect
 - display: Max events per fetch
-  additionalinfo: 'Maximum number of ConfigLog events per fetch.'
+  additionalinfo: 'Maximum number of ConfigLog events per fetch. This requires the configuration logging database to be configured and enabled. Results are returned in the order of most-recent to least-recent.'
   defaultvalue: '2000'
   name: max_fetch
   section: Collect
