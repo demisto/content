@@ -713,13 +713,13 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f"[Main] Command: {command}")
 
+    cert_data = None
     try:
         if command not in COMMAND_MAP:
             raise DemistoException(f"Command '{command}' is not implemented")
 
         config = parse_integration_params(demisto.params())
 
-        cert_data = None
         if config["auth_type"] == AuthType.MTLS.value:
             cert_data = create_mtls_cert_files(config["certificate"], config["private_key"])
 
@@ -751,6 +751,21 @@ def main() -> None:
         return_error(error_msg)
 
     finally:
+        # Clean up temporary mTLS certificate files
+        if cert_data:
+            import os
+
+            cert_path, key_path = cert_data
+            try:
+                if os.path.exists(cert_path):
+                    os.remove(cert_path)
+                    demisto.debug(f"[Cleanup] Removed temporary certificate file: {cert_path}")
+                if os.path.exists(key_path):
+                    os.remove(key_path)
+                    demisto.debug(f"[Cleanup] Removed temporary key file: {key_path}")
+            except Exception as cleanup_error:
+                demisto.debug(f"[Cleanup] Warning: Failed to remove temporary files: {str(cleanup_error)}")
+
         demisto.debug(f"{INTEGRATION_NAME} integration finished")
 
 

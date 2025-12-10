@@ -1740,3 +1740,104 @@ def test_main_parse_params_error(mocker):
     mock_return_error.assert_called_once()
     error_message = mock_return_error.call_args[0][0]
     assert "API URL is required" in error_message
+
+
+def test_main_cleans_up_mtls_cert_files(mocker):
+    """Tests main() cleans up temporary mTLS certificate files in finally block."""
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": SERVER_URL,
+            "token_url": AUTH_SERVER_URL,
+            "client_id": MOCK_CLIENT_ID,
+            "certificate": MOCK_CERTIFICATE,
+            "private_key": MOCK_PRIVATE_KEY,
+            "auth_type": AuthType.MTLS.value,
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
+
+    # Mock cert file creation
+    mock_cert_path = "/tmp/test_cert_cleanup.pem"
+    mock_key_path = "/tmp/test_key_cleanup.key"
+    mocker.patch("SAPBTP.create_mtls_cert_files", return_value=(mock_cert_path, mock_key_path))
+
+    # Mock os.path.exists and os.remove
+    mocker.patch("os.path.exists", return_value=True)
+    mock_remove = mocker.patch("os.remove")
+    mocker.patch("SAPBTP.return_results")
+
+    SAPBTP.main()
+
+    # Verify cleanup was called for both files
+    assert mock_remove.call_count == 2
+    mock_remove.assert_any_call(mock_cert_path)
+    mock_remove.assert_any_call(mock_key_path)
+
+
+def test_main_cleanup_handles_missing_files(mocker):
+    """Tests main() cleanup handles case where files don't exist."""
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": SERVER_URL,
+            "token_url": AUTH_SERVER_URL,
+            "client_id": MOCK_CLIENT_ID,
+            "certificate": MOCK_CERTIFICATE,
+            "private_key": MOCK_PRIVATE_KEY,
+            "auth_type": AuthType.MTLS.value,
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
+
+    mock_cert_path = "/tmp/test_cert_missing.pem"
+    mock_key_path = "/tmp/test_key_missing.key"
+    mocker.patch("SAPBTP.create_mtls_cert_files", return_value=(mock_cert_path, mock_key_path))
+
+    # Mock files don't exist
+    mocker.patch("os.path.exists", return_value=False)
+    mock_remove = mocker.patch("os.remove")
+    mocker.patch("SAPBTP.return_results")
+
+    # Should not raise an error
+    SAPBTP.main()
+
+    # os.remove should not be called since files don't exist
+    mock_remove.assert_not_called()
+
+
+def test_main_cleanup_handles_removal_error(mocker):
+    """Tests main() cleanup handles errors during file removal gracefully."""
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": SERVER_URL,
+            "token_url": AUTH_SERVER_URL,
+            "client_id": MOCK_CLIENT_ID,
+            "certificate": MOCK_CERTIFICATE,
+            "private_key": MOCK_PRIVATE_KEY,
+            "auth_type": AuthType.MTLS.value,
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
+
+    mock_cert_path = "/tmp/test_cert_error.pem"
+    mock_key_path = "/tmp/test_key_error.key"
+    mocker.patch("SAPBTP.create_mtls_cert_files", return_value=(mock_cert_path, mock_key_path))
+
+    mocker.patch("os.path.exists", return_value=True)
+    # Simulate error during removal
+    mocker.patch("os.remove", side_effect=OSError("Permission denied"))
+    mocker.patch("SAPBTP.return_results")
+
+    # Should not raise an error - cleanup errors are logged but not raised
+    SAPBTP.main()
