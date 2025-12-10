@@ -3404,13 +3404,11 @@ def splunk_get_indexes_command(service: client.Service, app):
     | table name, count"""
 
     indexesNames = []
-    
+
     # Try the first approach: REST API query
     try:
         demisto.debug("Attempting to get indexes using REST API query approach")
-        for item in results.JSONResultsReader(
-            service.jobs.oneshot(query=search_query, output_mode=OUTPUT_MODE_JSON)
-        ):
+        for item in results.JSONResultsReader(service.jobs.oneshot(query=search_query, output_mode=OUTPUT_MODE_JSON)):
             if handle_message(item):
                 continue
             indexesNames.append(item)
@@ -3419,7 +3417,7 @@ def splunk_get_indexes_command(service: client.Service, app):
         # Log the error and fall back to the second approach
         demisto.error(f"Failed to get indexes using REST API query approach: {e!s}")
         demisto.debug("Falling back to direct API approach using service.indexes")
-        
+
         try:
             # Second approach: Direct API using service.indexes
             indexes = service.indexes
@@ -3430,10 +3428,9 @@ def splunk_get_indexes_command(service: client.Service, app):
         except Exception as fallback_error:
             demisto.error(f"Failed to get indexes using direct API approach: {fallback_error!s}")
             raise DemistoException(
-                f"Failed to retrieve indexes using both methods. "
-                f"REST API error: {e!s}. Direct API error: {fallback_error!s}"
+                f"Failed to retrieve indexes using both methods. " f"REST API error: {e!s}. Direct API error: {fallback_error!s}"
             )
-    
+
     return_results(
         CommandResults(
             content_format=EntryFormat.JSON,
