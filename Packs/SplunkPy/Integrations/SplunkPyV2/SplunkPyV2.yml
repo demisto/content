@@ -680,13 +680,7 @@ script:
   type: python
   runonce: false
 tests:
-- SplunkPySearch_Test_default_handler
-- SplunkPy-Test-V2_default_handler
-- Splunk-Test_default_handler
-- SplunkPy_KV_commands_default_handler
+- SplunkPy KV commands
+- SplunkPy-Test-V2
 - SplunkPy parse-raw - Test
-- Splunk-Test_requests_handler
-- SplunkPy_KV_commands_requests_handler
-- SplunkPy-Test-V2_requests_handler
-- SplunkPySearch_Test_requests_handler
-fromversion: 5.0.0
+fromversion: 6.0.0

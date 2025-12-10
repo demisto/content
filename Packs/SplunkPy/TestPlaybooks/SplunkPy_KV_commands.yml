@@ -776,12 +776,11 @@ tasks:
     task:
       id: 86cfa0e5-a948-4c8b-8eb9-bec0c85d86cc
       version: -1
-      name: splunk-kv-store-collection-add-entries
+      name: add_entries
       description: Adds objects to a KV store utilizing the batch-save API.
       script: 'splunk-kv-store-collection-add-entries'
       type: regular
       iscommand: true
-      brand: SplunkPy
     nexttasks:
       '#none#':
       - "4"
