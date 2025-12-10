@@ -29,6 +29,5 @@ When you add an instance, you will need to fill in these parameters:
 * **Authorization Server URL** (e.g., `va.sentinel.liveperson.net`)
 * **Account ID**
 * **Client ID and Client Secret** (using the credential field)
-* **First fetch time** (e.g., `3 days` to set how far back to look for events)
 
 Select **Fetch events** to begin collecting audit data.
