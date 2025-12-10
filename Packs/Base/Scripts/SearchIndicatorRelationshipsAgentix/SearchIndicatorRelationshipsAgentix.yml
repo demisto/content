@@ -1,10 +1,9 @@
 commonfields:
   id: SearchIndicatorRelationshipsAgentix
   version: -1
-enabled: false
 name: SearchIndicatorRelationshipsAgentix
 comment: This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
-isInternal: false
+isInternal: true
 script: '-'
 type: python
 args:
@@ -174,7 +173,7 @@ outputs:
 system: false
 timeout: '0'
 subtype: python3
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.12.12.6204436
 fromversion: 6.6.0
 tests:
 - No tests (auto formatted)

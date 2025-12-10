@@ -3,18 +3,16 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-def filter_relationships_by_entity_types(
-    entities, entities_types, relationships, limit
-):
+def filter_relationships_by_entity_types(entities, entities_types, relationships, limit):
     """
     Filters indicator relationships by entity types using pagination.
-    
+
     Args:
         entities: List of entities to search for relationships
         entities_types: List of entity types to filter by (EntityA or EntityB must match)
         relationships: List of relationship types to search for
         limit: Maximum number of filtered relationships to return
-        
+
     Returns:
         list: Filtered relationships where EntityA or EntityB type matches entities_types
     """
@@ -44,10 +42,7 @@ def filter_relationships_by_entity_types(
             break
 
         for relationship in data.get("Relationships", []):
-            if (
-                relationship["EntityAType"] in entities_types
-                or relationship["EntityBType"] in entities_types
-            ):
+            if relationship["EntityAType"] in entities_types or relationship["EntityBType"] in entities_types:
                 filtered_relationships.append(relationship)
 
                 if len(filtered_relationships) >= limit:
@@ -95,9 +90,7 @@ def get_relationships(
     }
     remove_nulls_from_dictionary(search_params)
     if entities_types:
-        filtered_relationships = filter_relationships_by_entity_types(
-            entities, entities_types, relationships, limit
-        )
+        filtered_relationships = filter_relationships_by_entity_types(entities, entities_types, relationships, limit)
         return filtered_relationships
 
     res = demisto.executeCommand("SearchIndicatorRelationships", search_params)
@@ -116,9 +109,7 @@ def main():
         relationships = args.get("relationships", "")
         limit = int(args.get("limit", "20"))
 
-        relationships = get_relationships(
-            entities, entities_types, relationships, limit
-        )
+        relationships = get_relationships(entities, entities_types, relationships, limit)
         hr = tableToMarkdown(
             "Relationships",
             relationships,
@@ -140,9 +131,7 @@ def main():
             )
         )
     except Exception as ex:
-        return_error(
-            f"Failed to execute SearchIndicatorRelationshipsAgentix. Error: {str(ex)}"
-        )
+        return_error(f"Failed to execute SearchIndicatorRelationshipsAgentix. Error: {str(ex)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

@@ -22,6 +22,7 @@ This automation outputs the indicator relationships to context according to the 
 | limit | The number of results to return. Default is 20. |
 | verbose | Whether all of the relationships attributes will be returned or just the basic attributes. Default is false and the returned values will be name, entity A value, entity A type, entity B value, entity B type, relationships type. If true, all attributes will be returned. |
 | revoked | The status of the relationships to return. Default is false. |
+| searchAfter | Use the searchAfter token from the preceding response to indicate the starting point for retrieving the subsequent batch of relationships. |
 
 ## Outputs
 
@@ -43,6 +44,8 @@ This automation outputs the indicator relationships to context according to the 
 | Relationships.LastSeenBySource | The last time seen by the source of the relationship. | string |
 | Relationships.Description | The description of the relationship. | string |
 | Relationships.Type | The type of the relationship. | string |
+| RelationshipsPagination | The searchAfter token for retrieving the next batch of relationships. | string |
+
 
 ## Script Examples
 

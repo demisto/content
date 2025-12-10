@@ -37,21 +37,15 @@ def test_get_relationships_with_entities_only(mocker):
     """
     from SearchIndicatorRelationshipsAgentix import get_relationships
 
-    mock_execute_command = mocker.patch(
-        "SearchIndicatorRelationshipsAgentix.demisto.executeCommand"
-    )
+    mock_execute_command = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.executeCommand")
     mock_get = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.get")
 
-    mock_execute_command.return_value = [
-        {"Contents": {"Relationships": [{"id": "rel1", "type": "related-to"}]}}
-    ]
+    mock_execute_command.return_value = [{"Contents": {"Relationships": [{"id": "rel1", "type": "related-to"}]}}]
     mock_get.return_value = {"Relationships": [{"id": "rel1", "type": "related-to"}]}
 
     result = get_relationships(entities=["example.com"])
 
-    mock_execute_command.assert_called_once_with(
-        "SearchIndicatorRelationships", {"entities": ["example.com"], "limit": 20}
-    )
+    mock_execute_command.assert_called_once_with("SearchIndicatorRelationships", {"entities": ["example.com"], "limit": 20})
     assert result == [{"id": "rel1", "type": "related-to"}]
 
 
@@ -63,14 +57,10 @@ def test_get_relationships_with_entities_types_calls_filter_function(mocker):
     """
     from SearchIndicatorRelationshipsAgentix import get_relationships
 
-    mock_filter = mocker.patch(
-        "SearchIndicatorRelationshipsAgentix.filter_relationships_by_entity_types"
-    )
+    mock_filter = mocker.patch("SearchIndicatorRelationshipsAgentix.filter_relationships_by_entity_types")
     mock_filter.return_value = [{"id": "filtered_rel", "type": "indicates"}]
 
-    result = get_relationships(
-        entities=["malware.exe"], entities_types=["File"], limit=10
-    )
+    result = get_relationships(entities=["malware.exe"], entities_types=["File"], limit=10)
 
     mock_filter.assert_called_once_with(["malware.exe"], ["File"], None, 10)
     assert result == [{"id": "filtered_rel", "type": "indicates"}]
@@ -84,9 +74,7 @@ def test_filter_relationships_by_entity_types_single_page_results(mocker):
     """
     from SearchIndicatorRelationshipsAgentix import filter_relationships_by_entity_types
 
-    mock_execute_command = mocker.patch(
-        "SearchIndicatorRelationshipsAgentix.demisto.executeCommand"
-    )
+    mock_execute_command = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.executeCommand")
     mock_get = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.get")
 
     mock_execute_command.return_value = [
@@ -125,18 +113,14 @@ def test_filter_relationships_by_entity_types_multiple_pages(mocker):
     """
     from SearchIndicatorRelationshipsAgentix import filter_relationships_by_entity_types
 
-    mock_execute_command = mocker.patch(
-        "SearchIndicatorRelationshipsAgentix.demisto.executeCommand"
-    )
+    mock_execute_command = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.executeCommand")
     mock_get = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.get")
 
     mock_execute_command.side_effect = [
         [
             {
                 "Contents": {
-                    "Relationships": [
-                        {"EntityAType": "File", "EntityBType": "Domain", "id": "rel1"}
-                    ],
+                    "Relationships": [{"EntityAType": "File", "EntityBType": "Domain", "id": "rel1"}],
                     "RelationshipsPagination": ["token1"],
                 }
             }
@@ -144,9 +128,7 @@ def test_filter_relationships_by_entity_types_multiple_pages(mocker):
         [
             {
                 "Contents": {
-                    "Relationships": [
-                        {"EntityAType": "File", "EntityBType": "IP", "id": "rel2"}
-                    ],
+                    "Relationships": [{"EntityAType": "File", "EntityBType": "IP", "id": "rel2"}],
                     "RelationshipsPagination": [],
                 }
             }
@@ -155,15 +137,11 @@ def test_filter_relationships_by_entity_types_multiple_pages(mocker):
 
     mock_get.side_effect = [
         {
-            "Relationships": [
-                {"EntityAType": "File", "EntityBType": "Domain", "id": "rel1"}
-            ],
+            "Relationships": [{"EntityAType": "File", "EntityBType": "Domain", "id": "rel1"}],
             "RelationshipsPagination": ["token1"],
         },
         {
-            "Relationships": [
-                {"EntityAType": "File", "EntityBType": "IP", "id": "rel2"}
-            ],
+            "Relationships": [{"EntityAType": "File", "EntityBType": "IP", "id": "rel2"}],
             "RelationshipsPagination": [],
         },
     ]
@@ -182,9 +160,7 @@ def test_filter_relationships_by_entity_types_limit_reached_early(mocker):
     """
     from SearchIndicatorRelationshipsAgentix import filter_relationships_by_entity_types
 
-    mock_execute_command = mocker.patch(
-        "SearchIndicatorRelationshipsAgentix.demisto.executeCommand"
-    )
+    mock_execute_command = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.executeCommand")
     mock_get = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.get")
 
     mock_execute_command.return_value = [
@@ -221,9 +197,7 @@ def test_filter_relationships_by_entity_types_no_matching_types(mocker):
     """
     from SearchIndicatorRelationshipsAgentix import filter_relationships_by_entity_types
 
-    mock_execute_command = mocker.patch(
-        "SearchIndicatorRelationshipsAgentix.demisto.executeCommand"
-    )
+    mock_execute_command = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.executeCommand")
     mock_get = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.get")
 
     mock_execute_command.return_value = [
@@ -258,9 +232,7 @@ def test_filter_relationships_by_entity_types_empty_response(mocker):
     """
     from SearchIndicatorRelationshipsAgentix import filter_relationships_by_entity_types
 
-    mock_execute_command = mocker.patch(
-        "SearchIndicatorRelationshipsAgentix.demisto.executeCommand"
-    )
+    mock_execute_command = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.executeCommand")
 
     mock_execute_command.return_value = []
 

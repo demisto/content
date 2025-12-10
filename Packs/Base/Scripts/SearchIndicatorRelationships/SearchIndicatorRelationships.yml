@@ -177,6 +177,9 @@ outputs:
 - contextPath: Relationships.Type
   description: The type of the relationship.
   type: string
+- contextPath: RelationshipsPagination
+  description: The searchAfter token for retrieving the next batch of relationships.
+  type: string
 script: '-'
 tags:
 - basescript
