@@ -84,6 +84,33 @@ def unit42_error_handler(res: requests.Response):
     return_error(error_msg)
 
 
+def encode_url_indicator(indicator_value: str) -> str:
+    """
+    Double-encode URLs to handle special characters like < and >
+
+    Args:
+        indicator_value: The URL to encode
+
+    Returns:
+        Encoded URL string
+    """
+    # Step 1: Parse the URL to separate components
+    parsed = urllib.parse.urlparse(indicator_value)
+
+    # Step 2: Encode special characters in the query string (keeping '=' safe)
+    # This converts query=<test> to query=%3Ctest%3E
+    encoded_query = urllib.parse.quote(parsed.query, safe="=") if parsed.query else ""
+
+    # Step 3: Reconstruct the URL with the encoded query
+    temp_url = urllib.parse.urlunparse(parsed._replace(query=encoded_query))
+
+    # Step 4: Final full URL encoding for the API request
+    # This converts the entire URL including the already-encoded query
+    # Example: https://example.com/search?query=%3Ctest%3E becomes
+    # https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E
+    return urllib.parse.quote(temp_url, safe="")
+
+
 #### CLIENT CLASS ####
 
 
@@ -112,9 +139,7 @@ class Client(BaseClient):
             requests.Response object
         """
         if indicator_type.lower() == "url":
-            # URL-encode the indicator value to handle special characters safely in the API request
-            # Example: "http://example.com/path?param=value" becomes "http%3A%2F%2Fexample.com%2Fpath%3Fparam%3Dvalue"
-            indicator_value = urllib.parse.quote(indicator_value, safe="")
+            indicator_value = encode_url_indicator(indicator_value=indicator_value)
 
         endpoint = LOOKUP_ENDPOINT.format(indicator_type=indicator_type, indicator_value=indicator_value)
 
@@ -798,7 +823,7 @@ def create_threat_object_indicators(
     return indicators
 
 
-def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
+def create_context_data(response_data: dict[str, Any], indicator_value: str | None = None) -> dict[str, Any]:
     """
     Create context data for indicators
 
@@ -809,7 +834,7 @@ def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
         Dictionary containing context data
     """
     return {
-        "Value": response_data["indicator_value"],
+        "Value": indicator_value or response_data["indicator_value"],
         "Type": INDICATOR_TYPE_MAPPING.get(response_data["indicator_type"]),
         "Verdict": string_to_table_header(response_data["verdict"]),
         "VerdictCategories": list({string_to_table_header(item) for item in response_data["verdict_categories"]}),
@@ -1040,8 +1065,8 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
         if threat_indicators:
             demisto.createIndicators(threat_indicators)
 
-    # Create context data
-    context_data = create_context_data(response_data)
+    # Create context data, Use the original URL in the indicator value since the returned URL is encoded.
+    context_data = create_context_data(response_data, indicator_value=url)
 
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for URL: {url}",
