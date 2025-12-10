@@ -553,7 +553,7 @@ There is no context output for this command.
 ### incap-modify-site-acl-config
 
 ***
-**Deprecated. Use the new Policy Management commands (incap-get-all-policies, incap-create-policy, incap-modify-policy) instead.**
+**Deprecated. Use the new Policy Management commands (incap-policy-list, incap-policy-create, incap-policy-update) instead.**
 
 Use this operation to change the ACL configuration of a site. To modify the configuration for a specific ACL rule, its values are required, as documented below. To delete an entire ACL list, send an empty string as the list values
 
@@ -1808,14 +1808,14 @@ Use this operation to view the highest peak values and highest average values fo
 
 There is no context output for this command.
 
-### incap-get-all-policies
+### incap-policy-list
 
 ***
 Retrieves all policies associated with the account or a specific policy if policy_id is provided.
 
 #### Base Command
 
-`incap-get-all-policies`
+`incap-policy-list`
 
 #### Input
 
@@ -1831,14 +1831,14 @@ Retrieves all policies associated with the account or a specific policy if polic
 | --- | --- | --- |
 | Incapsula.Policies | unknown | The policies information |
 
-### incap-create-policy
+### incap-policy-create
 
 ***
 Add a new policy or copy an existing policy.
 
 #### Base Command
 
-`incap-create-policy`
+`incap-policy-create`
 
 #### Input
 
@@ -1870,14 +1870,14 @@ Add a new policy or copy an existing policy.
 | --- | --- | --- |
 | Incapsula.Policies | unknown | The created policy information |
 
-### incap-modify-policy
+### incap-policy-update
 
 ***
 Modify an existing policy (partial or full update).
 
 #### Base Command
 
-`incap-modify-policy`
+`incap-policy-update`
 
 #### Input
 
@@ -1909,3 +1909,71 @@ Modify an existing policy (partial or full update).
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Incapsula.Policies | unknown | The modified policy information |
+
+### incap-policy-delete
+
+***
+Delete an existing policy.
+
+#### Base Command
+
+`incap-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | The ID of the policy to delete. | Required |
+| account_id | Optional account ID to delete the policy for a different sub-account. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### incap-asset-on-policy-check
+
+***
+Check whether the policy is applied on the asset.
+
+#### Base Command
+
+`incap-asset-on-policy-check`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | The ID of the asset. | Required |
+| asset_type | Type of asset on which the policy is applied. | Required |
+| policy_id | The ID of the policy. | Required |
+| account_id | Optional account ID for different sub-account. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Incapsula.AssetOnPolicy | unknown | The asset on policy check result |
+
+### incap-asset-on-policy-apply
+
+***
+Overwrite applied assets in a policy.
+
+#### Base Command
+
+`incap-asset-on-policy-apply`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | The ID of the asset. | Required |
+| asset_type | Type of asset on which the policy is applied. | Required |
+| policy_id | The ID of the policy. | Required |
+| account_id | Optional account ID for different sub-account. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Incapsula.AssetOnPolicy | unknown | The asset on policy apply result |

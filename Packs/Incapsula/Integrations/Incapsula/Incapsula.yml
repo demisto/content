@@ -1388,7 +1388,7 @@ script:
       required: true
     description: Use this operation to view the highest peak values and highest average values for a protected IP range during a selected time period.
     name: incap-get-infra-protection-top-items-table
-  - name: incap-get-all-policies
+  - name: incap-policy-list
     arguments:
     - name: policy_id
       description: Unique identifier of the policy. If provided, retrieves a specific policy.
@@ -1401,7 +1401,7 @@ script:
       - "false"
       description: Default is false (basic policy details). Set to true for full policy data, including configuration.
     description: Retrieves all policies associated with the account or a specific policy if policy_id is provided.
-  - name: incap-create-policy
+  - name: incap-policy-create
     arguments:
     - name: policy_name
       required: true
@@ -1481,7 +1481,7 @@ script:
     - name: policy_data_exceptions_json_entry_id
       description: Entry ID for policy data exceptions JSON.
     description: Add a new policy or copy an existing policy.
-  - name: incap-modify-policy
+  - name: incap-policy-update
     arguments:
     - name: policy_name
       required: true
@@ -1567,6 +1567,42 @@ script:
     - name: policy_data_exceptions_json_entry_id
       description: Entry ID for policy data exceptions JSON.
     description: Modify an existing policy (partial or full update).
+  - name: incap-policy-delete
+    arguments:
+    - name: policy_id
+      required: true
+      description: The ID of the policy to delete.
+    - name: account_id
+      description: Optional account ID to delete the policy for a different sub-account.
+    description: Delete an existing policy.
+  - name: incap-asset-on-policy-check
+    arguments:
+    - name: asset_id
+      required: true
+      description: The ID of the asset.
+    - name: asset_type
+      required: true
+      description: Type of asset on which the policy is applied.
+    - name: policy_id
+      required: true
+      description: The ID of the policy.
+    - name: account_id
+      description: Optional account ID for different sub-account.
+    description: Check whether the policy is applied on the asset.
+  - name: incap-asset-on-policy-apply
+    arguments:
+    - name: asset_id
+      required: true
+      description: The ID of the asset.
+    - name: asset_type
+      required: true
+      description: Type of asset on which the policy is applied.
+    - name: policy_id
+      required: true
+      description: The ID of the policy.
+    - name: account_id
+      description: Optional account ID for different sub-account.
+    description: Overwrite applied assets in a policy.
 system: true
 tests:
 - No test
