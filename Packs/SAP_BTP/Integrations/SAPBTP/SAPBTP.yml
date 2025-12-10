@@ -97,7 +97,7 @@ script:
   commands:
   - name: sap-btp-get-events
     description: |-
-      Gets events from SAP BTP Audit Log. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication.
+      Gets events from SAP BTP Audit Log. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
       Note: This command is not supported in XSOAR.
     deprecated: false
     arguments:
