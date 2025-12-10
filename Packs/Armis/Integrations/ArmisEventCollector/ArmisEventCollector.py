@@ -1,3 +1,4 @@
+import copy
 import itertools
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -822,7 +823,7 @@ def fetch_events(
                     event_type_name,
                     EVENT_TYPES[event_type_name],
                     event_max_fetch,
-                    last_run.copy(),  # Each thread gets its own copy
+                    copy.deepcopy(last_run),  # Each thread gets its own deep copy
                     fetch_start_time,
                     fetch_delay,
                     context_manager,
