@@ -280,9 +280,14 @@ class Client(BaseClient):
                                 url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
                             )
                         except Exception as retry_e:
-                            if "Invalid access token" not in str(retry_e):
+                            # Use repr() for JSON errors to avoid parsing issues, str() for others
+                            retry_error_str = repr(retry_e) if isinstance(retry_e, json.JSONDecodeError) else str(retry_e)
+                            # Check if retry with context token failed for a non-auth reason
+                            # If it's not an auth error (e.g., network issue, timeout), raise immediately
+                            is_retry_auth_error = "Invalid access token" in retry_error_str or "401" in retry_error_str
+                            if not is_retry_auth_error:
                                 raise retry_e
-                            # Token from context was also invalid, need to refresh
+                            # If we reach here, the token from context was also invalid - proceed to full refresh
 
                 # Perform coordinated token refresh
                 new_token = self.refresh_access_token()
