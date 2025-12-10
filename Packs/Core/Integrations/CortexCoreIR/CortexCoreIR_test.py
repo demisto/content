@@ -35,7 +35,9 @@ def test_report_incorrect_wildfire_command(mocker):
 
     wildfire_response = load_test_data("./test_data/wildfire_response.json")
     mock_client = Client(base_url=f"{Core_URL}/public_api/v1", headers={})
-    mocker.patch.object(mock_client, "report_incorrect_wildfire", return_value=wildfire_response)
+    mocker.patch.object(
+        mock_client, "report_incorrect_wildfire", return_value=wildfire_response
+    )
     file_hash = "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252"
     args = {
         "email": "a@a.gmail.com",
@@ -61,8 +63,12 @@ class TestPrevalenceCommands:
 
         mock_client = Client(base_url=f"{Core_URL}/xsiam/", headers={})
         mock_res = load_test_data("./test_data/prevalence_response.json")
-        mocker.patch.object(mock_client, "get_prevalence", return_value=mock_res.get("domain"))
-        res = handle_prevalence_command(mock_client, "core-get-domain-analytics-prevalence", {"domain": "some_name"})
+        mocker.patch.object(
+            mock_client, "get_prevalence", return_value=mock_res.get("domain")
+        )
+        res = handle_prevalence_command(
+            mock_client, "core-get-domain-analytics-prevalence", {"domain": "some_name"}
+        )
         assert res.outputs[0].get("value") is True
         assert res.outputs[0].get("domain_name") == "some_name"
 
@@ -79,8 +85,12 @@ class TestPrevalenceCommands:
 
         mock_client = Client(base_url=f"{Core_URL}/xsiam/", headers={})
         mock_res = load_test_data("./test_data/prevalence_response.json")
-        mocker.patch.object(mock_client, "get_prevalence", return_value=mock_res.get("ip"))
-        res = handle_prevalence_command(mock_client, "core-get-IP-analytics-prevalence", {"ip": "some ip"})
+        mocker.patch.object(
+            mock_client, "get_prevalence", return_value=mock_res.get("ip")
+        )
+        res = handle_prevalence_command(
+            mock_client, "core-get-IP-analytics-prevalence", {"ip": "some ip"}
+        )
         assert res.outputs[0].get("value") is True
         assert res.outputs[0].get("ip_address") == "some_ip"
 
@@ -97,7 +107,9 @@ class TestPrevalenceCommands:
 
         mock_client = Client(base_url=f"{Core_URL}/xsiam/", headers={})
         mock_res = load_test_data("./test_data/prevalence_response.json")
-        mocker.patch.object(mock_client, "get_prevalence", return_value=mock_res.get("registry"))
+        mocker.patch.object(
+            mock_client, "get_prevalence", return_value=mock_res.get("registry")
+        )
         res = handle_prevalence_command(
             mock_client,
             "core-get-registry-analytics-prevalence",
@@ -126,11 +138,16 @@ class TestPrevalenceCommands:
             '{"reply": {"err_code": 500, "err_msg": "An error occurred while processing XDR public API", "err_extra": '
             '"All hashes have already been added to the allow or block list"}}\n'
         )
-        mocker.patch.object(mock_client, "_http_request", side_effect=Exception(error_message))
+        mocker.patch.object(
+            mock_client, "_http_request", side_effect=Exception(error_message)
+        )
         mocker.patch("CoreIRApiModule.validate_sha256_hashes", return_value="")
 
         res = blocklist_files_command(mock_client, args)
-        assert res.readable_output == "All hashes have already been added to the block list."
+        assert (
+            res.readable_output
+            == "All hashes have already been added to the block list."
+        )
 
     def test_allowlist_files_command(self, mocker):
         """
@@ -152,17 +169,24 @@ class TestPrevalenceCommands:
             '{"reply": {"err_code": 500, "err_msg": "An error occurred while processing XDR public API", "err_extra": '
             '"All hashes have already been added to the allow or block list"}}\n'
         )
-        mocker.patch.object(mock_client, "_http_request", side_effect=Exception(error_message))
+        mocker.patch.object(
+            mock_client, "_http_request", side_effect=Exception(error_message)
+        )
         mocker.patch("CoreIRApiModule.validate_sha256_hashes", return_value="")
 
         res = allowlist_files_command(mock_client, args)
-        assert res.readable_output == "All hashes have already been added to the allow list."
+        assert (
+            res.readable_output
+            == "All hashes have already been added to the allow list."
+        )
 
 
 class TestPollingCommand:
     @staticmethod
     def create_mocked_responses():
-        response_queue = [{"reply": {"action_id": 1, "status": 1, "endpoints_count": 1}}]
+        response_queue = [
+            {"reply": {"action_id": 1, "status": 1, "endpoints_count": 1}}
+        ]
 
         for i in range(STATUS_AMOUNT):
             if i == STATUS_AMOUNT - 1:
@@ -224,12 +248,21 @@ class TestPollingCommand:
 
         client = CoreClient(base_url="https://test_api.com/public_api/v1", headers={})
 
-        mocker.patch.object(client, "_http_request", side_effect=self.create_mocked_responses())
-        mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+        mocker.patch.object(
+            client, "_http_request", side_effect=self.create_mocked_responses()
+        )
+        mocker.patch.object(
+            ScheduledCommand, "raise_error_if_not_supported", return_value=None
+        )
 
-        command_result = script_run_polling_command(args={"endpoint_ids": "1", "script_uid": "1"}, client=client)
+        command_result = script_run_polling_command(
+            args={"endpoint_ids": "1", "script_uid": "1"}, client=client
+        )
 
-        assert command_result.readable_output == "Waiting for the script to finish running on the following endpoints: ['1']..."
+        assert (
+            command_result.readable_output
+            == "Waiting for the script to finish running on the following endpoints: ['1']..."
+        )
         assert command_result.outputs == {
             "action_id": 1,
             "endpoints_count": 1,
@@ -248,7 +281,9 @@ class TestPollingCommand:
         # if scheduled_command is set, it means that command should still poll
         while not isinstance(command_result, list) and command_result.scheduled_command:
             # if command result is a list, it means command execution finished
-            assert not command_result.readable_output  # make sure that indication of polling is printed only once
+            assert (
+                not command_result.readable_output
+            )  # make sure that indication of polling is printed only once
             # make sure no context output is being returned to war-room during polling
             assert not command_result.outputs
             command_result = script_run_polling_command(polling_args, client)
@@ -309,7 +344,9 @@ def test_get_distribution_url_command_without_download():
     from CoreIRApiModule import get_distribution_url_command
 
     client = MagicMock()
-    client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
+    client.get_distribution_url = MagicMock(
+        return_value="https://example.com/distribution"
+    )
 
     args = {
         "distribution_id": "12345",
@@ -324,7 +361,9 @@ def test_get_distribution_url_command_without_download():
     assert result.outputs == {"id": "12345", "url": "https://example.com/distribution"}
     assert result.outputs_prefix == "CoreIR.Distribution"
     assert result.outputs_key_field == "id"
-    assert "[Distribution URL](https://example.com/distribution)" in result.readable_output
+    assert (
+        "[Distribution URL](https://example.com/distribution)" in result.readable_output
+    )
 
 
 def test_get_distribution_url_command_with_download(mocker):
@@ -339,7 +378,9 @@ def test_get_distribution_url_command_with_download(mocker):
     from CoreIRApiModule import get_distribution_url_command
 
     client = MagicMock()
-    client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
+    client.get_distribution_url = MagicMock(
+        return_value="https://example.com/distribution"
+    )
     client._http_request = MagicMock(return_value=b"mock_binary_data")
 
     args = {
@@ -360,7 +401,9 @@ def test_get_distribution_url_command_with_download(mocker):
     )
     result = get_distribution_url_command(client, args)
     client.get_distribution_url.assert_called_once_with("12345", "x64")
-    client._http_request.assert_called_once_with(method="GET", full_url="https://example.com/distribution", resp_type="content")
+    client._http_request.assert_called_once_with(
+        method="GET", full_url="https://example.com/distribution", resp_type="content"
+    )
     assert isinstance(result, list)
     assert len(result) == 2
     command_result = result[1]
@@ -371,7 +414,10 @@ def test_get_distribution_url_command_with_download(mocker):
     }
     assert command_result.outputs_prefix == "CortexCoreIR.Distribution"
     assert command_result.outputs_key_field == "id"
-    assert "Installation package downloaded successfully." in command_result.readable_output
+    assert (
+        "Installation package downloaded successfully."
+        in command_result.readable_output
+    )
 
 
 def test_get_distribution_url_command_without_download_not_supported_type():
@@ -387,7 +433,9 @@ def test_get_distribution_url_command_without_download_not_supported_type():
     from CoreIRApiModule import get_distribution_url_command
 
     client = MagicMock()
-    client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
+    client.get_distribution_url = MagicMock(
+        return_value="https://example.com/distribution"
+    )
 
     args = {
         "distribution_id": "12345",
@@ -398,7 +446,10 @@ def test_get_distribution_url_command_without_download_not_supported_type():
     with pytest.raises(DemistoException) as e:
         get_distribution_url_command(client, args)
     client.get_distribution_url.assert_called_once_with("12345", "sh")
-    assert e.value.message == "`download_package` argument can be used only for package_type 'x64' or 'x86'."
+    assert (
+        e.value.message
+        == "`download_package` argument can be used only for package_type 'x64' or 'x86'."
+    )
 
 
 # tests for core_execute_command_command
@@ -586,7 +637,9 @@ def test_reformat_readable():
         outputs_prefix="val",
         outputs=load_test_data("./test_data/execute_command_response.json"),
     )
-    reformatted_readable_output = core_execute_command_reformat_readable_output([mock_res])
+    reformatted_readable_output = core_execute_command_reformat_readable_output(
+        [mock_res]
+    )
     excepted_output = """### Script Execution Results for Action ID: 1
 |Endpoint Id|Command|Command Output|Endpoint Ip Address|Endpoint Name|Endpoint Status|
 |---|---|---|---|---|---|
@@ -599,7 +652,9 @@ def test_reformat_readable():
     assert reformatted_readable_output == excepted_output
 
 
-@pytest.mark.parametrize("result", load_test_data("./test_data/execute_command_response.json")["results"])
+@pytest.mark.parametrize(
+    "result", load_test_data("./test_data/execute_command_response.json")["results"]
+)
 def test_reformat_command_data(result):
     """
     Given:
@@ -709,9 +764,13 @@ def test_prepare_ioc_to_output():
         "reputation": "SUSPICIOUS",
         "reliability": "D",
         "class": "Malware",
-        "vendors": [{"vendor_name": "VirusTotal", "reliability": "A", "reputation": "GOOD"}],
+        "vendors": [
+            {"vendor_name": "VirusTotal", "reliability": "A", "reputation": "GOOD"}
+        ],
     }
-    assert prepare_ioc_to_output(csv_input_single_vendor, "CSV") == expected_output_single
+    assert (
+        prepare_ioc_to_output(csv_input_single_vendor, "CSV") == expected_output_single
+    )
 
     # Case 3: input_format is CSV → multiple vendors, only last one taken
     csv_input_multi_vendor = (
@@ -949,7 +1008,10 @@ class TestCoreAddIndicator:
         with pytest.raises(DemistoException) as exc_info:
             core_add_indicator_rule_command(client, args)
 
-        assert "Core Add Indicator Rule Command: post of IOC rule failed: error1, error2" in str(exc_info.value)
+        assert (
+            "Core Add Indicator Rule Command: post of IOC rule failed: error1, error2"
+            in str(exc_info.value)
+        )
         mock_post.assert_called_once()
 
 
@@ -1200,7 +1262,9 @@ class TestBlockIp:
 
         assert pollRequest.continue_to_poll is False
         assert isinstance(pollRequest.response, CommandResults)
-        assert pollRequest.response.outputs == [{"ip_address": "1.1.1.1", "endpoint_id": "endpoint1", "reason": "Success"}]
+        assert pollRequest.response.outputs == [
+            {"ip_address": "1.1.1.1", "endpoint_id": "endpoint1", "reason": "Success"}
+        ]
         assert pollRequest.args_for_next_run == args
 
     def test_polling_failure(self):
@@ -1221,7 +1285,9 @@ class TestBlockIp:
                 }
             ]
         }
-        client = DummyClient(status_map={("gid1", "endpoint1"): ("Failure", "Network unreachable")})
+        client = DummyClient(
+            status_map={("gid1", "endpoint1"): ("Failure", "Network unreachable")}
+        )
 
         pollRequest = polling_block_ip_status(args, client)
 
@@ -1253,7 +1319,9 @@ class TestBlockIp:
                 }
             ]
         }
-        client = DummyClient(status_map={("gid1", "endpoint1"): ("PENDING", "Still working")})
+        client = DummyClient(
+            status_map={("gid1", "endpoint1"): ("PENDING", "Still working")}
+        )
 
         pollRequest = polling_block_ip_status(args, client)
 
@@ -1429,87 +1497,118 @@ def test_core_get_contributing_event(mocker):
     assert "Contributing events" in result.readable_output
     assert result.outputs[0]["alertID"] == "1"
 
-def test_update_endpoints_tags_command_with_both_add_and_remove(mocker):
+
+def test_update_endpoints_tags_add_and_remove(mocker):
     """
     Given:
-        - Endpoint IDs and both tags to add and tags to remove
+        - Endpoint IDs and both tags to add and remove.
     When:
-        - update_endpoints_tags_command is called
+        - Calling update_endpoints_tags_command.
     Then:
-        - Tags are successfully added and removed
-        - Results contain success message with added and removed tags
+        - Verify both add and remove functions are called appropriately.
+        - Verify success message includes both added and removed tags.
     """
     from CortexCoreIR import update_endpoints_tags_command
 
-    mock_execute_command = mocker.patch("CortexCoreIR.demisto.executeCommand")
-    mock_execute_command.return_value = [{"Contents": {"reply": "true"}}]
+    client = get_mock_client()
+    mock_add_tag = mocker.patch(
+        "CortexCoreIR.add_tag_to_endpoints_command", return_value=None
+    )
+    mock_remove_tag = mocker.patch(
+        "CortexCoreIR.remove_tag_from_endpoints_command", return_value=None
+    )
     mocker.patch("CortexCoreIR.filter_invalid_tags", return_value=[])
 
     args = {
         "endpoint_ids": ["endpoint1", "endpoint2"],
-        "tags_to_add": ["tag1", "tag2"],
-        "tags_to_remove": ["tag3", "tag4"],
+        "tags_to_add": ["new_tag"],
+        "tags_to_remove": ["old_tag"],
     }
 
-    results = update_endpoints_tags_command(args)
+    results = update_endpoints_tags_command(client, args)
 
     assert len(results) == 1
-    assert "Successfully updated tags for endpoint(s)" in results[0].readable_output
-    assert "Added tags: ['tag1', 'tag2']" in results[0].readable_output
-    assert "Removed tags: ['tag3', 'tag4']" in results[0].readable_output
-    
-    expected_calls = [
-        mocker.call("core-add-endpoint-tag", {"endpoint_ids": ["endpoint1", "endpoint2"], "tag": "tag1"}),
-        mocker.call("core-add-endpoint-tag", {"endpoint_ids": ["endpoint1", "endpoint2"], "tag": "tag2"}),
-        mocker.call("core-remove-endpoint-tag", {"endpoint_ids": ["endpoint1", "endpoint2"], "tag": "tag3"}),
-        mocker.call("core-remove-endpoint-tag", {"endpoint_ids": ["endpoint1", "endpoint2"], "tag": "tag4"}),
-    ]
-    mock_execute_command.assert_has_calls(expected_calls)
+    assert (
+        "Successfully updated tags for endpoint(s) ['endpoint1', 'endpoint2']. Added tags: ['new_tag'] Removed tags: ['old_tag']."
+        in results[0].readable_output
+    )
+    assert mock_add_tag.call_count == 1
+    assert mock_remove_tag.call_count == 1
+    mock_add_tag.assert_called_with(
+        client, {"endpoint_ids": ["endpoint1", "endpoint2"], "tag": "new_tag"}
+    )
+    mock_remove_tag.assert_called_with(
+        client, {"endpoint_ids": ["endpoint1", "endpoint2"], "tag": "old_tag"}
+    )
 
-def test_update_endpoints_tags_command_with_invalid_tags(mocker):
+
+def test_update_endpoints_tags_no_tags_provided_raises_exception():
     """
     Given:
-        - Endpoint IDs and tags including invalid ones
+        - Endpoint IDs but no tags to add or remove.
     When:
-        - update_endpoints_tags_command is called
+        - Calling update_endpoints_tags_command.
     Then:
-        - Valid tags are processed successfully
-        - Invalid tags are detected and reported
+        - Verify DemistoException is raised with appropriate message.
+    """
+    from CortexCoreIR import update_endpoints_tags_command
+    from CommonServerPython import DemistoException
+
+    client = get_mock_client()
+
+    args = {"endpoint_ids": ["endpoint1"]}
+
+    with pytest.raises(
+        DemistoException, match="At least one tag to add or remove must be specified."
+    ):
+        update_endpoints_tags_command(client, args)
+
+
+def test_update_endpoints_tags_with_invalid_tags(mocker):
+    """
+    Given:
+        - Endpoint IDs and tags including some invalid ones.
+    When:
+        - Calling update_endpoints_tags_command.
+    Then:
+        - Verify success message for valid operations.
+        - Verify warning message for invalid tags.
+        - Verify two CommandResults are returned.
     """
     from CortexCoreIR import update_endpoints_tags_command
 
-    mock_execute_command = mocker.patch("CortexCoreIR.demisto.executeCommand")
-    mock_execute_command.return_value = [{"Contents": {"reply": "true"}}]
-    mocker.patch("CortexCoreIR.filter_invalid_tags", side_effect=[["invalid_tag_that_is_too_long"], []])
+    client = get_mock_client()
+    mock_add_tag = mocker.patch(
+        "CortexCoreIR.add_tag_to_endpoints_command", return_value=None
+    )
+    mock_remove_tag = mocker.patch(
+        "CortexCoreIR.remove_tag_from_endpoints_command", return_value=None
+    )
+    mocker.patch(
+        "CortexCoreIR.filter_invalid_tags",
+        side_effect=[
+            ["very_long_invalid_tag_that_exceeds_limit"],
+            ["another_invalid_tag"],
+        ],
+    )
 
     args = {
         "endpoint_ids": ["endpoint1"],
-        "tags_to_add": ["valid_tag", "invalid_tag_that_is_too_long"],
-        "tags_to_remove": [],
+        "tags_to_add": ["valid_tag", "very_long_invalid_tag_that_exceeds_limit"],
+        "tags_to_remove": ["another_invalid_tag"],
     }
 
-    results = update_endpoints_tags_command(args)
+    results = update_endpoints_tags_command(client, args)
 
     assert len(results) == 2
-    assert "Successfully updated tags" in results[0].readable_output
-    assert "Invalid tags detected: invalid_tag_that_is_too_long" in results[1].readable_output
+    assert (
+        "Successfully updated tags for endpoint(s) ['endpoint1']. Added tags: ['valid_tag', 'very_long_invalid_tag_that_exceeds_limit'] Removed tags: ['another_invalid_tag']."
+        in results[0].readable_output
+    )
+    assert (
+        "Invalid tags detected: very_long_invalid_tag_that_exceeds_limit, another_invalid_tag. Tags must be less than 64 characters long."
+        in results[1].readable_output
+    )
     assert results[1].entry_type == 4
-
-def test_update_endpoints_tags_command_no_tags_provided():
-    """
-    Given:
-        - Endpoint IDs but no tags to add or remove
-    When:
-        - update_endpoints_tags_command is called
-    Then:
-        - A DemistoException is raised indicating tags must be specified
-    """
-    from CortexCoreIR import update_endpoints_tags_command
-
-    args = {"endpoint_ids": ["endpoint1"], "tags_to_add": [], "tags_to_remove": []}
-
-    with pytest.raises(DemistoException) as exc_info:
-        update_endpoints_tags_command(args)
-
-    assert "At least one tag to add or remove must be specified" in str(exc_info.value)
-
+    assert mock_add_tag.call_count == 2
+    assert mock_remove_tag.call_count == 1
