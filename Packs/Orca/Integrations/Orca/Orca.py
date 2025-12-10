@@ -463,7 +463,7 @@ def main() -> None:
         # How much time before the first fetch to retrieve incidents
         first_fetch_time = None
         if arg := demisto.params().get("first_fetch"):  # pylint: disable=SIM102
-            if first_fetch_time_stamp := dateparser.parse(arg): # pylint: disable=SIM102
+            if first_fetch_time_stamp := dateparser.parse(arg):  # pylint: disable=SIM102
                 first_fetch_time = first_fetch_time_stamp.isoformat()
 
         client = BaseClient(base_url=api_url, verify=True, headers={"Authorization": f"Token {api_token}"}, proxy=True)
