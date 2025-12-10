@@ -746,7 +746,7 @@ class Client(CoreClient):
             url_suffix="/get_data",
             json_data=request_data,
         )
-        
+
     def get_webapp_histograms(self, request_data: dict) -> dict:
         return self._http_request(
             method="POST",
@@ -2841,11 +2841,11 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
     demisto.debug(f"Endpoint data after mapping and formatting: {data}")
 
     return CommandResults(
-            readable_output=tableToMarkdown("Endpoints", data, headerTransform=string_to_table_header),
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Endpoint",
-            outputs_key_field="endpoint_id",
-            outputs=data,
-            raw_response=data,
+        readable_output=tableToMarkdown("Endpoints", data, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Endpoint",
+        outputs_key_field="endpoint_id",
+        outputs=data,
+        raw_response=data,
     )
 
 
