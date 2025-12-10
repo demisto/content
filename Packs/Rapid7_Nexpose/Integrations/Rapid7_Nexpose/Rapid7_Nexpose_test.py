@@ -2354,14 +2354,14 @@ async def test_run_all_collectors_success(mocker):
     """
     # Mock the InsightVMClient
     mock_client = mocker.AsyncMock()
-    
+
     # Mock create_report_config_from_template to return a string instead of a coroutine
     # Use a synchronous mock to avoid coroutine warnings
     mocker.patch("Rapid7_Nexpose.create_report_config_from_template", return_value="test-report-id")
-    
+
     # Mock ensure_report_config_exists to be a synchronous function
     mocker.patch("Rapid7_Nexpose.ensure_report_config_exists")
-    
+
     # Mock the run_full_collector_workflow function to return successfully
     run_full_collector_mock = mocker.patch("Rapid7_Nexpose.run_full_collector_workflow", return_value=None)
 
@@ -2450,7 +2450,7 @@ async def test_run_full_collector_workflow_success(mocker):
     await run_full_collector_workflow(client=mock_client, event_type="asset", batch_size=500)
 
     # Verify the workflow execution
-    mock_generate_report.assert_called_once_with(mock_client, "test-report-id")
+    mock_generate_report.assert_called_once_with(mock_client, "test-report-id", "asset")
     mock_check_status.assert_called_once_with(mock_client, "test-report-id", "test-instance-id", "asset")
     # Update the expected arguments to match what the function actually passes
     mock_download_parse.assert_called_once_with(
@@ -2616,7 +2616,7 @@ async def test_check_status_of_report_failed(mocker):
     mock_client.http_request.assert_any_call("GET", "/api/3/reports/test-report-id/history/test-instance-id")
 
     # Verify generate_report was called with the correct parameters
-    mock_generate_report.assert_called_once_with(mock_client, "test-report-id")
+    mock_generate_report.assert_called_once_with(mock_client, "test-report-id", "assets")
 
 
 @pytest.mark.asyncio
@@ -2651,8 +2651,8 @@ async def test_stream_and_parse_report_success(mocker):
     # Mock process_and_send_events_to_xsiam
     mock_process_send = mocker.patch("Rapid7_Nexpose.process_and_send_events_to_xsiam")
 
-    # Mock update_state_checkpoint
-    mocker.patch("Rapid7_Nexpose.update_state_checkpoint")
+    # Mock update_integration_context_by_event_type
+    mocker.patch("Rapid7_Nexpose.update_integration_context_by_event_type")
 
     # Mock other dependencies
     mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
@@ -2700,7 +2700,7 @@ async def test_stream_and_parse_report_success(mocker):
     assert all(record in expected_records for record in actual_records)
 
     # We're primarily testing that process_and_send_events_to_xsiam was called correctly
-    # The update_state_checkpoint call happens inside process_and_send_events_to_xsiam
+    # The update_integration_context_by_event_type call happens inside process_and_send_events_to_xsiam
     # which we've mocked, so we don't expect it to be called directly
     assert mock_process_send.call_count == 1
 
@@ -2733,8 +2733,8 @@ async def test_stream_and_parse_report_error(mocker):
     # Mock process_and_send_events_to_xsiam
     mock_process_send = mocker.patch("Rapid7_Nexpose.process_and_send_events_to_xsiam")
 
-    # Mock update_state_checkpoint
-    mocker.patch("Rapid7_Nexpose.update_state_checkpoint")
+    # Mock update_integration_context_by_event_type
+    mocker.patch("Rapid7_Nexpose.update_integration_context_by_event_type")
 
     # Mock other dependencies
     mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
@@ -2784,7 +2784,7 @@ async def test_stream_and_parse_report_error(mocker):
         ),
     ],
 )
-def test_update_state_checkpoint(mocker, initial_context, collector_type, changes, expected_context):
+def test_update_integration_context_by_event_type(mocker, initial_context, collector_type, changes, expected_context):
     """
     Given:
       - An initial integration context
@@ -2792,7 +2792,7 @@ def test_update_state_checkpoint(mocker, initial_context, collector_type, change
       - Changes to apply to the collector state
 
     When:
-      - Calling the update_state_checkpoint function
+      - Calling the update_integration_context_by_event_type function
 
     Then:
       - Ensure the integration context is retrieved
@@ -2806,7 +2806,7 @@ def test_update_state_checkpoint(mocker, initial_context, collector_type, change
     mocker.patch("Rapid7_Nexpose.demisto.debug")
 
     # Call the function under test
-    update_state_checkpoint(collector_type, changes)
+    update_integration_context_by_event_type(collector_type, changes)
 
     # Verify get_integration_context was called
     mock_get_context.assert_called_once()
@@ -2890,7 +2890,9 @@ def test_apply_collector_changes(collector_context, collector_type, changes, exp
         ),
     ],
 )
-def test_update_state_checkpoint_mismatch_updates(mocker, initial_context, collector_type, changes, expected_context):
+def test_update_integration_context_by_event_type_mismatch_updates(
+    mocker, initial_context, collector_type, changes, expected_context
+):
     """
     Given:
       - An initial integration context with existing values for monitored keys
@@ -2898,7 +2900,7 @@ def test_update_state_checkpoint_mismatch_updates(mocker, initial_context, colle
       - Changes with values that may be less than, equal to, or greater than the existing values
 
     When:
-      - Calling the update_state_checkpoint function
+      - Calling the update_integration_context_by_event_type function
 
     Then:
       - Ensure the integration context is only updated when the new values are greater than the existing values
@@ -2910,7 +2912,7 @@ def test_update_state_checkpoint_mismatch_updates(mocker, initial_context, colle
     mocker.patch("Rapid7_Nexpose.demisto.debug")
 
     # Call the function under test
-    update_state_checkpoint(collector_type, changes)
+    update_integration_context_by_event_type(collector_type, changes)
 
     # Verify get_integration_context was called
     mock_get_context.assert_called_once()
@@ -2978,7 +2980,7 @@ async def test_stream_report_success(mocker):
 
     # Call the function under test and collect the results
     results = []
-    async for line in stream_report(mock_client, "test-report-id", "test-instance-id"):
+    async for line in stream_report(mock_client, "test-report-id", "test-instance-id", "asset"):
         results.append(line)
 
     # Verify the expected results
@@ -3034,7 +3036,7 @@ async def test_fetch_assets_long_running_command(mocker):
     mock_time.side_effect = [100, 200, 300, 400]
 
     # Mock INTERVAL_SECONDS constant
-    mocker.patch("Rapid7_Nexpose.INTERVAL_SECONDS", 3600)  # 1 hour
+    mocker.patch("Rapid7_Nexpose.TWENTYFOUR_HOURS_AS_SECONDS", 3600)  # 1 hour
 
     # Mock demisto.debug to avoid debug output during tests
     mocker.patch("Rapid7_Nexpose.demisto.debug")
@@ -3109,8 +3111,8 @@ async def test_fetch_assets_long_running_command_error_handling(mocker):
     # First call is at the start, second call is at the end of the first iteration
     mock_time.side_effect = [100, 200, 300, 400]
 
-    # Mock INTERVAL_SECONDS constant
-    mocker.patch("Rapid7_Nexpose.INTERVAL_SECONDS", 3600)  # 1 hour
+    # Mock TWENTYFOUR_HOURS_AS_SECONDS constant
+    mocker.patch("Rapid7_Nexpose.TWENTYFOUR_HOURS_AS_SECONDS", 3600)  # 1 hour
 
     # Mock demisto.debug to check error logging
     mock_debug = mocker.patch("Rapid7_Nexpose.demisto.debug")
@@ -3187,7 +3189,7 @@ async def test_stream_report_error_handling(mocker):
 
     # Call the function under test and expect an exception
     with pytest.raises(Exception) as excinfo:
-        async for _ in stream_report(mock_client, "test-report-id", "test-instance-id"):
+        async for _ in stream_report(mock_client, "test-report-id", "test-instance-id", "asset"):
             pass
 
     # Verify the exception contains the expected error message

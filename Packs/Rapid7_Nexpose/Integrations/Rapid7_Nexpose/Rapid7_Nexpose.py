@@ -138,7 +138,7 @@ aggregated_details AS (
         ) AS finding_details_json
     FROM
         fact_asset_scan_vulnerability_instance fasvi
-    INNER JOIN 
+    INNER JOIN
         fact_asset_vulnerability_finding favf
         ON fasvi.asset_id = favf.asset_id
         AND fasvi.vulnerability_id = favf.vulnerability_id
@@ -158,7 +158,7 @@ SELECT
     dv.nexpose_id AS vulnerability_name,
     dv.severity AS vulnerability_severity,
     dv.title,
-    dv.description,
+    REPLACE(REPLACE(dv.description, CHR(10), ' '), CHR(13), ' ') AS description,
     dv.date_published,
     dv.date_added,
     dv.severity_score,
@@ -183,8 +183,10 @@ LEFT JOIN dim_vulnerability AS dv
     ON ad.vulnerability_id = dv.vulnerability_id
 LEFT JOIN aggregated_categories AS ac
     ON ad.vulnerability_id = ac.vulnerability_id
-LEFT JOIN cve_references cef 
+LEFT JOIN cve_references cef
     ON ad.vulnerability_id = cef.vulnerability_id
+WHERE
+    ad.scan_date >= CURRENT_DATE - INTERVAL '100 days'
 ORDER BY
     ad.asset_id, ad.vulnerability_id, ad.scan_date DESC
 """
@@ -194,9 +196,13 @@ PRODUCT = {"asset": "nexpose_assets", "vulnerability": "nexpose_vulnerabilities"
 XSIAM_EVENT_CHUNK_SIZE = 2**20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10**6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
 
-# 12 hours converted to seconds
-INTERVAL_SECONDS = 12 * 60 * 60
-INTEGRATION_CONTEXT_DICTIONARY = {"": ""}
+# 24 hours converted to seconds
+TWENTYFOUR_HOURS_AS_SECONDS = 24 * 60 * 60
+
+
+def log(event_type: str, log_line: str):
+    full_log_line = f"[{event_type}] {log_line}"
+    demisto.debug(full_log_line)
 
 
 class ScanStatus(Enum):
@@ -2475,7 +2481,7 @@ class InsightVMClient:
 
         MAX_RETRIES = 3
         # Retry on: 500/502/503/504 (Server Errors), 429 (Rate Limit)
-        RETRYABLE_STATUSES = {400, 500, 502, 503, 504, 429}
+        RETRYABLE_STATUSES = {500, 502, 503, 504, 429}
 
         for attempt in range(MAX_RETRIES + 1):
             if attempt > 0:
@@ -2488,12 +2494,12 @@ class InsightVMClient:
 
                 # 1. Handle Retryable Errors
                 if response.status in RETRYABLE_STATUSES:
-                    demisto.debug(f"API returned retryable status {response.status}.")
+                    demisto.debug(f"API returned retryable status {response.status}: {response.message}")
                     response.close()  # Close connection before retrying
                     continue
 
                 # 2. Handle Fatal Client Errors (4xx)
-                if 400 < response.status < 500:
+                if 400 <= response.status < 500:
                     try:
                         error_body = await response.text()
                     except Exception:
@@ -2511,48 +2517,6 @@ class InsightVMClient:
                     raise
 
         raise DemistoException(f"API request failed after {MAX_RETRIES} attempts.")
-
-    @staticmethod
-    def _sync_http_request(url: str, headers: Dict[str, str], payload: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Performs a blocking POST request using the 'requests' library.
-        This runs in a separate thread via asyncio.to_thread().
-        """
-        try:
-            # Note: headers and payload are already prepared by the calling method
-            response = requests.post(url, headers=headers, json=payload, verify=False)
-            response.raise_for_status()  # Raise exception for 4xx/5xx status codes
-
-            # Return the necessary information for the calling async function
-            return {
-                "status": response.status_code,
-                "location": response.headers.get("Location"),
-                "data": response.json() if response.content else response.text,
-            }
-        except requests.exceptions.RequestException as e:
-            # Catch all requests errors (network, timeout, etc.)
-            raise Exception(f"Synchronous HTTP Request Failed: {e}")
-
-    # ====================================================================
-    #           2. ASYNCHRONOUS THREADED WRAPPER
-    # ====================================================================
-
-    def http_request_sync(self, method: str, endpoint: str, payload: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Runs the blocking request in a separate thread to avoid freezing the asyncio event loop.
-        """
-        url = self._base_url + endpoint
-
-        # Use functools.partial to pre-fill the synchronous function arguments
-        # We only pass the data required by the static method.
-        if method.upper() != "POST":
-            raise NotImplementedError("http_request_sync only supports POST method for report creation.")
-
-        # Offload the blocking request to a separate thread
-        result = self._sync_http_request(url, self._headers, payload)
-
-        # We assume the static method handles basic error raising (via raise_for_status)
-        return result
 
 
 class Site:
@@ -6785,11 +6749,11 @@ async def create_report_config_from_template(client: InsightVMClient, event_type
     # Define the payload
     payload = {
         "format": "sql-query",
-        "name": f"XSOAR_Asset_Collector_{int(time.time())}",
+        "name": f"PA_Asset_Collector_{int(time.time())}",
         "query": BASE_QUERY.get(event_type),
         "version": "2.3.0",
     }
-    demisto.debug(f"Creating report config for {event_type}.")
+    log(event_type, "Creating report config.")
     response = await client.http_request(method="POST", endpoint=endpoint, payload=payload)
 
     try:
@@ -6810,7 +6774,7 @@ async def create_report_config_from_template(client: InsightVMClient, event_type
         raise DemistoException(f"Error creating report configuration: {e}")
 
 
-async def generate_report(client: InsightVMClient, report_id: str) -> str:
+async def generate_report(client: InsightVMClient, report_id: str, event_type: str) -> str:
     """Triggers the generation of a report."""
     endpoint = f"/api/3/reports/{report_id}/generate"
 
@@ -6821,7 +6785,7 @@ async def generate_report(client: InsightVMClient, report_id: str) -> str:
     data = await response.json()
     await response.release()
     instance_id = str(data.get("id"))
-    demisto.debug(f"Report generation started. Instance ID: {instance_id}")
+    log(event_type, f"Report generation started. Instance ID: {instance_id}")
     return instance_id
 
 
@@ -6837,28 +6801,30 @@ async def check_status_of_report(client: InsightVMClient, report_id: str, instan
         await response.release()
         status = status_data.get("status", "unknown").lower()
 
-        demisto.debug(f"Current {event_type} report status: '{status}' for {report_id=} and {instance_id=}")
+        log(event_type, f"Current report status: '{status}' for {report_id=} and {instance_id=}")
 
         if status == "complete":
             return instance_id
 
         if status in ["failed", "aborted"]:
-            demisto.debug(f"Report {instance_id} status for {event_type} is '{status}'. Re-triggering report generation")
-            instance_id = await generate_report(client, report_id)
+            log(event_type, f"Report {instance_id} status is '{status}'. Re-triggering report generation")
+            instance_id = await generate_report(client, report_id, event_type)
 
         if status in ["generated", "running", "unknown"]:
-            demisto.debug(f"Report {instance_id} for {event_type} still processing/unknown. Waiting 120 seconds")
+            log(event_type, f"Report {instance_id} still processing. Waiting 60 seconds")
 
-        await asyncio.sleep(60)
+        await asyncio.sleep(REPORT_DOWNLOAD_WAIT_TIME)
 
 
-async def stream_report(client: "InsightVMClient", report_id: str, instance_id: str) -> AsyncGenerator[str, None]:
+async def stream_report(
+    client: "InsightVMClient", report_id: str, instance_id: str, event_type: str
+) -> AsyncGenerator[str, None]:  # noqa: E501
     """
     Asynchronously streams the content of a Rapid7 InsightVM report.
     Yields decoded text lines (strings) to be consumed by the parser.
     """
     endpoint = f"/api/3/reports/{report_id}/history/{instance_id}/output"
-    demisto.debug(f"Starting report download stream from: {endpoint}")
+    log(event_type, f"Starting report download stream from: {endpoint}")
 
     # Use the client's http_request method for the asynchronous GET request
     response = await client.http_request("GET", endpoint)
@@ -6893,7 +6859,7 @@ async def stream_report(client: "InsightVMClient", report_id: str, instance_id: 
         if buffer:
             yield buffer.decode("utf-8")
 
-        demisto.debug("Finished streaming report.")
+        log(event_type, "Finished streaming report.")
 
     finally:
         # Crucial: Always ensure the response object is released/closed
@@ -6906,7 +6872,7 @@ async def stream_and_parse_report(
     instance_id: str,
     event_integration_context: dict,
     event_type: str,
-    batch_size: int = 1000,
+    batch_size: int = DEFAULT_BATCH_SIZE,
 ):
     # --- Checkpoint Setup ---
     # Retrieve checkpoints:
@@ -6916,16 +6882,16 @@ async def stream_and_parse_report(
     start_line_for_batch_raw = last_sent_line_raw + 1
     pending_tasks: set[asyncio.Task] = set()
 
-    demisto.debug(f"--- Starting Data Stream (Resuming from line: {start_line_for_batch_raw}) ---")
+    log(event_type, f"--- Starting Data Stream (Resuming from line: {start_line_for_batch_raw}) ---")
     # --- Lookahead Stream Setup ---
     try:
-        stream_iterator = stream_report(client, report_id, instance_id).__aiter__()
+        stream_iterator = stream_report(client, report_id, instance_id, event_type)
     except Exception as e:
         raise DemistoException(f"Failed to initialize stream: {e}")
 
     line_to_process: Optional[str] = None
 
-    demisto.debug(f"--- Starting Data Stream for {event_type} report instance {instance_id} ---")
+    log(event_type, f"--- Starting Data Stream for report instance {instance_id} ---")
 
     try:
         # INITIAL LINE READ: Get the header of the report
@@ -6935,13 +6901,13 @@ async def stream_and_parse_report(
 
             # Parse the header immediately
             header = next(csv.reader(io.StringIO(header_line)))
-            demisto.debug(f"CSV Header parsed: {header}")
+            log(event_type, f"CSV Header parsed: {header}")
 
         except StopAsyncIteration:
-            demisto.debug("Report was empty (no header found).")
+            log(event_type, "Report was empty (no header found).")
             return
         except Exception as e:
-            raise Exception(f"Failed to parse CSV header on line 1: {e}")
+            raise DemistoException(f"Failed to parse CSV header on line 1: {e}")
 
         try:
             # Try to fetch Line 2 (the first data line)
@@ -6965,7 +6931,7 @@ async def stream_and_parse_report(
                 instance_id=instance_id,
             )
         else:
-            demisto.debug("No data rows to process.")
+            log(event_type, "No data rows to process.")
 
     except Exception as e:
         raise DemistoException(f"\nFATAL ERROR during streaming or sending events: {e}")
@@ -7020,8 +6986,9 @@ async def process_data_stream(
         try:
             data_row = next(csv.reader(io.StringIO(current_line)))
             if not header or len(data_row) != len(header):
+                log(event_type, f"Got: {data_row=} with {header=}, where {len(data_row)=} and {len(header)=}")
                 if current_line_count > HEADER_LINE_NUMBER:
-                    demisto.debug(f"Skipping malformed row {current_line_count}.")
+                    log(event_type, f"Skipping malformed row {current_line_count}.")
                 line_to_process = next_line
                 continue
 
@@ -7030,7 +6997,7 @@ async def process_data_stream(
             current_run_data_records += 1  # Count of data records in the current run
 
         except Exception as e:
-            demisto.debug(f"Error parsing CSV line {current_line_count}: {e}. Skipping record.")
+            log(event_type, f"Error parsing CSV line {current_line_count}: {e}. Skipping record.")
             line_to_process = next_line
             continue
 
@@ -7057,13 +7024,13 @@ async def process_data_stream(
             current_run_data_records = 0  # Reset count for the new batch
             current_batch = []
 
-            demisto.debug(f"Batch task created. Continuing stream. (Current line: {current_line_count})")
+            log(event_type, f"Batch task created. Continuing stream. (Current line: {current_line_count})")
 
         # Move processing to the next line:
         line_to_process = next_line
 
     if pending_tasks:
-        demisto.debug(f"\nWaiting for {len(pending_tasks)} final submission task(s) to finish.")
+        log(event_type, f"Waiting for {len(pending_tasks)} final submission task(s) to finish.")
         results = await asyncio.gather(*pending_tasks, return_exceptions=True)
 
         for res in results:
@@ -7101,9 +7068,10 @@ async def handle_batch_submission(
     if is_last_batch:
         # If this is the last batch, the indicator MUST be the final total record count.
         lines_to_send_indicator = new_total_records
-        demisto.debug(
-            f"DEBUG: End of {event_type} report number {instance_id} reached. Sending Final Report Total: \
-        {lines_to_send_indicator}"
+        log(
+            event_type,
+            f"DEBUG: End of report number {instance_id} reached. Sending Final Report Total: \
+        {lines_to_send_indicator}",
         )
     else:
         # Otherwise, send the placeholder (1) to indicate it's a middle batch.
@@ -7111,23 +7079,29 @@ async def handle_batch_submission(
 
     # --- END FINAL COUNT LOGIC ---
     # Create the asynchronous task for concurrent submission
-    demisto.debug(f"Sending {batch_size_actual} {event_type} to xsiam")
-
-    task = asyncio.create_task(
-        process_and_send_events_to_xsiam(
-            current_batch,
-            total_lines_after_batch_raw,  # Raw line number for resuming stream (e.g., 1001)
-            batch_counter,
-            new_total_records,  # Cumulative data records processed (e.g., 1000)
-            event_type,
-            snapshot_id,
-            lines_to_send_indicator,
+    
+    try:
+        log(event_type, f"Sending {batch_size_actual} {event_type} to xsiam")
+        task = asyncio.create_task(
+            process_and_send_events_to_xsiam(
+                current_batch,
+                total_lines_after_batch_raw,  # Raw line number for resuming stream (e.g., 1001)
+                batch_counter,
+                new_total_records,  # Cumulative data records processed (e.g., 1000)
+                event_type,
+                snapshot_id,
+                lines_to_send_indicator,
+            )
         )
-    )
 
-    # Manage the task set
-    pending_tasks.add(task)
-    task.add_done_callback(pending_tasks.discard)
+        # Manage the task set
+        pending_tasks.add(task)
+        task.add_done_callback(pending_tasks.discard)
+    except Exception as e:
+        log(event_type, f"CRITICAL ERROR: Failed to schedule batch submission task: {e}")
+        if 'task' in locals() and not task.done():
+            task.cancel()
+            log(event_type, "Safe guard: Orphaned task cancelled.")
 
     # Reset batch trackers for the next iteration
     start_line_for_batch_raw = total_lines_after_batch_raw + 1
@@ -7201,9 +7175,9 @@ def _apply_collector_changes(collector_context: Dict[str, Dict[str, Any]], colle
             current_sub_dict[key] = new_value
 
 
-def update_state_checkpoint(collector_type: str, changes: Dict[str, Any]) -> None:
+def update_integration_context_by_event_type(event_type: str, changes: Dict[str, Any]) -> None:
     """
-    Retrieves the current integration context, updates the specified collector's
+    Retrieves the current integration context, updates the specified event's
     state with the provided changes, and saves the updated context.
 
     Args:
@@ -7215,11 +7189,11 @@ def update_state_checkpoint(collector_type: str, changes: Dict[str, Any]) -> Non
     current_context = get_integration_context()
 
     # 2. Apply the update using the helper function
-    _apply_collector_changes(current_context, collector_type, changes)
+    _apply_collector_changes(current_context, event_type, changes)
 
     # 3. Set the updated context back to the platform
     set_integration_context(current_context)
-    demisto.debug(f"State checkpoint saved for '{collector_type}'. New line: {current_context[collector_type]}")  # noqa: E501
+    log(event_type, f"State checkpoint saved. New line: {current_context[event_type]}")  # noqa: E501
 
 
 #################################################
@@ -7245,9 +7219,7 @@ async def process_and_send_events_to_xsiam(
         offset (str | None): The offset hash.
         counter (int): The current execution number.
     """
-    demisto.debug(
-        f"Running in interval = {batch_counter}. got {event_type} {len(events)} events, moving to processing events data."
-    )  # noqa: E501
+    log(event_type, f"Running in interval = {batch_counter}. got {len(events)} lines, moving to processing data.")  # noqa: E501
     processed_events = events
 
     size_in_bytes = sum(len(line.encode("utf-8")) for line in events)
@@ -7266,17 +7238,17 @@ async def process_and_send_events_to_xsiam(
         items_count=items_count,
         snapshot_id=snapshot_id,
     )
-    demisto.debug(f"Running in interval = {batch_counter}. Finished executing send_events_to_xsiam, waiting for tasks to end.")
+    log(event_type, f"Running in interval = {batch_counter}. Finished executing send_events_to_xsiam, waiting for tasks to end.")
     await asyncio.gather(*tasks)
-    demisto.debug(f"Running in interval = {batch_counter}. Finished gathering all tasks.")
-    demisto.debug(f"Running in interval = {batch_counter}. Updating module health.")
+    log(event_type, f"Running in interval = {batch_counter}. Finished gathering all tasks.")
+    log(event_type, f"Running in interval = {batch_counter}. Updating module health.")
 
-    update_state_checkpoint(
+    update_integration_context_by_event_type(
         event_type,
         {"last_sent_line": total_lines_after_batch_raw, "total_records_ingested": new_total_records, "snapshot_id": snapshot_id},
     )
     demisto.updateModuleHealth({"assetsPulled": len(processed_events)})
-    demisto.debug(f"Running in interval = {batch_counter}. Finished updating module health.")
+    log(event_type, f"Running in interval = {batch_counter}. Finished updating module health.")
 
 
 def rapid7_send_data_to_xsiam(
@@ -7668,7 +7640,7 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
     The function signature is adapted to receive the client instance.
     """
     integration_context = get_integration_context()
-    demisto.debug(f"Got integration_context: {integration_context} for {event_type}")
+    log(event_type, f"Got integration_context: {integration_context}")
 
     # 1. RETRIEVE STATE
     event_integration_context = integration_context.get(event_type, {})
@@ -7680,41 +7652,40 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
     if not finish_current_report_stream:
         try:
             if report_id and instance_id:
-                demisto.debug(f"State found in context. Resuming check for Report ID: {report_id}, Instance ID: {instance_id}")
+                log(event_type, f"State found in context. Resuming check for Report ID: {report_id}, Instance ID: {instance_id}")
                 # If IDs exist, go straight to checking the status of the ongoing report
                 instance_id = await check_status_of_report(client, report_id, instance_id, event_type)
 
             else:
-                demisto.debug(f"No state found for {event_type}. Starting new report  generation.")
+                log(event_type, "No state found. Starting new report generation.")
                 if not report_id:
-                    raise Exception(f"Report ID for {event_type} is missing from context despite setup phase.")
+                    raise DemistoException(f"Report ID for {event_type} is missing from context despite setup phase.")
 
                 # 2. GENERATE REPORT
-                demisto.debug(f"Generation report for {event_type}")
-                instance_id = await generate_report(client, report_id)
-                demisto.debug(f"Finish generation report for {event_type}")
-                update_state_checkpoint(event_type, {"instance_id": instance_id})
+                instance_id = await generate_report(client, report_id, event_type)
+                update_integration_context_by_event_type(event_type, {"instance_id": instance_id})
 
                 # 3. CHECK STATUS (Will wait asynchronously until finished or retry if failed)
                 instance_id = await check_status_of_report(client, report_id, instance_id, event_type)
+                update_integration_context_by_event_type(event_type, {"instance_id": instance_id})
 
             # 4. STREAM DATA AND SEND EVENTS
-            demisto.debug("\n--- Starting Data Streaming Phase ---")
+            log(event_type, "\n--- Starting Data Streaming Phase ---")
 
             await stream_and_parse_report(client, report_id, instance_id, event_integration_context, event_type, batch_size)
-            update_state_checkpoint(
+            update_integration_context_by_event_type(
                 event_type,
                 {"last_sent_line": 0, "finish_current_report_stream": True, "snapshot_id": "", "total_records_ingested": 0},
             )
-            demisto.debug("--- Data Streaming Phase Complete ---")
+            log(event_type, "--- Data Streaming Phase Complete ---")
 
         except Exception as e:
-            demisto.debug(f"\nFATAL WORKFLOW ERROR: {e}")
+            log(event_type, f"\nFATAL WORKFLOW ERROR: {e}")
             # Preserve the original exception message to ensure test expectations are met
             raise DemistoException(f"Got the following error: {str(e)}")
 
     # 5. CLEANUP:
-    demisto.debug("\n--- Starting Cleanup Phase ---")
+    log(event_type, "\n--- Starting Cleanup Phase ---")
 
     if report_id and instance_id:
         await delete_report_instance(client, report_id, instance_id, event_type)
@@ -7722,32 +7693,31 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
         await delete_report_configuration(client, report_id, event_type)
 
     # Clear all state markers in context for the next 12-hour run
-    update_state_checkpoint(event_type, {"instance_id": "", "report_id": "", "finish_current_report_stream": False})
+    update_integration_context_by_event_type(
+        event_type, {"instance_id": "", "report_id": "", "finish_current_report_stream": False}
+    )
 
-    demisto.debug("--- Cleanup Phase Complete ---")
+    log(event_type, "--- Cleanup Phase Complete ---")
 
 
-async def ensure_report_config_exists(client: InsightVMClient, collector_type: str, context: dict) -> None:
+async def ensure_report_config_exists(client: InsightVMClient, event_type: str, context: dict) -> None:
     """
     Checks if a report configuration exists in the integration context.
     If not, it creates one sequentially and updates the context.
     """
-    # 1. Check Context
-    existing_id = context.get(collector_type, {}).get("report_id")
+    existing_id = context.get(event_type, {}).get("report_id")
 
     if existing_id:
-        demisto.debug(f"[{collector_type}] Report config already exists (ID: {existing_id}). Skipping creation.")
+        log(event_type, f"Report config already exists (ID: {existing_id}). Skipping creation.")
         return
 
-    # 2. Create if Missing (Sequential/Blocking)
-    demisto.debug(f"[{collector_type}] No report config found. Creating new configuration...")
+    log(event_type, "No report config found. Creating new configuration.")
 
     # We await this call so it finishes completely before moving on
-    new_report_id = await create_report_config_from_template(client, collector_type)
+    new_report_id = await create_report_config_from_template(client, event_type)
 
-    # 3. Update Context Immediately
-    update_state_checkpoint(collector_type=collector_type, changes={"report_id": new_report_id})
-    demisto.debug(f"[{collector_type}] Context updated with new Report ID: {new_report_id}")
+    update_integration_context_by_event_type(event_type, {"report_id": new_report_id})
+    log(event_type, f"Context updated with new Report ID: {new_report_id}")
 
 
 async def run_all_collectors(
@@ -7804,7 +7774,7 @@ async def fetch_assets_long_running_command(params: dict, token: str):
         fetch_interval (int): Fetch time for this fetching events cycle.
     """
     while True:
-        demisto.debug("Started running")
+        demisto.debug("Started long running execution")
         start_time = time.time()
         try:
             async with InsightVMClient(
@@ -7824,7 +7794,7 @@ async def fetch_assets_long_running_command(params: dict, token: str):
             end_time = time.time()
             duration_seconds = end_time - start_time
             demisto.debug(f"The whole run took {duration_seconds} seconds")
-            remaining_time_seconds = INTERVAL_SECONDS - duration_seconds
+            remaining_time_seconds = TWENTYFOUR_HOURS_AS_SECONDS - duration_seconds
             demisto.debug(f"Will sleep for {remaining_time_seconds} seconds")
 
             await asyncio.sleep(remaining_time_seconds)
