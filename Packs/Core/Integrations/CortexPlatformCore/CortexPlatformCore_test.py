@@ -5615,23 +5615,22 @@ def test_build_endpoint_filters_minimal_args(mocker):
     assert result == {"empty": "filter"}
 
 
-def test_build_endpoint_filters_agent_eol_inversion(mocker):
+def test_build_endpoint_filters_agent_eol(mocker):
     """
     Given:
-        - Arguments with agent_eol parameter set to True.
+    - Arguments with agent_eol parameter set to True.
     When:
-        - Calling build_endpoint_filters with agent_eol=True.
+    - Calling build_endpoint_filters with agent_eol=True.
     Then:
-        - supported_version filter is set to False (inverted value).
+    - supported_version filter is set to True.
     """
-    from CortexPlatformCore import build_endpoint_filters, ENDPOINT_FIELDS
+    from CortexPlatformCore import build_endpoint_filters, Endpoints
 
     # Mock dependencies
     mock_filter_builder = mocker.patch("CortexPlatformCore.FilterBuilder")
     mock_filter_instance = mocker.Mock()
     mock_filter_builder.return_value = mock_filter_instance
     mock_filter_instance.to_dict.return_value = {}
-
     mock_arg_to_list = mocker.patch("CortexPlatformCore.argToList")
     mock_arg_to_bool = mocker.patch("CortexPlatformCore.arg_to_bool_or_none")
 
@@ -5639,29 +5638,28 @@ def test_build_endpoint_filters_agent_eol_inversion(mocker):
     mock_arg_to_bool.return_value = True  # agent_eol = True
 
     args = {"agent_eol": "true"}
-
     build_endpoint_filters(args)
 
     # Verify supported_version (not agent_eol) was passed correctly
     calls = mock_filter_instance.add_field.call_args_list
     agent_eol_call = None
     for current_call in calls:
-        if current_call[0][0] == ENDPOINT_FIELDS["agent_eol"]:
+        if current_call[0][0] == Endpoints.ENDPOINT_FIELDS["agent_eol"]:
             agent_eol_call = current_call
             break
 
     assert agent_eol_call is not None
-    assert agent_eol_call[0][2]
+    assert agent_eol_call[0][2] is True
 
 
 def test_core_list_endpoints_command_success(mocker):
     """
     Given:
-        - Valid arguments and successful client response with endpoint data.
+    - Valid arguments and successful client response with endpoint data.
     When:
-        - Calling core_list_endpoints_command.
+    - Calling core_list_endpoints_command.
     Then:
-        - Returns CommandResults with properly formatted endpoint data and readable output.
+    - Returns list of CommandResults with properly formatted endpoint data and readable output.
     """
     from CortexPlatformCore import core_list_endpoints_command, Client, INTEGRATION_CONTEXT_BRAND
 
@@ -5679,23 +5677,29 @@ def test_core_list_endpoints_command_success(mocker):
     mock_build_webapp_request_data.return_value = {"test": "request_data"}
     mock_table_to_markdown.return_value = "Mock table output"
 
-    raw_data = [{"AGENT_ID": "endpoint-1", "AGENT_HOSTNAME": "host-1"}]
+    raw_data = [{"AGENT_ID": "endpoint-1", "HOST_NAME": "host-1"}]
     mapped_data = [{"endpoint_id": "endpoint-1", "endpoint_name": "host-1"}]
 
     mock_client = mocker.Mock(spec=Client)
-    mock_client.get_webapp_data.return_value = {"reply": {"DATA": raw_data}}
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": raw_data, "FILTER_COUNT": "1"}}
     mock_map_endpoint_format.return_value = mapped_data
 
-    args = {"page": "0", "limit": "50", "endpoint_name": "test"}
-
+    args = {"page": "0", "page_size": "50", "endpoint_name": "test"}
     result = core_list_endpoints_command(mock_client, args)
 
-    # Verify result structure
-    assert result.readable_output == "Mock table output"
-    assert result.outputs == mapped_data
-    assert result.outputs_prefix == f"{INTEGRATION_CONTEXT_BRAND}.Endpoint"
-    assert result.outputs_key_field == "endpoint_id"
-    assert result.raw_response == mapped_data
+    # Verify result structure - should be a list with 2 CommandResults
+    assert len(result) == 2
+
+    # First result is metadata
+    assert result[0].outputs_prefix == f"{INTEGRATION_CONTEXT_BRAND}.EndpointsMetadata"
+    assert result[0].outputs == {"filtered_count": 1, "returned_count": 1}
+
+    # Second result is the actual endpoint data
+    assert result[1].readable_output == "Mock table output"
+    assert result[1].outputs == mapped_data
+    assert result[1].outputs_prefix == f"{INTEGRATION_CONTEXT_BRAND}.Endpoint"
+    assert result[1].outputs_key_field == "endpoint_id"
+    assert result[1].raw_response == mapped_data
 
     # Verify function calls
     mock_build_endpoint_filters.assert_called_once_with(args)
@@ -5707,11 +5711,11 @@ def test_core_list_endpoints_command_success(mocker):
 def test_core_list_endpoints_command_default_pagination(mocker):
     """
     Given:
-        - Arguments without page and limit specified.
+    - Arguments without page and page_size specified.
     When:
-        - Calling core_list_endpoints_command with default pagination.
+    - Calling core_list_endpoints_command with default pagination.
     Then:
-        - Uses default pagination values (page=0, limit=MAX_GET_ENDPOINTS_LIMIT).
+    - Uses default pagination values (page=0, limit=100).
     """
     from CortexPlatformCore import core_list_endpoints_command, Client, MAX_GET_ENDPOINTS_LIMIT
 
@@ -5730,29 +5734,28 @@ def test_core_list_endpoints_command_default_pagination(mocker):
     mock_table_to_markdown.return_value = "Empty table"
 
     mock_client = mocker.Mock(spec=Client)
-    mock_client.get_webapp_data.return_value = {"reply": {"DATA": []}}
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [], "FILTER_COUNT": "0"}}
     mock_map_endpoint_format.return_value = []
 
     args = {}
-
     result = core_list_endpoints_command(mock_client, args)
 
     # Verify default pagination was used
     call_kwargs = mock_build_webapp_request_data.call_args[1]
     assert call_kwargs["limit"] == MAX_GET_ENDPOINTS_LIMIT
     assert call_kwargs["start_page"] == 0
-
-    assert result.outputs == []
+    assert len(result) == 2
+    assert result[1].outputs == []
 
 
 def test_core_list_endpoints_command_empty_response(mocker):
     """
     Given:
-        - Client returns empty DATA response.
+    - Client returns empty DATA response.
     When:
-        - Calling core_list_endpoints_command with empty server response.
+    - Calling core_list_endpoints_command with empty server response.
     Then:
-        - Returns CommandResults with empty outputs and handles gracefully.
+    - Returns CommandResults with empty outputs and handles gracefully.
     """
     from CortexPlatformCore import core_list_endpoints_command, Client
 
@@ -5770,17 +5773,17 @@ def test_core_list_endpoints_command_empty_response(mocker):
     mock_table_to_markdown.return_value = "No endpoints found"
 
     mock_client = mocker.Mock(spec=Client)
-    mock_client.get_webapp_data.return_value = {"reply": {"DATA": []}}
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [], "FILTER_COUNT": "0"}}
     mock_map_endpoint_format.return_value = []
 
     args = {}
-
     result = core_list_endpoints_command(mock_client, args)
 
     # Verify empty response handling
-    assert result.readable_output == "No endpoints found"
-    assert result.outputs == []
-    assert result.raw_response == []
+    assert len(result) == 2
+    assert result[1].readable_output == "No endpoints found"
+    assert result[1].outputs == []
+    assert result[1].raw_response == []
 
     # Verify map_endpoint_format was called with empty list
     mock_map_endpoint_format.assert_called_once_with([])
@@ -5789,11 +5792,11 @@ def test_core_list_endpoints_command_empty_response(mocker):
 def test_core_list_endpoints_command_custom_pagination(mocker):
     """
     Given:
-        - Arguments with custom page and limit values.
+    - Arguments with custom page and page_size values.
     When:
-        - Calling core_list_endpoints_command with page=2, limit=10.
+    - Calling core_list_endpoints_command with page=2, page_size=10.
     Then:
-        - Uses correct pagination calculations (page_from=20, page_to=30).
+    - Uses correct pagination calculations (page_from=20, page_to=30).
     """
     from CortexPlatformCore import core_list_endpoints_command, Client, CommandResults
 
@@ -5819,29 +5822,28 @@ def test_core_list_endpoints_command_custom_pagination(mocker):
     mock_table_to_markdown.return_value = "Page 2 table"
 
     mock_client = mocker.Mock(spec=Client)
-    mock_client.get_webapp_data.return_value = {"reply": {"DATA": []}}
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [], "FILTER_COUNT": "0"}}
     mock_map_endpoint_format.return_value = []
 
-    args = {"page": "2", "limit": "10"}
-
+    args = {"page": "2", "page_size": "10"}
     result = core_list_endpoints_command(mock_client, args)
 
     # Verify pagination calculations: page_from=2*10=20, page_to=2*10+10=30
     call_kwargs = mock_build_webapp_request_data.call_args[1]
     assert call_kwargs["limit"] == 30  # page_to
     assert call_kwargs["start_page"] == 20  # page_from
-
-    assert isinstance(result, CommandResults)
+    assert len(result) == 2
+    assert isinstance(result[1], CommandResults)
 
 
 def test_core_list_endpoints_command_missing_reply_field(mocker):
     """
     Given:
-        - Client returns response without 'reply' field.
+    - Client returns response without 'reply' field.
     When:
-        - Calling core_list_endpoints_command with malformed server response.
+    - Calling core_list_endpoints_command with malformed server response.
     Then:
-        - Handles missing reply gracefully and returns empty results.
+    - Handles missing reply gracefully and returns empty results.
     """
     from CortexPlatformCore import core_list_endpoints_command, Client
 
@@ -5864,11 +5866,11 @@ def test_core_list_endpoints_command_missing_reply_field(mocker):
     mock_map_endpoint_format.return_value = []
 
     args = {}
-
     result = core_list_endpoints_command(mock_client, args)
 
     # Verify graceful handling of missing reply
-    assert result.outputs == []
+    assert len(result) == 2
+    assert result[1].outputs == []
 
     # Verify map_endpoint_format was called with empty list (from missing DATA)
     mock_map_endpoint_format.assert_called_once_with([])
@@ -5877,11 +5879,11 @@ def test_core_list_endpoints_command_missing_reply_field(mocker):
 def test_core_list_endpoints_command_with_filters(mocker):
     """
     Given:
-        - Arguments with multiple filter parameters.
+    - Arguments with multiple filter parameters.
     When:
-        - Calling core_list_endpoints_command with endpoint filters.
+    - Calling core_list_endpoints_command with endpoint filters.
     Then:
-        - Filters are properly applied and data is correctly processed.
+    - Filters are properly applied and data is correctly processed.
     """
     from CortexPlatformCore import core_list_endpoints_command, Client
 
@@ -5899,23 +5901,23 @@ def test_core_list_endpoints_command_with_filters(mocker):
     mock_build_webapp_request_data.return_value = {"table": "agents", "filters": {}}
     mock_table_to_markdown.return_value = "Filtered endpoints table"
 
-    raw_data = [{"AGENT_ID": "filtered-endpoint", "AGENT_HOSTNAME": "server-01"}]
+    raw_data = [{"AGENT_ID": "filtered-endpoint", "HOST_NAME": "server-01"}]
     mapped_data = [{"endpoint_id": "filtered-endpoint", "endpoint_name": "server-01"}]
 
     mock_client = mocker.Mock(spec=Client)
-    mock_client.get_webapp_data.return_value = {"reply": {"DATA": raw_data}}
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": raw_data, "FILTER_COUNT": "1"}}
     mock_map_endpoint_format.return_value = mapped_data
 
-    args = {"endpoint_status": "Connected", "endpoint_type": "Server", "endpoint_name": "server-01"}
-
+    args = {"endpoint_status": "connected", "endpoint_type": "server", "endpoint_name": "server-01"}
     result = core_list_endpoints_command(mock_client, args)
 
     # Verify filters were applied
     mock_build_endpoint_filters.assert_called_once_with(args)
 
     # Verify result
-    assert result.outputs == mapped_data
-    assert result.readable_output == "Filtered endpoints table"
+    assert len(result) == 2
+    assert result[1].outputs == mapped_data
+    assert result[1].readable_output == "Filtered endpoints table"
 
     # Verify logging was called
     assert mock_demisto.info.called

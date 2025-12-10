@@ -14,6 +14,7 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
+MAX_GET_ENDPOINTS_LIMIT = 100
 AGENTS_TABLE = "AGENTS_TABLE"
 
 ASSET_FIELDS = {
@@ -2767,7 +2768,8 @@ def build_endpoint_filters(args: dict):
         FilterBuilder: Object with filters applied.
     """
     operational_status = [
-        Endpoints.ENDPOINT_OPERATIONAL_STATUS[operational_status] for operational_status in argToList(args.get("operational_status"))
+        Endpoints.ENDPOINT_OPERATIONAL_STATUS[operational_status]
+        for operational_status in argToList(args.get("operational_status"))
     ]
     endpoint_type = [Endpoints.ENDPOINT_TYPE[endpoint_type] for endpoint_type in argToList(args.get("endpoint_type"))]
     endpoint_status = [Endpoints.ENDPOINT_STATUS[status] for status in argToList(args.get("endpoint_status"))]
@@ -2785,10 +2787,14 @@ def build_endpoint_filters(args: dict):
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["platform"], FilterType.EQ, platform)
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["assigned_prevention_policy"], FilterType.EQ, assigned_prevention_policy)
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_name"], FilterType.EQ, argToList(args.get("endpoint_name")))
-    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["operating_system"], FilterType.CONTAINS, argToList(args.get("operating_system")))
+    filter_builder.add_field(
+        Endpoints.ENDPOINT_FIELDS["operating_system"], FilterType.CONTAINS, argToList(args.get("operating_system"))
+    )
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["agent_version"], FilterType.EQ, argToList(args.get("agent_version")))
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["os_version"], FilterType.EQ, argToList(args.get("os_version")))
-    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["ip_address"], FilterType.ADVANCED_IP_MATCH_EXACT, argToList(args.get("ip_address")))
+    filter_builder.add_field(
+        Endpoints.ENDPOINT_FIELDS["ip_address"], FilterType.ADVANCED_IP_MATCH_EXACT, argToList(args.get("ip_address"))
+    )
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["domain"], FilterType.EQ, argToList(args.get("domain")))
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["tags"], FilterType.EQ, argToList(args.get("tags")))
     filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_id"], FilterType.EQ, argToList(args.get("endpoint_id")))
@@ -2813,7 +2819,8 @@ def core_list_endpoints_command(client: Client, args: dict) -> list[CommandResul
         CommandResults: Contains the formatted table, raw response, and outputs.
     """
     page = arg_to_number(args.get("page")) or 0
-    limit = min(int(args.get("page_size", 100)), 100)
+    limit = arg_to_number(args.get("page_size")) or MAX_GET_ENDPOINTS_LIMIT
+    limit = min(limit, MAX_GET_ENDPOINTS_LIMIT)
     page_from = page * limit
     page_to = page * limit + limit
     filter_dict = build_endpoint_filters(args)
@@ -2832,7 +2839,7 @@ def core_list_endpoints_command(client: Client, args: dict) -> list[CommandResul
     data = reply.get("DATA", [])
     data = map_endpoint_format(data)
     demisto.debug(f"Endpoint data after mapping and formatting: {data}")
-    
+
     filter_count = int(reply.get("FILTER_COUNT", "0"))
     returned_count = len(data)
 
@@ -2854,7 +2861,7 @@ def core_list_endpoints_command(client: Client, args: dict) -> list[CommandResul
             raw_response=data,
         )
     )
-    
+
     return command_results
 
 
