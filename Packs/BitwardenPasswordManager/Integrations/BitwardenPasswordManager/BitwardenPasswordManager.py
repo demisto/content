@@ -80,7 +80,11 @@ class Client(BaseClient):
 
         headers = {"Authorization": f"Bearer {self.token}"}
 
-        res = self._http_request(method="GET", url_suffix="/public/events", headers=headers, params=params)
+        url_suffix = "/public/events"
+        if self.self_hosted:
+            url_suffix = f"/api{url_suffix}"
+
+        res = self._http_request(method="GET", url_suffix=url_suffix, headers=headers, params=params)
 
         return res
 
@@ -91,7 +95,7 @@ def test_module(client: Client) -> str:
 
 
 def get_events_command(client: Client, args: Dict[str, Any]) -> tuple:
-    limit = args.get("limit", DEFAULT_MAX_FETCH)
+    limit = int(args.get("limit", DEFAULT_MAX_FETCH))
     start = args.get("start", DEFAULT_FIRST_FETCH)
     end = args.get("end", DEFAULT_END_DATE)
     events, _ = fetch_events(client=client, max_fetch=limit, dates={"start": start, "end": end})
