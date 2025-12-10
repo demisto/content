@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 from copy import deepcopy
-
+from CortexPlatformCore import FilterBuilder, FilterType
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
@@ -24,6 +24,10 @@ PREVALENCE_COMMANDS = {
     "core-get-registry-analytics-prevalence": "registry",
     "core-get-cmd-analytics-prevalence": "cmd",
 }
+
+WEBAPP_COMMANDS = [
+    "core-list-scripts"
+]
 
 TERMINATE_BUILD_NUM = "1398786"
 TERMINATE_SERVER_VERSION = "8.8.0"
@@ -56,7 +60,19 @@ ERROR_CODE_MAP = {
     -191: "IP_IS_LOCAL_ADDRESS",
 }
 
+SCRIPTS_TABLE = "SCRIPTS_TABLE"
 
+class ScriptManagement:
+    FIELDS = {
+        "script_name": "NAME",
+        "script_type": "PLATFORM",
+    }
+    
+    PLATFORMS = {
+        "windows" : "AGENT_OS_WINDOWS",
+        "linux" : "AGENT_OS_LINUX",
+        "macos" : "AGENT_OS_MAC",
+    }
 class Client(CoreClient):
     def test_module(self):
         """
@@ -813,7 +829,31 @@ def is_ip_list_valid(ip_list: list[str]):
         if not is_ip_valid(ip_address) and not is_ipv6_valid(ip_address):
             raise DemistoException(f"ip address {ip_address} is invalid")
 
+def core_list_scripts_command(client: Client, args: dict):
+    filter_builder = FilterBuilder()
+    filter_builder.add_field(
+        ScriptManagement.FIELDS["script_name"],
+        FilterType.CONTAINS,
+        argToList(args.get("script_name")),
+    )
+    
+    windows = ScriptManagement.PLATFORMS["windows"] if args.get("windows_supported") else None
+    macos = ScriptManagement.PLATFORMS["macos"] if args.get("macos_supported") else None
+    linux = ScriptManagement.PLATFORMS["linux"] if args.get("linux_supported") else None
+    filter_builder.add_field(ScriptManagement.FIELDS["script_type"], FilterType.CONTAINS, [windows, macos, linux,])
+    
 
+    request_data = build_webapp_request_data(
+        table_name=SCRIPTS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=args.get("limit", 50),
+        sort_field="MODIFICATION_TIME",
+    )
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+     
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1203,6 +1243,10 @@ def main():  # pragma: no cover
 
         elif command == "core-block-ip":
             return_results(core_block_ip_command(args, client))
+        
+        elif command == "core-list-scripts":
+            base_url = "/api/webapp"
+            return_results(core_list_scripts_command(args, client))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
