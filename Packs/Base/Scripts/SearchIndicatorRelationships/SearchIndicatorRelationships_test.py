@@ -93,4 +93,5 @@ def test_search_relationship_command_args_by_demisto_version(mocker, demisto_ver
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     mocker.patch.object(demisto, "searchRelationships", side_effect=searchRelationships)
     result = search_relationships(entities="1.1.1.1,8.8.8.8")
+    result = result.get('data', [])  # handle both old and new response formats
     assert result == expected_result
