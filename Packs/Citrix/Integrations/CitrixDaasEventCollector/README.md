@@ -58,7 +58,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### citrix-daas-get-events
 
 ***
-Returns system log events extracted from Citrix.
+Returns config log events extracted from Citrix.
 
 #### Base Command
 
