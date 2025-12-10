@@ -51,8 +51,7 @@ RES_EXAMPLE = {
             "OperationType": "ConfigurationChange",
             "Text": "Shutdown Machine",
         },
-
-    ]
+    ],
 }
 
 
@@ -141,7 +140,8 @@ class Client(BaseClient):
             searchDateOption=search_date_option,
         )
         if days:
-            # Note: This parameter is exclusive with parameter searchDateOption. If neither is specified, all records will be returned.
+            # Note: This parameter is exclusive with parameter searchDateOption.
+            # If neither is specified, all records will be returned.
             params.pop("searchDateOption", None)
             params["days"] = days
 
@@ -176,7 +176,12 @@ class Client(BaseClient):
             return response.json()
 
     def get_operations_with_pagination(
-        self, limit: int, search_date_option: str | None = None, last_operation_id: str | None = None, days: int | None = None
+        self,
+        limit: int,
+        search_date_option: str | None = None,
+        last_operation_id: str | None = None,
+        days: int | None = None,
+        last_run_date: str | None = None,
     ):
         operations: list[dict] = []
         continuation_token = None
@@ -188,13 +193,25 @@ class Client(BaseClient):
             )
 
             items = raw_res.get("Items", [])
+
+            if items and last_run_date:
+                res_first_item_time = datetime.strptime(items[0].get("FormattedStartTime"), "%Y-%m-%dT%H:%M:%S.%fZ")
+                last_fetched_item_time = datetime.strptime(last_run_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+                if last_fetched_item_time > res_first_item_time:
+                    continuation_token = raw_res.get("ContinuationToken")
+
+                    if continuation_token:
+                        continue
+                    else:
+                        break
+
             items.reverse()
 
             # get the items after the last fetched record id to avoid duplicates
             if items and last_operation_id:
                 for idx, item in enumerate(items):
                     if item.get("Id") == last_operation_id:
-                        items = items[idx+1:]
+                        items = items[idx + 1 :]
                         break
 
             operations.extend(items)
@@ -252,14 +269,15 @@ def days_since(timestamp_str) -> int:
 
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
-    # last_run = {"LastRun": "2025-12-04T10:44:34.373Z", "Id": "abcd4"}
-
     last_run_date = last_run.get("LastRun")
     days = 0
     if last_run_date:
+        # TODO: check this when the time is today
         days = days_since(last_run_date)
 
-    operations, _ = client.get_operations_with_pagination(limit=max_fetch, last_operation_id=last_run.get("Id"), days=days)
+    operations, _ = client.get_operations_with_pagination(
+        limit=max_fetch, last_operation_id=last_run.get("Id"), days=days, last_run_date=last_run_date
+    )
 
     if operations:
         last_run = {"LastRun": operations[-1]["_time"], "Id": operations[-1]["Id"]}
