@@ -549,7 +549,6 @@ def fetch_events_with_pagination(
 
     demisto.debug(f"[Pagination Loop] Start. Goal: {max_events}. Time: {created_after} -> {created_before or 'Now'}")
 
-    # Fetch Loop
     while len(events) < max_events:
         page_count += 1
 
