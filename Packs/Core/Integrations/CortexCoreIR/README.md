@@ -2457,6 +2457,35 @@ There is no context output for this command.
 
 >Successfully removed tag test from endpoint(s) ['1234']
 
+### core-update-endpoint-tags
+
+***
+Update tags of one or more endpoints.
+
+#### Base Command
+
+`core-update-endpoint-tags`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | A comma-separated list of endpoint IDs to update their tags. | Required |
+| tags_to_add | A comma-separated list of tags to add to the endpoints. Either this arguemnt or tags_to_remove is requierd. | Optional |
+| tags_to_remove | A comma-separated list of tags to remove from the endpoints. Either this arguemnt or tags_to_add is requierd. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!core-update-endpoint-tags endpoint_ids=1234 tags_to_add=tag1,tag2 tags_to_remove=old_tag```
+
+#### Human Readable Output
+
+>Successfully updated tags for endpoint(s) '1234'. Added tags: tag1, tag2 Removed tags: old_tag.
+
 ### core-endpoint-alias-change
 
 ***
