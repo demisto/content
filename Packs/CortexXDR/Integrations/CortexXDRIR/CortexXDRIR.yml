@@ -207,6 +207,10 @@ configuration:
   advanced: true
   type: 8
   section: Collect
+- display: fetchSingleIncident
+  defaultvalue: "false"
+  type: 8
+  required: false
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
@@ -325,6 +329,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.modification_time
       description: Date and time that the incident was last modified.
       type: date
+  - arguments:
+    - description: Incident id to fetch
+      name: incident_id    
+      required: true
+    description: Fetches a single incident.
+    name: xdr-fetch-incident
   - arguments:
     - description: The ID of the incident for which to get additional data.
       name: incident_id
