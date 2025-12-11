@@ -1,8 +1,8 @@
-comment: Presenting Number of engines
+comment: Presenting Number of engines.
 commonfields:
   id: HealthCheckNumberOfEngines
   version: -1
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 enabled: true
 name: HealthCheckNumberOfEngines
 runas: DBotWeakRole
