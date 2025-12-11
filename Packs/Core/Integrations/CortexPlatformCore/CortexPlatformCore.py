@@ -2966,7 +2966,7 @@ def get_webapp_data(client, table_name: str, filter_dict: Any,
     all_records = []
     raw_responses = []
 
-    current_limit = max_limit if retrieve_all else base_limit
+    current_limit = max_limit if retrieve_all else base_limit + offset
     current_offset = offset
 
     while True:
