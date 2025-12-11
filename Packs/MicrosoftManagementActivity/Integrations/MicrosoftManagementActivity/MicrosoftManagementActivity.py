@@ -519,6 +519,7 @@ def content_records_to_incidents(content_records, start_time, end_time, last_run
         elif incident_creation_time_datetime == latest_creation_time_datetime:
             new_incidents_id_dedup.add(record_id)
 
+    demisto.debug(f"Skipped those records ids in order to avoid duplication {skipped_records_ids=}")
     latest_creation_time_str = datetime.strftime(latest_creation_time_datetime, DATE_FORMAT)
 
     if len(content_records) == 0 or latest_creation_time_str == start_time:
@@ -529,9 +530,7 @@ def content_records_to_incidents(content_records, start_time, end_time, last_run
     incident_ids_from_name = [i["name"].split(": ")[-1] for i in incidents]
     demisto.debug(
         f"Fetching window is {start_time=}, {end_time=} and those are the IDs of the incidents: {incident_ids_from_name}."
-        f"Skipped those records ids {skipped_records_ids=}"
     )
-
     return incidents, latest_creation_time_str, list(new_incidents_id_dedup)
 
 
