@@ -1,5 +1,5 @@
 {
-    "name": "GuardiCore",
+    "name": "Akamai GuardiCore",
     "description": "Data center breach detection",
     "support": "xsoar",
     "currentVersion": "2.0.17",
@@ -8,11 +8,23 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Deception & Breach Simulation"
+        "Cloud Security",
+        "Deception & Breach Simulation",
+        "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Network",
+        "Security",
+        "Breach",
+        "Breach Simulation",
+        "Malware"
+    ],
+    "useCases": [
+        "Breach and Attack Simulation",
+        "Malware",
+        "Network Security"
+    ],
+    "keywords": ["Guardicore Centra", "Centra"],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
