@@ -202,7 +202,7 @@ SAMPLE_RESPONSE = [
         "owner_realname": "test_owner",
         "priorities": "critical",
         "priority": "critical",
-        "review_time": ["1737547610.488234", "1737545623.764639", "1737545033.187136"],
+        "review_time": "1737547610.488234",
         "reviewer": ["test_owner", "test_owner", "test_owner"],
         "risk_score": "24160",
         "rule_description": "A high or critical priority host (ACME-code-001) was detected with malware.",
@@ -227,7 +227,6 @@ SAMPLE_RESPONSE = [
         "tag::eventtype": "modaction_result",
         "timestamp": "none",
         "urgency": "informational",
-        "review_time": "1737547610.488234",
     },
 ]
 
@@ -436,7 +435,6 @@ def test_replace_keys(dict_in, dict_out):
     assert out == dict_out, f"replace_keys({dict_in}) got: {out} instead: {dict_out}"
 
 
-
 def test_splunk_submit_event_hec_command(mocker):
     text = "a msg with a failure."
 
@@ -502,7 +500,6 @@ def test_splunk_submit_event_hec_command_without_request_channel(mocker):
     splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"}, args=args, service=Service)
     err_msg = return_error_mock.call_args[0][0]
     assert err_msg == 'Could not send event to Splunk {"text":"Data channel is missing","code":10}'
-
 
 
 SEARCH_RESULT = [
@@ -698,14 +695,18 @@ class TestFetchRemovingIrrelevantIncidents:
         - Make sure that the fetched IDs that are no longer in the fetch window are removed
         """
         from SplunkPyV2 import UserMappingObject
+
         mocker.patch.object(splunk, "get_current_splunk_time", return_value="2024-02-19T10:00:00.000000+0000")
         mocker.patch.object(demisto, "setLastRun")
         mock_last_run = {
             "next_run_earliest_time": "2024-02-12T10:00:00.000000+0000",
             "late_indexed_pagination": False,
-            "next_run_found_incidents_ids": {"1": {"occurred_time": "2024-02-12T09:59:59.000000+0000"}, "2": {"occurred_time": "2024-02-18T10:00:00.000000+0000"}},
+            "next_run_found_incidents_ids": {
+                "1": {"occurred_time": "2024-02-12T09:59:59.000000+0000"},
+                "2": {"occurred_time": "2024-02-18T10:00:00.000000+0000"},
+            },
         }
-        mock_params = {"fetchQuery": "`notable` is cool", "fetch_limit": 2}
+        mock_params = {"fetchQuery": "`notable` is cool", "max_fetch": 2}
         mocker.patch("demistomock.getLastRun", return_value=mock_last_run)
         mocker.patch("demistomock.params", return_value=mock_params)
         mocker.patch("splunklib.results.JSONResultsReader", return_value=[self.finding1, self.finding2])
@@ -752,12 +753,16 @@ class TestFetchForLateIndexedEvents:
         - Make sure that the offset of the fetch query is set to 0
         """
         from SplunkPyV2 import UserMappingObject
+
         mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
         mocker.patch.object(demisto, "setLastRun")
         mock_last_run = {
             "next_run_earliest_time": "2018-10-24T14:13:20.000+00:00",
             "late_indexed_pagination": True,
-            "next_run_found_incidents_ids": {"1234": {"occurred_time": "2018-10-24T14:10:20.000+00:00"}, "5678": {"occurred_time": "2018-10-24T14:10:20.000+00:00"}},
+            "next_run_found_incidents_ids": {
+                "1234": {"occurred_time": "2018-10-24T14:10:20.000+00:00"},
+                "5678": {"occurred_time": "2018-10-24T14:10:20.000+00:00"},
+            },
         }
         mock_params = {"fetchQuery": "something"}
         mocker.patch("demistomock.getLastRun", return_value=mock_last_run)
@@ -792,10 +797,13 @@ class TestFetchForLateIndexedEvents:
         mock_last_run = {
             "next_run_earliest_time": "2018-10-24T14:13:20.000+00:00",
             "late_indexed_pagination": True,
-            "next_run_found_incidents_ids": {"id_1": {"occurred_time": "2018-10-24T14:10:20.000+00:00"}, "id_2": {"occurred_time": "2018-10-24T14:1:20.000+00:00"}},
+            "next_run_found_incidents_ids": {
+                "id_1": {"occurred_time": "2018-10-24T14:10:20.000+00:00"},
+                "id_2": {"occurred_time": "2018-10-24T14:1:20.000+00:00"},
+            },
         }
         mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
-        mock_params = {"fetchQuery": "`notable` is cool", "fetch_limit": 2}
+        mock_params = {"fetchQuery": "`notable` is cool", "max_fetch": 2}
         mocker.patch("demistomock.getLastRun", return_value=mock_last_run)
         mocker.patch("demistomock.params", return_value=mock_params)
         mocker.patch("splunklib.results.JSONResultsReader", return_value=[self.finding1, self.finding2])
@@ -827,10 +835,13 @@ class TestFetchForLateIndexedEvents:
         mock_last_run = {
             "next_run_earliest_time": "2018-10-24T14:13:20.000+00:00",
             "late_indexed_pagination": True,
-            "next_run_found_incidents_ids": {"1234": {"occurred_time": "2018-10-24T14:10:20.000+00:00"}, "5678": {"occurred_time": "2018-10-24T14:1:20.000+00:00"}},
+            "next_run_found_incidents_ids": {
+                "1234": {"occurred_time": "2018-10-24T14:10:20.000+00:00"},
+                "5678": {"occurred_time": "2018-10-24T14:1:20.000+00:00"},
+            },
         }
         mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
-        mock_params = {"fetchQuery": "`notable` is cool", "fetch_limit": 2}
+        mock_params = {"fetchQuery": "`notable` is cool", "max_fetch": 2}
         mocker.patch("demistomock.getLastRun", return_value=mock_last_run)
         mocker.patch("demistomock.params", return_value=mock_params)
         mocker.patch("splunklib.results.JSONResultsReader", return_value=[self.finding1, self.finding2])
@@ -1104,8 +1115,8 @@ def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_
     Then:
     - Return the expected result
     """
-    mocked_dt = mocker.patch('SplunkPyV2.datetime')
-    mocked_dt.now.return_value=datetime.strptime("2025-12-09T20:01:00.000000+00:00", splunk.ISO_FORMAT_TZ_AWARE)
+    mocked_dt = mocker.patch("SplunkPyV2.datetime")
+    mocked_dt.now.return_value = datetime.strptime("2025-12-09T20:01:00.000000+00:00", splunk.ISO_FORMAT_TZ_AWARE)
     mocked_dt.strptime.side_effect = datetime.strptime
     mocker.patch.object(splunk, "ENABLED_ENRICHMENTS", return_value=[splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT])
     finding = splunk.Finding({splunk.EVENT_ID: "id"})
@@ -1331,7 +1342,6 @@ def test_get_fields_query_part(finding_data, prefix, fields, query_part):
     - Return the expected result
     """
     assert splunk.get_fields_query_part(finding_data, prefix, fields) == query_part
-
 
 
 @pytest.mark.parametrize(
@@ -2045,7 +2055,6 @@ def test_drilldown_enrichment_no_enrichement_cases(mocker, finding_data, debug_l
 """ ========== Mirroring Mechanism Tests ========== """
 
 
-
 @pytest.mark.parametrize(
     "finding_data, func_call_kwargs, expected_closure_data",
     [
@@ -2221,7 +2230,7 @@ def test_get_modified_remote_data_command_close_incident(
     mocker, finding_data: list[results.Message | dict], func_call_kwargs: dict, expected_closure_data: dict
 ):
     class Jobs:
-        def oneshot(self, **kwargs):
+        def oneshot(self, query, **kwargs):
             assert kwargs["output_mode"] == splunk.OUTPUT_MODE_JSON
             return finding_data
 
@@ -2231,6 +2240,7 @@ def test_get_modified_remote_data_command_close_incident(
 
     expected_entries = {"EntryContext": {"mirrorRemoteId": "id"}, "Type": EntryType.NOTE, "ContentsFormat": EntryFormat.JSON}
     args = {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"}
+    mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
     mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "info")
@@ -2342,241 +2352,244 @@ def test_edit_finding_event__failed_to_update(mocker):
     Then
     - ensure the error message parsed correctly and returned to the user
     """
-    
+
     test_args = {"event_ids": "ID100", "owner": "dbot"}
-    mocker.patch.object(splunk, "return_error")
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(
+        splunk, "return_error", side_effect=Exception("Failed to update finding ID100: ValueError: Invalid owner value.")
+    )
 
     mocker.patch.object(splunk, "update_investigation_or_finding", side_effect=Exception("ValueError: Invalid owner value."))
 
-    splunk.splunk_edit_finding_command(service=MagicMock(), args=test_args)
+    with pytest.raises(Exception, match="Failed to update finding ID100: ValueError: Invalid owner value."):
+        splunk.splunk_edit_finding_command(service=MagicMock(), args=test_args)
 
     assert splunk.return_error.call_count == 1
     error_message = splunk.return_error.call_args[0][0]
     assert "Failed to update finding ID100: ValueError: Invalid owner value." in error_message
 
 
-
 NOTABLE = {
-        "rule_name": "string",
-        "rule_title": "string",
-        "security_domain": "string",
-        "index": "string",
-        "rule_description": "string",
-        "risk_score": "string",
-        "host": "string",
-        "host_risk_object_type": "string",
-        "dest_risk_object_type": "string",
-        "dest_risk_score": "string",
-        "splunk_server": "string",
-        "_sourcetype": "string",
-        "_indextime": "string",
-        "_time": "string",
-        "src_risk_object_type": "string",
-        "src_risk_score": "string",
-        "_raw": "string",
-        "urgency": "string",
-        "owner": "string",
-        "info_min_time": "string",
-        "info_max_time": "string",
-        "note": "string",
-        "reviewer": "string",
-        "rule_id": "string",
-        "action": "string",
-        "app": "string",
-        "authentication_method": "string",
-        "authentication_service": "string",
-        "bugtraq": "string",
-        "bytes": "string",
-        "bytes_in": "string",
-        "bytes_out": "string",
-        "category": "string",
-        "cert": "string",
-        "change": "string",
-        "change_type": "string",
-        "command": "string",
-        "comments": "string",
-        "cookie": "string",
-        "creation_time": "string",
-        "cve": "string",
-        "cvss": "string",
-        "date": "string",
-        "description": "string",
-        "dest": "string",
-        "dest_bunit": "string",
-        "dest_category": "string",
-        "dest_dns": "string",
-        "dest_interface": "string",
-        "dest_ip": "string",
-        "dest_ip_range": "string",
-        "dest_mac": "string",
-        "dest_nt_domain": "string",
-        "dest_nt_host": "string",
-        "dest_port": "string",
-        "dest_priority": "string",
-        "dest_translated_ip": "string",
-        "dest_translated_port": "string",
-        "dest_type": "string",
-        "dest_zone": "string",
-        "direction": "string",
-        "dlp_type": "string",
-        "dns": "string",
-        "duration": "string",
-        "dvc": "string",
-        "dvc_bunit": "string",
-        "dvc_category": "string",
-        "dvc_ip": "string",
-        "dvc_mac": "string",
-        "dvc_priority": "string",
-        "dvc_zone": "string",
-        "file_hash": "string",
-        "file_name": "string",
-        "file_path": "string",
-        "file_size": "string",
-        "http_content_type": "string",
-        "http_method": "string",
-        "http_referrer": "string",
-        "http_referrer_domain": "string",
-        "http_user_agent": "string",
-        "icmp_code": "string",
-        "icmp_type": "string",
-        "id": "string",
-        "ids_type": "string",
-        "incident": "string",
-        "ip": "string",
-        "mac": "string",
-        "message_id": "string",
-        "message_info": "string",
-        "message_priority": "string",
-        "message_type": "string",
-        "mitre_technique_id": "string",
-        "msft": "string",
-        "mskb": "string",
-        "name": "string",
-        "orig_dest": "string",
-        "orig_recipient": "string",
-        "orig_src": "string",
-        "os": "string",
-        "packets": "string",
-        "packets_in": "string",
-        "packets_out": "string",
-        "parent_process": "string",
-        "parent_process_id": "string",
-        "parent_process_name": "string",
-        "parent_process_path": "string",
-        "password": "string",
-        "payload": "string",
-        "payload_type": "string",
-        "priority": "string",
-        "problem": "string",
-        "process": "string",
-        "process_hash": "string",
-        "process_id": "string",
-        "process_name": "string",
-        "process_path": "string",
-        "product_version": "string",
-        "protocol": "string",
-        "protocol_version": "string",
-        "query": "string",
-        "query_count": "string",
-        "query_type": "string",
-        "reason": "string",
-        "recipient": "string",
-        "recipient_count": "string",
-        "recipient_domain": "string",
-        "recipient_status": "string",
-        "record_type": "string",
-        "registry_hive": "string",
-        "registry_key_name": "string",
-        "registry_path": "string",
-        "registry_value_data": "string",
-        "registry_value_name": "string",
-        "registry_value_text": "string",
-        "registry_value_type": "string",
-        "request_sent_time": "string",
-        "request_payload": "string",
-        "request_payload_type": "string",
-        "response_code": "string",
-        "response_payload_type": "string",
-        "response_received_time": "string",
-        "response_time": "string",
-        "result": "string",
-        "return_addr": "string",
-        "rule": "string",
-        "rule_action": "string",
-        "sender": "string",
-        "service": "string",
-        "service_hash": "string",
-        "service_id": "string",
-        "service_name": "string",
-        "service_path": "string",
-        "session_id": "string",
-        "sessions": "string",
-        "severity": "string",
-        "severity_id": "string",
-        "sid": "string",
-        "signature": "string",
-        "signature_id": "string",
-        "signature_version": "string",
-        "site": "string",
-        "size": "string",
-        "source": "string",
-        "sourcetype": "string",
-        "src": "string",
-        "src_bunit": "string",
-        "src_category": "string",
-        "src_dns": "string",
-        "src_interface": "string",
-        "src_ip": "string",
-        "src_ip_range": "string",
-        "src_mac": "string",
-        "src_nt_domain": "string",
-        "src_nt_host": "string",
-        "src_port": "string",
-        "src_priority": "string",
-        "src_translated_ip": "string",
-        "src_translated_port": "string",
-        "src_type": "string",
-        "src_user": "string",
-        "src_user_bunit": "string",
-        "src_user_category": "string",
-        "src_user_domain": "string",
-        "src_user_id": "string",
-        "src_user_priority": "string",
-        "src_user_role": "string",
-        "src_user_type": "string",
-        "src_zone": "string",
-        "state": "string",
-        "status": "string",
-        "status_code": "string",
-        "status_description": "string",
-        "subject": "string",
-        "tag": "string",
-        "ticket_id": "string",
-        "time": "string",
-        "time_submitted": "string",
-        "transport": "string",
-        "transport_dest_port": "string",
-        "type": "string",
-        "uri": "string",
-        "uri_path": "string",
-        "uri_query": "string",
-        "url": "string",
-        "url_domain": "string",
-        "url_length": "string",
-        "user": "string",
-        "user_agent": "string",
-        "user_bunit": "string",
-        "user_category": "string",
-        "user_id": "string",
-        "user_priority": "string",
-        "user_role": "string",
-        "user_type": "string",
-        "vendor_account": "string",
-        "vendor_product": "string",
-        "vlan": "string",
-        "xdelay": "string",
-        "xref": "string",
-    }
+    "rule_name": "string",
+    "rule_title": "string",
+    "security_domain": "string",
+    "index": "string",
+    "rule_description": "string",
+    "risk_score": "string",
+    "host": "string",
+    "host_risk_object_type": "string",
+    "dest_risk_object_type": "string",
+    "dest_risk_score": "string",
+    "splunk_server": "string",
+    "_sourcetype": "string",
+    "_indextime": "string",
+    "_time": "string",
+    "src_risk_object_type": "string",
+    "src_risk_score": "string",
+    "_raw": "string",
+    "urgency": "string",
+    "owner": "string",
+    "info_min_time": "string",
+    "info_max_time": "string",
+    "note": "string",
+    "reviewer": "string",
+    "rule_id": "string",
+    "action": "string",
+    "app": "string",
+    "authentication_method": "string",
+    "authentication_service": "string",
+    "bugtraq": "string",
+    "bytes": "string",
+    "bytes_in": "string",
+    "bytes_out": "string",
+    "category": "string",
+    "cert": "string",
+    "change": "string",
+    "change_type": "string",
+    "command": "string",
+    "comments": "string",
+    "cookie": "string",
+    "creation_time": "string",
+    "cve": "string",
+    "cvss": "string",
+    "date": "string",
+    "description": "string",
+    "dest": "string",
+    "dest_bunit": "string",
+    "dest_category": "string",
+    "dest_dns": "string",
+    "dest_interface": "string",
+    "dest_ip": "string",
+    "dest_ip_range": "string",
+    "dest_mac": "string",
+    "dest_nt_domain": "string",
+    "dest_nt_host": "string",
+    "dest_port": "string",
+    "dest_priority": "string",
+    "dest_translated_ip": "string",
+    "dest_translated_port": "string",
+    "dest_type": "string",
+    "dest_zone": "string",
+    "direction": "string",
+    "dlp_type": "string",
+    "dns": "string",
+    "duration": "string",
+    "dvc": "string",
+    "dvc_bunit": "string",
+    "dvc_category": "string",
+    "dvc_ip": "string",
+    "dvc_mac": "string",
+    "dvc_priority": "string",
+    "dvc_zone": "string",
+    "file_hash": "string",
+    "file_name": "string",
+    "file_path": "string",
+    "file_size": "string",
+    "http_content_type": "string",
+    "http_method": "string",
+    "http_referrer": "string",
+    "http_referrer_domain": "string",
+    "http_user_agent": "string",
+    "icmp_code": "string",
+    "icmp_type": "string",
+    "id": "string",
+    "ids_type": "string",
+    "incident": "string",
+    "ip": "string",
+    "mac": "string",
+    "message_id": "string",
+    "message_info": "string",
+    "message_priority": "string",
+    "message_type": "string",
+    "mitre_technique_id": "string",
+    "msft": "string",
+    "mskb": "string",
+    "name": "string",
+    "orig_dest": "string",
+    "orig_recipient": "string",
+    "orig_src": "string",
+    "os": "string",
+    "packets": "string",
+    "packets_in": "string",
+    "packets_out": "string",
+    "parent_process": "string",
+    "parent_process_id": "string",
+    "parent_process_name": "string",
+    "parent_process_path": "string",
+    "password": "string",
+    "payload": "string",
+    "payload_type": "string",
+    "priority": "string",
+    "problem": "string",
+    "process": "string",
+    "process_hash": "string",
+    "process_id": "string",
+    "process_name": "string",
+    "process_path": "string",
+    "product_version": "string",
+    "protocol": "string",
+    "protocol_version": "string",
+    "query": "string",
+    "query_count": "string",
+    "query_type": "string",
+    "reason": "string",
+    "recipient": "string",
+    "recipient_count": "string",
+    "recipient_domain": "string",
+    "recipient_status": "string",
+    "record_type": "string",
+    "registry_hive": "string",
+    "registry_key_name": "string",
+    "registry_path": "string",
+    "registry_value_data": "string",
+    "registry_value_name": "string",
+    "registry_value_text": "string",
+    "registry_value_type": "string",
+    "request_sent_time": "string",
+    "request_payload": "string",
+    "request_payload_type": "string",
+    "response_code": "string",
+    "response_payload_type": "string",
+    "response_received_time": "string",
+    "response_time": "string",
+    "result": "string",
+    "return_addr": "string",
+    "rule": "string",
+    "rule_action": "string",
+    "sender": "string",
+    "service": "string",
+    "service_hash": "string",
+    "service_id": "string",
+    "service_name": "string",
+    "service_path": "string",
+    "session_id": "string",
+    "sessions": "string",
+    "severity": "string",
+    "severity_id": "string",
+    "sid": "string",
+    "signature": "string",
+    "signature_id": "string",
+    "signature_version": "string",
+    "site": "string",
+    "size": "string",
+    "source": "string",
+    "sourcetype": "string",
+    "src": "string",
+    "src_bunit": "string",
+    "src_category": "string",
+    "src_dns": "string",
+    "src_interface": "string",
+    "src_ip": "string",
+    "src_ip_range": "string",
+    "src_mac": "string",
+    "src_nt_domain": "string",
+    "src_nt_host": "string",
+    "src_port": "string",
+    "src_priority": "string",
+    "src_translated_ip": "string",
+    "src_translated_port": "string",
+    "src_type": "string",
+    "src_user": "string",
+    "src_user_bunit": "string",
+    "src_user_category": "string",
+    "src_user_domain": "string",
+    "src_user_id": "string",
+    "src_user_priority": "string",
+    "src_user_role": "string",
+    "src_user_type": "string",
+    "src_zone": "string",
+    "state": "string",
+    "status": "string",
+    "status_code": "string",
+    "status_description": "string",
+    "subject": "string",
+    "tag": "string",
+    "ticket_id": "string",
+    "time": "string",
+    "time_submitted": "string",
+    "transport": "string",
+    "transport_dest_port": "string",
+    "type": "string",
+    "uri": "string",
+    "uri_path": "string",
+    "uri_query": "string",
+    "url": "string",
+    "url_domain": "string",
+    "url_length": "string",
+    "user": "string",
+    "user_agent": "string",
+    "user_bunit": "string",
+    "user_category": "string",
+    "user_id": "string",
+    "user_priority": "string",
+    "user_role": "string",
+    "user_type": "string",
+    "vendor_account": "string",
+    "vendor_product": "string",
+    "vlan": "string",
+    "xdelay": "string",
+    "xref": "string",
+}
 
 DRILLDOWN = {
     "Drilldown": {
@@ -3175,7 +3188,6 @@ def test_empty_string_as_app_param_value(mocker):
     assert connection_args.get("app") == "-"
 
 
-
 OWNER_MAPPING = [
     {"xsoar_user": "test_xsoar", "splunk_user": "test_splunk", "wait": True},
     {"xsoar_user": "test_not_full", "splunk_user": "", "wait": True},
@@ -3338,7 +3350,7 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
 
 def test_authentication_params(mocker):
     """
-    Given: - the splunkToken 
+    Given: - the splunkToken
     When:  - connecting to Splunk server
     Then:  - validate the connection args was sent as expected
 
@@ -3347,7 +3359,7 @@ def test_authentication_params(mocker):
     mocked_params = {
         "server_url": "test_host",
         "proxy": "false",
-        "authentication": {"identifier": 'identifier', "password": splunk_token},
+        "authentication": {"identifier": "identifier", "password": splunk_token},
     }
     mocker.patch.object(client, "connect")
     mocker.patch.object(demisto, "params", return_value=mocked_params)
@@ -3363,7 +3375,7 @@ def test_authentication_params(mocker):
     argvalues=[
         ("8.8.8.8", {"host": "8.8.8.8", "port": 8089}),
         ("https://www.test.com", {"host": "www.test.com", "port": 8089}),
-        ("www.test.com:9000/", {"host": "www.test.com", "port": 9000}), 
+        ("www.test.com:9000/", {"host": "www.test.com", "port": 9000}),
     ],
 )
 def test_server_url(mocker, host, expected_connect_args):
@@ -3384,7 +3396,7 @@ def test_server_url(mocker, host, expected_connect_args):
     mocker.patch.object(splunk, "test_module")
     splunk.main()
 
-    assert all([mocked_connect.call_args[1][k] == expected_connect_args[k] for k in expected_connect_args.keys()])
+    assert all(mocked_connect.call_args[1][k] == expected_connect_args[k] for k in expected_connect_args)
 
 
 @pytest.mark.parametrize(
@@ -3685,11 +3697,11 @@ def test_mirror_in_with_enrichment_enabled(mocker):
     mocker.patch.object(splunk, "ENABLED_ENRICHMENTS", new=[splunk.DRILLDOWN_ENRICHMENT])
     mocker.patch("SplunkPyV2.results.JSONResultsReader", side_effect=lambda res: res)
     mocker.patch.object(splunk.UserMappingObject, "get_xsoar_user_by_splunk", return_value="after_mirror_owner")
+    mocker.patch("SplunkPyV2.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
     mocked_service = mocker.patch("SplunkPyV2.client.Service")
     finding_delta = {"status_label": "after_mirror_status", "urgency": "after_mirror_urgency"}
     updated_finding = SAMPLE_RESPONSE[2] | finding_delta
     mocked_service.jobs.oneshot.return_value = [updated_finding]
-    
 
     splunk.get_modified_remote_data_command(
         mocked_service,
@@ -3717,8 +3729,8 @@ def test_format_splunk_note_for_xsoar_basic():
     Then:
         - The title and content are URL-decoded and separated by a blank line, ending with a newline.
     """
-    note = {"title": "My%20Title", "content": "Line%201%0ALine%202", "author":{"username": "test user"}}
-    expected = '**test user**\n\nMy Title\nLine 1\nLine 2'
+    note = {"title": "My%20Title", "content": "Line%201%0ALine%202", "author": {"username": "test user"}}
+    expected = "**test user**\n\nMy Title\nLine 1\nLine 2"
     assert splunk.format_splunk_note_for_xsoar(note) == expected
 
 
@@ -3731,7 +3743,7 @@ def test_format_splunk_note_for_xsoar_empty_content():
     Then:
         - The title is URL-decoded and followed by two newlines (current implementation behavior).
     """
-    note = {"title": "Only%20Title", "content": "", "author":{"username": "test user"}}
+    note = {"title": "Only%20Title", "content": "", "author": {"username": "test user"}}
     expected = "**test user**\n\nOnly Title"
     assert splunk.format_splunk_note_for_xsoar(note) == expected
 
@@ -3959,7 +3971,7 @@ def test_splunk_submit_event_hec_command_invalid_index(mocker, requests_mock, ar
     service_mock.indexes = [index_mock]
 
     splunk_submit_event_hec_command(
-        params={"cred_hec_token": {"password":"token"}, "hec_url": "https://splunk.test.com"}, service=service_mock, args=args
+        params={"cred_hec_token": {"password": "token"}, "hec_url": "https://splunk.test.com"}, service=service_mock, args=args
     )
 
 
@@ -3998,6 +4010,7 @@ def test_get_modified_remote_data_skips_cached_events(mocker):
     mocker.patch("splunklib.results.JSONResultsReader", return_value=audit_index_response)
     mocker.patch("SplunkPyV2.get_integration_context", return_value={})
     mocker.patch("SplunkPyV2.demisto.results")
+    mocker.patch("SplunkPyV2.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
     set_context_mock = mocker.patch("SplunkPyV2.set_integration_context")
     extensive_log_mock = mocker.patch("SplunkPyV2.extensive_log")
 
@@ -4007,7 +4020,7 @@ def test_get_modified_remote_data_skips_cached_events(mocker):
     assert results["event_id"] == test_id
 
     # Assert the event was cached
-    set_context_mock.assert_called_once()
+    assert set_context_mock.call_count == 2
     cached_context = set_context_mock.call_args[0][0]
     assert cached_context.get("processed_mirror_in_events_cache") == [event_key]
 
@@ -4187,18 +4200,13 @@ def test_fetch_findings_with_notes(mocker):
 
     # Create mock service and mapper
     mock_service = MagicMock()
-    mock_service.jobs.oneshot = (
-        lambda query, **kwargs: search_results if "search `notable`" in query else mock_notes_data
-    )
+    mock_service.jobs.oneshot = lambda query, **kwargs: search_results if "search `notable`" in query else mock_notes_data
     mocker.patch("SplunkPyV2.results.JSONResultsReader", side_effect=lambda res: res)
     mock_service.kvstore.__getitem__.return_value = mock_kv_store
     mock_mapper = splunk.UserMappingObject(MagicMock(), False)
 
     # Call fetch_findings
-    fetch_findings(
-        service=mock_service,
-        mapper=mock_mapper
-    )
+    fetch_findings(service=mock_service, mapper=mock_mapper)
 
     # Verify that KV store was accessed (indicating get_comments_data_new was called)
     mock_service.kvstore.__getitem__.assert_called_with("mc_notes")
@@ -4223,15 +4231,15 @@ def test_fetch_findings_with_notes(mocker):
 def test_update_remote_system_command_owner_mapping(mocker, delta, user_mapping_enabled, expected_owner, mapper_should_map):
     """
     Test update_remote_system_command with different owner mapping scenarios.
-    
+
     Given:
         - Different delta configurations with owner field
         - User mapping enabled/disabled
         - Mapper returning different values
-    
+
     When:
         - update_remote_system_command is called
-    
+
     Then:
         - Verify correct owner is passed to update_investigation_or_finding
         - Verify user mapping is called when enabled
@@ -4247,22 +4255,22 @@ def test_update_remote_system_command_owner_mapping(mocker, delta, user_mapping_
         "status": 1,
     }
     params = {"userMapping": user_mapping_enabled, "close_finding": False}
-    
+
     mock_service = MagicMock()
     mock_mapper = MagicMock()
     mock_mapper.should_map = mapper_should_map
     mock_mapper.get_splunk_user_by_xsoar.return_value = expected_owner
-    
+
     mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
-    
+
     # Execute
     result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
-    
+
     # Verify
     assert result == finding_id
-    
+
     if "owner" in delta and user_mapping_enabled and mapper_should_map:
         mock_mapper.get_splunk_user_by_xsoar.assert_called_once_with("xsoar_user")
         if expected_owner:
@@ -4290,15 +4298,15 @@ def test_update_remote_system_command_owner_mapping(mocker, delta, user_mapping_
 def test_update_remote_system_command_close_finding(mocker, delta, inc_status, close_finding_param, expected_status):
     """
     Test update_remote_system_command closing finding functionality.
-    
+
     Given:
         - Different incident statuses
         - close_finding parameter enabled/disabled
         - Different delta configurations
-    
+
     When:
         - update_remote_system_command is called
-    
+
     Then:
         - Verify status is set to "5" (closed) when appropriate
     """
@@ -4313,20 +4321,20 @@ def test_update_remote_system_command_close_finding(mocker, delta, inc_status, c
         "status": inc_status,
     }
     params = {"userMapping": False, "close_finding": close_finding_param}
-    
+
     mock_service = MagicMock()
     mock_mapper = MagicMock()
     mock_mapper.should_map = False
-    
+
     mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
     mocker.patch.object(demisto, "debug")
-    
+
     # Execute
     result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
-    
+
     # Verify
     assert result == finding_id
-    
+
     if mock_update.called:
         call_kwargs = mock_update.call_args[1]
         assert call_kwargs.get("status") == expected_status
@@ -4335,13 +4343,13 @@ def test_update_remote_system_command_close_finding(mocker, delta, inc_status, c
 def test_update_remote_system_command_multiple_fields(mocker):
     """
     Test update_remote_system_command with multiple field updates.
-    
+
     Given:
         - Delta with multiple mirrored fields (status, urgency, disposition)
-    
+
     When:
         - update_remote_system_command is called
-    
+
     Then:
         - All fields are passed to update_investigation_or_finding
     """
@@ -4362,17 +4370,17 @@ def test_update_remote_system_command_multiple_fields(mocker):
         "status": 1,
     }
     params = {"userMapping": False, "close_finding": False}
-    
+
     mock_service = MagicMock()
     mock_mapper = MagicMock()
     mock_mapper.should_map = False
-    
+
     mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
     mocker.patch.object(demisto, "debug")
-    
+
     # Execute
     result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
-    
+
     # Verify
     assert result == finding_id
     mock_update.assert_called_once()
@@ -4385,13 +4393,13 @@ def test_update_remote_system_command_multiple_fields(mocker):
 def test_update_remote_system_command_with_note_in_delta(mocker):
     """
     Test update_remote_system_command with note in delta.
-    
+
     Given:
         - Delta containing a note field
-    
+
     When:
         - update_remote_system_command is called
-    
+
     Then:
         - add_investigation_note is called with the note content
         - Note includes COMMENT_MIRRORED_FROM_XSOAR marker
@@ -4409,18 +4417,18 @@ def test_update_remote_system_command_with_note_in_delta(mocker):
         "status": 1,
     }
     params = {"userMapping": False, "close_finding": False}
-    
+
     mock_service = MagicMock()
     mock_mapper = MagicMock()
     mock_mapper.should_map = False
-    
+
     mocker.patch("SplunkPyV2.update_investigation_or_finding")
     mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note")
     mocker.patch.object(demisto, "debug")
-    
+
     # Execute
     result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
-    
+
     # Verify
     assert result == finding_id
     mock_add_note.assert_called_once()
@@ -4433,13 +4441,13 @@ def test_update_remote_system_command_with_note_in_delta(mocker):
 def test_update_remote_system_command_with_entries(mocker):
     """
     Test update_remote_system_command with entries containing notes.
-    
+
     Given:
         - Entries with NOTE_TAG_TO_SPLUNK tag
-    
+
     When:
         - update_remote_system_command is called
-    
+
     Then:
         - add_investigation_note is called for each tagged entry
     """
@@ -4461,25 +4469,25 @@ def test_update_remote_system_command_with_entries(mocker):
         "status": 1,
     }
     params = {"userMapping": False, "close_finding": False}
-    
+
     mock_service = MagicMock()
     mock_mapper = MagicMock()
-    
+
     mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note")
     mocker.patch.object(demisto, "debug")
-    
+
     # Execute
     result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
-    
+
     # Verify
     assert result == finding_id
     assert mock_add_note.call_count == 2
-    
+
     # Verify first call
     first_call = mock_add_note.call_args_list[0]
     assert entry1_content in first_call[1]["content"]
     assert splunk.COMMENT_MIRRORED_FROM_XSOAR in first_call[1]["content"]
-    
+
     # Verify second call
     second_call = mock_add_note.call_args_list[1]
     assert entry2_content in second_call[1]["content"]
@@ -4489,13 +4497,13 @@ def test_update_remote_system_command_with_entries(mocker):
 def test_update_remote_system_command_no_changes(mocker):
     """
     Test update_remote_system_command when incident hasn't changed.
-    
+
     Given:
         - incidentChanged is False
-    
+
     When:
         - update_remote_system_command is called
-    
+
     Then:
         - No API calls are made
         - Finding ID is still returned
@@ -4511,16 +4519,16 @@ def test_update_remote_system_command_no_changes(mocker):
         "status": 1,
     }
     params = {"userMapping": False, "close_finding": False}
-    
+
     mock_service = MagicMock()
     mock_mapper = MagicMock()
-    
+
     mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
     mocker.patch.object(demisto, "debug")
-    
+
     # Execute
     result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
-    
+
     # Verify
     assert result == finding_id
     mock_update.assert_not_called()
@@ -4529,14 +4537,14 @@ def test_update_remote_system_command_no_changes(mocker):
 def test_update_remote_system_command_empty_delta(mocker):
     """
     Test update_remote_system_command with empty delta.
-    
+
     Given:
         - Empty delta dictionary
         - incidentChanged is True
-    
+
     When:
         - update_remote_system_command is called
-    
+
     Then:
         - No API calls are made (no changed data)
     """
@@ -4551,16 +4559,16 @@ def test_update_remote_system_command_empty_delta(mocker):
         "status": 1,
     }
     params = {"userMapping": False, "close_finding": False}
-    
+
     mock_service = MagicMock()
     mock_mapper = MagicMock()
-    
+
     mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
     mocker.patch.object(demisto, "debug")
-    
+
     # Execute
     result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
-    
+
     # Verify
     assert result == finding_id
     mock_update.assert_not_called()
@@ -4569,14 +4577,14 @@ def test_update_remote_system_command_empty_delta(mocker):
 def test_update_remote_system_command_api_error(mocker):
     """
     Test update_remote_system_command when API call fails.
-    
+
     Given:
         - Valid delta with changes
         - update_investigation_or_finding raises an exception
-    
+
     When:
         - update_remote_system_command is called
-    
+
     Then:
         - Error is logged
         - Finding ID is still returned
@@ -4593,19 +4601,19 @@ def test_update_remote_system_command_api_error(mocker):
         "status": 1,
     }
     params = {"userMapping": False, "close_finding": False}
-    
+
     mock_service = MagicMock()
     mock_mapper = MagicMock()
     mock_mapper.should_map = False
-    
+
     error_message = "API Error: Connection failed"
     mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding", side_effect=Exception(error_message))
     mock_error = mocker.patch.object(demisto, "error")
     mocker.patch.object(demisto, "debug")
-    
+
     # Execute
     result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
-    
+
     # Verify
     assert result == finding_id
     mock_update.assert_called_once()
@@ -4618,14 +4626,14 @@ def test_update_remote_system_command_api_error(mocker):
 def test_update_remote_system_command_note_api_error(mocker):
     """
     Test update_remote_system_command when add_investigation_note fails.
-    
+
     Given:
         - Delta with note field
         - add_investigation_note raises an exception
-    
+
     When:
         - update_remote_system_command is called
-    
+
     Then:
         - Error is logged
         - Finding ID is still returned
@@ -4642,20 +4650,20 @@ def test_update_remote_system_command_note_api_error(mocker):
         "status": 1,
     }
     params = {"userMapping": False, "close_finding": False}
-    
+
     mock_service = MagicMock()
     mock_mapper = MagicMock()
     mock_mapper.should_map = False
-    
+
     mocker.patch("SplunkPyV2.update_investigation_or_finding")
     error_message = "Note API Error"
     mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note", side_effect=Exception(error_message))
     mock_error = mocker.patch.object(demisto, "error")
     mocker.patch.object(demisto, "debug")
-    
+
     # Execute
     result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
-    
+
     # Verify
     assert result == finding_id
     mock_add_note.assert_called_once()
@@ -4667,13 +4675,13 @@ def test_update_remote_system_command_note_api_error(mocker):
 def test_update_remote_system_command_non_mirrored_fields_ignored(mocker):
     """
     Test that non-mirrored fields in delta are ignored.
-    
+
     Given:
         - Delta with both mirrored and non-mirrored fields
-    
+
     When:
         - update_remote_system_command is called
-    
+
     Then:
         - Only mirrored fields are passed to the API
     """
@@ -4694,22 +4702,22 @@ def test_update_remote_system_command_non_mirrored_fields_ignored(mocker):
         "status": 1,
     }
     params = {"userMapping": False, "close_finding": False}
-    
+
     mock_service = MagicMock()
     mock_mapper = MagicMock()
     mock_mapper.should_map = False
-    
+
     mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
     mocker.patch.object(demisto, "debug")
-    
+
     # Execute
     result = splunk.update_remote_system_command(args, params, mock_service, mock_mapper)
-    
+
     # Verify
     assert result == finding_id
     mock_update.assert_called_once()
     call_kwargs = mock_update.call_args[1]
-    
+
     # Verify only mirrored fields are present
     assert call_kwargs["status"] == "2"
     assert call_kwargs["urgency"] == "high"

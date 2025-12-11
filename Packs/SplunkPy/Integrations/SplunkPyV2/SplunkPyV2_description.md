@@ -140,16 +140,6 @@ To set up mirroring:
 Newly fetched incidents will be mirrored in the chosen direction.
 **Note: This will not affect existing incidents.**
 
-### Existing users
-**NOTE: The enrichment and mirroring mechanisms use a new default fetch query.**
-This implies that new fetched events might have a slightly different structure than old events fetched so far.
-Users who wish to enrich or mirror fetched findings and have already used the integration in the past:
-- Might have to slightly change the existing logic for some of their custom entities configured for Splunk (Playbooks, Mappers, Pre-Processing Rules, Scripts, Classifiers, etc.) in order for them to work with the modified structure of the fetched events.
-- Will need to change the *Fetch finding events ES enrichment query* integration parameter to the following query (or a fetch query of their own that uses the \`noatble\` macro):
-
-```
-search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
-```
 
 # Splunk non-Enterprise Security Users
 

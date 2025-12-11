@@ -99,10 +99,9 @@ Each query can have more that one API call.
 
 #### Fetch
 
-Configured by the instance configuration fetch_limit (behind the scenes an query can made few API calls).
+Configured by the instance configuration max_fetch (behind the scenes an query can made few API calls).
 
 ## Configure SplunkPy v2 in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -115,7 +114,7 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | Parse Raw Part of Finding Events | Whether to parse the raw part of the Findings, or not. | False |
 | Replace with Underscore in Incident Fields | Whether to replace special characters to underscore when parsing the raw data of the Findings, or not. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option. | False |
-| Extract Fields - CSV fields that will be parsed out of _raw finding events |  | False |
+| Extract Fields - CSV fields that will be parsed out of raw finding events |  | False |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Splunk to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Splunk\), or Incoming and Outgoing \(from/to Cortex XSOAR and Splunk\). | False |
 | Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Splunk finding event with a "Closed" status will close the Cortex XSOAR incident. | False |
 | Additional Splunk status labels to close on mirror (Incoming Mirroring) | A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident \(Example: Resolved,False-Positive\). | False |
@@ -126,7 +125,7 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | The app context of the namespace |  | False |
 | HEC Token (HTTP Event Collector) |  | False |
 | HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/). |  | False |
-| Enrichment Types | Enrichment types to enrich each fetched finding. If none are selected, the integration will fetch findings as usual \(without enrichment\). 
+| Enrichment Types | Enrichment types to enrich each fetched finding. If none are selected, the integration will fetch findings as usual \(without enrichment\).
 For more info about enrichment types see [Enriching Finding Events](#enriching-finding-events). | False |
 | Asset enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Asset enrichment data. | False |
 | Identity enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Identity enrichment data. | False |
@@ -187,6 +186,7 @@ Each enriched incident contains the following fields in the incident context:
 - **successful_identity_enrichment**: whether the identity enrichment was successful.
 
 #### Resetting the enriching fetch mechanism
+
 - Run the **Last Run** button
 - Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism will be reset to the initial configuration.
 
@@ -195,7 +195,6 @@ Each enriched incident contains the following fields in the incident context:
 - As the enrichment process is asynchronous, fetching enriched incidents takes longer. The integration was tested with 20+ findings simultaneously that were fetched and enriched after approximately ~4min.
 - If you wish to configure a mapper, wait for the integration to perform the first fetch successfully. This is to make the fetch mechanism logic stable.
 - The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)
-
 
 #### Configure User Mapping between Splunk and Cortex XSOAR  
 
@@ -224,12 +223,12 @@ You can use Splunk to define a user lookup table and then configure the SplunkPy
    6. Click **Create Lookup**.
       ![image](../../doc_files/new-lookup-table.png)
 
-    7. Add values to the table to map Cortex XSOAR users to the Splunk users.  
+   7. Add values to the table to map Cortex XSOAR users to the Splunk users.  
       ![image](../../doc_files/add-values-to-lookup-table.png)
 
     **Note:**  
     If the user keys are defined already in another table, you can use that table name and relevant key names in the SplunkPy integration settings.
-    
+
 2. Configure the SplunkPy v2 integration instance.  
    1. Under **Settings** > **Integrations**, search for the SplunkPy v2 integration and create an instance.
    2. In the Integration Settings:  
@@ -239,7 +238,6 @@ You can use Splunk to define a user lookup table and then configure the SplunkPy
        4. Set the **SPLUNK user key** to the field defined in the Splunk lookup table. By default it is **splunk_user**.
 
           ![image](../../doc_files/user-mapping-settings-configuration.png)
-
 
 ### Incident Mirroring
 
@@ -273,7 +271,6 @@ To set up mirroring:
 5. Optional: Check the *Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)* integration parameter to close the Cortex XSOAR incident when the corresponding finding is closed on the Splunk side.
    By default, only Findings closed with a "Closed" label will be mirrored. You can specify specific statuses (comma-separated) in the *Additional Splunk status labels to close on mirror (Incoming Mirroring)*, and enable the *Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)* option to add statuses marked as "End Status" in Splunk, and to add additional statuses to the mirroring process.
 6. Optional: Check the *Close Mirrored Splunk Finding Event* integration parameter to close the Splunk finding when the corresponding Cortex XSOAR incident is closed.
-
 
 ### Mapping fetched incidents using Select Schema
 
@@ -1105,7 +1102,6 @@ There is no context output for this command.
 
 >The values of the demisto_store were deleted successfully
 
-
 ### get-modified-remote-data
 
 ***
@@ -1233,8 +1229,8 @@ Change job settings to share its results to all Splunk users, and change its TTL
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sid | Comma-separated list of job IDs to share. | Required | 
-| ttl | Time in seconds for the job's expiry time. Default is 1800. | Optional | 
+| sid | Comma-separated list of job IDs to share. | Required |
+| ttl | Time in seconds for the job's expiry time. Default is 1800. | Optional |
 
 #### Context Output
 
@@ -1267,7 +1263,6 @@ In some cases, the Splunk API may not return a complete list of all available in
 
 1. Verify that the index name is spelled correctly in your request.
 2. If the index exists and is accessible in Splunk but is not found by the integration, please contact Splunk support for assistance, as this is a known limitation with the Splunk API.
-
 
 ### Connectivity Issues
 

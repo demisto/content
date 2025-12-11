@@ -1,6 +1,6 @@
 import SplunkConvertNotesToTable
 
-EXPECTED_TABLE = "#### Splunk Notes (1)\n\n---\n\nnew note\n\n"
+EXPECTED_TABLE = "#### Splunk Notes (1)\n\n--\n\nnew note\n\n"
 
 
 def test_convert_to_table(mocker):

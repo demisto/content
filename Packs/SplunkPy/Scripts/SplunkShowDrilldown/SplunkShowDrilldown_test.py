@@ -1,7 +1,6 @@
 import json
 
 import SplunkShowDrilldown
-from pytest import raises  # noqa: PT013
 
 
 def test_incident_with_empty_custom_fields(mocker):
@@ -16,7 +15,15 @@ def test_incident_with_empty_custom_fields(mocker):
     incident = {"CustomFields": {}}
     mocker.patch("demistomock.incident", return_value=incident)
     res = SplunkShowDrilldown.main()
-    assert res.readable_output == "Drilldown was not configured for notable."
+    assert res.get("Contents") == (
+        "#### Drilldown Configuration Status\n\n"
+        "⚠️ **Drilldown enrichment is not configured for this integration instance.**\n\n"
+        "Enrichment is not enabled, so drilldown results are not available.\n\n"
+        "**To enable drilldown enrichment:**\n"
+        "1. Go to the integration instance settings\n"
+        "2. In the 'Enrichment Types' parameter, select 'Drilldown'\n"
+        "3. Save the configuration and fetch new incidents\n\n"
+    )
 
 
 def test_incident_not_notabledrilldown(mocker):
@@ -31,7 +38,15 @@ def test_incident_not_notabledrilldown(mocker):
     incident = {"CustomFields": {"notabledrilldown": {}}}
     mocker.patch("demistomock.incident", return_value=incident)
     res = SplunkShowDrilldown.main()
-    assert res.readable_output == "Drilldown was not configured for notable."
+    assert res.get("Contents") == (
+        "#### Drilldown Configuration Status\n\n"
+        "⚠️ **Drilldown enrichment is not configured for this integration instance.**\n\n"
+        "Enrichment is not enabled, so drilldown results are not available.\n\n"
+        "**To enable drilldown enrichment:**\n"
+        "1. Go to the integration instance settings\n"
+        "2. In the 'Enrichment Types' parameter, select 'Drilldown'\n"
+        "3. Save the configuration and fetch new incidents\n\n"
+    )
 
 
 def test_incident_not_successful(mocker):
@@ -46,7 +61,12 @@ def test_incident_not_successful(mocker):
     incident = {"labels": [{"type": "successful_drilldown_enrichment", "value": "false"}]}
     mocker.patch("demistomock.incident", return_value=incident)
     res = SplunkShowDrilldown.main()
-    assert res.readable_output == "Drilldown enrichment failed."
+    assert res.get("Contents") == (
+        "#### Drilldown Enrichment Not Successful\n\n"
+        "**Error:** The drilldown enrichment did not complete successfully. "
+        "This could be due to query parsing issues, no results found, or other errors.\n\n"
+        "*No drilldown searches data found.*"
+    )
 
 
 def test_json_loads_fails(mocker):
@@ -60,8 +80,18 @@ def test_json_loads_fails(mocker):
     """
     incident = {"labels": [{"type": "Drilldown", "value": {"not json"}}]}
     mocker.patch("demistomock.incident", return_value=incident)
-    with raises(ValueError):
-        SplunkShowDrilldown.main()
+    res = SplunkShowDrilldown.main()
+    assert res.get("Contents") == (
+        "#### Drilldown Searches (Invalid JSON)\n\n"
+        "⚠️ **Note:** The drilldown_searches data received from Splunk contains invalid JSON formatting.\n\n"
+        "The data from Splunk has JSON syntax issues (such as unescaped quotes or malformed structure).\n\n"
+        "**Error Details:** JSON Parsing Error: the JSON object must be str, bytes or bytearray, not set\n\n"
+        "**Raw Data from Splunk:**\n"
+        "```\n"
+        "{'not json'}\n"
+        "```\n\n"
+        "**Recommendation:** Check the drilldown configuration in Splunk to ensure it generates valid JSON."
+    )
 
 
 def test_incident_single_drilldown_search_results(mocker):

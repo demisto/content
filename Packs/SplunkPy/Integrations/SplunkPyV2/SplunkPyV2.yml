@@ -29,7 +29,7 @@ configuration:
   required: false
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
-  name: fetch_limit
+  name: max_fetch
   type: 0
   section: Collect
   required: false
@@ -62,11 +62,11 @@ configuration:
 - additionalinfo: The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option.
   defaultvalue: 10 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
-  name: first_fetch_time
+  name: first_fetch
   type: 0
   section: Collect
   required: false
-- display: Extract Fields - CSV fields that will be parsed out of _raw finding events
+- display: Extract Fields - CSV fields that will be parsed out of raw finding events
   name: extractFields
   type: 0
   section: Collect
