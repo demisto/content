@@ -56,6 +56,8 @@ PROFILE_ARGS = [
 GROUP_PROFILE_ARGS = ["name", "description"]
 
 MAX_LOGS_LIMIT = 1000
+DEFAULT_POLLING_TIME = 5
+DEFAULT_MAX_POLLING_CALLS = 10
 
 
 class Client(OktaClient):
@@ -223,18 +225,18 @@ class Client(OktaClient):
         uri = f"/api/v1/users/{user_id}/factors/{factor_id}/verify"
         return self.http_request(method="POST", url_suffix=uri)
 
-    def poll_verify_push(self, url):
+    def poll_verify_push(self, url, polling_time: int = DEFAULT_POLLING_TIME, max_polling_calls: int = DEFAULT_MAX_POLLING_CALLS):
         """
         Keep polling authentication transactions with WAITING result until the challenge completes or expires.
         time limit defined by us = one minute
         """
         counter = 0
-        while counter < 10:
+        while counter < max_polling_calls:
             response = self.http_request(method="GET", full_url=url, url_suffix="")
             if response.get("factorResult") != "WAITING":
                 return response
             counter += 1
-            time.sleep(5)
+            time.sleep(polling_time)  # pylint: disable=E9003
         response["factorResult"] = "TIMEOUT"
         return response
 
@@ -678,6 +680,8 @@ def add_user_to_group_command(client, args):
         user_id = client.get_user_id(args.get("username"))
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
+        if group_id is None:
+            raise ValueError("Either the group name was not found or multiple groups contain this name.")
     raw_response = client.add_user_to_group(user_id, group_id)
     outputs = {
         "Okta.Metadata(true)": client.request_metadata,
@@ -696,6 +700,8 @@ def remove_from_group_command(client, args):
         user_id = client.get_user_id(args.get("username"))
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
+        if group_id is None:
+            raise ValueError("Either the group name was not found or multiple groups contain this name.")
     raw_response = client.remove_user_from_group(user_id, group_id)
     outputs = {
         "Okta.Metadata(true)": client.request_metadata,
@@ -722,12 +728,14 @@ def get_groups_for_user_command(client, args):
 def verify_push_factor_command(client, args):
     user_id = args.get("userId")
     factor_id = args.get("factorId")
+    polling_time = arg_to_number(args.get("polling_time", DEFAULT_POLLING_TIME))
+    max_polling_calls = arg_to_number(args.get("max_polling_calls", DEFAULT_MAX_POLLING_CALLS))
 
     raw_response = client.verify_push_factor(user_id, factor_id)
     poll_link = raw_response.get("_links").get("poll")
     if not poll_link:
         raise Exception("No poll link for the push factor challenge")
-    poll_response = client.poll_verify_push(poll_link.get("href"))
+    poll_response = client.poll_verify_push(poll_link.get("href"), polling_time, max_polling_calls)
 
     outputs = {
         "Account(val.ID && val.ID === obj.ID)": {"ID": user_id, "VerifyPushResult": poll_response.get("factorResult")},
@@ -833,6 +841,8 @@ def get_group_members_command(client, args):
         raise Exception("You must supply either 'groupName' or 'groupId")
     limit = args.get("limit")
     group_id = args.get("groupId") or client.get_group_id(args.get("groupName"))
+    if group_id is None:
+        raise ValueError("Either the group name was not found or multiple groups contain this name.")
     raw_members = client.get_group_members(group_id, limit)
     users_context = client.get_users_context(raw_members)
     users_readable = client.get_readable_users(raw_members, args.get("verbose"))
@@ -1128,7 +1138,7 @@ def assign_group_to_app_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
         if group_id is None:
-            raise ValueError("Either group name not found or multiple groups include this name.")
+            raise ValueError("Either the group name was not found or multiple groups contain this name.")
     app_id = client.get_app_id(args.get("appName"))
     raw_response = client.assign_group_to_app(group_id, app_id)
     outputs = {"Okta.Metadata(true)": client.request_metadata}

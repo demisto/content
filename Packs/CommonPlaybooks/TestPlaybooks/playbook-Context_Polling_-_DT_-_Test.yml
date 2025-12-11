@@ -1,0 +1,462 @@
+id: Context Polling - DT - Test
+version: -1
+name: Context Polling - DT - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7adf160b-964a-4221-81a2-69f9e9f95380
+    type: start
+    task:
+      id: 7adf160b-964a-4221-81a2-69f9e9f95380
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 79acabe7-f1e5-405d-8a5f-a99f53204d8a
+    type: title
+    task:
+      id: 79acabe7-f1e5-405d-8a5f-a99f53204d8a
+      version: -1
+      name: Test2
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 67790c84-f4d1-46f3-89b3-fc0377281f10
+    type: title
+    task:
+      id: 67790c84-f4d1-46f3-89b3-fc0377281f10
+      version: -1
+      name: Test1
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+      - "19"
+      - "17"
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e79d5bd4-fac9-408f-9f73-a5f2d12f6d2a
+    type: playbook
+    task:
+      id: e79d5bd4-fac9-408f-9f73-a5f2d12f6d2a
+      version: -1
+      name: Context Polling - DT
+      description: This playbook polls a context value until a specific condition, defined by a DT expression, is met.
+      playbookName: Context Polling - DT
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      eval_dt:
+        simple: .=>val.length == 2
+      frequency:
+        simple: "1"
+      playbook_id:
+        simple: ${currentPlaybookID}
+      tags:
+        simple: waiting-task1,waiting-task2
+      timeout:
+        simple: "100"
+      value_dt:
+        simple: Test1
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f00c6290-a7fa-4349-852b-abb84ae1963c
+    type: regular
+    task:
+      id: f00c6290-a7fa-4349-852b-abb84ae1963c
+      version: -1
+      name: Waiting Task 1
+      tags:
+      - waiting-task1
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b8653a83-fabe-46f8-8e7a-12910e832051
+    type: regular
+    task:
+      id: b8653a83-fabe-46f8-8e7a-12910e832051
+      version: -1
+      name: Waiting Task 2
+      tags:
+      - waiting-task2
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: abdb1aef-8576-4938-81b9-686266eab81c
+    type: regular
+    task:
+      id: abdb1aef-8576-4938-81b9-686266eab81c
+      version: -1
+      name: Sleep 30 secs
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c1c22da5-45dc-4600-8670-9f8c8df45368
+    type: regular
+    task:
+      id: c1c22da5-45dc-4600-8670-9f8c8df45368
+      version: -1
+      name: Set Context - Test1
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Test1
+      value:
+        complex:
+          root: .
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=["xxx","yyy"]
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: b3b26ccb-c0d2-4162-b5fb-86a50e89fecf
+    type: collection
+    task:
+      id: b3b26ccb-c0d2-4162-b5fb-86a50e89fecf
+      version: -1
+      name: Finish the task of waiting for replies
+      tags:
+      - test-data-collection-task
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 0
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: test question
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Test Data Collection
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: cc275f38-f5b5-4f1a-9735-bf7f16620c0c
+    type: playbook
+    task:
+      id: cc275f38-f5b5-4f1a-9735-bf7f16620c0c
+      version: -1
+      name: Context Polling - DT
+      description: This playbook polls a context value until a specific condition, defined by a DT expression, is met.
+      playbookName: Context Polling - DT
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      eval_dt:
+        simple: .=>val.length == 2
+      frequency:
+        simple: "1"
+      playbook_id:
+        simple: ${currentPlaybookID}
+      tags:
+        simple: test-data-collection-task
+      timeout:
+        simple: "100"
+      value_dt:
+        simple: Test Data Collection.Answers
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 88c6c8f4-ce73-41f1-ac50-49aeaf0a6294
+    type: title
+    task:
+      id: 88c6c8f4-ce73-41f1-ac50-49aeaf0a6294
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1050,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+description: "This is a test playbook for 'Context Polling - DT'."
