@@ -33,6 +33,7 @@
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 /Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan @inbalapt1 @noydavidi
 /Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan @inbalapt1 @noydavidi
+/Packs/ApiModules/Scripts/EWSApiModule @noydavidi
 /Packs/ApiModules/Scripts/TAXII2ApiModule/* @Ni-Knight
 /Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
 
