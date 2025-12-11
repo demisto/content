@@ -13,7 +13,7 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
-
+MAX_GET_CASES_LIMIT = 100
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -25,6 +25,7 @@ ASSET_FIELDS = {
     "asset_group_ids": "xdm.asset.group_ids",
     "asset_categories": "xdm.asset.type.category",
 }
+
 APPSEC_SOURCES = [
     "CAS_CVE_SCANNER",
     "CAS_IAC_SCANNER",
@@ -39,6 +40,7 @@ WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
     "core-get-issue-recommendations",
+    "core-get-cases",
     "core-update-issue",
     "core-get-asset-coverage",
     "core-get-asset-coverage-histogram",
@@ -54,6 +56,7 @@ VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
+CASES_TABLE = "CASE_MANAGER_TABLE"
 
 
 class CaseManagement:
@@ -83,6 +86,7 @@ class CaseManagement:
         "last_updated": "LAST_UPDATE_TIME",
         "hosts": "HOSTS",
         "starred": "CASE_STARRED",
+        "tags": "CURRENT_TAGS",
     }
 
     STATUS = {
@@ -91,7 +95,17 @@ class CaseManagement:
         "resolved": "STATUS_025_RESOLVED",
     }
 
-    SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+    SEVERITY = {
+        "low": "SEV_020_LOW",
+        "medium": "SEV_030_MEDIUM",
+        "high": "SEV_040_HIGH",
+        "critical": "SEV_050_CRITICAL",
+    }
+
+    TAGS = {
+        "DOM:Security": "DOM:1",
+        "DOM:Posture": "DOM:5",
+    }
 
 
 class AppsecIssues:
@@ -101,7 +115,10 @@ class AppsecIssues:
             self.filters: set = filters or set()
 
     ISSUE_TYPES = [
-        AppsecIssueType("ISSUES_IAC", {"urgency", "repository", "file_path", "automated_fix_available", "sla"}),
+        AppsecIssueType(
+            "ISSUES_IAC",
+            {"urgency", "repository", "file_path", "automated_fix_available", "sla"},
+        ),
         AppsecIssueType(
             "ISSUES_CVES",
             {
@@ -115,7 +132,10 @@ class AppsecIssues:
                 "has_kev",
             },
         ),
-        AppsecIssueType("ISSUES_SECRETS", {"urgency", "repository", "file_path", "sla", "validation"}),
+        AppsecIssueType(
+            "ISSUES_SECRETS",
+            {"urgency", "repository", "file_path", "sla", "validation"},
+        ),
         AppsecIssueType("ISSUES_WEAKNESSES", {"urgency", "repository", "file_path", "sla"}),
         AppsecIssueType("ISSUES_OPERATIONAL_RISK", {"repository", "file_path", "sla"}),
         AppsecIssueType("ISSUES_LICENSES", {"repository", "file_path", "sla"}),
@@ -206,7 +226,10 @@ ALLOWED_SCANNERS = [
     "SECRETS",
 ]
 
-COVERAGE_API_FIELDS_MAPPING = {"vendor_name": "asset_provider", "asset_provider": "unified_provider"}
+COVERAGE_API_FIELDS_MAPPING = {
+    "vendor_name": "asset_provider",
+    "asset_provider": "unified_provider",
+}
 # Policy finding type mapping
 POLICY_FINDING_TYPE_MAPPING = {
     "CI/CD Risk": "CAS_CI_CD_RISK_SCANNER",
@@ -252,6 +275,8 @@ class FilterBuilder:
         EQ = ("EQ", "OR")
         RANGE = ("RANGE", "OR")
         CONTAINS = ("CONTAINS", "OR")
+        CASE_HOST_EQ = ("CASE_HOSTS_EQ", "OR")
+        CONTAINS_IN_LIST = ("CONTAINS_IN_LIST", "OR")
         GTE = ("GTE", "OR")
         ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
@@ -271,7 +296,13 @@ class FilterBuilder:
             self.values = values
 
     class MappedValuesField(Field):
-        def __init__(self, field_name: str, filter_type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+        def __init__(
+            self,
+            field_name: str,
+            filter_type: "FilterType",
+            values: Any,
+            mappings: dict[str, "FilterType"],
+        ):
             super().__init__(field_name, filter_type, values)
             self.mappings = mappings
 
@@ -295,7 +326,13 @@ class FilterBuilder:
 
         self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
 
-    def add_field_with_mappings(self, name: str, type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+    def add_field_with_mappings(
+        self,
+        name: str,
+        type: "FilterType",
+        values: Any,
+        mappings: dict[str, "FilterType"],
+    ):
         """
         Adds a new field to the filter with special value mappings.
         Args:
@@ -346,7 +383,10 @@ class FilterBuilder:
 
                 if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
                     current_filter_type = field.mappings[value]
-                    if current_filter_type in [FilterType.IS_EMPTY, FilterType.NIS_EMPTY]:
+                    if current_filter_type in [
+                        FilterType.IS_EMPTY,
+                        FilterType.NIS_EMPTY,
+                    ]:
                         current_value = "<No Value>"
 
                 search_values.append(
@@ -417,6 +457,29 @@ def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
                 new_key = key.replace(original, new)
                 data[new_key] = data.pop(key)
     return data
+
+
+def determine_assignee_filter_field(assignee_list: list) -> str:
+    """
+    Determine whether the assignee should be filtered by email or pretty name.
+
+    Args:
+        assignee (list): The assignee values to filter on.
+
+    Returns:
+        str: The appropriate field to filter on based on the input.
+    """
+    if not assignee_list:
+        return CaseManagement.FIELDS["assignee"]
+
+    assignee = assignee_list[0]
+
+    if "@" in assignee:
+        # If the assignee contains '@', use the email field
+        return CaseManagement.FIELDS["assignee_email"]
+    else:
+        # Otherwise, use the pretty name field
+        return CaseManagement.FIELDS["assignee"]
 
 
 def process_case_response(resp):
@@ -556,6 +619,34 @@ class Client(CoreClient):
     def update_issue(self, filter_data):
         return self._http_request(method="POST", json_data=filter_data, url_suffix="/alerts/update_alerts")
 
+    def link_issue_to_cases(self, issue_id, case_ids: list) -> dict:
+        """Link an issue to one or more cases.
+
+        Args:
+            issue_id: The issue ID to link
+            case_ids: List of case IDs to link the issue to
+
+        Returns:
+            dict: API response
+        """
+        return self._http_request(
+            method="POST", json_data={"issue_ids": [issue_id], "case_ids": case_ids}, url_suffix="/cases/link_issues"
+        )
+
+    def unlink_issue_from_cases(self, issue_id, case_ids: list) -> dict:
+        """Unlink an issue from one or more cases.
+
+        Args:
+            issue_id: The issue ID to unlink
+            case_ids: List of case IDs to unlink the issue from
+
+        Returns:
+            dict: API response
+        """
+        return self._http_request(
+            method="POST", json_data={"issue_id": issue_id, "case_ids": case_ids}, url_suffix="/cases/unlink_issue"
+        )
+
     def search_assets(self, filter, page_number, page_size, on_demand_fields):
         reply = self._http_request(
             method="POST",
@@ -616,14 +707,26 @@ class Client(CoreClient):
         Returns:
             dict: The response containing playbook suggestions.
         """
-        reply = self._http_request(
+        return self._http_request(
             method="POST",
             json_data={"alert_internal_id": issue_id},
             headers=self._headers,
             url_suffix="/incident/get_playbook_suggestion_by_alert/",
         )
 
-        return reply
+    def get_playbooks_metadata(self):
+        return self._http_request(
+            method="GET",
+            headers=self._headers,
+            full_url="/xsoar/playbooks/metadata",
+        )
+
+    def get_quick_actions_metadata(self):
+        return self._http_request(
+            method="GET",
+            headers=self._headers,
+            full_url="/xsoar/quickactions",
+        )
 
     def appsec_remediate_issue(self, request_body):
         return self._http_request(
@@ -719,7 +822,7 @@ class Client(CoreClient):
         )
 
 
-def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
+def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     """
     Append Application Security - related suggestions to the recommendation data.
 
@@ -733,23 +836,211 @@ def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommenda
     Returns:
         tuple[list, dict]: Updated headers and recommendation including AppSec additions.
     """
+    alert_source = issue.get("alert_source")
+    if alert_source not in APPSEC_SOURCES:
+        return {}
+
+    recommendation = {}
     manual_fix = issue.get("extended_fields", {}).get("action")
-    recommendation["remediation"] = manual_fix if manual_fix else recommendation.get("remediation")
+    if manual_fix:
+        recommendation["remediation"] = manual_fix
+
     fix_suggestion = client.get_appsec_suggested_fix(issue_id)
     demisto.debug(f"AppSec fix suggestion: {fix_suggestion}")
 
-    # Avoid situations where existingCodeBlock is dirty, leaving suggestedCodeBlock empty.
-    if fix_suggestion and fix_suggestion.get("suggestedCodeBlock"):
+    if fix_suggestion and isinstance(fix_suggestion, dict) and fix_suggestion.get("suggestedCodeBlock"):
         recommendation.update(
             {
                 "existing_code_block": fix_suggestion.get("existingCodeBlock", ""),
                 "suggested_code_block": fix_suggestion.get("suggestedCodeBlock", ""),
             }
         )
-        headers.append("existing_code_block")
-        headers.append("suggested_code_block")
+    demisto.debug(f"{recommendation=} for {issue=}")
 
-    return headers, recommendation
+    return recommendation
+
+
+def populate_playbook_and_quick_action_suggestions(
+    client: Client, issue_id: str, pb_id_to_data: dict, qa_name_to_data: dict
+) -> dict:
+    """
+    Fetches playbook and quick-action suggestions for a given issue
+    and updates the recommendation dictionary accordingly.
+
+    Returns:
+        recommendation
+    """
+    recommendation = {}
+
+    response = client.get_playbook_suggestion_by_issue(issue_id)
+    suggestions = response.get("reply", {})
+    demisto.debug(f"Playbooks and quick action {suggestions=} for {issue_id=}")
+
+    if not suggestions:
+        return {}
+
+    # Playbook suggestion
+    playbook_id = suggestions.get("playbook_id")
+    suggestion_rule_id = suggestions.get("suggestion_rule_id")
+
+    if playbook_id:
+        recommendation["playbook_suggestions"] = {
+            "playbook_id": playbook_id,
+            "suggestion_rule_id": suggestion_rule_id,
+        }
+        pb_data = pb_id_to_data.get(playbook_id)
+        if pb_data:
+            recommendation["playbook_suggestions"].update(pb_data)
+
+    # Quick action suggestion
+    quick_action_id = suggestions.get("quick_action_id", None)
+    quick_action_suggestion_rule_id = suggestions.get("quick_action_suggestion_rule_id", None)
+
+    if quick_action_id:
+        recommendation["quick_action_suggestions"] = {
+            "name": quick_action_id,
+            "suggestion_rule_id": quick_action_suggestion_rule_id,
+        }
+        qa_data = qa_name_to_data.get(quick_action_id)
+        if qa_data:
+            recommendation["quick_action_suggestions"].update(qa_data)
+
+    return recommendation
+
+
+def map_qa_name_to_data(qas_metadata) -> dict:
+    """
+    Maps each quick-action command name to its metadata, filtering hidden arguments
+    and removing empty fields.
+
+    Returns:
+        dict: command_name → metadata.
+    """
+    if not isinstance(qas_metadata, list):
+        return {}
+
+    qa_name_to_data = {}
+
+    for item in qas_metadata:
+        brand = item.get("brand")
+        category = item.get("category")
+
+        for cmd in item.get("commands", []):
+            cmd_name = cmd.get("name")
+            arguments = cmd.get("arguments", [])
+            filtered_args = [arg for arg in arguments if not arg.get("hidden", False)]
+            qa_name_to_data[cmd_name] = remove_empty_elements(
+                {
+                    "brand": brand,
+                    "category": category,
+                    "description": cmd.get("description"),
+                    "pretty_name": cmd.get("prettyName"),
+                    "arguments": filtered_args,
+                }
+            )
+
+    return qa_name_to_data
+
+
+def map_pb_id_to_data(pbs_metadata) -> dict:
+    """
+    Maps each playbook ID to its corresponding data to enable fast lookups.
+
+    Args:
+        pbs_metadata: List of playbook metadata dictionaries.
+
+    Returns:
+        dict: Mapping of playbook ID to its data from the metadata list.
+    """
+    if not isinstance(pbs_metadata, list):
+        return {}
+
+    pb_id_to_data = {}
+    for pb_metadata in pbs_metadata:
+        pb_id = pb_metadata.get("id")
+        if pb_id:
+            pb_id_to_data[pb_id] = remove_empty_elements({"name": pb_metadata.get("name"), "comment": pb_metadata.get("comment")})
+
+    return pb_id_to_data
+
+
+def create_issue_recommendations_readable_output(issue_ids: list[str], all_recommendations: list[dict]) -> str:
+    """
+    Create readable output for issue recommendations with dynamic headers based on content.
+
+    Args:
+        issue_ids: List of issue IDs being processed
+        all_recommendations: Complete recommendation data used to determine headers and create readable output
+
+    Returns:
+        str: Formatted markdown table string for readable output
+    """
+    # Base headers that are always present
+    headers = [
+        "issue_id",
+        "issue_name",
+        "severity",
+        "description",
+        "remediation",
+    ]
+
+    # Flags to track what headers we need to append
+    append_appsec_headers = False
+    append_playbook_suggestions_header = False
+    append_quick_action_suggestions_header = False
+
+    readable_recommendations = []
+
+    # Single loop to both check for headers and create readable recommendations
+    for recommendation in all_recommendations:
+        # Check what headers we need to append
+        if not append_appsec_headers and ("existing_code_block" in recommendation or "suggested_code_block" in recommendation):
+            append_appsec_headers = True
+        if not append_playbook_suggestions_header and "playbook_suggestions" in recommendation:
+            append_playbook_suggestions_header = True
+        if not append_quick_action_suggestions_header and "quick_action_suggestions" in recommendation:
+            append_quick_action_suggestions_header = True
+
+        # Create readable recommendation
+        readable_rec = recommendation.copy()
+
+        # Simplify playbook suggestions for readable output (show only name)
+        if "playbook_suggestions" in readable_rec and isinstance(readable_rec["playbook_suggestions"], dict):
+            pb_suggestions = readable_rec["playbook_suggestions"]
+            readable_rec["playbook_suggestions"] = {
+                "name": pb_suggestions.get("name", ""),
+                "playbook_id": pb_suggestions.get("playbook_id", ""),
+            }
+
+        # Simplify quick action suggestions for readable output (show only pretty_name)
+        if "quick_action_suggestions" in readable_rec and isinstance(readable_rec["quick_action_suggestions"], dict):
+            qa_suggestions = readable_rec["quick_action_suggestions"]
+            readable_rec["quick_action_suggestions"] = {
+                "name": qa_suggestions.get("name", ""),
+                "pretty_name": qa_suggestions.get("pretty_name", ""),
+            }
+
+        readable_recommendations.append(readable_rec)
+
+    # Add conditional headers based on what we found
+    if append_appsec_headers:
+        headers.extend(["existing_code_block", "suggested_code_block"])
+
+    if append_playbook_suggestions_header:
+        headers.append("playbook_suggestions")
+
+    if append_quick_action_suggestions_header:
+        headers.append("quick_action_suggestions")
+
+    # Create the readable output table
+    issue_readable_output = tableToMarkdown(
+        f"Issue Recommendations for {issue_ids}",
+        readable_recommendations,
+        headerTransform=string_to_table_header,
+        headers=headers,
+    )
+
+    return issue_readable_output
 
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
@@ -757,17 +1048,17 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     Get comprehensive recommendations for an issue, including remediation steps and playbook suggestions.
     Retrieves issue data with remediation field using the generic /api/webapp/get_data endpoint.
     """
-    issue_id = args.get("issue_id")
-    if not issue_id:
-        raise DemistoException("issue_id is required.")
+    issue_ids = argToList(args.get("issue_ids"))
+    if len(issue_ids) > 10:
+        raise DemistoException("Please provide a maximum of 10 issue IDs per request.")
 
     filter_builder = FilterBuilder()
-    filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
+    filter_builder.add_field("internal_id", FilterType.EQ, issue_ids)
 
     request_data = build_webapp_request_data(
         table_name="ALERTS_VIEW_TABLE",
         filter_dict=filter_builder.to_dict(),
-        limit=1,
+        limit=10,
         sort_field="source_insert_ts",
         sort_order="DESC",
         on_demand_fields=[],
@@ -779,48 +1070,50 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     issue_data = reply.get("DATA", [])
 
     if not issue_data:
-        raise DemistoException(f"No issue found with ID: {issue_id}")
+        raise DemistoException(f"No issues found with IDs: {issue_ids}")
 
-    issue = issue_data[0]
+    # Call the endpoint here to avoid calling it for each issue.
+    pbs_metadata = client.get_playbooks_metadata() or []
+    qas_metadata = client.get_quick_actions_metadata() or []
+    pb_id_to_data = map_pb_id_to_data(pbs_metadata)
+    qa_name_to_data = map_qa_name_to_data(qas_metadata)
+    all_recommendations = []
 
-    # Get playbook suggestions
-    playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
-    playbook_suggestions = playbook_response.get("reply", {})
-    demisto.debug(f"{playbook_response=}")
+    for issue in issue_data:
+        current_issue_id = issue.get("internal_id")
 
-    recommendation = {
-        "issue_id": issue.get("internal_id") or issue_id,
-        "issue_name": issue.get("alert_name"),
-        "severity": issue.get("severity"),
-        "description": issue.get("alert_description"),
-        "remediation": issue.get("remediation"),
-        "playbook_suggestions": playbook_suggestions,
-    }
+        # Base recommendation
+        recommendation = {
+            "issue_id": current_issue_id,
+            "issue_name": issue.get("alert_name"),
+            "severity": issue.get("severity"),
+            "description": issue.get("alert_description"),
+            "remediation": issue.get("remediation"),
+        }
 
-    headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+        # --- Playbook and Quick Action Suggestions ---
+        recommendation_pb_qa = populate_playbook_and_quick_action_suggestions(
+            client, current_issue_id, pb_id_to_data, qa_name_to_data
+        )
+        recommendation.update(recommendation_pb_qa)
 
-    if issue.get("alert_source") in APPSEC_SOURCES:
-        headers, recommendation = get_appsec_suggestion(client, headers, issue, recommendation, issue_id)
+        # --- AppSec ---
+        appsec_recommendation = get_appsec_suggestion(client, issue, current_issue_id)
+        if appsec_recommendation:
+            recommendation.update(appsec_recommendation)
 
-    readable_output = tableToMarkdown(
-        f"Issue Recommendations for {issue_id}",
-        [recommendation],
-        headerTransform=string_to_table_header,
-        headers=headers,
+        all_recommendations.append(recommendation)
+
+    # Final header adjustments
+    issue_readable_output = create_issue_recommendations_readable_output(
+        issue_ids=issue_ids, all_recommendations=all_recommendations
     )
 
-    if playbook_suggestions:
-        readable_output += "\n" + tableToMarkdown(
-            "Playbook Suggestions",
-            playbook_suggestions,
-            headerTransform=string_to_table_header,
-        )
-
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=issue_readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.IssueRecommendations",
         outputs_key_field="issue_id",
-        outputs=recommendation,
+        outputs=all_recommendations,
         raw_response=response,
     )
 
@@ -844,10 +1137,16 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     """
     limit = arg_to_number(args.get("limit")) or 50
     filter_builder = FilterBuilder()
-    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_name"], FilterType.CONTAINS, argToList(args.get("name")))
+    filter_builder.add_field(
+        ASSET_GROUP_FIELDS["asset_group_name"],
+        FilterType.CONTAINS,
+        argToList(args.get("name")),
+    )
     filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_type"], FilterType.EQ, args.get("type"))
     filter_builder.add_field(
-        ASSET_GROUP_FIELDS["asset_group_description"], FilterType.CONTAINS, argToList(args.get("description"))
+        ASSET_GROUP_FIELDS["asset_group_description"],
+        FilterType.CONTAINS,
+        argToList(args.get("description")),
     )
     filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_id"], FilterType.EQ, argToList(args.get("id")))
 
@@ -883,14 +1182,24 @@ def build_webapp_request_data(
     sort_field: str | None,
     on_demand_fields: list | None = None,
     sort_order: str | None = "DESC",
+    start_page: int = 0,
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
     """
-    sort = [{"FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field), "ORDER": sort_order}] if sort_field else []
+    sort = (
+        [
+            {
+                "FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field),
+                "ORDER": sort_order,
+            }
+        ]
+        if sort_field
+        else []
+    )
     filter_data = {
         "sort": sort,
-        "paging": {"from": 0, "to": limit},
+        "paging": {"from": start_page, "to": limit},
         "filter": filter_dict,
     }
     demisto.debug(f"{filter_data=}")
@@ -936,12 +1245,23 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     filter_builder.add_field("CVE_ID", FilterType.CONTAINS, argToList(args.get("cve_id")))
     filter_builder.add_field("CVSS_SCORE", FilterType.GTE, arg_to_number(args.get("cvss_score_gte")))
     filter_builder.add_field("EPSS_SCORE", FilterType.GTE, arg_to_number(args.get("epss_score_gte")))
-    filter_builder.add_field("INTERNET_EXPOSED", FilterType.EQ, arg_to_bool_or_none(args.get("internet_exposed")))
+    filter_builder.add_field(
+        "INTERNET_EXPOSED",
+        FilterType.EQ,
+        arg_to_bool_or_none(args.get("internet_exposed")),
+    )
     filter_builder.add_field("EXPLOITABLE", FilterType.EQ, arg_to_bool_or_none(args.get("exploitable")))
     filter_builder.add_field("HAS_KEV", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
-    filter_builder.add_field("AFFECTED_SOFTWARE", FilterType.CONTAINS, argToList(args.get("affected_software")))
     filter_builder.add_field(
-        "PLATFORM_SEVERITY", FilterType.EQ, argToList(args.get("severity")), VULNERABILITIES_SEVERITY_MAPPING
+        "AFFECTED_SOFTWARE",
+        FilterType.CONTAINS,
+        argToList(args.get("affected_software")),
+    )
+    filter_builder.add_field(
+        "PLATFORM_SEVERITY",
+        FilterType.EQ,
+        argToList(args.get("severity")),
+        VULNERABILITIES_SEVERITY_MAPPING,
     )
     filter_builder.add_field("ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id")))
     filter_builder.add_time_range_field("LAST_OBSERVED", args.get("start_time"), args.get("end_time"))
@@ -987,7 +1307,10 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
 
     readable_output = tableToMarkdown(
-        "Vulnerabilities", filtered_data, headerTransform=string_to_table_header, sort_headers=False
+        "Vulnerabilities",
+        filtered_data,
+        headerTransform=string_to_table_header,
+        sort_headers=False,
     )
     return CommandResults(
         readable_output=readable_output,
@@ -1026,20 +1349,340 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def extract_ids(case_extra_data: dict) -> list:
+    """
+    Extract a list of IDs from a command result.
+
+    Args:
+        command_res: The result of a command. It can be either a dictionary or a list.
+        field_name: The name of the field that contains the ID.
+
+    Returns:
+        A list of the IDs extracted from the command result.
+    """
+    if not case_extra_data:
+        return []
+
+    field_name = "issue_id"
+    issues = case_extra_data.get("issues", {})
+    issues_data = issues.get("data", {}) if issues else {}
+    issue_ids = [issue.get(field_name) for issue in issues_data if isinstance(issue, dict) and field_name in issue]
+    demisto.debug(f"Extracted issue ids: {issue_ids}")
+    return issue_ids
+
+
+def get_case_extra_data(client, args):
+    """
+    Calls the core-get-case-extra-data command and parses the output to a standard structure.
+
+    Args:
+        args: The arguments to pass to the core-get-case-extra-data command.
+
+    Returns:
+        A dictionary containing the case data with the following keys:
+            issue_ids: A list of IDs of issues in the case.
+            network_artifacts: A list of network artifacts in the case.
+            file_artifacts: A list of file artifacts in the case.
+    """
+    demisto.debug(f"Calling core-get-case-extra-data, {args=}")
+    # Set the base URL for this API call to use the public API v1 endpoint
+    client._base_url = "api/webapp/public_api/v1"
+    case_extra_data = get_extra_data_for_case_id_command(client, args).outputs
+    demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
+    issue_ids = extract_ids(case_extra_data)
+    case_data = case_extra_data.get("case", {})
+    notes = case_data.get("notes")
+    xdr_url = case_data.get("xdr_url")
+    starred_manually = case_data.get("starred_manually")
+    manual_description = case_data.get("manual_description")
+    detection_time = case_data.get("detection_time")
+    manual_description = case_extra_data.get("manual_description")
+    network_artifacts = case_extra_data.get("network_artifacts")
+    file_artifacts = case_extra_data.get("file_artifacts")
+    extra_data = {
+        "issue_ids": issue_ids,
+        "network_artifacts": network_artifacts,
+        "file_artifacts": file_artifacts,
+        "notes": notes,
+        "detection_time": detection_time,
+        "xdr_url": xdr_url,
+        "starred_manually": starred_manually,
+        "manual_description": manual_description,
+    }
+    return extra_data
+
+
+def add_cases_extra_data(client, cases_list):
+    # for each case id in the entry context, get the case extra data
+    for case in cases_list:
+        case_id = case.get("case_id")
+        extra_data = get_case_extra_data(client, {"case_id": case_id, "limit": 1000})
+        case.update({"CaseExtraData": extra_data})
+
+    return cases_list
+
+
+def map_case_format(case_list):
+    """
+    Maps a list of case data from the API response format to a standardized internal format.
+
+    Args:
+        case_list (list): List of case dictionaries from the API response.
+                         Each case should contain fields like CASE_ID, NAME, STATUS, etc.
+
+    Returns:
+        dict or list: Returns an empty dict if case_list is invalid or empty,
+                     otherwise returns a list of mapped case dictionaries with
+                     standardized field names and processed values.
+    """
+    if not case_list or not isinstance(case_list, list):
+        return {}
+
+    mapped_cases = []
+    for case_data in case_list:
+        demisto.debug(f"Processing case data: {case_data}")
+        mapped_case = {
+            "case_id": str(case_data.get("CASE_ID")),
+            "case_name": case_data.get("NAME"),
+            "description": case_data.get("DESCRIPTION"),
+            "creation_time": case_data.get("CREATION_TIME"),
+            "modification_time": case_data.get("LAST_UPDATE_TIME"),
+            "resolved_timestamp": case_data.get("RESOLVED_TIMESTAMP"),
+            "status": str(case_data.get("STATUS", case_data.get("STATUS_PROGRESS"))).split("_")[-1].lower(),
+            "severity": str(case_data.get("SEVERITY")).split("_")[-1].lower(),
+            "case_domain": case_data.get("INCIDENT_DOMAIN"),
+            "original_tags": [tag.get("tag_name") for tag in case_data.get("ORIGINAL_TAGS", [])],
+            "tags": [tag.get("tag_name") for tag in case_data.get("CURRENT_TAGS", [])],
+            "issue_count": case_data.get("ACC_ALERT_COUNT"),
+            "critical_severity_issue_count": case_data.get("CRITICAL_SEVERITY_ALERTS"),
+            "high_severity_issue_count": case_data.get("HIGH_SEVERITY_ALERTS"),
+            "med_severity_issue_count": case_data.get("MEDIUM_SEVERITY_ALERTS"),
+            "low_severity_issue_count": case_data.get("LOW_SEVERITY_ALERTS"),
+            "rule_based_score": case_data.get("CALCULATED_SCORE"),
+            "aggregated_score": case_data.get("SCORE"),
+            "manual_score": case_data.get("MANUAL_SCORE"),
+            "predicted_score": case_data.get("SCORTEX"),
+            "wildfire_hits": case_data.get("WF_HITS"),
+            "assigned_user_pretty_name": case_data.get("ASSIGNED_USER_PRETTY"),
+            "assigned_user_mail": case_data.get("ASSIGNED_USER"),
+            "resolve_comment": case_data.get("RESOLVED_COMMENT"),
+            "issues_grouping_status": str(case_data.get("CASE_GROUPING_STATUS")).split("_")[-1],
+            "starred": case_data.get("CASE_STARRED"),
+            "case_sources": case_data.get("INCIDENT_SOURCES"),
+            "custom_fields": case_data.get("EXTENDED_FIELDS"),
+            "hosts": case_data.get("HOSTS") or [],
+            "users": case_data.get("USERS") or [],
+            "host_count": len(case_data.get("HOSTS", []) or []),
+            "user_count": len(case_data.get("USERS", []) or []),
+            "issue_categories": case_data.get("ALERT_CATEGORIES"),
+            "mitre_techniques_ids_and_names": case_data.get("MITRE_TECHNIQUES"),
+            "mitre_tactics_ids_and_names": case_data.get("MITRE_TACTICS"),
+            "manual_severity": case_data.get("USER_SEVERITY"),
+            "asset_accounts": case_data.get("UAI_ASSET_ACCOUNTS", []),
+            "asset_categories": case_data.get("UAI_ASSET_CATEGORIES", []),
+            "asset_classes": case_data.get("UAI_ASSET_CLASSES", []),
+            "asset_group_ids": case_data.get("UAI_ASSET_GROUP_IDS", []),
+            "asset_ids": case_data.get("UAI_ASSET_IDS", []),
+            "asset_names": case_data.get("UAI_ASSET_NAMES", []),
+            "asset_providers": case_data.get("UAI_ASSET_PROVIDERS", []),
+            "asset_regions": case_data.get("UAI_ASSET_REGIONS", []),
+            "asset_types": case_data.get("UAI_ASSET_TYPES", []),
+        }
+
+        mapped_cases.append(mapped_case)
+
+    return mapped_cases
+
+
 def get_cases_command(client, args):
     """
-    Retrieve a list of Cases from XDR, filtered by some filters.
+    Retrieves cases from Cortex platform based on provided filtering criteria.
+
+    Args:
+        client: The Cortex platform client instance for making API requests.
+        args (dict): Dictionary containing filter parameters including page number,
+                    limits, time ranges, status, severity, and other case attributes.
+
+    Returns:
+        List of mapped case objects containing case details and metadata.
     """
-    args = preprocess_get_cases_args(args)
-    _, _, raw_incidents = get_incidents_command(client, args)
-    mapped_raw_cases = preprocess_get_cases_outputs(raw_incidents)
-    return CommandResults(
-        readable_output=tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header),
-        outputs_prefix="Core.Case",
-        outputs_key_field="case_id",
-        outputs=mapped_raw_cases,
-        raw_response=mapped_raw_cases,
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
+
+    limit = page * MAX_GET_CASES_LIMIT + limit
+    page = page * MAX_GET_CASES_LIMIT
+
+    sort_by_modification_time = args.get("sort_by_modification_time")
+    sort_by_creation_time = args.get("sort_by_creation_time")
+    since_creation_start_time = args.get("since_creation_time")
+    since_creation_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_creation_start_time else None
+    since_modification_start_time = args.get("since_modification_time")
+    since_modification_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_modification_start_time else None
+    gte_creation_time = args.get("gte_creation_time")
+    lte_creation_time = args.get("lte_creation_time")
+    gte_modification_time = args.get("gte_modification_time")
+    lte_modification_time = args.get("lte_modification_time")
+
+    sort_field, sort_order = get_cases_sort_order(sort_by_creation_time, sort_by_modification_time)
+
+    status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("status"))]
+    severity_values = [CaseManagement.SEVERITY[severity] for severity in argToList(args.get("severity"))]
+    tag_values = [CaseManagement.TAGS.get(tag, tag) for tag in argToList(args.get("tag"))]
+    filter_builder = FilterBuilder()
+    filter_builder.add_time_range_field(CaseManagement.FIELDS["creation_time"], gte_creation_time, lte_creation_time)
+    filter_builder.add_time_range_field(
+        CaseManagement.FIELDS["last_updated"],
+        gte_modification_time,
+        lte_modification_time,
     )
+    filter_builder.add_time_range_field(
+        CaseManagement.FIELDS["creation_time"],
+        since_creation_start_time,
+        since_creation_end_time,
+    )
+    filter_builder.add_time_range_field(
+        CaseManagement.FIELDS["last_updated"],
+        since_modification_start_time,
+        since_modification_end_time,
+    )
+    filter_builder.add_field(CaseManagement.FIELDS["status"], FilterType.EQ, status_values)
+    filter_builder.add_field(CaseManagement.FIELDS["severity"], FilterType.EQ, severity_values)
+    filter_builder.add_field(
+        CaseManagement.FIELDS["case_id_list"],
+        FilterType.EQ,
+        argToList(args.get("case_id_list")),
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["case_domain"],
+        FilterType.EQ,
+        argToList(args.get("case_domain")),
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["case_name"],
+        FilterType.CONTAINS,
+        argToList(args.get("case_name")),
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["case_description"],
+        FilterType.CONTAINS,
+        argToList(args.get("case_description")),
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["starred"],
+        FilterType.EQ,
+        [argToBoolean(x) for x in argToList(args.get("starred"))],
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["asset_ids"],
+        FilterType.CONTAINS_IN_LIST,
+        argToList(args.get("asset_ids")),
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["asset_groups"],
+        FilterType.CONTAINS_IN_LIST,
+        argToList(args.get("asset_groups")),
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["hosts"],
+        FilterType.CASE_HOST_EQ,
+        argToList(args.get("hosts")),
+    )
+    filter_builder.add_field(CaseManagement.FIELDS["tags"], FilterType.ARRAY_CONTAINS, tag_values)
+    filter_builder.add_field_with_mappings(
+        determine_assignee_filter_field(argToList(args.get("assignee"))),
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },
+    )
+
+    request_data = build_webapp_request_data(
+        table_name=CASES_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=limit,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        start_page=page,
+    )
+    demisto.info(f"{request_data=}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+    demisto.debug(f"Raw case data retrieved from API: {data}")
+    data = map_case_format(data)
+    demisto.debug(f"Case data after mapping and formatting: {data}")
+
+    filter_count = int(reply.get("FILTER_COUNT", "0"))
+    returned_count = len(data)
+
+    command_results = []
+
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
+            outputs={"filter_count": filter_count, "returned_count": returned_count},
+        )
+    )
+
+    get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
+    # In case enriched case data was requested
+    if get_enriched_case_data and len(data) <= 10:
+        if isinstance(data, dict):
+            data = [data]
+
+        case_extra_data = add_cases_extra_data(client, data)
+
+        command_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
+                outputs_prefix="Core.Case",
+                outputs_key_field="case_id",
+                outputs=case_extra_data,
+                raw_response=case_extra_data,
+            )
+        )
+
+    else:
+        if get_enriched_case_data:
+            command_results.append(
+                CommandResults(
+                    readable_output="Cannot retrieve enriched case data for more than 10 cases. "
+                    "Only standard case data will be shown. "
+                    "Try using a more specific query, "
+                    "for example specific case IDs you want to get enriched data for.",
+                    entry_type=4,
+                )
+            )
+
+        command_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
+                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+                outputs_key_field="case_id",
+                outputs=data,
+                raw_response=data,
+            )
+        )
+
+    return command_results
+
+
+def get_cases_sort_order(sort_by_creation_time, sort_by_modification_time):
+    if sort_by_creation_time and sort_by_modification_time:
+        raise ValueError("Should be provide either sort_by_creation_time or sort_by_modification_time. Can't provide both")
+
+    if sort_by_creation_time:
+        sort_field = "CREATION_TIME"
+        sort_order = sort_by_creation_time
+    elif sort_by_modification_time:
+        sort_field = "LAST_UPDATE_TIME"
+        sort_order = sort_by_modification_time
+    else:
+        sort_field = "LAST_UPDATE_TIME"
+        sort_order = "DESC"
+    return sort_field, sort_order
 
 
 def get_issue_id(args) -> str:
@@ -1074,7 +1717,11 @@ def create_filter_data(issue_id: str, update_args: dict) -> dict:
     filter_builder = FilterBuilder()
     filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
 
-    filter_data = {"filter_data": {"filter": filter_builder.to_dict()}, "filter_type": "static", "update_data": update_args}
+    filter_data = {
+        "filter_data": {"filter": filter_builder.to_dict()},
+        "filter_type": "static",
+        "update_data": update_args,
+    }
     return filter_data
 
 
@@ -1102,9 +1749,17 @@ def update_issue_command(client: Client, args: dict):
         "Resolved - Fixed": "STATUS_250_RESOLVED_FIXED",
         "Resolved - Risk Accepted": "STATUS_130_RESOLVED_RISK_ACCEPTED",
     }
-    severity_map = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+    severity_map = {
+        "low": "SEV_020_LOW",
+        "medium": "SEV_030_MEDIUM",
+        "high": "SEV_040_HIGH",
+        "critical": "SEV_050_CRITICAL",
+    }
     severity_value = args.get("severity")
     status = args.get("status")
+    link_cases = [int(case_id) for case_id in argToList(args.get("link_cases"))] if args.get("link_cases") else []
+    unlink_cases = [int(case_id) for case_id in argToList(args.get("unlink_cases"))] if args.get("unlink_cases") else []
+
     update_args = {
         "assigned_user": args.get("assigned_user_mail"),
         "severity": severity_map.get(severity_value) if severity_value else None,
@@ -1118,14 +1773,23 @@ def update_issue_command(client: Client, args: dict):
 
     # Remove None values before sending to API
     filtered_update_args = {k: v for k, v in update_args.items() if v is not None}
-    if not filtered_update_args:
+
+    if not filtered_update_args and not link_cases and not unlink_cases:
         raise DemistoException("Please provide arguments to update the issue.")
 
-    # Send update to API
-    filter_data = create_filter_data(issue_id, filtered_update_args)
+    if link_cases:
+        client.link_issue_to_cases(int(issue_id), link_cases)
+        demisto.debug(f"Linked issue {issue_id} to cases {link_cases}")
 
-    demisto.debug(filter_data)
-    client.update_issue(filter_data)
+    if unlink_cases:
+        client.unlink_issue_from_cases(int(issue_id), unlink_cases)
+        demisto.debug(f"Unlinked issue {issue_id} from cases {unlink_cases}")
+
+    if filtered_update_args:
+        filter_data = create_filter_data(issue_id, filtered_update_args)
+        demisto.debug(filter_data)
+        client.update_issue(filter_data)
+
     return "done"
 
 
@@ -1146,7 +1810,7 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
     """
     case_id = args.get("case_id")
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
-    response = client.get_incident_data(case_id, issues_limit)
+    response = client.get_incident_data(case_id, issues_limit, full_alert_fields=True)
     mapped_response = preprocess_get_case_extra_data_outputs(response)
     return CommandResults(
         readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
@@ -1173,14 +1837,38 @@ def search_assets_command(client: Client, args):
     """
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
     filter = FilterBuilder()
-    filter.add_field(ASSET_FIELDS["asset_names"], FilterType.CONTAINS, argToList(args.get("asset_names", "")))
-    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.EQ, argToList(args.get("asset_types", "")))
-    filter.add_field(ASSET_FIELDS["asset_tags"], FilterType.JSON_WILDCARD, safe_load_json(args.get("asset_tags", [])))
+    filter.add_field(
+        ASSET_FIELDS["asset_names"],
+        FilterType.CONTAINS,
+        argToList(args.get("asset_names", "")),
+    )
+    filter.add_field(
+        ASSET_FIELDS["asset_types"],
+        FilterType.EQ,
+        argToList(args.get("asset_types", "")),
+    )
+    filter.add_field(
+        ASSET_FIELDS["asset_tags"],
+        FilterType.JSON_WILDCARD,
+        safe_load_json(args.get("asset_tags", [])),
+    )
     filter.add_field(ASSET_FIELDS["asset_ids"], FilterType.EQ, argToList(args.get("asset_ids", "")))
-    filter.add_field(ASSET_FIELDS["asset_providers"], FilterType.EQ, argToList(args.get("asset_providers", "")))
-    filter.add_field(ASSET_FIELDS["asset_realms"], FilterType.EQ, argToList(args.get("asset_realms", "")))
+    filter.add_field(
+        ASSET_FIELDS["asset_providers"],
+        FilterType.EQ,
+        argToList(args.get("asset_providers", "")),
+    )
+    filter.add_field(
+        ASSET_FIELDS["asset_realms"],
+        FilterType.EQ,
+        argToList(args.get("asset_realms", "")),
+    )
     filter.add_field(ASSET_FIELDS["asset_group_ids"], FilterType.ARRAY_CONTAINS, asset_group_ids)
-    filter.add_field(ASSET_FIELDS["asset_categories"], FilterType.EQ, argToList(args.get("asset_categories", "")))
+    filter.add_field(
+        ASSET_FIELDS["asset_categories"],
+        FilterType.EQ,
+        argToList(args.get("asset_categories", "")),
+    )
     filter_str = filter.to_dict()
 
     demisto.debug(f"Search Assets Filter: {filter_str}")
@@ -1256,7 +1944,10 @@ def build_scanner_config_payload(args: dict) -> dict:
     for scanner in enabled_scanners:
         validate_scanner_name(scanner)
         if scanner.upper() == "SECRETS":
-            scanners["SECRETS"] = {"isEnabled": True, "scanOptions": {"secretValidation": secret_validation}}
+            scanners["SECRETS"] = {
+                "isEnabled": True,
+                "scanOptions": {"secretValidation": secret_validation},
+            }
         else:
             scanners[scanner.upper()] = {"isEnabled": True}
 
@@ -1392,14 +2083,32 @@ def build_asset_coverage_filter(args: dict) -> FilterBuilder:
     filter_builder.add_field("asset_id", FilterType.CONTAINS, argToList(args.get("asset_id")))
     filter_builder.add_field("asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
     filter_builder.add_field(
-        "business_application_names", FilterType.ARRAY_CONTAINS, argToList(args.get("business_application_names"))
+        "business_application_names",
+        FilterType.ARRAY_CONTAINS,
+        argToList(args.get("business_application_names")),
     )
     filter_builder.add_field("status_coverage", FilterType.EQ, argToList(args.get("status_coverage")))
-    filter_builder.add_field("is_scanned_by_vulnerabilities", FilterType.EQ, argToList(args.get("is_scanned_by_vulnerabilities")))
-    filter_builder.add_field("is_scanned_by_code_weakness", FilterType.EQ, argToList(args.get("is_scanned_by_code_weakness")))
-    filter_builder.add_field("is_scanned_by_secrets", FilterType.EQ, argToList(args.get("is_scanned_by_secrets")))
+    filter_builder.add_field(
+        "is_scanned_by_vulnerabilities",
+        FilterType.EQ,
+        argToList(args.get("is_scanned_by_vulnerabilities")),
+    )
+    filter_builder.add_field(
+        "is_scanned_by_code_weakness",
+        FilterType.EQ,
+        argToList(args.get("is_scanned_by_code_weakness")),
+    )
+    filter_builder.add_field(
+        "is_scanned_by_secrets",
+        FilterType.EQ,
+        argToList(args.get("is_scanned_by_secrets")),
+    )
     filter_builder.add_field("is_scanned_by_iac", FilterType.EQ, argToList(args.get("is_scanned_by_iac")))
-    filter_builder.add_field("is_scanned_by_malware", FilterType.EQ, argToList(args.get("is_scanned_by_malware")))
+    filter_builder.add_field(
+        "is_scanned_by_malware",
+        FilterType.EQ,
+        argToList(args.get("is_scanned_by_malware")),
+    )
     filter_builder.add_field("is_scanned_by_cicd", FilterType.EQ, argToList(args.get("is_scanned_by_cicd")))
     filter_builder.add_field("last_scan_status", FilterType.EQ, argToList(args.get("last_scan_status")))
     filter_builder.add_field("asset_type", FilterType.EQ, argToList(args.get("asset_type")))
@@ -1425,7 +2134,12 @@ def get_asset_coverage_command(client: Client, args: dict):
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
 
-    readable_output = tableToMarkdown("ASPM Coverage", data, headerTransform=string_to_table_header, sort_headers=False)
+    readable_output = tableToMarkdown(
+        "ASPM Coverage",
+        data,
+        headerTransform=string_to_table_header,
+        sort_headers=False,
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Asset",
@@ -1786,14 +2500,25 @@ def create_policy_build_triggers(args: dict) -> dict:
     cicd_enabled = cicd_report_issue or cicd_block_cicd or cicd_report_cicd or bool(cicd_override)
 
     triggers = {
-        "periodic": {"isEnabled": periodic_enabled, "actions": {"reportIssue": periodic_report_issue}},
+        "periodic": {
+            "isEnabled": periodic_enabled,
+            "actions": {"reportIssue": periodic_report_issue},
+        },
         "pr": {
             "isEnabled": pr_enabled,
-            "actions": {"reportIssue": pr_report_issue, "blockPr": pr_block_pr, "reportPrComment": pr_report_comment},
+            "actions": {
+                "reportIssue": pr_report_issue,
+                "blockPr": pr_block_pr,
+                "reportPrComment": pr_report_comment,
+            },
         },
         "cicd": {
             "isEnabled": cicd_enabled,
-            "actions": {"reportIssue": cicd_report_issue, "blockCicd": cicd_block_cicd, "reportCicd": cicd_report_cicd},
+            "actions": {
+                "reportIssue": cicd_report_issue,
+                "blockCicd": cicd_block_cicd,
+                "reportCicd": cicd_report_cicd,
+            },
         },
     }
 
@@ -1832,14 +2557,36 @@ def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilde
     if not tables_filters:
         raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
 
-    filter_builder.add_field("cas_issues_cvss_score", FilterType.GTE, arg_to_float(args.get("cvss_score_gte")))
-    filter_builder.add_field("cas_issues_epss_score", FilterType.GTE, arg_to_float(args.get("epss_score_gte")))
+    filter_builder.add_field(
+        "cas_issues_cvss_score",
+        FilterType.GTE,
+        arg_to_float(args.get("cvss_score_gte")),
+    )
+    filter_builder.add_field(
+        "cas_issues_epss_score",
+        FilterType.GTE,
+        arg_to_float(args.get("epss_score_gte")),
+    )
     filter_builder.add_field("cas_issues_is_kev", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
-    filter_builder.add_field("cas_sla_status", FilterType.EQ, argToList(args.get("sla")), AppsecIssues.SLA_MAPPING)
-    filter_builder.add_field("cas_issues_is_fixable", FilterType.EQ, arg_to_bool_or_none(args.get("automated_fix_available")))
+    filter_builder.add_field(
+        "cas_sla_status",
+        FilterType.EQ,
+        argToList(args.get("sla")),
+        AppsecIssues.SLA_MAPPING,
+    )
+    filter_builder.add_field(
+        "cas_issues_is_fixable",
+        FilterType.EQ,
+        arg_to_bool_or_none(args.get("automated_fix_available")),
+    )
     filter_builder.add_field("cas_issues_validation", FilterType.EQ, argToList(args.get("validation")))
     filter_builder.add_field("urgency", FilterType.EQ, argToList(args.get("urgency")))
-    filter_builder.add_field("severity", FilterType.EQ, argToList(args.get("severity")), AppsecIssues.SEVERITY_MAPPINGS)
+    filter_builder.add_field(
+        "severity",
+        FilterType.EQ,
+        argToList(args.get("severity")),
+        AppsecIssues.SEVERITY_MAPPINGS,
+    )
     filter_builder.add_field("internal_id", FilterType.CONTAINS, argToList(args.get("issue_id")))
     filter_builder.add_field("alert_name", FilterType.CONTAINS, argToList(args.get("issue_name")))
     filter_builder.add_field("cas_issues_asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
@@ -1883,13 +2630,19 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
 
     filtered_output_keys: dict[str, dict] = {
         "internal_id": {"path": ["internal_id"]},
-        "severity": {"path": ["severity"], "mapper": AppsecIssues.SEVERITY_OUTPUT_MAPPINGS},
+        "severity": {
+            "path": ["severity"],
+            "mapper": AppsecIssues.SEVERITY_OUTPUT_MAPPINGS,
+        },
         "issue_name": {"path": ["issue_name"]},
         "issue_source": {"path": ["issue_source"]},
         "issue_category": {"path": ["issue_category"]},
         "issue_domain": {"path": ["issue_domain"]},
         "issue_description": {"path": ["issue_description"]},
-        "status": {"path": ["status_progress"], "mapper": AppsecIssues.STATUS_OUTPUT_MAPPINGS},
+        "status": {
+            "path": ["status_progress"],
+            "mapper": AppsecIssues.STATUS_OUTPUT_MAPPINGS,
+        },
         "asset_name": {"path": ["cas_issues_asset_name"]},
         "assignee": {"path": ["assigned_to_pretty"]},
         "time_added": {"path": ["source_insert_ts"]},
@@ -1897,7 +2650,10 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
         "cvss_score": {"path": ["cas_issues_normalized_fields", "xdm.vulnerability.cvss_score"]},
         "has_kev": {"path": ["cas_issues_is_kev"]},
         "urgency": {"path": ["urgency"], "mapper": AppsecIssues.URGENCY_OUTPUT_MAPPING},
-        "sla_status": {"path": ["cas_sla_status"], "mapper": AppsecIssues.SLA_OUTPUT_MAPPING},
+        "sla_status": {
+            "path": ["cas_sla_status"],
+            "mapper": AppsecIssues.SLA_OUTPUT_MAPPING,
+        },
         "secret_validation": {"path": ["secret_validation"]},
         "is_fixable": {"path": ["cas_issues_is_fixable"]},
         "repository_name": {"path": ["cas_issues_normalized_fields", "xdm.repository.name"]},
@@ -1949,12 +2705,19 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
         except Exception as e:
             raise DemistoException(f"Failed to retrieve issues from the {table_name} table: {e}")
 
-    sorted_issues = sorted(all_appsec_issues, key=lambda issue: issue.get(sort_field, ""), reverse=(sort_order == "DESC"))
+    sorted_issues = sorted(
+        all_appsec_issues,
+        key=lambda issue: issue.get(sort_field, ""),
+        reverse=(sort_order == "DESC"),
+    )
     sorted_issues = sorted_issues[:limit]
     filtered_appsec_issues = [normalize_and_filter_appsec_issue(issue) for issue in sorted_issues]
 
     readable_output = tableToMarkdown(
-        "Application Security Issues", filtered_appsec_issues, headerTransform=string_to_table_header, sort_headers=False
+        "Application Security Issues",
+        filtered_appsec_issues,
+        headerTransform=string_to_table_header,
+        sort_headers=False,
     )
 
     return CommandResults(

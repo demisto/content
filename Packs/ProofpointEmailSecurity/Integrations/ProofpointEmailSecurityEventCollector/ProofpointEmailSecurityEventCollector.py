@@ -473,7 +473,7 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
         event_types (List[str]): The list of event types to collect.
     """
     support_multithreading()
-    demisto.info("starting long running execution.")
+    demisto.info(f"Starting long running execution. Fetching {event_types=}.")
     while True:
         try:
             with websocket_connections(
@@ -558,7 +558,7 @@ def main():  # pragma: no cover
     cluster_id = params.get("cluster_id", "")
     api_key = params.get("api_key", {}).get("password", "")
     fetch_interval = int(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
-    event_types = params.get("event_types", EVENT_TYPES)
+    event_types = argToList(params.get("event_types")) or EVENT_TYPES
     try:
         if command == "long-running-execution":
             if params.get("isFetchEvents", False):
