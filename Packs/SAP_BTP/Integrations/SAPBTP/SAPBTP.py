@@ -1,15 +1,19 @@
+import contextlib
+import os
 import tempfile
 import time
 import traceback
-from datetime import datetime, timedelta, timezone  # noqa: UP017
+from collections.abc import Generator
+from datetime import datetime, timezone  # noqa: UP017
 from enum import Enum
 from typing import Any
 
+import dateparser
 import demistomock as demisto  # noqa: F401
 import urllib3
-from CommonServerPython import *  # noqa: F401, F403
-from dateutil import parser
+from CommonServerPython import *  # noqa: F401
 
+# Disable insecure warnings
 urllib3.disable_warnings()
 
 """
@@ -114,13 +118,16 @@ def parse_date_or_use_current(date_string: str | None) -> datetime:
         return current_time
 
     demisto.debug(f"[Date Helper] Attempting to parse date string: '{date_string}'")
-    parsed_datetime = dateparser.parse(date_string, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
+    # Using strict settings for dateparser to avoid ambiguous timezone guessing
+    parsed_datetime = dateparser.parse(
+        date_string, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True, "TO_TIMEZONE": "UTC"}
+    )
 
     if not parsed_datetime:
         demisto.debug(f"[Date Helper] Failed to parse '{date_string}'. Fallback to current UTC.")
         return datetime.now(timezone.utc)  # noqa: UP017
 
-    # Ensure UTC timezone
+    # Ensure UTC timezone explicitly even if dateparser didn't set it (safety check)
     if parsed_datetime.tzinfo != timezone.utc:  # noqa: UP017
         parsed_datetime = parsed_datetime.astimezone(timezone.utc)  # noqa: UP017
 
@@ -128,30 +135,42 @@ def parse_date_or_use_current(date_string: str | None) -> datetime:
     return parsed_datetime
 
 
-def create_mtls_cert_files(certificate: str, private_key: str) -> tuple[str, str]:
-    """Create temporary certificate files for mTLS authentication."""
-    demisto.debug("[Cert Manager] Creating temporary mTLS certificate files")
+@contextlib.contextmanager
+def temporary_cert_files(certificate: str, private_key: str) -> Generator[tuple[str, str], None, None]:
+    """Context manager to create temporary certificate files for mTLS authentication.
 
+    Automatically handles cleanup of files upon exiting the context.
+    """
+    cert_path = ""
+    key_path = ""
     try:
-        # Replace escaped newlines with actual newlines
+        demisto.debug("[Cert Manager] Creating temporary mTLS certificate files")
+        # Replace escaped newlines if they exist
         cert_content = certificate.replace("\\n", "\n")
         key_content = private_key.replace("\\n", "\n")
 
         with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".pem") as cert_file:
             cert_file.write(cert_content)
-            cert_file.flush()
             cert_path = cert_file.name
 
         with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".key") as key_file:
             key_file.write(key_content)
-            key_file.flush()
             key_path = key_file.name
 
-        demisto.debug(f"[Cert Manager] Files created successfully: {cert_path}, {key_path}")
-        return cert_path, key_path
+        demisto.debug(f"[Cert Manager] Files created: {cert_path}, {key_path}")
+        yield cert_path, key_path
 
     except Exception as error:
-        raise DemistoException(f"Failed to create mTLS certificate files. Error: {str(error)}")
+        raise DemistoException(f"Failed to process mTLS certificates: {str(error)}")
+    finally:
+        # Cleanup
+        for path in [cert_path, key_path]:
+            if path and os.path.exists(path):
+                try:
+                    os.remove(path)
+                    demisto.debug(f"[Cert Manager] Removed temp file: {path}")
+                except OSError as e:
+                    demisto.debug(f"[Cert Manager] Warning: Failed to remove {path}: {str(e)}")
 
 
 def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
@@ -166,7 +185,10 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     if not token_url_param:
         raise DemistoException("Token URL is required. For Non-mTLS use 'uaa.url', for mTLS use 'uaa.certurl'.")
 
-    token_url = f"{token_url_param}/oauth/token"
+    if not token_url_param.endswith("/token"):
+        token_url = f"{token_url_param}/oauth/token"
+    else:
+        token_url = token_url_param
 
     client_id = params.get("client_id", "").strip() or None
     if not client_id:
@@ -191,6 +213,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     elif auth_type == AuthType.NON_MTLS.value:
         credentials = params.get("client_secret", {})
         client_secret = credentials.get("password")
+
         if not client_secret:
             raise DemistoException("Non-mTLS authentication requires Client Secret.")
     else:
@@ -213,39 +236,18 @@ def add_time_to_events(events: list[dict[str, Any]]) -> None:
     """Add _time field to events for XSIAM ingestion.
 
     Maps the event's 'time' field to '_time' for proper XSIAM indexing.
-    SAP BTP events have a 'time' field in format: %Y-%m-%dT%H:%M:%S
-
-    Args:
-        events: List of events to process
+    The value is copied as-is without any parsing or transformation.
     """
     for event in events:
         event_time = event.get("time")
         if event_time:
-            try:
-                # Parse the time string and format it for XSIAM
-                parsed_time = parser.parse(event_time)
-                event["_time"] = parsed_time.strftime(Config.DATE_FORMAT)
-                demisto.debug(f"[Event Time] Mapped time field: {event_time} -> _time: {event['_time']}")
-            except Exception as error:
-                demisto.debug(f"[Event Time] Failed to parse time '{event_time}': {str(error)}")
-                event["_time"] = event_time
+            event["_time"] = event_time
         else:
             demisto.debug(f"[Event Time] WARNING: Event missing 'time' field: {event.get('uuid', 'unknown')}")
 
 
 def deduplicate_events(events: list[dict[str, Any]], last_fetched_uuids: list[str]) -> list[dict[str, Any]]:
-    """Remove already-processed events based on previously fetched UUIDs.
-
-    When multiple events share the same timestamp, we need to track all UUIDs
-    from that timestamp to avoid duplicates on the next fetch.
-
-    Args:
-        events: List of events sorted by time (oldest first)
-        last_fetched_uuids: List of UUIDs that were already fetched in the previous run (empty list for first run)
-
-    Returns:
-        List of new events (excluding already-processed ones)
-    """
+    """Remove already-processed events based on previously fetched UUIDs."""
     if not events:
         demisto.debug("[Dedup] No events to process")
         return events
@@ -254,7 +256,7 @@ def deduplicate_events(events: list[dict[str, Any]], last_fetched_uuids: list[st
         demisto.debug("[Dedup] No deduplication needed (first run - no previous UUIDs)")
         return events
 
-    demisto.debug(f"[Dedup] Starting deduplication. Total events: {len(events)}, Last fetched UUIDs: {len(last_fetched_uuids)}")
+    demisto.debug(f"[Dedup] Checking {len(events)} events against {len(last_fetched_uuids)} previously fetched UUIDs")
 
     # Convert to set for O(1) lookup
     fetched_uuids_set = set(last_fetched_uuids)
@@ -263,7 +265,10 @@ def deduplicate_events(events: list[dict[str, Any]], last_fetched_uuids: list[st
     new_events = [event for event in events if event.get("uuid") not in fetched_uuids_set]
 
     skipped_count = len(events) - len(new_events)
-    demisto.debug(f"[Dedup] Skipped {skipped_count} already-processed events, {len(new_events)} new events remain")
+    if skipped_count > 0:
+        demisto.debug(f"[Dedup] Skipped {skipped_count} duplicates. {len(new_events)} new events remain.")
+    else:
+        demisto.debug("[Dedup] No duplicates found.")
 
     return new_events
 
@@ -308,10 +313,9 @@ class Client(BaseClient):
         # Check if cached token is valid
         if cached_token and cached_valid_until:
             try:
-                valid_until_timestamp = int(cached_valid_until)
+                valid_until_timestamp = int(float(cached_valid_until))
                 if current_timestamp < valid_until_timestamp:
-                    time_left = valid_until_timestamp - current_timestamp
-                    demisto.debug(f"[Token Cache] Hit! Valid for another {time_left}s")
+                    demisto.debug("[Token Cache] Hit! Token is still valid.")
                     return cached_token
                 demisto.debug("[Token Cache] Miss. Token expired.")
             except (ValueError, TypeError):
@@ -350,19 +354,12 @@ class Client(BaseClient):
         new_context = {ContextKeys.ACCESS_TOKEN.value: access_token, ContextKeys.VALID_UNTIL.value: str(token_valid_until)}
         set_integration_context(new_context)
 
-        demisto.debug("[Token Request] Token stored securely in integration context.")
         return access_token
 
     def http_request(
         self, method: str, url_suffix: str, params: dict[str, Any] | None = None, return_full_response: bool = False
     ) -> Any:
-        """Execute HTTP request with authentication and detailed logging.
-
-        Implements proper error handling:
-        - 401/403: Authentication errors (logged and raised)
-        - 429: Rate limiting (exponential backoff via BaseClient)
-        - 5xx: Server errors (exponential backoff via BaseClient)
-        """
+        """Execute HTTP request with authentication and detailed logging."""
         access_token = self._get_access_token()
         auth_headers = {APIKeys.HEADER_AUTH.value: f"Bearer {access_token}"}
 
@@ -383,7 +380,7 @@ class Client(BaseClient):
             error_msg = str(error)
             if "401" in error_msg or "403" in error_msg:
                 demisto.error(f"[HTTP Error] Authentication failed: {error_msg}")
-                raise DemistoException(f"Authentication error: {error_msg}")
+                raise DemistoException(f"Authentication error: {error_msg}. Please check credentials/certificates.")
             raise
 
         status_code = http_response.status_code
@@ -396,7 +393,7 @@ class Client(BaseClient):
         try:
             response_json = http_response.json()
         except ValueError:
-            demisto.debug(f"[HTTP Error] Failed to parse JSON. Raw body preview: {http_response.text[:200]}")
+            demisto.debug(f"[HTTP Error] Failed to parse JSON. Status: {status_code}, Body: {http_response.text[:200]}")
             raise DemistoException(f"API returned non-JSON response with status {status_code}")
 
         if return_full_response:
@@ -405,27 +402,12 @@ class Client(BaseClient):
         return response_json
 
     def _parse_events_from_response(self, response_body: Any) -> list[dict[str, Any]]:
-        """Defensively parse events from a response body.
-
-        This handles several known SAP BTP response formats:
-        1. A list of events (standard).
-        2. A dictionary with a "results" key.
-        3. A nested dictionary like {"d": {"results": [...]}} (OData format).
-        4. A single event dictionary returned directly.
-
-        Args:
-            response_body: The raw response body from the API.
-
-        Returns:
-            A list of event dictionaries.
-        """
-        demisto.debug("[Response Parser] Parsing response body.")
-
+        """Defensively parse events from a response body."""
         if isinstance(response_body, list):
-            demisto.debug(f"[Response Parser] Direct list format detected with {len(response_body)} events")
             return response_body
 
         # Handle dictionary-based responses
+        # SAP BTP Audit log often uses "d" wrapper for OData
         events_list = response_body.get("results") or response_body.get("d", {}).get("results") or []
 
         # Safety net: Single object response (Edge case)
@@ -436,7 +418,7 @@ class Client(BaseClient):
         return events_list
 
     def get_audit_log_events(
-        self, created_after: str, created_before: str | None = None, limit: int = 0, pagination_handle: str | None = None
+        self, created_after: str, created_before: str | None = None, pagination_handle: str | None = None
     ) -> tuple[list[dict[str, Any]], str | None]:
         """Retrieve a single page of audit log events from SAP BTP.
 
@@ -455,7 +437,7 @@ class Client(BaseClient):
         request_params: dict[str, Any] = {}
 
         if pagination_handle:
-            demisto.debug("[API Fetch] Using pagination handle for next page...")
+            demisto.debug("[API Fetch] Using pagination handle...")
             request_params[APIKeys.HANDLE.value] = pagination_handle
         else:
             demisto.debug(f"[API Fetch] Initial Request | From: {created_after} | To: {created_before or 'Now'}")
@@ -470,10 +452,7 @@ class Client(BaseClient):
         events_list = self._parse_events_from_response(response_body)
         next_page_handle = self._extract_pagination_handle(response_headers)
 
-        demisto.debug(
-            f"[API Fetch] Finished fetching page. Found {len(events_list)} events. "
-            f"Next handle available: {next_page_handle is not None}"
-        )
+        demisto.debug(f"[API Fetch] Page fetched. Count: {len(events_list)}. Next handle exists: {bool(next_page_handle)}")
 
         return events_list, next_page_handle
 
@@ -487,7 +466,7 @@ class Client(BaseClient):
             return None
 
         if "handle=" not in paging_header_value:
-            demisto.debug(f"[Pagination] Header present but 'handle=' not found: {paging_header_value}")
+            demisto.debug(f"[Pagination] Header present but 'handle=' missing: {paging_header_value}")
             demisto.debug("[Pagination] No handle extracted. This is the last page.")
             return None
 
@@ -511,7 +490,6 @@ class Client(BaseClient):
 def test_module(client: Client) -> str:
     """Test API connectivity by fetching 1 minute of data."""
     demisto.debug("[Test Module] Starting...")
-
     try:
         utc_now = datetime.now(timezone.utc)  # noqa: UP017
         test_time = (utc_now - timedelta(minutes=Config.TEST_MODULE_LOOKBACK_MINUTES)).strftime(Config.DATE_FORMAT)
@@ -525,7 +503,6 @@ def test_module(client: Client) -> str:
     except Exception as error:
         error_msg = str(error)
         demisto.debug(f"[Test Module] Failed: {error_msg}")
-
         if "401" in error_msg or "403" in error_msg:
             return "Authorization Error: Verify Client ID, Secret, or Certificates."
         raise
@@ -534,12 +511,9 @@ def test_module(client: Client) -> str:
 def fetch_events_with_pagination(
     client: Client, created_after: str, created_before: str | None = None, max_events: int = Config.DEFAULT_LIMIT
 ) -> list[dict[str, Any]]:
-    """Fetch, Sort (Oldest First), and Slice events.
+    """Fetch events with pagination support.
 
-    Implements "Fetch-Sort-Slice" strategy:
-    - Fetch pages until we have at least 'max_events' raw items.
-    - Sort raw list by time (Oldest -> Newest).
-    - Slice to return exactly 'max_events' (the oldest ones).
+    Fetches pages until the limit is reached or no more pages exist.
     """
     events: list[dict[str, Any]] = []
     pagination_handle: str | None = None
@@ -549,7 +523,6 @@ def fetch_events_with_pagination(
 
     while len(events) < max_events:
         page_count += 1
-
         page_events, pagination_handle = client.get_audit_log_events(
             created_after=created_after, created_before=created_before, pagination_handle=pagination_handle
         )
@@ -565,7 +538,7 @@ def fetch_events_with_pagination(
             demisto.debug("[Pagination Loop] No next page handle. Stopping.")
             break
 
-        # Stop fetching if we have enough
+        # Safety break to prevent infinite loops in case of weird API behavior
         if len(events) >= max_events:
             demisto.debug(f"[Pagination Loop] Threshold reached ({len(events)} >= {max_events}). Stopping fetch.")
             break
@@ -574,25 +547,16 @@ def fetch_events_with_pagination(
         demisto.debug("[Pagination Result] No events found.")
         return []
 
-    # Sort events by time (Oldest First)
+    # Sort events by time (Oldest -> Newest) because SAP usually returns oldest first
     demisto.debug(f"[Pagination Process] Sorting {len(events)} raw events by time...")
     events.sort(key=lambda x: x.get("time", ""))
 
-    # Slice to limit
+    # Slice to limit (Keep the Oldest X events)
     if len(events) > max_events:
-        discarded_count = len(events) - max_events
-        demisto.debug(f"[Pagination Slice] Cutting list to {max_events}. Discarding {discarded_count} newer events.")
-        final_events = events[:max_events]
-    else:
-        demisto.debug("[Pagination Slice] Returning all fetched events (count is under limit).")
-        final_events = events
+        demisto.debug(f"[Pagination Loop] Slicing {len(events)} events to limit {max_events}")
+        events = events[:max_events]
 
-    # Log results
-    first_time = final_events[0].get("time", "N/A")
-    last_time = final_events[-1].get("time", "N/A")
-    demisto.debug(f"[Pagination Final] Returning {len(final_events)} events. Range: {first_time} to {last_time}")
-
-    return final_events
+    return events
 
 
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
@@ -628,70 +592,57 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults |
 
 
 def fetch_events_command(client: Client) -> None:
-    """Scheduled command to fetch events with deduplication.
-
-    Implements state protection: Only updates set_last_run on successful completion.
-    If an error occurs, the state is not updated, ensuring the failed window is retried.
-
-    Deduplication strategy: Stores all UUIDs from the last fetched timestamp to prevent
-    duplicate ingestion when multiple events share the same timestamp.
-    """
-    demisto.debug("[Command] fetch-events triggered")
-
+    """Scheduled command to fetch events."""
     params = demisto.params()
     max_events_to_fetch = int(params.get("max_fetch", DefaultValues.MAX_FETCH.value))
 
     last_run = demisto.getLastRun()
     last_fetch_timestamp = last_run.get("last_fetch")
-    last_fetched_uuids = last_run.get("last_fetched_uuids") or []
+    raw_uuids = last_run.get("last_fetched_uuids")
+    last_fetched_uuids: list[str] = raw_uuids if isinstance(raw_uuids, list) else []
 
     if last_fetch_timestamp:
         time_input = last_fetch_timestamp
         demisto.debug(
-            f"[Fetch Logic] Continuing from Last Run. Fetching from: {time_input}, Last fetched UUIDs: {len(last_fetched_uuids)}"
+            f"[Fetch] Continuing from Last Run. Fetching from: {time_input}. Prev UUID count: {len(last_fetched_uuids)}"
         )
     else:
         time_input = DefaultValues.FROM_TIME.value
-        demisto.debug("[Fetch Logic] First Run - starting from current time (no historical data)")
+        demisto.debug("[Fetch] First Run - starting from default time")
 
     created_after = get_formatted_utc_time(time_input)
 
     # Fetch events
     events = fetch_events_with_pagination(client, created_after, None, max_events_to_fetch)
 
-    if events:
-        demisto.debug(f"[Fetch] Fetched {len(events)} events from API")
+    if not events:
+        demisto.debug("[Fetch] No events found.")
+        return
 
-        # Deduplicate events based on last fetched UUIDs
-        new_events = deduplicate_events(events, last_fetched_uuids)
+    # Deduplicate
+    new_events = deduplicate_events(events, last_fetched_uuids)
 
-        if new_events:
-            add_time_to_events(new_events)
-            send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
+    if new_events:
+        add_time_to_events(new_events)
+        send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
+        demisto.debug(f"[Fetch] Pushed {len(new_events)} events to XSIAM")
 
-            # State Protection: Only update Last Run after successful send
-            # Store the timestamp and ALL UUIDs from events with that timestamp
-            last_event = events[-1]
-            new_last_run_time = last_event.get("time")
+        # Update Last Run
+        last_event = events[-1]
+        new_last_run_time = last_event.get("time")
 
-            if new_last_run_time:
-                # Collect all UUIDs that share the last timestamp
-                uuids_at_last_timestamp = [
-                    event.get("uuid") for event in events if event.get("time") == new_last_run_time and event.get("uuid")
-                ]
+        if new_last_run_time:
+            # Collect UUIDs for the new high-water mark timestamp
+            uuids_at_last_timestamp = [
+                event.get("uuid") for event in events if event.get("time") == new_last_run_time and event.get("uuid")
+            ]
 
-                demisto.setLastRun({"last_fetch": new_last_run_time, "last_fetched_uuids": uuids_at_last_timestamp})
-                demisto.debug(
-                    f"[Last Run] Updated to: {new_last_run_time}, Stored {len(uuids_at_last_timestamp)} UUIDs from last timestamp"
-                )
-            else:
-                demisto.debug("[Last Run] WARNING: Last event missing 'time' field. Not updating.")
-
-            demisto.debug(f"[Command] Sent {len(new_events)} new events to XSIAM")
+            demisto.setLastRun({"last_fetch": new_last_run_time, "last_fetched_uuids": uuids_at_last_timestamp})
+            demisto.debug(f"[Fetch] State updated. New HWM: {new_last_run_time}")
         else:
-            demisto.debug("[Command] All fetched events were duplicates, nothing new to send.")
+            demisto.debug("[Fetch] Warning: Last event missing time. State not updated.")
     else:
-        demisto.debug("[Command] No events found in the specified time range.")
+        demisto.debug("[Fetch] All events were duplicates.")
 
 
 # endregion
@@ -711,11 +662,8 @@ COMMAND_MAP: dict[str, Any] = {
 def main() -> None:
     """Main entry point for SAP BTP integration."""
     demisto.debug(f"{INTEGRATION_NAME} integration started")
-
     command = demisto.command()
-    demisto.debug(f"[Main] Command: {command}")
 
-    cert_data = None
     try:
         if command not in COMMAND_MAP:
             raise DemistoException(f"Command '{command}' is not implemented")
@@ -723,52 +671,44 @@ def main() -> None:
         config = parse_integration_params(demisto.params())
 
         if config["auth_type"] == AuthType.MTLS.value:
-            cert_data = create_mtls_cert_files(config["certificate"], config["private_key"])
-
-        client = Client(
-            base_url=config["base_url"],
-            token_url=config["token_url"],
-            client_id=config["client_id"],
-            client_secret=config["client_secret"],
-            verify=config["verify"],
-            proxy=config["proxy"],
-            auth_type=config["auth_type"],
-            cert_data=cert_data,
-        )
-
-        command_func = COMMAND_MAP[command]
-
-        if command == "test-module":
-            result = command_func(client)
-            return_results(result)
-        elif command == "fetch-events":
-            command_func(client)
+            cert_context = temporary_cert_files(config["certificate"], config["private_key"])
         else:
-            result = command_func(client, demisto.args())
-            return_results(result)
+            # Create a dummy context that yields None if not using mTLS
+            @contextlib.contextmanager
+            def no_op_context():
+                yield None
+
+            cert_context = no_op_context()
+
+        with cert_context as cert_data:
+            client = Client(
+                base_url=config["base_url"],
+                token_url=config["token_url"],
+                client_id=config["client_id"],
+                client_secret=config["client_secret"],
+                verify=config["verify"],
+                proxy=config["proxy"],
+                auth_type=config["auth_type"],
+                cert_data=cert_data,
+            )
+
+            command_func = COMMAND_MAP[command]
+
+            if command == "test-module":
+                result = command_func(client)
+                return_results(result)
+            elif command == "fetch-events":
+                command_func(client)
+            else:
+                result = command_func(client, demisto.args())
+                return_results(result)
 
     except Exception as error:
-        error_msg = f"Failed to execute {command=}. Error: {str(error)}"
-        demisto.debug(f"[Critical Error] {error_msg}\nTrace: {traceback.format_exc()}")
+        error_msg = f"Failed to execute {command}. Error: {str(error)}"
+        demisto.error(f"{error_msg}\n{traceback.format_exc()}")
         return_error(error_msg)
 
-    finally:
-        # Clean up temporary mTLS certificate files
-        if cert_data:
-            import os
-
-            cert_path, key_path = cert_data
-            try:
-                if os.path.exists(cert_path):
-                    os.remove(cert_path)
-                    demisto.debug(f"[Cleanup] Removed temporary certificate file: {cert_path}")
-                if os.path.exists(key_path):
-                    os.remove(key_path)
-                    demisto.debug(f"[Cleanup] Removed temporary key file: {key_path}")
-            except Exception as cleanup_error:
-                demisto.debug(f"[Cleanup] Warning: Failed to remove temporary files: {str(cleanup_error)}")
-
-        demisto.debug(f"{INTEGRATION_NAME} integration finished")
+    demisto.debug(f"{INTEGRATION_NAME} integration finished")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

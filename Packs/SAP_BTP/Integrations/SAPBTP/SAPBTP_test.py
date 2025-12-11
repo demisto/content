@@ -16,7 +16,7 @@ from SAPBTP import (  # noqa: E402
     Config,
     ContextKeys,
     add_time_to_events,
-    create_mtls_cert_files,
+    temporary_cert_files,
     fetch_events_command,
     fetch_events_with_pagination,
     get_events_command,
@@ -172,24 +172,29 @@ def test_parse_date_or_use_current_invalid_returns_current():
     "should_fail,mock_exception,expected_error",
     [
         (False, None, None),  # Success case
-        (True, Exception("File creation failed"), "Failed to create mTLS certificate files"),  # Failure case
+        (True, Exception("File creation failed"), "Failed to process mTLS certificates"),  # Failure case
     ],
 )
-def test_create_mtls_cert_files(mocker, should_fail, mock_exception, expected_error):
-    """Tests create_mtls_cert_files creates temporary files or raises DemistoException on failure."""
+def test_temporary_cert_files(mocker, should_fail, mock_exception, expected_error):
+    """Tests temporary_cert_files context manager creates and cleans up temporary files."""
     if should_fail:
         mocker.patch("tempfile.NamedTemporaryFile", side_effect=mock_exception)
-        with pytest.raises(DemistoException, match=expected_error):
-            create_mtls_cert_files(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
+        with pytest.raises(DemistoException, match=expected_error), temporary_cert_files(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY):
+            pass
     else:
-        cert_path, key_path = create_mtls_cert_files(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
-        assert os.path.exists(cert_path)
-        assert os.path.exists(key_path)
-        assert cert_path.endswith(".pem")
-        assert key_path.endswith(".key")
-        # Cleanup
-        os.remove(cert_path)
-        os.remove(key_path)
+        with temporary_cert_files(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY) as (cert_path, key_path):
+            # Files should exist inside context
+            assert os.path.exists(cert_path)
+            assert os.path.exists(key_path)
+            assert cert_path.endswith(".pem")
+            assert key_path.endswith(".key")
+            # Store paths for verification after context
+            stored_cert_path = cert_path
+            stored_key_path = key_path
+
+        # Files should be cleaned up after context exits
+        assert not os.path.exists(stored_cert_path)
+        assert not os.path.exists(stored_key_path)
 
 
 # ========================================
@@ -747,7 +752,7 @@ def test_get_audit_log_events_scenarios(
     mocker.patch.object(client_non_mtls, "http_request", return_value=(response_body, response_headers))
 
     events, next_handle = client_non_mtls.get_audit_log_events(
-        created_after="2024-01-01T00:00:00Z", limit=100, pagination_handle=pagination_handle
+        created_after="2024-01-01T00:00:00Z", pagination_handle=pagination_handle
     )
 
     assert len(events) == expected_count
@@ -882,9 +887,7 @@ def test_get_audit_log_events_created_before_in_params(mocker, client_non_mtls, 
     mock_response_headers: dict[str, str] = {}
     mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
 
-    events, _ = client_non_mtls.get_audit_log_events(
-        created_after="2024-01-01T00:00:00Z", created_before=created_before, limit=100
-    )
+    events, _ = client_non_mtls.get_audit_log_events(created_after="2024-01-01T00:00:00Z", created_before=created_before)
 
     assert len(events) == 1
     call_args = client_non_mtls.http_request.call_args
@@ -1008,18 +1011,18 @@ def test_fetch_events_with_pagination_discards_newer_events(mocker, client_non_m
 @pytest.mark.parametrize(
     "input_events,expected_results",
     [
-        # Success case with Z suffix
+        # Success case with Z suffix - copied as-is
         (
             [
                 {"uuid": "1", "time": "2024-01-01T00:00:00Z", "user": "test@example.com"},
                 {"uuid": "2", "time": "2024-01-02T12:30:45Z", "action": "login"},
             ],
             [
-                {"uuid": "1", "time": "2024-01-01T00:00:00Z", "user": "test@example.com", "_time": "2024-01-01T00:00:00"},
-                {"uuid": "2", "time": "2024-01-02T12:30:45Z", "action": "login", "_time": "2024-01-02T12:30:45"},
+                {"uuid": "1", "time": "2024-01-01T00:00:00Z", "user": "test@example.com", "_time": "2024-01-01T00:00:00Z"},
+                {"uuid": "2", "time": "2024-01-02T12:30:45Z", "action": "login", "_time": "2024-01-02T12:30:45Z"},
             ],
         ),
-        # SAP BTP format (no Z suffix)
+        # SAP BTP format (no Z suffix) - copied as-is
         (
             [
                 {"uuid": "1", "time": "2024-01-01T00:00:00", "user": "test@example.com"},
@@ -1041,17 +1044,17 @@ def test_fetch_events_with_pagination_discards_newer_events(mocker, client_non_m
                 {"uuid": "2", "action": "login"},
             ],
         ),
-        # Invalid time format (fallback to original)
+        # Any time format - copied as-is
         (
             [{"uuid": "1", "time": "invalid-time-format", "user": "test@example.com"}],
             [{"uuid": "1", "time": "invalid-time-format", "user": "test@example.com", "_time": "invalid-time-format"}],
         ),
         # Empty list
         ([], []),
-        # Time with microseconds
+        # Time with microseconds - copied as-is
         (
             [{"uuid": "1", "time": "2024-01-01T00:00:00.123456Z"}],
-            [{"uuid": "1", "time": "2024-01-01T00:00:00.123456Z", "_time": "2024-01-01T00:00:00"}],
+            [{"uuid": "1", "time": "2024-01-01T00:00:00.123456Z", "_time": "2024-01-01T00:00:00.123456Z"}],
         ),
         # Multiple events with mixed scenarios
         (
@@ -1060,12 +1063,12 @@ def test_fetch_events_with_pagination_discards_newer_events(mocker, client_non_m
                 {"uuid": "2", "time": "2024-01-02T00:00:00Z"},
                 {"uuid": "3", "time": "2024-01-03T00:00:00Z"},
                 {"uuid": "4"},  # Missing time
-                {"uuid": "5", "time": "invalid"},  # Invalid time
+                {"uuid": "5", "time": "invalid"},  # Any format
             ],
             [
-                {"uuid": "1", "time": "2024-01-01T00:00:00Z", "_time": "2024-01-01T00:00:00"},
-                {"uuid": "2", "time": "2024-01-02T00:00:00Z", "_time": "2024-01-02T00:00:00"},
-                {"uuid": "3", "time": "2024-01-03T00:00:00Z", "_time": "2024-01-03T00:00:00"},
+                {"uuid": "1", "time": "2024-01-01T00:00:00Z", "_time": "2024-01-01T00:00:00Z"},
+                {"uuid": "2", "time": "2024-01-02T00:00:00Z", "_time": "2024-01-02T00:00:00Z"},
+                {"uuid": "3", "time": "2024-01-03T00:00:00Z", "_time": "2024-01-03T00:00:00Z"},
                 {"uuid": "4"},
                 {"uuid": "5", "time": "invalid", "_time": "invalid"},
             ],
@@ -1073,7 +1076,7 @@ def test_fetch_events_with_pagination_discards_newer_events(mocker, client_non_m
     ],
 )
 def test_add_time_to_events(input_events, expected_results):
-    """Tests add_time_to_events handles various scenarios correctly."""
+    """Tests add_time_to_events copies time field to _time as-is."""
     add_time_to_events(input_events)
     assert input_events == expected_results
 
@@ -1098,8 +1101,8 @@ def test_add_time_to_events_preserves_all_fields():
     assert events[0]["user"] == "test@example.com"
     assert events[0]["action"] == "login"
     assert events[0]["ip"] == "192.168.1.1"
-    # _time should be added
-    assert events[0]["_time"] == "2024-01-01T00:00:00"
+    # _time should be added as-is
+    assert events[0]["_time"] == "2024-01-01T00:00:00Z"
 
 
 # ========================================
@@ -1513,29 +1516,30 @@ def test_fetch_events_command_state_protection_on_error(mocker, client_non_mtls)
 # ========================================
 
 
-def test_main_invalid_command_fail(mocker):
+def test_main_invalid_command_fail(mocker, capfd):
     """Tests main() raises error for invalid command."""
-    mocker.patch.object(demisto, "command", return_value="invalid-command")
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": SERVER_URL,
-            "token_url": AUTH_SERVER_URL,
-            "client_id": MOCK_CLIENT_ID,
-            "client_secret": {"password": MOCK_CLIENT_SECRET},
-        },
-    )
-    mocker.patch.object(demisto, "args", return_value={})
+    with capfd.disabled():
+        mocker.patch.object(demisto, "command", return_value="invalid-command")
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": SERVER_URL,
+                "token_url": AUTH_SERVER_URL,
+                "client_id": MOCK_CLIENT_ID,
+                "client_secret": {"password": MOCK_CLIENT_SECRET},
+            },
+        )
+        mocker.patch.object(demisto, "args", return_value={})
 
-    mock_return_error = mocker.patch("SAPBTP.return_error")
+        mock_return_error = mocker.patch("SAPBTP.return_error")
 
-    SAPBTP.main()
+        SAPBTP.main()
 
-    mock_return_error.assert_called_once()
-    error_call_args = mock_return_error.call_args[0][0]
-    assert "invalid-command" in error_call_args
-    assert "not implemented" in error_call_args.lower()
+        mock_return_error.assert_called_once()
+        error_call_args = mock_return_error.call_args[0][0]
+        assert "invalid-command" in error_call_args
+        assert "not implemented" in error_call_args.lower()
 
 
 def test_main_test_module_success(mocker):
@@ -1609,30 +1613,31 @@ def test_main_fetch_events_success(mocker):
     # Should complete without error
 
 
-def test_main_command_execution_error(mocker):
+def test_main_command_execution_error(mocker, capfd):
     """Tests main() handles command execution errors gracefully."""
-    mocker.patch.object(demisto, "command", return_value="sap-btp-get-events")
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": SERVER_URL,
-            "token_url": AUTH_SERVER_URL,
-            "client_id": MOCK_CLIENT_ID,
-            "client_secret": {"password": MOCK_CLIENT_SECRET},
-            "auth_type": AuthType.NON_MTLS.value,
-        },
-    )
-    mocker.patch.object(demisto, "args", return_value={})
-    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", side_effect=Exception("API Error"))
+    with capfd.disabled():
+        mocker.patch.object(demisto, "command", return_value="sap-btp-get-events")
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": SERVER_URL,
+                "token_url": AUTH_SERVER_URL,
+                "client_id": MOCK_CLIENT_ID,
+                "client_secret": {"password": MOCK_CLIENT_SECRET},
+                "auth_type": AuthType.NON_MTLS.value,
+            },
+        )
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(SAPBTP, "fetch_events_with_pagination", side_effect=Exception("API Error"))
 
-    mock_return_error = mocker.patch("SAPBTP.return_error")
+        mock_return_error = mocker.patch("SAPBTP.return_error")
 
-    SAPBTP.main()
+        SAPBTP.main()
 
-    mock_return_error.assert_called_once()
-    error_message = mock_return_error.call_args[0][0]
-    assert "sap-btp-get-events" in error_message.lower()
+        mock_return_error.assert_called_once()
+        error_message = mock_return_error.call_args[0][0]
+        assert "sap-btp-get-events" in error_message.lower()
 
 
 @pytest.mark.parametrize(
@@ -1651,7 +1656,7 @@ def test_command_map_completeness(command_name, expected_in_map):
 
 
 def test_main_with_mtls_cert_creation(mocker):
-    """Tests main() creates mTLS certificates when auth_type is mTLS."""
+    """Tests main() uses temporary_cert_files context manager when auth_type is mTLS."""
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(
         demisto,
@@ -1668,12 +1673,14 @@ def test_main_with_mtls_cert_creation(mocker):
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
 
-    mock_create_cert = mocker.patch("SAPBTP.create_mtls_cert_files", return_value=("/tmp/cert.pem", "/tmp/key.pem"))
+    # Mock the context manager
+    mock_cert_context = mocker.patch("SAPBTP.temporary_cert_files")
+    mock_cert_context.return_value.__enter__.return_value = ("/tmp/cert.pem", "/tmp/key.pem")
     mock_return_results = mocker.patch("SAPBTP.return_results")
 
     SAPBTP.main()
 
-    mock_create_cert.assert_called_once_with(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
+    mock_cert_context.assert_called_once_with(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
     mock_return_results.assert_called_once_with("ok")
 
 
@@ -1695,7 +1702,9 @@ def test_main_mtls_client_receives_cert_data(mocker):
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
 
-    mock_create_cert = mocker.patch("SAPBTP.create_mtls_cert_files", return_value=("/tmp/test_cert.pem", "/tmp/test_key.pem"))
+    # Mock the context manager
+    mock_cert_context = mocker.patch("SAPBTP.temporary_cert_files")
+    mock_cert_context.return_value.__enter__.return_value = ("/tmp/test_cert.pem", "/tmp/test_key.pem")
 
     # Spy on Client initialization
     original_client = SAPBTP.Client
@@ -1711,8 +1720,8 @@ def test_main_mtls_client_receives_cert_data(mocker):
 
     SAPBTP.main()
 
-    # Verify cert files were created
-    mock_create_cert.assert_called_once_with(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
+    # Verify cert context manager was used
+    mock_cert_context.assert_called_once_with(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
 
     # Verify Client was initialized with cert_data
     assert len(client_instances) == 1
@@ -1761,59 +1770,24 @@ def test_main_non_mtls_client_no_cert_data(mocker):
     assert client.client_secret == MOCK_CLIENT_SECRET
 
 
-def test_main_parse_params_error(mocker):
+def test_main_parse_params_error(mocker, capfd):
     """Tests main() handles parameter parsing errors."""
-    mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(demisto, "params", return_value={})  # Missing required params
-    mocker.patch.object(demisto, "args", return_value={})
+    with capfd.disabled():
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(demisto, "params", return_value={})  # Missing required params
+        mocker.patch.object(demisto, "args", return_value={})
 
-    mock_return_error = mocker.patch("SAPBTP.return_error")
+        mock_return_error = mocker.patch("SAPBTP.return_error")
 
-    SAPBTP.main()
+        SAPBTP.main()
 
-    mock_return_error.assert_called_once()
-    error_message = mock_return_error.call_args[0][0]
-    assert "API URL is required" in error_message
-
-
-def test_main_cleans_up_mtls_cert_files(mocker):
-    """Tests main() cleans up temporary mTLS certificate files in finally block."""
-    mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": SERVER_URL,
-            "token_url": AUTH_SERVER_URL,
-            "client_id": MOCK_CLIENT_ID,
-            "certificate": MOCK_CERTIFICATE,
-            "private_key": MOCK_PRIVATE_KEY,
-            "auth_type": AuthType.MTLS.value,
-        },
-    )
-    mocker.patch.object(demisto, "args", return_value={})
-    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
-
-    # Mock cert file creation
-    mock_cert_path = "/tmp/test_cert_cleanup.pem"
-    mock_key_path = "/tmp/test_key_cleanup.key"
-    mocker.patch("SAPBTP.create_mtls_cert_files", return_value=(mock_cert_path, mock_key_path))
-
-    # Mock os.path.exists and os.remove
-    mocker.patch("os.path.exists", return_value=True)
-    mock_remove = mocker.patch("os.remove")
-    mocker.patch("SAPBTP.return_results")
-
-    SAPBTP.main()
-
-    # Verify cleanup was called for both files
-    assert mock_remove.call_count == 2
-    mock_remove.assert_any_call(mock_cert_path)
-    mock_remove.assert_any_call(mock_key_path)
+        mock_return_error.assert_called_once()
+        error_message = mock_return_error.call_args[0][0]
+        assert "API URL is required" in error_message
 
 
-def test_main_cleanup_handles_missing_files(mocker):
-    """Tests main() cleanup handles case where files don't exist."""
+def test_main_context_manager_cleanup_on_success(mocker):
+    """Tests that context manager properly cleans up cert files on successful execution."""
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(
         demisto,
@@ -1830,48 +1804,47 @@ def test_main_cleanup_handles_missing_files(mocker):
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
 
-    mock_cert_path = "/tmp/test_cert_missing.pem"
-    mock_key_path = "/tmp/test_key_missing.key"
-    mocker.patch("SAPBTP.create_mtls_cert_files", return_value=(mock_cert_path, mock_key_path))
-
-    # Mock files don't exist
-    mocker.patch("os.path.exists", return_value=False)
-    mock_remove = mocker.patch("os.remove")
+    # Mock the context manager to verify it's used correctly
+    mock_cert_context = mocker.patch("SAPBTP.temporary_cert_files")
+    mock_cert_context.return_value.__enter__.return_value = ("/tmp/cert.pem", "/tmp/key.pem")
+    mock_cert_context.return_value.__exit__.return_value = None
     mocker.patch("SAPBTP.return_results")
 
-    # Should not raise an error
     SAPBTP.main()
 
-    # os.remove should not be called since files don't exist
-    mock_remove.assert_not_called()
+    # Verify context manager was entered and exited (cleanup happened)
+    mock_cert_context.return_value.__enter__.assert_called_once()
+    mock_cert_context.return_value.__exit__.assert_called_once()
 
 
-def test_main_cleanup_handles_removal_error(mocker):
-    """Tests main() cleanup handles errors during file removal gracefully."""
-    mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": SERVER_URL,
-            "token_url": AUTH_SERVER_URL,
-            "client_id": MOCK_CLIENT_ID,
-            "certificate": MOCK_CERTIFICATE,
-            "private_key": MOCK_PRIVATE_KEY,
-            "auth_type": AuthType.MTLS.value,
-        },
-    )
-    mocker.patch.object(demisto, "args", return_value={})
-    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
+def test_main_context_manager_cleanup_on_error(mocker, capfd):
+    """Tests that context manager cleans up cert files even when command fails."""
+    with capfd.disabled():
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": SERVER_URL,
+                "token_url": AUTH_SERVER_URL,
+                "client_id": MOCK_CLIENT_ID,
+                "certificate": MOCK_CERTIFICATE,
+                "private_key": MOCK_PRIVATE_KEY,
+                "auth_type": AuthType.MTLS.value,
+            },
+        )
+        mocker.patch.object(demisto, "args", return_value={})
+        # Simulate command failure
+        mocker.patch.object(SAPBTP, "fetch_events_with_pagination", side_effect=Exception("Command failed"))
 
-    mock_cert_path = "/tmp/test_cert_error.pem"
-    mock_key_path = "/tmp/test_key_error.key"
-    mocker.patch("SAPBTP.create_mtls_cert_files", return_value=(mock_cert_path, mock_key_path))
+        # Mock the context manager
+        mock_cert_context = mocker.patch("SAPBTP.temporary_cert_files")
+        mock_cert_context.return_value.__enter__.return_value = ("/tmp/cert.pem", "/tmp/key.pem")
+        mock_cert_context.return_value.__exit__.return_value = None
+        mocker.patch("SAPBTP.return_error")
 
-    mocker.patch("os.path.exists", return_value=True)
-    # Simulate error during removal
-    mocker.patch("os.remove", side_effect=OSError("Permission denied"))
-    mocker.patch("SAPBTP.return_results")
+        SAPBTP.main()
 
-    # Should not raise an error - cleanup errors are logged but not raised
-    SAPBTP.main()
+        # Verify context manager cleanup happened even though command failed
+        mock_cert_context.return_value.__enter__.assert_called_once()
+        mock_cert_context.return_value.__exit__.assert_called_once()
