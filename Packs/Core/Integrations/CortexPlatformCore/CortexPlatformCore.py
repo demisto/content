@@ -2639,6 +2639,27 @@ def validate_start_end_times(start_time, end_time):
             raise DemistoException("A minimum of two hours is required between the start time and the end time.")
 
 
+def transform_distributions(response):
+    """
+    Takes the full API response and replaces `distributions` dict
+    with a single flattened list while keeping everything else the same.
+    """
+    new_response = response.copy()
+    flattened = []
+
+    distributions = response.get("distributions", {})
+
+    for platform, items in distributions.items():
+        for item in items:
+            flattened.append({"platform": platform, "version": item.get("version")})
+            # new_item = item.copy()
+            # new_item["platform"] = platform
+            # flattened.append(new_item)
+
+    new_response["distributions"] = flattened
+    return new_response
+
+
 def get_endpoint_update_version_command(client, args):
     """
     Get the endpoint update version for specified endpoints.
@@ -2659,9 +2680,10 @@ def get_endpoint_update_version_command(client, args):
     request_data = {"filter_data": filter_data, "filter_type": "static"}
     demisto.debug(f"{request_data=}")
     response = client.get_endpoint_update_version(request_data)
+    flattened_response = transform_distributions(response)
     return CommandResults(
-        readable_output=tableToMarkdown("Endpoint Update Versions", response, headerTransform=string_to_table_header),
-        outputs=response,
+        readable_output=tableToMarkdown("Endpoint Update Versions", flattened_response, headerTransform=string_to_table_header),
+        outputs=flattened_response,
         outputs_prefix="Core.EndpointUpdate",
     )
 
@@ -2692,7 +2714,7 @@ def update_endpoint_version_command(client, args):
     if not group_action_id:
         summary = "Failed to update to the target versions."
     else:
-        summary = "Successfully updated to the target versions."
+        summary = f"Successfully updated to the target versions. Action ID: {group_action_id}"
 
     return CommandResults(
         readable_output=summary,

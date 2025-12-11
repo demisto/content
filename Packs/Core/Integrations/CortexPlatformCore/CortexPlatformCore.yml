@@ -2508,9 +2508,12 @@ script:
       name: core-get-endpoint-update-version
       description: Retrieves endpoint update versions for the provided endpoint ID.
       outputs:
-      - contextPath: Core.EndpointUpdate.distributions
-        description: The distributions of the endpoint update.
-        type: Dictionary
+      - contextPath: Core.EndpointUpdate.distributions.platform
+        description: The platform of the endpoint update.
+        type: String
+      - contextPath: Core.EndpointUpdate.distributions.version
+        description: The version of the endpoint update.
+        type: String
     - arguments: 
       - description: A comma-separated list of endpoint IDs.
         name: endpoint_ids
@@ -2550,7 +2553,7 @@ script:
         description: The IDs of the endpoints on which the update run.
         type: String
       - contextPath: Core.EndpointUpdate.action_id
-        description: The ID of the update action.
+        description: The ID of the update action. 0 means that the action failed.
         type: String
   runonce: false
   script: "-"
