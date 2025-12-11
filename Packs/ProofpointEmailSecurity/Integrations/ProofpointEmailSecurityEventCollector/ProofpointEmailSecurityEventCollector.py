@@ -299,9 +299,7 @@ def fetch_events(
 
     demisto.info(f"[{event_type}] Released the lock and finished recv.")
     num_events = len(events)
-    last_event_time = None
-    if events:
-        last_event_time = events[-1].get("_time")
+    last_event_time = events[-1].get("_time") if events else None
     demisto.debug(f"[{event_type}] Fetched {num_events} events with {last_event_time=}")
     demisto.debug(f"[{event_type}] Fetched events IDs: {', '.join([str(event_id) for event_id in event_ids])}.")
     if write_to_integration_context:
