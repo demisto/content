@@ -1,8 +1,4 @@
-import json
-import time
-
 import demistomock as demisto
-import requests
 from CommonServerPython import *
 
 from anyrun import RunTimeException
@@ -269,17 +265,16 @@ def get_analysis_report(params: dict, args: dict) -> None:  # pragma: no cover
             return_results(fileResult(f"anyrun_report_{task_uuid}.html", report))
         elif report_format == "summary":
             return_results(CommandResults(outputs_prefix="ANYRUN.SandboxAnalysis", outputs=report, ignore_auto_extract=True))
-        elif report_format == "ioc":
-            if report:
-                create_indicators(report, task_uuid)
+        elif report_format == "ioc" and report:
+            create_indicators(report, task_uuid)
 
-                return_results(
-                    CommandResults(
-                        outputs_prefix="ANYRUN.IOCs",
-                        outputs=",".join(indicator.get("ioc") for indicator in report),
-                        ignore_auto_extract=True
-                    )
+            return_results(
+                CommandResults(
+                    outputs_prefix="ANYRUN.IOCs",
+                    outputs=",".join(indicator.get("ioc") for indicator in report),
+                    ignore_auto_extract=True
                 )
+            )
 
 
 def main():  # pragma: no cover
