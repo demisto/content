@@ -485,7 +485,7 @@ def _event_producer(
 
             # Update from_time for the next iteration
             latest_event = max(events, key=lambda e: e.get("last_event_time", ""))
-            from_time = str(latest_event.get("last_event_time"))
+            from_time = latest_event.get("last_event_time", "")
 
     except queue.Full:
         demisto.info("Producer: Event queue is full. Pausing.")
@@ -531,11 +531,14 @@ def _event_consumer(
         except Exception as e:
             demisto.error(f"Consumer thread encountered an error: {e}")
             metrics.increment_errors()
-            if "event_batch" in locals():
-                event_batch.status = EventBatchStatus.FAILED
-                event_batch.retry_count += 1
-                if event_batch.retry_count <= 3:
-                    event_queue.put(event_batch)  # Re-queue for retry
+            try:
+                if "event_batch" in locals() and event_batch:
+                    event_batch.status = EventBatchStatus.FAILED
+                    event_batch.retry_count += 1
+                    if event_batch.retry_count <= 3:
+                        event_queue.put(event_batch)  # Re-queue for retry
+            except Exception as retry_error:
+                demisto.error(f"Failed to re-queue event batch: {retry_error}")
             time.sleep(1)
 
 
@@ -616,15 +619,9 @@ def main() -> None:  # pragma: no cover
         elif command == "fetch-events":
             events, next_run = fetch_events_command(client, last_run, max_fetch)
 
-            if events:
-                demisto.debug(f"Sending {len(events)} events to XSIAM")
-                # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-
-                # Update last run
-                demisto.debug(f"Setting next_run: {next_run}")
-                demisto.setLastRun(next_run)
-            else:
-                demisto.debug("No events to send, last_run unchanged")
+            # Update last run - the producer-consumer model handles sending events internally
+            demisto.debug(f"Setting next_run: {next_run}")
+            demisto.setLastRun(next_run)
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
