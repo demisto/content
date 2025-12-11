@@ -53,7 +53,7 @@ class Client(BaseClient):
         else:
             # For cloud-hosted instances, use existing logic (supports EU region)
             full_url = AUTHENTICATION_FULL_URL.replace(".com", ".eu") if ".eu" in self._base_url else AUTHENTICATION_FULL_URL
-        demisto.debug(f"Authenticating to {'self-hosted' if self.self_hosted else 'cloud'} Bitwarden instance at {full_url}"")
+        demisto.debug(f"Authenticating to {'self-hosted' if self.self_hosted else 'cloud'} Bitwarden instance at {full_url}")
         access_token_obj = self._http_request(
             method="POST",
             full_url=full_url,
