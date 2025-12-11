@@ -222,6 +222,10 @@ FORMAT_QUERY = [
         "https://test.dev?email=some@email.addres",
     ),  # disable-secrets-detection
     (
+        "https://test.dev?email=some@email.addres/",  # disable-secrets-detection
+        "https://test.dev?email=some@email.addres/",
+    ),  # disable-secrets-detection
+    (
         "https://abc.ly/test?a=b',",
         "https://abc.ly/test?a=b",
     ),  # disable-secrets-detection

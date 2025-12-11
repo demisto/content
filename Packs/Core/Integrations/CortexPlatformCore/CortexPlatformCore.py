@@ -16,6 +16,7 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
+MAX_GET_SYSTEM_USERS_LIMIT = 50
 MAX_GET_EXCEPTION_RULES_LIMIT = 100
 
 ASSET_FIELDS = {
@@ -50,7 +51,8 @@ WEBAPP_COMMANDS = [
     "core-create-appsec-policy",
     "core-get-appsec-issues",
     "core-update-case",
-    "core-get-exception-rules"
+    "core-get-exception-rules",
+    "core-update-case"
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -61,6 +63,7 @@ ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
+USERS_TABLE = "USERS_TABLE"
 DISABLE_PREVENTION_RULES_TABLE = "AGENT_EXCEPTION_RULES_TABLE_ADVANCED"
 LEGACY_AGENT_EXCEPTIONS_TABLE = "AGENT_EXCEPTION_RULES_TABLE_LEGACY"
 
@@ -633,6 +636,34 @@ class Client(CoreClient):
     def update_issue(self, filter_data):
         return self._http_request(method="POST", json_data=filter_data, url_suffix="/alerts/update_alerts")
 
+    def link_issue_to_cases(self, issue_id, case_ids: list) -> dict:
+        """Link an issue to one or more cases.
+
+        Args:
+            issue_id: The issue ID to link
+            case_ids: List of case IDs to link the issue to
+
+        Returns:
+            dict: API response
+        """
+        return self._http_request(
+            method="POST", json_data={"issue_ids": [issue_id], "case_ids": case_ids}, url_suffix="/cases/link_issues"
+        )
+
+    def unlink_issue_from_cases(self, issue_id, case_ids: list) -> dict:
+        """Unlink an issue from one or more cases.
+
+        Args:
+            issue_id: The issue ID to unlink
+            case_ids: List of case IDs to unlink the issue from
+
+        Returns:
+            dict: API response
+        """
+        return self._http_request(
+            method="POST", json_data={"issue_id": issue_id, "case_ids": case_ids}, url_suffix="/cases/unlink_issue"
+        )
+
     def search_assets(self, filter, page_number, page_size, on_demand_fields):
         reply = self._http_request(
             method="POST",
@@ -700,14 +731,26 @@ class Client(CoreClient):
         Returns:
             dict: The response containing playbook suggestions.
         """
-        reply = self._http_request(
+        return self._http_request(
             method="POST",
             json_data={"alert_internal_id": issue_id},
             headers=self._headers,
             url_suffix="/incident/get_playbook_suggestion_by_alert/",
         )
 
-        return reply
+    def get_playbooks_metadata(self):
+        return self._http_request(
+            method="GET",
+            headers=self._headers,
+            full_url="/xsoar/playbooks/metadata",
+        )
+
+    def get_quick_actions_metadata(self):
+        return self._http_request(
+            method="GET",
+            headers=self._headers,
+            full_url="/xsoar/quickactions",
+        )
 
     def appsec_remediate_issue(self, request_body):
         return self._http_request(
@@ -802,8 +845,18 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def get_users(self):
+        reply = self._http_request(
+            method="POST",
+            json_data={},
+            headers=self._headers,
+            url_suffix="/rbac/get_users",
+        )
 
-def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
+        return reply
+
+
+def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     """
     Append Application Security - related suggestions to the recommendation data.
 
@@ -817,23 +870,211 @@ def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommenda
     Returns:
         tuple[list, dict]: Updated headers and recommendation including AppSec additions.
     """
+    alert_source = issue.get("alert_source")
+    if alert_source not in APPSEC_SOURCES:
+        return {}
+
+    recommendation = {}
     manual_fix = issue.get("extended_fields", {}).get("action")
-    recommendation["remediation"] = manual_fix if manual_fix else recommendation.get("remediation")
+    if manual_fix:
+        recommendation["remediation"] = manual_fix
+
     fix_suggestion = client.get_appsec_suggested_fix(issue_id)
     demisto.debug(f"AppSec fix suggestion: {fix_suggestion}")
 
-    # Avoid situations where existingCodeBlock is dirty, leaving suggestedCodeBlock empty.
-    if fix_suggestion and fix_suggestion.get("suggestedCodeBlock"):
+    if fix_suggestion and isinstance(fix_suggestion, dict) and fix_suggestion.get("suggestedCodeBlock"):
         recommendation.update(
             {
                 "existing_code_block": fix_suggestion.get("existingCodeBlock", ""),
                 "suggested_code_block": fix_suggestion.get("suggestedCodeBlock", ""),
             }
         )
-        headers.append("existing_code_block")
-        headers.append("suggested_code_block")
+    demisto.debug(f"{recommendation=} for {issue=}")
 
-    return headers, recommendation
+    return recommendation
+
+
+def populate_playbook_and_quick_action_suggestions(
+    client: Client, issue_id: str, pb_id_to_data: dict, qa_name_to_data: dict
+) -> dict:
+    """
+    Fetches playbook and quick-action suggestions for a given issue
+    and updates the recommendation dictionary accordingly.
+
+    Returns:
+        recommendation
+    """
+    recommendation = {}
+
+    response = client.get_playbook_suggestion_by_issue(issue_id)
+    suggestions = response.get("reply", {})
+    demisto.debug(f"Playbooks and quick action {suggestions=} for {issue_id=}")
+
+    if not suggestions:
+        return {}
+
+    # Playbook suggestion
+    playbook_id = suggestions.get("playbook_id")
+    suggestion_rule_id = suggestions.get("suggestion_rule_id")
+
+    if playbook_id:
+        recommendation["playbook_suggestions"] = {
+            "playbook_id": playbook_id,
+            "suggestion_rule_id": suggestion_rule_id,
+        }
+        pb_data = pb_id_to_data.get(playbook_id)
+        if pb_data:
+            recommendation["playbook_suggestions"].update(pb_data)
+
+    # Quick action suggestion
+    quick_action_id = suggestions.get("quick_action_id", None)
+    quick_action_suggestion_rule_id = suggestions.get("quick_action_suggestion_rule_id", None)
+
+    if quick_action_id:
+        recommendation["quick_action_suggestions"] = {
+            "name": quick_action_id,
+            "suggestion_rule_id": quick_action_suggestion_rule_id,
+        }
+        qa_data = qa_name_to_data.get(quick_action_id)
+        if qa_data:
+            recommendation["quick_action_suggestions"].update(qa_data)
+
+    return recommendation
+
+
+def map_qa_name_to_data(qas_metadata) -> dict:
+    """
+    Maps each quick-action command name to its metadata, filtering hidden arguments
+    and removing empty fields.
+
+    Returns:
+        dict: command_name → metadata.
+    """
+    if not isinstance(qas_metadata, list):
+        return {}
+
+    qa_name_to_data = {}
+
+    for item in qas_metadata:
+        brand = item.get("brand")
+        category = item.get("category")
+
+        for cmd in item.get("commands", []):
+            cmd_name = cmd.get("name")
+            arguments = cmd.get("arguments", [])
+            filtered_args = [arg for arg in arguments if not arg.get("hidden", False)]
+            qa_name_to_data[cmd_name] = remove_empty_elements(
+                {
+                    "brand": brand,
+                    "category": category,
+                    "description": cmd.get("description"),
+                    "pretty_name": cmd.get("prettyName"),
+                    "arguments": filtered_args,
+                }
+            )
+
+    return qa_name_to_data
+
+
+def map_pb_id_to_data(pbs_metadata) -> dict:
+    """
+    Maps each playbook ID to its corresponding data to enable fast lookups.
+
+    Args:
+        pbs_metadata: List of playbook metadata dictionaries.
+
+    Returns:
+        dict: Mapping of playbook ID to its data from the metadata list.
+    """
+    if not isinstance(pbs_metadata, list):
+        return {}
+
+    pb_id_to_data = {}
+    for pb_metadata in pbs_metadata:
+        pb_id = pb_metadata.get("id")
+        if pb_id:
+            pb_id_to_data[pb_id] = remove_empty_elements({"name": pb_metadata.get("name"), "comment": pb_metadata.get("comment")})
+
+    return pb_id_to_data
+
+
+def create_issue_recommendations_readable_output(issue_ids: list[str], all_recommendations: list[dict]) -> str:
+    """
+    Create readable output for issue recommendations with dynamic headers based on content.
+
+    Args:
+        issue_ids: List of issue IDs being processed
+        all_recommendations: Complete recommendation data used to determine headers and create readable output
+
+    Returns:
+        str: Formatted markdown table string for readable output
+    """
+    # Base headers that are always present
+    headers = [
+        "issue_id",
+        "issue_name",
+        "severity",
+        "description",
+        "remediation",
+    ]
+
+    # Flags to track what headers we need to append
+    append_appsec_headers = False
+    append_playbook_suggestions_header = False
+    append_quick_action_suggestions_header = False
+
+    readable_recommendations = []
+
+    # Single loop to both check for headers and create readable recommendations
+    for recommendation in all_recommendations:
+        # Check what headers we need to append
+        if not append_appsec_headers and ("existing_code_block" in recommendation or "suggested_code_block" in recommendation):
+            append_appsec_headers = True
+        if not append_playbook_suggestions_header and "playbook_suggestions" in recommendation:
+            append_playbook_suggestions_header = True
+        if not append_quick_action_suggestions_header and "quick_action_suggestions" in recommendation:
+            append_quick_action_suggestions_header = True
+
+        # Create readable recommendation
+        readable_rec = recommendation.copy()
+
+        # Simplify playbook suggestions for readable output (show only name)
+        if "playbook_suggestions" in readable_rec and isinstance(readable_rec["playbook_suggestions"], dict):
+            pb_suggestions = readable_rec["playbook_suggestions"]
+            readable_rec["playbook_suggestions"] = {
+                "name": pb_suggestions.get("name", ""),
+                "playbook_id": pb_suggestions.get("playbook_id", ""),
+            }
+
+        # Simplify quick action suggestions for readable output (show only pretty_name)
+        if "quick_action_suggestions" in readable_rec and isinstance(readable_rec["quick_action_suggestions"], dict):
+            qa_suggestions = readable_rec["quick_action_suggestions"]
+            readable_rec["quick_action_suggestions"] = {
+                "name": qa_suggestions.get("name", ""),
+                "pretty_name": qa_suggestions.get("pretty_name", ""),
+            }
+
+        readable_recommendations.append(readable_rec)
+
+    # Add conditional headers based on what we found
+    if append_appsec_headers:
+        headers.extend(["existing_code_block", "suggested_code_block"])
+
+    if append_playbook_suggestions_header:
+        headers.append("playbook_suggestions")
+
+    if append_quick_action_suggestions_header:
+        headers.append("quick_action_suggestions")
+
+    # Create the readable output table
+    issue_readable_output = tableToMarkdown(
+        f"Issue Recommendations for {issue_ids}",
+        readable_recommendations,
+        headerTransform=string_to_table_header,
+        headers=headers,
+    )
+
+    return issue_readable_output
 
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
@@ -841,17 +1082,17 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     Get comprehensive recommendations for an issue, including remediation steps and playbook suggestions.
     Retrieves issue data with remediation field using the generic /api/webapp/get_data endpoint.
     """
-    issue_id = args.get("issue_id")
-    if not issue_id:
-        raise DemistoException("issue_id is required.")
+    issue_ids = argToList(args.get("issue_ids"))
+    if len(issue_ids) > 10:
+        raise DemistoException("Please provide a maximum of 10 issue IDs per request.")
 
     filter_builder = FilterBuilder()
-    filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
+    filter_builder.add_field("internal_id", FilterType.EQ, issue_ids)
 
     request_data = build_webapp_request_data(
         table_name="ALERTS_VIEW_TABLE",
         filter_dict=filter_builder.to_dict(),
-        limit=1,
+        limit=10,
         sort_field="source_insert_ts",
         sort_order="DESC",
         on_demand_fields=[],
@@ -863,48 +1104,50 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     issue_data = reply.get("DATA", [])
 
     if not issue_data:
-        raise DemistoException(f"No issue found with ID: {issue_id}")
+        raise DemistoException(f"No issues found with IDs: {issue_ids}")
 
-    issue = issue_data[0]
+    # Call the endpoint here to avoid calling it for each issue.
+    pbs_metadata = client.get_playbooks_metadata() or []
+    qas_metadata = client.get_quick_actions_metadata() or []
+    pb_id_to_data = map_pb_id_to_data(pbs_metadata)
+    qa_name_to_data = map_qa_name_to_data(qas_metadata)
+    all_recommendations = []
 
-    # Get playbook suggestions
-    playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
-    playbook_suggestions = playbook_response.get("reply", {})
-    demisto.debug(f"{playbook_response=}")
+    for issue in issue_data:
+        current_issue_id = issue.get("internal_id")
 
-    recommendation = {
-        "issue_id": issue.get("internal_id") or issue_id,
-        "issue_name": issue.get("alert_name"),
-        "severity": issue.get("severity"),
-        "description": issue.get("alert_description"),
-        "remediation": issue.get("remediation"),
-        "playbook_suggestions": playbook_suggestions,
-    }
+        # Base recommendation
+        recommendation = {
+            "issue_id": current_issue_id,
+            "issue_name": issue.get("alert_name"),
+            "severity": issue.get("severity"),
+            "description": issue.get("alert_description"),
+            "remediation": issue.get("remediation"),
+        }
 
-    headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+        # --- Playbook and Quick Action Suggestions ---
+        recommendation_pb_qa = populate_playbook_and_quick_action_suggestions(
+            client, current_issue_id, pb_id_to_data, qa_name_to_data
+        )
+        recommendation.update(recommendation_pb_qa)
 
-    if issue.get("alert_source") in APPSEC_SOURCES:
-        headers, recommendation = get_appsec_suggestion(client, headers, issue, recommendation, issue_id)
+        # --- AppSec ---
+        appsec_recommendation = get_appsec_suggestion(client, issue, current_issue_id)
+        if appsec_recommendation:
+            recommendation.update(appsec_recommendation)
 
-    readable_output = tableToMarkdown(
-        f"Issue Recommendations for {issue_id}",
-        [recommendation],
-        headerTransform=string_to_table_header,
-        headers=headers,
+        all_recommendations.append(recommendation)
+
+    # Final header adjustments
+    issue_readable_output = create_issue_recommendations_readable_output(
+        issue_ids=issue_ids, all_recommendations=all_recommendations
     )
 
-    if playbook_suggestions:
-        readable_output += "\n" + tableToMarkdown(
-            "Playbook Suggestions",
-            playbook_suggestions,
-            headerTransform=string_to_table_header,
-        )
-
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=issue_readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.IssueRecommendations",
         outputs_key_field="issue_id",
-        outputs=recommendation,
+        outputs=all_recommendations,
         raw_response=response,
     )
 
@@ -974,6 +1217,7 @@ def build_webapp_request_data(
     on_demand_fields: list | None = None,
     sort_order: str | None = "DESC",
     start_page: int = 0,
+    extra_data : dict | None = None,
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
@@ -1004,6 +1248,7 @@ def build_webapp_request_data(
         "filter_data": filter_data,
         "jsons": [],
         "onDemandFields": on_demand_fields,
+        "extraData": extra_data
     }
 
 
@@ -1548,6 +1793,9 @@ def update_issue_command(client: Client, args: dict):
     }
     severity_value = args.get("severity")
     status = args.get("status")
+    link_cases = [int(case_id) for case_id in argToList(args.get("link_cases"))] if args.get("link_cases") else []
+    unlink_cases = [int(case_id) for case_id in argToList(args.get("unlink_cases"))] if args.get("unlink_cases") else []
+
     update_args = {
         "assigned_user": args.get("assigned_user_mail"),
         "severity": severity_map.get(severity_value) if severity_value else None,
@@ -1561,14 +1809,23 @@ def update_issue_command(client: Client, args: dict):
 
     # Remove None values before sending to API
     filtered_update_args = {k: v for k, v in update_args.items() if v is not None}
-    if not filtered_update_args:
+
+    if not filtered_update_args and not link_cases and not unlink_cases:
         raise DemistoException("Please provide arguments to update the issue.")
 
-    # Send update to API
-    filter_data = create_filter_data(issue_id, filtered_update_args)
+    if link_cases:
+        client.link_issue_to_cases(int(issue_id), link_cases)
+        demisto.debug(f"Linked issue {issue_id} to cases {link_cases}")
 
-    demisto.debug(filter_data)
-    client.update_issue(filter_data)
+    if unlink_cases:
+        client.unlink_issue_from_cases(int(issue_id), unlink_cases)
+        demisto.debug(f"Unlinked issue {issue_id} from cases {unlink_cases}")
+
+    if filtered_update_args:
+        filter_data = create_filter_data(issue_id, filtered_update_args)
+        demisto.debug(filter_data)
+        client.update_issue(filter_data)
+
     return "done"
 
 
@@ -2798,6 +3055,30 @@ def get_exception_rules(client, args: Dict[str, Any]) -> Tuple[List[Dict[str, An
     )
 
 
+def get_system_users_command(client, args):
+    """
+    Retrieves system user optionally filtered by email using the public api ep /public_api/v1/rbac/get_users
+    This function calls the client to fetch all available system users. If specific
+    emails are provided via the 'email' argument, it filters the results. If no
+    emails are provided, it limits the results to 50.
+    """
+    emails = argToList(args.get("email", ""))
+    response = client.get_users()
+    reply = response.get("reply", {})
+    if emails:
+        data = [user for user in reply if user.get("user_email") in emails]
+    else:
+        data = reply[:MAX_GET_SYSTEM_USERS_LIMIT] if len(reply) > MAX_GET_SYSTEM_USERS_LIMIT else reply
+
+    return CommandResults(
+        readable_output=tableToMarkdown("System Users", data, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.User",
+        outputs_key_field="user_email",
+        outputs=data,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -2919,6 +3200,10 @@ def main():  # pragma: no cover
             return_results(run_playbook_command(client, args))
         elif command == "core-get-exception-rules":
             return_results(get_exception_rules(client, args))
+        elif command == "core-get-system-users":
+            return_results(get_system_users_command(client, args))
+
+
 
     except Exception as err:
         demisto.error(traceback.format_exc())
