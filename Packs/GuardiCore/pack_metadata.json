@@ -2,7 +2,7 @@
     "name": "Akamai GuardiCore",
     "description": "Data center breach detection",
     "support": "xsoar",
-    "currentVersion": "2.0.17",
+    "currentVersion": "2.0.18",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -24,7 +24,10 @@
         "Malware",
         "Network Security"
     ],
-    "keywords": ["Guardicore Centra", "Centra"],
+    "keywords": [
+        "Guardicore Centra",
+        "Centra"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
