@@ -447,7 +447,7 @@ def fetch_events(
     demisto.debug(f"Starting fetching events. Using {event_types_to_fetch=}, got {last_run=}.")
     total_event_count: int = 0
 
-    # Fetch file events and send to XSIAM in batches with nextTrigger 0 if needed
+    # Fetch file events and send to XSIAM in batches with nextTrigger if needed
     if "File" in event_types_to_fetch:
         file_events, file_events_last_run = fetch_file_events(
             client, last_run=last_run, max_fetch_file_events=max_fetch_file_events
@@ -464,6 +464,7 @@ def fetch_events(
         demisto.updateModuleHealth({"eventsPulled": len(file_events)})
         total_event_count += len(file_events)
 
+    # Fetch audit logs and send to XSIAM in batches with nextTrigger if needed
     if "Audit" in event_types_to_fetch:
         audit_logs, audit_logs_last_run = fetch_audit_logs(
             client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events
