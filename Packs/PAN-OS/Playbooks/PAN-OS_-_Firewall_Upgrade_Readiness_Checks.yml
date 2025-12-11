@@ -2081,7 +2081,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Print message to indicate that target version is already installed on the connected firewall.
+      description: Print message to indicate that the target version is already installed on the connected firewall.
       id: 6dbd4745-ebfd-417e-b500-a9a589adb211
       iscommand: false
       name: Firewall is already on target version
@@ -2437,7 +2437,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Conditional task to check if active Panorama integration instance is available.
+      description: Conditional task to check if an active Panorama integration instance is available.
       id: fabe203f-5b0d-4e0f-ab5e-7c8bbc8102a0
       iscommand: false
       name: Is the Panorama integration enabled?
@@ -2552,7 +2552,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Conditional task to check if the Integration Instance type being used is Panorama then was a target device id provided.
+      description: Checks if the Integration Instance type is Panorama and verifies that a target device ID is provided.
       id: 0e8a0870-388e-40fa-96d1-894313cf1303
       iscommand: false
       name: If IntegrationInstanceType is Panorama, is targetDevice provided?
@@ -2586,7 +2586,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prints an error entry for Target Device ID is required for Panorama Instance.
+      description: Prints an error indicating that a Target Device ID is required for a Panorama instance.
       id: 2eaa27eb-9c2d-45ef-82b2-cab82fda9f45
       iscommand: false
       name: Target Device ID is required for Panorama Instance
