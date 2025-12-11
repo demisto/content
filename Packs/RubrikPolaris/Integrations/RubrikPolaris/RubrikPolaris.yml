@@ -4636,39 +4636,21 @@ script:
     - contextPath: RubrikPolaris.AnomalyCSVv2.isSuccessful
       description: Whether the CSV analysis was successful or not.
       type: Boolean
-    - contextPath: File.Size
-      description: File size in bytes.
-      type: String
-    - contextPath: File.SHA1
-      description: SHA1 hash of file.
-      type: String
-    - contextPath: File.SHA256
-      description: SHA256 hash of file.
-      type: String
-    - contextPath: File.SHA512
-      description: SHA512 hash of file.
-      type: String
-    - contextPath: File.Name
-      description: File name.
-      type: String
-    - contextPath: File.SSDeep
-      description: SSDeep hash of the file.
-      type: String
-    - contextPath: File.EntryID
-      description: The entry ID of the file.
-      type: Unknown
-    - contextPath: File.Info
-      description: File information.
-      type: String
-    - contextPath: File.Type
-      description: The file type.
-      type: String
-    - contextPath: File.MD5
-      description: MD5 hash of the file.
-      type: String
-    - contextPath: File.Extension
-      description: The file extension.
-      type: String
+    - contextPath: InfoFile.Name
+      description: FileName.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
   dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.2072916
   isfetch: true
   runonce: false

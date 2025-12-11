@@ -6352,7 +6352,9 @@ def rubrik_anomaly_csv_analysis_v2_command(client: PolarisClient, args: Dict[str
             )
             response.raise_for_status()
 
-            file_result = fileResult(filename=f"{target_file_name}.csv", data=response.content)
+            file_result = fileResult(
+                filename=f"{target_file_name}.csv", data=response.content, file_type=EntryType.ENTRY_INFO_FILE
+            )
 
         # Determine human-readable message based on status
         if not is_successful:

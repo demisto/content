@@ -4183,17 +4183,11 @@ Request for the analysis and directly download the anomaly CSV analyzed file.
 | RubrikPolaris.AnomalyCSVv2.objectId | String | The ID of the object. |
 | RubrikPolaris.AnomalyCSVv2.externalId | String | The external ID of the CSV file. |
 | RubrikPolaris.AnomalyCSVv2.isSuccessful | Boolean | Whether the CSV analysis was successful or not. |
-| File.Size | String | File size in bytes. |
-| File.SHA1 | String | SHA1 hash of file. |
-| File.SHA256 | String | SHA256 hash of file. |
-| File.SHA512 | String | SHA512 hash of file. |
-| File.Name | String | File name. |
-| File.SSDeep | String | SSDeep hash of the file. |
-| File.EntryID | Unknown | The entry ID of the file. |
-| File.Info | String | File information. |
-| File.Type | String | The file type. |
-| File.MD5 | String | MD5 hash of the file. |
-| File.Extension | String | The file extension. |
+| InfoFile.Name | string | FileName. |
+| InfoFile.EntryID | string | The EntryID of the report. |
+| InfoFile.Size | number | File Size. |
+| InfoFile.Type | string | File type e.g. "PE". |
+| InfoFile.Info | string | Basic information of the file. |
 
 #### Command example
 
@@ -4203,16 +4197,11 @@ Request for the analysis and directly download the anomaly CSV analyzed file.
 
 ```json
 {
-    "File": {
+    "InfoFile": {
         "EntryID": "10000@00000000-0000-0000-0000-000000000001",
         "Extension": "csv",
         "Info": "text/csv; charset=utf-8",
-        "MD5": "00000000000000000000000000000000",
         "Name": "snapshot_00000000-0000-0000-0000-000000000000.csv",
-        "SHA1": "1000000000000000000000000000000",
-        "SHA256": "1000000000000000000000000000000000000000000000000000000000",
-        "SHA512": "10000000000000000000000000000000000000000000000000000000000000000000000",
-        "SSDeep": "1:100000000000000000000000000000000000000000000000000000000:",
         "Size": 1771317,
         "Type": "ASCII text, with very long lines"
     },
