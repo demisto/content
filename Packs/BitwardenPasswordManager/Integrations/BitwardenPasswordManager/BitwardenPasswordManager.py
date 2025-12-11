@@ -53,7 +53,7 @@ class Client(BaseClient):
         else:
             # For cloud-hosted instances, use existing logic (supports EU region)
             full_url = AUTHENTICATION_FULL_URL.replace(".com", ".eu") if ".eu" in self._base_url else AUTHENTICATION_FULL_URL
-        demisto.debug(f"create_new_token using {full_url} endpoint (self_hosted={self.self_hosted})")
+        demisto.debug(f"Authenticating to {'self-hosted' if self.self_hosted else 'cloud'} Bitwarden instance at {full_url}"")
         access_token_obj = self._http_request(
             method="POST",
             full_url=full_url,
@@ -95,7 +95,7 @@ def test_module(client: Client) -> str:
 
 
 def get_events_command(client: Client, args: Dict[str, Any]) -> tuple:
-    limit = int(args.get("limit", DEFAULT_MAX_FETCH))
+    limit = arg_to_number(args.get("limit", DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH 
     start = args.get("start", DEFAULT_FIRST_FETCH)
     end = args.get("end", DEFAULT_END_DATE)
     events, _ = fetch_events(client=client, max_fetch=limit, dates={"start": start, "end": end})
