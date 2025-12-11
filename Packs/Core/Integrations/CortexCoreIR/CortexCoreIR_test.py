@@ -1520,12 +1520,12 @@ def test_update_endpoints_tags_with_invalid_tags(mocker):
 
     assert len(results) == 2
     assert (
-        "Successfully updated tags for endpoint(s) ['endpoint1']. Added tags: ['valid_tag', 'very_long_invalid_tag_that_exceeds_limit'] Removed tags: ['another_invalid_tag']."
-        in results[0].readable_output
+        "Successfully updated tags for endpoint(s) ['endpoint1']. Added tags: ['valid_tag', "
+        "'very_long_invalid_tag_that_exceeds_limit'] Removed tags: ['another_invalid_tag']." in results[0].readable_output
     )
     assert (
-        "Invalid tags detected: very_long_invalid_tag_that_exceeds_limit, another_invalid_tag. Tags must be less than 64 characters long."
-        in results[1].readable_output
+        "Invalid tags detected: very_long_invalid_tag_that_exceeds_limit, another_invalid_tag. Tags must be less than "
+        "64 characters long." in results[1].readable_output
     )
     assert results[1].entry_type == 4
     assert mock_add_tag.call_count == 2
