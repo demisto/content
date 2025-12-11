@@ -1409,6 +1409,14 @@ script:
         - Resolved - Dismissed
         - Resolved - Fixed
         - Resolved - Risk Accepted
+      - name: link_cases
+        description: Comma-separated list of case IDs to link the issue to.
+        type: string
+        isArray: true
+      - name: unlink_cases
+        description: Comma-separated list of case IDs to unlink the issue from.
+        type: string
+        isArray: true
       name: core-update-issue
       description: Updates the properties of an issue. This command does not provide an explicit indication of success.
     - arguments:
@@ -1643,9 +1651,10 @@ script:
           description: The unique identifier for the asset.
           type: String
     - arguments:
-        - description: The ID of the issue to get recommendations for.
-          name: issue_id
+        - description: Comma-separated list of IDs of the issues to get recommendations for (maximum 10 per request).
+          name: issue_ids
           required: true
+          isArray: true
       name: core-get-issue-recommendations
       description: Get comprehensive recommendations for an issue, including remediation steps, playbook suggestions, and recommended actions.
       outputs:
@@ -1669,6 +1678,45 @@ script:
           type: String
         - contextPath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
           description: The ID of the suggestion rule that generated this recommendation.
+          type: String
+        - contextPath: Core.IssueRecommendations.playbook_suggestions.name
+          description: The name of the suggested playbook.
+          type: String
+        - contextPath: Core.IssueRecommendations.playbook_suggestions.comment
+          description: An explanation of the suggested playbook.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.name
+          description: The name of the suggested quick action.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.suggestion_rule_id
+          description: The ID of the suggestion quick action rule that generated this recommendation.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.brand
+          description: The brand of the quick action.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.category
+          description: The category of the quick action.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.description
+          description: An explanation of the quick action.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.pretty_name
+          description: The display name of the quick action.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.arguments.name
+          description: The argument name.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.arguments.prettyName
+          description: The argument display name.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.arguments.prettyPredefined
+          description: The argument predefined display value.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.arguments.description
+          description: The argument description.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.arguments.required
+          description: Whether the argument is required.
           type: String
         - contextPath: Core.IssueRecommendations.existing_code_block
           description: Original vulnerable code.
