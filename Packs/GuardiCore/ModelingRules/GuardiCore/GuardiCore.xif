@@ -5,7 +5,7 @@
 filter cefName ~= "Audit"
 | alter //Extraction fields
     src_username_from_upn = if(suser ~= "@", arrayindex(regextract(suser, "(\S+)\@"),0)), //Sometimes the suser field comes as UPN.
-    msg_host = arrayindex(regextract(msg, "host\:\s(\S+)\,"),0), 
+    msg_host = arrayindex(regextract(msg, "host\:\s(\S+)\,"),0),
     msg_port = arrayindex(regextract(msg, "port\:\s(\d+)"),0),
     msg_protocol = arrayindex(regextract(msg, "protocol\:\s(\w+)"),0),
     msg_resource_name = arrayindex(regextract(msg, "resource\:\s(\S+)"),0),
@@ -407,8 +407,8 @@ filter cefName ~= "Agent"
         trg_os ~= "Linux", XDM_CONST.OS_FAMILY_LINUX,
         trg_os ~= "Ubuntu", XDM_CONST.OS_FAMILY_UBUNTU),
     xdm.target.host.hostname = trg_hostname,
-    xdm.target.resoucre.type = parsed_cs1 -> Role,
-    xdm.target.application.name = parsed_cs1 -> App,
+    xdm.target.resource.type = parsed_cs1 -> Role,
+    xdm.target.resource.name = parsed_cs1 -> App,
     xdm.alert.severity = cefSeverity;
 
 /* ==========================================
@@ -448,7 +448,7 @@ filter cefName ~= "Network"
     xdm.source.user.username = suser,
     xdm.target.ipv4 = if(is_ipv4(dst) = TRUE, dst),
     xdm.target.ipv6 = if(is_ipv6(dst) = TRUE, dst),
-    xdm.target.port = to_integer(dst),
+    xdm.target.port = to_integer(dpt),
     xdm.target.host.hostname = dhost,
     xdm.target.user.username = duser,
     xdm.network.ip_protocol = if(

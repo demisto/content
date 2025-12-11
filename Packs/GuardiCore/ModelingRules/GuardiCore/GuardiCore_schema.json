@@ -40,6 +40,10 @@
             "type": "string",
             "is_array": false
         },
+        "dpt": {
+            "type": "int",
+            "is_array": false
+        },
         "dhost": {
             "type": "string",
             "is_array": false
