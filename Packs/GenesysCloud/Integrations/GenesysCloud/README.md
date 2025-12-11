@@ -11,7 +11,7 @@ This integration was integrated and tested with version 2 of the Genesys Cloud P
 | Trust any certificate (not secure) | | False |
 | Use system proxy settings | | False |
 | Fetch Events | | False |
-| Service names | Possible values are: Architect, PeoplePermissions, ContactCenter, Groups, Telephony, Outbound, Routing, Integrations, AnalyticsReporting. | False |
+| Service names | Ensure all selected services appear in the [audit service mapping information](https://developer.genesys.cloud/devapps/api-explorer#get-api-v2-audits-query-realtime-servicemapping). Possible values are: Architect, PeoplePermissions, ContactCenter, Groups, Telephony, Outbound, Routing, Integrations, AnalyticsReporting. | False |
 | Maximum number of events per service | Default value is 2500. | False |
 
 ## Commands

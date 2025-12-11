@@ -48,7 +48,7 @@ configuration:
   - Integrations
   - AnalyticsReporting
   defaultvalue: Architect,PeoplePermissions,ContactCenter,Groups,Telephony,Outbound,Routing,Integrations,AnalyticsReporting
-  additionalinfo: By default, all services are selected.
+  additionalinfo: Ensure all selected services appear in the audit service mapping information.
   required: false
   type: 16
   section: Collect
