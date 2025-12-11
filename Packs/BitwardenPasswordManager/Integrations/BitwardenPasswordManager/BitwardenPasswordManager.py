@@ -95,7 +95,7 @@ def test_module(client: Client) -> str:
 
 
 def get_events_command(client: Client, args: Dict[str, Any]) -> tuple:
-    limit = arg_to_number(args.get("limit", DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH 
+    limit = arg_to_number(args.get("limit", DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
     start = args.get("start", DEFAULT_FIRST_FETCH)
     end = args.get("end", DEFAULT_END_DATE)
     events, _ = fetch_events(client=client, max_fetch=limit, dates={"start": start, "end": end})
