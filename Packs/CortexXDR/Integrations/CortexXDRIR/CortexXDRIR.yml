@@ -207,7 +207,8 @@ configuration:
   advanced: true
   type: 8
   section: Collect
-- display: fetchSingleIncident
+- display: Fetch Single Incidents
+  name: fetchSingleIncident
   defaultvalue: "false"
   type: 8
   required: false

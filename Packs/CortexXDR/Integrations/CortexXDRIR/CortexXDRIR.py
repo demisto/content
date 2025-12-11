@@ -1216,7 +1216,7 @@ def fetch_incidents(
 
         integration_context = get_integration_context()
         raw_incident_id: Any = integration_context.get("incidentidtofetch", 0)
-        
+
         if isinstance(raw_incident_id, int):
             incident_id_str = str(raw_incident_id)
         else:
@@ -1230,9 +1230,9 @@ def fetch_incidents(
         for raw_incident in raw_incidents:
             curr_incident_id = raw_incident.get("incident_id")
 
-            curr_incident_data = get_incident_extra_data_command(client, {"incident_id": curr_incident_id, "alerts_limit": 1000})[2].get(
-                "incident"
-            )
+            curr_incident_data = get_incident_extra_data_command(client, {"incident_id": curr_incident_id, "alerts_limit": 1000})[
+                2
+            ].get("incident")
 
             sort_all_list_incident_fields(curr_incident_data)
 
@@ -1242,13 +1242,13 @@ def fetch_incidents(
 
             description = raw_incident.get("description")
             occurred = timestamp_to_datestring(raw_incident["creation_time"], TIME_FORMAT + "Z")
-            incident = {
-                "name": f"#{incident_id} - {description}",
+            curr_incident = {
+                "name": f"#{curr_incident_id} - {description}",
                 "occurred": occurred,
                 "rawJSON": json.dumps(curr_incident_data),
             }
 
-            incidents.append(incident)
+            incidents.append(curr_incident)
 
         integration_context = get_integration_context()
         integration_context_to_set = {"incidentidtofetch": 0}
