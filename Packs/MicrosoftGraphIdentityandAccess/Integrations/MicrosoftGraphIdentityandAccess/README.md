@@ -63,7 +63,7 @@ By default, issues created in Cortex XSOAR/XSIAM uses the risk level of the Micr
 
 | **Parameter** | **Required** | **Default value**
 | --- | --- | --- |
-| Override Microsoft Entra ID Protection risk level | True |False |
+| Override Microsoft Entra ID Protection risk level | True |True |
 | Issue severity | False | medium |
 
 ## Required Permissions
