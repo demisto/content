@@ -2707,6 +2707,8 @@ def run_script_agentix_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: Results of the script execution.
     """
+    
+    from CortexCoreIR import script_run_polling_command
     script_uid = args.get("script_uid", "")
     script_name = args.get("script_name", "")
     endpoint_ids = argToList(args.get("endpoint_ids", ""))
@@ -2725,11 +2727,14 @@ def run_script_agentix_command(client: Client, args: dict) -> CommandResults:
         raise ValueError("You must specify either endpoint_ids or endpoint_names.")
     
     if script_name:
-        script_uid = list_scripts_command(client, {"script_name": script_name})
-    
-    if endpoint_names:
-        endpoint_ids = core_list_endpoints_command(client, {"endpoint_name": endpoint_names})
+        scripts_results = list_scripts_command(client, {"script_name": script_name})
+        script_uid = [script['script_uid'] for script in scripts_results.outputs]
 
+    if endpoint_names:
+        endpoint_results = core_list_endpoints_command(client, {"endpoint_name": endpoint_names})
+        endpoint_ids = [endpoint['endpoint_id'] for endpoint in endpoint_results.outputs]
+
+    return script_run_polling_command({"endpoint_ids": endpoint_ids, "script_uid": script_uid})
 
 def main():  # pragma: no cover
     """
