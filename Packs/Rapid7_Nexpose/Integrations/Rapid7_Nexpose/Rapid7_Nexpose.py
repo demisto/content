@@ -6826,7 +6826,6 @@ async def stream_report(
     endpoint = f"/api/3/reports/{report_id}/history/{instance_id}/output"
     log(event_type, f"Starting report download stream from: {endpoint}")
 
-    # Use the client's http_request method for the asynchronous GET request
     response = await client.http_request("GET", endpoint)
 
     buffer = b""  # Buffer to hold partial lines across chunks
@@ -6879,6 +6878,8 @@ async def stream_and_parse_report(
     last_sent_line_raw = event_integration_context.get("last_sent_line", 0)
     total_records_ingested = event_integration_context.get("total_records_ingested", 0)
     header: Optional[List[str]] = None
+    # The start line for the *next* batch we will build
+    # NOTE: raw line numbers are 1-based and inclusive.
     start_line_for_batch_raw = last_sent_line_raw + 1
     pending_tasks: set[asyncio.Task] = set()
 
@@ -6957,12 +6958,12 @@ async def process_data_stream(
     # We are starting at Line 1 because the header (Line 1) was already processed outside.
     current_line_count = 1
     batch_counter = 0
-    HEADER_LINE_NUMBER = 1
     current_batch: List[str] = []
     current_run_data_records = 0
     snapshot_id = event_integration_context.get("snapshot_id") or str(round(time.time() * 1000))
 
     # The start line for the *next* batch we will build
+    # NOTE: raw line numbers are 1-based and inclusive.
     start_line_for_batch_raw = last_sent_line_raw + 1
 
     # --- MAIN LOOP ---
@@ -6971,33 +6972,22 @@ async def process_data_stream(
         current_line = line_to_process
 
         # --- Try to read the NEXT line (Lookahead) ---
-        try:
-            next_line = await anext(stream_iterator)
-        except StopAsyncIteration:
-            # If we fail to get the next line, this is the final line of the report.
-            next_line = None
+        next_line = await _get_next_line(stream_iterator)
 
         # 1. Skip Checkpoint
-        if current_line_count <= last_sent_line_raw:
+        if _should_skip_line(current_line_count, last_sent_line_raw):
             line_to_process = next_line
             continue
 
         # 2. Parse Data Row and Append to Batch
-        try:
-            data_row = next(csv.reader(io.StringIO(current_line)))
-            if not header or len(data_row) != len(header):
-                log(event_type, f"Got: {data_row=} with {header=}, where {len(data_row)=} and {len(header)=}")
-                if current_line_count > HEADER_LINE_NUMBER:
-                    log(event_type, f"Skipping malformed row {current_line_count}.")
-                line_to_process = next_line
-                continue
+        data_row = _parse_csv_row(current_line, header, current_line_count, event_type)
 
-            record_dict = dict(zip(header, data_row))
-            current_batch.append(json.dumps(record_dict))
+        if data_row:
+            current_batch.append(data_row)
             current_run_data_records += 1  # Count of data records in the current run
 
-        except Exception as e:
-            log(event_type, f"Error parsing CSV line {current_line_count}: {e}. Skipping record.")
+        else:
+            # if the line was malformed, we continue to the next line
             line_to_process = next_line
             continue
 
@@ -7005,7 +6995,7 @@ async def process_data_stream(
         is_last_batch = next_line is None
 
         # Send batch if it's full OR if the stream has ended
-        if len(current_batch) >= batch_size or is_last_batch:
+        if _is_last_batch(len(current_batch), batch_size, is_last_batch):
             batch_counter += 1
 
             start_line_for_batch_raw, total_records_ingested = await handle_batch_submission(
@@ -7038,6 +7028,59 @@ async def process_data_stream(
                 raise res
 
 
+def _should_skip_line(current_line_count: int, last_sent_line_raw: int) -> bool:
+    """
+    Determines if the current line was already processed in a previous run.
+    """
+    return current_line_count <= last_sent_line_raw
+
+
+def _is_last_batch(len_current_batch: int, batch_size: int, is_last_batch: bool):
+    """
+    Determines if this is the last batch of events to send.
+    """
+    return len_current_batch >= batch_size or is_last_batch
+
+
+async def _get_next_line(stream_iterator: Any) -> Optional[str]:
+    """
+    Safely retrieves the next line from the iterator.
+    Returns None if the stream has ended.
+    """
+    try:
+        return await anext(stream_iterator)
+    except StopAsyncIteration:
+        return None
+
+
+def _parse_csv_row(current_line: str, header: List[str], current_line_count: int, event_type: str) -> Optional[str]:
+    """
+    Parses a CSV string into a JSON string.
+    Returns None if the row is malformed or invalid.
+    """
+    try:
+        # Parse the CSV line
+        data_row = next(csv.reader(io.StringIO(current_line)))
+
+        # Validate column count matches header
+        if not header or len(data_row) != len(header):
+            # Only log if it's not just an empty trailing line
+            if "".join(data_row).strip():
+                log(
+                    event_type,
+                    f"Skipping malformed row {current_line_count}. " f"Got {len(data_row)} cols, expected {len(header)}.",
+                )
+            return None
+
+        # Success: Zip headers with data and dump to JSON
+        record_dict = dict(zip(header, data_row))
+        return json.dumps(record_dict)
+
+    except Exception as e:
+        log(event_type, f"Error parsing CSV line {current_line_count}: {e}. Skipping record.")
+        return None
+
+
 async def handle_batch_submission(
     current_batch: List[str],
     start_line_for_batch_raw: int,
@@ -7059,6 +7102,8 @@ async def handle_batch_submission(
     """
 
     batch_size_actual = len(current_batch)
+    # NOTE: raw line numbers are 1-based and inclusive.
+    # Example: if start=500 and batch size=100 → end=599 → next start=600.
     total_lines_after_batch_raw = start_line_for_batch_raw + batch_size_actual - 1
 
     # Calculate the NEW cumulative total records ingested after this batch
@@ -7079,7 +7124,7 @@ async def handle_batch_submission(
 
     # --- END FINAL COUNT LOGIC ---
     # Create the asynchronous task for concurrent submission
-    
+
     try:
         log(event_type, f"Sending {batch_size_actual} {event_type} to xsiam")
         task = asyncio.create_task(
@@ -7099,7 +7144,7 @@ async def handle_batch_submission(
         task.add_done_callback(pending_tasks.discard)
     except Exception as e:
         log(event_type, f"CRITICAL ERROR: Failed to schedule batch submission task: {e}")
-        if 'task' in locals() and not task.done():
+        if "task" in locals() and not task.done():
             task.cancel()
             log(event_type, "Safe guard: Orphaned task cancelled.")
 

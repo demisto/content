@@ -2726,6 +2726,9 @@ async def test_stream_and_parse_report_error(mocker):
     # We need to create a proper async generator that raises an exception when __aiter__ is called
     class MockStreamReportError:
         def __aiter__(self):
+            return self
+
+        async def __anext__(self):
             raise Exception("Error streaming report")
 
     mocker.patch("Rapid7_Nexpose.stream_report", return_value=MockStreamReportError())
