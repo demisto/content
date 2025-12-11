@@ -330,38 +330,24 @@ def test_process_single_input_marks_failure_on_extraction_error(mocker):
     assert "example" in invalid_set
     assert not valid_set
 
+
 @pytest.mark.parametrize(
     "raw, expected_type_lower, extracted_ctx, mark_invalid_flag, is_valid, expected_values",
     [
         # 1) Exact match
-        ("https://a.com", "url",
-         {"URL": ["https://a.com"]}, False,
-         True, {"https://a.com"}),
-
+        ("https://a.com", "url", {"URL": ["https://a.com"]}, False, True, {"https://a.com"}),
         # 2) Case-insensitive type match
-        ("https://a.com", "URL",
-         {"URL": ["https://a.com"]}, False,
-         True, {"https://a.com"}),
-
+        ("https://a.com", "URL", {"URL": ["https://a.com"]}, False, True, {"https://a.com"}),
         # 3) Expected + other types → still valid when flag=False
-        ("https://a.com", "url",
-         {"URL": ["https://a.com"], "IP": ["1.1.1.1"]}, False,
-         True, {"https://a.com"}),
-
+        ("https://a.com", "url", {"URL": ["https://a.com"], "IP": ["1.1.1.1"]}, False, True, {"https://a.com"}),
         # 4) Only other types → invalid
-        ("a", "url",
-         {"Domain": ["a.com"]}, False,
-         False, set()),
-
+        ("a", "url", {"Domain": ["a.com"]}, False, False, set()),
         # 5) Expected + other types → invalid when flag=True
-        ("https://a.com", "url",
-         {"URL": ["https://a.com"], "IP": ["1.1.1.1"]}, True,
-         False, set()),
-    ]
+        ("https://a.com", "url", {"URL": ["https://a.com"], "IP": ["1.1.1.1"]}, True, False, set()),
+    ],
 )
 def test_process_single_input_parametrized(
-    mocker, raw, expected_type_lower, extracted_ctx,
-    mark_invalid_flag, is_valid, expected_values
+    mocker, raw, expected_type_lower, extracted_ctx, mark_invalid_flag, is_valid, expected_values
 ):
     """
     Given:
@@ -375,6 +361,7 @@ def test_process_single_input_parametrized(
         - valid_set / invalid_set are updated correctly.
     """
     from AggregatedCommandApiModule import _process_single_input
+
     # Mock extraction to return our parametrized extracted context
     mocker.patch(
         "AggregatedCommandApiModule._execute_extraction",
