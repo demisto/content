@@ -409,9 +409,7 @@ def test_display_error_with_raw_data_present():
     Then:
         Returns properly formatted error with raw data
     """
-    result = SplunkShowDrilldown.display_error_with_raw_data(
-        "Test Error", "Error message", '[{"test":"data"}]'
-    )
+    result = SplunkShowDrilldown.display_error_with_raw_data("Test Error", "Error message", '[{"test":"data"}]')
     assert "#### Test Error" in result["Contents"]
     assert "**Error:** Error message" in result["Contents"]
     assert "**Raw Drilldown Searches Data:**" in result["Contents"]
@@ -442,9 +440,7 @@ def test_display_json_parsing_error_with_raw_data():
     Then:
         Returns detailed JSON error message with raw data
     """
-    result = SplunkShowDrilldown.display_json_parsing_error(
-        "JSON Error", "Invalid JSON syntax", '{"invalid": json}'
-    )
+    result = SplunkShowDrilldown.display_json_parsing_error("JSON Error", "Invalid JSON syntax", '{"invalid": json}')
     assert "#### JSON Error" in result["Contents"]
     assert "⚠️ **Note:** The drilldown_searches data received from Splunk contains invalid JSON formatting" in result["Contents"]
     assert "**Error Details:** Invalid JSON syntax" in result["Contents"]
@@ -490,10 +486,7 @@ def test_incident_with_splunkdrilldown_field(mocker):
         Verifies that the output uses splunkdrilldown field
     """
     drilldown_config = [{"name": "test_query", "search": "index=main"}]
-    incident = {
-        "CustomFields": {"splunkdrilldown": json.dumps(drilldown_config)},
-        "labels": []
-    }
+    incident = {"CustomFields": {"splunkdrilldown": json.dumps(drilldown_config)}, "labels": []}
     mocker.patch("demistomock.incident", return_value=incident)
     res = SplunkShowDrilldown.main()
     contents = res.get("Contents")
@@ -511,10 +504,7 @@ def test_incident_enrichment_not_configured_with_valid_json_config(mocker):
         Verifies that raw configuration is displayed as table
     """
     drilldown_config = [{"name": "test_query", "search": "index=main"}]
-    incident = {
-        "CustomFields": {"splunkdrilldown": json.dumps(drilldown_config)},
-        "labels": []
-    }
+    incident = {"CustomFields": {"splunkdrilldown": json.dumps(drilldown_config)}, "labels": []}
     mocker.patch("demistomock.incident", return_value=incident)
     res = SplunkShowDrilldown.main()
     contents = res.get("Contents")
@@ -532,10 +522,7 @@ def test_incident_enrichment_not_configured_with_invalid_json_config(mocker):
     Then:
         Verifies that error is shown with raw data
     """
-    incident = {
-        "CustomFields": {"splunkdrilldown": '{"invalid": json}'},
-        "labels": []
-    }
+    incident = {"CustomFields": {"splunkdrilldown": '{"invalid": json}'}, "labels": []}
     mocker.patch("demistomock.incident", return_value=incident)
     res = SplunkShowDrilldown.main()
     contents = res.get("Contents")
@@ -556,7 +543,7 @@ def test_incident_enrichment_configured_no_results_with_valid_json(mocker):
     drilldown_config = [{"name": "test_query", "search": "index=main"}]
     incident = {
         "CustomFields": {"splunkdrilldown": json.dumps(drilldown_config)},
-        "labels": [{"type": "successful_drilldown_enrichment", "value": "true"}]
+        "labels": [{"type": "successful_drilldown_enrichment", "value": "true"}],
     }
     mocker.patch("demistomock.incident", return_value=incident)
     res = SplunkShowDrilldown.main()
@@ -578,7 +565,7 @@ def test_incident_enrichment_configured_no_results_with_invalid_json(mocker):
     """
     incident = {
         "CustomFields": {"splunkdrilldown": '{"invalid": json}'},
-        "labels": [{"type": "successful_drilldown_enrichment", "value": "true"}]
+        "labels": [{"type": "successful_drilldown_enrichment", "value": "true"}],
     }
     mocker.patch("demistomock.incident", return_value=incident)
     res = SplunkShowDrilldown.main()
@@ -597,10 +584,7 @@ def test_incident_enrichment_configured_no_results_no_config(mocker):
     Then:
         Verifies that appropriate message is shown
     """
-    incident = {
-        "CustomFields": {},
-        "labels": [{"type": "successful_drilldown_enrichment", "value": "true"}]
-    }
+    incident = {"CustomFields": {}, "labels": [{"type": "successful_drilldown_enrichment", "value": "true"}]}
     mocker.patch("demistomock.incident", return_value=incident)
     res = SplunkShowDrilldown.main()
     contents = res.get("Contents")
@@ -621,7 +605,7 @@ def test_incident_drilldown_results_as_dict(mocker):
     incident = {
         "labels": [
             {"type": "successful_drilldown_enrichment", "value": "true"},
-            {"type": "Drilldown", "value": json.dumps(drilldown_dict)}
+            {"type": "Drilldown", "value": json.dumps(drilldown_dict)},
         ]
     }
     mocker.patch("demistomock.incident", return_value=incident)
@@ -642,13 +626,13 @@ def test_main_exception_handling(mocker):
     """
     mocker.patch("demistomock.incident", side_effect=Exception("Test exception"))
     mock_return_error = mocker.patch("SplunkShowDrilldown.return_error")
-    
+
     # Simulate the __main__ block
     try:
         SplunkShowDrilldown.main()
     except Exception as e:
         SplunkShowDrilldown.return_error(f"Got an error while parsing Splunk events: {e}")
-    
+
     mock_return_error.assert_called_once()
     assert "Got an error while parsing Splunk events" in str(mock_return_error.call_args)
 
@@ -665,7 +649,7 @@ def test_incident_not_successful_with_raw_data(mocker):
     drilldown_data = '[{"query": "test"}]'
     incident = {
         "labels": [{"type": "successful_drilldown_enrichment", "value": "false"}],
-        "CustomFields": {"splunkdrilldown": drilldown_data}
+        "CustomFields": {"splunkdrilldown": drilldown_data},
     }
     mocker.patch("demistomock.incident", return_value=incident)
     res = SplunkShowDrilldown.main()
