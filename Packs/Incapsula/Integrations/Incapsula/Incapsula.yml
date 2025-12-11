@@ -14,22 +14,25 @@ configuration:
   type: 0
   hidden: true
   required: false
+  section: Connect
 - display: API key
   name: apikey
   defaultvalue: ""
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API ID
   name: creds
   type: 9
   displaypassword: API key
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
-
   required: false
+  section: Connect
 script:
   script: ''
   type: javascript
@@ -1404,6 +1407,9 @@ script:
       description: Default is false (basic policy details). Set to true for full policy data, including configuration.
     description: Retrieves all policies associated with the account or a specific policy if policy_id is provided.
     outputs:
+    - contextPath: Incapsula.Policies
+      description: The policies information.
+      type: unknown
     - contextPath: Incapsula.Policies.policy_id
       description: The policy ID.
       type: string
@@ -1500,6 +1506,9 @@ script:
       description: Entry ID for policy data exceptions JSON.
     description: Add a new policy or copy an existing policy.
     outputs:
+    - contextPath: Incapsula.Policies
+      description: The created policy information.
+      type: unknown
     - contextPath: Incapsula.Policies.policy_id
       description: The policy ID.
       type: string
@@ -1602,6 +1611,9 @@ script:
       description: Entry ID for policy data exceptions JSON.
     description: Modify an existing policy (partial or full update).
     outputs:
+    - contextPath: Incapsula.Policies
+      description: The modified policy information.
+      type: unknown
     - contextPath: Incapsula.Policies.policy_id
       description: The policy ID.
       type: string
@@ -1640,6 +1652,9 @@ script:
       description: Optional account ID for different sub-account.
     description: Check whether the policy is applied on the asset.
     outputs:
+    - contextPath: Incapsula.AssetOnPolicy
+      description: The asset on policy check result.
+      type: unknown
     - contextPath: Incapsula.AssetOnPolicy.asset_id
       description: The asset ID.
       type: string
@@ -1664,6 +1679,9 @@ script:
       description: Optional account ID for different sub-account.
     description: Overwrite applied assets in a policy.
     outputs:
+    - contextPath: Incapsula.AssetOnPolicy
+      description: The asset on policy apply result.
+      type: unknown
     - contextPath: Incapsula.AssetOnPolicy.asset_id
       description: The asset ID.
       type: string

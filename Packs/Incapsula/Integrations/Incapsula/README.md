@@ -1829,7 +1829,11 @@ Retrieves all policies associated with the account or a specific policy if polic
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Incapsula.Policies | unknown | The policies information |
+| Incapsula.Policies.policy_id | string | The policy ID. |
+| Incapsula.Policies.policy_name | string | The policy name. |
+| Incapsula.Policies.enabled | boolean | Whether the policy is enabled. |
+| Incapsula.Policies.setting_action | string | The action to take when the policy is triggered. |
+| Incapsula.Policies.policy_setting_type | string | The type of policy setting. |
 
 ### incap-policy-create
 
@@ -1868,7 +1872,11 @@ Add a new policy or copy an existing policy.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Incapsula.Policies | unknown | The created policy information |
+| Incapsula.Policies.policy_id | string | The policy ID. |
+| Incapsula.Policies.policy_name | string | The policy name. |
+| Incapsula.Policies.enabled | boolean | Whether the policy is enabled. |
+| Incapsula.Policies.setting_action | string | The action to take when the policy is triggered. |
+| Incapsula.Policies.policy_setting_type | string | The type of policy setting. |
 
 ### incap-policy-update
 
@@ -1908,7 +1916,11 @@ Modify an existing policy (partial or full update).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Incapsula.Policies | unknown | The modified policy information |
+| Incapsula.Policies.policy_id | string | The policy ID. |
+| Incapsula.Policies.policy_name | string | The policy name. |
+| Incapsula.Policies.enabled | boolean | Whether the policy is enabled. |
+| Incapsula.Policies.setting_action | string | The action to take when the policy is triggered. |
+| Incapsula.Policies.policy_setting_type | string | The type of policy setting. |
 
 ### incap-policy-delete
 
@@ -1952,7 +1964,9 @@ Check whether the policy is applied on the asset.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Incapsula.AssetOnPolicy | unknown | The asset on policy check result |
+| Incapsula.AssetOnPolicy.asset_id | string | The asset ID. |
+| Incapsula.AssetOnPolicy.policy_id | string | The policy ID. |
+| Incapsula.AssetOnPolicy.asset_type | string | Type of asset on which the policy is applied. |
 
 ### incap-asset-on-policy-apply
 
@@ -1976,4 +1990,6 @@ Overwrite applied assets in a policy.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Incapsula.AssetOnPolicy | unknown | The asset on policy apply result |
+| Incapsula.AssetOnPolicy.asset_id | string | The asset ID. |
+| Incapsula.AssetOnPolicy.policy_id | string | The policy ID. |
+| Incapsula.AssetOnPolicy.asset_type | string | Type of asset on which the policy is applied. |
