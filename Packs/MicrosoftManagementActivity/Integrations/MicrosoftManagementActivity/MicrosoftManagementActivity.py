@@ -478,6 +478,7 @@ def get_all_content_records_of_specified_types(client, content_types_to_fetch, s
 
 def content_records_to_incidents(content_records, start_time, end_time, last_run):
     last_incidents_id_dedup = last_run.get("incidents_id_dedup", [])
+    skipped_records_ids = []
     incidents = []
     new_incidents_id_dedup: Set = set()
     start_time_datetime = datetime.strptime(start_time, DATE_FORMAT)
@@ -497,6 +498,7 @@ def content_records_to_incidents(content_records, start_time, end_time, last_run
 
         # Skipping incidents from previous run
         if record_id in last_incidents_id_dedup:
+            skipped_records_ids.append(record_id)
             continue
 
         # Internal Batch Deduplication (Skip duplicates within this specific response)
@@ -526,7 +528,8 @@ def content_records_to_incidents(content_records, start_time, end_time, last_run
 
     incident_ids_from_name = [i["name"].split(": ")[-1] for i in incidents]
     demisto.debug(
-        f"Fetching window is {start_time=}, {end_time=} and those are the IDs of the incidents: {incident_ids_from_name}"
+        f"Fetching window is {start_time=}, {end_time=} and those are the IDs of the incidents: {incident_ids_from_name}."
+        f"Skipped those records ids {skipped_records_ids=}"
     )
 
     return incidents, latest_creation_time_str, list(new_incidents_id_dedup)
