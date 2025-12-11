@@ -57,6 +57,7 @@ ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
+USERS_TABLE = "USERS_TABLE"
 
 
 class CaseManagement:
@@ -1183,6 +1184,7 @@ def build_webapp_request_data(
     on_demand_fields: list | None = None,
     sort_order: str | None = "DESC",
     start_page: int = 0,
+    extra_data : dict | None = None,
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
@@ -1213,6 +1215,7 @@ def build_webapp_request_data(
         "filter_data": filter_data,
         "jsons": [],
         "onDemandFields": on_demand_fields,
+        "extraData": extra_data
     }
 
 
@@ -2837,6 +2840,35 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
+def get_system_users(client, args):
+    emails = argToList(args.get("email", ""))
+    request_data = build_webapp_request_data(
+        table_name=USERS_TABLE,
+        filter_dict={},
+        limit=50,
+        sort_field="PRETTY_USER_NAME",
+        sort_order="ASC",
+        extra_data = {"include_hidden_users": True}
+    )
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+    if emails:
+        data = [user for user in data if user.get("USERNAME") in emails]
+    else:
+        data = data[:50] if len(data) > 50 else data
+
+
+    return CommandResults(
+        readable_output=tableToMarkdown("System Users", data, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Users",
+        outputs_key_field="USERNAME",
+        outputs=data,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -2956,6 +2988,10 @@ def main():  # pragma: no cover
             return_results(update_case_command(client, args))
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
+        elif command == "core-get-system-users":
+            return_results(get_system_users(client, args))
+
+
 
     except Exception as err:
         demisto.error(traceback.format_exc())
