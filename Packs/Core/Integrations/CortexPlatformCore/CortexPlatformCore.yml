@@ -2614,6 +2614,7 @@ script:
             - ASC
         - defaultValue: "100"
           description: Number of exception rules to return. Ignored if 'retrieve_all' is set to true.
+          name: limit
         - defaultValue: "0"
           description: Page number to return. Ignored if 'retrieve_all' is set to true.
           name: page
