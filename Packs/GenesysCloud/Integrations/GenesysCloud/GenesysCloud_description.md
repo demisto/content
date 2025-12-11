@@ -21,6 +21,7 @@ The steps below require a user account with Admin access.
 8. In the **Assign Roles** table, enable the toggle for each role required by the XSIAM collector.
     - Ensure the "**Audits** > **Audit** > **View**" permission is selected.
     - Update the associated divisions for the roles as required; otherwise, they default to the **Home** Division.
+    - If assigning roles for Genesys Cloud for Salesforce, see also [OAuth client permissions for Genesys Cloud for Salesforce](https://help.mypurecloud.com/articles/oauth-client-permissions-for-genesys-cloud-for-salesforce/).
 
 9. Click **Next**.
 

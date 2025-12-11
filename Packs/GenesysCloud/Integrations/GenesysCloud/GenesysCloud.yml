@@ -48,10 +48,11 @@ configuration:
   - Integrations
   - AnalyticsReporting
   defaultvalue: Architect,PeoplePermissions,ContactCenter,Groups,Telephony,Outbound,Routing,Integrations,AnalyticsReporting
+  additionalinfo: By default, all services are selected.
   required: false
   type: 16
   section: Collect
-- display: Maximum Number of Events Per Service
+- display: Maximum number of events per service
   name: max_fetch
   defaultvalue: 2500
   required: false

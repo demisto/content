@@ -12,7 +12,7 @@ This integration was integrated and tested with version 2 of the Genesys Cloud P
 | Use system proxy settings | | False |
 | Fetch Events | | False |
 | Service names | Possible values are: Architect, PeoplePermissions, ContactCenter, Groups, Telephony, Outbound, Routing, Integrations, AnalyticsReporting. | False |
-| Maximum Number of Events Per Service | Default value is 2500. | False |
+| Maximum number of events per service | Default value is 2500. | False |
 
 ## Commands
 
