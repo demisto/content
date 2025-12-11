@@ -524,9 +524,10 @@ def content_records_to_incidents(content_records, start_time, end_time, last_run
         # If we advanced to end_time, we don't need to dedup IDs anymore
         new_incidents_id_dedup = set()
 
-    incident_ids_from_name = [i['name'].split(': ')[-1] for i in incidents]
+    incident_ids_from_name = [i["name"].split(": ")[-1] for i in incidents]
     demisto.debug(
-        f"Fetching window is {start_time=}, {end_time=} and those are the IDs of the incidents: {incident_ids_from_name}")
+        f"Fetching window is {start_time=}, {end_time=} and those are the IDs of the incidents: {incident_ids_from_name}"
+    )
 
     return incidents, latest_creation_time_str, list(new_incidents_id_dedup)
 

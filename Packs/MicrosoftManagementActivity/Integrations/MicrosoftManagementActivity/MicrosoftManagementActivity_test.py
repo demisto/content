@@ -758,9 +758,7 @@ def test_fetch_standard_flow(mock_content_records):
     end_time = "2025-12-05T04:20:00"
     last_run = {}
 
-    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(
-        mock_content_records, start_time, end_time, last_run
-    )
+    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(mock_content_records, start_time, end_time, last_run)
 
     incident_ids = [json.loads(i["rawJSON"])["Id"] for i in incidents]
 
