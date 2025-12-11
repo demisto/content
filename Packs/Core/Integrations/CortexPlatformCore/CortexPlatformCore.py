@@ -2696,6 +2696,40 @@ def list_scripts_command(client: Client, args: dict) -> CommandResults:
         raw_response=response,
     )
 
+def run_script_agentix_command(client: Client, args: dict) -> CommandResults:
+    """
+    Executes a script on agents with specified parameters.
+
+    Args:
+        client (Client): The client instance for making API requests.
+        args (dict): Arguments for running the script.
+
+    Returns:
+        CommandResults: Results of the script execution.
+    """
+    script_uid = args.get("script_uid", "")
+    script_name = args.get("script_name", "")
+    endpoint_ids = argToList(args.get("endpoint_ids", ""))
+    endpoint_names = argToList(args.get("endpoint_names", ""))
+    
+    if script_uid and script_name:
+        raise ValueError("Please provide either script_uid or script_name, not both.")
+    
+    if not script_uid and not script_name:
+        raise ValueError("You must specify either script_uid or script_name.")
+    
+    if endpoint_ids and endpoint_names:
+        raise ValueError("Please provide either endpoint_ids or endpoint_names, not both.")
+    
+    if not endpoint_ids and not endpoint_names:
+        raise ValueError("You must specify either endpoint_ids or endpoint_names.")
+    
+    if script_name:
+        script_uid = list_scripts_command(client, {"script_name": script_name})
+    
+    if endpoint_names:
+        endpoint_ids = core_list_endpoints_command(client, {"endpoint_name": endpoint_names})
+
 
 def main():  # pragma: no cover
     """
@@ -2818,6 +2852,8 @@ def main():  # pragma: no cover
             return_results(run_playbook_command(client, args))
         elif command == "core-list-scripts":
             return_results(list_scripts_command(client, args))
+        elif command == "core-run-script-agentix":
+            return_results(run_script_agentix_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
