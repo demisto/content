@@ -2613,14 +2613,10 @@ script:
             - DESC
             - ASC
         - defaultValue: "100"
-          description: Number of exception rules to return. Cannot be used together with page_size.
-          name: limit
+          description: Number of exception rules to return. Ignored if 'retrieve_all' is set to true.
         - defaultValue: "0"
-          description: Page number to return.
+          description: Page number to return. Ignored if 'retrieve_all' is set to true.
           name: page
-        - defaultValue: "100"
-          description: Page size to use for pagination. Cannot be used together with limit.
-          name: page_size
         - auto: PREDEFINED
           defaultValue: "true"
           description: Return all exception rules.

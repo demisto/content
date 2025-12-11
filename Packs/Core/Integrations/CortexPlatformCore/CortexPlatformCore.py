@@ -426,9 +426,6 @@ class FilterBuilder:
     @staticmethod
     def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
         """Prepare start and end time from args, parsing relative time strings."""
-        if end_time_str and not start_time_str:
-            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
-
         start_time, end_time = None, None
 
         if start_time_str:
@@ -446,6 +443,9 @@ class FilterBuilder:
         if start_time and not end_time:
             # Set end_time to the current time if only start_time is provided
             end_time = int(datetime.now().timestamp() * 1000)
+
+        if end_time and not start_time:
+            start_time = 0
 
         return start_time, end_time
 
@@ -2966,8 +2966,10 @@ def get_webapp_data(client, table_name: str, filter_dict: Any,
     all_records = []
     raw_responses = []
 
-    current_limit = max_limit if retrieve_all else base_limit + offset
+    limit = max_limit if retrieve_all else base_limit
     current_offset = offset
+    current_limit = offset + limit
+
 
     while True:
         request_data = build_webapp_request_data(
@@ -2990,7 +2992,9 @@ def get_webapp_data(client, table_name: str, filter_dict: Any,
         if not retrieve_all or len(data) < current_limit:
             break
 
-        current_offset += current_limit
+        current_offset += limit
+        current_limit = current_offset + limit
+
 
     return all_records, raw_responses
 
@@ -3063,12 +3067,14 @@ def get_system_users_command(client, args):
     emails are provided, it limits the results to 50.
     """
     emails = argToList(args.get("email", ""))
+    if len(emails) > MAX_GET_SYSTEM_USERS_LIMIT:
+        raise DemistoException("The maximum number of emails allowed is 50.")
     response = client.get_users()
-    reply = response.get("reply", {})
+    data = response.get("reply", {})
     if emails:
-        data = [user for user in reply if user.get("user_email") in emails]
-    else:
-        data = reply[:MAX_GET_SYSTEM_USERS_LIMIT] if len(reply) > MAX_GET_SYSTEM_USERS_LIMIT else reply
+        data = [user for user in data if user.get("user_email") in emails]
+    if len(data) > MAX_GET_SYSTEM_USERS_LIMIT:
+        data = data[:MAX_GET_SYSTEM_USERS_LIMIT]
 
     return CommandResults(
         readable_output=tableToMarkdown("System Users", data, headerTransform=string_to_table_header),
