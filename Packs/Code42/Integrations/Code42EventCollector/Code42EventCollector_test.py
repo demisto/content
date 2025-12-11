@@ -669,9 +669,9 @@ def test_get_events_command(mocker):
         ),
         pytest.param(  # Halfway through batching (counts incremented and nextTrigger in 3 seconds)
             {FileEventLastRun.CUMULATIVE_COUNT.value: 12000, AuditLogLastRun.CUMULATIVE_COUNT.value: 48000},
-            18000,
+            12000 + MAX_AUDIT_LOGS_BATCH_SIZE,
             NEXT_TRIGGER_VALUE,
-            54000,
+            48000 + MAX_AUDIT_LOGS_BATCH_SIZE,
             NEXT_TRIGGER_VALUE,
             id="Middle batch",
         ),

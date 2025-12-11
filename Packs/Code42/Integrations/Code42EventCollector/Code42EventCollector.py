@@ -17,12 +17,12 @@ DEFAULT_AUDIT_EVENTS_MAX_FETCH = 100000
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%fZ"
 
 MAX_FETCH_AUDIT_LOGS = 100000
-MAX_AUDIT_LOGS_PAGE_SIZE = 6000
-MAX_AUDIT_LOGS_BATCH_SIZE = 6000
+MAX_AUDIT_LOGS_PAGE_SIZE = 9000
+MAX_AUDIT_LOGS_BATCH_SIZE = 8000
 
 MAX_FETCH_FILE_EVENTS = 50000
-MAX_FILE_EVENTS_PAGE_SIZE = 6000
-MAX_FILE_EVENTS_BATCH_SIZE = 6000
+MAX_FILE_EVENTS_PAGE_SIZE = 9000
+MAX_FILE_EVENTS_BATCH_SIZE = 8000
 FILE_EVENTS_LOOK_BACK = timedelta(seconds=45)
 # The time filter in Code 42 is only accurate up to the first 23 characters (first 3 microsecond digits)
 # i.e., a query for incidents inserted after "2025-01-01 00:00:00.123456Z" is the same as "2025-01-01 00:00:00.123000Z"
@@ -46,7 +46,7 @@ class AuditLogLastRun(str, Enum):
     NEXT_TRIGGER = "audit-log-next-trigger"  # helps determine when to trigger next fetch
 
 
-NEXT_TRIGGER_VALUE = "3"  # seconds to wait before triggering the next fetch iteration when batching is in progress
+NEXT_TRIGGER_VALUE = "1"  # seconds to wait before triggering the next fetch iteration when batching is in progress
 
 
 class EventType(str, Enum):
@@ -297,7 +297,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
         f"Starting batch fetch for {EventType.FILE.value} events. "
         f"Last progress={cumulative_count}/{max_fetch_file_events}, {limit=}."
     )
-    # Assume over-fetching negligible
+    # Assume over-fetching negligible (very few last run fetched IDs since timestamp in microsecond resolution)
     file_events = client.get_file_events(file_event_time, limit=limit + len(fetched_events))
     dedup_file_events = dedup_fetched_events(
         events=file_events,
@@ -380,7 +380,7 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
         f"Starting batch fetch for {EventType.AUDIT.value} logs. "
         f"Last progress={cumulative_count}/{max_fetch_audit_events}, {limit=}."
     )
-    # Assume over-fetching negligible
+    # Assume over-fetching negligible (very few last run fetched IDs since timestamp in microsecond resolution)
     audit_logs = client.get_audit_logs(audit_log_time, limit=limit + len(last_fetched_audit_log_ids))
     dedup_audit_logs = dedup_fetched_events(
         events=audit_logs,
@@ -482,10 +482,10 @@ def fetch_events(
         demisto.updateModuleHealth({"eventsPulled": len(audit_logs)})
         total_event_count += len(audit_logs)
 
-    # If at least one type has not completed batching, trigger next fetch iteration in 3 seconds
+    # If at least one type has not completed batching, trigger next fetch iteration in 1 second
     if last_run.get(FileEventLastRun.NEXT_TRIGGER.value) or last_run.get(AuditLogLastRun.NEXT_TRIGGER.value):
         last_run["nextTrigger"] = NEXT_TRIGGER_VALUE
-        demisto.debug("At least on event type has batching in progress. Next run will be triggered in 3 seconds.")
+        demisto.debug("At least on event type has batching in progress. Next run will be triggered in 1 second.")
     else:
         last_run["nextTrigger"] = None
         demisto.debug("All event types finished batching. Next run will be triggered based on fetch interval.")
