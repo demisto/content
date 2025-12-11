@@ -340,13 +340,13 @@ class Service:
 
 def test_raw_to_dict():
     actual_raw = DICT_RAW_RESPONSE
-    response = splunk.rawToDict(actual_raw)
-    response_with_message = splunk.rawToDict(DICT_RAW_RESPONSE_WITH_MESSAGE_ID)
-    list_response = splunk.rawToDict(LIST_RAW)
-    raw_message = splunk.rawToDict(RAW_WITH_MESSAGE)
-    empty = splunk.rawToDict("")
-    url_test = splunk.rawToDict(URL_TESTING_IN)
-    character_check = splunk.rawToDict(RESPONSE)
+    response = splunk.raw_to_dict(actual_raw)
+    response_with_message = splunk.raw_to_dict(DICT_RAW_RESPONSE_WITH_MESSAGE_ID)
+    list_response = splunk.raw_to_dict(LIST_RAW)
+    raw_message = splunk.raw_to_dict(RAW_WITH_MESSAGE)
+    empty = splunk.raw_to_dict("")
+    url_test = splunk.raw_to_dict(URL_TESTING_IN)
+    character_check = splunk.raw_to_dict(RESPONSE)
 
     assert response == EXPECTED
     assert response_with_message == EXPECTED_WITH_MESSAGE_ID
@@ -356,11 +356,11 @@ def test_raw_to_dict():
     assert empty == {}
     assert url_test == URL_TESTING_OUT
     assert character_check == POSITIVE
-    assert splunk.rawToDict(RAW_JSON) == RAW_JSON_AND_STANDARD_OUTPUT
-    assert splunk.rawToDict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
+    assert splunk.raw_to_dict(RAW_JSON) == RAW_JSON_AND_STANDARD_OUTPUT
+    assert splunk.raw_to_dict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
 
-    assert splunk.rawToDict('drilldown_search="key IN ("test1","test2")') == {"drilldown_search": "key IN (test1,test2)"}
-    assert splunk.rawToDict(
+    assert splunk.raw_to_dict('drilldown_search="key IN ("test1","test2")') == {"drilldown_search": "key IN (test1,test2)"}
+    assert splunk.raw_to_dict(
         '123456, sample_account="sample1", sample_account="sample2", sample_account="sample3", distinct_count_ac="5"'
     ) == {"sample_account": "sample1, sample2, sample3", "distinct_count_ac": "5"}
 
@@ -4723,3 +4723,86 @@ def test_update_remote_system_command_non_mirrored_fields_ignored(mocker):
     assert call_kwargs["urgency"] == "high"
     assert "custom_field" not in str(call_kwargs)
     assert "another_field" not in str(call_kwargs)
+
+
+@pytest.mark.parametrize(
+    "splunk_time, expected_offset",
+    [
+        # Valid positive timezone offsets
+        ("2024-01-15T10:30:45.123456+02:00", "+02:00"),
+        ("2024-01-15T10:30:45.123456+09:30", "+09:30"),
+        ("2024-01-15T10:30:45.123456+14:00", "+14:00"),
+        # Valid negative timezone offsets
+        ("2024-01-15T10:30:45.123456-05:00", "-05:00"),
+        ("2024-01-15T10:30:45.123456-03:30", "-03:30"),
+        ("2024-01-15T10:30:45.123456-12:00", "-12:00"),
+        # UTC/zero offset
+        ("2024-01-15T10:30:45.123456+00:00", "+00:00"),
+        # Different microsecond precision
+        ("2024-01-15T10:30:45.1+02:00", "+02:00"),
+        ("2024-01-15T10:30:45.12+02:00", "+02:00"),
+        ("2024-01-15T10:30:45.123+02:00", "+02:00"),
+        ("2024-01-15T10:30:45.1234+02:00", "+02:00"),
+        ("2024-01-15T10:30:45.12345+02:00", "+02:00"),
+    ],
+)
+def test_extract_timezone_offset_from_splunk_time_valid_inputs(splunk_time, expected_offset):
+    """
+    Given: A valid Splunk time string in ISO_FORMAT_TZ_AWARE format with various timezone offsets.
+    When: The extract_timezone_offset_from_splunk_time function is called.
+    Then: The function returns the correct timezone offset string.
+    """
+    result = splunk.extract_timezone_offset_from_splunk_time(splunk_time)
+    assert result == expected_offset
+
+
+@pytest.mark.parametrize(
+    "splunk_time, expected_offset",
+    [
+        # Empty string
+        ("", "+00:00"),
+        # Malformed strings
+        ("invalid-time-string", "+00:00"),
+        ("2024-01-15", "+00:00"),
+        ("2024-01-15T10:30:45", "+00:00"),
+        # Missing timezone
+        ("2024-01-15T10:30:45.123456", "+00:00"),
+        # Z notation (not in expected format)
+        ("2024-01-15T10:30:45.123456Z", "+00:00"),
+        # Invalid timezone format
+        ("2024-01-15T10:30:45.123456+2:00", "+00:00"),
+        ("2024-01-15T10:30:45.123456+0200", "+02:00"),
+    ],
+)
+def test_extract_timezone_offset_from_splunk_time_invalid_inputs(mocker, splunk_time, expected_offset):
+    """
+    Given: An invalid or malformed Splunk time string.
+    When: The extract_timezone_offset_from_splunk_time function is called.
+    Then: The function returns '+00:00' (UTC) as the default fallback.
+    """
+    mocker.patch.object(demisto, "error")
+    result = splunk.extract_timezone_offset_from_splunk_time(splunk_time)
+    assert result == expected_offset
+
+
+def test_extract_timezone_offset_from_splunk_time_edge_cases():
+    """
+    Given: Edge case Splunk time strings with boundary timezone values.
+    When: The extract_timezone_offset_from_splunk_time function is called.
+    Then: The function correctly handles extreme timezone offsets.
+    """
+    # Maximum positive offset (UTC+14:00)
+    result = splunk.extract_timezone_offset_from_splunk_time("2024-01-15T10:30:45.123456+14:00")
+    assert result == "+14:00"
+
+    # Maximum negative offset (UTC-12:00)
+    result = splunk.extract_timezone_offset_from_splunk_time("2024-01-15T10:30:45.123456-12:00")
+    assert result == "-12:00"
+
+    # Half-hour offset
+    result = splunk.extract_timezone_offset_from_splunk_time("2024-01-15T10:30:45.123456+05:30")
+    assert result == "+05:30"
+
+    # Quarter-hour offset
+    result = splunk.extract_timezone_offset_from_splunk_time("2024-01-15T10:30:45.123456+05:45")
+    assert result == "+05:45"

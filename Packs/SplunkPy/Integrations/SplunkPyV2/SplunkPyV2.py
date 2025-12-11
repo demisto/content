@@ -20,7 +20,6 @@ from splunklib.data import Record
 
 INTEGRATION_LOG = "SplunkPyV2- "
 OUTPUT_MODE_JSON = "json"  # type of response from splunk-sdk query (json/csv/xml)
-# Define utf8 as default encoding
 params = demisto.params()
 DEFAULT_ASSET_ENRICH_TABLES = "asset_lookup_by_str,asset_lookup_by_cidr"
 DEFAULT_IDENTITY_ENRICH_TABLE = "identity_lookup_expanded"
@@ -118,6 +117,14 @@ class UserMappingObject:
         xsoar_user_column_name: str = "xsoar_user",
         splunk_user_column_name: str = "splunk_user",
     ):
+        """
+        Args:
+            service (client.Service): Splunk service object.
+            should_map_user (bool): Whether to map the user or not.
+            table_name (str): The name of the table in Splunk.
+            xsoar_user_column_name (str): The name of the column in the table that holds the XSOAR user.
+            splunk_user_column_name (str): The name of the column in the table that holds the Splunk user.
+        """
         self.service = service
         self.should_map = should_map_user
         self.table_name = table_name
@@ -125,7 +132,7 @@ class UserMappingObject:
         self.splunk_user_column_name = splunk_user_column_name
         self._kvstore_data: list[dict[str, Any]] = []
 
-    def _get_record(self, col: str, value_to_search: str):
+    def _get_record(self, col: str, value_to_search: str) -> filter:
         """Gets the records with the value found in the relevant column."""
         if not self._kvstore_data:
             demisto.debug("UserMapping: kvstore data empty, initialize it")
@@ -256,7 +263,24 @@ class SplunkGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
 # =========== Time & Date Utilities ===========
 
 
-def get_current_splunk_time(splunk_service: client.Service):
+def get_current_splunk_time(splunk_service: client.Service) -> str:
+    """Get the current time from the Splunk server in ISO format with timezone.
+
+    This query uses the gentimes command to generate a single time event, then formats it
+    using strftime to get the current server time in ISO_FORMAT_TZ_AWARE format.
+    The timezone offset in the result is according to the timezone configured for the user
+    who owns the token that was provided for authentication.
+
+    Args:
+        splunk_service: Splunk service object
+
+    Returns:
+        Current Splunk server time as a string in ISO_FORMAT_TZ_AWARE format
+        (e.g., '2025-12-03T11:53:45.138540+02:00')
+
+    Raises:
+        ValueError: If the Splunk time cannot be fetched
+    """
     get_time_query = f'| gentimes start=-1 | eval clock = strftime(time(), "{ISO_FORMAT_TZ_AWARE}") | sort 1 -_time | table clock'
     search_results = splunk_service.jobs.oneshot(get_time_query, count=1, output_mode=OUTPUT_MODE_JSON)
 
@@ -289,7 +313,7 @@ def extract_timezone_offset_from_splunk_time(splunk_time_str: str) -> str:
         # Format as +HH:MM
         return f"{tz_offset[:3]}:{tz_offset[3:]}"
     except Exception as e:
-        demisto.error(f"Failed to extract timezone from '{splunk_time_str}': {e}")
+        demisto.error(f"Failed to extract timezone from '{splunk_time_str}' using +00:00 as timezone : {e}")
         return "+00:00"  # Default to UTC
 
 
@@ -333,7 +357,7 @@ def get_splunk_timezone_offset(service: client.Service) -> str:
         return "+00:00"  # Default to UTC on error
 
 
-def enforce_look_behind_time(fetch_window_start_time, fetch_window_end_time, look_behind_time):
+def enforce_lookback_time(fetch_window_start_time, fetch_window_end_time, look_behind_time):
     """Verifies that the start time of the fetch is at X minutes before
     the end time, X being the number of minutes specified in the look_behind parameter.
     The reason this is needed is to ensure that events that have a significant difference
@@ -397,8 +421,8 @@ def get_fetch_time_window(params, service, last_run_fetch_window_start_time: str
     occurrence_time_look_behind_minutes = arg_to_number(params.get("occurrence_look_behind") or 15)
     extensive_log(f"[SplunkPy] occurrence look behind is: {occurrence_time_look_behind_minutes}")
 
-    # Enforce look-behind time to ensure we don't miss late-indexed events
-    fetch_window_start_time = enforce_look_behind_time(
+    # Enforce look-back time to ensure we don't miss late-indexed events
+    fetch_window_start_time = enforce_lookback_time(
         fetch_window_start_time, fetch_window_end_time, occurrence_time_look_behind_minutes
     )
 
@@ -406,6 +430,136 @@ def get_fetch_time_window(params, service, last_run_fetch_window_start_time: str
 
 
 # =========== Helper Utilities ===========
+
+
+def quote_group(text: str) -> list[str]:
+    """A function that splits groups of key value pairs.
+    Taking into consideration key values pairs with nested quotes.
+    """
+
+    def clean(t):
+        return t.strip().rstrip(",")
+
+    # Return strings that aren't key-valued, as is.
+    if len(text.strip()) < 3 or "=" not in text:
+        return [text]
+
+    # Remove prefix & suffix wrapping quotes if present around all the text
+    # For example a text could be:
+    # "a="123"", we want it to be: a="123"
+    text = re.sub(r"^\"([\s\S]+\")\"$", r"\1", text)
+
+    # Some of the texts don't end with a comma so we add it to make sure
+    # everything acts the same.
+    if not text.rstrip().endswith(","):
+        text = text.rstrip()
+        text += ","
+
+    # Fix elements that aren't key=value (`111, a="123"` => `a="123"`)
+    # (^) - start of text
+    # ([^=]+), - everything without equal sign and a comma at the end
+    #   ('111,' above)
+    text = re.sub(r"(^)([^=]+),", ",", text).lstrip(",")
+
+    # Wrap all key values without a quote (`a=123` => `a="123"`)
+    # Key part: ([^\"\,]+?=)
+    #   asdf=123, here it will match 'asdf'.
+    #
+    # Value part: ([^\"]+?)
+    #   every string without a quote or doesn't start the text.
+    #   For example: asdf=123, here it will match '123'.
+    #
+    # End value part: (,|\")
+    #   we need to decide when to end the value, in our case
+    #   with a comma. We also check for quotes for this case:
+    #   a="b=nested_value_without_a_wrapping_quote", as we want to
+    #   wrap 'nested_value_without_a_wrapping_quote' with quotes.
+    text = re.sub(r"([^\"\,]+?=)([^\"]+?)(,|\")", r'\1"\2"\3', text)
+
+    # The basic idea here is to check that every key value ends with a `",`
+    # Assuming that there are even number of quotes before
+    # (some values can have deep nested quotes).
+    quote_counter = 0
+    rindex = 0
+    lindex = 0
+    groups = []
+    while rindex < len(text):
+        # For every quote we increment the quote counter
+        # (to preserve context on the opening/closed quotes)
+        if text[rindex] == '"':
+            quote_counter += 1
+
+        # A quote group ends when `",` is encountered.
+        is_end_keypair = rindex > 1 and text[rindex - 1] + text[rindex] == '",'
+
+        # If the quote_counter isn't even we shouldn't close the group,
+        # for example: a="b="1",c="3""                * *
+        # I'll space for readability:   a = " b = " 1 " , c ...
+        #                               0 1 2 3 4 5 6 7 8 9
+        # quote_counter is even:            F     T   F   T
+        # On index 7 & 8 we find a potential quote closing, but as you can
+        # see it isn't a valid group (because of nesting) we need to check
+        # the quote counter for an even number => a closing match.
+        is_even_number_of_quotes = quote_counter % 2 == 0
+
+        # We check both conditions to find a group
+        if is_end_keypair and is_even_number_of_quotes:
+            # Clean the match group and append to groups
+            groups.append(clean(text[lindex:rindex]))
+
+            # Incrementing the indexes to start searching for the next group.
+            lindex = rindex + 1
+            rindex += 1
+            quote_counter = 0
+
+        # Continue to walk the string until we find a quote again.
+        rindex += 1
+
+    # Sometimes there aren't any quotes in the string so we can just append it
+    if not groups:
+        groups.append(clean(text))
+
+    return groups
+
+
+def raw_to_dict(raw: str) -> dict[str, str]:
+    result: dict[str, str] = {}
+    try:
+        result = json.loads(raw)
+    except ValueError:
+        if '"message"' in raw:
+            raw = raw.replace('"', "").strip("{").strip("}")
+            key_val_arr = raw.split(",")
+            for key_val in key_val_arr:
+                single_key_val = key_val.split(":", 1)
+                if len(single_key_val) <= 1:
+                    single_key_val = key_val.split("=", 1)
+                if len(single_key_val) > 1:
+                    val = single_key_val[1]
+                    key = single_key_val[0].strip()
+
+                    result[key] = f"{result[key]},{val}" if key in tuple(result.keys()) else val
+        else:
+            # search for the pattern: `key="value", `
+            # (the double quotes are optional)
+            # we append `, ` to the end of the string to catch the last value
+            groups = quote_group(raw)
+            for g in groups:
+                key_value = g.replace('"', "").strip()
+                if key_value == "":
+                    continue
+
+                if "=" in key_value:
+                    key_and_val = key_value.split("=", 1)
+                    if key_and_val[0] not in result:
+                        result[key_and_val[0]] = key_and_val[1]
+                    else:
+                        # If there are multiple values for a key, append them.
+                        result[key_and_val[0]] = ", ".join([result[key_and_val[0]], key_and_val[1]])
+
+    if REPLACE_FLAG:
+        result = replace_keys(result)
+    return result
 
 
 def create_incident_custom_id(incident: dict[str, Any]):
@@ -740,7 +894,9 @@ class Enrichment:
         self.query_search = query_search
 
     @classmethod
-    def from_job(cls, enrichment_type, job: client.Job, query_name=None, query_search=None):
+    def from_job(
+        cls, enrichment_type: str, job: client.Job | None, query_name: str | None = None, query_search: str | None = None
+    ) -> "Enrichment":
         """Creates an Enrichment object from Splunk Job object
 
         Args:
@@ -760,7 +916,7 @@ class Enrichment:
             return cls(enrichment_type=enrichment_type, status=Enrichment.FAILED)
 
     @classmethod
-    def from_json(cls, enrichment_dict):
+    def from_json(cls, enrichment_dict: dict[str, Any]) -> "Enrichment":
         """Deserialization method.
 
         Args:
@@ -797,15 +953,15 @@ class Finding:
 
     def __init__(
         self,
-        data,
-        enrichments=None,
-        finding_id=None,
-        occurred=None,
-        custom_id=None,
-        index_time=None,
-        time_is_missing=None,
-        incident_created=None,
-    ):
+        data: dict[str, Any],
+        enrichments: list[Enrichment] | None = None,
+        finding_id: str | None = None,
+        occurred: str | None = None,
+        custom_id: str | None = None,
+        index_time: str | None = None,
+        time_is_missing: bool | None = None,
+        incident_created: bool | None = None,
+    ) -> None:
         self.data = data
         self.id = finding_id or self.get_id()
         self.enrichments = enrichments or []
@@ -815,7 +971,7 @@ class Finding:
         self.occurred = occurred or self.get_occurred()
         self.custom_id = custom_id or self.create_custom_id()
 
-    def get_id(self):
+    def get_id(self) -> str:
         if EVENT_ID in self.data:
             return self.data[EVENT_ID]
         if ENABLED_ENRICHMENTS:
@@ -827,10 +983,10 @@ class Finding:
                 "run the fetch again."
             )
         else:
-            return None
+            return ""
 
     @staticmethod
-    def create_incident(finding_data, occurred, mapper: UserMappingObject):
+    def create_incident(finding_data: dict[str, Any], occurred: str, mapper: UserMappingObject) -> dict[str, Any]:
         rule_title, rule_name = "", ""
         params = demisto.params()
         if demisto.get(finding_data, "rule_title"):
@@ -858,9 +1014,9 @@ class Finding:
         splunk_note_entries = []
         labels = []
         if params.get("parseFindingEventsRaw"):
-            for key, value in rawToDict(finding_data["_raw"]).items():
+            for key, value in raw_to_dict(finding_data["_raw"]).items():
                 if not isinstance(value, str):
-                    value = convert_to_str(value)
+                    value = str(value)
                 labels.append({"type": key, "value": value})
         if demisto.get(finding_data, "security_domain"):
             labels.append({"type": "security_domain", "value": finding_data["security_domain"]})
@@ -875,7 +1031,7 @@ class Finding:
 
         return incident
 
-    def to_incident(self, mapper: UserMappingObject):
+    def to_incident(self, mapper: UserMappingObject) -> dict[str, Any]:
         """Gathers all data from all finding's enrichments and return an incident"""
         self.incident_created = True
 
@@ -928,20 +1084,20 @@ class Finding:
         # any interruption we will have at least one enrichment object for each enrichment type (for drilldown enrichment we could
         # have more than one enrichment object - in a case of multiple drilldown searches enrichment).
 
-    def failed_to_submit(self):
+    def failed_to_submit(self) -> bool:
         """Returns an indicator on whether all finding's enrichments were failed to submit or not"""
         finding_enrichment_types = {e.type for e in self.enrichments}
         return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and len(
             finding_enrichment_types
         ) == len(ENABLED_ENRICHMENTS)
 
-    def handled(self):
+    def handled(self) -> bool:
         """Returns an indicator on whether all finding's enrichments were handled or not"""
         return all(enrichment.status in Enrichment.HANDLED for enrichment in self.enrichments) or any(
             enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments
         )
 
-    def get_submitted_enrichments(self):
+    def get_submitted_enrichments(self) -> tuple[bool, bool, bool]:
         """Returns indicators on whether each enrichment was submitted/failed or not initiated"""
         submitted_drilldown, submitted_asset, submitted_identity = False, False, False
 
@@ -955,7 +1111,7 @@ class Finding:
 
         return submitted_drilldown, submitted_asset, submitted_identity
 
-    def get_occurred(self):
+    def get_occurred(self) -> str:
         """Returns the occurred time, if not exists in data, returns the current fetch time"""
         if "_time" in self.data:
             finding_occurred = self.data["_time"]
@@ -968,7 +1124,7 @@ class Finding:
 
         return finding_occurred
 
-    def create_custom_id(self):
+    def create_custom_id(self) -> str:
         """Generates a custom ID for a given finding"""
         if self.id:
             return self.id
@@ -984,7 +1140,7 @@ class Finding:
 
         return finding_custom_id
 
-    def is_enrichment_process_exceeding_timeout(self, enrichment_timeout):
+    def is_enrichment_process_exceeding_timeout(self, enrichment_timeout: int) -> bool:
         """Checks whether an enrichment process has exceeded timeout or not
 
         Args:
@@ -1005,7 +1161,7 @@ class Finding:
         return exceeding_timeout
 
     @classmethod
-    def from_json(cls, finding_dict):
+    def from_json(cls, finding_dict: dict[str, Any]) -> "Finding":
         """Deserialization method.
 
         Args:
@@ -1015,8 +1171,8 @@ class Finding:
             An instance of the Finding class constructed from JSON representation.
         """
         return cls(
-            data=finding_dict.get(DATA),
-            enrichments=list(map(Enrichment.from_json, finding_dict.get(ENRICHMENTS))),
+            data=finding_dict.get(DATA) or {},
+            enrichments=list(map(Enrichment.from_json, finding_dict.get(ENRICHMENTS) or [])),
             finding_id=finding_dict.get(ID),
             custom_id=finding_dict.get(CUSTOM_ID),
             occurred=finding_dict.get(OCCURRED),
@@ -1034,17 +1190,19 @@ class Cache:
         submitted_findings (list): The list of all submitted findings that needs to be handled.
     """
 
-    def __init__(self, not_yet_submitted_findings=None, submitted_findings=None):
+    def __init__(
+        self, not_yet_submitted_findings: list[Finding] | None = None, submitted_findings: list[Finding] | None = None
+    ) -> None:
         self.not_yet_submitted_findings = not_yet_submitted_findings or []
         self.submitted_findings = submitted_findings or []
 
-    def done_submitting(self):
+    def done_submitting(self) -> bool:
         return not self.not_yet_submitted_findings
 
-    def done_handling(self):
+    def done_handling(self) -> bool:
         return not self.submitted_findings
 
-    def organize(self):
+    def organize(self) -> list[Finding]:
         """This function is designated to handle unexpected behaviors in the enrichment mechanism.
          E.g. Connection error, instance disabling, etc...
          It re-organizes the cache object to the correct state of the mechanism when the exception was caught.
@@ -1080,7 +1238,7 @@ class Cache:
         return handled_not_created_incident
 
     @classmethod
-    def from_json(cls, cache_dict):
+    def from_json(cls, cache_dict: dict[str, Any]) -> "Cache":
         """Deserialization method.
 
         Args:
@@ -1095,16 +1253,22 @@ class Cache:
         )
 
     @classmethod
-    def load_from_integration_context(cls, integration_context):
+    def load_from_integration_context(cls, integration_context: dict[str, Any]) -> "Cache":
         return Cache.from_json(json.loads(integration_context.get(CACHE, "{}")))
 
-    def dump_to_integration_context(self):
+    def dump_to_integration_context(self) -> None:
         integration_context = get_integration_context()
         integration_context[CACHE] = json.dumps(self, default=lambda obj: obj.__dict__)
         set_integration_context(integration_context)
 
 
-def get_fields_query_part(finding_data, prefix, fields, raw_dict=None, add_backslash=False):
+def get_fields_query_part(
+    finding_data: dict[str, Any],
+    prefix: str,
+    fields: list[str],
+    raw_dict: dict[str, Any] | None = None,
+    add_backslash: bool = False,
+) -> str:
     """Given the fields to search for in the findings and the prefix, creates the query part for splunk search.
     For example: if fields are ["user"], and the value of the "user" fields in the finding is ["u1", "u2"], and the
     prefix is "identity", the function returns: (identity="u1" OR identity="u2")
@@ -1119,7 +1283,7 @@ def get_fields_query_part(finding_data, prefix, fields, raw_dict=None, add_backs
     Returns: The query part
     """
     if not raw_dict:
-        raw_dict = rawToDict(finding_data.get("_raw", ""))
+        raw_dict = raw_to_dict(finding_data.get("_raw", ""))
     raw_list: list = []
     for field in fields:
         raw_list += argToList(finding_data.get(field, "")) + argToList(raw_dict.get(field, ""))
@@ -1135,7 +1299,9 @@ def get_fields_query_part(finding_data, prefix, fields, raw_dict=None, add_backs
         return f'({" OR ".join(raw_list)})'
 
 
-def get_finding_field_and_value(raw_field, finding_data, raw=None):
+def get_finding_field_and_value(
+    raw_field: str, finding_data: dict[str, Any], raw: dict[str, Any] | None = None
+) -> tuple[str, Any]:
     """Gets the value by the name of the raw_field. We don't search for equivalence because raw field
     can be "threat_match_field|s" while the field is "threat_match_field".
 
@@ -1148,7 +1314,7 @@ def get_finding_field_and_value(raw_field, finding_data, raw=None):
 
     """
     if not raw:
-        raw = rawToDict(finding_data.get("_raw", ""))
+        raw = raw_to_dict(finding_data.get("_raw", ""))
     for field in finding_data:
         if field in raw_field:
             return field, finding_data[field]
@@ -1159,7 +1325,9 @@ def get_finding_field_and_value(raw_field, finding_data, raw=None):
     return "", ""
 
 
-def build_drilldown_search(finding_data, search, raw_dict, is_query_name=False):
+def build_drilldown_search(
+    finding_data: dict[str, Any], search: str, raw_dict: dict[str, Any], is_query_name: bool = False
+) -> str:
     """Replaces all needed fields in a drilldown search query, or a search query name
     Args:
         finding_data (dict): The finding data
@@ -1230,7 +1398,7 @@ def get_drilldown_timeframe(finding_data, raw) -> tuple[str, str]:
     return earliest_offset, latest_offset
 
 
-def escape_invalid_chars_in_drilldown_json(drilldown_search):
+def escape_invalid_chars_in_drilldown_json(drilldown_search: str) -> str:
     """Goes over the drilldown search, and replace the unescaped or invalid chars.
 
     Args:
@@ -1253,7 +1421,7 @@ def escape_invalid_chars_in_drilldown_json(drilldown_search):
     return drilldown_search
 
 
-def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
+def parse_drilldown_searches(drilldown_searches: list[str]) -> list[dict[str, Any]]:
     """Goes over the drilldown searches list, parses each drilldown search and converts it to a python dictionary.
 
     Args:
@@ -1283,7 +1451,7 @@ def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
     return searches
 
 
-def get_drilldown_searches(finding_data):
+def get_drilldown_searches(finding_data: dict[str, Any]) -> list[dict[str, Any]]:
     """Extract the drilldown_searches from the finding_data.
     It can be a list of objects, a single object or a simple string that contains the query.
 
@@ -1310,7 +1478,9 @@ def get_drilldown_searches(finding_data):
     return []
 
 
-def drilldown_enrichment(service: client.Service, finding_data, num_enrichment_events) -> list[tuple[str, str, client.Job]]:
+def drilldown_enrichment(
+    service: client.Service, finding_data: dict[str, Any], num_enrichment_events: int
+) -> list[tuple[str | None, str | None, client.Job | None]]:
     """Performs a drilldown enrichment.
     If the finding has multiple drilldown searches, enriches all the drilldown searches.
 
@@ -1322,10 +1492,10 @@ def drilldown_enrichment(service: client.Service, finding_data, num_enrichment_e
     Returns: A list that contains tuples of a query name, query search and the splunk job that runs the query.
              [(query_name, query_search, splunk_job)]
     """
-    jobs_and_queries = []
+    jobs_and_queries: list[tuple[str | None, str | None, client.Job | None]] = []
     demisto.debug(f"finding data is: {finding_data}")
     if searches := get_drilldown_searches(finding_data):
-        raw_dict = rawToDict(finding_data.get("_raw", ""))
+        raw_dict = raw_to_dict(finding_data.get("_raw", ""))
 
         total_searches = len(searches)
         demisto.debug(f"Finding {finding_data[EVENT_ID]} has {total_searches} drilldown searches to enrich")
@@ -1392,7 +1562,7 @@ def drilldown_enrichment(service: client.Service, finding_data, num_enrichment_e
     return jobs_and_queries
 
 
-def identity_enrichment(service: client.Service, finding_data, num_enrichment_events) -> client.Job:
+def identity_enrichment(service: client.Service, finding_data: dict[str, Any], num_enrichment_events: int) -> client.Job | None:
     """Performs an identity enrichment.
 
     Args:
@@ -1426,7 +1596,7 @@ def identity_enrichment(service: client.Service, finding_data, num_enrichment_ev
     return job
 
 
-def asset_enrichment(service: client.Service, finding_data, num_enrichment_events) -> client.Job:
+def asset_enrichment(service: client.Service, finding_data: dict[str, Any], num_enrichment_events: int) -> client.Job | None:
     """Performs an asset enrichment.
 
     Args:
@@ -1559,7 +1729,7 @@ def submit_findings(service: client.Service, cache_object: Cache) -> tuple[list[
         tuple[list[Finding], list[Finding]]: failed_findings, submitted_findings
     """
     failed_findings, submitted_findings = [], []
-    num_enrichment_events = arg_to_number(str(demisto.params().get("num_enrichment_events", "20")))
+    num_enrichment_events = arg_to_number(str(demisto.params().get("num_enrichment_events", "20"))) or 20
     findings = cache_object.not_yet_submitted_findings
     total = len(findings)
     if findings:
@@ -1588,7 +1758,7 @@ def submit_findings(service: client.Service, cache_object: Cache) -> tuple[list[
     return failed_findings, submitted_findings
 
 
-def submit_finding(service: client.Service, finding: Finding, num_enrichment_events) -> bool:
+def submit_finding(service: client.Service, finding: Finding, num_enrichment_events: int) -> bool:
     """Submits fetched finding to Splunk for an Enrichment. Three enrichments possible: Drilldown, Asset & Identity.
      If all enrichment type executions were unsuccessful, creates a regular incident, Otherwise updates the
      integration context for the next fetch to handle the submitted finding.
@@ -1621,7 +1791,7 @@ def submit_finding(service: client.Service, finding: Finding, num_enrichment_eve
     return finding.submitted()
 
 
-def create_incidents_from_findings(findings_to_be_created: list[Finding], mapper: UserMappingObject):
+def create_incidents_from_findings(findings_to_be_created: list[Finding], mapper: UserMappingObject) -> list[dict[str, Any]]:
     """Create the actual incident from the handled Findings
         in addition, taking in account the data from the integration_context (from mirror-in process)
         about Findings which was updated by mirror-in during the Enrichment time.
@@ -1657,12 +1827,12 @@ def create_incidents_from_findings(findings_to_be_created: list[Finding], mapper
     return incidents
 
 
-def is_mirror_in_enabled():
+def is_mirror_in_enabled() -> bool:
     params = demisto.params()
     return MIRROR_DIRECTION.get(params.get("mirror_direction", "")) in ["Both", "In"]
 
 
-def run_enrichment_mechanism(service: client.Service, integration_context, mapper: UserMappingObject):
+def run_enrichment_mechanism(service: client.Service, integration_context: dict[str, Any], mapper: UserMappingObject) -> None:
     """Execute the enriching fetch mechanism
     1. We first handle submitted findings that have not been handled in the last fetch run
     2. If we finished handling and submitting all fetched findings, we fetch new findings
@@ -1709,7 +1879,7 @@ def run_enrichment_mechanism(service: client.Service, integration_context, mappe
         demisto.incidents(incidents)
 
 
-def store_incidents_for_mapping(incidents):
+def store_incidents_for_mapping(incidents: list[dict[str, Any]]) -> None:
     """Stores ready incidents in integration context to allow the mapping to pull the incidents from the instance.
     We store at most 20 incidents.
 
@@ -1722,7 +1892,7 @@ def store_incidents_for_mapping(incidents):
         set_integration_context(integration_context)
 
 
-def fetch_incidents_for_mapping(integration_context):
+def fetch_incidents_for_mapping(integration_context: dict[str, Any]) -> None:
     """Gets the stored incidents to the "Pull from instance" in Classification & Mapping (In case of enriched fetch)
 
     Args:
@@ -1733,7 +1903,7 @@ def fetch_incidents_for_mapping(integration_context):
     demisto.incidents(incidents)
 
 
-def reset_enriching_fetch_mechanism():
+def reset_enriching_fetch_mechanism() -> None:
     """Resets all the fields regarding the enriching fetch mechanism & the last run object"""
 
     # keys: INCIDENTS, CACHE, MIRRORED_ENRICHING_FINDINGS, PROCESSED_MIRRORED_EVENTS may exist in context
@@ -1807,7 +1977,7 @@ def format_splunk_note_for_xsoar(note: dict, timezone_offset: str = "+00:00") ->
         return header
 
 
-def get_war_room_note_entry(content: str, finding_id: str, format: str) -> dict:
+def get_war_room_note_entry(content: str, finding_id: str, format: str) -> dict[str, Any]:
     return {
         "EntryContext": {"mirrorRemoteId": finding_id},
         "Type": EntryType.NOTE,
@@ -1820,10 +1990,10 @@ def get_war_room_note_entry(content: str, finding_id: str, format: str) -> dict:
 
 def enrich_findings_with_splunk_notes(
     service: client.Service,
-    id_to_finding_map: dict[str, dict],
-    last_update_splunk_timestamp=None,
+    id_to_finding_map: dict[str, dict[str, Any]],
+    last_update_splunk_timestamp: float | None = None,
     is_fetch: bool = False,
-):
+) -> list[dict[str, Any]]:
     """Get finding notes from Splunk with timezone-aware timestamps.
 
     This implementation uses a search query to find note IDs associated with findings from the _audit index,
@@ -1946,7 +2116,7 @@ def enrich_findings_with_splunk_notes(
     return war_room_notes
 
 
-def handle_enriching_findings(modified_findings: dict[str, dict]):
+def handle_enriching_findings(modified_findings: dict[str, dict[str, Any]]) -> None:
     """Store the mirror in "delta" of the findings which not yet created because of enrichment mechanism.
 
     Args:
@@ -1980,7 +2150,12 @@ def handle_enriching_findings(modified_findings: dict[str, dict]):
         demisto.error(f"mirror-in: failed to check for enriching findings, {e}")
 
 
-def handle_closed_findings(modified_findings_map, close_extra_labels, close_end_statuses, entries):
+def handle_closed_findings(
+    modified_findings_map: dict[str, dict[str, Any]],
+    close_extra_labels: list[str],
+    close_end_statuses: bool,
+    entries: list[dict[str, Any]],
+) -> None:
     demisto.debug("Starting handling closing the finding")
     for finding_id, finding in modified_findings_map.items():
         status_label = finding.get("status_label", "")
@@ -2017,12 +2192,12 @@ def handle_closed_findings(modified_findings_map, close_extra_labels, close_end_
 
 def get_modified_remote_data_command(
     service: client.Service,
-    args: dict,
+    args: dict[str, Any],
     close_incident: bool,
     close_end_statuses: bool,
     close_extra_labels: list[str],
     mapper: UserMappingObject,
-):
+) -> None:
     """Gets the list of the findings data that have changed since a given time
 
     Args:
@@ -2132,7 +2307,9 @@ def get_modified_remote_data_command(
     return_results(res)
 
 
-def update_remote_system_command(args, params, service: client.Service, mapper):
+def update_remote_system_command(
+    args: dict[str, Any], params: dict[str, Any], service: client.Service, mapper: UserMappingObject
+) -> str:
     """Pushes changes in XSOAR incident into the corresponding finding event in Splunk Server.
 
     Args:
@@ -2234,7 +2411,7 @@ def update_remote_system_command(args, params, service: client.Service, mapper):
 # =========== Mapping Mechanism ===========
 
 
-def create_mapping_dict(total_parsed_results, type_field):
+def create_mapping_dict(total_parsed_results: list[dict[str, Any]], type_field: str) -> dict[str, Any]:
     """
     Create a {'field_name': 'fields_properties'} dict to be used as mapping schemas.
     Args:
@@ -2250,7 +2427,7 @@ def create_mapping_dict(total_parsed_results, type_field):
     return types_map
 
 
-def get_mapping_fields_command(service: client.Service, mapper, params: dict):
+def get_mapping_fields_command(service: client.Service, mapper: UserMappingObject, params: dict[str, Any]) -> dict[str, Any]:
     # Create the query to get unique objects
     # The logic is identical to the 'fetch_incidents' command
     type_field = "source"
@@ -2288,7 +2465,7 @@ def get_mapping_fields_command(service: client.Service, mapper, params: dict):
     return types_map
 
 
-def get_cim_mapping_field_command():
+def get_cim_mapping_field_command() -> dict[str, dict[str, Any]]:
     finding = {
         "rule_name": "string",
         "rule_title": "string",
@@ -2766,21 +2943,21 @@ def get_cim_mapping_field_command():
 class ResponseReaderWrapper(io.RawIOBase):
     """This class was supplied as a solution for a bug in Splunk causing the search to run slowly."""
 
-    def __init__(self, responseReader):
-        self.responseReader = responseReader
+    def __init__(self, response_reader):
+        self.response_reader = response_reader
 
-    def readable(self):
+    def readable(self) -> bool:
         return True
 
-    def close(self):
-        self.responseReader.close()
+    def close(self) -> None:
+        self.response_reader.close()
 
-    def read(self, n):  # type: ignore[override]
-        return self.responseReader.read(n)
+    def read(self, n: int) -> bytes:  # type: ignore[override]
+        return self.response_reader.read(n)
 
-    def readinto(self, b):
+    def readinto(self, b: bytearray) -> int:  # type: ignore[override]
         sz = len(b)
-        data = self.responseReader.read(sz)
+        data = self.response_reader.read(sz)
 
         # Remove non utf-8 characters to avoid decode errors in JSONResultsReader
         # See resolution section from: https://splunk.my.site.com/customer/s/article/Search-Failed-Due-to
@@ -2796,141 +2973,6 @@ class ResponseReaderWrapper(io.RawIOBase):
             b[idx] = ch
 
         return len(cleaned_data)
-
-
-def quote_group(text):
-    """A function that splits groups of key value pairs.
-    Taking into consideration key values pairs with nested quotes.
-    """
-
-    def clean(t):
-        return t.strip().rstrip(",")
-
-    # Return strings that aren't key-valued, as is.
-    if len(text.strip()) < 3 or "=" not in text:
-        return [text]
-
-    # Remove prefix & suffix wrapping quotes if present around all the text
-    # For example a text could be:
-    # "a="123"", we want it to be: a="123"
-    text = re.sub(r"^\"([\s\S]+\")\"$", r"\1", text)
-
-    # Some of the texts don't end with a comma so we add it to make sure
-    # everything acts the same.
-    if not text.rstrip().endswith(","):
-        text = text.rstrip()
-        text += ","
-
-    # Fix elements that aren't key=value (`111, a="123"` => `a="123"`)
-    # (^) - start of text
-    # ([^=]+), - everything without equal sign and a comma at the end
-    #   ('111,' above)
-    text = re.sub(r"(^)([^=]+),", ",", text).lstrip(",")
-
-    # Wrap all key values without a quote (`a=123` => `a="123"`)
-    # Key part: ([^\"\,]+?=)
-    #   asdf=123, here it will match 'asdf'.
-    #
-    # Value part: ([^\"]+?)
-    #   every string without a quote or doesn't start the text.
-    #   For example: asdf=123, here it will match '123'.
-    #
-    # End value part: (,|\")
-    #   we need to decide when to end the value, in our case
-    #   with a comma. We also check for quotes for this case:
-    #   a="b=nested_value_without_a_wrapping_quote", as we want to
-    #   wrap 'nested_value_without_a_wrapping_quote' with quotes.
-    text = re.sub(r"([^\"\,]+?=)([^\"]+?)(,|\")", r'\1"\2"\3', text)
-
-    # The basic idea here is to check that every key value ends with a `",`
-    # Assuming that there are even number of quotes before
-    # (some values can have deep nested quotes).
-    quote_counter = 0
-    rindex = 0
-    lindex = 0
-    groups = []
-    while rindex < len(text):
-        # For every quote we increment the quote counter
-        # (to preserve context on the opening/closed quotes)
-        if text[rindex] == '"':
-            quote_counter += 1
-
-        # A quote group ends when `",` is encountered.
-        is_end_keypair = rindex > 1 and text[rindex - 1] + text[rindex] == '",'
-
-        # If the quote_counter isn't even we shouldn't close the group,
-        # for example: a="b="1",c="3""                * *
-        # I'll space for readability:   a = " b = " 1 " , c ...
-        #                               0 1 2 3 4 5 6 7 8 9
-        # quote_counter is even:            F     T   F   T
-        # On index 7 & 8 we find a potential quote closing, but as you can
-        # see it isn't a valid group (because of nesting) we need to check
-        # the quote counter for an even number => a closing match.
-        is_even_number_of_quotes = quote_counter % 2 == 0
-
-        # We check both conditions to find a group
-        if is_end_keypair and is_even_number_of_quotes:
-            # Clean the match group and append to groups
-            groups.append(clean(text[lindex:rindex]))
-
-            # Incrementing the indexes to start searching for the next group.
-            lindex = rindex + 1
-            rindex += 1
-            quote_counter = 0
-
-        # Continue to walk the string until we find a quote again.
-        rindex += 1
-
-    # Sometimes there aren't any quotes in the string so we can just append it
-    if not groups:
-        groups.append(clean(text))
-
-    return groups
-
-
-def rawToDict(raw):
-    result: dict[str, str] = {}
-    try:
-        result = json.loads(raw)
-    except ValueError:
-        if '"message"' in raw:
-            raw = raw.replace('"', "").strip("{").strip("}")
-            key_val_arr = raw.split(",")
-            for key_val in key_val_arr:
-                single_key_val = key_val.split(":", 1)
-                if len(single_key_val) <= 1:
-                    single_key_val = key_val.split("=", 1)
-                if len(single_key_val) > 1:
-                    val = single_key_val[1]
-                    key = single_key_val[0].strip()
-
-                    result[key] = f"{result[key]},{val}" if key in tuple(result.keys()) else val
-        else:
-            # search for the pattern: `key="value", `
-            # (the double quotes are optional)
-            # we append `, ` to the end of the string to catch the last value
-            groups = quote_group(raw)
-            for g in groups:
-                key_value = g.replace('"', "").strip()
-                if key_value == "":
-                    continue
-
-                if "=" in key_value:
-                    key_and_val = key_value.split("=", 1)
-                    if key_and_val[0] not in result:
-                        result[key_and_val[0]] = key_and_val[1]
-                    else:
-                        # If there are multiple values for a key, append them.
-                        result[key_and_val[0]] = ", ".join([result[key_and_val[0]], key_and_val[1]])
-
-    if REPLACE_FLAG:
-        result = replace_keys(result)
-    return result
-
-
-# Converts to an str
-def convert_to_str(obj):
-    return obj.encode("utf-8") if isinstance(obj, str) else str(obj)
 
 
 def add_investigation_note(
@@ -3052,7 +3094,7 @@ def severity_to_level(severity: str | None) -> int | float:
             return 1
 
 
-def parse_finding(finding, to_dict=False):
+def parse_finding(finding: dict[str, Any], to_dict: bool = False) -> dict[str, Any]:
     """Parses the finding
 
     Args:
@@ -3074,7 +3116,7 @@ def parse_finding(finding, to_dict=False):
     return dict(finding) if to_dict else finding
 
 
-def requests_handler(url, message, **kwargs):
+def requests_handler(url: str, message: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
     method = message["method"].lower()
     data = message.get("body", "") if method == "post" else None
     headers = dict(message.get("headers", []))
@@ -3092,33 +3134,39 @@ def requests_handler(url, message, **kwargs):
     }
 
 
-def build_search_kwargs(args, polling=False):
+def build_search_kwargs(args: dict[str, Any], polling: bool = False) -> dict[str, Any]:
     t = datetime.now(pytz.UTC) - timedelta(days=7)
     time_str = t.strftime(ISO_FORMAT_TZ_AWARE)
 
-    kwargs_normalsearch: dict[str, Any] = {
+    kwargs_normal_search: dict[str, Any] = {
         "earliest_time": time_str,
     }
     if demisto.get(args, "earliest_time"):
-        kwargs_normalsearch["earliest_time"] = args["earliest_time"]
+        kwargs_normal_search["earliest_time"] = args["earliest_time"]
     if demisto.get(args, "latest_time"):
-        kwargs_normalsearch["latest_time"] = args["latest_time"]
+        kwargs_normal_search["latest_time"] = args["latest_time"]
     if demisto.get(args, "app"):
-        kwargs_normalsearch["app"] = args["app"]
+        kwargs_normal_search["app"] = args["app"]
     if argToBoolean(demisto.get(args, "fast_mode")):
-        kwargs_normalsearch["adhoc_search_level"] = "fast"
-    kwargs_normalsearch["exec_mode"] = "normal" if polling else "blocking"
-    return kwargs_normalsearch
+        kwargs_normal_search["adhoc_search_level"] = "fast"
+    kwargs_normal_search["exec_mode"] = "normal" if polling else "blocking"
+    return kwargs_normal_search
 
 
-def build_search_query(args):
+def build_search_query(args: dict[str, Any]) -> str:
     query = args["query"]
     if not query.startswith("search") and not query.startswith("Search") and not query.startswith("|"):
         query = f"search {query}"
     return query
 
 
-def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_res, job_id):
+def create_entry_context(
+    args: dict[str, Any],
+    parsed_search_results: list[dict[str, Any]],
+    dbot_scores: list[dict[str, Any]],
+    status_res: CommandResults | None,
+    job_id: str | None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
     ec = {}
     dbot_ec = {}
     number_of_results = len(parsed_search_results)
@@ -3128,7 +3176,7 @@ def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_
         if len(dbot_scores) > 0:
             dbot_ec["DBotScore"] = dbot_scores
         if status_res:
-            ec["Splunk.JobStatus(val.SID && val.SID === obj.SID)"] = {**status_res.outputs, "TotalResults": number_of_results}
+            ec["Splunk.JobStatus(val.SID && val.SID === obj.SID)"] = {**status_res.outputs, "TotalResults": number_of_results}  # type: ignore[dict-item, assignment]
     if job_id and not status_res:
         status = "DONE" if (number_of_results > 0) else "NO RESULTS"
         ec["Splunk.JobStatus(val.SID && val.SID === obj.SID)"] = [
@@ -3137,15 +3185,15 @@ def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_
     return ec, dbot_ec
 
 
-def schedule_polling_command(command: str, args: dict, interval_in_secs: int) -> ScheduledCommand:
+def schedule_polling_command(command: str, args: dict[str, Any], interval_in_secs: int) -> ScheduledCommand:
     """
     Returns a ScheduledCommand object which contain the needed arguments for schedule the polling command.
     """
     return ScheduledCommand(command=command, next_run_in_seconds=interval_in_secs, args=args, timeout_in_seconds=600)
 
 
-def build_search_human_readable(args: dict, parsed_search_results, sid) -> str:
-    headers = ""
+def build_search_human_readable(args: dict[str, Any], parsed_search_results: list[dict[str, Any]], sid: str | None) -> str:
+    headers: str | list[str] = ""
     if parsed_search_results and len(parsed_search_results) > 0:
         if not isinstance(parsed_search_results[0], dict):
             headers = "results"
@@ -3175,7 +3223,7 @@ def build_search_human_readable(args: dict, parsed_search_results, sid) -> str:
     return tableToMarkdown(hr_headline, parsed_search_results, headers)
 
 
-def update_headers_from_field_names(search_result, chosen_fields):
+def update_headers_from_field_names(search_result: list[dict[str, Any]], chosen_fields: list[str]) -> list[str]:
     headers: list = []
     search_result_keys: set = set().union(*(list(d.keys()) for d in search_result))
     for field in chosen_fields:
@@ -3188,7 +3236,7 @@ def update_headers_from_field_names(search_result, chosen_fields):
     return headers
 
 
-def get_current_results_batch(search_job: client.Job, batch_size: int, results_offset: int):
+def get_current_results_batch(search_job: client.Job, batch_size: int, results_offset: int) -> Any:
     current_batch_kwargs = {
         "count": batch_size,
         "offset": results_offset,
@@ -3198,7 +3246,9 @@ def get_current_results_batch(search_job: client.Job, batch_size: int, results_o
     return search_job.results(**current_batch_kwargs)
 
 
-def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
+def parse_batch_of_results(
+    current_batch_of_results: Any, max_results_to_add: float, app: str
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     parsed_batch_results = []
     batch_dbot_scores = []
     results_reader = results.JSONResultsReader(io.BufferedReader(ResponseReaderWrapper(current_batch_of_results)))
@@ -3221,7 +3271,7 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     return parsed_batch_results, batch_dbot_scores
 
 
-def raise_error_for_failed_job(job):
+def raise_error_for_failed_job(job: client.Job | None) -> None:
     """
     Handle the case that the search job failed due to dome reason like parsing issues etc
     raise DemistoException in case there is a fatal error in the search job.
@@ -3247,7 +3297,7 @@ def raise_error_for_failed_job(job):
         raise DemistoException(f"Failed to run the search in Splunk: {err_msg}")
 
 
-def splunk_search_command(service: client.Service, args: dict) -> CommandResults | list[CommandResults]:
+def splunk_search_command(service: client.Service, args: dict[str, Any]) -> CommandResults | list[CommandResults]:
     query = build_search_query(args)
     polling = argToBoolean(args.get("polling", False))
     search_kwargs = build_search_kwargs(args, polling)
@@ -3319,7 +3369,7 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
     return results
 
 
-def splunk_job_create_command(service: client.Service, args: dict):
+def splunk_job_create_command(service: client.Service, args: dict[str, Any]) -> None:
     app = args.get("app", "")
     query = build_search_query(args)
     search_kwargs = {"exec_mode": "normal", "app": app}
@@ -3334,7 +3384,7 @@ def splunk_job_create_command(service: client.Service, args: dict):
     )
 
 
-def splunk_results_command(service: client.Service, args: dict):
+def splunk_results_command(service: client.Service, args: dict[str, Any]) -> str | None:
     res = []
     sid = args.get("sid", "")
     limit = int(args.get("limit", "100"))
@@ -3359,24 +3409,25 @@ def splunk_results_command(service: client.Service, args: dict):
                 content_format=EntryFormat.JSON,
             )
         )
+    return None
 
 
-def splunk_get_indexes_command(service: client.Service):
+def splunk_get_indexes_command(service: client.Service) -> None:
     indexes = service.indexes
-    indexesNames = []
+    indexes_names = []
     for index in indexes:
         index_json = {"name": index.name, "count": index["totalEventCount"]}
-        indexesNames.append(index_json)
+        indexes_names.append(index_json)
     return_results(
         CommandResults(
             content_format=EntryFormat.JSON,
-            raw_response=json.dumps(indexesNames),
-            readable_output=tableToMarkdown("Splunk Indexes names", indexesNames, ""),
+            raw_response=json.dumps(indexes_names),
+            readable_output=tableToMarkdown("Splunk Indexes names", indexes_names, ""),
         )
     )
 
 
-def splunk_submit_event_command(service: client.Service, args: dict):
+def splunk_submit_event_command(service: client.Service, args: dict[str, Any]) -> None:
     try:
         index = service.indexes[args["index"]]
     except KeyError:
@@ -3389,7 +3440,7 @@ def splunk_submit_event_command(service: client.Service, args: dict):
         return_results(f"Event was created in Splunk index: {r.name}")
 
 
-def get_events_from_file(entry_id):
+def get_events_from_file(entry_id: str) -> str:
     """
     Retrieves event data from a file in Demisto based on a specified entry ID as a string.
 
@@ -3405,7 +3456,7 @@ def get_events_from_file(entry_id):
         return file_data.read()
 
 
-def parse_fields(fields):
+def parse_fields(fields: str | None) -> dict[str, Any] | None:
     """
     Parses the `fields` input into a dictionary.
 
@@ -3442,9 +3493,9 @@ def splunk_submit_event_hec(
     time_: str | None,
     request_channel: str | None,
     batch_event_data: str | None,
-    entry_id: int | None,
-    service,
-):
+    entry_id: str | None,
+    service: client.Service,
+) -> requests.Response:
     if hec_token is None:
         raise Exception("The HEC Token was not provided")
 
@@ -3483,7 +3534,7 @@ def splunk_submit_event_hec(
     )
 
 
-def splunk_submit_event_hec_command(params: dict, service, args: dict):
+def splunk_submit_event_hec_command(params: dict[str, Any], service: client.Service, args: dict[str, Any]) -> None:
     hec_token = params.get("cred_hec_token", {}).get("password")
     baseurl = params.get("hec_url")
     if baseurl is None:
@@ -3609,7 +3660,7 @@ def splunk_edit_finding_command(service: client.Service, args: dict) -> None:
         return_error("Failed to update all finding events:\n" + "\n".join(errors))
 
 
-def splunk_job_status(service: client.Service, args: dict) -> list[CommandResults]:
+def splunk_job_status(service: client.Service, args: dict[str, Any]) -> list[CommandResults]:
     sids = argToList(args.get("sid"))
     job_results = []
     for sid in sids:
@@ -3637,7 +3688,7 @@ def splunk_job_status(service: client.Service, args: dict) -> list[CommandResult
     return job_results
 
 
-def splunk_job_share(service: client.Service, args: dict) -> list[CommandResults]:  # pragma: no cover
+def splunk_job_share(service: client.Service, args: dict[str, Any]) -> list[CommandResults]:  # pragma: no cover
     sids = argToList(args.get("sid"))
     try:
         ttl = int(args.get("ttl", 1800))
@@ -3691,17 +3742,20 @@ def splunk_job_share(service: client.Service, args: dict) -> list[CommandResults
     return job_results
 
 
-def splunk_parse_raw_command(args: dict):
+def splunk_parse_raw_command(args: dict[str, Any]) -> None:
     raw = args.get("raw", "")
-    rawDict = rawToDict(raw)
+    raw_dict = raw_to_dict(raw)
     return_results(
         CommandResults(
-            outputs_prefix="Splunk.Raw.Parsed", raw_response=json.dumps(rawDict), outputs=rawDict, content_format=EntryFormat.JSON
+            outputs_prefix="Splunk.Raw.Parsed",
+            raw_response=json.dumps(raw_dict),
+            outputs=raw_dict,
+            content_format=EntryFormat.JSON,
         )
     )
 
 
-def test_module(service: client.Service, params: dict) -> None:
+def test_module(service: client.Service, params: dict[str, Any]) -> None:
     try:
         # validate connection
         service.info()
@@ -3784,7 +3838,7 @@ def test_module(service: client.Service, params: dict) -> None:
             return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
 
-def replace_keys(data):
+def replace_keys(data: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(data, dict):
         return data
     for key in list(data.keys()):
@@ -3796,7 +3850,7 @@ def replace_keys(data):
     return data
 
 
-def kv_store_collection_create(service: client.Service, args: dict) -> CommandResults:
+def kv_store_collection_create(service: client.Service, args: dict[str, Any]) -> CommandResults:
     try:
         service.kvstore.create(args["kv_store_name"])
     except HTTPError as error:
@@ -3811,7 +3865,7 @@ def kv_store_collection_create(service: client.Service, args: dict) -> CommandRe
     )
 
 
-def kv_store_collection_config(service: client.Service, args: dict) -> CommandResults:
+def kv_store_collection_config(service: client.Service, args: dict[str, Any]) -> CommandResults:
     app = service.namespace["app"]
     kv_store_collection_name = args["kv_store_collection_name"]
     kv_store_fields = args["kv_store_fields"].split(",")
@@ -3828,7 +3882,7 @@ def kv_store_collection_config(service: client.Service, args: dict) -> CommandRe
     return CommandResults(readable_output=f"KV store collection {app} configured successfully")
 
 
-def kv_store_collection_create_transform(service: client.Service, args: dict) -> CommandResults:
+def kv_store_collection_create_transform(service: client.Service, args: dict[str, Any]) -> CommandResults:
     collection_name = args["kv_store_collection_name"]
     fields = args.get("supported_fields")
     if not fields:
@@ -3845,7 +3899,7 @@ def kv_store_collection_create_transform(service: client.Service, args: dict) ->
     return CommandResults(readable_output=f"KV store collection transforms {collection_name} created successfully")
 
 
-def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_data: str) -> dict:
+def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_data: str) -> dict[str, Any]:
     if json_data.startswith("[") and json_data.endswith("]"):
         record: Record = kv_data_service_client._post(
             "batch_save", headers=client.KVStoreCollectionData.JSON_HEADER, body=json_data.encode("utf-8")
@@ -3859,7 +3913,7 @@ def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_d
         )
 
 
-def kv_store_collection_add_entries(service: client.Service, args: dict) -> None:
+def kv_store_collection_add_entries(service: client.Service, args: dict[str, Any]) -> None:
     kv_store_data = args.get("kv_store_data", "")
     kv_store_collection_name = args["kv_store_collection_name"]
     indicator_path = args.get("indicator_path")
@@ -3887,21 +3941,21 @@ def kv_store_collections_list(service: client.Service) -> None:
     )
 
 
-def kv_store_collection_data_delete(service: client.Service, args: dict) -> None:
+def kv_store_collection_data_delete(service: client.Service, args: dict[str, Any]) -> None:
     kv_store_collection_name = args["kv_store_collection_name"].split(",")
     for store in kv_store_collection_name:
         service.kvstore[store].data.delete()
     return_results(f"The values of the {args['kv_store_collection_name']} were deleted successfully")
 
 
-def kv_store_collection_delete(service: client.Service, args: dict) -> CommandResults:
+def kv_store_collection_delete(service: client.Service, args: dict[str, Any]) -> CommandResults:
     kv_store_names = args["kv_store_name"]
     for store in kv_store_names.split(","):
         service.kvstore[store].delete()
     return CommandResults(readable_output=f"The following KV store {kv_store_names} were deleted successfully.")
 
 
-def build_kv_store_query(kv_store: client.KVStoreCollection, args: dict):
+def build_kv_store_query(kv_store: client.KVStoreCollection, args: dict[str, Any]) -> str | dict[str, Any]:
     if "key" in args and "value" in args:
         _type = get_key_type(kv_store, args["key"])
         args["value"] = _type(args["value"]) if _type else args["value"]
@@ -3912,7 +3966,7 @@ def build_kv_store_query(kv_store: client.KVStoreCollection, args: dict):
         return args.get("query", "{}")
 
 
-def kv_store_collection_data(service: client.Service, args: dict) -> None:
+def kv_store_collection_data(service: client.Service, args: dict[str, Any]) -> None:
     stores = args["kv_store_collection_name"].split(",")
 
     for i, store_res in enumerate(get_store_data(service)):
@@ -3932,7 +3986,7 @@ def kv_store_collection_data(service: client.Service, args: dict) -> None:
             return_results(get_kv_store_config(store))
 
 
-def kv_store_collection_delete_entry(service: client.Service, args: dict) -> None:
+def kv_store_collection_delete_entry(service: client.Service, args: dict[str, Any]) -> None:
     store_name = args["kv_store_collection_name"]
     indicator_path = args.get("indicator_path")
     store: client.KVStoreCollection = service.kvstore[store_name]
@@ -3954,7 +4008,7 @@ def kv_store_collection_delete_entry(service: client.Service, args: dict) -> Non
     )
 
 
-def check_error(service: client.Service, args: dict) -> None:
+def check_error(service: client.Service, args: dict[str, Any]) -> None:
     app = args.get("app_name")
     store_name = args.get("kv_store_collection_name")
     if app not in service.apps:
@@ -3963,7 +4017,7 @@ def check_error(service: client.Service, args: dict) -> None:
         raise DemistoException("KV Store not found")
 
 
-def get_key_type(kv_store: client.KVStoreCollection, _key: str):
+def get_key_type(kv_store: client.KVStoreCollection, _key: str) -> type | None:
     keys_and_types = get_keys_and_types(kv_store)
     types = {"number": float, "string": str, "cidr": str, "boolean": bool, "time": str}
     index = f"index.{_key}"
@@ -3987,7 +4041,7 @@ def get_kv_store_config(kv_store: client.KVStoreCollection) -> str:
     return "\n".join(readable)
 
 
-def extract_indicator(indicator_path: str, _dict_objects: list[dict]) -> list[str]:
+def extract_indicator(indicator_path: str, _dict_objects: list[dict[str, Any]]) -> list[str]:
     indicators = []
     indicator_paths = indicator_path.split(".")
     for indicator_obj in _dict_objects:
@@ -3998,7 +4052,7 @@ def extract_indicator(indicator_path: str, _dict_objects: list[dict]) -> list[st
     return indicators
 
 
-def get_store_data(service: client.Service):
+def get_store_data(service: client.Service) -> Any:
     args = demisto.args()
     stores = args["kv_store_collection_name"].split(",")
 
@@ -4010,7 +4064,7 @@ def get_store_data(service: client.Service):
         yield kvstore.data.query(**query)
 
 
-def get_connection_args(params: dict) -> dict:
+def get_connection_args(params: dict[str, Any]) -> dict[str, Any]:
     """
     This function gets the connection arguments: host, port, app, and verify.
     Parses the server_url parameter to extract host and port, with port 8089 as default.
@@ -4060,7 +4114,7 @@ def handle_message(item: results.Message | dict) -> bool:
     return False
 
 
-def main():  # pragma: no cover
+def main() -> None:  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()

@@ -254,6 +254,7 @@ You can use Splunk to define a user lookup table and then configure the SplunkPy
 
 - **Splunk Notes Updates/Deletions** - Editing or deleting existing Finding notes will NOT trigger mirroring to XSOAR on their own. Notes changes will only appear in the *Splunk Notes* field when a "real" change occurs in another finding field (such as status, owner, urgency, etc.), which triggers the mirror-in process.
 - **Notes Display Behavior** - The *Splunk Notes* field will display notes from the past week only. However, all notes that were mirrored via mirror-in will appear in the War Room notes.
+- **Notes Time** - Note timestamps will display the same time as shown in Splunk for the user who created the authentication token. The timezone offset is based on the timezone configured for that user in Splunk.
 
 You can enable incident mirroring between Cortex XSOAR incidents and Splunk findings.
 
