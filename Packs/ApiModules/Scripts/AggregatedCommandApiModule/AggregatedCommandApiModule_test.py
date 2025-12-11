@@ -174,12 +174,12 @@ def test_extract_input_success_sets_data(mocker, data, indicator_type, extracted
         (["https://a.com", "https://b.com"], "URL", {}),
     ],
 )
-def test_extract_input_raises_when_no_valid_indicators(mocker, data, indicator_type, extracted):
+def test_create_and_extract_indicators_raises_when_no_valid_indicators(mocker, data, indicator_type, extracted):
     """
     Given:
         - extractIndicators returns no items for the requested indicator type.
     When:
-        - Calling extract_input.
+        - Calling create_and_extract_indicators.
     Then:
         - Raises ValueError("No valid indicators found in the input data.").
     """
@@ -192,12 +192,12 @@ def test_extract_input_raises_when_no_valid_indicators(mocker, data, indicator_t
         data, _ = create_and_extract_indicators(data, indicator_type)
 
 
-def test_extract_input_raises_on_empty_execute_command_result(mocker):
+def test_create_and_extract_indicators_raises_on_empty_result(mocker):
     """
     Given:
-        - execute_command('extractIndicators', ...) returns a falsy/empty result.
+        - execute_command('extractIndicators', ...) returns a empty result.
     When:
-        - Calling extract_input.
+        - Calling create_and_extract_indicators.
     Then:
         - Raises DemistoException with a validation failure message.
     """
@@ -330,10 +330,86 @@ def test_process_single_input_marks_failure_on_extraction_error(mocker):
     assert "example" in invalid_set
     assert not valid_set
 
+@pytest.mark.parametrize(
+    "raw, expected_type_lower, extracted_ctx, mark_invalid_flag, is_valid, expected_values",
+    [
+        # 1) Exact match
+        ("https://a.com", "url",
+         {"URL": ["https://a.com"]}, False,
+         True, {"https://a.com"}),
+
+        # 2) Case-insensitive type match
+        ("https://a.com", "URL",
+         {"URL": ["https://a.com"]}, False,
+         True, {"https://a.com"}),
+
+        # 3) Expected + other types → still valid when flag=False
+        ("https://a.com", "url",
+         {"URL": ["https://a.com"], "IP": ["1.1.1.1"]}, False,
+         True, {"https://a.com"}),
+
+        # 4) Only other types → invalid
+        ("a", "url",
+         {"Domain": ["a.com"]}, False,
+         False, set()),
+
+        # 5) Expected + other types → invalid when flag=True
+        ("https://a.com", "url",
+         {"URL": ["https://a.com"], "IP": ["1.1.1.1"]}, True,
+         False, set()),
+    ]
+)
+def test_process_single_input_parametrized(
+    mocker, raw, expected_type_lower, extracted_ctx,
+    mark_invalid_flag, is_valid, expected_values
+):
+    """
+    Given:
+        - A raw input and an extractIndicators context.
+    When:
+        - Calling _process_single_input with different combinations of expected types
+          and the mark_mismatched_type_as_invalid flag.
+    Then:
+        - Valid inputs produce IndicatorInstances with extracted_value.
+        - Invalid inputs produce a failure IndicatorInstance.
+        - valid_set / invalid_set are updated correctly.
+    """
+    from AggregatedCommandApiModule import _process_single_input
+    # Mock extraction to return our parametrized extracted context
+    mocker.patch(
+        "AggregatedCommandApiModule._execute_extraction",
+        return_value=(extracted_ctx, "HR_FRAGMENT", None),
+    )
+
+    valid_set = set()
+    invalid_set = set()
+
+    instances, hr = _process_single_input(
+        raw=raw,
+        expected_type_lower=expected_type_lower.lower(),
+        mark_mismatched_type_as_invalid=mark_invalid_flag,
+        valid_set=valid_set,
+        invalid_set=invalid_set,
+    )
+
+    assert hr == "HR_FRAGMENT"
+
+    if is_valid:
+        # Should produce expected extracted values
+        assert {inst.extracted_value for inst in instances} == expected_values
+        assert raw not in invalid_set
+        assert valid_set == expected_values
+    else:
+        # Should produce exactly one invalid instance
+        assert len(instances) == 1
+        inst = instances[0]
+        assert inst.final_status == Status.FAILURE
+        assert raw in invalid_set
+        assert not valid_set
+
 
 def test_split_expected_and_other_types_only_expected(mocker):
     """
-    Small sanity test for the helper behavior via the main flow:
     Given:
         - extractIndicators returns only the expected type.
     When:

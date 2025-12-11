@@ -1532,7 +1532,7 @@ def _process_single_input(
         return instances, hr_fragment
 
     expected_indicators, has_other_types = _split_expected_and_other_types(extracted_ctx, expected_type_lower)
-    demisto.debug(f"expected for '{raw}': {expected_indicators}, other types exits={has_other_types}")
+    demisto.debug(f"expected for '{raw}': {expected_indicators}, other types exists={has_other_types}")
 
     # Extracted something, but none are of the expected type -> invalid
     # Or expected type + other types and we treat that as invalid
