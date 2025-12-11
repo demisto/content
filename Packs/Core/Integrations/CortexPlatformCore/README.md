@@ -372,7 +372,7 @@ Get extra data fields of a specific case including issues and key artifacts.
 ### core-get-cases
 
 ***
-Get cases information based on the specified filters.
+Get case information based on the specified filters.
 
 #### Base Command
 
@@ -392,9 +392,19 @@ Get cases information based on the specified filters.
 | sort_by_modification_time | Sorts returned cases by the date/time that the case was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional |
 | sort_by_creation_time | Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional |
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional |
-| limit | Maximum number of cases to return per page. The default and maximum is 100. Default is 100. | Optional |
-| status | Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional |
-| starred | Whether the case is starred (Boolean value: true or false). Possible values are: true, false. | Optional |
+| limit | Maximum number of cases to return per page. The default and maximum value is 60. Default is 60. | Optional |
+| case_domain | A comma-separated list of domains to filter cases by. | Optional |
+| status | A comma-separated list of case statuses to filter cases by. Possible values are: new, under_investigation, resolved. | Optional |
+| severity | A comma-separated list of severity levels to filter cases by. Possible values are: low, medium, high, critical. | Optional |
+| asset_ids | A comma-separated list of Asset IDs associated with the case by which to filter the cases. | Optional |
+| asset_groups | A comma-separated list of Asset Group IDs, where the case is filtered by the assets contained within those groups. | Optional |
+| hosts | A comma-separated list of hosts to filter cases by. | Optional |
+| tags | A comma-separated list of tags to filter cases by. | Optional |
+| assignee | A comma-separated list of assignee names or emails to filter cases by. | Optional |
+| starred | Filter cases by whether they are starred or not. Possible values are: true, false. | Optional |
+| case_name | A comma-separated list of names to filter cases by. | Optional |
+| case_description | A comma-separated list of descriptions to filter cases by. | Optional |
+| get_enriched_case_data | Whether to include enriched case data in the response. Recommended for up to 10 cases. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -404,7 +414,6 @@ Get cases information based on the specified filters.
 | Core.Case.case_name | String | Name of the case. |
 | Core.Case.creation_time | Number | Timestamp when the case was created. |
 | Core.Case.modification_time | Number | Timestamp when the case was last modified. |
-| Core.Case.detection_time | Date | Timestamp when the first issue was detected in the case. May be null. |
 | Core.Case.status | String | Current status of the case. |
 | Core.Case.severity | String | Severity level of the case. |
 | Core.Case.description | String | Description of the case. |
@@ -417,14 +426,10 @@ Get cases information based on the specified filters.
 | Core.Case.critical_severity_issue_count | Number | Number of issues with critical severity. |
 | Core.Case.user_count | Number | Number of users involved in the case. |
 | Core.Case.host_count | Number | Number of hosts involved in the case. |
-| Core.Case.notes | String | Notes related to the case. May be null. |
 | Core.Case.resolve_comment | String | Comments added when resolving the case. May be null. |
 | Core.Case.resolved_timestamp | Number | Timestamp when the case was resolved. |
 | Core.Case.manual_severity | Number | Severity manually assigned by the user. May be null. |
-| Core.Case.manual_description | String | Description manually provided by the user. |
-| Core.Case.xdr_url | String | URL to view the case in Cortex XDR. |
 | Core.Case.starred | Boolean | Indicates whether the case is starred. |
-| Core.Case.starred_manually | Boolean | True if the case was starred manually; false if starred by rules. |
 | Core.Case.hosts | Array | List of hosts involved in the case. |
 | Core.Case.users | Array | List of users involved in the case. |
 | Core.Case.case_sources | Array | Sources of the case. |
@@ -439,6 +444,16 @@ Get cases information based on the specified filters.
 | Core.Case.tags | Array | Current tags assigned to the case. |
 | Core.Case.case_domain | String | Domain associated with the case. |
 | Core.Case.custom_fields | Unknown | Custom fields for the case with standardized lowercase, whitespace-free names. |
+| Core.Case.CaseExtraData.issue_ids | Array | List of issue IDs associated with the case. |
+| Core.Case.CaseExtraData.file_artifacts | Array | File artifacts associated with the case. |
+| Core.Case.CaseExtraData.network_artifacts | Array | Network artifacts associated with the case. |
+| Core.Case.CaseExtraData.starred_manually | Boolean | True if the case was starred manually; false if starred by rules. |
+| Core.Case.CaseExtraData.xdr_url | String | URL to view the case in Cortex XDR. |
+| Core.Case.CaseExtraData.manual_description | String | Description manually provided by the user. |
+| Core.Case.CaseExtraData.notes | String | The notes related to the case. |
+| Core.Case.CaseExtraData.detection_time | Date | The timestamp when the first issue was detected in the case. |
+| Core.CasesMetadata.returned_count | String | The actual number of cases that match all filter criteria and returned in this specific response. |
+| Core.CasesMetadata.filtered_count | String | The total number of cases in the system that match all filter criteria. |
 
 ### core-search-asset-groups
 
@@ -579,7 +594,7 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | The ID of the issue to get recommendations for. | Required |
+| issue_ids | Comma-separated list of IDs of the issues to get recommendations for (maximum 10 per request). | Required |
 
 #### Context Output
 
@@ -592,6 +607,19 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. |
 | Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
 | Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
+| Core.IssueRecommendations.playbook_suggestions.name | String | The name of the suggested playbook. |
+| Core.IssueRecommendations.playbook_suggestions.comment | String | An explanation of the suggested playbook. |
+| Core.IssueRecommendations.quick_action_suggestions.name | String | The name of the suggested quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.suggestion_rule_id | String | The ID of the suggestion quick action rule that generated this recommendation. |
+| Core.IssueRecommendations.quick_action_suggestions.brand | String | The brand of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.category | String | The category of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.description | String | An explanation of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.pretty_name | String | The display name of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.name | String | The argument name. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.prettyName | String | The argument display name. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.prettyPredefined | String | The argument predefined display value. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.description | String | The argument description. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.required | String | Whether the argument is required. |
 | Core.IssueRecommendations.existing_code_block | String | Original vulnerable code. |
 | Core.IssueRecommendations.suggested_code_block | String | Code block fix suggestion. |
 
