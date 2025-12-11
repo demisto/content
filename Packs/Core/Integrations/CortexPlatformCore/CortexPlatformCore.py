@@ -47,7 +47,7 @@ WEBAPP_COMMANDS = [
     "core-create-appsec-policy",
     "core-get-appsec-issues",
     "core-update-case",
-    "core-list-scripts2"
+    "core-list-scripts",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -60,17 +60,19 @@ APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
 SCRIPTS_TABLE = "SCRIPTS_TABLE"
 
+
 class ScriptManagement:
     FIELDS = {
         "script_name": "NAME",
-        "script_type": "PLATFORM",
+        "script_platforms": "PLATFORM",
     }
-    
+
     PLATFORMS = {
-        "windows" : "AGENT_OS_WINDOWS",
-        "linux" : "AGENT_OS_LINUX",
-        "macos" : "AGENT_OS_MAC",
+        "windows": "AGENT_OS_WINDOWS",
+        "linux": "AGENT_OS_LINUX",
+        "macos": "AGENT_OS_MAC",
     }
+
 
 class CaseManagement:
     STATUS_RESOLVED_REASON = {
@@ -2647,22 +2649,23 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     demisto.debug(f"Playbook run errors: {error_messages}")
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
+
 def list_scripts_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of scripts from the platform with optional filtering.
+    """
     filter_builder = FilterBuilder()
     filter_builder.add_field(
         ScriptManagement.FIELDS["script_name"],
         FilterType.CONTAINS,
         argToList(args.get("script_name")),
     )
-    
-    windows = ScriptManagement.PLATFORMS["windows"] if args.get("windows_supported") else None
-    macos = ScriptManagement.PLATFORMS["macos"] if args.get("macos_supported") else None
-    linux = ScriptManagement.PLATFORMS["linux"] if args.get("linux_supported") else None
-    filter_builder.add_field(ScriptManagement.FIELDS["script_type"], FilterType.CONTAINS, [windows, macos, linux,])
-    
+
+    platforms = [ScriptManagement.PLATFORMS[platform] for platform in argToList(args.get("script_platforms"))]
+    filter_builder.add_field(ScriptManagement.FIELDS["script_platforms"], FilterType.CONTAINS, platforms)
 
     request_data = build_webapp_request_data(
-        table_name=ASSET_GROUPS_TABLE,
+        table_name=SCRIPTS_TABLE,
         filter_dict=filter_builder.to_dict(),
         limit=args.get("limit", 50),
         sort_field="MODIFICATION_TIME",
@@ -2671,36 +2674,29 @@ def list_scripts_command(client: Client, args: dict) -> CommandResults:
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
-    
+
     mapped_scripts = []
     for script in data:
         mapped_script = {
-            "script_name": script.get("NAME"),
+            "name": script.get("NAME"),
             "windows_supported": "AGENT_OS_WINDOWS" in str(script.get("PLATFORM", "")),
             "linux_supported": "AGENT_OS_LINUX" in str(script.get("PLATFORM", "")),
             "macos_supported": "AGENT_OS_MAC" in str(script.get("PLATFORM", "")),
+            "script_uid": script.get("GUID"),
             "script_id": script.get("ID"),
             "script_inputs": script.get("ENTRY_POINT_DEFINITION", {}).get("input_params", []),
         }
         mapped_scripts.append(mapped_script)
 
-    metadata = {
-        "filtered_count": reply.get("FILTER_COUNT", 0),
-        "returned_count": len(mapped_scripts),
-    }
-
-    outputs = {
-        "Scripts" : mapped_scripts,
-        "ScriptsMetadata": metadata
-    }
     return CommandResults(
         readable_output=tableToMarkdown("Scripts", mapped_scripts, headerTransform=string_to_table_header),
-        outputs=outputs,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Scripts",
+        outputs=mapped_scripts,
         outputs_key_field="script_id",
         raw_response=response,
     )
-        
-    
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -2820,7 +2816,7 @@ def main():  # pragma: no cover
             return_results(update_case_command(client, args))
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
-        elif command == "core-list-scripts2":
+        elif command == "core-list-scripts":
             return_results(list_scripts_command(client, args))
 
     except Exception as err:

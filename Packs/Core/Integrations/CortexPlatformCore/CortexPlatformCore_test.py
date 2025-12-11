@@ -5381,3 +5381,123 @@ def test_update_issue_command_link_cases_empty_list_no_other_updates(mocker: Moc
     mock_link_issue_to_cases.assert_not_called()
     mock_unlink_issue_from_cases.assert_not_called()
     mock_update_issue.assert_not_called()
+
+
+def test_list_scripts_command_with_multiple_platforms():
+    """
+    GIVEN:
+        A client with a mock response containing a script that supports multiple platforms.
+    WHEN:
+        The list_scripts_command function is called with platform filters.
+    THEN:
+        The script is returned with correct platform support flags.
+    """
+    from CortexPlatformCore import list_scripts_command
+
+    client = Mock()
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "NAME": "test_script",
+                    "PLATFORM": "AGENT_OS_WINDOWS,AGENT_OS_LINUX",
+                    "GUID": "test-guid-123",
+                    "ID": "script-id-1",
+                    "ENTRY_POINT_DEFINITION": {"input_params": [{"name": "param1", "type": "string"}]},
+                }
+            ]
+        }
+    }
+    client.get_webapp_data.return_value = mock_response
+
+    args = {"script_platforms": ["windows", "linux"], "limit": 50}
+
+    result = list_scripts_command(client, args)
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["windows_supported"] is True
+    assert result.outputs[0]["linux_supported"] is True
+    assert result.outputs[0]["macos_supported"] is False
+
+
+def test_list_scripts_command_with_script_name_filter():
+    """
+    GIVEN:
+        A client with a mock response containing a script with the specified name.
+    WHEN:
+        The list_scripts_command function is called with a script name filter.
+    THEN:
+        The script with matching name is returned and the client method is called once.
+    """
+    from CortexPlatformCore import list_scripts_command
+
+    client = Mock()
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "NAME": "test_script",
+                    "PLATFORM": "AGENT_OS_WINDOWS,AGENT_OS_LINUX",
+                    "GUID": "test-guid-123",
+                    "ID": "script-id-1",
+                    "ENTRY_POINT_DEFINITION": {"input_params": []},
+                }
+            ]
+        }
+    }
+    client.get_webapp_data.return_value = mock_response
+
+    args = {"script_name": "test_script"}
+
+    result = list_scripts_command(client, args)
+
+    client.get_webapp_data.assert_called_once()
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["name"] == "test_script"
+
+
+def test_list_scripts_command_outputs_structure():
+    """
+    GIVEN:
+        A client with a mock response containing a complete script with all platform support and input parameters.
+    WHEN:
+        The list_scripts_command function is called without arguments.
+    THEN:
+        The result contains the correct output structure with proper key field, raw response, and expected script data.
+    """
+    from CortexPlatformCore import list_scripts_command
+
+    client = Mock()
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "NAME": "complete_script",
+                    "PLATFORM": "AGENT_OS_WINDOWS,AGENT_OS_LINUX,AGENT_OS_MAC",
+                    "GUID": "complete-guid-456",
+                    "ID": "complete-id-2",
+                    "ENTRY_POINT_DEFINITION": {
+                        "input_params": [{"name": "param1", "type": "string"}, {"name": "param2", "type": "int"}]
+                    },
+                }
+            ]
+        }
+    }
+    client.get_webapp_data.return_value = mock_response
+
+    args = {}
+
+    result = list_scripts_command(client, args)
+
+    assert result.outputs_key_field == "script_id"
+    assert result.raw_response == mock_response
+    expected_script = {
+        "name": "complete_script",
+        "windows_supported": True,
+        "linux_supported": True,
+        "macos_supported": True,
+        "script_uid": "complete-guid-456",
+        "script_id": "complete-id-2",
+        "script_inputs": [{"name": "param1", "type": "string"}, {"name": "param2", "type": "int"}],
+    }
+    assert result.outputs[0] == expected_script
