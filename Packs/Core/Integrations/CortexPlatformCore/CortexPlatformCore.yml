@@ -2548,6 +2548,37 @@ script:
           description: The IDs of the issues to process with the playbook.
           required: true
           isArray: true
+    - arguments:
+        - description: The email of the user. Accepts a comma-separated list.
+          isArray: true
+          name: email
+      name: core-get-system-users
+      description: "Returns a list users and their core properties within the system. Results are limited to 50."
+      outputs:
+        - contextPath: Core.User.user_email
+          description: The user's email address.
+          type: String
+        - contextPath: Core.User.user_first_name
+          description: The user's first name.
+          type: String
+        - contextPath: Core.User.user_last_name
+          description: The user's last name.
+          type: String
+        - contextPath: Core.User.role_name
+          description: The specific role assigned to the user within this instance (e.g., Instance Administrator).
+          type: String
+        - contextPath: Core.User.user_type
+          description: The identity provider or source of the user account (e.g., CSP / SSO).
+          type: String
+        - contextPath: Core.User.last_logged_in
+          description: The last time the user successfully logged in, represented as a Unix epoch timestamp in milliseconds.
+          type: Number
+        - contextPath: Core.User.scope
+          description: The user's defined access scope or permissions structure within the instance.
+          type: String
+        - contextPath: Core.User.groups
+          description: A specific name of a group the user belongs to within this instance.
+          type: String
   runonce: false
   script: "-"
   subtype: python3

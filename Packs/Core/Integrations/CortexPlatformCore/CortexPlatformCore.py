@@ -14,6 +14,7 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
+MAX_GET_SYSTEM_USERS_LIMIT = 50
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -46,7 +47,7 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
     "core-get-appsec-issues",
-    "core-update-case",
+    "core-update-case"
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -821,6 +822,16 @@ class Client(CoreClient):
             },
             json_data=request_data,
         )
+
+    def get_users(self):
+        reply = self._http_request(
+            method="POST",
+            json_data={},
+            headers=self._headers,
+            url_suffix="/rbac/get_users",
+        )
+
+        return reply
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -2840,30 +2851,25 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
-def get_system_users(client, args):
+def get_system_users_command(client, args):
+    """
+    Retrieves system user optionally filtered by email using the public api ep /public_api/v1/rbac/get_users
+    This function calls the client to fetch all available system users. If specific
+    emails are provided via the 'email' argument, it filters the results. If no
+    emails are provided, it limits the results to 50.
+    """
     emails = argToList(args.get("email", ""))
-    request_data = build_webapp_request_data(
-        table_name=USERS_TABLE,
-        filter_dict={},
-        limit=50,
-        sort_field="PRETTY_USER_NAME",
-        sort_order="ASC",
-        extra_data = {"include_hidden_users": True}
-    )
-
-    response = client.get_webapp_data(request_data)
+    response = client.get_users()
     reply = response.get("reply", {})
-    data = reply.get("DATA", [])
     if emails:
-        data = [user for user in data if user.get("USERNAME") in emails]
+        data = [user for user in reply if user.get("user_email") in emails]
     else:
-        data = data[:50] if len(data) > 50 else data
-
+        data = reply[:MAX_GET_SYSTEM_USERS_LIMIT] if len(reply) > MAX_GET_SYSTEM_USERS_LIMIT else reply
 
     return CommandResults(
         readable_output=tableToMarkdown("System Users", data, headerTransform=string_to_table_header),
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Users",
-        outputs_key_field="USERNAME",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.User",
+        outputs_key_field="user_email",
         outputs=data,
         raw_response=response,
     )
@@ -2989,7 +2995,7 @@ def main():  # pragma: no cover
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
         elif command == "core-get-system-users":
-            return_results(get_system_users(client, args))
+            return_results(get_system_users_command(client, args))
 
 
 
