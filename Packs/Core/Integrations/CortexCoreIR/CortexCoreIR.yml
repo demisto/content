@@ -3656,6 +3656,7 @@ script:
       name: tags_to_add
     - description: A comma-separated list of tags to remove from the endpoints. Either this arguemnt or tags_to_add is requierd.
       name: tags_to_remove
+    hidden: true
     description: Update tags of one or more endpoints.
     name: core-update-endpoint-tags
   - name: core-list-users
