@@ -6406,19 +6406,11 @@ def test_core_list_endpoints_command_success(mocker):
     args = {"page": "0", "page_size": "50", "endpoint_name": "test"}
     result = core_list_endpoints_command(mock_client, args)
 
-    # Verify result structure - should be a list with 2 CommandResults
-    assert len(result) == 2
-
-    # First result is metadata
-    assert result[0].outputs_prefix == f"{INTEGRATION_CONTEXT_BRAND}.EndpointsMetadata"
-    assert result[0].outputs == {"filtered_count": 1, "returned_count": 1}
-
-    # Second result is the actual endpoint data
-    assert result[1].readable_output == "Mock table output"
-    assert result[1].outputs == mapped_data
-    assert result[1].outputs_prefix == f"{INTEGRATION_CONTEXT_BRAND}.Endpoint"
-    assert result[1].outputs_key_field == "endpoint_id"
-    assert result[1].raw_response == mapped_data
+    assert result.readable_output == "Mock table output"
+    assert result.outputs == mapped_data
+    assert result.outputs_prefix == f"{INTEGRATION_CONTEXT_BRAND}.Endpoint"
+    assert result.outputs_key_field == "endpoint_id"
+    assert result.raw_response == mapped_data
 
     # Verify function calls
     mock_build_endpoint_filters.assert_called_once_with(args)
@@ -6463,8 +6455,7 @@ def test_core_list_endpoints_command_default_pagination(mocker):
     call_kwargs = mock_build_webapp_request_data.call_args[1]
     assert call_kwargs["limit"] == MAX_GET_ENDPOINTS_LIMIT
     assert call_kwargs["start_page"] == 0
-    assert len(result) == 2
-    assert result[1].outputs == []
+    assert result.outputs == []
 
 
 def test_core_list_endpoints_command_empty_response(mocker):
@@ -6498,11 +6489,9 @@ def test_core_list_endpoints_command_empty_response(mocker):
     args = {}
     result = core_list_endpoints_command(mock_client, args)
 
-    # Verify empty response handling
-    assert len(result) == 2
-    assert result[1].readable_output == "No endpoints found"
-    assert result[1].outputs == []
-    assert result[1].raw_response == []
+    assert result.readable_output == "No endpoints found"
+    assert result.outputs == []
+    assert result.raw_response == []
 
     # Verify map_endpoint_format was called with empty list
     mock_map_endpoint_format.assert_called_once_with([])
@@ -6551,8 +6540,7 @@ def test_core_list_endpoints_command_custom_pagination(mocker):
     call_kwargs = mock_build_webapp_request_data.call_args[1]
     assert call_kwargs["limit"] == 30  # page_to
     assert call_kwargs["start_page"] == 20  # page_from
-    assert len(result) == 2
-    assert isinstance(result[1], CommandResults)
+    assert isinstance(result, CommandResults)
 
 
 def test_core_list_endpoints_command_missing_reply_field(mocker):
@@ -6587,9 +6575,7 @@ def test_core_list_endpoints_command_missing_reply_field(mocker):
     args = {}
     result = core_list_endpoints_command(mock_client, args)
 
-    # Verify graceful handling of missing reply
-    assert len(result) == 2
-    assert result[1].outputs == []
+    assert result.outputs == []
 
     # Verify map_endpoint_format was called with empty list (from missing DATA)
     mock_map_endpoint_format.assert_called_once_with([])
@@ -6634,9 +6620,8 @@ def test_core_list_endpoints_command_with_filters(mocker):
     mock_build_endpoint_filters.assert_called_once_with(args)
 
     # Verify result
-    assert len(result) == 2
-    assert result[1].outputs == mapped_data
-    assert result[1].readable_output == "Filtered endpoints table"
+    assert result.outputs == mapped_data
+    assert result.readable_output == "Filtered endpoints table"
 
     # Verify logging was called
     assert mock_demisto.info.called
