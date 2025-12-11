@@ -55,4 +55,8 @@ You can configure the specific vendor and product for this instance.
    | `Vendor`      | Enter **Brocade**.
    | `Product`     | Enter **Switch**.
 
+   **NOTE:** In the content pack parsing rule we added the tmp_timezone field
+   You can configure in User Define your offset preferences for your specific timezone.
+
+   For example: tmp_timezone = "UTC+2"
 </~XSIAM>
