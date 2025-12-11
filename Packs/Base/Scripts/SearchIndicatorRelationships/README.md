@@ -46,7 +46,6 @@ This automation outputs the indicator relationships to context according to the 
 | Relationships.Type | The type of the relationship. | string |
 | RelationshipsPagination | The searchAfter token for retrieving the next batch of relationships. | string |
 
-
 ## Script Examples
 
 ### Example command
