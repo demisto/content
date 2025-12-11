@@ -7,6 +7,7 @@ An integration to MS Graph Identity and Access endpoint.
 https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph-rest-1.0
 """
 
+import json
 import urllib3
 
 
@@ -294,6 +295,20 @@ class Client:  # pragma: no cover
         if odata:
             odata_query += odata
         return self.ms_client.http_request("GET", f"v1.0/identityProtection/riskyUsers/{user_id}/history{odata_query}")["value"]
+
+    def get_user_signin_event(self, signin_id: str) -> dict:
+        """Retrieve a specific Microsoft Entra user sign-in event
+
+        Args:
+            signin_id: Unique ID representing the sign-in event.
+
+        Returns:
+            a list of dictionaries with the object from the api
+
+        Docs:
+            https://learn.microsoft.com/en-us/graph/api/signin-get?view=graph-rest-1.0&tabs=http
+        """
+        return self.ms_client.http_request("GET", f"v1.0/auditLogs/signIns/{signin_id}")
 
     def activate_directory_role(self, template_id: str) -> dict:
         """Activating a role in the directory.
@@ -1150,20 +1165,219 @@ def date_str_to_azure_format(date_str: str) -> str:
     return date_str
 
 
-def detection_to_incident(detection: dict, detection_date: str) -> dict:
+def detection_to_incident(detection: dict, detection_date: str, severity_override: bool, overridden_issue_severity: str) -> dict:
     detection_id: str = detection.get("id", "")
+    sign_in_risk_mapping = {
+        "riskyIPAddress": {
+            "alertName": "Microsoft Entra ID sign-in risk: Risky IP address",
+            "alertDescription": (
+                "Sign-in by user {userId} from an IP address identified "
+                "as an anonymous proxy IP address by Microsoft Defender for Cloud Apps."
+            ),
+        },
+        "generic": {
+            "alertName": "Microsoft Entra ID sign-in risk: Additional risk detected",
+            "alertDescription": (
+                "One of the Microsoft Entra ID Protection premium detections was triggered for user {userId}. "
+                "Since premium detections are only visible to Microsoft Entra ID P2 customers, "
+                "they are labeled as Additional risk detected for users without Microsoft Entra ID P2 licenses."
+            ),
+        },
+        "adminConfirmedUserCompromised": {
+            "alertName": "Microsoft Entra ID sign-in risk: Admin confirmed user compromised",
+            "alertDescription": (
+                "An admin selected Confirm user compromised " "in Microsoft Entra ID Protection UI or API for user {userId}. "
+            ),
+        },
+        "anomalousToken": {
+            "alertName": "Microsoft Entra ID sign-in risk: Anomalous token",
+            "alertDescription": (
+                "Sign-in detected with abnormal characteristics in the token, such as an unusual lifetime "
+                "or a token played from an unfamiliar location, for user {userId}. This detection covers 'Session Tokens' "
+                "and 'Refresh Tokens.' If the location, application, IP address, User Agent, or other characteristics "
+                "are unexpected for the user, the administrator should consider "
+                "this risk as an indicator of potential token replay."
+            ),
+        },
+        "anonymizedIPAddress": {
+            "alertName": "Microsoft Entra ID sign-in risk: Anonymous IP address",
+            "alertDescription": (
+                "Suspicious sign-in from an anonymous IP address "
+                "(for example, Tor browser or anonymous VPN) detected for user {userId}."
+            ),
+        },
+        "unlikelyTravel": {
+            "alertName": "Microsoft Entra ID sign-in risk: Atypical travel",
+            "alertDescription": (
+                "Sign-ins originating from two geographically distant locations, where at least "
+                "one of the locations might also be atypical for the user, given past behavior based on {userId} user history."
+            ),
+        },
+        "mcasImpossibleTravel": {
+            "alertName": "Microsoft Entra ID sign-in risk: Impossible travel",
+            "alertDescription": (
+                "Sign-in originating from geographically distant locations within a time period shorter "
+                "than the time it takes to travel from the first location to the second detected for user {userId}."
+            ),
+        },
+        "maliciousIPAddress": {
+            "alertName": "Microsoft Entra ID sign-in risk: Malicious IP address",
+            "alertDescription": (
+                "Sign-in from an IP address flagged as malicious based on high failure rates "
+                "because of invalid credentials received from the IP address or other IP reputation sources for user {userId}."
+            ),
+        },
+        "mcasFinSuspiciousFileAccess": {
+            "alertName": "Microsoft Entra ID sign-in risk: Mass access to sensitive files",
+            "alertDescription": (
+                "User {userId} accessed an uncommon large number of files, and/or files containing "
+                "sensitive information, from Microsoft SharePoint Online or Microsoft OneDrive."
+            ),
+        },
+        "investigationsThreatIntelligence": {
+            "alertName": "Microsoft Entra ID sign-in risk: Microsoft Entra threat intelligence (sign-in)",
+            "alertDescription": (
+                "User {userId} activity is unusual for the user or consistent with known attack patterns. "
+                "This detection is based on Microsoft's internal and external threat intelligence sources."
+            ),
+        },
+        "newCountry": {
+            "alertName": "Microsoft Entra ID sign-in risk: New country",
+            "alertDescription": "Sign-in from an unusual country for user {userId} based on past activity locations.",
+        },
+        "passwordSpray": {
+            "alertName": "Microsoft Entra ID sign-in risk: Password spray",
+            "alertDescription": (
+                "Multiple sign-in attempts detected across accounts, targeting user {userId}. "
+                "The risk detection is triggered when an account's password is valid and has an attempted sign in."
+            ),
+        },
+        "suspiciousBrowser": {
+            "alertName": "Microsoft Entra ID sign-in risk: Suspicious browser",
+            "alertDescription": (
+                "Sign-in detected from a browser associated with anomalous behavior based on "
+                "suspicious sign-in activity across multiple tenants from different countries/regions "
+                "in the same browser for user {userId}."
+            ),
+        },
+        "suspiciousInboxForwarding": {
+            "alertName": "Microsoft Entra ID sign-in risk: Suspicious inbox forwarding",
+            "alertDescription": (
+                "Suspicious rules that delete or move messages or folders are set on {userId} user's inbox. "
+                "This detection might indicate: a user's account is compromised, messages are being intentionally hidden, "
+                "and the mailbox is being used to distribute spam or malware in your organization."
+            ),
+        },
+        "mcasSuspiciousInboxManipulationRules": {
+            "alertName": "Microsoft Entra ID sign-in risk: Suspicious inbox manipulation rules",
+            "alertDescription": (
+                "Suspicious mailbox rule that delete or move messages or folders are set on user {userId} "
+                "mailbox. This detection might indicate: a user's account is compromised, messages are being intentionally "
+                "hidden, and the mailbox is being used to distribute spam or malware in your organization."
+            ),
+        },
+        "tokenIssuerAnomaly": {
+            "alertName": "Microsoft Entra ID sign-in risk: Token issuer anomaly",
+            "alertDescription": (
+                "Sign-in detected  for user {userId} with indications that the SAML token issuer "
+                "for the associated SAML token is potentially compromised. "
+                "The claims included in the token are unusual or match known attacker patterns."
+            ),
+        },
+        "unfamiliarFeatures": {
+            "alertName": "Microsoft Entra ID sign-in risk: Unfamiliar sign-in properties",
+            "alertDescription": (
+                "Sign-in using features (IP, ASN, location, device, and/or browser) not previously seen "
+                "for user {userId} based on past sign-in history. Unfamiliar sign-in properties can be detected on both "
+                "interactive and non-interactive sign-ins. When this detection is detected on non-interactive sign-ins, "
+                "it deserves increased scrutiny due to the risk of token replay attacks."
+            ),
+        },
+        "nationStateIP": {
+            "alertName": "Microsoft Entra ID sign-in risk: Verified threat actor IP",
+            "alertDescription": (
+                "Sign-in detected from an IP address consistent with known IP addresses associated "
+                "with nation state actors or cyber crime groups, "
+                "based on data from the Microsoft Threat Intelligence Center (MSTIC), for user {userId}."
+            ),
+        },
+        "anomalousUserActivity": {
+            "alertName": "Microsoft Entra ID user risk: Anomalous User Activity",
+            "alertDescription": (
+                "Anomalous privileged user {userId} activity regarding user baseline. The detection "
+                "is triggered against the privileged user account making the change or the object that was changed."
+            ),
+        },
+        "attackerinTheMiddle": {
+            "alertName": "Microsoft Entra ID user risk: Attacker in the Middle",
+            "alertDescription": (
+                "Sign-in from a malicious reverse proxy associated with known Adversary in the Middle activity "
+                "detected for user {userId}. Thoughtful investigation is required when this detection is triggered "
+                "to ensure the risk is cleared, which might require secure password reset and revocation of existing sessions."
+            ),
+        },
+        "leakedCredentials": {
+            "alertName": "Microsoft Entra ID user risk: Leaked credentials",
+            "alertDescription": "Credentials for user {userId} found in known data breaches.",
+        },
+        "attemptedPrtAccess": {
+            "alertName": "Microsoft Entra ID sign-in risk: Possible attempt to access Primary Refresh Token (PRT)",
+            "alertDescription": (
+                "Possible attempt to access Primary Refresh Token (PRT) on {userId} device.  A PRT is a "
+                "JSON Web Token (JWT) issued to Microsoft first-party token brokers to enable single sign-on (SSO) "
+                "across the applications used on those devices. This detection is high risk and prompt remediation "
+                "of these users is recommended. It appears infrequently in most organizations due to its low volume."
+            ),
+        },
+        "suspiciousAPITraffic": {
+            "alertName": "Microsoft Entra ID sign-in risk: Suspicious API traffic",
+            "alertDescription": (
+                "Abnormal GraphAPI traffic or directory enumeration detected for user {userId}. Suspicious "
+                "API traffic might suggest that a user is compromised and conducting reconnaissance in the environment."
+            ),
+        },
+        "suspiciousSendingPatterns": {
+            "alertName": "Microsoft Entra ID sign-in risk: Suspicious sending patterns",
+            "alertDescription": (
+                "Suspicious email patterns detected by Microsoft Defender for Office 365 (MDO) " "in email sent by user {userId}."
+            ),
+        },
+        "userReportedSuspiciousActivity": {
+            "alertName": "Microsoft Entra ID sign-in risk: User reported suspicious activity",
+            "alertDescription": (
+                "User {userId} denied a multi factor authentication (MFA) prompt " "and reported it as suspicious activity."
+            ),
+        },
+    }
+
     detection_type: str = detection.get("riskEventType", "")
     detection_detail: str = detection.get("riskDetail", "")
+    detection_upn: str = detection.get("userPrincipalName", "")
+    detection_severity: str = detection.get("riskLevel", "")
+
+    risk = sign_in_risk_mapping.get(detection_type)
+
+    severity_map = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+    if severity_override:
+        incident_severity = severity_map.get(overridden_issue_severity, 2)
+    else:
+        incident_severity = severity_map.get(detection_severity, 2)
+
     incident = {
         "name": f"Azure AD: {detection_id} {detection_type} {detection_detail}",
+        "severity": incident_severity,
         "occurred": f"{detection_date}Z",
         "rawJSON": json.dumps(detection),
     }
+
+    if isinstance(risk, dict):
+        incident["details"] = risk.get("alertDescription", "").replace("{userId}", detection_upn)
+
     return incident
 
 
 def detections_to_incidents(
-    detections: List[Dict[str, str]], last_fetch_datetime: str
+    detections: List[Dict[str, str]], last_fetch_datetime: str, severity_override: bool, overridden_issue_severity: str
 ) -> tuple[List[Dict[str, str]], str]:  # pragma: no cover  # noqa
     """
     Given the detections retrieved from Azure Identity Protection, transforms their data to incidents format.
@@ -1174,7 +1388,9 @@ def detections_to_incidents(
     for detection in detections:
         detection_datetime = detection.get("detectedDateTime", "")
         detection_datetime_in_azure_format = date_str_to_azure_format(detection_datetime)
-        incident = detection_to_incident(detection, detection_datetime_in_azure_format)
+        incident = detection_to_incident(
+            detection, detection_datetime_in_azure_format, severity_override, overridden_issue_severity
+        )
         incidents.append(incident)
 
         if datetime.strptime(detection_datetime_in_azure_format, DATE_FORMAT) > datetime.strptime(
@@ -1185,20 +1401,67 @@ def detections_to_incidents(
     return incidents, latest_incident_time
 
 
-def risky_user_to_incident(riskyuser: dict, riskyuser_date: str) -> dict:
+def risky_user_to_incident(riskyuser: dict, riskyuser_date: str, severity_override: bool, overridden_issue_severity: str) -> dict:
     riskyuser_upn: str = riskyuser.get("userPrincipalName", "")
     riskyuser_risk_level: str = riskyuser.get("riskLevel", "")
     riskyuser_risk_state: str = riskyuser.get("riskState", "")
+
+    severity_map = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+    if severity_override:
+        incident_severity = severity_map.get(overridden_issue_severity, 2)
+    else:
+        incident_severity = severity_map.get(riskyuser_risk_level, 2)
+
+    if riskyuser_risk_level == "remediated":
+        incident_details = (
+            f"User {riskyuser_upn} remediated. Risk might have been self-remediated by user through MFA "
+            "or secure password change, or manually remediated by an administrator. Caution is required "
+            "before dismissing this alert when risk detail is userPassedMFADrivenByRiskBasedPolicy "
+            "as AiTM attacks on an MFA-enabled account trigger this alert."
+        )
+
+    elif riskyuser_risk_level == "dismissed":
+        incident_details = (
+            f"User {riskyuser_upn} risk has been dismissed because the user's account has been considered safe. "
+            "In some cases, Microsoft Entra ID Protection can also automatically dismiss a user's risk state when "
+            "both the risk detection and the corresponding risky sign-in are identified by ID Protection as no longer "
+            "posing a security threat. This automatic intervention can happen if the user provides a second factor, "
+            "such as multifactor authentication (MFA) or if the real-time and offline assessment determines that the sign-in "
+            "is no longer risky"
+        )
+
+    elif riskyuser_risk_state == "atRisk" and riskyuser_risk_level == "high":
+        incident_details = (
+            f"High-risk of {riskyuser_upn} Entra ID account compromise. "
+            "Microsoft is highly confident that the account is compromised.  Signals such as threat intelligence "
+            "and known attack patterns factor into the confidence level of the risk detection"
+        )
+
+    elif riskyuser_risk_state == "atRisk" and (riskyuser_risk_level == "medium" or riskyuser_risk_level == "low"):
+        incident_details = (
+            f"One or more {riskyuser_risk_level}-severity anomalies were detected "
+            f"by Microsoft on {riskyuser_upn} Entra ID account. "
+            "Sign-in patterns, behaviors, and other signals factor into the confidence level of the risk detection."
+        )
+
+    else:
+        incident_details = (
+            f"Risk detected by Microsoft for {riskyuser_upn} Entra ID account. Risk level is {riskyuser_risk_state}."
+        )
+
     incident = {
         "name": f"Azure User at Risk: {riskyuser_upn} - {riskyuser_risk_state} - {riskyuser_risk_level}",
+        "details": incident_details,
+        "severity": incident_severity,
         "occurred": f"{riskyuser_date}Z",
         "rawJSON": json.dumps(riskyuser),
     }
-
     return incident
 
 
-def risky_users_to_incidents(riskyusers: List[Dict[str, str]], last_fetch_datetime: str) -> tuple[List[Dict[str, str]], str]:
+def risky_users_to_incidents(
+    riskyusers: List[Dict[str, str]], last_fetch_datetime: str, severity_override: bool, overridden_issue_severity: str
+) -> tuple[List[Dict[str, str]], str]:
     """
     Given the risky users retrieved from Azure Identity Protection, transforms their data to incidents format.
     """
@@ -1209,7 +1472,9 @@ def risky_users_to_incidents(riskyusers: List[Dict[str, str]], last_fetch_dateti
     for riskyuser in riskyusers:
         riskyuser_datetime = riskyuser.get("riskLastUpdatedDateTime", "")
         riskyuser_datetime_in_azure_format = date_str_to_azure_format(riskyuser_datetime)
-        incident = risky_user_to_incident(riskyuser, riskyuser_datetime_in_azure_format)
+        incident = risky_user_to_incident(
+            riskyuser, riskyuser_datetime_in_azure_format, severity_override, overridden_issue_severity
+        )
         incidents.append(incident)
 
         if datetime.strptime(riskyuser_datetime_in_azure_format, DATE_FORMAT) > datetime.strptime(
@@ -1245,12 +1510,25 @@ def fetch_incidents(client: Client, params: Dict[str, str]):  # pragma: no cover
     limit = params.get("max_fetch", "50")
     filter_expression = query_filter
 
+    severity_override = params.get("override_issue_severity", False)
+    issue_severity = params.get("issue_severity", "medium")
+
     if params.get("alerts_to_fetch", "Risk Detections") == "Risky Users":
         riskyusers: list = client.list_risky_users(limit, None, filter_expression)  # type: ignore
-        incidents, latest_detection_time = risky_users_to_incidents(riskyusers, last_fetch_datetime=last_fetch)  # type: ignore
+        incidents, latest_detection_time = risky_users_to_incidents(
+            riskyusers,
+            last_fetch_datetime=last_fetch,
+            severity_override=severity_override,  # type: ignore
+            overridden_issue_severity=issue_severity,
+        )
     else:
         detections: list = client.list_risk_detections(limit, None, filter_expression)  # type: ignore
-        incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)  # type: ignore
+        incidents, latest_detection_time = detections_to_incidents(
+            detections,
+            last_fetch_datetime=last_fetch,
+            severity_override=severity_override,  # type: ignore
+            overridden_issue_severity=issue_severity,
+        )
 
     demisto.debug(f"Fetched {len(incidents)} incidents")
 
@@ -1435,6 +1713,60 @@ def update_conditional_access_policy_command(client: Client, args: Dict[str, Any
     return result
 
 
+def get_user_signin_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve a specific Microsoft Entra ID user sign-in event
+
+    Args:
+        client (Client): An authenticated Microsoft Graph API client.
+        args (Dict[str, Any]): Command arguments including:
+            - id: Unique ID representing the sign-in event.
+
+    Returns:
+        CommandResults: A result object with the details of the requested user sign-in event.
+    """
+
+    signin_id = args.get("id", "")
+
+    context = []
+    readable_signin_events = []
+
+    if signin_event := client.get_user_signin_event(signin_id):
+        # Append raw sign-in event object retrieved from Graph API to context which will be an array
+        # to make it compatible with retrieval of multiple sign-in events by other commands
+        context.append(signin_event)
+
+        # Extract relevant items from the raw Graph API object to display them in war room
+        readable_signin_event = {
+            "id": signin_event.get("id"),
+            "correlationId": signin_event.get("correlationId"),
+            "appDisplayName": signin_event.get("appDisplayName"),
+            "resourceDisplayName": signin_event.get("resourceDisplayName"),
+            "status": signin_event.get("status"),
+            "ipAddress": signin_event.get("ipAddress"),
+            "conditionalAccessStatus": signin_event.get("conditionalAccessStatus"),
+            "appliedConditionalAccessPolicies": signin_event.get("appliedConditionalAccessPolicies"),
+            "deviceDetail": signin_event.get("deviceDetail"),
+            "clientAppUsed": signin_event.get("clientAppUsed"),
+            "userDisplayName": signin_event.get("userDisplayName"),
+            "userPrincipalName": signin_event.get("userPrincipalName"),
+        }
+        readable_signin_events.append(readable_signin_event)
+
+        return CommandResults(
+            "MSGraphIdentity.AuditLog.signIns",
+            "id",
+            outputs=context,
+            ignore_auto_extract=True,
+            readable_output=tableToMarkdown(
+                "Microsoft Entra ID user sign-in event :",
+                readable_signin_events,
+            ),
+        )
+    else:
+        return CommandResults(readable_output=f"Could not retrieve sign-in data for request_id {signin_id}")
+
+
 def main():  # pragma: no cover
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
@@ -1507,6 +1839,8 @@ def main():  # pragma: no cover
             return_results(create_conditional_access_policy_command(client, args))
         elif command == "msgraph-identity-ca-policy-update":
             return_results(update_conditional_access_policy_command(client, args))
+        elif command == "msgraph-identity-audit-signin-event-get":
+            return_results(get_user_signin_event_command(client, args))
         elif command == "fetch-incidents":
             incidents, last_run = fetch_incidents(client, params)
             demisto.incidents(incidents)
