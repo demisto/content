@@ -150,7 +150,6 @@ triggers:
     effects:
       - name: client_secret
         action:
-          type: 14 # only for enable the trigger hidden
           hidden: true
       - name: certificate
         action:
