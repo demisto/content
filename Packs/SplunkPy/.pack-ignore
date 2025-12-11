@@ -56,3 +56,6 @@ ignore=IF115
 
 [file:incidentfield-Splunk_Drilldown.json]
 ignore=IF115
+
+[file:SplunkPyV2_image.png]
+ignore=IM111
