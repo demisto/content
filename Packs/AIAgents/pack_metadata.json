@@ -17,18 +17,14 @@
         "platform"
     ],
     "supportedModules": [
-        "C1",
-        "C3",
-        "X0",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
-        "xsiam",
-        "agentix",
-        "cloud",
         "cloud_posture",
+        "cloud",
         "cloud_runtime_security",
-        "edr"
+        "edr",
+        "asm",
+        "cloud_appsec",
+        "xsiam",
+        "exposure_management",
+        "agentix"
     ]
 }

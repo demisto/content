@@ -20,9 +20,15 @@
         {
             "id": "AIAgents",
             "supportedModules": [
-                "agentix",
                 "cloud_posture",
-                "xsiam"
+                "cloud",
+                "cloud_runtime_security",
+                "edr",
+                "asm",
+                "cloud_appsec",
+                "xsiam",
+                "exposure_management",
+                "agentix"
             ]
         },
         {
