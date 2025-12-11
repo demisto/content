@@ -1,5 +1,6 @@
 id: ANYRUN Detonate Url Windows
 version: -1
+fromversion: 6.0.0
 name: ANYRUN Detonate Url Windows
 description: This playbook submits a URL extracted from an indicator to the ANY.RUN
   cloud sandbox for dynamic analysis in an Windows environment. It automates the analysis

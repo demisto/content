@@ -210,7 +210,7 @@ def parse_results(report: dict, reliability: str, indicator_value: str, indicato
         )
 
     output_context["Verdict"] = VERDICT_RESOLVER.get(
-        report.get("summary", {}).get("threatLevel", 0)
+        report.get("summary", {}).get("threatLevel", 0), "No info"
     )
 
     return_results(
