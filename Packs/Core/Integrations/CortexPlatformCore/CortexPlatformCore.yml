@@ -2556,6 +2556,7 @@ script:
       # - X3
       # - X5
       # - ENT_PLUS
+      polling: true
       description: Run a script on endpoints.
       hidden: false
       arguments:
@@ -2570,6 +2571,8 @@ script:
           description: A comma-separated list of endpoint names. Either this field or endpoint_ids must be provided.
           isArray: true
           polling: true
+        - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
+          name: parameters
       outputs:
       - contextPath: Core.ScriptResult.action_id
         description: ID of the action initiated.

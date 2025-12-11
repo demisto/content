@@ -3387,6 +3387,7 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> tuple[s
 )
 def script_run_polling_command(args: dict, client: CoreClient, statuses: tuple = ("PENDING", "IN_PROGRESS")) -> PollResult:
     # is_core=True when this script is called from a Core pack, otherwise, it is called from XDR pack
+    demisto.debug(f"Running script on args out: {args}")
     if action_id := args.get("action_id"):
         response = client.get_script_execution_status(action_id)
         general_status = response.get("reply", {}).get("general_status") or ""
@@ -3404,6 +3405,7 @@ def script_run_polling_command(args: dict, client: CoreClient, statuses: tuple =
 
     else:
         endpoint_ids = argToList(args.get("endpoint_ids"))
+        demisto.debug(f"Running script on args: {args}")
         response = get_run_script_execution_response(client, args)
         reply = response.get("reply")
         action_id = reply.get("action_id")
@@ -3429,13 +3431,16 @@ def get_run_script_execution_response(client: CoreClient, args: Dict):
     endpoint_ids = argToList(args.get("endpoint_ids"))
     timeout = arg_to_number(args.get("timeout", 600)) or 600
     incident_id = arg_to_number(args.get("incident_id"))
+    demisto.debug(f"run script execution with args: {args}")
     if parameters := args.get("parameters"):
         try:
             parameters = json.loads(parameters)
+            demisto.debug(f"parameters in try: {parameters}")
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f"The parameters argument is not in a valid JSON structure:\n{e}")
     else:
         parameters = {}
+    
     return client.run_script(script_uid, endpoint_ids, parameters, timeout, incident_id=incident_id)
 
 
