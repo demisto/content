@@ -26,8 +26,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -154,
-          "y": -317
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -87,8 +87,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 227,
-          "y": 411
+          "x": 275,
+          "y": 560
         }
       }
     note: false
@@ -115,8 +115,6 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      incident_info:
-        simple: ${incident}
       report_format:
         simple: html
       task_uuid:
@@ -126,8 +124,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 999
+          "x": 387.5,
+          "y": 1085
         }
       }
     note: false
@@ -148,14 +146,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -154,
-          "y": 1455
+          "x": 50,
+          "y": 1785
         }
       }
     note: false
@@ -173,11 +170,11 @@ tasks:
       id: cd868d33-64f3-4b5a-9fff-6cbd8277c790
       version: -1
       name: Is there any URL to detonate?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       type: condition
       iscommand: false
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
     nexttasks:
       '#default#':
       - "5"
@@ -198,8 +195,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 66,
-          "y": 143
+          "x": 162.5,
+          "y": 385
         }
       }
     note: false
@@ -236,8 +233,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -154,
-          "y": -98
+          "x": 50,
+          "y": 210
         }
       }
     note: false
@@ -281,8 +278,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 227,
-          "y": 806
+          "x": 275,
+          "y": 910
         }
       }
     note: false
@@ -317,8 +314,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 227,
-          "y": 610
+          "x": 275,
+          "y": 735
         }
       }
     note: false
@@ -343,10 +340,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "11"
     scriptarguments:
-      incident_info:
-        simple: ${incident}
       report_format:
         simple: ioc
       task_uuid:
@@ -356,8 +351,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 1179
+          "x": 387.5,
+          "y": 1260
         }
       }
     note: false
@@ -365,6 +360,90 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 62f3401c-c964-4db4-84cb-51275addf443
+    type: condition
+    task:
+      id: 62f3401c-c964-4db4-84cb-51275addf443
+      version: -1
+      name: Is there an incident ID and ANY.RUN IOCs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "Yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ANYRUN.IOCs
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 98186284-6175-46f0-b351-f7211107d42b
+    type: regular
+    task:
+      id: 98186284-6175-46f0-b351-f7211107d42b
+      version: -1
+      name: Associate IOCs to incident
+      description: commands.local.cmd.associate.indicators
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      indicatorsValues:
+        simple: ${ANYRUN.IOCs}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 system: true
@@ -375,10 +454,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1832,
-        "width": 982,
-        "x": -154,
-        "y": -317
+        "height": 1795,
+        "width": 950,
+        "x": 50,
+        "y": 50
       }
     }
   }

@@ -1,8 +1,9 @@
 id: ANYRUN Detonate Url Windows
 version: -1
 name: ANYRUN Detonate Url Windows
-fromversion: 6.0.0
-description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. It automates the analysis of potentially malicious URLs on Windows OS.
+description: This playbook submits a URL extracted from an indicator to the ANY.RUN
+  cloud sandbox for dynamic analysis in an Windows environment. It automates the analysis
+  of potentially malicious URLs on Windows OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -24,8 +25,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -154,
-          "y": -316
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -89,8 +90,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 227,
-          "y": 411
+          "x": 275,
+          "y": 560
         }
       }
     note: false
@@ -117,8 +118,6 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      incident_info:
-        simple: ${incident}
       report_format:
         simple: html
       task_uuid:
@@ -128,8 +127,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 998
+          "x": 387.5,
+          "y": 1085
         }
       }
     note: false
@@ -156,8 +155,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -154,
-          "y": 1488
+          "x": 70,
+          "y": 1785
         }
       }
     note: false
@@ -175,10 +174,11 @@ tasks:
       id: 953830ac-79b0-42f2-83c9-509386fcfe8e
       version: -1
       name: Is there any URL to detonate?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       type: condition
       iscommand: false
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
     nexttasks:
       '#default#':
       - "5"
@@ -199,8 +199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 66,
-          "y": 143
+          "x": 162.5,
+          "y": 385
         }
       }
     note: false
@@ -218,7 +218,8 @@ tasks:
       id: 6bda10d8-8658-450e-9c09-071864fe4814
       version: -1
       name: Is there an active ANY.RUN instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -236,8 +237,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -154,
-          "y": -98
+          "x": 50,
+          "y": 210
         }
       }
     note: false
@@ -255,7 +256,8 @@ tasks:
       id: ef81e54c-6bc4-4b82-b668-f9c1801aee6a
       version: -1
       name: Was a malicious or suspicious verdict received?
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -280,8 +282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 227,
-          "y": 806
+          "x": 275,
+          "y": 910
         }
       }
     note: false
@@ -299,7 +301,8 @@ tasks:
       id: 6ec11986-da4b-4bc3-b41e-f8375fe86c7b
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
-      description: 'Returns a threat level text. Possible values: No threats detected, Suspicious activity, Malicious activity'
+      description: 'Returns a threat level text. Possible values: No threats detected,
+        Suspicious activity, Malicious activity'
       script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
@@ -315,8 +318,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 227,
-          "y": 610
+          "x": 275,
+          "y": 735
         }
       }
     note: false
@@ -341,10 +344,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "12"
     scriptarguments:
-      incident_info:
-        simple: ${incident}
       report_format:
         simple: ioc
       task_uuid:
@@ -354,8 +355,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 1179
+          "x": 387.5,
+          "y": 1260
         }
       }
     note: false
@@ -363,6 +364,90 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1ec79259-a989-4b6d-9327-8aa3360669e4
+    type: regular
+    task:
+      id: 1ec79259-a989-4b6d-9327-8aa3360669e4
+      version: -1
+      name: Associate IOCs to incident
+      description: commands.local.cmd.associate.indicators
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      indicatorsValues:
+        simple: ${ANYRUN.IOCs}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 60710b44-a061-4877-b816-886e175d2948
+    type: condition
+    task:
+      id: 60710b44-a061-4877-b816-886e175d2948
+      version: -1
+      name: Is there an incident ID and ANY.RUN IOCs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "Yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ANYRUN.IOCs
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 system: true
@@ -373,10 +458,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1864,
-        "width": 982,
-        "x": -154,
-        "y": -316
+        "height": 1795,
+        "width": 830,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -391,7 +476,8 @@ inputs:
   value:
     simple: en-US
   required: false
-  description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil"). Case insensitive.'
+  description: 'Operation system language. Use locale identifier or country name (Ex:
+    "en-US" or "Brazil"). Case insensitive.'
   playbookInputQuery:
 - key: env_bitness
   value:
@@ -409,7 +495,8 @@ inputs:
   value:
     simple: complete
   required: false
-  description: Environment preset type. You can select **development** env for OS Windows 10 x64. For all other cases, **complete** env is required
+  description: Environment preset type. You can select **development** env for OS
+    Windows 10 x64. For all other cases, **complete** env is required
   playbookInputQuery:
 - key: opt_network_connect
   value:
@@ -469,7 +556,8 @@ inputs:
   value:
     simple: Google Chrome
   required: false
-  description: 'Browser name. Supports: Google Chrome, Mozilla Firefox, Internet Explorer, Microsoft Edge'
+  description: 'Browser name. Supports: Google Chrome, Mozilla Firefox, Internet Explorer,
+    Microsoft Edge'
   playbookInputQuery:
 - key: obj_ext_extension
   value:

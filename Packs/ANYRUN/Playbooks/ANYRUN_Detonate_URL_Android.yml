@@ -1,8 +1,9 @@
 id: ANYRUN Detonate Url Android
 version: -1
 name: ANYRUN Detonate Url Android
-fromversion: 6.0.0
-description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It automates the analysis of potentially malicious URLs on Android OS.
+description: This playbook submits a URL extracted from an indicator to the ANY.RUN
+  cloud sandbox for dynamic analysis in an Android environment. It automates the analysis
+  of potentially malicious URLs on Android OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -24,8 +25,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -154,
-          "y": -317
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -81,8 +82,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 227,
-          "y": 411
+          "x": 275,
+          "y": 560
         }
       }
     note: false
@@ -109,8 +110,6 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      incident_info:
-        simple: ${incident}
       report_format:
         simple: html
       task_uuid:
@@ -120,8 +119,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 999
+          "x": 387.5,
+          "y": 1085
         }
       }
     note: false
@@ -148,8 +147,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -154,
-          "y": 1465
+          "x": 50,
+          "y": 1785
         }
       }
     note: false
@@ -167,10 +166,11 @@ tasks:
       id: a02a2aaa-c451-4e29-9a9e-e222c7660c9a
       version: -1
       name: Is there any URL to detonate?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       type: condition
       iscommand: false
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
     nexttasks:
       '#default#':
       - "5"
@@ -191,8 +191,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 66,
-          "y": 143
+          "x": 162.5,
+          "y": 385
         }
       }
     note: false
@@ -210,7 +210,8 @@ tasks:
       id: 6bda10d8-8658-450e-9c09-071864fe4814
       version: -1
       name: Is there an active ANY.RUN instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -228,8 +229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -154,
-          "y": -98
+          "x": 50,
+          "y": 210
         }
       }
     note: false
@@ -247,7 +248,8 @@ tasks:
       id: 4265cf78-40be-41bb-99bb-027a1b4b7ef6
       version: -1
       name: Was a malicious or suspicious verdict received?
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -272,8 +274,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 227,
-          "y": 804
+          "x": 275,
+          "y": 910
         }
       }
     note: false
@@ -291,7 +293,8 @@ tasks:
       id: 790bca60-a62d-49d1-a058-c8cbb0bb30e7
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
-      description: 'Returns a threat level text. Possible values: No threats detected, Suspicious activity, Malicious activity'
+      description: 'Returns a threat level text. Possible values: No threats detected,
+        Suspicious activity, Malicious activity'
       script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
@@ -307,8 +310,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 227,
-          "y": 611
+          "x": 275,
+          "y": 735
         }
       }
     note: false
@@ -333,10 +336,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "11"
     scriptarguments:
-      incident_info:
-        simple: ${incident}
       report_format:
         simple: ioc
       task_uuid:
@@ -346,8 +347,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 1179
+          "x": 387.5,
+          "y": 1260
         }
       }
     note: false
@@ -355,6 +356,90 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: c950ff96-f59b-4bd4-aaca-f68e19180d13
+    type: condition
+    task:
+      id: c950ff96-f59b-4bd4-aaca-f68e19180d13
+      version: -1
+      name: Is there an incident ID and ANY.RUN IOCs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "Yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ANYRUN.IOCs
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 0c2b7829-0ab5-499f-b493-2a4a930b7b39
+    type: regular
+    task:
+      id: 0c2b7829-0ab5-499f-b493-2a4a930b7b39
+      version: -1
+      name: Associate IOCs to incident
+      description: commands.local.cmd.associate.indicators
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      indicatorsValues:
+        simple: ${ANYRUN.IOCs}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 system: true
@@ -365,10 +450,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1842,
-        "width": 982,
-        "x": -154,
-        "y": -317
+        "height": 1795,
+        "width": 960,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -383,7 +468,8 @@ inputs:
   value:
     simple: en-US
   required: false
-  description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil"). Case insensitive.'
+  description: 'Operation system language. Use locale identifier or country name (Ex:
+    "en-US" or "Brazil"). Case insensitive.'
   playbookInputQuery:
 - key: opt_network_connect
   value:

@@ -2,7 +2,7 @@
     "name": "ANY.RUN",
     "description": "Empowers SOC teams with a Cloud Sandbox for real-time malware analysis, Threat Intelligence Lookup, and high-quality feeds to enhance detection and threat coverage.",
     "support": "partner",
-    "currentVersion": "2.1.1",
+    "currentVersion": "2.2.1",
     "author": "ANY.RUN",
     "url": "https://any.run/",
     "email": "support@any.run",

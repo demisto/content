@@ -23,6 +23,12 @@ LOOKUP_INDICATOR_TYPE_RESOLVER = {
     "sha256": "sha256",
 }
 
+VERDICT_RESOLVER = {
+    0: "No info",
+    1: "Suspicious",
+    2: "Malicious",
+}
+
 
 def test_module(params: dict) -> str:  # pragma: no cover
     """Performs ANY.RUN API call to verify integration is operational"""
@@ -194,6 +200,18 @@ def parse_results(report: dict, reliability: str, indicator_value: str, indicato
 
     if tags := report.get("summary", {}).get("tags"):
         output_context["Tags"] = ",".join(tags)
+
+    if industries := report.get("industries", {}):
+        output_context["Industries"] = ",".join(
+            [
+                industry.get('industryName') for industry in
+                sorted(industries, key=lambda x: x['confidence'], reverse=True)
+            ]
+        )
+
+    output_context["Verdict"] = VERDICT_RESOLVER.get(
+        report.get("summary", {}).get("threatLevel", 0)
+    )
 
     return_results(
         CommandResults(

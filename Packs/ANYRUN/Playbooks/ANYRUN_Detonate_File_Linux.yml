@@ -2,7 +2,9 @@ id: ANYRUN Detonate File Linux
 version: -1
 fromversion: 6.0.0
 name: ANYRUN Detonate File Linux
-description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It helps to automate malware detonation and behavior observation on Linux OS.
+description: This playbook submits a file extracted from an incident attachment to
+  the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It helps
+  to automate malware detonation and behavior observation on Linux OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -24,8 +26,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -154,
-          "y": -317
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -89,8 +91,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 227,
-          "y": 410
+          "x": 275,
+          "y": 560
         }
       }
     note: false
@@ -117,8 +119,6 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      incident_info:
-        simple: ${inputs.incident_info}
       report_format:
         simple: html
       task_uuid:
@@ -128,8 +128,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 999
+          "x": 387.5,
+          "y": 1085
         }
       }
     note: false
@@ -156,8 +156,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -154,
-          "y": 1516
+          "x": 50,
+          "y": 1785
         }
       }
     note: false
@@ -199,8 +199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 66,
-          "y": 143
+          "x": 162.5,
+          "y": 385
         }
       }
     note: false
@@ -218,7 +218,8 @@ tasks:
       id: 6bda10d8-8658-450e-9c09-071864fe4814
       version: -1
       name: Is there an active ANY.RUN instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -236,8 +237,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -154,
-          "y": -98
+          "x": 50,
+          "y": 210
         }
       }
     note: false
@@ -255,7 +256,8 @@ tasks:
       id: 48787ef6-ca44-4380-9db4-facc9841094e
       version: -1
       name: Was a malicious or suspicious verdict received?
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -280,8 +282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 227,
-          "y": 806
+          "x": 275,
+          "y": 910
         }
       }
     note: false
@@ -299,7 +301,8 @@ tasks:
       id: 7f744e68-334e-4d03-a107-7594b97da68c
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
-      description: 'Returns a threat level text. Possible values: No threats detected, Suspicious activity, Malicious activity'
+      description: 'Returns a threat level text. Possible values: No threats detected,
+        Suspicious activity, Malicious activity'
       script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
@@ -315,8 +318,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 227,
-          "y": 610
+          "x": 275,
+          "y": 735
         }
       }
     note: false
@@ -341,10 +344,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "11"
     scriptarguments:
-      incident_info:
-        simple: ${inputs.incident_info}
       report_format:
         simple: ioc
       task_uuid:
@@ -354,8 +355,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 1179
+          "x": 387.5,
+          "y": 1260
         }
       }
     note: false
@@ -363,6 +364,90 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: bc6e3c68-77d8-48c7-ac12-b908c1b516a4
+    type: condition
+    task:
+      id: bc6e3c68-77d8-48c7-ac12-b908c1b516a4
+      version: -1
+      name: Is there an incident ID and ANY.RUN IOCs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "Yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ANYRUN.IOCs
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 2c2f9b10-82be-4531-9670-cb2f0f9465d5
+    type: regular
+    task:
+      id: 2c2f9b10-82be-4531-9670-cb2f0f9465d5
+      version: -1
+      name: Associate IOCs to incident
+      description: commands.local.cmd.associate.indicators
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      indicatorsValues:
+        simple: ${ANYRUN.IOCs}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 system: true
@@ -373,10 +458,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1893,
-        "width": 982,
-        "x": -154,
-        "y": -317
+        "height": 1795,
+        "width": 1030,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -386,12 +471,6 @@ inputs:
     simple: ${File.EntryID}
   required: false
   description: XSOAR Entry ID
-  playbookInputQuery:
-- key: incident_info
-  value:
-    simple: ${incident}
-  required: false
-  description: XSOAR Incident
   playbookInputQuery:
 - key: run_as_root
   value:
@@ -403,7 +482,8 @@ inputs:
   value:
     simple: en-US
   required: false
-  description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil"). Case insensitive.'
+  description: 'Operation system language. Use locale identifier or country name (Ex:
+    "en-US" or "Brazil"). Case insensitive.'
   playbookInputQuery:
 - key: env_os
   value:
@@ -474,7 +554,8 @@ inputs:
   value:
     simple: temp
   required: false
-  description: 'Start object from. Supports: desktop, home, downloads, appdata, temp, windows, root'
+  description: 'Start object from. Supports: desktop, home, downloads, appdata, temp,
+    windows, root'
   playbookInputQuery:
 - key: obj_ext_extension
   value:
@@ -485,7 +566,6 @@ inputs:
 inputSections:
 - inputs:
   - file
-  - incident_info
   - run_as_root
   name: General (Inputs group)
   description: Generic group for inputs

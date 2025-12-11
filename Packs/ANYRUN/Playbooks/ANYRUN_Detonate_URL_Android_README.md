@@ -15,6 +15,7 @@ This playbook does not use any sub-playbooks.
 ### Scripts
 
 * IsIntegrationAvailable
+* associateIndicatorsToIncident
 
 ### Commands
 

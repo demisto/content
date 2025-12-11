@@ -32,15 +32,15 @@ Integration is officially supported from XSOAR 8.x
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for ANY.RUN.
 3. Click **Add instance** to create and configure a new integration instance.
-4. Insert ANY.RUN API-KEY into the **Password** parameter
+4. Insert ANY.RUN API-KEY into the **Password** parameter.
 5. Click **Test** to validate the URLs, token, and connection.
 
 | **Parameter**                                                                                                   | **Description**                                                                                                                                                 | **Required** |
 |-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | Password                                                                                                        | ANY.RUN API-KEY without prefix.                                                                                                                                 | True |
-| Server's FQDN                                                                                                   | Go to Settings &amp; Info → Settings → Integrations → API Keys. Click Copy API URL. Your FQDN is saved in the clipboard. Inline it without http/https protocol. | True |
-| [XSOAR API-KEY ID](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR-8-API/Get-your-Cortex-XSOAR-API-key-ID)                                                                                            | In the API Keys table, locate the ID field. Note your corresponding ID number.                                                                                  | True |
-| [XSOAR API-KEY](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR-8-API/Get-your-Cortex-XSOAR-API-key-ID) | XSOAR API-KEY.                                                                                                                                                  | True |
+
+## Note:
+Please use "ANY.RUN" as username.
 
 ## Commands
 
@@ -354,7 +354,6 @@ Returns the analysis report summary.
 | --- |-----------------------------------------------------------------------------| --- |
 | task_uuid | Sandbox task uuid.                                                          | Required |
 | report_format | Report format. Possible values are: summary, html, ioc. Default is summary. | Optional |
-| incident_info | XSOAR Related incident info.                                                | Required |
 
 #### Context Output
 

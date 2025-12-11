@@ -10,23 +10,6 @@ configuration:
   required: true
   type: 9
   section: Connect
-- display: Server's FQDN
-  additionalinfo: Go to Settings & Info → Settings → Integrations → API Keys. Click Copy API URL. Your FQDN is saved in the clipboard.
-  name: soar_fqdn
-  required: true
-  type: 0
-  section: Connect
-- display: XSOAR API-KEY ID
-  additionalinfo: In the API Keys table, locate the ID field. Note your corresponding ID number
-  name: soar_api_key_id
-  required: true
-  type: 0
-  section: Connect
-- display: XSOAR API-KEY
-  name: soar_api_key
-  required: true
-  type: 4
-  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -733,13 +716,12 @@ script:
       - 'summary'
       - 'html'
       - 'ioc'
-    - description: 'XSOAR Related icnident info.'
-      name: incident_info
-      required: true
-      type: Unknown
     name: anyrun-get-analysis-report
     description: 'Returns the analysis report summary.'
     outputs:
+    - contextPath: ANYRUN.IOCs
+      description: 'ANYRUN Indicators.'
+      type: String
     - contextPath: ANYRUN.SandboxAnalysis.mitre.name
       description: 'MITRE Technic text description.'
       type: String
@@ -1467,7 +1449,7 @@ script:
     - contextPath: ANYRUN.SandboxAnalysisReportVerdict
       description: "The analysis verdict."
       type: String
-  dockerimage: demisto/anyrun-sdk:1.0.0.5185978
+  dockerimage: demisto/anyrun-sdk:1.0.0.6192697
   subtype: python3
   runonce: false
   script: '-'
