@@ -11,12 +11,14 @@ Follow these steps to configure the SAP BTP Event Collector:
 The integration supports two authentication methods:
 
 #### 1. mTLS Authentication (Recommended)
+
 - **Certificate**: PEM-encoded certificate from your SAP Service Key
 - **Private Key**: PEM-encoded private key from your SAP Service Key
 - **Client ID**: The `uaa.clientid` field from your SAP Service Key
 - **Token URL**: The `uaa.certurl` field from your SAP Service Key (for mTLS authentication)
 
 #### 2. Non-mTLS Authentication
+
 - **Client ID**: The `uaa.clientid` field from your SAP Service Key
 - **Client Secret**: The `uaa.clientsecret` field from your SAP Service Key
 - **Token URL**: The `uaa.url` field from your SAP Service Key (for Non-mTLS authentication)
@@ -31,6 +33,7 @@ The integration supports two authentication methods:
 6. Download or copy the service key JSON
 
 The service key contains:
+
 - `url`: API URL for Audit Log Service (use this for the integration's **API URL** parameter)
 - `uaa.url`: Token URL for Non-mTLS authentication (e.g., `https://<subdomain>.authentication.<region>.hana.ondemand.com`)
 - `uaa.certurl`: Token URL for mTLS authentication (e.g., `https://<subdomain>.authentication.cert.<region>.hana.ondemand.com`)
@@ -50,12 +53,11 @@ The service key contains:
 - **Client Secret**: Required only for Non-mTLS authentication (`uaa.clientsecret`)
 - **Certificate**: Required only for mTLS authentication (PEM format)
 - **Private Key**: Required only for mTLS authentication (PEM format)
-- **First Fetch Time**: (Optional) Leave empty to start from current time. Only configure if you need to fetch historical data (e.g., "3 days", "1 week").
 - **Max Fetch**: Maximum number of events to fetch per cycle (default: 5000, advanced setting)
 
 ### Important Notes
 
-- **First Run Behavior**: By default, the collector starts from the current time and does not fetch historical data. This prevents overwhelming the system with old events.
+- **First Run Behavior**: The collector starts from the current time and does not fetch historical data.
 - **get-events Command**: This command is for debugging only and should be used with caution. It can create duplicate events if `should_push_events` is set to true.
 - **XSOAR Compatibility**: The `sap-btp-get-events` command is not supported in XSOAR environments.
 

@@ -71,15 +71,6 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- name: first_fetch
-  display: First fetch time
-  required: false
-  type: 0
-  section: Collect
-  defaultvalue: ""
-  additionalinfo: >-
-      Time range to fetch events from on first run. Leave empty to start from current time (recommended).
-      Only use this to fetch historical data if specifically needed (e.g., "3 days", "1 hour").
 - name: max_fetch
   display: The maximum number of audit logs per fetch
   required: false
@@ -159,6 +150,7 @@ triggers:
     effects:
       - name: client_secret
         action:
+          type: 14 # only for enable the trigger hidden
           hidden: true
       - name: certificate
         action:

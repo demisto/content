@@ -101,7 +101,6 @@ Before configuring the integration, you must complete the following prerequisite
 | Trust any certificate (not secure) | When selected, the integration will not verify SSL certificates. | False |
 | Use system proxy settings | When selected, the integration will use the system proxy settings. | False |
 | Fetch events | Enable automatic collection of audit log events. | False |
-| First fetch time | Time range to start fetching events from on first run.<br/>Default: 3 days<br/>Examples: "3 days", "1 week", "2024-01-01" | False |
 | The maximum number of audit logs per fetch | Maximum number of events to fetch per collection cycle.<br/>Default: 5000<br/>Note: The API returns a maximum of 500 events per page. | False |
 
 4. Click **Test** to validate the connection and authentication.
@@ -111,7 +110,7 @@ Before configuring the integration, you must complete the following prerequisite
 
 This integration automatically collects audit log events from SAP BTP and sends them to your Cortex environment for security monitoring and compliance.
 
-1. **Initial Collection**: On the first run, the integration begins collecting events from the configured start time (default: 3 days ago).
+1. **Initial Collection**: On the first run, the integration begins collecting events from the current time.
 2. **Continuous Monitoring**: The integration automatically tracks the last collected event and fetches only new events on subsequent runs.
 3. **Automatic Pagination**: The integration handles large result sets automatically, retrieving up to the configured maximum number of events per collection cycle.
 

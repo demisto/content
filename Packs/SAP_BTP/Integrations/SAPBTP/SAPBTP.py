@@ -85,7 +85,6 @@ class DefaultValues(str, Enum):
     """Default values for command arguments."""
 
     FROM_TIME = "1 minute ago"
-    FIRST_FETCH = "3 minute ago"
     MAX_FETCH = "5000"
 
 
@@ -175,22 +174,23 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
 
     auth_type = params.get("auth_type", AuthType.NON_MTLS.value)
     proxy = argToBoolean(params.get("proxy", False))
-
-    # Basic Auth credentials / Non-mTls
-    credentials = params.get("client_secret", {})
-    client_secret = credentials.get("password", params.get("password"))
-
-    # mTls Auth
     verify_certificate = not argToBoolean(params.get("insecure", False))
-    certificate = params.get("certificate", "").strip() or None
-    private_key = params.get("private_key", "").strip() or None
 
     demisto.debug(f"[Config] URL: {base_url} | Token URL: {token_url} | Auth Type: {auth_type}")
 
+    # Parse credentials based on auth type
+    client_secret = None
+    certificate = None
+    private_key = None
+
     if auth_type == AuthType.MTLS.value:
+        certificate = params.get("certificate", "").strip() or None
+        private_key = params.get("private_key", "").strip() or None
         if not certificate or not private_key:
             raise DemistoException("mTLS authentication requires both Certificate and Private Key.")
     elif auth_type == AuthType.NON_MTLS.value:
+        credentials = params.get("client_secret", {})
+        client_secret = credentials.get("password")
         if not client_secret:
             raise DemistoException("Non-mTLS authentication requires Client Secret.")
     else:
@@ -233,41 +233,39 @@ def add_time_to_events(events: list[dict[str, Any]]) -> None:
             demisto.debug(f"[Event Time] WARNING: Event missing 'time' field: {event.get('uuid', 'unknown')}")
 
 
-def deduplicate_events(events: list[dict[str, Any]], last_event_uuid: str | None) -> list[dict[str, Any]]:
-    """Remove already-processed events based on the last event UUID.
+def deduplicate_events(events: list[dict[str, Any]], last_fetched_uuids: list[str]) -> list[dict[str, Any]]:
+    """Remove already-processed events based on previously fetched UUIDs.
 
-    When multiple events share the same timestamp, we need to track which event
-    was the last one processed to avoid duplicates on the next fetch.
+    When multiple events share the same timestamp, we need to track all UUIDs
+    from that timestamp to avoid duplicates on the next fetch.
 
     Args:
         events: List of events sorted by time (oldest first)
-        last_event_uuid: UUID of the last event processed in the previous fetch
+        last_fetched_uuids: List of UUIDs that were already fetched in the previous run (empty list for first run)
 
     Returns:
         List of new events (excluding already-processed ones)
     """
-    if not last_event_uuid or not events:
-        demisto.debug("[Dedup] No deduplication needed (first run or no events)")
+    if not events:
+        demisto.debug("[Dedup] No events to process")
         return events
 
-    demisto.debug(f"[Dedup] Starting deduplication. Total events: {len(events)}, Last UUID: {last_event_uuid}")
-
-    # Find the last processed event in the current batch
-    skip_count = 0
-    for i, event in enumerate(events):
-        if event.get("uuid") == last_event_uuid:
-            skip_count = i + 1  # Skip this event and all before it
-            demisto.debug(f"[Dedup] Found last processed event at index {i}")
-            break
-
-    if skip_count > 0:
-        new_events = events[skip_count:]
-        demisto.debug(f"[Dedup] Skipped {skip_count} already-processed events, {len(new_events)} new events remain")
-        return new_events
-    else:
-        # Last UUID not found - this means all events are new (time window moved forward)
-        demisto.debug(f"[Dedup] Last processed UUID not found in current batch, all {len(events)} events are new")
+    if not last_fetched_uuids:
+        demisto.debug("[Dedup] No deduplication needed (first run - no previous UUIDs)")
         return events
+
+    demisto.debug(f"[Dedup] Starting deduplication. Total events: {len(events)}, Last fetched UUIDs: {len(last_fetched_uuids)}")
+
+    # Convert to set for O(1) lookup
+    fetched_uuids_set = set(last_fetched_uuids)
+
+    # Filter out events that were already fetched
+    new_events = [event for event in events if event.get("uuid") not in fetched_uuids_set]
+
+    skipped_count = len(events) - len(new_events)
+    demisto.debug(f"[Dedup] Skipped {skipped_count} already-processed events, {len(new_events)} new events remain")
+
+    return new_events
 
 
 # endregion
@@ -635,25 +633,23 @@ def fetch_events_command(client: Client) -> None:
     Implements state protection: Only updates set_last_run on successful completion.
     If an error occurs, the state is not updated, ensuring the failed window is retried.
 
-    Deduplication strategy: Stores the UUID of the last processed event to prevent
+    Deduplication strategy: Stores all UUIDs from the last fetched timestamp to prevent
     duplicate ingestion when multiple events share the same timestamp.
     """
     demisto.debug("[Command] fetch-events triggered")
 
     params = demisto.params()
     max_events_to_fetch = int(params.get("max_fetch", DefaultValues.MAX_FETCH.value))
-    first_fetch_param = params.get("first_fetch", "").strip()
 
     last_run = demisto.getLastRun()
     last_fetch_timestamp = last_run.get("last_fetch")
-    last_event_uuid = last_run.get("last_event_uuid")
+    last_fetched_uuids = last_run.get("last_fetched_uuids") or []
 
     if last_fetch_timestamp:
         time_input = last_fetch_timestamp
-        demisto.debug(f"[Fetch Logic] Continuing from Last Run. Fetching from: {time_input}, Last UUID: {last_event_uuid}")
-    elif first_fetch_param:
-        time_input = first_fetch_param
-        demisto.debug(f"[Fetch Logic] First Run with configured first_fetch. Fetching from: {time_input}")
+        demisto.debug(
+            f"[Fetch Logic] Continuing from Last Run. Fetching from: {time_input}, Last fetched UUIDs: {len(last_fetched_uuids)}"
+        )
     else:
         time_input = DefaultValues.FROM_TIME.value
         demisto.debug("[Fetch Logic] First Run - starting from current time (no historical data)")
@@ -666,22 +662,28 @@ def fetch_events_command(client: Client) -> None:
     if events:
         demisto.debug(f"[Fetch] Fetched {len(events)} events from API")
 
-        # Deduplicate events based on last processed UUID
-        new_events = deduplicate_events(events, last_event_uuid)
+        # Deduplicate events based on last fetched UUIDs
+        new_events = deduplicate_events(events, last_fetched_uuids)
 
         if new_events:
             add_time_to_events(new_events)
             send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
 
             # State Protection: Only update Last Run after successful send
-            # Use the last event from the original events list (not filtered) for state tracking
+            # Store the timestamp and ALL UUIDs from events with that timestamp
             last_event = events[-1]
             new_last_run_time = last_event.get("time")
-            new_last_event_uuid = last_event.get("uuid")
 
             if new_last_run_time:
-                demisto.setLastRun({"last_fetch": new_last_run_time, "last_event_uuid": new_last_event_uuid})
-                demisto.debug(f"[Last Run] Updated to: {new_last_run_time}, UUID: {new_last_event_uuid}")
+                # Collect all UUIDs that share the last timestamp
+                uuids_at_last_timestamp = [
+                    event.get("uuid") for event in events if event.get("time") == new_last_run_time and event.get("uuid")
+                ]
+
+                demisto.setLastRun({"last_fetch": new_last_run_time, "last_fetched_uuids": uuids_at_last_timestamp})
+                demisto.debug(
+                    f"[Last Run] Updated to: {new_last_run_time}, Stored {len(uuids_at_last_timestamp)} UUIDs from last timestamp"
+                )
             else:
                 demisto.debug("[Last Run] WARNING: Last event missing 'time' field. Not updating.")
 

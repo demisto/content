@@ -1221,32 +1221,32 @@ def test_get_events_command_with_end_time(mocker, client_non_mtls):
             {},
             {"max_fetch": 100},
             [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}, {"uuid": "2", "time": "2024-01-01T01:00:00Z"}],
-            {"last_fetch": "2024-01-01T01:00:00Z", "last_event_uuid": "2"},
+            {"last_fetch": "2024-01-01T01:00:00Z", "last_fetched_uuids": ["2"]},
             [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}, {"uuid": "2", "time": "2024-01-01T01:00:00Z"}],
         ),
         (
             "with_last_run",
-            {"last_fetch": "2024-01-01T00:00:00Z"},
+            {"last_fetch": "2024-01-01T00:00:00Z", "last_fetched_uuids": []},
             {"max_fetch": 100},
             [{"uuid": "3", "time": "2024-01-02T00:00:00Z"}],
-            {"last_fetch": "2024-01-02T00:00:00Z", "last_event_uuid": "3"},
+            {"last_fetch": "2024-01-02T00:00:00Z", "last_fetched_uuids": ["3"]},
             [{"uuid": "3", "time": "2024-01-02T00:00:00Z"}],
         ),
         (
-            "first_run_with_first_fetch",
+            "multiple_events_same_timestamp",
             {},
-            {"first_fetch": "7 days", "max_fetch": 100},
-            [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}],
-            {"last_fetch": "2024-01-01T00:00:00Z", "last_event_uuid": "1"},
-            [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}],
-        ),
-        (
-            "first_run_empty_first_fetch",
-            {},
-            {"first_fetch": ""},
-            [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}],
-            {"last_fetch": "2024-01-01T00:00:00Z", "last_event_uuid": "1"},
-            [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}],
+            {"max_fetch": 100},
+            [
+                {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
+                {"uuid": "2", "time": "2024-01-01T00:00:00Z"},
+                {"uuid": "3", "time": "2024-01-01T00:00:00Z"},
+            ],
+            {"last_fetch": "2024-01-01T00:00:00Z", "last_fetched_uuids": ["1", "2", "3"]},
+            [
+                {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
+                {"uuid": "2", "time": "2024-01-01T00:00:00Z"},
+                {"uuid": "3", "time": "2024-01-01T00:00:00Z"},
+            ],
         ),
     ],
 )
@@ -1276,72 +1276,103 @@ def test_fetch_events_command_scenarios(
 
 
 @pytest.mark.parametrize(
-    "events,last_uuid,expected_count,expected_first_uuid,description",
+    "events,last_fetched_uuids,expected_count,expected_first_uuid,description",
     [
-        # No deduplication needed - first run
+        # No deduplication needed - first run (None)
         (
             [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}, {"uuid": "2", "time": "2024-01-01T01:00:00Z"}],
             None,
             2,
             "1",
-            "first_run_no_last_uuid",
+            "first_run_no_last_uuids_none",
+        ),
+        # No deduplication needed - first run (empty list)
+        (
+            [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}, {"uuid": "2", "time": "2024-01-01T01:00:00Z"}],
+            [],
+            2,
+            "1",
+            "first_run_no_last_uuids_empty",
         ),
         # No deduplication needed - empty events
-        ([], "last_uuid", 0, None, "empty_events"),
-        # Deduplication - last UUID found at beginning
+        ([], ["last_uuid"], 0, None, "empty_events"),
+        # Deduplication - single UUID in list
         (
             [
                 {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
                 {"uuid": "2", "time": "2024-01-01T01:00:00Z"},
                 {"uuid": "3", "time": "2024-01-01T02:00:00Z"},
             ],
-            "1",
+            ["1"],
             2,
             "2",
-            "last_uuid_at_start",
+            "single_uuid_filtered",
         ),
-        # Deduplication - last UUID found in middle
+        # Deduplication - multiple UUIDs in list
         (
             [
                 {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
                 {"uuid": "2", "time": "2024-01-01T01:00:00Z"},
                 {"uuid": "3", "time": "2024-01-01T02:00:00Z"},
             ],
-            "2",
+            ["1", "2"],
             1,
             "3",
-            "last_uuid_in_middle",
+            "multiple_uuids_filtered",
         ),
-        # Deduplication - last UUID found at end (all duplicates)
+        # Deduplication - all events are duplicates
         (
             [
                 {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
                 {"uuid": "2", "time": "2024-01-01T01:00:00Z"},
                 {"uuid": "3", "time": "2024-01-01T02:00:00Z"},
             ],
-            "3",
+            ["1", "2", "3"],
             0,
             None,
-            "last_uuid_at_end",
+            "all_duplicates",
         ),
-        # Deduplication - last UUID not found (all new events)
+        # Deduplication - no UUIDs match (all new events)
         (
             [
                 {"uuid": "4", "time": "2024-01-01T03:00:00Z"},
                 {"uuid": "5", "time": "2024-01-01T04:00:00Z"},
             ],
-            "3",
+            ["1", "2", "3"],
             2,
             "4",
-            "last_uuid_not_found",
+            "no_matches_all_new",
+        ),
+        # Deduplication - partial match
+        (
+            [
+                {"uuid": "2", "time": "2024-01-01T00:00:00Z"},
+                {"uuid": "3", "time": "2024-01-01T00:00:00Z"},
+                {"uuid": "4", "time": "2024-01-01T01:00:00Z"},
+            ],
+            ["1", "2"],
+            2,
+            "3",
+            "partial_match",
+        ),
+        # Events without UUID field
+        (
+            [
+                {"time": "2024-01-01T00:00:00Z", "data": "event1"},
+                {"uuid": "2", "time": "2024-01-01T01:00:00Z"},
+            ],
+            ["1"],
+            2,
+            None,
+            "events_without_uuid",
         ),
     ],
 )
-def test_deduplicate_events(events, last_uuid, expected_count, expected_first_uuid, description):
+def test_deduplicate_events(events, last_fetched_uuids, expected_count, expected_first_uuid, description):
     """Tests deduplicate_events function with various scenarios."""
     from SAPBTP import deduplicate_events
 
-    result = deduplicate_events(events, last_uuid)
+    result = deduplicate_events(events, last_fetched_uuids)
 
     assert len(result) == expected_count, f"Failed for {description}: expected {expected_count} events, got {len(result)}"
     if expected_first_uuid:
@@ -1359,7 +1390,7 @@ def test_deduplicate_events_preserves_order():
         {"uuid": "4", "time": "2024-01-01T03:00:00Z", "data": "fourth"},
     ]
 
-    result = deduplicate_events(events, "2")
+    result = deduplicate_events(events, ["1", "2"])
 
     assert len(result) == 2
     assert result[0]["uuid"] == "3"
@@ -1374,7 +1405,7 @@ def test_deduplicate_events_preserves_order():
 
 
 def test_fetch_events_command_with_deduplication(mocker, client_non_mtls):
-    """Tests fetch_events_command deduplicates events based on last_event_uuid."""
+    """Tests fetch_events_command deduplicates events based on last_fetched_uuids."""
     # Simulate fetching events where some are duplicates
     mock_events = [
         {"uuid": "1", "time": "2024-01-01T00:00:00Z"},
@@ -1382,8 +1413,10 @@ def test_fetch_events_command_with_deduplication(mocker, client_non_mtls):
         {"uuid": "3", "time": "2024-01-01T01:00:00Z"},  # New event
     ]
 
-    # Last run has UUID "2" - so we should skip events 1 and 2
-    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00Z", "last_event_uuid": "2"})
+    # Last run has UUIDs "1" and "2" - so we should skip events 1 and 2
+    mocker.patch.object(
+        demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00Z", "last_fetched_uuids": ["1", "2"]}
+    )
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
@@ -1392,13 +1425,13 @@ def test_fetch_events_command_with_deduplication(mocker, client_non_mtls):
 
     fetch_events_command(client_non_mtls)
 
-    # Should only send event 3 (new event after UUID "2")
+    # Should only send event 3 (new event not in last_fetched_uuids)
     SAPBTP.add_time_to_events.assert_called_once_with([{"uuid": "3", "time": "2024-01-01T01:00:00Z"}])  # type: ignore[attr-defined]
     SAPBTP.send_events_to_xsiam.assert_called_once_with(  # type: ignore[attr-defined]
         events=[{"uuid": "3", "time": "2024-01-01T01:00:00Z"}], vendor=Config.VENDOR, product=Config.PRODUCT
     )
-    # Last run should be updated to the last event in the original list (not filtered)
-    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T01:00:00Z", "last_event_uuid": "3"})  # type: ignore[attr-defined]
+    # Last run should be updated with the last timestamp and its UUID
+    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T01:00:00Z", "last_fetched_uuids": ["3"]})  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_all_duplicates(mocker, client_non_mtls):
@@ -1408,8 +1441,10 @@ def test_fetch_events_command_all_duplicates(mocker, client_non_mtls):
         {"uuid": "2", "time": "2024-01-01T00:00:00Z"},
     ]
 
-    # Last run has UUID "2" - all events are duplicates
-    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00Z", "last_event_uuid": "2"})
+    # Last run has both UUIDs - all events are duplicates
+    mocker.patch.object(
+        demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00Z", "last_fetched_uuids": ["1", "2"]}
+    )
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
@@ -1425,37 +1460,36 @@ def test_fetch_events_command_all_duplicates(mocker, client_non_mtls):
     demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
 
 
-def test_fetch_events_command_no_events(mocker, client_non_mtls):
-    """Tests fetch_events_command when no events are fetched."""
-    mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(demisto, "setLastRun")
-    mocker.patch.object(demisto, "params", return_value={})
-    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
-    mocker.patch.object(SAPBTP, "send_events_to_xsiam")
-
-    fetch_events_command(client_non_mtls)
-
-    demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
-    SAPBTP.send_events_to_xsiam.assert_not_called()  # type: ignore[attr-defined]
-
-
-def test_fetch_events_command_events_without_time(mocker, client_non_mtls):
-    """Tests fetch_events_command handles events without time field."""
-    mock_events = [{"uuid": "1"}, {"uuid": "2"}]
-
-    mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(demisto, "setLastRun")
+@pytest.mark.parametrize(
+    "mock_events,last_run,should_update_last_run,description",
+    [
+        ([], {}, False, "no_events_fetched"),
+        ([], {"last_fetch": "2024-01-01T00:00:00Z", "last_fetched_uuids": []}, False, "no_events_with_existing_last_run"),
+        ([{"uuid": "1"}, {"uuid": "2"}], {}, False, "events_without_time_field"),
+        ([{"uuid": "1", "time": "2024-01-01T00:00:00Z"}], {}, True, "single_event_with_time"),
+    ],
+)
+def test_fetch_events_command_edge_cases(mocker, client_non_mtls, mock_events, last_run, should_update_last_run, description):
+    """Tests fetch_events_command handles various edge cases."""
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "params", return_value={})
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
     mocker.patch.object(SAPBTP, "add_time_to_events")
-    mocker.patch.object(SAPBTP, "send_events_to_xsiam")
+    mock_send = mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
     fetch_events_command(client_non_mtls)
 
-    # Should not update last_run if events have no time field
-    demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
-    SAPBTP.add_time_to_events.assert_called_once_with(mock_events)  # type: ignore[attr-defined]
-    SAPBTP.send_events_to_xsiam.assert_called_once()  # type: ignore[attr-defined]
+    if should_update_last_run:
+        mock_set_last_run.assert_called_once()
+    else:
+        mock_set_last_run.assert_not_called()
+
+    # Events should be sent if they exist (even without time field)
+    if mock_events:
+        mock_send.assert_called_once()
+    else:
+        mock_send.assert_not_called()
 
 
 def test_fetch_events_command_state_protection_on_error(mocker, client_non_mtls):
