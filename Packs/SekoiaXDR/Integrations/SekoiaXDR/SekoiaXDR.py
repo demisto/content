@@ -1394,7 +1394,7 @@ def get_kill_chain_command(client: Client, args: dict[str, Any]) -> CommandResul
 def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     method = args["method"]
-    url_suffix = args["url_sufix"]
+    url_suffix = args["url_suffix"]
     params = args.get("parameters", {})
     data_arg = args.get("data", "")
 
