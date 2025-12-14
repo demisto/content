@@ -1605,6 +1605,8 @@ def search_assets_command(client: Client, args):
                          - asset_group_names (list[str]): List of asset group names to search for.
     """
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
+    software_package_versions = args.get("software_package_versions", "")
+    kubernetes_cluster_versions = args.get("kubernetes_cluster_versions", "")
     filter = FilterBuilder()
     filter.add_field(
         ASSET_FIELDS["asset_names"],
@@ -1640,17 +1642,23 @@ def search_assets_command(client: Client, args):
     )
     filter.add_field(ASSET_FIELDS["asset_classes"], FilterType.EQ, argToList(args.get("asset_classes", "")))
     filter.add_field(
-        ASSET_FIELDS["software_package_versions"], FilterType.EQ, argToList(args.get("software_package_versions", ""))
+        ASSET_FIELDS["software_package_versions"], FilterType.EQ, argToList(software_package_versions)
     )
     filter.add_field(
-        ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(args.get("kubernetes_cluster_versions", ""))
+        ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(kubernetes_cluster_versions)
     )
     filter_str = filter.to_dict()
 
     demisto.debug(f"Search Assets Filter: {filter_str}")
     page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
     page_number = arg_to_number(args.get("page_number", 0))
-    on_demand_fields = ["xdm.asset.tags", "xdm.kubernetes.cluster.version", "xdm.software_package.version"]
+    on_demand_fields = ["xdm.asset.tags"]
+    version_fields = [
+        ('xdm.software_package.version', software_package_versions),
+        ('xdm.kubernetes.cluster.version', kubernetes_cluster_versions)
+    ]
+    on_demand_fields.extend([field for field, condition in version_fields if condition])
+        
     raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
     # Remove "xdm.asset." suffix from all keys in the response
     response = [{normalize_key(k): v for k, v in item.items()} for item in raw_response]
