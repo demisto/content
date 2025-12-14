@@ -2771,13 +2771,13 @@ script:
         isArray: true
         auto: PREDEFINED
         predefined:
-        - sunday
-        - monday
-        - tuesday
-        - wednesday
-        - thursday
-        - friday
-        - saturday
+        - Sunday
+        - Monday
+        - Tuesday
+        - Wednesday
+        - Thursday
+        - Friday
+        - Saturday
       name: core-update-endpoint-version
       description: Updates the version of the given endpoint to the target version supplied.
       outputs: 

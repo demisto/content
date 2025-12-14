@@ -3103,20 +3103,22 @@ def transform_distributions(response):
     flattened = []
     distributions = response.get("distributions", {})
     total_count = arg_to_number(response.get("total_count"))
-    
+
     for platform, items in distributions.items():
         for item in items:
             unsupported_os = arg_to_number(item.get("unsupported_os"))
             if item.get("is_beta") or item.get("less") == 0 or (unsupported_os != 0 and unsupported_os == total_count):
                 continue
-            
-            new_item = {
-                "platform": platform,
-                "less": item.get("less"),
-                "greater": item.get("greater"),
-                "equal": item.get("equal"),
-                "version": item.get("version")
-            }
+
+            new_item = remove_empty_elements(
+                {
+                    "platform": platform,
+                    "less": item.get("less"),
+                    "greater": item.get("greater"),
+                    "equal": item.get("equal"),
+                    "version": item.get("version"),
+                }
+            )
             flattened.append(new_item)
 
     new_response = {"platform_count": response.get("platform_count"), "total_count": total_count, "distributions": flattened}
@@ -3158,7 +3160,15 @@ def update_endpoint_version_command(client, args):
     endpoint_ids = argToList(args.get("endpoint_ids", ""))
     filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_ids)
     versions = {args.get("platform"): args.get("version")}
-    days = [DAYS_MAPPING.get(day.lower()) for day in argToList(args.get("days", ""))] or None
+    days_arg = argToList(args.get("days", ""))
+
+    if days_arg:
+        days = [DAYS_MAPPING.get(day.lower()) for day in days_arg]
+        if any(d is None for d in days):
+            raise DemistoException("Please provide valid days.")
+    else:
+        days = None
+
     start_time = args.get("start_time")
     end_time = args.get("end_time")
     validate_start_end_times(start_time, end_time)
