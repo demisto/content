@@ -14,7 +14,7 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
-MAX_SCRIPTS_LIMIT = 200
+MAX_SCRIPTS_LIMIT = 100
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -66,7 +66,7 @@ SCRIPTS_TABLE = "SCRIPTS_TABLE"
 class ScriptManagement:
     FIELDS = {
         "script_name": "NAME",
-        "script_platforms": "PLATFORM",
+        "supported_platforms": "PLATFORM",
     }
 
     PLATFORMS = {
@@ -2656,6 +2656,10 @@ def list_scripts_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a list of scripts from the platform with optional filtering.
     """
+    page_number = arg_to_number(args.get("page_number")) or 0
+    page_size = arg_to_number(args.get("page_size")) or MAX_SCRIPTS_LIMIT
+    page_size = page_number * MAX_SCRIPTS_LIMIT + page_size
+    page_number = page_number * MAX_SCRIPTS_LIMIT
     filter_builder = FilterBuilder()
     filter_builder.add_field(
         ScriptManagement.FIELDS["script_name"],
@@ -2663,8 +2667,8 @@ def list_scripts_command(client: Client, args: dict) -> CommandResults:
         argToList(args.get("script_name")),
     )
 
-    platforms = [ScriptManagement.PLATFORMS[platform] for platform in argToList(args.get("script_platforms"))]
-    filter_builder.add_field(ScriptManagement.FIELDS["script_platforms"], FilterType.CONTAINS, platforms)
+    platforms = [ScriptManagement.PLATFORMS[platform] for platform in argToList(args.get("supported_platforms"))]
+    filter_builder.add_field(ScriptManagement.FIELDS["supported_platforms"], FilterType.CONTAINS, platforms)
 
     request_data = build_webapp_request_data(
         table_name=SCRIPTS_TABLE,
@@ -2691,10 +2695,19 @@ def list_scripts_command(client: Client, args: dict) -> CommandResults:
         }
         mapped_scripts.append(mapped_script)
 
+    metadata = {
+        "filtered_count": reply.get("FILTER_COUNT", 0),
+        "returned_count": len(mapped_scripts),
+    }
+
+    outputs = {
+        "Scripts" : mapped_scripts,
+        "ScriptsMetadata": metadata
+    }
+    
     return CommandResults(
         readable_output=tableToMarkdown("Scripts", mapped_scripts, headerTransform=string_to_table_header),
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Scripts",
-        outputs=mapped_scripts,
+        outputs=outputs,
         outputs_key_field="script_id",
         raw_response=response,
     )
@@ -2729,11 +2742,12 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
     
     if script_name:
         scripts_results = list_scripts_command(client, {"script_name": script_name})
-        number_of_returned_scripts = len(scripts_results.outputs)
-        demisto.debug(f"Scripts results: {scripts_results.outputs}")
+        scripts = scripts_results.outputs["Scripts"]
+        number_of_returned_scripts = len(scripts)
+        demisto.debug(f"Scripts results: {scripts}")
         if number_of_returned_scripts > 1:
             error_message = "Multiple scripts found. Please specify the exact script by providing one of the following script_uid:\n\n"
-            for script in scripts_results.outputs:
+            for script in scripts:
                 error_message += (
                     f"Script UID: {script['script_uid']}\n"
                     f"Description: {script['description']}\n"
@@ -2747,7 +2761,12 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
     
         # If exactly one script is found, use its script_uid
         elif number_of_returned_scripts == 1:
-            script_uid = scripts_results.outputs[0]['script_uid']
+            script = scripts[0]
+            script_uid = script['script_uid']
+            script_inputs = script['script_inputs']
+            script_inputs_names = [input_param['name'] for input_param in script_inputs]
+            if script['script_inputs'] and not parameters:
+                raise ValueError(f"Script '{script_name}' requires the following input parameters: {",".join(script_inputs_names)}, but none were provided.")
         
         # If no scripts found, raise an error
         else:

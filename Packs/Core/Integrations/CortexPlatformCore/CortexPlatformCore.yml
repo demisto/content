@@ -2516,11 +2516,17 @@ script:
         name: script_name
       - auto: PREDEFINED
         description: Filters scripts based on the platform they are designed to run on.
-        name: script_platforms
+        name: supported_platforms
         predefined:
         - 'windows'
         - 'linux'
         - 'macos'
+    - name: page_size
+      description: The number of scripts to return per page. The default is 100.
+      defaultvalue: 100
+    - name: page_number
+      description: Page number (for pagination). The default is 0 (the first page).
+      defaultvalue: 0
       outputs:
         - contextPath: Core.Scripts.name
           description: Name of the script.
@@ -2546,6 +2552,12 @@ script:
         - contextPath: Core.Scripts.script_inputs
           description: Input parameters for the script.
           type: JSON
+        - contextpath: Core.ScriptsMetadata.returned_count
+          description: |-
+            The actual number of script results returned in this specific execution.
+        - contextpath: Core.ScriptsMetadata.filtered_count
+          description: |-
+            The total number of script results in the system that match the specified filter criteria.
     - name: core-run-script-agentix
       description: Run a script on endpoints.
       hidden: false
