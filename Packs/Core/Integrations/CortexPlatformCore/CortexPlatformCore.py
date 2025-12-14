@@ -2968,7 +2968,7 @@ def list_scripts_command(client: Client, args: dict) -> CommandResults:
         "returned_count": len(mapped_scripts),
     }
 
-    outputs = {"Scripts": mapped_scripts, "ScriptsMetadata": metadata}
+    outputs : dict = {"Scripts": mapped_scripts,  "ScriptsMetadata": metadata}
 
     return CommandResults(
         readable_output=tableToMarkdown("Scripts", mapped_scripts, headerTransform=string_to_table_header),
@@ -3008,7 +3008,7 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
 
     if script_name:
         scripts_results = list_scripts_command(client, {"script_name": script_name})
-        scripts = scripts_results.outputs.get("Scripts", [])
+        scripts = scripts_results.outputs.get("Scripts", []) # type: ignore
         number_of_returned_scripts = len(scripts)
         demisto.debug(f"Scripts results: {scripts}")
         if number_of_returned_scripts > 1:
@@ -3047,7 +3047,7 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
         endpoint_results = core_list_endpoints_command(client, {"endpoint_name": endpoint_names})
         endpoints = endpoint_results.outputs or []
         demisto.debug(f"Endpoint results: {endpoints}")
-        endpoint_ids = [endpoint["endpoint_id"] for endpoint in endpoints]
+        endpoint_ids = [endpoint["endpoint_id"] for endpoint in endpoints] # type: ignore
 
     if not endpoint_ids:
         raise ValueError(f"No endpoints found with the specified names: {', '.join(endpoint_names)}")
