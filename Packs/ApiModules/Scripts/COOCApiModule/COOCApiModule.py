@@ -419,6 +419,6 @@ def is_gov_account(connector_id: str, account_id: str) -> bool:
         demisto.debug(f"The found {account_cloud_partition=}")
         return account_cloud_partition.upper() == "GOV"
     else:
-        demisto.debug(f"No information found for account_id: {account_id}, {relevant_account=}.")
+        demisto.debug(f"The information found for account_id: {account_id}, {relevant_account=}.")
         demisto.debug(f"The account {account_id} cloud partition information is {relevant_account.get('cloud_partition')=}")
         return False
