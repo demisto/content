@@ -2644,20 +2644,31 @@ def transform_distributions(response):
     Takes the full API response and replaces `distributions` dict
     with a single flattened list while keeping everything else the same.
     """
-    new_response = response.copy()
-    flattened = []
+    # new_response = response.copy()
+    # flattened = []
 
+    # distributions = response.get("distributions", {})
+
+    # for platform, items in distributions.items():
+    #     for item in items:
+    #         flattened.append({"platform": platform, "version": item.get("version")})
+    #         # new_item = item.copy()
+    #         # new_item["platform"] = platform
+    #         # flattened.append(new_item)
+
+    # new_response["distributions"] = flattened
+    # return new_response
+    flattened = []
     distributions = response.get("distributions", {})
 
     for platform, items in distributions.items():
         for item in items:
-            flattened.append({"platform": platform, "version": item.get("version")})
-            # new_item = item.copy()
-            # new_item["platform"] = platform
-            # flattened.append(new_item)
+            flattened.append({
+                "platform": platform,
+                "version": item.get("version")
+            })
 
-    new_response["distributions"] = flattened
-    return new_response
+    return {"distributions": flattened}
 
 
 def get_endpoint_update_version_command(client, args):
@@ -2682,7 +2693,7 @@ def get_endpoint_update_version_command(client, args):
     response = client.get_endpoint_update_version(request_data)
     flattened_response = transform_distributions(response)
     return CommandResults(
-        readable_output=tableToMarkdown("Endpoint Update Versions", flattened_response, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("Endpoint Update Versions", flattened_response.get("distributions"), headerTransform=string_to_table_header),
         outputs=flattened_response,
         outputs_prefix="Core.EndpointUpdate",
     )
