@@ -7082,7 +7082,9 @@ def test_list_exception_rules_command_single_type(mocker: MockerFixture):
     mocker.patch.object(
         mock_client,
         "get_webapp_data",
-        return_value={"reply": {"DATA": [{"ID": "rule_1", "NAME": "Test Rule", "MODIFICATION_TIME": 1000,  "CREATION_TIME": 1000}]}},
+        return_value={
+            "reply": {"DATA": [{"ID": "rule_1", "NAME": "Test Rule", "MODIFICATION_TIME": 1000, "CREATION_TIME": 1000, "CONDITIONS_PRETTY" : "conditions"}]}
+        },
     )
     mocker.patch.object(
         mock_client,
@@ -7116,8 +7118,8 @@ def test_list_exception_rules_command_all_types(mocker: MockerFixture):
         mock_client,
         "get_webapp_data",
         side_effect=[
-            {"reply": {"DATA": [{"ID": "rule_1", "MODIFICATION_TIME": 1000,  "CREATION_TIME": 1000}]}},
-            {"reply": {"DATA": [{"ID": "rule_2", "MODIFICATION_TIME": 1000,  "CREATION_TIME": 1000}]}},
+            {"reply": {"DATA": [{"ID": "rule_1", "MODIFICATION_TIME": 1000, "CREATION_TIME": 1000, "CONDITIONS_PRETTY" : "conditions"}]}},
+            {"reply": {"DATA": [{"ID": "rule_2", "MODIFICATION_TIME": 1000, "CREATION_TIME": 1000, "CONDITIONS_PRETTY" : "conditions"}]}},
         ],
     )
     mocker.patch.object(
@@ -7151,8 +7153,8 @@ def test_list_exception_rules_command_retrieve_all(mocker: MockerFixture):
         mock_client,
         "get_webapp_data",
         side_effect=[
-            {"reply": {"DATA": [{"ID": f"rule_{i}", "MODIFICATION_TIME": 1000,  "CREATION_TIME": 1000} for i in range(100)]}},
-            {"reply": {"DATA": [{"ID": f"rule_{i}", "MODIFICATION_TIME": 1000,  "CREATION_TIME": 1000} for i in range(100, 120)]}},
+            {"reply": {"DATA": [{"ID": f"rule_{i}", "MODIFICATION_TIME": 1000, "CREATION_TIME": 1000, "CONDITIONS_PRETTY" : "conditions"} for i in range(100)]}},
+            {"reply": {"DATA": [{"ID": f"rule_{i}", "MODIFICATION_TIME": 1000, "CREATION_TIME": 1000, "CONDITIONS_PRETTY" : "conditions"} for i in range(100, 120)]}},
         ],
     )
     mocker.patch.object(
