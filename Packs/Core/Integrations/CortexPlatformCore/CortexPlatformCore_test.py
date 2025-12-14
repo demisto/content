@@ -5208,177 +5208,183 @@ def test_run_playbook_command_client_call_parameters():
     mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
 
 
-
-class TestValidateStartEndTimes():
-    
+class TestValidateStartEndTimes:
     def test_validate_start_end_times_both_none(self):
         """Test with both start_time and end_time as None - should pass"""
         # Should not raise any exception
         validate_start_end_times(None, None)
-    
+
     def test_validate_start_end_times_both_empty_strings(self):
         """Test with both start_time and end_time as empty strings - should pass"""
         # Should not raise any exception
         validate_start_end_times("", "")
-    
+
     def test_validate_start_end_times_both_falsy(self):
         """Test with both start_time and end_time as falsy values - should pass"""
         # Should not raise any exception
         validate_start_end_times(None, "")
         validate_start_end_times("", None)
-    
+
     def test_validate_start_end_times_only_start_provided(self):
         """Test with only start_time provided - should raise exception"""
         from CommonServerPython import DemistoException
+
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("10:00", None)
         assert "Both start_time and end_time must be provided together." in str(exc_info.value)
-        
+
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("10:00", "")
         assert "Both start_time and end_time must be provided together." in str(exc_info.value)
-    
+
     def test_validate_start_end_times_only_end_provided(self):
         """Test with only end_time provided - should raise exception"""
         from CommonServerPython import DemistoException
+
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times(None, "15:00")
         assert "Both start_time and end_time must be provided together." in str(exc_info.value)
-        
+
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("", "15:00")
         assert "Both start_time and end_time must be provided together." in str(exc_info.value)
-    
+
     def test_validate_start_end_times_valid_same_day_sufficient_gap(self):
         """Test with valid times on same day with sufficient gap (>= 2 hours)"""
         # Exactly 2 hours apart - should pass
         validate_start_end_times("10:00", "12:00")
-        
+
         # More than 2 hours apart - should pass
         validate_start_end_times("09:00", "14:00")
         validate_start_end_times("08:30", "11:15")
         validate_start_end_times("00:00", "02:00")
-    
+
     def test_validate_start_end_times_valid_cross_day_sufficient_gap(self):
         """Test with times crossing midnight with sufficient gap"""
         # 23:00 to 01:00 next day = 2 hours - should pass
         validate_start_end_times("23:00", "01:00")
-        
+
         # 22:00 to 02:00 next day = 4 hours - should pass
         validate_start_end_times("22:00", "02:00")
-        
+
         # 20:00 to 01:00 next day = 5 hours - should pass
         validate_start_end_times("20:00", "01:00")
-    
+
     def test_validate_start_end_times_insufficient_gap_same_day(self):
         """Test with insufficient gap between times on same day"""
         from CommonServerPython import DemistoException
+
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("10:00", "11:30")  # 1.5 hours
         assert "A minimum of two hours is required" in str(exc_info.value)
-        
+
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("10:00", "11:59")  # 1 hour 59 minutes
         assert "A minimum of two hours is required" in str(exc_info.value)
-        
+
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("14:30", "15:45")  # 1 hour 15 minutes
         assert "A minimum of two hours is required" in str(exc_info.value)
-    
+
     def test_validate_start_end_times_insufficient_gap_cross_day(self):
         """Test with insufficient gap crossing midnight"""
         from CommonServerPython import DemistoException
+
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("23:30", "00:30")  # 1 hour
         assert "A minimum of two hours is required" in str(exc_info.value)
-        
+
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("23:15", "01:00")  # 1 hour 45 minutes
         assert "A minimum of two hours is required" in str(exc_info.value)
-    
+
     def test_validate_start_end_times_same_time(self):
         """Test with identical start and end times"""
         from CommonServerPython import DemistoException
+
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("10:00", "10:00")
         assert "A minimum of two hours is required" in str(exc_info.value)
-    
+
     def test_validate_start_end_times_invalid_time_format(self):
         """Test with invalid time formats - should raise ValueError"""
         with pytest.raises(ValueError):
             validate_start_end_times("25:00", "12:00")  # Invalid hour
-        
+
         with pytest.raises(ValueError):
             validate_start_end_times("10:70", "12:00")  # Invalid minute
-        
+
         with pytest.raises(ValueError):
             validate_start_end_times("invalid", "12:00")  # Invalid format
-        
+
         with pytest.raises(ValueError):
             validate_start_end_times("10:00", "not-a-time")  # Invalid format
-        
+
         with pytest.raises(ValueError):
             validate_start_end_times("10", "12:00")  # Incomplete format
-    
+
     def test_validate_start_end_times_edge_cases_valid(self):
         """Test edge cases that should be valid"""
         # Midnight to 2 AM
         validate_start_end_times("00:00", "02:00")
-        
+
         # 10 PM to midnight next day (2 hours)
         validate_start_end_times("22:00", "00:00")
-        
+
         # Almost full day (22 hours)
         validate_start_end_times("01:00", "23:00")
-    
+
     def test_validate_start_end_times_edge_cases_invalid(self):
         """Test edge cases that should be invalid"""
         from CommonServerPython import DemistoException
+
         # 1 minute gap
         with pytest.raises(DemistoException):
             validate_start_end_times("10:00", "10:01")
-        
+
         # 1 hour 59 minutes 59 seconds would round to 1 hour 59 minutes in strptime
         with pytest.raises(DemistoException):
             validate_start_end_times("10:00", "11:59")
-    
+
     def test_validate_start_end_times_boundary_conditions(self):
         """Test boundary conditions around the 2-hour requirement"""
         from CommonServerPython import DemistoException
+
         # Exactly 2 hours - should pass
         validate_start_end_times("10:00", "12:00")
-        
+
         # 1 minute less than 2 hours - should fail
         with pytest.raises(DemistoException):
             validate_start_end_times("10:00", "11:59")
-        
+
         # 1 minute more than 2 hours - should pass
         validate_start_end_times("10:00", "12:01")
-    
+
     def test_validate_start_end_times_cross_midnight_boundary(self):
         """Test the cross-midnight calculation boundary"""
         from CommonServerPython import DemistoException
+
         # 22:00 to 00:00 next day = exactly 2 hours - should pass
         validate_start_end_times("22:00", "00:00")
-        
+
         # 22:01 to 00:00 next day = 1 hour 59 minutes - should fail
         with pytest.raises(DemistoException):
             validate_start_end_times("22:01", "00:00")
-        
+
         # 21:59 to 00:00 next day = 2 hours 1 minute - should pass
         validate_start_end_times("21:59", "00:00")
-    
+
     def test_validate_start_end_times_various_time_formats(self):
         """Test with various valid time formats"""
         # Single digit hours and minutes
         validate_start_end_times("9:00", "11:00")
         validate_start_end_times("09:0", "11:0")  # This might fail depending on strptime behavior
-        
+
     def test_validate_start_end_times_whitespace_handling(self):
         """Test with whitespace in time strings"""
         # Note: strptime might be sensitive to whitespace
         validate_start_end_times("10:00", "12:00")
-        
+
         # Test with potential whitespace (these might raise ValueError)
         with pytest.raises(ValueError):
             validate_start_end_times(" 10:00 ", "12:00")

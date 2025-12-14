@@ -48,7 +48,7 @@ WEBAPP_COMMANDS = [
     "core-get-appsec-issues",
     "core-update-case",
     "core-get-endpoint-update-version",
-    "core-update-endpoint-version"
+    "core-update-endpoint-version",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -732,7 +732,7 @@ class Client(CoreClient):
             headers={**self._headers, "content-type": "application/json"},
             url_suffix="/public_api/appsec/v1/policies",
         )
-        
+
     def get_endpoint_update_version(self, request_data):
         reply = self._http_request(
             method="POST",
@@ -2627,7 +2627,7 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
 def validate_start_end_times(start_time, end_time):
     if (start_time and not end_time) or (end_time and not start_time):
         raise DemistoException("Both start_time and end_time must be provided together.")
-    
+
     if start_time and end_time:
         start_dt = datetime.strptime(start_time, "%H:%M")
         end_dt = datetime.strptime(end_time, "%H:%M")
@@ -2663,10 +2663,7 @@ def transform_distributions(response):
 
     for platform, items in distributions.items():
         for item in items:
-            flattened.append({
-                "platform": platform,
-                "version": item.get("version")
-            })
+            flattened.append({"platform": platform, "version": item.get("version")})
 
     return {"distributions": flattened}
 
@@ -2693,10 +2690,13 @@ def get_endpoint_update_version_command(client, args):
     response = client.get_endpoint_update_version(request_data)
     flattened_response = transform_distributions(response)
     return CommandResults(
-        readable_output=tableToMarkdown("Endpoint Update Versions", flattened_response.get("distributions"), headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown(
+            "Endpoint Update Versions", flattened_response.get("distributions"), headerTransform=string_to_table_header
+        ),
         outputs=flattened_response,
         outputs_prefix="Core.EndpointUpdate",
     )
+
 
 def update_endpoint_version_command(client, args):
     filter_builder = FilterBuilder()
@@ -2853,10 +2853,10 @@ def main():  # pragma: no cover
             return_results(update_case_command(client, args))
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
-            
+
         elif command == "core-get-endpoint-update-version":
             return_results(get_endpoint_update_version_command(client, args))
-            
+
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
 
