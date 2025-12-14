@@ -3008,7 +3008,7 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
 
     if script_name:
         scripts_results = list_scripts_command(client, {"script_name": script_name})
-        scripts = scripts_results.outputs["Scripts"]
+        scripts = scripts_results.outputs.get("Scripts", [])
         number_of_returned_scripts = len(scripts)
         demisto.debug(f"Scripts results: {scripts}")
         if number_of_returned_scripts > 1:
@@ -3035,7 +3035,8 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
             script_inputs_names = [input_param["name"] for input_param in script_inputs]
             if script["script_inputs"] and not parameters:
                 raise ValueError(
-                    f"Script '{script_name}' requires the following input parameters: {",".join(script_inputs_names)}, but none were provided."
+                    f"Script '{script_name}' requires the following input parameters: {', '.join(script_inputs_names)}, "
+                    "but none were provided."
                 )
 
         # If no scripts found, raise an error
@@ -3044,8 +3045,9 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
 
     if endpoint_names:
         endpoint_results = core_list_endpoints_command(client, {"endpoint_name": endpoint_names})
-        demisto.debug(f"Endpoint results: {endpoint_results.outputs}")
-        endpoint_ids = [endpoint["endpoint_id"] for endpoint in endpoint_results.outputs]
+        endpoints = endpoint_results.outputs or []
+        demisto.debug(f"Endpoint results: {endpoints}")
+        endpoint_ids = [endpoint["endpoint_id"] for endpoint in endpoints]
 
     if not endpoint_ids:
         raise ValueError(f"No endpoints found with the specified names: {', '.join(endpoint_names)}")
