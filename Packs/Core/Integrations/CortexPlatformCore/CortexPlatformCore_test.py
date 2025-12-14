@@ -1613,7 +1613,7 @@ class TestFilterBuilder:
         filter_builder.add_time_range_field("test_field", None, "2022-01-02T00:00:00")
 
         # Assert
-        mock_prepare_time_range.assert_called_once_with(0, "2022-01-02T00:00:00")
+        mock_prepare_time_range.assert_called_once_with(None, "2022-01-02T00:00:00")
         mock_add_field.assert_called_once_with("test_field", FilterType.RANGE, {"from": 0, "to": 1641081600000})
 
     def test_add_time_range_field_with_none_end_time(self, mocker: MockerFixture):
