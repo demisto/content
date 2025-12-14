@@ -141,7 +141,7 @@ class UserMappingObject:
             demisto.debug(f"UserMapping: {self._kvstore_data=}")
         return filter(lambda row: row.get(col) == value_to_search, self._kvstore_data)
 
-    def get_xsoar_user_by_splunk(self, splunk_user):
+    def get_xsoar_user_by_splunk(self, splunk_user: str):
         record = list(self._get_record(self.splunk_user_column_name, splunk_user))
 
         if not record:
@@ -162,7 +162,7 @@ class UserMappingObject:
 
         return xsoar_user
 
-    def get_splunk_user_by_xsoar(self, xsoar_user, map_missing=True):
+    def get_splunk_user_by_xsoar(self, xsoar_user: str, map_missing: bool = True):
         record = list(self._get_record(self.xsoar_user_column_name, xsoar_user))
 
         if not record:
@@ -183,7 +183,7 @@ class UserMappingObject:
 
         return splunk_user
 
-    def get_splunk_user_by_xsoar_command(self, args):
+    def get_splunk_user_by_xsoar_command(self, args: dict[str, str]) -> CommandResults:
         xsoar_users = argToList(args.get("xsoar_username"))
         map_missing = argToBoolean(args.get("map_missing", True))
 
@@ -200,7 +200,7 @@ class UserMappingObject:
             readable_output=tableToMarkdown("Xsoar-Splunk Username Mapping", outputs, headers=["XsoarUser", "SplunkUser"]),
         )
 
-    def update_xsoar_user_in_findings(self, findings_data):
+    def update_xsoar_user_in_findings(self, findings_data: list[dict]):
         """In case of `should_map_user` is True, update the 'owner' in the findings to be the mapped XSOAR user.
 
         Args:
@@ -353,7 +353,7 @@ def get_splunk_timezone_offset(service: client.Service) -> str:
         return timezone_offset
 
     except Exception as e:
-        demisto.error(f"Failed to get Splunk timezone: {e}")
+        demisto.error(f"Failed to get Splunk timezone: using +00:00 as default {e}")
         return "+00:00"  # Default to UTC on error
 
 
@@ -2300,7 +2300,7 @@ def get_modified_remote_data_command(
         war_room_notes = enrich_findings_with_splunk_notes(service, modified_findings_map, original_last_update_timestamp)
         entries.extend(war_room_notes)
 
-        mapper.update_xsoar_user_in_findings(modified_findings_map.values())
+        mapper.update_xsoar_user_in_findings(modified_findings_map.values())  # type: ignore[arg-type]
 
         if ENABLED_ENRICHMENTS:
             handle_enriching_findings(modified_findings_map)

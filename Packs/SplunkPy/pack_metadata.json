@@ -10,7 +10,7 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "defaultDataSource": "SplunkPy v2",
+    "defaultDataSource": "SplunkPy",
     "tags": [],
     "useCases": [],
     "keywords": [],
