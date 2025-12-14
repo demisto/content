@@ -438,6 +438,9 @@ filter cefName ~= "System"
    Network logs mapping
    ========================================== */
 filter cefName ~= "Network"
+| alter
+    proto = to_string(proto)
+
 | alter //XDM mapping
     xdm.observer.version = cefDeviceVersion,
     xdm.event.type = cefName,
