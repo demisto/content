@@ -55,7 +55,7 @@ You can configure the specific vendor and product for this instance.
    | `Vendor`      | Enter **Brocade**.
    | `Product`     | Enter **Switch**.
 
-   **NOTE:** The content pack parsing rule has been updated to include the `tmp_timezone` field. 
+   **NOTE:** The content pack parsing rule has been updated to include the `tmp_timezone` field.
    Users can now configure their specific time zone offset preferences within the ***`User Defined`*** settings.
 
    **For example: `tmp_timezone = "UTC+2"`**
