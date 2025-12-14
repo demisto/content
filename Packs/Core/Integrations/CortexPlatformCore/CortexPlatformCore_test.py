@@ -6626,3 +6626,674 @@ def test_core_list_endpoints_command_error_handling(mocker):
     # Verify exception is propagated
     with pytest.raises(Exception, match="Server error"):
         core_list_endpoints_command(mock_client, args)
+
+def test_build_column_mapping_with_enum_values():
+    """
+    GIVEN:
+        A column definition with FILTER_PARAMS containing ENUM_VALUES.
+    WHEN:
+        build_column_mapping is called.
+    THEN:
+        A dictionary mapping NAME to PRETTY_NAME is returned.
+    """
+    from CortexPlatformCore import build_column_mapping
+
+    column = {
+        "FILTER_PARAMS": {
+            "ENUM_VALUES": [
+                {"NAME": "MODULE_1", "PRETTY_NAME": "Module One"},
+                {"NAME": "MODULE_2", "PRETTY_NAME": "Module Two"},
+                {"NAME": "MODULE_3", "PRETTY_NAME": "Module Three"},
+            ]
+        }
+    }
+
+    result = build_column_mapping(column)
+
+    assert result == {
+        "MODULE_1": "Module One",
+        "MODULE_2": "Module Two",
+        "MODULE_3": "Module Three",
+    }
+
+
+def test_build_column_mapping_empty_enum_values():
+    """
+    GIVEN:
+        A column definition with empty ENUM_VALUES.
+    WHEN:
+        build_column_mapping is called.
+    THEN:
+        An empty dictionary is returned.
+    """
+    from CortexPlatformCore import build_column_mapping
+
+    column = {"FILTER_PARAMS": {"ENUM_VALUES": []}}
+
+    result = build_column_mapping(column)
+
+    assert result == {}
+
+
+def test_build_column_mapping_missing_filter_params():
+    """
+    GIVEN:
+        A column definition without FILTER_PARAMS.
+    WHEN:
+        build_column_mapping is called.
+    THEN:
+        An empty dictionary is returned.
+    """
+    from CortexPlatformCore import build_column_mapping
+
+    column = {}
+
+    result = build_column_mapping(column)
+
+    assert result == {}
+
+
+def test_build_column_mapping_missing_enum_values():
+    """
+    GIVEN:
+        A column definition with FILTER_PARAMS but no ENUM_VALUES.
+    WHEN:
+        build_column_mapping is called.
+    THEN:
+        An empty dictionary is returned.
+    """
+    from CortexPlatformCore import build_column_mapping
+
+    column = {"FILTER_PARAMS": {}}
+
+    result = build_column_mapping(column)
+
+    assert result == {}
+
+
+def test_extract_mappings_from_view_def_single_column():
+    """
+    GIVEN:
+        A view definition with one column to map.
+    WHEN:
+        extract_mappings_from_view_def is called.
+    THEN:
+        A dictionary with the column mapping is returned.
+    """
+    from CortexPlatformCore import extract_mappings_from_view_def
+
+    view_def = {
+        "COLUMN_DEFINITIONS": [
+            {
+                "FIELD_NAME": "MODULES",
+                "FILTER_PARAMS": {
+                    "ENUM_VALUES": [
+                        {"NAME": "MOD_A", "PRETTY_NAME": "Module A"},
+                        {"NAME": "MOD_B", "PRETTY_NAME": "Module B"},
+                    ]
+                },
+            }
+        ]
+    }
+    columns_to_map = {"MODULES"}
+
+    result = extract_mappings_from_view_def(view_def, columns_to_map)
+
+    assert result == {"MODULES": {"MOD_A": "Module A", "MOD_B": "Module B"}}
+
+
+def test_extract_mappings_from_view_def_multiple_columns():
+    """
+    GIVEN:
+        A view definition with multiple columns to map.
+    WHEN:
+        extract_mappings_from_view_def is called.
+    THEN:
+        A dictionary with all column mappings is returned.
+    """
+    from CortexPlatformCore import extract_mappings_from_view_def
+
+    view_def = {
+        "COLUMN_DEFINITIONS": [
+            {
+                "FIELD_NAME": "MODULES",
+                "FILTER_PARAMS": {
+                    "ENUM_VALUES": [
+                        {"NAME": "MOD_A", "PRETTY_NAME": "Module A"},
+                    ]
+                },
+            },
+            {
+                "FIELD_NAME": "PROFILE_IDS",
+                "FILTER_PARAMS": {
+                    "ENUM_VALUES": [
+                        {"NAME": "PROF_1", "PRETTY_NAME": "Profile 1"},
+                    ]
+                },
+            },
+        ]
+    }
+    columns_to_map = {"MODULES", "PROFILE_IDS"}
+
+    result = extract_mappings_from_view_def(view_def, columns_to_map)
+
+    assert result == {
+        "MODULES": {"MOD_A": "Module A"},
+        "PROFILE_IDS": {"PROF_1": "Profile 1"},
+    }
+
+
+def test_extract_mappings_from_view_def_no_matching_columns():
+    """
+    GIVEN:
+        A view definition with columns that don't match the columns_to_map set.
+    WHEN:
+        extract_mappings_from_view_def is called.
+    THEN:
+        An empty dictionary is returned.
+    """
+    from CortexPlatformCore import extract_mappings_from_view_def
+
+    view_def = {
+        "COLUMN_DEFINITIONS": [
+            {
+                "FIELD_NAME": "OTHER_FIELD",
+                "FILTER_PARAMS": {
+                    "ENUM_VALUES": [
+                        {"NAME": "VAL", "PRETTY_NAME": "Value"},
+                    ]
+                },
+            }
+        ]
+    }
+    columns_to_map = {"MODULES"}
+
+    result = extract_mappings_from_view_def(view_def, columns_to_map)
+
+    assert result == {}
+
+
+def test_combine_pretty_names_with_list_criteria():
+    """
+    GIVEN:
+        A list of criteria where each criterion is a list of dictionaries with 'pretty_name'.
+    WHEN:
+        combine_pretty_names is called.
+    THEN:
+        A list of concatenated pretty_name strings is returned.
+    """
+    from CortexPlatformCore import combine_pretty_names
+
+    list_of_criteria = [
+        [{"pretty_name": "First"}, {"pretty_name": "Second"}],
+        [{"pretty_name": "Third"}],
+        [{"pretty_name": "A"}, {"pretty_name": "B"}, {"pretty_name": "C"}],
+    ]
+
+    result = combine_pretty_names(list_of_criteria)
+
+    assert result == ["FirstSecond", "Third", "ABC"]
+
+
+def test_combine_pretty_names_with_empty_lists():
+    """
+    GIVEN:
+        A list of criteria containing empty lists.
+    WHEN:
+        combine_pretty_names is called.
+    THEN:
+        Empty strings are returned for empty lists.
+    """
+    from CortexPlatformCore import combine_pretty_names
+
+    list_of_criteria = [
+        [],
+        [{"pretty_name": "Test"}],
+        [],
+    ]
+
+    result = combine_pretty_names(list_of_criteria)
+
+    assert result == ["", "Test", ""]
+
+
+def test_combine_pretty_names_with_non_list_items():
+    """
+    GIVEN:
+        A list of criteria containing non-list items.
+    WHEN:
+        combine_pretty_names is called.
+    THEN:
+        Non-list items are returned as-is.
+    """
+    from CortexPlatformCore import combine_pretty_names
+
+    list_of_criteria = [
+        [{"pretty_name": "First"}],
+        "StringValue",
+        [{"pretty_name": "Second"}],
+    ]
+
+    result = combine_pretty_names(list_of_criteria)
+
+    assert result == ["First", "StringValue", "Second"]
+
+
+def test_combine_pretty_names_missing_pretty_name_key():
+    """
+    GIVEN:
+        A list of criteria with dictionaries missing 'pretty_name' key.
+    WHEN:
+        combine_pretty_names is called.
+    THEN:
+        Empty strings are used for missing keys.
+    """
+    from CortexPlatformCore import combine_pretty_names
+
+    list_of_criteria = [
+        [{"pretty_name": "A"}, {"other_key": "B"}, {"pretty_name": "C"}],
+    ]
+
+    result = combine_pretty_names(list_of_criteria)
+
+    assert result == ["AC"]
+
+
+def test_postprocess_exception_rules_response(mocker: MockerFixture):
+    """
+    GIVEN:
+        View definition and exception rules data.
+    WHEN:
+        postprocess_exception_rules_response is called.
+    THEN:
+        Data is properly mapped and formatted with readable output.
+    """
+    from CortexPlatformCore import postprocess_exception_rules_response
+
+    view_def = [
+        {
+            "TABLE_NAME": "Exception Rules",
+            "COLUMN_DEFINITIONS": [
+                {
+                    "FIELD_NAME": "MODULES",
+                    "FILTER_PARAMS": {
+                        "ENUM_VALUES": [
+                            {"NAME": "MOD_1", "PRETTY_NAME": "Module One"},
+                        ]
+                    },
+                },
+                {
+                    "FIELD_NAME": "PROFILE_IDS",
+                    "FILTER_PARAMS": {
+                        "ENUM_VALUES": [
+                            {"NAME": "PROF_1", "PRETTY_NAME": "Profile One"},
+                        ]
+                    },
+                },
+            ],
+        }
+    ]
+
+    data = [
+        {
+            "ID": "rule_1",
+            "MODULES": ["MOD_1"],
+            "PROFILE_IDS": ["PROF_1"],
+            "ASSOCIATED_TARGETS": [[{"pretty_name": "Target1"}, {"pretty_name": "Target2"}]],
+            "CONDITIONS_PRETTY": "condition text",
+            "SUBTYPE": "legacy",
+            "CREATION_TIME": 1640000000000,
+            "MODIFICATION_TIME": 1640100000000,
+        }
+    ]
+
+    mocker.patch("CortexPlatformCore.timestamp_to_datestring", side_effect=lambda x: f"date_{x}")
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="markdown_table")
+
+    result = postprocess_exception_rules_response(view_def, data)
+
+    assert result == "markdown_table"
+    assert data[0]["MODULES"] == ["Module One"]
+    assert data[0]["PROFILE_IDS"] == ["Profile One"]
+    assert data[0]["ASSOCIATED_TARGETS"] == ["Target1Target2"]
+    assert data[0]["CONDITIONS"] == "condition text"
+    assert data[0]["RULE_TYPE"] == "legacy"
+    assert data[0]["CREATION_TIMESTAMP"] == 1640000000000
+    assert data[0]["MODIFICATION_TIMESTAMP"] == 1640100000000
+    assert "CONDITIONS_PRETTY" not in data[0]
+    assert "SUBTYPE" not in data[0]
+
+
+def test_get_webapp_data_single_page(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and parameters for fetching a single page of data.
+    WHEN:
+        get_webapp_data is called with retrieve_all=False.
+    THEN:
+        A single request is made and data is returned.
+    """
+    from CortexPlatformCore import get_webapp_data, FilterBuilder
+
+    mock_client = mocker.Mock()
+    mock_client.get_webapp_data.return_value = {
+        "reply": {"DATA": [{"id": "1"}, {"id": "2"}]}
+    }
+
+    filter_builder = FilterBuilder()
+    records, raw_responses = get_webapp_data(
+        client=mock_client,
+        table_name="TEST_TABLE",
+        filter_dict=filter_builder,
+        sort_field="ID",
+        sort_order="ASC",
+        retrieve_all=False,
+        base_limit=10,
+        max_limit=100,
+        offset=0,
+    )
+
+    assert len(records) == 2
+    assert records[0]["id"] == "1"
+    assert records[1]["id"] == "2"
+    assert len(raw_responses) == 1
+    assert mock_client.get_webapp_data.call_count == 1
+
+
+def test_get_webapp_data_retrieve_all_multiple_pages(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and parameters for fetching all data across multiple pages.
+    WHEN:
+        get_webapp_data is called with retrieve_all=True.
+    THEN:
+        Multiple requests are made until all data is retrieved.
+    """
+    from CortexPlatformCore import get_webapp_data, FilterBuilder
+
+    mock_client = mocker.Mock()
+    # First call returns full page, second call returns partial page (end of data)
+    mock_client.get_webapp_data.side_effect = [
+        {"reply": {"DATA": [{"id": str(i)} for i in range(100)]}},
+        {"reply": {"DATA": [{"id": str(i)} for i in range(100, 150)]}},
+    ]
+
+    filter_builder = FilterBuilder()
+    records, raw_responses = get_webapp_data(
+        client=mock_client,
+        table_name="TEST_TABLE",
+        filter_dict=filter_builder,
+        sort_field="ID",
+        sort_order="ASC",
+        retrieve_all=True,
+        base_limit=50,
+        max_limit=100,
+        offset=0,
+    )
+
+    assert len(records) == 150
+    assert len(raw_responses) == 2
+    assert mock_client.get_webapp_data.call_count == 2
+
+
+def test_get_webapp_data_with_offset(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and parameters with a non-zero offset.
+    WHEN:
+        get_webapp_data is called with offset=50.
+    THEN:
+        The request starts from the specified offset.
+    """
+    from CortexPlatformCore import get_webapp_data, FilterBuilder
+
+    mock_client = mocker.Mock()
+    mock_client.get_webapp_data.return_value = {
+        "reply": {"DATA": [{"id": "51"}, {"id": "52"}]}
+    }
+
+    filter_builder = FilterBuilder()
+    records, raw_responses = get_webapp_data(
+        client=mock_client,
+        table_name="TEST_TABLE",
+        filter_dict=filter_builder,
+        sort_field="ID",
+        sort_order="ASC",
+        retrieve_all=False,
+        base_limit=10,
+        max_limit=100,
+        offset=50,
+    )
+
+    assert len(records) == 2
+    call_args = mock_client.get_webapp_data.call_args[0][0]
+    assert call_args["filter_data"]["paging"]["from"] == 50
+
+
+def test_list_exception_rules_command_single_type(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and args specifying a single exception rule type.
+    WHEN:
+        list_exception_rules_command is called.
+    THEN:
+        Only the specified table is queried and results are returned.
+    """
+    from CortexPlatformCore import list_exception_rules_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_data",
+        return_value={"reply": {"DATA": [{"ID": "rule_1", "NAME": "Test Rule"}]}},
+    )
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_view_def",
+        return_value=[{"TABLE_NAME": "Test Table", "COLUMN_DEFINITIONS": []}],
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {"type": "legacy_agent_exceptions", "limit": "10"}
+
+    result = list_exception_rules_command(mock_client, args)
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["ID"] == "rule_1"
+    assert "table" in result.readable_output
+
+
+def test_list_exception_rules_command_all_types(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and args without specifying exception rule type.
+    WHEN:
+        list_exception_rules_command is called.
+    THEN:
+        Both legacy and disable prevention tables are queried.
+    """
+    from CortexPlatformCore import list_exception_rules_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_data",
+        side_effect=[
+            {"reply": {"DATA": [{"ID": "rule_1"}]}},
+            {"reply": {"DATA": [{"ID": "rule_2"}]}},
+        ],
+    )
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_view_def",
+        return_value=[{"TABLE_NAME": "Test Table", "COLUMN_DEFINITIONS": []}],
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {"limit": "10"}
+
+    result = list_exception_rules_command(mock_client, args)
+
+    assert len(result.outputs) == 2
+    assert mock_client.get_webapp_data.call_count == 2
+
+
+def test_list_exception_rules_command_retrieve_all(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and args with retrieve_all=True.
+    WHEN:
+        list_exception_rules_command is called.
+    THEN:
+        All records are retrieved with pagination.
+    """
+    from CortexPlatformCore import list_exception_rules_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_data",
+        side_effect=[
+            {"reply": {"DATA": [{"ID": f"rule_{i}"} for i in range(100)]}},
+            {"reply": {"DATA": [{"ID": f"rule_{i}"} for i in range(100, 120)]}},
+        ],
+    )
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_view_def",
+        return_value=[{"TABLE_NAME": "Test Table", "COLUMN_DEFINITIONS": []}],
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {"type": "legacy_agent_exceptions", "retrieve_all": "true"}
+
+    result = list_exception_rules_command(mock_client, args)
+
+    assert len(result.outputs) == 120
+
+
+def test_list_exception_rules_command_no_data(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client that returns no data.
+    WHEN:
+        list_exception_rules_command is called.
+    THEN:
+        A message indicating no data is returned.
+    """
+    from CortexPlatformCore import list_exception_rules_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_data",
+        return_value={"reply": {"DATA": []}},
+    )
+
+    args = {"type": "legacy_agent_exceptions"}
+
+    result = list_exception_rules_command(mock_client, args)
+
+    assert len(result.outputs) == 0
+    assert "No data found" in result.readable_output
+
+
+def test_list_system_users_command_with_emails(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and args with specific email addresses.
+    WHEN:
+        list_system_users_command is called.
+    THEN:
+        Only users with matching emails are returned.
+    """
+    from CortexPlatformCore import list_system_users_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "get_users",
+        return_value={
+            "reply": [
+                {"user_email": "user1@example.com", "name": "User 1"},
+                {"user_email": "user2@example.com", "name": "User 2"},
+                {"user_email": "user3@example.com", "name": "User 3"},
+            ]
+        },
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {"email": "user1@example.com,user3@example.com"}
+
+    result = list_system_users_command(mock_client, args)
+
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["user_email"] == "user1@example.com"
+    assert result.outputs[1]["user_email"] == "user3@example.com"
+
+
+def test_list_system_users_command_no_emails(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and args without email filter.
+    WHEN:
+        list_system_users_command is called.
+    THEN:
+        All users are returned (up to limit of 50).
+    """
+    from CortexPlatformCore import list_system_users_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    users = [{"user_email": f"user{i}@example.com", "name": f"User {i}"} for i in range(30)]
+    mocker.patch.object(mock_client, "get_users", return_value={"reply": users})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {}
+
+    result = list_system_users_command(mock_client, args)
+
+    assert len(result.outputs) == 30
+
+
+def test_list_system_users_command_exceeds_limit(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and args with more than 50 emails.
+    WHEN:
+        list_system_users_command is called.
+    THEN:
+        A DemistoException is raised.
+    """
+    from CortexPlatformCore import list_system_users_command, Client
+    from CommonServerPython import DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    emails = [f"user{i}@example.com" for i in range(51)]
+
+    args = {"email": ",".join(emails)}
+
+    with pytest.raises(DemistoException, match="maximum number of emails allowed is 50"):
+        list_system_users_command(mock_client, args)
+
+
+def test_list_system_users_command_limits_results_to_50(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client that returns more than 50 users.
+    WHEN:
+        list_system_users_command is called without email filter.
+    THEN:
+        Results are limited to 50 users.
+    """
+    from CortexPlatformCore import list_system_users_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    users = [{"user_email": f"user{i}@example.com", "name": f"User {i}"} for i in range(100)]
+    mocker.patch.object(mock_client, "get_users", return_value={"reply": users})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {}
+
+    result = list_system_users_command(mock_client, args)
+
+    assert len(result.outputs) == 50
