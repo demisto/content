@@ -6627,6 +6627,7 @@ def test_core_list_endpoints_command_error_handling(mocker):
     with pytest.raises(Exception, match="Server error"):
         core_list_endpoints_command(mock_client, args)
 
+
 def test_build_column_mapping_with_enum_values():
     """
     GIVEN:
@@ -6976,9 +6977,7 @@ def test_get_webapp_data_single_page(mocker: MockerFixture):
     from CortexPlatformCore import get_webapp_data, FilterBuilder
 
     mock_client = mocker.Mock()
-    mock_client.get_webapp_data.return_value = {
-        "reply": {"DATA": [{"id": "1"}, {"id": "2"}]}
-    }
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [{"id": "1"}, {"id": "2"}]}}
 
     filter_builder = FilterBuilder()
     records, raw_responses = get_webapp_data(
@@ -7048,9 +7047,7 @@ def test_get_webapp_data_with_offset(mocker: MockerFixture):
     from CortexPlatformCore import get_webapp_data, FilterBuilder
 
     mock_client = mocker.Mock()
-    mock_client.get_webapp_data.return_value = {
-        "reply": {"DATA": [{"id": "51"}, {"id": "52"}]}
-    }
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [{"id": "51"}, {"id": "52"}]}}
 
     filter_builder = FilterBuilder()
     records, raw_responses = get_webapp_data(
