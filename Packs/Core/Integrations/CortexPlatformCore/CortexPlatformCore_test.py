@@ -7090,7 +7090,8 @@ def test_list_exception_rules_command_single_type(mocker: MockerFixture):
                         "NAME": "Test Rule",
                         "MODIFICATION_TIME": 1000,
                         "CREATION_TIME": 1000,
-                         "CONDITIONS_PRETTY" : "conditions" , "SUBTYPE" : "XDR",
+                        "CONDITIONS_PRETTY": "conditions",
+                        "SUBTYPE": "XDR",
                     }
                 ]
             }
@@ -7131,14 +7132,26 @@ def test_list_exception_rules_command_all_types(mocker: MockerFixture):
             {
                 "reply": {
                     "DATA": [
-                        {"ID": "rule_1", "MODIFICATION_TIME": 1000, "CREATION_TIME": 1000,  "CONDITIONS_PRETTY" : "conditions" , "SUBTYPE" : "XDR"}
+                        {
+                            "ID": "rule_1",
+                            "MODIFICATION_TIME": 1000,
+                            "CREATION_TIME": 1000,
+                            "CONDITIONS_PRETTY": "conditions",
+                            "SUBTYPE": "XDR",
+                        }
                     ]
                 }
             },
             {
                 "reply": {
                     "DATA": [
-                        {"ID": "rule_2", "MODIFICATION_TIME": 1000, "CREATION_TIME": 1000,  "CONDITIONS_PRETTY" : "conditions" , "SUBTYPE" : "XDR"}
+                        {
+                            "ID": "rule_2",
+                            "MODIFICATION_TIME": 1000,
+                            "CREATION_TIME": 1000,
+                            "CONDITIONS_PRETTY": "conditions",
+                            "SUBTYPE": "XDR",
+                        }
                     ]
                 }
             },
@@ -7178,7 +7191,13 @@ def test_list_exception_rules_command_retrieve_all(mocker: MockerFixture):
             {
                 "reply": {
                     "DATA": [
-                        {"ID": f"rule_{i}", "MODIFICATION_TIME": 1000, "CREATION_TIME": 1000,  "CONDITIONS_PRETTY" : "conditions" , "SUBTYPE" : "XDR"}
+                        {
+                            "ID": f"rule_{i}",
+                            "MODIFICATION_TIME": 1000,
+                            "CREATION_TIME": 1000,
+                            "CONDITIONS_PRETTY": "conditions",
+                            "SUBTYPE": "XDR",
+                        }
                         for i in range(100)
                     ]
                 }
@@ -7186,7 +7205,13 @@ def test_list_exception_rules_command_retrieve_all(mocker: MockerFixture):
             {
                 "reply": {
                     "DATA": [
-                        {"ID": f"rule_{i}", "MODIFICATION_TIME": 1000, "CREATION_TIME": 1000,  "CONDITIONS_PRETTY" : "conditions" , "SUBTYPE" : "XDR"}
+                        {
+                            "ID": f"rule_{i}",
+                            "MODIFICATION_TIME": 1000,
+                            "CREATION_TIME": 1000,
+                            "CONDITIONS_PRETTY": "conditions",
+                            "SUBTYPE": "XDR",
+                        }
                         for i in range(100, 120)
                     ]
                 }

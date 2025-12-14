@@ -3227,8 +3227,8 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults
     generic /api/webapp/get_data endpoint, handling pagination.
     """
     exception_rule_type = args.get("type")
-    sort_field = args.get("sort_field")
-    sort_order = args.get("sort_order")
+    sort_field = args.get("sort_field", "MODIFICATION_TIME")
+    sort_order = args.get("sort_order", "DESC")
 
     default_limit = arg_to_number(args.get("limit")) or MAX_GET_EXCEPTION_RULES_LIMIT
     offset = arg_to_number(args.get("page")) * default_limit if args.get("page") else 0
