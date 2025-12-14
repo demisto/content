@@ -57,6 +57,8 @@ SUPPORTED_DETECTIONS_TYPES = [
     OFP_DETECTION_TYPE,
     NGSIEM_DETECTION_FETCH_TYPE,
     NGSIEM_INCIDENT_FETCH_TYPE,
+    NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
+    NGSIEM_CASES_FETCH_TYPE,
     THIRD_PARTY_DETECTION_FETCH_TYPE,
 ]
 
@@ -960,7 +962,13 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     """
     add_mirroring_fields(detection)
     demisto.debug(f"detection_to_incident_context, {detection_type=}")
-    if detection_type in (IDP_DETECTION_FETCH_TYPE, NGSIEM_DETECTION_FETCH_TYPE, THIRD_PARTY_DETECTION_FETCH_TYPE, NGSIEM_INCIDENT_FETCH_TYPE):
+    if detection_type in (
+        IDP_DETECTION_FETCH_TYPE,
+        NGSIEM_DETECTION_FETCH_TYPE,
+        THIRD_PARTY_DETECTION_FETCH_TYPE,
+        NGSIEM_INCIDENT_FETCH_TYPE,
+        NGSIEM_AUTOMATED_LEADS_FETCH_TYPE
+    ):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
 
