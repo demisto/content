@@ -6,7 +6,7 @@ The steps below require a user account with Admin access.
 
 1. Log in to **Genesys Cloud** and click the **Admin** tab.
 
-2. On the Admin page, click on **OAuth** (under Integrations).
+2. On the Admin page, click **OAuth** (under Integrations).
 
 3. On the OAuth page, click **Add client**.
 
