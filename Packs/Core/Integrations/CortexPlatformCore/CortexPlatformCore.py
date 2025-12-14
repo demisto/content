@@ -2644,18 +2644,26 @@ def transform_distributions(response):
     Takes the full API response and replaces `distributions` dict
     with a single flattened list while keeping everything else the same.
     """
-    new_response = response.copy()
     flattened = []
-
     distributions = response.get("distributions", {})
-
+    total_count = arg_to_number(response.get("total_count"))
+    
     for platform, items in distributions.items():
         for item in items:
-            new_item = item.copy()
-            new_item["platform"] = platform
+            unsupported_os = arg_to_number(item.get("unsupported_os"))
+            if item.get("is_beta") or item.get("less") == 0 or (unsupported_os != 0 and unsupported_os == total_count):
+                continue
+            
+            new_item = {
+                "platform": platform,
+                "less": item.get("less"),
+                "greater": item.get("greater"),
+                "equal": item.get("equal"),
+                "version": item.get("version")
+            }
             flattened.append(new_item)
 
-    new_response["distributions"] = flattened
+    new_response = {"platform_count": response.get("platform_count"), "total_count": total_count, "distributions": flattened}
     return new_response
 
 
@@ -2682,10 +2690,10 @@ def get_endpoint_update_version_command(client, args):
     flattened_response = transform_distributions(response)
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Endpoint Update Versions", flattened_response, headerTransform=string_to_table_header
+            "Endpoint Update Versions", flattened_response.get("distributions"), headerTransform=string_to_table_header
         ),
         outputs=flattened_response,
-        outputs_prefix="Core.EndpointUpdate",
+        outputs_prefix="Core.EndpointUpdateVersion",
     )
 
 

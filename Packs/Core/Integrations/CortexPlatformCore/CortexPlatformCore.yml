@@ -2508,14 +2508,26 @@ script:
       name: core-get-endpoint-update-version
       description: Retrieves endpoint update versions for the provided endpoint ID.
       outputs:
-      - contextPath: Core.EndpointUpdate.distributions.platform
+      - contextPath: Core.EndpointUpdateVersion.total_count
+        description: Total number of endpoints.
+        type: String
+      - contextPath: Core.EndpointUpdateVersion.platform_count
+        description: Number of endpoints per platform.
+        type: String
+      - contextPath: Core.EndpointUpdateVersion.distributions.platform
         description: The platform of the endpoint update.
         type: String
-      - contextPath: Core.EndpointUpdate.distributions.version
+      - contextPath: Core.EndpointUpdateVersion.distributions.version
         description: The version of the endpoint update.
         type: String
-      - contextPath: Core.EndpointUpdate.distributions.is_beta
-        description: wether the version is a beta version.
+      - contextPath: Core.EndpointUpdateVersion.distributions.greater
+        description: The account of the given endpoints that are greater than the version.
+        type: String
+      - contextPath: Core.EndpointUpdateVersion.distributions.equal
+        description: The account of the given endpoints that are equal to the version.
+        type: String
+      - contextPath: Core.EndpointUpdateVersion.distributions.less
+        description: The account of the given endpoints that are less than the version.
         type: String
     - arguments: 
       - description: A comma-separated list of endpoint IDs.
