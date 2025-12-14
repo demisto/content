@@ -3431,7 +3431,6 @@ def main():  # pragma: no cover
             return_results(get_exception_rules(client, args))
         elif command == "core-get-system-users":
             return_results(get_system_users_command(client, args))
-
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
 
