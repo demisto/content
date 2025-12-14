@@ -1,6 +1,6 @@
 import pytest
 from CommonServerPython import *
-from Packs.OpenAI.Integrations.OpenAIV2.OpenAI import EmailParts
+from Packs.OpenAI.Integrations.OpenAIV2.OpenAIV2 import EmailParts
 
 
 def util_load_json(path):
@@ -16,7 +16,7 @@ def util_load_text(path: str) -> str:
 def test_extract_assistant_message():
     """Tests extraction from a valid response with choices and message."""
 
-    from Packs.OpenAI.Integrations.OpenAIV2.OpenAI import extract_assistant_message
+    from Packs.OpenAI.Integrations.OpenAIV2.OpenAIV2 import extract_assistant_message
 
     mock_response = util_load_json("test_data/mock_response.json")
     extracted_message = extract_assistant_message(response=mock_response)
@@ -27,7 +27,7 @@ def test_extract_assistant_message():
 def test_get_email_parts(mocker, entry_id, should_raise_error):
     """Tests email parsing and parts extraction."""
 
-    from Packs.OpenAI.Integrations.OpenAIV2.OpenAI import get_email_parts
+    from Packs.OpenAI.Integrations.OpenAIV2.OpenAIV2 import get_email_parts
 
     def mock_file(_entry_id: str):
         if _entry_id == "VALID_ENTRY_ID":
@@ -57,7 +57,7 @@ def test_get_email_parts(mocker, entry_id, should_raise_error):
 def test_check_email_parts(mocker, email_part: str, args: dict):
     """Tests 'check_email_parts' function. '"""
 
-    from Packs.OpenAI.Integrations.OpenAIV2.OpenAI import OpenAiClient, check_email_part
+    from Packs.OpenAI.Integrations.OpenAIV2.OpenAIV2 import OpenAiClient, check_email_part
 
     mocker.patch.object(OpenAiClient, "_http_request", return_value=util_load_json("test_data/mock_response.json"))
     mocker.patch.object(
@@ -87,7 +87,7 @@ def test_check_email_parts(mocker, email_part: str, args: dict):
 )
 def test_send_message_command(mocker, args):
     """ """
-    from Packs.OpenAI.Integrations.OpenAIV2.OpenAI import OpenAiClient, send_message_command
+    from Packs.OpenAI.Integrations.OpenAIV2.OpenAIV2 import OpenAiClient, send_message_command
 
     mocker.patch.object(OpenAiClient, "_http_request", return_value=util_load_json("test_data/mock_response.json"))
     mocker.patch.object(
@@ -103,7 +103,7 @@ def test_send_message_command(mocker, args):
 
 
 def test_create_soc_email_template_command(mocker):
-    from Packs.OpenAI.Integrations.OpenAIV2.OpenAI import OpenAiClient, create_soc_email_template_command
+    from Packs.OpenAI.Integrations.OpenAIV2.OpenAIV2 import OpenAiClient, create_soc_email_template_command
 
     mocker.patch.object(OpenAiClient, "_http_request", return_value=util_load_json("test_data/mock_response.json"))
     client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-4", proxy=False, verify=False)
