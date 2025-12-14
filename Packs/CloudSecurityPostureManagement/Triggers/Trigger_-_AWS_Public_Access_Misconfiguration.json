@@ -1,6 +1,6 @@
 {
   "id": "48fe389e557125e4a7666870eb4994e7",
-  "name": "״Trigger - AWS Public Access Misconfiguration",
+  "name": "Trigger - AWS Public Access Misconfiguration",
   "trigger_id": "48fe389e557125e4a7666870eb4994e7",
   "trigger_name": "Trigger - AWS Public Access Misconfiguration",
   "playbook_id": "AWS Public Access Misconfiguration - Auto-remediate",
