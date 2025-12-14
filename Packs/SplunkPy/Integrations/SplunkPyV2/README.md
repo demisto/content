@@ -534,6 +534,7 @@ There is no context output for this command.
 
 ```!splunk-finding-event-edit event_ids=${incident.eventid} note="note from `splunk-finding-event-edit` command"```
 
+##### Human Readable Output
 
 ### splunk-job-create
 
