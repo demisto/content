@@ -29,7 +29,7 @@ class UserData(TypedDict):
 # Success messages patterns for different integrations
 SUCCESS_MESSAGES = {
     "ad_never_expire_cleared": 'AD account {username} has cleared "password never expire" attribute. Value is set to False',
-    "ad_password_expired": 'Expired password successfully',
+    "ad_password_expired": "Expired password successfully",
     "msgraph": "User {username} will be required to change his password.",
     "aws": "The user {username} will be required to change his password.",
 }
@@ -42,7 +42,7 @@ GENERIC_FAILURE_MESSAGES = {
     "msgraph": "Microsoft Graph password reset failed",
     "okta": "Okta password expiration failed",
     "gsuite": "GSuite password reset failed",
-    "aws": "AWS IAM password reset failed"
+    "aws": "AWS IAM password reset failed",
 }
 
 
@@ -194,7 +194,10 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
         success = res_msg == SUCCESS_MESSAGES["ad_password_expired"]
         func_res.append(
             build_result(
-                res, success_condition=success, success_msg=SUCCESS_MESSAGES["ad_password_expired"], failure_msg=res_msg or GENERIC_FAILURE_MESSAGES["ad"]
+                res,
+                success_condition=success,
+                success_msg=SUCCESS_MESSAGES["ad_password_expired"],
+                failure_msg=res_msg or GENERIC_FAILURE_MESSAGES["ad"],
             )
         )
     return func_res, hr
@@ -332,7 +335,7 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     if errors:
         err = next((r for r in errors if not r["HumanReadable"]), None)
         default_err_info = "Command execution failed."
-        err_info_msg = err.get('Contents', default_err_info) if err else default_err_info
+        err_info_msg = err.get("Contents", default_err_info) if err else default_err_info
         demisto.debug(f"Error when calling get-user-data:\n{err_info_msg}")
 
     # Check for no available integrations

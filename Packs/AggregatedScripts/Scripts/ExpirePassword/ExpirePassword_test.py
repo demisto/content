@@ -156,7 +156,13 @@ def test_run_active_directory_query_v2_success(mock_run_command):
     # Second call: ad-expire-password (Success)
     mock_run_command.side_effect = [
         (
-            [{"Contents": SUCCESS_MESSAGES["ad_never_expire_cleared"].format(username="testuser"), "Type": 1, "Metadata": {"instance": "inst1"}}],
+            [
+                {
+                    "Contents": SUCCESS_MESSAGES["ad_never_expire_cleared"].format(username="testuser"),
+                    "Type": 1,
+                    "Metadata": {"instance": "inst1"},
+                }
+            ],
             "HR_CLEAR",
         ),
         ([{"Contents": SUCCESS_MESSAGES["ad_password_expired"], "Type": 1, "Metadata": {"instance": "inst1"}}], "HR_EXPIRE"),
@@ -164,7 +170,9 @@ def test_run_active_directory_query_v2_success(mock_run_command):
 
     result, hr = run_active_directory_query_v2(user, "inst1")
 
-    expected: list[ExpiredPasswordResult] = [{"Result": "Success", "Message": SUCCESS_MESSAGES["ad_password_expired"], "Instance": "inst1"}]
+    expected: list[ExpiredPasswordResult] = [
+        {"Result": "Success", "Message": SUCCESS_MESSAGES["ad_password_expired"], "Instance": "inst1"}
+    ]
     assert result == expected
     assert "HR_CLEAR\n\nHR_EXPIRE" in hr
 
@@ -374,7 +382,13 @@ def test_run_active_directory_query_v2_expire_command_failure(mock_run_command):
     # First call succeeds, second call fails
     mock_run_command.side_effect = [
         (
-            [{"Contents": SUCCESS_MESSAGES["ad_never_expire_cleared"].format(username="testuser"), "Type": 1, "Metadata": {"instance": "inst1"}}],
+            [
+                {
+                    "Contents": SUCCESS_MESSAGES["ad_never_expire_cleared"].format(username="testuser"),
+                    "Type": 1,
+                    "Metadata": {"instance": "inst1"},
+                }
+            ],
             "HR_CLEAR",
         ),
         ([{"Contents": "Failed to expire password", "Type": 4, "Metadata": {"instance": "inst1"}}], "HR_EXPIRE_FAIL"),
@@ -547,7 +561,13 @@ def test_expire_passwords_mixed_success_failure(mock_run_command):
         ([{"HumanReadable": "Graph API error", "Type": 4, "Metadata": {"instance": "msgraph-inst"}}], "MSGraph HR"),
         # AWS success
         (
-            [{"HumanReadable": SUCCESS_MESSAGES["aws"].format(username="user3"), "Type": 1, "Metadata": {"instance": "aws-inst"}}],
+            [
+                {
+                    "HumanReadable": SUCCESS_MESSAGES["aws"].format(username="user3"),
+                    "Type": 1,
+                    "Metadata": {"instance": "aws-inst"},
+                }
+            ],
             "AWS HR",
         ),
     ]
@@ -605,7 +625,13 @@ def test_expire_passwords_multiple_results_per_integration(mock_run_command):
     mock_run_command.side_effect = [
         # ad-modify-password-never-expire
         (
-            [{"Contents": SUCCESS_MESSAGES["ad_never_expire_cleared"].format(username="testuser"), "Type": 1, "Metadata": {"instance": "ad-inst"}}],
+            [
+                {
+                    "Contents": SUCCESS_MESSAGES["ad_never_expire_cleared"].format(username="testuser"),
+                    "Type": 1,
+                    "Metadata": {"instance": "ad-inst"},
+                }
+            ],
             "HR1",
         ),
         # ad-expire-password returns multiple results
