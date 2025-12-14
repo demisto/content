@@ -56,17 +56,38 @@ class EntryResult:
         args (Any): The args passed (dict or string); kept for HR visibility.
         brand (str): Integration brand (or TIM/Core/VirusTotal).
         status (Status): Success/Failure.
+        score_field_name (str): Score field name. For CVE Enrichment "TIM CVSS", for all other "TIM Score".
+        score (float): The CVSS/Score value.
         message (str): Short message (e.g., error text or brand summary).
     """
 
-    def __init__(self, command_name: str, args: Any, brand: str, status: Status, message: str):
+    def __init__(
+        self,
+        command_name: str,
+        args: Any,
+        brand: str,
+        status: Status,
+        message: str,
+        score_field_name: str = "",
+        score: float | None = 0,
+    ):
         self.command_name = command_name
         self.args = args
         self.brand = brand
         self.status = status
+        self.score = score
+        self.score_field_name = score_field_name
         self.message = message
 
     def to_entry(self) -> dict[str, Any]:
+        if self.brand == "TIM":
+            return {
+                "Arguments": self.args,
+                "Brand": self.brand,
+                "Status": self.status.value,
+                self.score_field_name: self.score,
+                "Message": self.message,
+            }
         return {
             "Arguments": self.args,
             "Brand": self.brand,
@@ -160,6 +181,7 @@ class IndicatorInstance:
         context_message (str | None): Small message for Context, relevant for failures.
         final_status (Status): The computed status of the indicator after all enrichment stages.
             Typically SUCCESS unless any stage failed or an invalid input was detected.
+        indicator_score (float | None): The final Score/CVSS from the TIM data relevant for final Human Readable.
     """
 
     raw_input: str
@@ -171,6 +193,7 @@ class IndicatorInstance:
     context_message: str | None = None
     error_message: str | None = None
     final_status: Status = Status.SUCCESS
+    indicator_score: float | None = None
 
     def _is_valid(self) -> bool:
         return bool(self.extracted_value)
@@ -1024,22 +1047,28 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
         for i, ioc in enumerate(iocs):
             demisto.debug(f"Processing #{i+1} TIM result")
-            parsed_indicators, value, message = self._process_single_tim_ioc(ioc)
+            parsed_indicators, indicator_score, value, message = self._process_single_tim_ioc(ioc)
             indicator_instance = self.indicator_mapping[value]
             indicator_instance.tim_context = parsed_indicators
+            indicator_instance.indicator_score = indicator_score
+            demisto.debug(f"Score2: {indicator_score}, {indicator_instance.indicator_score} ")
             indicator_instance.hr_message = message
 
-    def _process_single_tim_ioc(self, ioc: dict[str, Any]) -> tuple[list[dict], str, str]:
+    def _process_single_tim_ioc(self, ioc: dict[str, Any]) -> tuple[list[dict], float | None, str, str]:
         """
         Processes a single IOC object returned from a TIM search.
         Extract Score and brand and add them to parsed indicators.
         Args:
             ioc (dict[str, Any]): The IOC object to process.
         Returns:
-            tuple[list[dict], str, str]: The parsed indicators, indicator value, and hr message for final table.
+            tuple[list[dict], float, str, str]:
+            - The parsed indicators.
+            - Indicator score/cvss.
+            - Indicator value.
+            - HR message for final table.
         """
         all_parsed_indicators: list[ContextResult] = []
-        tim_indicator = self.create_tim_indicator(ioc)
+        tim_indicator, indicator_score = self.create_tim_indicator(ioc)
         all_parsed_indicators.append(tim_indicator)
 
         value = tim_indicator.get("Value", "")
@@ -1058,27 +1087,30 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
         message = f"Found indicator from brands: {', '.join(found_brands)}." if found_brands else "No matching indicators found."
 
-        return all_parsed_indicators, value, message
+        return all_parsed_indicators, indicator_score, value, message
 
-    def create_tim_indicator(self, ioc: dict[str, Any]) -> dict[str, Any]:
+    def create_tim_indicator(self, ioc: dict[str, Any]) -> tuple[dict[str, Any], float | None]:
         """
         Creates a TIM indicator from a TIM IOC CustomFields and Main Fields.
-        Relevant for extracting the Score/Status/ModifiedTime from the TIM IOC to the main context.
+        Relevant for extracting the CVSS/Score/Status/ModifiedTime from the TIM IOC to the main context.
         Args:
             ioc (dict[str, Any]): The TIM IOC to create a TIM indicator from.
         Returns:
             dict[str, Any]: The TIM indicator.
+            float | None: The Final TIM Score/CVSS.
         """
         demisto.debug("Extracting Custom Fields")
         customFields = ioc.get("CustomFields", {})
         # all Keys under CustomFields are lowercase while the mapping are CamelCase, this insure we will find the right keys
         lower_mapping = {k.lower(): v for k, v in self.indicator_schema.context_output_mapping.items()}
         mapped_indicator = self.map_command_context(customFields.copy(), lower_mapping, is_indicator=True)
-
+        indicator_score: float | None = 0
         if "Score" in self.indicator_schema.context_output_mapping:
-            mapped_indicator.update({"Score": ioc.get("score", Common.DBotScore.NONE)})
+            indicator_score = ioc.get("score", Common.DBotScore.NONE)
+            mapped_indicator.update({"Score": indicator_score})
         if "CVSS" in self.indicator_schema.context_output_mapping:
-            mapped_indicator.update({"CVSS": customFields.get("cvssscore")})
+            indicator_score = customFields.get("cvssscore")
+            mapped_indicator.update({"CVSS": indicator_score})
         mapped_indicator.update(
             {
                 "Brand": "TIM",
@@ -1094,7 +1126,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             value = ioc.get("value", "")
         mapped_indicator.update({"Value": value})
         demisto.debug(f"Created TIM Indicator for {value}")
-        return mapped_indicator
+        return mapped_indicator, indicator_score
 
     def get_indicator_status_from_ioc(self, ioc: dict) -> str | None:
         """
@@ -1324,9 +1356,14 @@ class ReputationAggregatedCommand(AggregatedCommand):
         human_readable = tableToMarkdown(
             "Final Results",
             t=[entry.to_entry() for entry in final_entries],
-            headers=["Brand", "Arguments", "Status", "Message"],
+            headers=[
+                "Brand",
+                "Arguments",
+                "Status",
+                "TIM CVSS" if self.indicator_schema.type == "cve" else "TIM Score",
+                "Message",
+            ],
         )
-
         if self.verbose and self.verbose_outputs:
             demisto.debug("Adding verbose outputs to human readable.")
             human_readable += "\n\n".join(self.verbose_outputs)
@@ -1412,6 +1449,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
                     brand="TIM",
                     status=indicator_instance.final_status,
                     args=indicator_instance.extracted_value or indicator_instance.raw_input,
+                    score_field_name="TIM CVSS" if self.indicator_schema.type == "cve" else "TIM Score",
+                    score=indicator_instance.indicator_score,
                     message=message or "",
                 )
             )

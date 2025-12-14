@@ -1638,7 +1638,7 @@ def test_process_single_tim_ioc(
     if "Value" not in mock_tim_indicator_return:
         mock_tim_indicator_return["Value"] = ioc_input.get("value")
 
-    mocker.patch.object(module, "create_tim_indicator", return_value=mock_tim_indicator_return)
+    mocker.patch.object(module, "create_tim_indicator", return_value=(mock_tim_indicator_return, 0))
 
     def side_effect(entry_context, brand, reliability, score):
         return mock_parse_indicator_side_effect.get(brand, [])
@@ -1647,7 +1647,7 @@ def test_process_single_tim_ioc(
 
     # 2. Act
     # NEW Signature: returns (list[dict], str, str)
-    indicators, value, message = module._process_single_tim_ioc(ioc_input)
+    indicators, score, value, message = module._process_single_tim_ioc(ioc_input)
 
     # 3. Assert
     assert indicators == expected_indicators
@@ -1764,7 +1764,7 @@ def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
 
     status_mock = mocker.patch.object(mod, "get_indicator_status_from_ioc", return_value=IndicatorStatus.FRESH.value)
 
-    res = mod.create_tim_indicator(ioc)
+    res, _ = mod.create_tim_indicator(ioc)
 
     status_mock.assert_called_once_with(ioc)
     assert res["Status"] == IndicatorStatus.FRESH.value
@@ -1832,7 +1832,7 @@ def test_create_tim_indicator_file_type_maps_value_using_hashes(module_factory, 
     )
 
     # 6. Execute
-    res = mod.create_tim_indicator(ioc)
+    res, _ = mod.create_tim_indicator(ioc)
 
     # 7. Assertions
     status_mock.assert_called_once_with(ioc)
