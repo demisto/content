@@ -35,6 +35,7 @@ DEFAULT_SERVICE_NAMES = [
     "AnalyticsReporting",
 ]
 DEFAULT_AUDIT_PAGE_SIZE = 500
+DEFAULT_AUDIT_RETRY_COUNT = 3
 DEFAULT_GET_EVENTS_LIMIT = 10
 DEFAULT_FETCH_EVENTS_LIMIT = 2500  # per service
 DEFAULT_TOKEN_TTL = 86400
@@ -188,6 +189,7 @@ class AsyncClient:
         service_name: str,
         page_number: int,
         page_size: int = DEFAULT_AUDIT_PAGE_SIZE,
+        max_retries: int = DEFAULT_AUDIT_RETRY_COUNT,
     ) -> dict[str, Any]:
         """
         Retrieves audit events from Genesys Cloud for a specific service using the realtime audit query API.
@@ -198,9 +200,10 @@ class AsyncClient:
             service_name (str): The name of the service to fetch events for.
             page_number (int): The page number to retrieve.
             page_size (int): The number of items per page. Defaults to 500.
+            max_retries (int): Maximum number of retries for rate limit errors. Defaults to 3.
 
         Raises:
-            ClientResponseError: If the request fails (after retry on 401 error or some other status code).
+            ClientResponseError: If the request fails (after retry on 401 or 429 errors or some other status code).
 
         Returns:
             dict[str, Any]: A dictionary containing the audit events raw API response.
@@ -218,28 +221,42 @@ class AsyncClient:
         headers = {"Content-Type": "application/json", "Authorization": await self.get_authorization_header()}
 
         demisto.debug(f"[{service_name}] Requesting audits using {from_date=}, {to_date=}, {page_number=}.")
-        try:
-            response_json = await self._send_audits_post_request(url, params=params, headers=headers, body=body)
 
-        except aiohttp.ClientResponseError as e:
-            status_code = e.status
-            error_message = e.message
-            if status_code == HTTPStatus.TOO_MANY_REQUESTS:
-                demisto.debug("Received HTTP 429 Too many requests error. Sleeping for 3 seconds and retrying...")
-                await asyncio.sleep(3)
+        retry_count = 0
+        while retry_count <= max_retries:
+            try:
                 response_json = await self._send_audits_post_request(url, params=params, headers=headers, body=body)
+                break  # Success, exit retry loop
 
-            if status_code == HTTPStatus.UNAUTHORIZED:
-                demisto.debug("Received HTTP 401 Unauthorized error. Forcing new token generation and retrying...")
-                headers["Authorization"] = await self.get_authorization_header(force_generate_new_token=True)
-                response_json = await self._send_audits_post_request(url, params=params, headers=headers, body=body)
+            except aiohttp.ClientResponseError as e:
+                status_code = e.status
+                error_message = e.message
 
-            else:
-                demisto.error(
-                    f"[{service_name}] Request using {from_date=}, {to_date=}, {page_number=} failed. "
-                    f"Got {status_code=}, {error_message=}."
-                )
-                raise DemistoException(f"Request to {e.request_info.url} failed with HTTP {e.status} status.") from e
+                if status_code == HTTPStatus.UNAUTHORIZED:
+                    demisto.debug(
+                        f"[{service_name}] Received HTTP 401 Unauthorized error. Forcing new token generation and retrying..."
+                    )
+                    headers["Authorization"] = await self.get_authorization_header(force_generate_new_token=True)
+                    response_json = await self._send_audits_post_request(url, params=params, headers=headers, body=body)
+                    break  # Success after token refresh, exit retry loop
+
+                if status_code == HTTPStatus.TOO_MANY_REQUESTS:
+                    if retry_count < max_retries:
+                        # Exponential backoff: 2^retry_count seconds (1s, 2s, 4s)
+                        wait_time = 2**retry_count
+                        demisto.debug(
+                            f"[{service_name}] Received HTTP 429 Too Many Requests error. "
+                            f"Retrying {retry_count + 1} of {max_retries} after {wait_time} seconds..."
+                        )
+                        await asyncio.sleep(wait_time)
+                        retry_count += 1
+
+                else:
+                    demisto.error(
+                        f"[{service_name}] Request using {from_date=}, {to_date=}, {page_number=} failed. "
+                        f"Got {status_code=}, {error_message=}."
+                    )
+                    raise DemistoException(f"Request to {e.request_info.url} failed with HTTP {e.status} status.") from e
 
         entities_count = len(response_json.get("entities", []))
         demisto.debug(f"[{service_name}] Fetched {entities_count} audits using {from_date=}, {to_date=}, {page_number=}.")

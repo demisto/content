@@ -283,8 +283,8 @@ async def test_async_client_get_realtime_audits_401_retry(async_client: AsyncCli
     mock_response_json = {"entities": [{"id": "event-1", "eventDate": "2025-01-01T00:00:00Z"}]}
 
     mock_responses = [
-        mock_async_session_response(error_status_code=401, error_message="Unauthorized"),  # First call -> expired token error
-        mock_async_session_response(mock_response_json),  # Second call (after token refresh) -> new events
+        mock_async_session_response(error_status_code=401, error_message="Unauthorized"),  # 1st call: expired token error
+        mock_async_session_response(mock_response_json),  # 2nd call (after token refresh): new events
     ]
 
     mock_get_auth_header = mocker.patch.object(async_client, "get_authorization_header", return_value="Bearer test_token")
@@ -301,6 +301,44 @@ async def test_async_client_get_realtime_audits_401_retry(async_client: AsyncCli
     assert response_json == mock_response_json
     assert mock_get_auth_header.call_count == 2  # First call + retry with `force_generate_new_token=True`
     assert mock_post_request.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_async_client_get_realtime_audits_429_retry(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient instance.
+    When:
+     - Calling get_realtime_audits and receiving a 429 Too many requests error.
+    Then:
+     - Ensure the client waits for a few seconds and retries the request.
+    """
+    from_date = "2025-01-01T00:00:00Z"
+    to_date = "2025-01-02T00:00:00Z"
+    service_name = "Outbound"
+    page_number = 1
+
+    mock_response_json = {"entities": [{"id": "event-1", "eventDate": "2025-01-01T00:00:00Z"}]}
+
+    mock_responses = [
+        mock_async_session_response(error_status_code=429, error_message="Too many requests"),  # 1st call -> rate limit
+        mock_async_session_response(error_status_code=429, error_message="Too many requests"),  # 2nd call (after 1s): rate limit
+        mock_async_session_response(mock_response_json),  # Second call (after 2s) -> new events
+    ]
+
+    mocker.patch.object(async_client, "get_authorization_header", return_value="Bearer test_token")
+
+    async with async_client as _client:
+        mock_post_request = mocker.patch.object(_client._session, "post", side_effect=mock_responses)
+        response_json = await _client.get_realtime_audits(
+            from_date=from_date,
+            to_date=to_date,
+            service_name=service_name,
+            page_number=page_number,
+        )
+
+    assert response_json == mock_response_json
+    assert mock_post_request.call_count == 3
 
 
 @pytest.mark.parametrize(
