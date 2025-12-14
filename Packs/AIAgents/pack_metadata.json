@@ -17,14 +17,15 @@
         "platform"
     ],
     "supportedModules": [
-        "cloud_posture",
+        "agentix",
+        "asm",
         "cloud",
+        "cloud_appsec",
+        "cloud_posture",
         "cloud_runtime_security",
         "edr",
-        "asm",
-        "cloud_appsec",
-        "xsiam",
+        "email_security",
         "exposure_management",
-        "agentix"
+        "xsiam"
     ]
 }
