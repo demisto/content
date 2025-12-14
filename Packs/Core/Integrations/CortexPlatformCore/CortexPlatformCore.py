@@ -3205,11 +3205,7 @@ def get_webapp_data(
             limit=current_limit,
             start_page=current_offset,
         )
-
-        print(request_data)
-
         response = client.get_webapp_data(request_data)
-        print(response)
         raw_responses.append(copy.deepcopy(response))
 
         reply = response.get("reply", {})
@@ -3441,7 +3437,6 @@ def main():  # pragma: no cover
 
     except Exception as err:
         demisto.error(traceback.format_exc())
-        print(traceback.format_exc())
         return_error(str(err))
 
 
