@@ -227,7 +227,7 @@ def test_run_microsoft_graph_user_success(mock_run_command):
         "Brand": "MSGraph",
         "Instance": "",
     }
-    expected_msg = SUCCESS_MESSAGES["msgraph"].format(username="testuser")
+    expected_msg = SUCCESS_MESSAGES["msgraph_user"].format(username="testuser")
     mock_run_command.return_value = ([{"HumanReadable": expected_msg, "Type": 1, "Metadata": {"instance": "inst1"}}], "")
     result, _ = run_microsoft_graph_user(user, "inst1")
 
@@ -415,7 +415,7 @@ def test_run_aws_iam_success(mock_run_command):
         "Brand": "AWS - IAM",
         "Instance": "inst1",
     }
-    expected_msg = SUCCESS_MESSAGES["aws"].format(username="testuser")
+    expected_msg = SUCCESS_MESSAGES["aws_iam"].format(username="testuser")
     mock_run_command.return_value = ([{"HumanReadable": expected_msg, "Type": 1, "Metadata": {"instance": "inst1"}}], "")
     result, _ = run_aws_iam(user, "inst1")
 
@@ -563,7 +563,7 @@ def test_expire_passwords_mixed_success_failure(mock_run_command):
         (
             [
                 {
-                    "HumanReadable": SUCCESS_MESSAGES["aws"].format(username="user3"),
+                    "HumanReadable": SUCCESS_MESSAGES["aws_iam"].format(username="user3"),
                     "Type": 1,
                     "Metadata": {"instance": "aws-inst"},
                 }
@@ -593,7 +593,7 @@ def test_expire_passwords_mixed_success_failure(mock_run_command):
             "UserProfile": {"ID": "3", "Username": "user3", "Email": "user3@example.com"},
             "Brand": "AWS - IAM",
             "Result": "Success",
-            "Message": SUCCESS_MESSAGES["aws"].format(username="user3"),
+            "Message": SUCCESS_MESSAGES["aws_iam"].format(username="user3"),
             "Instance": "aws-inst",
         },
     ]
