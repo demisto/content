@@ -921,20 +921,20 @@ Returns a list users and their core properties within the system. Results are li
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | The email of the user. Accepts a comma-separated list. | Optional | 
+| email | The email of the user. Accepts a comma-separated list. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.User.user_email | String | The user's email address. | 
-| Core.User.user_first_name | String | The user's first name. | 
-| Core.User.user_last_name | String | The user's last name. | 
-| Core.User.role_name | String | The specific role assigned to the user within this instance \(e.g., Instance Administrator\). | 
-| Core.User.user_type | String | The identity provider or source of the user account \(e.g., CSP / SSO\). | 
-| Core.User.last_logged_in | Number | The last time the user successfully logged in, represented as a Unix epoch timestamp in milliseconds. | 
-| Core.User.scope | String | The user's defined access scope or permissions structure within the instance. | 
-| Core.User.groups | String | A specific name of a group the user belongs to within this instance. | 
+| Core.User.user_email | String | The user's email address. |
+| Core.User.user_first_name | String | The user's first name. |
+| Core.User.user_last_name | String | The user's last name. |
+| Core.User.role_name | String | The specific role assigned to the user within this instance \(e.g., Instance Administrator\). |
+| Core.User.user_type | String | The identity provider or source of the user account \(e.g., CSP / SSO\). |
+| Core.User.last_logged_in | Number | The last time the user successfully logged in, represented as a Unix epoch timestamp in milliseconds. |
+| Core.User.scope | String | The user's defined access scope or permissions structure within the instance. |
+| Core.User.groups | String | A specific name of a group the user belongs to within this instance. |
 
 ### core-list-exception-rules
 
@@ -949,48 +949,47 @@ Returns a list of exception rules and their metadata, which you can filter by bu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The unique ID of the exception rule. Accepts a comma-separated list. | Optional | 
-| rule_name | The name of the exception rule. Accepts a comma-separated list. | Optional | 
-| platform | The platform the rule applies to. Accepts a comma-separated list. Possible values are: AGENT_OS_WINDOWS, AGENT_OS_MAC, AGENT_OS_LINUX, AGENT_OS_ANDROID, AGENT_OS_IOS, AGENT_OS_CAAS_LINUX, AGENT_OS_SERVERLESS. | Optional | 
-| conditions | The conditions defined in the rule. Accepts a comma-separated list. | Optional | 
-| created_by | The user who created the rule. Accepts a comma-separated list. | Optional | 
-| user_email | The email of the user associated with the rule. Accepts a comma-separated list. | Optional | 
-| start_modification_time | The start time for filtering according to rule modification time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional | 
-| end_modification_time | The end time for filtering according to rule modification time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional | 
-| status | The status of the exception rule. Possible values are: ENABLED, DISABLED. | Optional | 
-| rule_type | The type of the disable prevention rule. Accepts a comma-separated list. Possible values are: XDR, WAAS. | Optional | 
-| type | The type of the exception rule. If not specified, both are returned. Possible values are: legacy_agent_exceptions, disable_prevention_rules. | Optional | 
-| sort_field | The field by which to sort the results. Possible values are: MODIFICATION_TIME. Default is MODIFICATION_TIME. | Optional | 
-| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. Default is DESC. | Optional | 
-| limit | Number of exception rules to return. Ignored if 'retrieve_all' is set to true. Default is 100. | Optional | 
-| page | Page number to return. Ignored if 'retrieve_all' is set to true. Default is 0. | Optional | 
-| retrieve_all | Return all exception rules. Possible values are: true, false. Default is true. | Optional | 
+| id | The unique ID of the exception rule. Accepts a comma-separated list. | Optional |
+| rule_name | The name of the exception rule. Accepts a comma-separated list. | Optional |
+| platform | The platform the rule applies to. Accepts a comma-separated list. Possible values are: AGENT_OS_WINDOWS, AGENT_OS_MAC, AGENT_OS_LINUX, AGENT_OS_ANDROID, AGENT_OS_IOS, AGENT_OS_CAAS_LINUX, AGENT_OS_SERVERLESS. | Optional |
+| conditions | The conditions defined in the rule. Accepts a comma-separated list. | Optional |
+| created_by | The user who created the rule. Accepts a comma-separated list. | Optional |
+| user_email | The email of the user associated with the rule. Accepts a comma-separated list. | Optional |
+| start_modification_time | The start time for filtering according to rule modification time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
+| end_modification_time | The end time for filtering according to rule modification time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
+| status | The status of the exception rule. Possible values are: ENABLED, DISABLED. | Optional |
+| rule_type | The type of the disable prevention rule. Accepts a comma-separated list. Possible values are: XDR, WAAS. | Optional |
+| type | The type of the exception rule. If not specified, both are returned. Possible values are: legacy_agent_exceptions, disable_prevention_rules. | Optional |
+| sort_field | The field by which to sort the results. Possible values are: MODIFICATION_TIME. Default is MODIFICATION_TIME. | Optional |
+| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. Default is DESC. | Optional |
+| limit | Number of exception rules to return. Ignored if 'retrieve_all' is set to true. Default is 100. | Optional |
+| page | Page number to return. Ignored if 'retrieve_all' is set to true. Default is 0. | Optional |
+| retrieve_all | Return all exception rules. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.ExceptionRules.ID | String | The unique identifier for the exception rule. | 
-| Core.ExceptionRules.NAME | String | The user-defined name of the exception rule. | 
-| Core.ExceptionRules.DESCRIPTION | String | The detailed description of the exception rule. | 
-| Core.ExceptionRules.TYPE | String | The general type of the rule \(e.g., DISABLE_PREVENTION\). | 
-| Core.ExceptionRules.RULE_TYPE | String | The specific rule category \(e.g., XDR\). | 
-| Core.ExceptionRules.STATUS | String | The current status of the rule \(e.g., DISABLED\). | 
-| Core.ExceptionRules.PLATFORM | String | The operating system platform the rule targets \(e.g., AGENT_OS_MAC\). | 
-| Core.ExceptionRules.SCOPE | String | The scope of the rule \(e.g., GLOBAL\). | 
-| Core.ExceptionRules.EFFECT | String | The effect of the rule. | 
-| Core.ExceptionRules.USER_EMAIL | String | The email address of the user associated with the rule. | 
-| Core.ExceptionRules.CREATED_BY | String | The display name of the user who created the rule. | 
-| Core.ExceptionRules.CREATION_TIME | String | The creation time of the rule \(ISO 8601 string\). | 
-| Core.ExceptionRules.CREATION_TIMESTAMP | Number | The creation time of the rule in milliseconds. | 
-| Core.ExceptionRules.MODIFICATION_TIME | String | The last modification time of the rule \(ISO 8601 string\). | 
-| Core.ExceptionRules.MODIFICATION_TIMESTAMP | Number | The last modification time of the rule in milliseconds. | 
-| Core.ExceptionRules.GENERATING_ALERT_ID | String | The ID of the alert that generated this rule. | 
-| Core.ExceptionRules.TRIGGER_ALERTS | String | The alerts triggered by this rule. | 
-| Core.ExceptionRules.IS_IN_USER_SCOPE | Boolean | Boolean indicating if the rule is within the current user's scope. | 
-| Core.ExceptionRules.PROFILE_TYPE | String | The type of profile the rule belongs to. | 
-| Core.ExceptionRules.CONDITIONS | String | The rule conditions \(e.g., "Signer = ..."\). | 
-| Core.ExceptionRules.PROFILE_IDS | String | A specific profile name the rule is associated with. | 
-| Core.ExceptionRules.MODULES | String | A specific security component/module the rule applies to. | 
-| Core.ExceptionRules.ASSOCIATED_TARGETS | String | A specific target \(e.g., endpoint, group\) the rule is applied to. | 
-
+| Core.ExceptionRules.ID | String | The unique identifier for the exception rule. |
+| Core.ExceptionRules.NAME | String | The user-defined name of the exception rule. |
+| Core.ExceptionRules.DESCRIPTION | String | The detailed description of the exception rule. |
+| Core.ExceptionRules.TYPE | String | The general type of the rule \(e.g., DISABLE_PREVENTION\). |
+| Core.ExceptionRules.RULE_TYPE | String | The specific rule category \(e.g., XDR\). |
+| Core.ExceptionRules.STATUS | String | The current status of the rule \(e.g., DISABLED\). |
+| Core.ExceptionRules.PLATFORM | String | The operating system platform the rule targets \(e.g., AGENT_OS_MAC\). |
+| Core.ExceptionRules.SCOPE | String | The scope of the rule \(e.g., GLOBAL\). |
+| Core.ExceptionRules.EFFECT | String | The effect of the rule. |
+| Core.ExceptionRules.USER_EMAIL | String | The email address of the user associated with the rule. |
+| Core.ExceptionRules.CREATED_BY | String | The display name of the user who created the rule. |
+| Core.ExceptionRules.CREATION_TIME | String | The creation time of the rule \(ISO 8601 string\). |
+| Core.ExceptionRules.CREATION_TIMESTAMP | Number | The creation time of the rule in milliseconds. |
+| Core.ExceptionRules.MODIFICATION_TIME | String | The last modification time of the rule \(ISO 8601 string\). |
+| Core.ExceptionRules.MODIFICATION_TIMESTAMP | Number | The last modification time of the rule in milliseconds. |
+| Core.ExceptionRules.GENERATING_ALERT_ID | String | The ID of the alert that generated this rule. |
+| Core.ExceptionRules.TRIGGER_ALERTS | String | The alerts triggered by this rule. |
+| Core.ExceptionRules.IS_IN_USER_SCOPE | Boolean | Boolean indicating if the rule is within the current user's scope. |
+| Core.ExceptionRules.PROFILE_TYPE | String | The type of profile the rule belongs to. |
+| Core.ExceptionRules.CONDITIONS | String | The rule conditions \(e.g., "Signer = ..."\). |
+| Core.ExceptionRules.PROFILE_IDS | String | A specific profile name the rule is associated with. |
+| Core.ExceptionRules.MODULES | String | A specific security component/module the rule applies to. |
+| Core.ExceptionRules.ASSOCIATED_TARGETS | String | A specific target \(e.g., endpoint, group\) the rule is applied to. |
