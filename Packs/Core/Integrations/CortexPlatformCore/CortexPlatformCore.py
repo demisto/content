@@ -374,8 +374,9 @@ class FilterBuilder:
             end_time (str | None): The end time of the range.
         """
         start, end = self._prepare_time_range(start_time, end_time)
-        if start and end:
-            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
+        if start is None and end is None:
+            return
+        self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
 
     def to_dict(self) -> dict[str, list]:
         """
