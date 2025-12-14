@@ -5130,6 +5130,7 @@ def test_list_scripts_command_with_multiple_platforms():
                     "PLATFORM": "AGENT_OS_WINDOWS,AGENT_OS_LINUX",
                     "GUID": "test-guid-123",
                     "ID": "script-id-1",
+                    "DESCRIPTION": "Test script for multiple platforms",
                     "ENTRY_POINT_DEFINITION": {"input_params": [{"name": "param1", "type": "string"}]},
                 }
             ],
@@ -5170,6 +5171,7 @@ def test_list_scripts_command_with_script_name_filter():
                     "PLATFORM": "AGENT_OS_WINDOWS,AGENT_OS_LINUX",
                     "GUID": "test-guid-123",
                     "ID": "script-id-1",
+                    "DESCRIPTION": "Test script for filtering by name",
                     "ENTRY_POINT_DEFINITION": {"input_params": []},
                 }
             ],
@@ -5209,6 +5211,7 @@ def test_list_scripts_command_outputs_structure():
                     "PLATFORM": "AGENT_OS_WINDOWS,AGENT_OS_LINUX,AGENT_OS_MAC",
                     "GUID": "complete-guid-456",
                     "ID": "complete-id-2",
+                    "DESCRIPTION": "Complete script with all platform support",
                     "ENTRY_POINT_DEFINITION": {
                         "input_params": [{"name": "param1", "type": "string"}, {"name": "param2", "type": "int"}]
                     },
@@ -5228,6 +5231,7 @@ def test_list_scripts_command_outputs_structure():
     assert result.raw_response == mock_response
     expected_script = {
         "name": "complete_script",
+        "description": "Complete script with all platform support",
         "windows_supported": True,
         "linux_supported": True,
         "macos_supported": True,
@@ -5236,6 +5240,8 @@ def test_list_scripts_command_outputs_structure():
         "script_inputs": [{"name": "param1", "type": "string"}, {"name": "param2", "type": "int"}],
     }
     assert result.outputs["Scripts"][0] == expected_script
+
+
 class TestGetAppsecSuggestion(unittest.TestCase):
     def setUp(self):
         self.mock_client = Mock(spec=Client)

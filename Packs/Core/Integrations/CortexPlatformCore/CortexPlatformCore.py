@@ -2968,17 +2968,15 @@ def list_scripts_command(client: Client, args: dict) -> CommandResults:
         "returned_count": len(mapped_scripts),
     }
 
-    outputs = {
-        "Scripts" : mapped_scripts,
-        "ScriptsMetadata": metadata
-    }
-    
+    outputs = {"Scripts": mapped_scripts, "ScriptsMetadata": metadata}
+
     return CommandResults(
         readable_output=tableToMarkdown("Scripts", mapped_scripts, headerTransform=string_to_table_header),
         outputs=outputs,
         outputs_key_field="script_id",
         raw_response=response,
     )
+
 
 def run_script_agentix_command(client: Client, args: dict) -> PollResult:
     """
@@ -2990,7 +2988,7 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
 
     Returns:
         CommandResults: Results of the script execution.
-    """    
+    """
     script_uid = args.get("script_uid", "")
     script_name = args.get("script_name", "")
     endpoint_ids = argToList(args.get("endpoint_ids", ""))
@@ -2998,23 +2996,25 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
     parameters = args.get("parameters", "")
     if script_uid and script_name:
         raise ValueError("Please provide either script_uid or script_name, not both.")
-    
+
     if not script_uid and not script_name:
         raise ValueError("You must specify either script_uid or script_name.")
-    
+
     if endpoint_ids and endpoint_names:
         raise ValueError("Please provide either endpoint_ids or endpoint_names, not both.")
-    
+
     if not endpoint_ids and not endpoint_names:
         raise ValueError("You must specify either endpoint_ids or endpoint_names.")
-    
+
     if script_name:
         scripts_results = list_scripts_command(client, {"script_name": script_name})
         scripts = scripts_results.outputs["Scripts"]
         number_of_returned_scripts = len(scripts)
         demisto.debug(f"Scripts results: {scripts}")
         if number_of_returned_scripts > 1:
-            error_message = "Multiple scripts found. Please specify the exact script by providing one of the following script_uid:\n\n"
+            error_message = (
+                "Multiple scripts found. Please specify the exact script by providing one of the following script_uid:\n\n"
+            )
             for script in scripts:
                 error_message += (
                     f"Script UID: {script['script_uid']}\n"
@@ -3026,16 +3026,18 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
                     f"Script Inputs: {script['script_inputs']}\n\n"
                 )
             raise ValueError(error_message)
-    
+
         # If exactly one script is found, use its script_uid
         elif number_of_returned_scripts == 1:
             script = scripts[0]
-            script_uid = script['script_uid']
-            script_inputs = script['script_inputs']
-            script_inputs_names = [input_param['name'] for input_param in script_inputs]
-            if script['script_inputs'] and not parameters:
-                raise ValueError(f"Script '{script_name}' requires the following input parameters: {",".join(script_inputs_names)}, but none were provided.")
-        
+            script_uid = script["script_uid"]
+            script_inputs = script["script_inputs"]
+            script_inputs_names = [input_param["name"] for input_param in script_inputs]
+            if script["script_inputs"] and not parameters:
+                raise ValueError(
+                    f"Script '{script_name}' requires the following input parameters: {",".join(script_inputs_names)}, but none were provided."
+                )
+
         # If no scripts found, raise an error
         else:
             raise ValueError(f"No scripts found with the name: {script_name}")
@@ -3043,13 +3045,17 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
     if endpoint_names:
         endpoint_results = core_list_endpoints_command(client, {"endpoint_name": endpoint_names})
         demisto.debug(f"Endpoint results: {endpoint_results.outputs}")
-        endpoint_ids = [endpoint['endpoint_id'] for endpoint in endpoint_results.outputs]
+        endpoint_ids = [endpoint["endpoint_id"] for endpoint in endpoint_results.outputs]
 
     if not endpoint_ids:
         raise ValueError(f"No endpoints found with the specified names: {', '.join(endpoint_names)}")
-    
+
     client._base_url = "/api/webapp/public_api/v1"
-    return script_run_polling_command({"endpoint_ids": endpoint_ids, "script_uid": script_uid, "parameters": parameters, "is_core": True}, client)
+    return script_run_polling_command(
+        {"endpoint_ids": endpoint_ids, "script_uid": script_uid, "parameters": parameters, "is_core": True}, client
+    )
+
+
 def map_endpoint_format(endpoint_list: list) -> list:
     """
     Maps and prepares endpoints data for consistent output formatting.
