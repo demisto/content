@@ -90,7 +90,7 @@ script:
     - name: limit
       description: Maximum number of audit events to return.
     - name: from_date
-      description: The start date from which to get events. Must be within the last 14 days.
+      description: The start date for fetching events. Must be within the last 14 days.
       defaultValue: "1 hour ago"
     - name: to_date
       description: The end date till which to get events. Must be within the last 14 days.
