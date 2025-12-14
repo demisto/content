@@ -27,7 +27,6 @@ def main():
     return CommandResults(readable_output=markdown_output)
 
 
-
 if __name__ in ("__main__", "__builtin__", "builtins"):
     try:
         return_results(main())
