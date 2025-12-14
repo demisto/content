@@ -5,9 +5,18 @@ function valueToValidString(value) {
     else if (typeof value === 'object') {
         value = JSON.stringify(value);
     }
-    value = value.trim().replace(/\n/g, '\\n').replace(/"/g, '""');
-    if (value && value.indexOf(',') > -1) {
-        value = '"' + value + '"';
+    
+    const mustQuote =
+        value.includes(',') ||
+        value.includes('"') ||
+        value.includes('\n') ||
+        value.includes('\r');
+
+    if (value.includes('"')) {
+        value = value.replace(/"/g, '""');
+    }
+    if (mustQuote) {
+        value = `"${value}"`;
     }
     return value;
 }
