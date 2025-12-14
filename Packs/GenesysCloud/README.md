@@ -4,4 +4,4 @@ Genesys Cloud is a unified, all-in-one cloud collaboration and contact center pl
 
 ## What does this pack do?
 
-Fetch audit events to see changes within a Genesys Cloud organization. Audit events provide key details of changes that include the service name (e.g. PeoplePermissions, ContactCenter, etc), action taken (read, view, update, etc), action details, and user executing the action.
+Fetch audit events to track changes within a Genesys Cloud organization. Audit events provide key details such as the service name (e.g., PeoplePermissions, ContactCenter), the action taken (read, view, update, etc.), action details, and the user who performed the action.
