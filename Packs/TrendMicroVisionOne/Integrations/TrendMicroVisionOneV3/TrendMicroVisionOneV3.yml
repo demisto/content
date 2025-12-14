@@ -105,7 +105,7 @@ description: Trend Vision One is a purpose-built threat defense platform that pr
 display: Trend Vision One v3
 defaultmapperin: Trend Micro Vision One V3 XDR - Incoming Mapper
 defaultmapperout: Trend Micro Vision One V3 XDR - Outgoing Mapper
-name: Trend Vision One v3
+name: Trend Micro Vision One V3
 script:
   commands:
   - arguments:
