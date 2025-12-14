@@ -2,9 +2,9 @@
 
 Use the SplunkPy v2 integration to:
 
-- Fetch events (logs) from Splunk as Cortex XSOAR incidents
-- Push events from Cortex XSOAR to Splunk
-- Fetch Splunk Enterprise Security events (Findings) as Cortex XSOAR incidents.
+- Fetch events (logs) from Splunk into Cortex
+- Push events from Cortex to Splunk
+- Fetch Splunk Enterprise Security events (Findings) into Cortex.
 ***
 
 ## Authentication Configuration
