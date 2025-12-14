@@ -3,7 +3,7 @@ version: -1
 name: File Enrichment - Generic v2
 deprecated: true
 description: |-
-  This playbook is deprecated. Please use Entity Enrichment - Generic v3 instead.
+  Deprecated. Use file-enrichment instead.
   Enrich a file using one or more integrations.
 
   - Provide threat information
