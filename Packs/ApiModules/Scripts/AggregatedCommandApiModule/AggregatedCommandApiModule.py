@@ -69,7 +69,7 @@ class EntryResult:
         status: Status,
         message: str,
         score_field_name: str = "",
-        score: float | None = 0,
+        score: float | None = None,
     ):
         self.command_name = command_name
         self.args = args
@@ -85,7 +85,7 @@ class EntryResult:
                 "Arguments": self.args,
                 "Brand": self.brand,
                 "Status": self.status.value,
-                self.score_field_name: self.score,
+                self.score_field_name: self.score if self.score else "",
                 "Message": self.message,
             }
         return {

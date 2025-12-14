@@ -1764,7 +1764,7 @@ def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
 
     status_mock = mocker.patch.object(mod, "get_indicator_status_from_ioc", return_value=IndicatorStatus.FRESH.value)
 
-    res, _ = mod.create_tim_indicator(ioc)
+    res, indicator_score = mod.create_tim_indicator(ioc)
 
     status_mock.assert_called_once_with(ioc)
     assert res["Status"] == IndicatorStatus.FRESH.value
@@ -1772,6 +1772,7 @@ def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
     assert res["Score"] == 2
     assert res[default_indicator.value_field] == "indicator1"
     assert res["ModifiedTime"] is None
+    assert indicator_score == 2
 
 
 def test_create_tim_indicator_file_type_maps_value_using_hashes(module_factory, mocker):
@@ -1973,7 +1974,14 @@ def test_update_indicator_instances_status_logic(module_factory):
     assert instance.final_status == Status.FAILURE
 
 
-def test_create_indicators_entry_results(module_factory):
+@pytest.mark.parametrize(
+    "schema_type, indicator_score, expected_field_name",
+    [
+        ("ip", 2, "TIM Score"),
+        ("cve", 7.1, "TIM CVSS"),
+    ],
+)
+def test_create_indicators_entry_results_sets_score_fields(module_factory, schema_type, indicator_score, expected_field_name):
     """
     Given:
         - IndicatorInstances with specific final statuses.
@@ -1984,8 +1992,15 @@ def test_create_indicators_entry_results(module_factory):
         - New EntryResult objects (Brand='TIM') are PREPENDED to the list.
     """
     # 1. Setup
-    instance = IndicatorInstance(raw_input="1.1.1.1", extracted_value="1.1.1.1", final_status=Status.SUCCESS, hr_message="Found")
-    mod = module_factory(indicator_instances=[instance])
+    instance = IndicatorInstance(
+        raw_input="v",
+        extracted_value="v",
+        final_status=Status.SUCCESS,
+        hr_message="Found",
+        indicator_score=indicator_score,
+    )
+    schema = IndicatorSchema(type=schema_type, value_field="Value", context_path_prefix="X(", context_output_mapping={})
+    mod = module_factory(indicator_schema=schema, indicator_instances=[instance])
 
     # Existing entry (e.g., from an enrichment command)
     existing_entry = EntryResult("cmd", {}, "brand", Status.SUCCESS, "")
@@ -2000,9 +2015,9 @@ def test_create_indicators_entry_results(module_factory):
     # The TIM entry should be first
     tim_entry = mod.entry_results[0]
     assert tim_entry.brand == "TIM"
-    assert tim_entry.args == "1.1.1.1"
     assert tim_entry.status == Status.SUCCESS
     assert tim_entry.message == "Found"
+    assert tim_entry.score == indicator_score
 
     # The existing entry remains
     assert mod.entry_results[1] == existing_entry
@@ -2164,6 +2179,45 @@ def test_build_final_human_readable_includes_unsupported_brands(module_factory, 
         row = next(r for r in table_rows if r.get("Brand") == brand)
         assert row.get("Status") == Status.FAILURE.value
         assert "Unsupported Command" in (row.get("Message") or "")
+
+
+@pytest.mark.parametrize(
+    "schema_type, expected_header",
+    [
+        ("ip", "TIM Score"),
+        ("cve", "TIM CVSS"),
+    ],
+)
+def test_build_final_human_readable_uses_dynamic_score_header(module_factory, mocker, schema_type, expected_header):
+    """
+    Given:
+        - A module configured with an IndicatorSchema of a specific type:
+            * type="ip"   -> should render "TIM Score" column in the HR table headers.
+            * type="cve"  -> should render "TIM CVSS" column in the HR table headers.
+        - A TIM EntryResult with score_field_name aligned to the expected header.
+
+    When:
+        - Calling _build_final_human_readable with the TIM entry.
+
+    Then:
+        - tableToMarkdown is called with headers that include the expected dynamic score header
+          ("TIM Score" for non-CVE, "TIM CVSS" for CVE).
+    """
+    schema = IndicatorSchema(type=schema_type, value_field="Value", context_path_prefix="X(", context_output_mapping={})
+    mod = module_factory(indicator_schema=schema)
+
+    tbl = mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
+
+    entries = [
+        EntryResult(
+            command_name="", args="v", brand="TIM", status=Status.SUCCESS, message="m", score_field_name=expected_header, score=5
+        )
+    ]
+    _ = mod._build_final_human_readable(entries)
+
+    _, kwargs = tbl.call_args
+    headers = kwargs["headers"]
+    assert expected_header in headers
 
 
 def test_summarize_command_results_appends_unsupported_enrichment_row(module_factory, mocker):
