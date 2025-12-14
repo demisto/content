@@ -3162,8 +3162,8 @@ def postprocess_exception_rules_response(view_def, data):
         record["MODIFICATION_TIMESTAMP"] = record.get("MODIFICATION_TIME")
         record["MODIFICATION_TIME"] = timestamp_to_datestring(record["MODIFICATION_TIMESTAMP"])
         record["CREATION_TIME"] = timestamp_to_datestring(record["CREATION_TIMESTAMP"])
-        record.pop("CONDITIONS_PRETTY")
-        record.pop("SUBTYPE")
+        record.pop("CONDITIONS_PRETTY", None)
+        record.pop("SUBTYPE", None)
 
     readable_output = tableToMarkdown(
         view_def_data.get("TABLE_NAME"),
