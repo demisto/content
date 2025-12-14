@@ -1,6 +1,6 @@
 This content pack runs queries on Splunk servers.
 
-When a query or alert triggers a finding event (incident) in Splunk, the event is stored in an index (table). An XSOAR analyst can fetch the event and its context data all from the XSOAR console.
+When a query or alert triggers an event (incident) in Splunk, the event is stored in an index (table). An XSOAR/XSIAM analyst can fetch the event and its context data all from the XSOAR/XSIAM console.
 
 We strongly recommend you to use the SplunkPy pre-release version, specifically if you experience any issues regarding fetch logic, including (but not limited to) missing incidents.
 

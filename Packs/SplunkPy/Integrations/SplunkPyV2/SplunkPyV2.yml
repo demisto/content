@@ -113,6 +113,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  hidden:
+  - marketplacev2
+  - platform
 - display: Close Mirrored Splunk Finding Events (Outgoing Mirroring)
   name: close_finding
   type: 8

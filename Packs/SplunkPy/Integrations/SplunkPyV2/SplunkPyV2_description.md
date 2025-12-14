@@ -43,7 +43,7 @@ There are two main use cases for the SplunkPy v2 integration.
 ## Fetching finding events
 The integration allows for fetching Splunk finding events using a default query. The query can be changed and modified to support different Splunk use cases.
 Palo Alto highly recommends reading the [Ingest Incidents from a SIEM Using Splunk article](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Tutorials-6.x/Ingest-Incidents-from-a-SIEM-Using-Splunk) before starting to use this integration.
-This article will help you configure your Splunk v2 integration, set up a basic flow, and start ingesting incidents from Splunk to Cortex XSOAR.
+This article will help you configure your Splunk v2 integration, set up a basic flow, and start ingesting incidents from Splunk to Cortex XSOAR/XSIAM.
 
 ### How to configure
 1. Navigate to one of the following:

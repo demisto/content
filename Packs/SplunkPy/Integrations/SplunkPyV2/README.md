@@ -336,7 +336,7 @@ The following features are not supported in non-ES (Enterprise Security) Splunk.
 
 KV Store stores your data as key-value pairs in collections. It provides a way to save and retrieve data within your Splunk apps. The following is an example for how to create a KV Store.
 
-1. In Cortex XSOAR, create a new KV Store.
+1. In Cortex XSOAR/XSIAM, create a new KV Store.
 
    **!splunk-kv-store-collection-create kv_store_name="\<kv_store_name\>"**
 
