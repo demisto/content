@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Tuple
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -52,7 +52,7 @@ WEBAPP_COMMANDS = [
     "core-get-appsec-issues",
     "core-update-case",
     "core-get-exception-rules",
-    "core-update-case"
+    "core-update-case",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -66,6 +66,7 @@ CASES_TABLE = "CASE_MANAGER_TABLE"
 USERS_TABLE = "USERS_TABLE"
 DISABLE_PREVENTION_RULES_TABLE = "AGENT_EXCEPTION_RULES_TABLE_ADVANCED"
 LEGACY_AGENT_EXCEPTIONS_TABLE = "AGENT_EXCEPTION_RULES_TABLE_LEGACY"
+
 
 class CaseManagement:
     STATUS_RESOLVED_REASON = {
@@ -240,8 +241,8 @@ COVERAGE_API_FIELDS_MAPPING = {
 }
 
 EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING = {
-    "legacy_agent_exceptions" : LEGACY_AGENT_EXCEPTIONS_TABLE,
-    "disable_prevention_rules" : DISABLE_PREVENTION_RULES_TABLE,
+    "legacy_agent_exceptions": LEGACY_AGENT_EXCEPTIONS_TABLE,
+    "disable_prevention_rules": DISABLE_PREVENTION_RULES_TABLE,
 }
 # Policy finding type mapping
 POLICY_FINDING_TYPE_MAPPING = {
@@ -265,8 +266,7 @@ POLICY_CATEGORY_MAPPING = {
     "VCS Organization": "VCS_ORGANIZATION",
 }
 
-EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP = {"MODULES" , "PROFILE_IDS"}
-
+EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP = {"MODULES", "PROFILE_IDS"}
 
 
 class FilterBuilder:
@@ -1217,7 +1217,7 @@ def build_webapp_request_data(
     on_demand_fields: list | None = None,
     sort_order: str | None = "DESC",
     start_page: int = 0,
-    extra_data : dict | None = None,
+    extra_data: dict | None = None,
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
@@ -1248,7 +1248,7 @@ def build_webapp_request_data(
         "filter_data": filter_data,
         "jsons": [],
         "onDemandFields": on_demand_fields,
-        "extraData": extra_data
+        "extraData": extra_data,
     }
 
 
@@ -2153,17 +2153,20 @@ def build_asset_coverage_filter(args: dict) -> FilterBuilder:
 
     return filter_builder
 
+
 def build_exception_rules_filter(args: dict) -> FilterBuilder:
     filter_builder = FilterBuilder()
-    filter_builder.add_field("ID" , FilterType.CONTAINS, argToList(args.get("id")))
-    filter_builder.add_field("NAME" , FilterType.CONTAINS, argToList(args.get("rule_name")))
-    filter_builder.add_field("PLATFORM" , FilterType.EQ, argToList(args.get("platform")))
-    filter_builder.add_field("CONDITIONS_PRETTY" , FilterType.CONTAINS, argToList(args.get("conditions")))
-    filter_builder.add_field("CREATED_BY" , FilterType.CONTAINS, argToList(args.get("created_by")))
-    filter_builder.add_field("USER_EMAIL" , FilterType.CONTAINS, argToList(args.get("user_email")))
-    filter_builder.add_time_range_field("MODIFICATION_TIME", args.get("start_modification_time"), args.get("end_modification_time"))
-    filter_builder.add_field("STATUS" , FilterType.EQ, argToList(args.get("status")))
-    filter_builder.add_field("SUBTYPE" , FilterType.EQ, argToList(args.get("rule_type")))
+    filter_builder.add_field("ID", FilterType.CONTAINS, argToList(args.get("id")))
+    filter_builder.add_field("NAME", FilterType.CONTAINS, argToList(args.get("rule_name")))
+    filter_builder.add_field("PLATFORM", FilterType.EQ, argToList(args.get("platform")))
+    filter_builder.add_field("CONDITIONS_PRETTY", FilterType.CONTAINS, argToList(args.get("conditions")))
+    filter_builder.add_field("CREATED_BY", FilterType.CONTAINS, argToList(args.get("created_by")))
+    filter_builder.add_field("USER_EMAIL", FilterType.CONTAINS, argToList(args.get("user_email")))
+    filter_builder.add_time_range_field(
+        "MODIFICATION_TIME", args.get("start_modification_time"), args.get("end_modification_time")
+    )
+    filter_builder.add_field("STATUS", FilterType.EQ, argToList(args.get("status")))
+    filter_builder.add_field("SUBTYPE", FilterType.EQ, argToList(args.get("rule_type")))
     return filter_builder
 
 
@@ -2897,17 +2900,18 @@ def build_column_mapping(column):
         mapping[enum.get("NAME")] = enum.get("PRETTY_NAME")
     return mapping
 
-def extract_mappings_from_view_def(view_def: dict, columns_to_map:set[str]):
+
+def extract_mappings_from_view_def(view_def: dict, columns_to_map: set[str]):
     mapping = {}
     column_definitions = view_def.get("COLUMN_DEFINITIONS", [])
     for column in column_definitions:
         column_name = column.get("FIELD_NAME")
-        if column_name in columns_to_map :
+        if column_name in columns_to_map:
             mapping[column_name] = build_column_mapping(column)
     return mapping
 
 
-def combine_pretty_names(list_of_criteria: List[List[Dict[str, Any]]]) -> List[str]:
+def combine_pretty_names(list_of_criteria: list[list[dict[str, Any]]]) -> list[str]:
     """
     Takes a list of criteria (where each criterion is a list of dictionaries)
     and combines the 'pretty_name' values from the dictionaries in each criterion
@@ -2947,19 +2951,26 @@ def postprocess_exception_rules_response(view_def, data):
         record.pop("CONDITIONS_PRETTY")
         record.pop("SUBTYPE")
 
-
     readable_output = tableToMarkdown(
-            view_def_data.get("TABLE_NAME"),
-            data,
-            headerTransform=string_to_table_header,
-            sort_headers=False,
-        )
+        view_def_data.get("TABLE_NAME"),
+        data,
+        headerTransform=string_to_table_header,
+        sort_headers=False,
+    )
     return readable_output
 
 
-def get_webapp_data(client, table_name: str, filter_dict: Any,
-                       sort_field: str, sort_order: str, retrieve_all: bool,
-                       base_limit: int, max_limit : int, offset: int = 0) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+def get_webapp_data(
+    client,
+    table_name: str,
+    filter_dict: Any,
+    sort_field: str,
+    sort_order: str,
+    retrieve_all: bool,
+    base_limit: int,
+    max_limit: int,
+    offset: int = 0,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """
     Helper function to iteratively fetch records for a single table with optional pagination.
     """
@@ -2970,7 +2981,6 @@ def get_webapp_data(client, table_name: str, filter_dict: Any,
     current_offset = offset
     current_limit = offset + limit
 
-
     while True:
         request_data = build_webapp_request_data(
             table_name=table_name,
@@ -2978,10 +2988,13 @@ def get_webapp_data(client, table_name: str, filter_dict: Any,
             sort_field=sort_field,
             sort_order=sort_order,
             limit=current_limit,
-            start_page=current_offset
+            start_page=current_offset,
         )
 
+        print(request_data)
+
         response = client.get_webapp_data(request_data)
+        print(response)
         raw_responses.append(copy.deepcopy(response))
 
         reply = response.get("reply", {})
@@ -2995,18 +3008,17 @@ def get_webapp_data(client, table_name: str, filter_dict: Any,
         current_offset += limit
         current_limit = current_offset + limit
 
-
     return all_records, raw_responses
 
 
-def get_exception_rules(client, args: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], str, List[Dict[str, Any]]]:
+def get_exception_rules(client, args: dict[str, Any]) -> tuple[list[dict[str, Any]], str, list[dict[str, Any]]]:
     """
     Retrieves Disable Prevention Rules and Legacy Agent Exceptions using the
     generic /api/webapp/get_data endpoint, handling pagination.
     """
-    exception_rule_type = args.get('type')
-    sort_field = args.get('sort_field')
-    sort_order = args.get('sort_order')
+    exception_rule_type = args.get("type")
+    sort_field = args.get("sort_field")
+    sort_order = args.get("sort_order")
 
     default_limit = arg_to_number(args.get("limit")) or MAX_GET_EXCEPTION_RULES_LIMIT
     offset = arg_to_number(args.get("page")) * default_limit if args.get("page") else 0
@@ -3035,7 +3047,7 @@ def get_exception_rules(client, args: Dict[str, Any]) -> Tuple[List[Dict[str, An
             retrieve_all=retrieve_all,
             base_limit=base_limit,
             max_limit=MAX_GET_EXCEPTION_RULES_LIMIT,
-            offset=offset
+            offset=offset,
         )
 
         all_raw_responses.extend(raw_responses)
@@ -3208,8 +3220,6 @@ def main():  # pragma: no cover
             return_results(get_exception_rules(client, args))
         elif command == "core-get-system-users":
             return_results(get_system_users_command(client, args))
-
-
 
     except Exception as err:
         demisto.error(traceback.format_exc())
