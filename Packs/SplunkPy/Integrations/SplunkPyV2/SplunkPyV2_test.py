@@ -1870,6 +1870,43 @@ def test_drilldown_enrichment_get_timeframe(mocker, finding_data, expected_call_
     assert mock_get_drilldown_timeframe.call_count == expected_call_count
 
 
+def test_drilldown_enrichment_query_earliest(mocker: MockerFixture):
+    """
+    Tests the drilldown enrichment process when query contains earliest filter
+    Given:
+        A drilldown data without drilldown_earliest and drilldown_latest values,
+        the drilldown search query contains earliest filter.
+    When:
+        Performing drilldown enrichment to generate search jobs and queries
+    Then:
+        The generated query match the expected enriched query and contains then earliest value
+    """
+
+    from splunklib import client
+
+    service = Service("DONE")
+
+    mock_params = {"fetchQuery": "`notable` is cool | fillnull value=NULL"}
+    mocker.patch("demistomock.params", return_value=mock_params)
+
+    notable_data = {
+        "event_id": "test_id",
+        "drilldown_name": "View all login attempts by system $src$",
+        "drilldown_search": '| from datamodel:"Authentication"."Authentication" | search src=$src|s$ | earliest=1d',
+        "drilldown_searches": "[]",
+        "_raw": "src='test_src'",
+    }
+
+    jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
+    for i in range(len(jobs_and_queries)):
+        job_and_queries = jobs_and_queries[i]
+        assert job_and_queries[0] == "View all login attempts by system 'test_src'"
+        assert (
+            job_and_queries[1] == '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'" | earliest=1d'
+        )
+        assert isinstance(job_and_queries[2], client.Job)
+
+
 @pytest.mark.parametrize(
     "finding_data, expected_result",
     [

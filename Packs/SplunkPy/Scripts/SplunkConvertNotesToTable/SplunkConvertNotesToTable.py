@@ -11,8 +11,6 @@ def main():
     for data in splunk_notes:
         parsed_data = json.loads(data)
         parsed_notes.append(parsed_data)
-    # if not parsed_notes:
-    #     return CommandResults(readable_output="No notes were found in the Finding")
 
     # Build markdown output with improved formatting
     markdown_output = f"#### Splunk Notes ({len(parsed_notes)})\n\n"
@@ -28,14 +26,6 @@ def main():
 
     return CommandResults(readable_output=markdown_output)
 
-    # Custom header transform to add count to the Note header
-    # def header_transform(header):
-    #     if header == 'Note':
-    #         return f'Notes ({len(parsed_notes)})'
-    #     return header
-
-    # markdown = tableToMarkdown("", parsed_notes, headers='Note', headerTransform=lambda _: f'Notes ({len(parsed_notes)})' )
-    # return CommandResults(readable_output=markdown)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
