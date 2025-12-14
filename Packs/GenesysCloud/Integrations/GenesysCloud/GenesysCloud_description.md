@@ -4,7 +4,7 @@
 
 The steps below require a user account with Admin access.
 
-1. Log in to **Genesys Cloud** and click on the **Admin** tab.
+1. Log in to **Genesys Cloud** and click the **Admin** tab.
 
 2. On the Admin page, click on **OAuth** (under Integrations).
 
