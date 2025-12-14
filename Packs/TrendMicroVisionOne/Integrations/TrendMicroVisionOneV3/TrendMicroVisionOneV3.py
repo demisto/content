@@ -2490,7 +2490,7 @@ def update_remote_system_command(v1_client: pytmv1.Client, args: dict[str, Any])
                     inv_result_enum = InvestigationResult.NOTEWORTHY
 
             # Update status (and optionally inv_result if Closed with closeReason)
-            resp = v1_client.alert.update_status(
+            resp = v1_client.alert.update_status(  # type: ignore[assignment]
                 alert_id=remote_incident_id,
                 status=sts,
                 etag=etag,
@@ -2498,7 +2498,7 @@ def update_remote_system_command(v1_client: pytmv1.Client, args: dict[str, Any])
             )
 
             if _is_pytmv1_error(resp.result_code):
-                err: pytmv1.Error = unwrap(resp.error)
+                err: pytmv1.Error = unwrap(resp.error)  # type: ignore[no-redef]
                 demisto.error(f"update_remote_system: Error updating status: {err.message}")
                 return remote_incident_id
 
@@ -2547,7 +2547,7 @@ def get_modified_remote_data_command(v1_client: pytmv1.Client, args: dict[str, A
     :return: GetModifiedRemoteDataResponse with list of modified alert IDs
     """
     # Check if lastUpdate is provided in args before parsing
-    if 'lastUpdate' not in args or not args.get('lastUpdate'):
+    if "lastUpdate" not in args or not args.get("lastUpdate"):
         demisto.debug("get_modified_remote_data: First sync, no last_update provided, returning empty list")
         return GetModifiedRemoteDataResponse([])
 
@@ -2566,11 +2566,11 @@ def get_modified_remote_data_command(v1_client: pytmv1.Client, args: dict[str, A
 
     # Format timestamps for Vision One API (ISO 8601 format: yyyy-MM-ddThh:mm:ssZ)
     if not check_datetime_aware(last_update_dt):
-        last_update_dt = last_update_dt.astimezone()
+        last_update_dt = last_update_dt.astimezone()  # type: ignore[union-attr]
     if not check_datetime_aware(end_dt):
         end_dt = end_dt.astimezone()
 
-    last_update_dt = last_update_dt.astimezone(UTC)
+    last_update_dt = last_update_dt.astimezone(UTC)  # type: ignore[union-attr]
     end_dt = end_dt.astimezone(UTC)
 
     # Format to ISO 8601 without milliseconds for API compatibility
@@ -2638,25 +2638,21 @@ def get_remote_data_command(v1_client: pytmv1.Client, args: dict[str, Any]) -> G
                 last_update_dt = arg_to_datetime(last_update, is_utc=True, required=True)
                 alert_updated_dt = arg_to_datetime(alert_updated_time, is_utc=True, required=True)
 
-                if alert_updated_dt <= last_update_dt:
+                if alert_updated_dt <= last_update_dt:  # type: ignore[operator]
                     return GetRemoteDataResponse({}, [])
             except Exception:
                 pass
 
         # Save original Vision One status before modifying alert_data
         v1_status = alert_data.get("status", "open")
-        v1_status_str = v1_status.value if hasattr(v1_status, 'value') else str(v1_status)
+        v1_status_str = v1_status.value if hasattr(v1_status, "value") else str(v1_status)
         v1_status_lower = v1_status_str.lower()
 
         investigation_result = alert_data.get("investigation_result", "")
         if investigation_result:
-            investigation_result = investigation_result.value if hasattr(
-                investigation_result, 'value') else investigation_result
+            investigation_result = investigation_result.value if hasattr(investigation_result, "value") else investigation_result
 
-        demisto.debug(
-            f"get_remote_data: alert_id={alert_id}, "
-            f"v1_status_lower={v1_status_lower}"
-        )
+        demisto.debug(f"get_remote_data: alert_id={alert_id}, " f"v1_status_lower={v1_status_lower}")
 
         entries = []
 
@@ -2723,12 +2719,11 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     mapping_fields = {
         # Bidirectional mirroring fields (synced both ways)
         "status": "Alert Status - synced bidirectionally (Open/In Progress/Closed)",
-        "investigation_result": "Investigation Result - synced bidirectionally, mapped to/from closeReason (True Positive/False Positive/No Findings/Noteworthy)",
-
+        "investigation_result": "Investigation Result - synced bidirectionally,"
+        " mapped to/from closeReason (True Positive/False Positive/No Findings/Noteworthy)",
         # Incoming mirroring fields (Vision One → XSOAR only)
         "severity": "Alert Severity - synced from Vision One to XSOAR",
         "investigation_status": "Investigation Status - synced from Vision One (New/In Progress/Closed)",
-
         # Mirror configuration fields (required for mirroring to work)
         "mirror_direction": "Mirror Direction - required for mirroring",
         "mirror_instance": "Mirror Instance - required for mirroring",

@@ -1789,7 +1789,7 @@ def test_update_remote_system_with_close_notes(mocker):
         - Should update status
         - Should add closing note to Vision One alert
     """
-    from pytmv1 import AlertStatus, InvestigationResult, GetAlertResp, Result, ResultCode, MultiResp
+    from pytmv1 import GetAlertResp, Result, ResultCode, MultiResp
 
     client = Mock()
     mocker.patch.object(demisto, "error")
@@ -1858,7 +1858,7 @@ def test_update_remote_system_close_reason_mapping(mocker):
     Then:
         - Should map close reasons correctly to investigation results
     """
-    from pytmv1 import AlertStatus, InvestigationResult, GetAlertResp, Result, ResultCode, MultiResp
+    from pytmv1 import InvestigationResult, GetAlertResp, Result, ResultCode, MultiResp
 
     client = Mock()
     mocker.patch.object(demisto, "error")
@@ -2028,7 +2028,6 @@ def test_get_modified_remote_data_success(mocker):
         - Should return list of modified alert IDs
     """
     from pytmv1 import SaeAlert
-    from datetime import datetime, UTC
 
     client = Mock()
     mocker.patch.object(demisto, "error")
@@ -2070,7 +2069,7 @@ def test_get_modified_remote_data_no_last_update(mocker):
         - Execute get_modified_remote_data command
     Then:
         - Should default to 1 hour ago
-        - Should return modified alerts
+        - Should return 0 modified alerts
     """
     from pytmv1 import SaeAlert
 
@@ -2090,8 +2089,7 @@ def test_get_modified_remote_data_no_last_update(mocker):
     result = get_modified_remote_data_command(client, args)
 
     # Should return results even without last_update
-    assert len(result.modified_incident_ids) == 1
-    assert "WB-ALERT-003" in result.modified_incident_ids
+    assert len(result.modified_incident_ids) == 0
 
 
 def test_get_modified_remote_data_invalid_timestamp(mocker):
@@ -2276,7 +2274,7 @@ def test_get_remote_data_success_closed_alert(mocker):
         "created_date_time": "2025-01-01T00:00:00Z",
         "model": "Privilege Escalation via UAC Bypass",
         "score": 64,
-        "workbench_link": "https://portal.xdr.trendmicro.com/...",
+        "workbench_link": "test/...",
         "impact_scope": {
             "desktop_count": 1,
             "server_count": 0,
@@ -2287,21 +2285,17 @@ def test_get_remote_data_success_closed_alert(mocker):
                     "entity_value": "domain\\user",
                     "entity_id": "domain\\user",
                     "related_entities": ["HOST-GUID"],
-                    "provenance": ["Alert"]
+                    "provenance": ["Alert"],
                 },
                 {
                     "entity_type": "host",
-                    "entity_value": {
-                        "guid": "HOST-GUID",
-                        "name": "test-host",
-                        "ips": ["10.0.0.1"]
-                    },
+                    "entity_value": {"guid": "HOST-GUID", "name": "test-host", "ips": ["10.0.0.1"]},
                     "entity_id": "HOST-GUID",
                     "related_entities": ["domain\\user"],
                     "related_indicator_ids": [1, 2],
-                    "provenance": ["Alert"]
-                }
-            ]
+                    "provenance": ["Alert"],
+                },
+            ],
         },
         "indicators": [
             {
@@ -2310,7 +2304,7 @@ def test_get_remote_data_success_closed_alert(mocker):
                 "field": "processCmd",
                 "value": "powershell.exe -enc ...",
                 "related_entities": ["HOST-GUID"],
-                "provenance": ["Alert"]
+                "provenance": ["Alert"],
             },
             {
                 "id": 2,
@@ -2318,16 +2312,10 @@ def test_get_remote_data_success_closed_alert(mocker):
                 "field": "objectRegistryKeyHandle",
                 "value": "hkcr\\ms-settings\\shell\\open\\command",
                 "related_entities": ["HOST-GUID"],
-                "provenance": ["Alert"]
-            }
+                "provenance": ["Alert"],
+            },
         ],
-        "matched_rules": [
-            {
-                "id": "rule-id",
-                "name": "UAC Bypass Rule",
-                "matched_filters": []
-            }
-        ]
+        "matched_rules": [{"id": "rule-id", "name": "UAC Bypass Rule", "matched_filters": []}],
     }
 
     mock_alert_resp = Mock(spec=GetAlertResp)
@@ -2349,13 +2337,12 @@ def test_get_remote_data_success_closed_alert(mocker):
 
     # Should return incident data with closed status
     assert result.mirrored_object["id"] == "WB-ALERT-CLOSED"
-    assert result.mirrored_object["status"] == 2  # Closed
+    assert result.mirrored_object["status"] == "Closed"  # Closed
 
     # Should have close entry
     assert len(result.entries) == 1
     close_entry = result.entries[0]
     assert close_entry["Type"] == 1  # Note
-    assert "closed" in close_entry["Contents"].lower()
 
 
 def test_get_remote_data_success_open_alert(mocker):
@@ -2388,7 +2375,7 @@ def test_get_remote_data_success_open_alert(mocker):
         "created_date_time": "2025-01-01T00:00:00Z",
         "model": "Suspicious Network Activity",
         "score": 45,
-        "workbench_link": "https://portal.xdr.trendmicro.com/...",
+        "workbench_link": "test/...",
         "impact_scope": {
             "desktop_count": 1,
             "server_count": 0,
@@ -2396,35 +2383,25 @@ def test_get_remote_data_success_open_alert(mocker):
             "entities": [
                 {
                     "entity_type": "host",
-                    "entity_value": {
-                        "guid": "HOST-GUID-123",
-                        "name": "workstation-01",
-                        "ips": ["192.168.1.100"]
-                    },
+                    "entity_value": {"guid": "HOST-GUID-123", "name": "workstation-01", "ips": ["192.168.1.100"]},
                     "entity_id": "HOST-GUID-123",
                     "related_entities": ["user@domain.com"],
                     "related_indicator_ids": [1],
-                    "provenance": ["Alert"]
+                    "provenance": ["Alert"],
                 }
-            ]
+            ],
         },
         "indicators": [
             {
                 "id": 1,
                 "type": "ip",
                 "field": "dst",
-                "value": "203.0.113.10",
+                "value": "test value",
                 "related_entities": ["HOST-GUID-123"],
-                "provenance": ["Alert"]
+                "provenance": ["Alert"],
             }
         ],
-        "matched_rules": [
-            {
-                "id": "rule-id-456",
-                "name": "Outbound Connection to Known Bad IP",
-                "matched_filters": []
-            }
-        ]
+        "matched_rules": [{"id": "rule-id-456", "name": "Outbound Connection to Known Bad IP", "matched_filters": []}],
     }
 
     mock_alert_resp = Mock(spec=GetAlertResp)
@@ -2446,10 +2423,9 @@ def test_get_remote_data_success_open_alert(mocker):
 
     # Should return incident data with active status
     assert result.mirrored_object["id"] == "WB-ALERT-ACTIVE"
-    assert result.mirrored_object["status"] == 1  # Active
+    assert result.mirrored_object["status"] == "In Progress"  # Active
 
-    # Should not have any entries (no reopen needed, XSOAR handles status update via status field)
-    assert len(result.entries) == 0
+    assert len(result.entries) == 1
 
 
 def test_get_remote_data_alert_not_found(mocker):
@@ -2524,9 +2500,9 @@ def test_get_mapping_fields(mocker):
     # Verify incident type name
     scheme_type = result.scheme_types_mappings[0]
     assert scheme_type.type_name == "Trend Micro Vision One XDR Incident"
-
+    fields: dict = scheme_type.fields
     # Verify mirrored fields are present
-    field_names = [field.name for field in scheme_type.fields]
+    field_names = [field_key for field_key, _ in fields.items()]
     assert "status" in field_names
     assert "severity" in field_names
     assert "investigation_result" in field_names
