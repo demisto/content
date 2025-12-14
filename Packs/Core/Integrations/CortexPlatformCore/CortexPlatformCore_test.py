@@ -1613,7 +1613,7 @@ class TestFilterBuilder:
         filter_builder.add_time_range_field("test_field", None, "2022-01-02T00:00:00")
 
         # Assert
-        mock_prepare_time_range.assert_called_once_with(None, "2022-01-02T00:00:00")
+        mock_prepare_time_range.assert_called_once_with(0, "2022-01-02T00:00:00")
         mock_add_field.assert_called_once_with("test_field", FilterType.RANGE, {"from": 0, "to": 1641081600000})
 
     def test_add_time_range_field_with_none_end_time(self, mocker: MockerFixture):
@@ -1654,26 +1654,6 @@ class TestFilterBuilder:
 
         # Assert
         mock_prepare_time_range.assert_called_once_with(None, None)
-        mock_add_field.assert_not_called()
-
-    def test_add_time_range_field_with_zero_timestamps(self, mocker: MockerFixture):
-        """
-        Given: A FilterBuilder instance and _prepare_time_range returning zero timestamps.
-        When: add_time_range_field is called and both timestamps are zero (falsy values).
-        Then: The method should not add any field to the filter since zero is falsy in the condition.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        # Arrange
-        filter_builder = FilterBuilder()
-        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(0, 0))
-        mock_add_field = mocker.patch.object(filter_builder, "add_field")
-
-        # Act
-        filter_builder.add_time_range_field("test_field", "some_time", "some_other_time")
-
-        # Assert
-        mock_prepare_time_range.assert_called_once_with("some_time", "some_other_time")
         mock_add_field.assert_not_called()
 
     def test_to_dict_empty_filter_fields(self):
@@ -1972,18 +1952,6 @@ class TestFilterBuilder:
 
         assert start_time is None
         assert end_time is None
-
-    def test_prepare_time_range_end_time_without_start_time_raises_exception(self):
-        """
-        Given: None as start_time_str and a valid end_time_str.
-        When: _prepare_time_range is called with end_time but no start_time.
-        Then: A DemistoException should be raised with appropriate error message.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from CommonServerPython import DemistoException
-
-        with pytest.raises(DemistoException, match="When 'end_time' is provided, 'start_time' must be provided as well."):
-            FilterBuilder._prepare_time_range(None, "2023-01-02T15:30:00")
 
     def test_prepare_time_range_invalid_start_time_raises_value_error(self, mocker: MockerFixture):
         """
