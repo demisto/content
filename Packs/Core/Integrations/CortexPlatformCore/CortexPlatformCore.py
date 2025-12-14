@@ -14,6 +14,7 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
+MAX_SCRIPTS_LIMIT = 200
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -48,6 +49,7 @@ WEBAPP_COMMANDS = [
     "core-get-appsec-issues",
     "core-update-case",
     "core-list-scripts",
+    "core-run-script-agentix",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -2667,7 +2669,7 @@ def list_scripts_command(client: Client, args: dict) -> CommandResults:
     request_data = build_webapp_request_data(
         table_name=SCRIPTS_TABLE,
         filter_dict=filter_builder.to_dict(),
-        limit=args.get("limit", 50),
+        limit=MAX_SCRIPTS_LIMIT,
         sort_field="MODIFICATION_TIME",
     )
 
@@ -2679,6 +2681,7 @@ def list_scripts_command(client: Client, args: dict) -> CommandResults:
     for script in data:
         mapped_script = {
             "name": script.get("NAME"),
+            "description": script.get("DESCRIPTION"),
             "windows_supported": "AGENT_OS_WINDOWS" in str(script.get("PLATFORM", "")),
             "linux_supported": "AGENT_OS_LINUX" in str(script.get("PLATFORM", "")),
             "macos_supported": "AGENT_OS_MAC" in str(script.get("PLATFORM", "")),
@@ -2696,7 +2699,7 @@ def list_scripts_command(client: Client, args: dict) -> CommandResults:
         raw_response=response,
     )
 
-def run_script_agentix_command(client: Client, args: dict) -> CommandResults:
+def run_script_agentix_command(client: Client, args: dict) -> PollResult:
     """
     Executes a script on agents with specified parameters.
 
@@ -2706,14 +2709,12 @@ def run_script_agentix_command(client: Client, args: dict) -> CommandResults:
 
     Returns:
         CommandResults: Results of the script execution.
-    """
-    
-    from CortexCoreIR import script_run_polling_command
+    """    
     script_uid = args.get("script_uid", "")
     script_name = args.get("script_name", "")
     endpoint_ids = argToList(args.get("endpoint_ids", ""))
     endpoint_names = argToList(args.get("endpoint_names", ""))
-    
+    parameters = args.get("parameters", "")
     if script_uid and script_name:
         raise ValueError("Please provide either script_uid or script_name, not both.")
     
@@ -2728,13 +2729,40 @@ def run_script_agentix_command(client: Client, args: dict) -> CommandResults:
     
     if script_name:
         scripts_results = list_scripts_command(client, {"script_name": script_name})
-        script_uid = [script['script_uid'] for script in scripts_results.outputs]
+        number_of_returned_scripts = len(scripts_results.outputs)
+        demisto.debug(f"Scripts results: {scripts_results.outputs}")
+        if number_of_returned_scripts > 1:
+            error_message = "Multiple scripts found. Please specify the exact script by providing one of the following script_uid:\n\n"
+            for script in scripts_results.outputs:
+                error_message += (
+                    f"Script UID: {script['script_uid']}\n"
+                    f"Description: {script['description']}\n"
+                    f"Name: {script['name']}\n"
+                    f"Supported Platforms: Windows: {script['windows_supported']}, "
+                    f"Linux: {script['linux_supported']}, "
+                    f"MacOS: {script['macos_supported']}\n"
+                    f"Script Inputs: {script['script_inputs']}\n\n"
+                )
+            raise ValueError(error_message)
+    
+        # If exactly one script is found, use its script_uid
+        elif number_of_returned_scripts == 1:
+            script_uid = scripts_results.outputs[0]['script_uid']
+        
+        # If no scripts found, raise an error
+        else:
+            raise ValueError(f"No scripts found with the name: {script_name}")
 
     if endpoint_names:
         endpoint_results = core_list_endpoints_command(client, {"endpoint_name": endpoint_names})
+        demisto.debug(f"Endpoint results: {endpoint_results.outputs}")
         endpoint_ids = [endpoint['endpoint_id'] for endpoint in endpoint_results.outputs]
 
-    return script_run_polling_command({"endpoint_ids": endpoint_ids, "script_uid": script_uid})
+    if not endpoint_ids:
+        raise ValueError(f"No endpoints found with the specified names: {', '.join(endpoint_names)}")
+    
+    client._base_url = "/api/webapp/public_api/v1"
+    return script_run_polling_command({"endpoint_ids": endpoint_ids, "script_uid": script_uid, "parameters": parameters, "is_core": True}, client)
 
 def main():  # pragma: no cover
     """
