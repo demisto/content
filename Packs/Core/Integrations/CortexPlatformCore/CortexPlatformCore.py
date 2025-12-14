@@ -1315,7 +1315,7 @@ def build_webapp_request_data(
         "filter_data": filter_data,
         "jsons": [],
         "onDemandFields": on_demand_fields,
-        "extraData": extra_data,
+        **({"extraData": extra_data} if extra_data is not None else {}),
     }
 
 

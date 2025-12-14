@@ -1614,7 +1614,7 @@ class TestFilterBuilder:
 
         # Assert
         mock_prepare_time_range.assert_called_once_with(None, "2022-01-02T00:00:00")
-        mock_add_field.assert_not_called()
+        mock_add_field.assert_called_once_with("test_field", FilterType.RANGE, {"from": 0, "to": 1641081600000})
 
     def test_add_time_range_field_with_none_end_time(self, mocker: MockerFixture):
         """
