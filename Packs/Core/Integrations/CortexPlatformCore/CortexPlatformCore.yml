@@ -2514,6 +2514,9 @@ script:
       - contextPath: Core.EndpointUpdate.distributions.version
         description: The version of the endpoint update.
         type: String
+      - contextPath: Core.EndpointUpdate.distributions.is_beta
+        description: wether the version is a beta version.
+        type: String
     - arguments: 
       - description: A comma-separated list of endpoint IDs.
         name: endpoint_ids
