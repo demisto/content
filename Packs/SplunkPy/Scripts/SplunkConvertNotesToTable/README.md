@@ -1,4 +1,4 @@
-This script is used to convert Splunk notes to a table.
+This script converts Splunk notes into a table.```
 
 ## Script Data
 

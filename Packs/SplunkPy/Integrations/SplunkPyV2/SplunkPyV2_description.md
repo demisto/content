@@ -46,12 +46,15 @@ Palo Alto highly recommends reading the [Ingest Incidents from a SIEM Using Splu
 This article will help you configure your Splunk v2 integration, set up a basic flow, and start ingesting incidents from Splunk to Cortex XSOAR.
 
 ### How to configure
-1. Select __Settings__>__Integrations__>__Servers & Services__>__SplunkPy v2__.
+1. Navigate to one of the following:
+    * Cortex XSOAR 8: Settings & Info > Settings > Integrations > Instances > SplunkPy v2
+    * Cortex XSOAR 6: Settings > Integrations > Servers & Services > SplunkPy v2.
+    * Cortex XSIAM: Settings > Configurations > Automation & Feed Integrations> SplunkPy v2```
 2. Click **Add Instance**.
 3. Select **Fetches incidents**.
 4. Under Classifier, select N/A.
 5. Under Incident Type, select **Splunk Finding**.
-You do not need to specify the classifier as all Splunk incidents are ingested as Splunk Finding. As you become more familiar with Cortex XSOAR, you can create custom incident types as needed instead of using the Splunk Finding incident type.
+You do not need to specify the classifier as all Splunk incidents are ingested as Splunk Finding. As you become more familiar with Cortex XSOAR/XSIAM, you can create custom incident types as needed instead of using the Splunk Finding incident type.
 7. Under Mapper (incoming), select **Splunk Finding - Incoming Mapper**.
 8. Under Mapper (outgoing), select **Splunk Finding - Outgoing Mapper**.
 

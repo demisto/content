@@ -552,7 +552,7 @@ tasks:
       id: 5660134d-1820-4aeb-8f7d-d7682a31a81c
       version: -1
       name: Check job status
-      description: checking the status of a job
+      description: checks the status of a job
       script: '|||splunk-job-status'
       type: regular
       iscommand: true

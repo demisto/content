@@ -1,8 +1,8 @@
 Use the SplunkPy v2 integration to:
 
-- Fetch events (logs) from Splunk as Cortex XSOAR incidents
-- Push events from Cortex XSOAR to Splunk
-- Fetch Splunk Enterprise Security events (Findings) as Cortex XSOAR incidents.
+- Fetch events (logs) from Splunk into Cortex
+- Push events from Cortex to Splunk
+- Fetch Splunk Enterprise Security events (Findings) into Cortex.
 
 **Important: This integration is designed specifically for Splunk Enterprise Security version 8.2 and above.**
 For Splunk ES versions prior to 8.2, please use the legacy SplunkPy integration.
@@ -196,14 +196,14 @@ Each enriched incident contains the following fields in the incident context:
 - If you wish to configure a mapper, wait for the integration to perform the first fetch successfully. This is to make the fetch mechanism logic stable.
 - The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)
 
-#### Configure User Mapping between Splunk and Cortex XSOAR  
+#### Configure User Mapping between Splunk and Cortex XSOAR/XSIAM  
 
 When fetching incidents from Splunk to Cortex XSOAR and when mirroring incidents between Splunk and Cortex XSOAR, the Splunk Owner Name (user) associated with an incident needs to be mapped to the relevant Cortex XSOAR Owner Name (user).  
 You can use Splunk to define a user lookup table and then configure the SplunkPy v2 integration instance to enable the user mapping. Alternatively, you can map the users with a script or a transformer.  
 
 **Note:**
 
-- When mapping users, the specified Cortex XSOAR user must be a valid user in the system.
+- When mapping users, the specified Cortex XSOAR/XSIAM user must be a valid user in the system.
 - The Cortex XSOAR `Owner` incident field can only be used for mirroring changes out to Splunk, you cannot use it to update Cortex XSOAR incidents based on values from Splunk. To mirror changes in from Splunk, use the `Assigned User` incident field.
 
 **Configure User Mapping Using Splunk**  
@@ -219,11 +219,11 @@ You can use Splunk to define a user lookup table and then configure the SplunkPy
 
    3. Enter the **Name** for the table. For example, **splunk_xsoar_users** is the default lookup table name defined in the SplunkPy v2 integration settings.
    4. Under **App**, select **Enterprise Security**.
-   5. Assign two **Key-value collection schema** fields, one for the Cortex XSOAR usernames and one for the corresponding Splunk usernames. For example, **xsoar_user** and **splunk_user** are the default field values defined in the SplunkPy v2 integration settings.
+   5. Assign two **Key-value collection schema** fields, one for the Cortex XSOAR/XSIAM usernames and one for the corresponding Splunk usernames. For example, **xsoar_user** and **splunk_user** are the default field values defined in the SplunkPy v2 integration settings.
    6. Click **Create Lookup**.
       ![image](../../doc_files/new-lookup-table.png)
 
-   7. Add values to the table to map Cortex XSOAR users to the Splunk users.  
+   7. Add values to the table to map Cortex XSOAR/XSIAM users to the Splunk users.  
       ![image](../../doc_files/add-values-to-lookup-table.png)
 
     **Note:**  
@@ -290,7 +290,7 @@ To use this feature, you must set several integration instance parameters:
 
 ### Configure Splunk to Produce Alerts for SplunkPy v2 for non-ES Splunk Users
 
-It is recommended that Splunk is configured to produce basic alerts that the SplunkPy v2 integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy v2 integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
+It is recommended that Splunk is configured to produce basic alerts that the SplunkPy v2 integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy v2 integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR/XSIAM application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
 
 1. Create a summary index in Splunk. For more information, click [here](https://help.splunk.com/en/splunk-enterprise/administer/manage-indexers-and-indexer-clusters/10.0/manage-indexes/create-custom-indexes#Create_events_indexes_2).
 2. Build a query to return relevant alerts.
@@ -303,7 +303,7 @@ Use the following naming convention: (demisto_fields_{type}).
 ![image](./../../doc_files/macro.png)
 5. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://help.splunk.com/en/splunk-enterprise/manage-knowledge-objects/knowledge-management-manual/10.0/search-macros/define-search-macros-in-settings).
 ![image](./../../doc_files/scheduled-search.png)
-6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
+6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR/XSIAM classification.
 ![image](./../../doc_files/summary-index.png)
 7. Configure the incident type in Cortex XSOAR by navigating to **Settings > Advanced > Incident Types.** Note: In the example, Splunk Generic is a custom incident type.
 ![image](./../../doc_files/incident_type.png)
