@@ -21,12 +21,6 @@ configuration:
   type: 0
   section: Connect
   additionalinfo: For Non-mTLS use 'uaa.url' (e.g., https://<subdomain>.authentication.<region>.hana.ondemand.com). For mTLS use 'uaa.certurl' (e.g., https://<subdomain>.authentication.cert.<region>.hana.ondemand.com).
-- name: client_id
-  display: Client ID
-  required: true
-  type: 0
-  section: Connect
-  additionalinfo: SAP Service Key field 'uaa.clientid'. Required for both mTLS and Non-mTLS authentication.
 - name: auth_type
   display: Authentication Type
   required: true
@@ -37,6 +31,12 @@ configuration:
   - mTLS
   - Non-mTLS
   additionalinfo: Select authentication method. mTLS (recommended) requires Certificate + Private Key. Non-mTLS requires Client Secret.
+- name: client_id
+  display: Client ID
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: SAP Service Key field 'uaa.clientid'. Required for both mTLS and Non-mTLS authentication.
 - name: client_secret
   display: Client Secret
   displaypassword: Client Secret
