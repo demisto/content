@@ -294,33 +294,33 @@ It is recommended that Splunk is configured to produce basic alerts that the Spl
 
 1. Create a summary index in Splunk. For more information, click [here](https://help.splunk.com/en/splunk-enterprise/administer/manage-indexers-and-indexer-clusters/10.0/manage-indexes/create-custom-indexes#Create_events_indexes_2).
 2. Build a query to return relevant alerts.
-![image](./../../doc_files/build-query.png)
+![image](../../doc_files/build-query.png)
 3. Identify the fields list from the Splunk query and save it to a local file.
-![image](./../../doc_files/identify-fields-list.png)
+![image](../../doc_files/identify-fields-list.png)
 4. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://help.splunk.com/en/splunk-enterprise/manage-knowledge-objects/knowledge-management-manual/10.0/search-macros/define-search-macros-in-settings).
 Use the following naming convention: (demisto_fields_{type}).
-![image](./../../doc_files/micro-name.png)
-![image](./../../doc_files/macro.png)
+![image](../../doc_files/micro-name.png)
+![image](../../doc_files/macro.png)
 5. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://help.splunk.com/en/splunk-enterprise/manage-knowledge-objects/knowledge-management-manual/10.0/search-macros/define-search-macros-in-settings).
-![image](./../../doc_files/scheduled-search.png)
+![image](../../doc_files/scheduled-search.png)
 6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR/XSIAM classification.
-![image](./../../doc_files/summary-index.png)
+![image](../../doc_files/summary-index.png)
 7. Configure the incident type in Cortex XSOAR by navigating to **Settings > Advanced > Incident Types.** Note: In the example, Splunk Generic is a custom incident type.
-![image](./../../doc_files/incident_type.png)
+![image](../../doc_files/incident_type.png)
 8. Configure the classification. Make sure that your non ES incident fields are associated with your custom incident type.
    1. Navigate to **Settings > Integrations > Classification & Mapping**.
-   1. Click your classifier.
-   2. Select your instance.
-   3. Click the fetched data.
-   4. Drag the value to the appropriate incident type.
-![image](./../../doc_files/classify.png)
+   2. Click your classifier.
+   3. Select your instance.
+   4. Click the fetched data.
+   5. Drag the value to the appropriate incident type.
+![image](../../doc_files/classify.png)
 9. Configure the mapping. Make sure to map your non ES fields accordingly and make sure that these incident fields are associated with their custom incident type.
    1. Navigate to **Settings > Integrations > Classification & Mapping**.
-   1. Click your mapper.
-   2. Select your instance.
-   3. Click the **Choose data path** link for the field you want to map.
-   4. Click the data from the Splunk fields to map it to Cortex XSOAR.
-![image](./../../doc_files/mapping.png)
+   2. Click your mapper.
+   3. Select your instance.
+   4. Click the **Choose data path** link for the field you want to map.
+   5. Click the data from the Splunk fields to map it to Cortex XSOAR.
+![image](../../doc_files/mapping.png)
 10. (Optional) Create custom fields.
 11. Build a playbook and assign it as the default for this incident type.
 
@@ -1241,14 +1241,14 @@ To get the HEC token
 
 1. Go to the Splunk UI.
 2. Under **Settings** > **Data** > **Data inputs**, click **HTTP Event Collector**.
-![Screen Shot 2020-01-20 at 10 22 50](./../../doc_files/http-event-collector.png)
+![Screen Shot 2020-01-20 at 10 22 50](../../doc_files/http-event-collector.png)
 
 4. Click **New Token**.
 5. Add all the relevant details until done.
 
 *For the HTTP Port number:*
 Click on Global settings (in the HTTP Event Collector page)
-![Screen Shot 2020-01-20 at 10 27 25](./../../doc_files/http-port-number.png)
+![Screen Shot 2020-01-20 at 10 27 25](../../doc_files/http-port-number.png)
 
 The default port is 8088.
 
