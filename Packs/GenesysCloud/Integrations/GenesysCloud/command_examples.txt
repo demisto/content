@@ -1,1 +1,1 @@
-!genesis-cloud-get-events service_name=Routing from_date="2025-10-20T15:25:26Z" to_date="2025-10-20T16:32:33Z" should_push_events=false
+!genesys-cloud-get-events service_name=Routing from_date="2025-10-20T15:25:26Z" to_date="2025-10-20T16:32:33Z" should_push_events=false

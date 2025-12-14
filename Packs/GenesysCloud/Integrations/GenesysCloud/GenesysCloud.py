@@ -68,25 +68,6 @@ class AsyncClient:
         # Always ensure HTTP client session is closed
         await self._session.close()
 
-    @staticmethod
-    async def _handle_response_error(response: aiohttp.ClientResponse):
-        """
-        Handles error responses and provides a more informative error message.
-
-        Args:
-            response (aiohttp.ClientResponse): The client response object.
-
-        Raises:
-            DemistoException: If a `ClientResponseError` is raised due to a failed request.
-        """
-        try:
-            response.raise_for_status()
-        except aiohttp.ClientResponseError as e:
-            url = e.request_info.url
-            response_json = await response.json()
-            error_message = response_json.get("message") or response_json.get("error")
-            raise DemistoException(f"Request to {url} failed with HTTP {e.status} status: {error_message}.")
-
     async def _generate_new_access_token(self) -> dict[str, Any]:
         """
         Generates a new OAuth2 access token using client credentials flow.
@@ -117,13 +98,19 @@ class AsyncClient:
             params={"grant_type": "client_credentials"},
             auth=aiohttp.BasicAuth(self._client_id, self._client_secret),
         ) as response:
-            await self._handle_response_error(response)
             response_json = await response.json()
-            error_message = response_json.get(TOKEN_ERROR_KEY)  # Optional error message if request fails
-            access_token = response_json.get(ACCESS_TOKEN_KEY)
+            try:
+                response.raise_for_status()
+            except aiohttp.ClientResponseError as e:
+                raise DemistoException(
+                    f"Request to {token_url} failed with HTTP {e.status} status. Got response: {response_json}."
+                ) from e
 
-            if error_message or not access_token:
-                raise DemistoException(f"Failed to obtain access token using {token_url=}. {error_message=}.")
+            if error_message := response_json.get(TOKEN_ERROR_KEY):  # Optional error message if request fails
+                raise DemistoException(f"Request to {token_url} failed. Got error: {error_message}.")
+
+            if not response_json.get(ACCESS_TOKEN_KEY):
+                raise DemistoException(f"Request to {token_url} failed. Failed to get access token from response.")
 
             token_type = response_json.get(TOKEN_TYPE_KEY)
             token_ttl = response_json.get(TOKEN_TTL_KEY)  # TTL in seconds
@@ -191,7 +178,7 @@ class AsyncClient:
             dict[str, Any]: The audit events raw API response.
         """
         async with self._session.post(url=url, params=params, headers=headers, json=body) as response:
-            await self._handle_response_error(response)
+            response.raise_for_status()
             return await response.json()
 
     async def get_realtime_audits(
@@ -237,6 +224,11 @@ class AsyncClient:
         except aiohttp.ClientResponseError as e:
             status_code = e.status
             error_message = e.message
+            if status_code == HTTPStatus.TOO_MANY_REQUESTS:
+                demisto.debug("Received HTTP 429 Too many requests error. Sleeping for 3 seconds and retrying...")
+                await asyncio.sleep(3)
+                response_json = await self._send_audits_post_request(url, params=params, headers=headers, body=body)
+
             if status_code == HTTPStatus.UNAUTHORIZED:
                 demisto.debug("Received HTTP 401 Unauthorized error. Forcing new token generation and retrying...")
                 headers["Authorization"] = await self.get_authorization_header(force_generate_new_token=True)
@@ -247,7 +239,7 @@ class AsyncClient:
                     f"[{service_name}] Request using {from_date=}, {to_date=}, {page_number=} failed. "
                     f"Got {status_code=}, {error_message=}."
                 )
-                raise
+                raise DemistoException(f"Request to {e.request_info.url} failed with HTTP {e.status} status.") from e
 
         entities_count = len(response_json.get("entities", []))
         demisto.debug(f"[{service_name}] Fetched {entities_count} audits using {from_date=}, {to_date=}, {page_number=}.")

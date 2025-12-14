@@ -1,4 +1,4 @@
-Fetch audit events from Genesys Cloud's suite of products and services.
+Fetch audit events to see changes within a Genesys Cloud organization.
 This integration was integrated and tested with version 2 of the Genesys Cloud Platform API.
 
 ## Configure Genesys Cloud in Cortex
@@ -19,10 +19,10 @@ This integration was integrated and tested with version 2 of the Genesys Cloud P
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### genesis-cloud-get-events
+### genesys-cloud-get-events
 
 ***
-Gets audit events from Genesys Cloud from the past 14 days. This command is intended for development and debugging purposes, as it may produce duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
+Retrieves audit events from Genesys Cloud from the past 14 days. This command is intended for development and debugging purposes, as it may produce duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
 
 #### Base Command
 
@@ -35,8 +35,8 @@ Gets audit events from Genesys Cloud from the past 14 days. This command is inte
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Optional |
 | service_name | Filter by the Genesys Cloud service name. Possible values are: Architect, PeoplePermissions, ContactCenter, Groups, Telephony, Outbound, Routing, Integrations, AnalyticsReporting. | Required |
 | limit | Maximum number of audit events to return. | Optional |
-| from_date | The start date from which to get events. Must be within the last 14 days. Default value is 1 hour ago. | Optional |
-| to_date | The end date till which to get events. Must be within the last 14 days. Default value is now. | Optional |
+| from_date | The start date for retrieving events. Must be within the last 14 days. Default is 1 hour ago. | Optional |
+| to_date | The end date for retrieving events. Must be within the last 14 days. Default is now. | Optional |
 
 #### Context Output
 
@@ -44,4 +44,4 @@ There is no context output for this command.
 
 ## Limitations
 
-* The `genesis-cloud-get-events` is only able to retrieve events from the past 14 days. Ensure both the `from_date` and `to_date` command arguments are within the last 14 days.
+* The `genesys-cloud-get-events` is only able to retrieve events from the past 14 days. Ensure both the `from_date` and `to_date` command arguments are within the last 14 days.

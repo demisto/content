@@ -64,7 +64,7 @@ name: GenesysCloud
 script:
   commands:
   - name: genesys-cloud-get-events
-    description: Gets audit events from Genesys Cloud from the past 14 days. This command is intended for development and debugging purposes, as it may produce duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
+    description: Retrieves audit events from Genesys Cloud from the past 14 days. This command is intended for development and debugging purposes, as it may produce duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
     arguments:
     - name: should_push_events
       description: If true, the command will create events, otherwise it will only display them.
@@ -90,10 +90,10 @@ script:
     - name: limit
       description: Maximum number of audit events to return.
     - name: from_date
-      description: The start date for fetching events. Must be within the last 14 days.
+      description: The start date for retrieving events. Must be within the last 14 days.
       defaultValue: "1 hour ago"
     - name: to_date
-      description: The end date for fetching events. Must be within the last 14 days.
+      description: The end date for retrieving events. Must be within the last 14 days.
       defaultValue: "now"
   dockerimage: demisto/auth-utils:1.0.0.6111183
   isfetchevents: true

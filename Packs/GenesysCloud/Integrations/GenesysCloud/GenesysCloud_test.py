@@ -106,7 +106,7 @@ async def test_async_client_generate_new_access_token_error(async_client: AsyncC
 
     async with async_client as _client:
         mocker.patch.object(_client._session, "post", return_value=mock_response)
-        with pytest.raises(DemistoException, match=f"Failed to obtain access token using {token_url=}. {error_message=}."):
+        with pytest.raises(DemistoException, match=f"Request to {token_url} failed. Got error: {error_message}."):
             await _client._generate_new_access_token()
 
 
