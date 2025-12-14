@@ -3258,7 +3258,7 @@ class TestGetCommandResource:
         """Test that a default command returns DEFAULT_RESOURCE."""
         command = "azure-nsg-security-rule-update"
         resource = get_command_resource(command)
-        assert resource == DEFAULT_RESOURCE
+        assert resource == f"{DEFAULT_RESOURCE}/"
 
     def test_storage_container_command(self):
         """Test that a storage-container command returns STORAGE_RESOURCE."""
@@ -3316,7 +3316,7 @@ class TestGetAzureClient:
             proxy=False,
             tenant_id="test-tenant-id",
             enc_key=None,
-            resource=DEFAULT_RESOURCE,
+            resource=f"{DEFAULT_RESOURCE}/",
             scope=DEFAULT_SCOPE,
             headers={"Authorization": "Bearer test-token", "Content-Type": "application/json", "Accept": "application/json"},
         )

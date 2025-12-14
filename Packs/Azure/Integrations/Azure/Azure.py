@@ -8,6 +8,8 @@ from requests.exceptions import ConnectionError, Timeout
 import datetime as dt
 import defusedxml.ElementTree as defused_ET
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
+
+# from datetime import
 from datetime import UTC
 
 
@@ -15,6 +17,8 @@ from datetime import UTC
 urllib3.disable_warnings()
 
 """ CONSTANTS """
+
+BLOB_SERVICE_PREFIX = "blob.core.windows.net"
 
 DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -32,7 +36,7 @@ SCOPE_BY_CONNECTION = {
     "Client Credentials": "https://management.azure.com/.default",
 }
 DEFAULT_SCOPE = "https://management.azure.com/.default"
-DEFAULT_RESOURCE = "https://management.azure.com/"
+DEFAULT_RESOURCE = "https://management.azure.com"
 STORAGE_SCOPE = "https://storage.azure.com/.default"
 STORAGE_RESOURCE = "https://storage.azure.com/"
 
@@ -814,7 +818,7 @@ class AzureClient:
 
         """
         params = assign_params(restype="container")
-        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}"
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}"
         self.storage_container_set_headers()
 
         response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="response")
@@ -834,7 +838,7 @@ class AzureClient:
 
         """
         params = assign_params(restype="container")
-        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}"
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}"
         self.storage_container_set_headers()
 
         response = self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
@@ -854,7 +858,7 @@ class AzureClient:
 
         """
         params = assign_params(restype="container")
-        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}"
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}"
         self.storage_container_set_headers()
 
         self.http_request(method="DELETE", full_url=full_url, params=params, resp_type="response")
@@ -875,7 +879,7 @@ class AzureClient:
 
         """
 
-        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}/{blob_name}"
 
         try:
             with open(system_file_path, "rb") as file_data:
@@ -904,7 +908,7 @@ class AzureClient:
         Returns:
             dict: The JSON response from the Azure API.
         """
-        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}/{blob_name}"
         self.storage_container_set_headers()
 
         response = self.http_request(method="GET", full_url=full_url, resp_type="response")
@@ -923,7 +927,7 @@ class AzureClient:
         Returns:
             dict: The JSON response from the Azure API.
         """
-        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}/{blob_name}"
         params = assign_params(comp="tags")
         self.storage_container_set_headers()
         response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
@@ -947,7 +951,7 @@ class AzureClient:
         Returns:
             dict: The JSON response from the Azure API.
         """
-        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}/{blob_name}"
         params = assign_params(comp="tags")
         headers = {
             "Content-Type": "application/xml; charset=utf-8",
@@ -974,7 +978,7 @@ class AzureClient:
             Response: API response from Azure.
 
         """
-        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}/{blob_name}"
         self.storage_container_set_headers()
 
         response = self.http_request(method="HEAD", full_url=full_url, resp_type="response")
@@ -996,7 +1000,7 @@ class AzureClient:
             Response: API response from Azure.
 
         """
-        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}/{blob_name}"
         params = assign_params(comp="properties")
         self.storage_container_set_headers(custom_headers=headers)
 
@@ -1017,7 +1021,7 @@ class AzureClient:
             Response: API response from Azure.
 
         """
-        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}"
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}"
         params = assign_params(restype="container", comp="acl")
         self.storage_container_set_headers()
 
@@ -1041,7 +1045,7 @@ class AzureClient:
             dict: The full response from the Azure policy assignment creation API.
         """
         # subscription_id is required as argument for token creation.
-        full_url = f"https://management.azure.com{scope}/providers/Microsoft.Authorization/policyAssignments/{name}"
+        full_url = f"{DEFAULT_RESOURCE}{scope}/providers/Microsoft.Authorization/policyAssignments/{name}"
         params = {"api-version": POLICY_ASSIGNMENT_API_VERSION}
         data = {
             "properties": {
@@ -4693,13 +4697,38 @@ def get_command_resource(command: str) -> str:
     """Get the resource for the command. Default is management_azure."""
     if "storage-container" in command:
         return STORAGE_RESOURCE
-    return DEFAULT_RESOURCE
+    return f"{DEFAULT_RESOURCE}/"
+
+
+def switch_to_gov_account() -> None:
+    global BLOB_SERVICE_PREFIX
+    global SCOPE_BY_CONNECTION
+    global DEFAULT_SCOPE
+    global DEFAULT_RESOURCE
+    global PREFIX_URL_AZURE
+    global PREFIX_URL_MS_GRAPH
+
+    BLOB_SERVICE_PREFIX = "blob.core.usgovcloudapi.net "
+    SCOPE_BY_CONNECTION = {
+        "Device Code": "https://management.usgovcloudapi.net/user_impersonation offline_access user.read",
+        "Authorization Code": "https://management.usgovcloudapi.net/.default",
+        "Client Credentials": "https://management.usgovcloudapi.net/.default",
+    }
+    DEFAULT_SCOPE = "https://management.usgovcloudapi.net/.default"
+    DEFAULT_RESOURCE = "https://management.usgovcloudapi.net"
+    PREFIX_URL_AZURE = "https://management.usgovcloudapi.net/subscriptions/"
+    PREFIX_URL_MS_GRAPH = "https://graph.microsoft.us/v1.0"
 
 
 def main():  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
+    #######
+    is_gov = False
+    if is_gov:
+        switch_to_gov_account()
+    #######
     demisto.debug(f"Command being called is {command}")
     connector_id = get_connector_id()
     demisto.debug(f"{connector_id=}")
