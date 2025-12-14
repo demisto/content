@@ -91,7 +91,7 @@ def build_result(res: dict, success_condition: bool, success_msg: str, failure_m
 
 def run_command(cmd: str, args: dict, label_hr: bool = True) -> tuple[list[dict], str]:
     """
-    Executes a Demisto command and captures human-readable outputs.
+    Executes a command and captures human-readable outputs.
 
     Args:
         cmd (str): The name of the command to execute.
@@ -173,7 +173,7 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     if not any(res.get("Contents") == expected_msg for res in res_modify_never_expire):
         return [
             ExpiredPasswordResult(
-                Result="Failed", Message="In Active Directory, clearing the never expire flag failed", Instance=""
+                Result="Failed", Message=f"Failed to clear 'Password Never Expires' for user {username}.", Instance=""
             )
         ], hr_modify_never_expire
 
@@ -323,13 +323,15 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
         tuple[list[UserData], str]: A list of user data dictionaries and the human-readable output.
     """
     res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
-    if error_results := [r for r in res if r["Type"] == EntryType.ERROR]:
-        err = next((r for r in error_results if not r["HumanReadable"]), None)
-        default_error = "Unknown Entry Contents"
-        demisto.debug(f"Error when calling get-user-data:\n{err.get('Contents', default_error) if err else default_error}")
+    errors = [r for r in res if r["Type"] == EntryType.ERROR]
+    if errors:
+        err = next((r for r in errors if not r["HumanReadable"]), None)
+        default_err_info = "Command execution failed."
+        err_info_msg = err.get('Contents', default_err_info) if err else default_err_info
+        demisto.debug(f"Error when calling get-user-data:\n{err_info_msg}")
 
     # Check for no available integrations
-    if any(r["HumanReadable"] == "### User(s) data\n**No entries.**\n" for r in res):
+    if any("No entries" in (r.get("HumanReadable") or "") for r in res):
         raise DemistoException(
             f"No integrations were found for the brands {args.get('brands')}. Please verify the brand instances setup."
         )
@@ -341,6 +343,11 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     # Check for unexpected response
     if not user_result:
         raise DemistoException(f"Unexpected response when calling get-user-data:\n{res}")
+
+    user_contents = user_result.get("Contents", [])
+
+    if not isinstance(user_contents, list):
+        raise DemistoException(f"Unexpected type for 'Contents' when calling get-user-data:\n{res}")
 
     # Build user list with all required fields, defaulting missing ones to empty string
     users: list[UserData] = [
@@ -355,7 +362,7 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
                 "Instance": user_data.get("Instance", ""),
             },
         )
-        for user_data in user_result["Contents"]
+        for user_data in user_contents
     ]
     # Remove duplicates by keeping unique users based on (Username, Email, ID, Brand, Instance)
     seen = set()
@@ -425,7 +432,7 @@ def main():
         validate_input(args)
         users, hr_get = get_users(args)
         outputs, hr_expire = expire_passwords(users)
-        if argToBoolean(args.get("verbose", "false")):
+        if argToBoolean(args.get("verbose", "False")):
             verbose_hr = "\n\n".join(("", hr_get, hr_expire))
 
         if any(res["Result"] == "Success" for res in outputs):
