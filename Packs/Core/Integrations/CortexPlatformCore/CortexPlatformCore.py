@@ -3231,14 +3231,14 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults
     sort_order = args.get("sort_order", "DESC")
 
     default_limit = arg_to_number(args.get("limit")) or MAX_GET_EXCEPTION_RULES_LIMIT
-    offset = arg_to_number(args.get("page")) * default_limit if args.get("page") else 0
+    offset = arg_to_number(args.get("page" , 0)) * default_limit if args.get("page") else 0
     retrieve_all = argToBoolean(args.get("retrieve_all", False))
 
     base_limit = MAX_GET_EXCEPTION_RULES_LIMIT if retrieve_all else default_limit
 
     exception_rule_filter = build_exception_rules_filter(args)
 
-    if exception_rule_type:
+    if exception_rule_type in EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING.keys():
         table_names = [EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING.get(exception_rule_type)]
     else:
         table_names = [LEGACY_AGENT_EXCEPTIONS_TABLE, DISABLE_PREVENTION_RULES_TABLE]
