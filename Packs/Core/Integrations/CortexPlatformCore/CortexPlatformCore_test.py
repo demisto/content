@@ -1606,7 +1606,7 @@ class TestFilterBuilder:
 
         # Arrange
         filter_builder = FilterBuilder()
-        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(None, 1641081600000))
+        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(0, 1641081600000))
         mock_add_field = mocker.patch.object(filter_builder, "add_field")
 
         # Act
@@ -7082,7 +7082,7 @@ def test_list_exception_rules_command_single_type(mocker: MockerFixture):
     mocker.patch.object(
         mock_client,
         "get_webapp_data",
-        return_value={"reply": {"DATA": [{"ID": "rule_1", "NAME": "Test Rule"}]}},
+        return_value={"reply": {"DATA": [{"ID": "rule_1", "NAME": "Test Rule" , "MODIFICATION_TIME" : 1000}]}},
     )
     mocker.patch.object(
         mock_client,
@@ -7116,8 +7116,8 @@ def test_list_exception_rules_command_all_types(mocker: MockerFixture):
         mock_client,
         "get_webapp_data",
         side_effect=[
-            {"reply": {"DATA": [{"ID": "rule_1"}]}},
-            {"reply": {"DATA": [{"ID": "rule_2"}]}},
+            {"reply": {"DATA": [{"ID": "rule_1" , "MODIFICATION_TIME" : 1000}]}},
+            {"reply": {"DATA": [{"ID": "rule_2" , "MODIFICATION_TIME" : 1000}]}},
         ],
     )
     mocker.patch.object(
@@ -7151,8 +7151,8 @@ def test_list_exception_rules_command_retrieve_all(mocker: MockerFixture):
         mock_client,
         "get_webapp_data",
         side_effect=[
-            {"reply": {"DATA": [{"ID": f"rule_{i}"} for i in range(100)]}},
-            {"reply": {"DATA": [{"ID": f"rule_{i}"} for i in range(100, 120)]}},
+            {"reply": {"DATA": [{"ID": f"rule_{i}" , "MODIFICATION_TIME" : 1000} for i in range(100)]}},
+            {"reply": {"DATA": [{"ID": f"rule_{i}", "MODIFICATION_TIME" : 1000} for i in range(100, 120)]}},
         ],
     )
     mocker.patch.object(
