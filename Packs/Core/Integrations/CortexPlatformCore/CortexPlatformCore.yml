@@ -2658,6 +2658,19 @@ script:
       name: core-list-endpoints
       description: Retrieves endpoints based on the provided filters.
       hidden: true
+      supportedModules:
+        - C3
+        - X0
+        - X1
+        - X3
+        - X5
+        - ENT_PLUS
+        - exposure_management
+        - cloud
+        - cloud_runtime_security
+        - cloud_posture
+        - xsiam
+        - edr
       outputs:
       - contextPath: Core.Endpoint.endpoint_name
         description: The endpoint name.
