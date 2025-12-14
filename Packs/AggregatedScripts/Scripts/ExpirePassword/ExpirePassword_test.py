@@ -16,10 +16,7 @@ from ExpirePassword import (
     get_response_message,
     build_result,
     # Import constants for proper testing
-    AD_NEVER_EXPIRE_CLEARED,
-    AD_PASSWORD_EXPIRED,
-    MSGRAPH_PASSWORD_RESET,
-    AWS_PASSWORD_CHANGED,
+    SUCCESS_MESSAGES,
     OKTA_PASSWORD_EXPIRED_MARKER,
 )
 
@@ -159,15 +156,15 @@ def test_run_active_directory_query_v2_success(mock_run_command):
     # Second call: ad-expire-password (Success)
     mock_run_command.side_effect = [
         (
-            [{"Contents": AD_NEVER_EXPIRE_CLEARED.format(username="testuser"), "Type": 1, "Metadata": {"instance": "inst1"}}],
+            [{"Contents": SUCCESS_MESSAGES["ad_never_expire_cleared"].format(username="testuser"), "Type": 1, "Metadata": {"instance": "inst1"}}],
             "HR_CLEAR",
         ),
-        ([{"Contents": AD_PASSWORD_EXPIRED, "Type": 1, "Metadata": {"instance": "inst1"}}], "HR_EXPIRE"),
+        ([{"Contents": SUCCESS_MESSAGES["ad_password_expired"], "Type": 1, "Metadata": {"instance": "inst1"}}], "HR_EXPIRE"),
     ]
 
     result, hr = run_active_directory_query_v2(user, "inst1")
 
-    expected: list[ExpiredPasswordResult] = [{"Result": "Success", "Message": AD_PASSWORD_EXPIRED, "Instance": "inst1"}]
+    expected: list[ExpiredPasswordResult] = [{"Result": "Success", "Message": SUCCESS_MESSAGES["ad_password_expired"], "Instance": "inst1"}]
     assert result == expected
     assert "HR_CLEAR\n\nHR_EXPIRE" in hr
 
@@ -198,7 +195,7 @@ def test_run_active_directory_query_v2_pre_check_failure(mock_run_command):
     result, hr = run_active_directory_query_v2(user, "inst1")
 
     expected: list[ExpiredPasswordResult] = [
-        {"Result": "Failed", "Message": "In Active Directory, clearing the never expire flag failed", "Instance": ""}
+        {"Result": "Failed", "Message": f"Failed to clear 'Password Never Expires' for user {user['Username']}.", "Instance": ""}
     ]
     assert result == expected
     assert "HR_CLEAR_FAIL" in hr
@@ -222,7 +219,7 @@ def test_run_microsoft_graph_user_success(mock_run_command):
         "Brand": "MSGraph",
         "Instance": "",
     }
-    expected_msg = MSGRAPH_PASSWORD_RESET.format(username="testuser")
+    expected_msg = SUCCESS_MESSAGES["msgraph"].format(username="testuser")
     mock_run_command.return_value = ([{"HumanReadable": expected_msg, "Type": 1, "Metadata": {"instance": "inst1"}}], "")
     result, _ = run_microsoft_graph_user(user, "inst1")
 
@@ -377,7 +374,7 @@ def test_run_active_directory_query_v2_expire_command_failure(mock_run_command):
     # First call succeeds, second call fails
     mock_run_command.side_effect = [
         (
-            [{"Contents": AD_NEVER_EXPIRE_CLEARED.format(username="testuser"), "Type": 1, "Metadata": {"instance": "inst1"}}],
+            [{"Contents": SUCCESS_MESSAGES["ad_never_expire_cleared"].format(username="testuser"), "Type": 1, "Metadata": {"instance": "inst1"}}],
             "HR_CLEAR",
         ),
         ([{"Contents": "Failed to expire password", "Type": 4, "Metadata": {"instance": "inst1"}}], "HR_EXPIRE_FAIL"),
@@ -404,7 +401,7 @@ def test_run_aws_iam_success(mock_run_command):
         "Brand": "AWS - IAM",
         "Instance": "inst1",
     }
-    expected_msg = AWS_PASSWORD_CHANGED.format(username="testuser")
+    expected_msg = SUCCESS_MESSAGES["aws"].format(username="testuser")
     mock_run_command.return_value = ([{"HumanReadable": expected_msg, "Type": 1, "Metadata": {"instance": "inst1"}}], "")
     result, _ = run_aws_iam(user, "inst1")
 
@@ -550,7 +547,7 @@ def test_expire_passwords_mixed_success_failure(mock_run_command):
         ([{"HumanReadable": "Graph API error", "Type": 4, "Metadata": {"instance": "msgraph-inst"}}], "MSGraph HR"),
         # AWS success
         (
-            [{"HumanReadable": AWS_PASSWORD_CHANGED.format(username="user3"), "Type": 1, "Metadata": {"instance": "aws-inst"}}],
+            [{"HumanReadable": SUCCESS_MESSAGES["aws"].format(username="user3"), "Type": 1, "Metadata": {"instance": "aws-inst"}}],
             "AWS HR",
         ),
     ]
@@ -576,7 +573,7 @@ def test_expire_passwords_mixed_success_failure(mock_run_command):
             "UserProfile": {"ID": "3", "Username": "user3", "Email": "user3@example.com"},
             "Brand": "AWS - IAM",
             "Result": "Success",
-            "Message": AWS_PASSWORD_CHANGED.format(username="user3"),
+            "Message": SUCCESS_MESSAGES["aws"].format(username="user3"),
             "Instance": "aws-inst",
         },
     ]
@@ -608,14 +605,14 @@ def test_expire_passwords_multiple_results_per_integration(mock_run_command):
     mock_run_command.side_effect = [
         # ad-modify-password-never-expire
         (
-            [{"Contents": AD_NEVER_EXPIRE_CLEARED.format(username="testuser"), "Type": 1, "Metadata": {"instance": "ad-inst"}}],
+            [{"Contents": SUCCESS_MESSAGES["ad_never_expire_cleared"].format(username="testuser"), "Type": 1, "Metadata": {"instance": "ad-inst"}}],
             "HR1",
         ),
         # ad-expire-password returns multiple results
         (
             [
-                {"Contents": AD_PASSWORD_EXPIRED, "Type": 1, "Metadata": {"instance": "ad-inst"}},
-                {"Contents": AD_PASSWORD_EXPIRED, "Type": 1, "Metadata": {"instance": "ad-inst-backup"}},
+                {"Contents": SUCCESS_MESSAGES["ad_password_expired"], "Type": 1, "Metadata": {"instance": "ad-inst"}},
+                {"Contents": SUCCESS_MESSAGES["ad_password_expired"], "Type": 1, "Metadata": {"instance": "ad-inst-backup"}},
             ],
             "HR2",
         ),
@@ -626,7 +623,7 @@ def test_expire_passwords_multiple_results_per_integration(mock_run_command):
     # Should get one result per command result from ad-expire-password
     assert len(results) == 2
     assert all(result["Result"] == "Success" for result in results)
-    assert all(result["Message"] == AD_PASSWORD_EXPIRED for result in results)
+    assert all(result["Message"] == SUCCESS_MESSAGES["ad_password_expired"] for result in results)
     assert results[0]["Instance"] == "ad-inst"
     assert results[1]["Instance"] == "ad-inst-backup"
 

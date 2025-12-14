@@ -26,19 +26,24 @@ class UserData(TypedDict):
 
 
 # --- Constants ---
-# Success message patterns for different integrations
-AD_NEVER_EXPIRE_CLEARED = 'AD account {username} has cleared "password never expire" attribute. Value is set to False'
-AD_PASSWORD_EXPIRED = "Expired password successfully"
-MSGRAPH_PASSWORD_RESET = "User {username} will be required to change his password."
-AWS_PASSWORD_CHANGED = "The user {username} will be required to change his password."
+# Success messages patterns for different integrations
+SUCCESS_MESSAGES = {
+    "ad_never_expire_cleared": 'AD account {username} has cleared "password never expire" attribute. Value is set to False',
+    "ad_password_expired": 'Expired password successfully',
+    "msgraph": "User {username} will be required to change his password.",
+    "aws": "The user {username} will be required to change his password.",
+}
+
 OKTA_PASSWORD_EXPIRED_MARKER = "PASSWORD_EXPIRED"
 
 # Generic failure messages for different integrations
-AD_GENERIC_FAILURE = "Active Directory password expiration failed"
-MSGRAPH_GENERIC_FAILURE = "Microsoft Graph password reset failed"
-OKTA_GENERIC_FAILURE = "Okta password expiration failed"
-GSUITE_GENERIC_FAILURE = "GSuite password reset failed"
-AWS_GENERIC_FAILURE = "AWS IAM password reset failed"
+GENERIC_FAILURE_MESSAGES = {
+    "ad": "Active Directory password expiration failed",
+    "msgraph": "Microsoft Graph password reset failed",
+    "okta": "Okta password expiration failed",
+    "gsuite": "GSuite password reset failed",
+    "aws": "AWS IAM password reset failed"
+}
 
 
 # --- Utility Functions ---
@@ -169,7 +174,7 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     )
 
     # Check if clearing the "never expire" flag failed first
-    expected_msg = AD_NEVER_EXPIRE_CLEARED.format(username=username)
+    expected_msg = SUCCESS_MESSAGES["ad_never_expire_cleared"].format(username=username)
     if not any(res.get("Contents") == expected_msg for res in res_modify_never_expire):
         return [
             ExpiredPasswordResult(
@@ -186,10 +191,10 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     func_res = []
     for res in res_expire:
         res_msg = res.get("Contents")
-        success = res_msg == AD_PASSWORD_EXPIRED
+        success = res_msg == SUCCESS_MESSAGES["ad_password_expired"]
         func_res.append(
             build_result(
-                res, success_condition=success, success_msg=AD_PASSWORD_EXPIRED, failure_msg=res_msg or AD_GENERIC_FAILURE
+                res, success_condition=success, success_msg=SUCCESS_MESSAGES["ad_password_expired"], failure_msg=res_msg or GENERIC_FAILURE_MESSAGES["ad"]
             )
         )
     return func_res, hr
@@ -209,8 +214,8 @@ def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[ExpiredPa
     res_cmd, hr = run_command("msgraph-user-force-reset-password", {"user": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
-        res_hr = get_response_message(res, MSGRAPH_GENERIC_FAILURE)
-        expected_msg = MSGRAPH_PASSWORD_RESET.format(username=user["Username"])
+        res_hr = get_response_message(res, GENERIC_FAILURE_MESSAGES["msgraph"])
+        expected_msg = SUCCESS_MESSAGES["msgraph"].format(username=user["Username"])
         success = res_hr == expected_msg
         func_res.append(build_result(res, success_condition=success, success_msg=expected_msg, failure_msg=res_hr))
     return func_res, hr
@@ -230,9 +235,9 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     res_cmd, hr = run_command("okta-expire-password", {"username": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
-        res_msg = get_response_message(res, OKTA_GENERIC_FAILURE)
+        res_msg = get_response_message(res, GENERIC_FAILURE_MESSAGES["okta"])
         success = OKTA_PASSWORD_EXPIRED_MARKER in res_msg
-        failure_msg = res_msg if not res_msg.startswith("###") else OKTA_GENERIC_FAILURE
+        failure_msg = res_msg if not res_msg.startswith("###") else GENERIC_FAILURE_MESSAGES["okta"]
         func_res.append(
             build_result(res, success_condition=success, success_msg="Password expired successfully", failure_msg=failure_msg)
         )
@@ -258,7 +263,7 @@ def run_gsuiteadmin(user: UserData, using: str) -> tuple[list[ExpiredPasswordRes
     for res in res_cmd:
         # make sure the field changePasswordAtNextLogin is true
         success = bool(dict_safe_get(res, ["Contents", "changePasswordAtNextLogin"]))
-        res_msg = get_response_message(res, GSUITE_GENERIC_FAILURE)
+        res_msg = get_response_message(res, GENERIC_FAILURE_MESSAGES["gsuite"])
         func_res.append(
             build_result(res, success_condition=success, success_msg="Password reset successfully enforced", failure_msg=res_msg)
         )
@@ -285,8 +290,8 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     )
     func_res = []
     for res in res_cmd:
-        res_msg = get_response_message(res, AWS_GENERIC_FAILURE)
-        expected_msg = AWS_PASSWORD_CHANGED.format(username=user["Username"])
+        res_msg = get_response_message(res, GENERIC_FAILURE_MESSAGES["aws"])
+        expected_msg = SUCCESS_MESSAGES["aws"].format(username=user["Username"])
         success = res_msg == expected_msg
         func_res.append(build_result(res, success_condition=success, success_msg=expected_msg, failure_msg=res_msg))
     return func_res, hr
