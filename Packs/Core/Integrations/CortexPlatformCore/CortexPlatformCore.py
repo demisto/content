@@ -3222,7 +3222,7 @@ def get_webapp_data(
     return all_records, raw_responses
 
 
-def get_exception_rules(client, args: dict[str, Any]) -> tuple[list[dict[str, Any]], str, list[dict[str, Any]]]:
+def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves Disable Prevention Rules and Legacy Agent Exceptions using the
     generic /api/webapp/get_data endpoint, handling pagination.
@@ -3282,7 +3282,7 @@ def get_exception_rules(client, args: dict[str, Any]) -> tuple[list[dict[str, An
     )
 
 
-def get_system_users_command(client, args):
+def list_system_users_command(client, args):
     """
     Retrieves system user optionally filtered by email using the public api ep /public_api/v1/rbac/get_users
     This function calls the client to fetch all available system users. If specific
@@ -3428,9 +3428,9 @@ def main():  # pragma: no cover
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
         elif command == "core-get-exception-rules":
-            return_results(get_exception_rules(client, args))
-        elif command == "core-get-system-users":
-            return_results(get_system_users_command(client, args))
+            return_results(list_exception_rules_command(client, args))
+        elif command == "core-list-system-users":
+            return_results(list_system_users_command(client, args))
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
 

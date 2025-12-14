@@ -2794,7 +2794,7 @@ script:
           predefined:
             - true
             - false
-      name: core-get-exception-rules
+      name: core-list-exception-rules
       description: "Returns a list of exception rules and their metadata, which you can filter by built-in arguments. Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       outputs:
         - contextPath: Core.ExceptionRules.ID
@@ -2870,7 +2870,7 @@ script:
         - description: The email of the user. Accepts a comma-separated list.
           isArray: true
           name: email
-      name: core-get-system-users
+      name: core-list-system-users
       description: "Returns a list users and their core properties within the system. Results are limited to 50."
       outputs:
         - contextPath: Core.User.user_email
