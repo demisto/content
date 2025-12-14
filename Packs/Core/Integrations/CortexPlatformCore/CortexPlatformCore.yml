@@ -2549,6 +2549,7 @@ script:
           required: true
           isArray: true
     - name: core-list-scripts
+      hidden: false
       description:  Gets a list of scripts available in the scripts library.
       arguments:
       - description: A comma-separated list of the script names.
@@ -2561,12 +2562,12 @@ script:
         - 'windows'
         - 'linux'
         - 'macos'
-    - name: page_size
-      description: The number of scripts to return per page. The default is 100.
-      defaultvalue: 100
-    - name: page_number
-      description: Page number (for pagination). The default is 0 (the first page).
-      defaultvalue: 0
+      - name: page_size
+        description: The number of scripts to return per page. The default is 100.
+        defaultvalue: 100
+      - name: page_number
+        description: Page number (for pagination). The default is 0 (the first page).
+        defaultvalue: 0
       outputs:
         - contextPath: Core.Scripts.name
           description: Name of the script.
