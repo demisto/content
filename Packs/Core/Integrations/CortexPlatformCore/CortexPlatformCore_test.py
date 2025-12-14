@@ -1602,7 +1602,7 @@ class TestFilterBuilder:
         When: add_time_range_field is called with start_time as None.
         Then: The method should not add any field to the filter since start is None.
         """
-        from CortexPlatformCore import FilterBuilder
+        from CortexPlatformCore import FilterBuilder, FilterType
 
         # Arrange
         filter_builder = FilterBuilder()
