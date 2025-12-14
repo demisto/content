@@ -777,7 +777,7 @@ filter cefName NOT IN ("System*", "Audit*", "Agent*", "Network*", "Label*")
         to_string(cefSeverity) = "8", "High",
         to_string(cefSeverity) = "5", "Medium",
         to_string(cefSeverity) = "3", "Low",
-        cefSeverity)
+        cefSeverity),
     xdm.observer.action = act,
     xdm.target.ipv4 = if(is_ipv4(dvc) = TRUE, dvc),
     xdm.target.ipv6 = if(is_ipv6(dvc) = TRUE, dvc),
