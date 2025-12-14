@@ -2,6 +2,8 @@ category: Database
 sectionorder:
 - Connect
 - Collect
+- Collect Issues
+- Collect Events
 commonfields:
   id: Elasticsearch v2
   version: -1
@@ -46,7 +48,7 @@ configuration:
 - display: Index from which to fetch incidents (CSV)
   name: fetch_index
   type: 0
-  section: Collect
+  section: Collect Issues
   required: false
 - display: Query String
   name: fetch_query
@@ -55,12 +57,12 @@ configuration:
     The query will be used when fetching incidents. Index time field will be used as a filter in the query.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
-  section: Collect
+  section: Collect Issues
   required: false
 - display: Index time field (for sorting sort and limiting data)
   name: fetch_time_field
   type: 0
-  section: Collect
+  section: Collect Issues
   required: false
   additionalinfo: |-
     The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
@@ -73,7 +75,7 @@ configuration:
     Will override the 'Query String' Lucene syntax string. Results will not be filtered or sorted. Use additional parameters in the raw query for these porpuses.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
-  section: Collect
+  section: Collect Issues
   advanced: true
   required: false
 - display: Time field type
@@ -84,27 +86,27 @@ configuration:
   - Simple-Date
   - Timestamp-Seconds
   - Timestamp-Milliseconds
-  section: Collect
+  section: Collect Issues
   advanced: true
   required: false
 - defaultvalue: 'true'
   display: Map JSON fields into labels
   name: map_labels
   type: 8
-  section: Collect
+  section: Collect Issues
   advanced: true
   required: false
 - defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
-  section: Collect
+  section: Collect Issues
   required: false
 - defaultvalue: '50'
-  display: The maximum number of results to return per fetch.
+  display: The maximum number of results to return per fetch
   name: fetch_size
   type: 0
-  section: Collect
+  section: Collect Issues
   required: false
 - display: Request timeout (in seconds).
   name: timeout
@@ -116,12 +118,74 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
+  section: Collect Issues
   required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
-  section: Collect
+  section: Collect Issues
+  required: false
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect Events
+  required: false
+- display: Index from which to fetch incidents (CSV)
+  name: fetch_index_fetch_event
+  type: 0
+  section: Collect Events
+  required: false
+- display: Query String
+  name: fetch_query_fetch_event
+  type: 0
+  additionalinfo: |-
+    The query will be used when fetching incidents. Index time field will be used as a filter in the query.
+
+    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
+  section: Collect Events
+  required: false
+- display: Index time field (for sorting sort and limiting data)
+  name: fetch_time_field_fetch_event
+  type: 0
+  section: Collect Events
+  required: false
+  additionalinfo: |-
+    The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
+
+    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
+- display: Raw Query
+  name: raw_query_fetch_event
+  type: 12
+  additionalinfo: |-
+    Will override the 'Query String' Lucene syntax string. Results will not be filtered or sorted. Use additional parameters in the raw query for these porpuses.
+
+    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
+  section: Collect Events
+  advanced: true
+  required: false
+- display: Time field type
+  defaultvalue: 'Simple-Date'
+  name: time_method_fetch_event
+  type: 15
+  options:
+  - Simple-Date
+  - Timestamp-Seconds
+  - Timestamp-Milliseconds
+  section: Collect Events
+  advanced: true
+  required: false
+- defaultvalue: 'true'
+  display: Map JSON fields into labels
+  name: map_labels_fetch_event
+  type: 8
+  section: Collect Events
+  advanced: true
+  required: false
+- defaultvalue: '50'
+  display: The maximum number of results to return per fetch
+  name: fetch_size_fetch_event
+  type: 0
+  section: Collect Events
   required: false
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
 display: Elasticsearch v2
@@ -438,6 +502,7 @@ script:
       description: ES|QL search result.
   dockerimage: demisto/elasticsearch:1.0.0.4861252
   isfetch: true
+  isfetchevents: true
   runonce: false
   script: '-'
   subtype: python3
