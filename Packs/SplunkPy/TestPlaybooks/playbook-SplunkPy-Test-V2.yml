@@ -551,11 +551,12 @@ tasks:
     task:
       id: 5660134d-1820-4aeb-8f7d-d7682a31a81c
       version: -1
-      name: Check job status
-      description: checks the status of a job
+      name: splunk-job-status
+      description: checking the status of a job
       script: '|||splunk-job-status'
       type: regular
       iscommand: true
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "8"
