@@ -4,7 +4,7 @@ Citrix Cloud is a cloud-based management platform that provides the centralized 
 
 ## What does this pack contain?
 
-- This pack includes the Citrix Cloud integration that collects system log records from the Citrix Cloud platform.
+- Citrix Cloud integration that collects system log records from the Citrix Cloud platform.
 - Modeling rules for Citrix Cloud system log records
 
 ## Configure Citrix Cloud Event Collector in Cortex
@@ -38,7 +38,7 @@ In the Citrix Cloud console, click the menu in the upper left corner.
 
 If these options do not appear, you might not have sufficient permissions to manage service principals. Contact your administrator to get the required full access permission.
 
-![ServicePrincipals](../../doc_files/ServicePrincipals.png)
+![ServicePrincipals](././doc_files/ServicePrincipals.png)
 
 **3. Add the credentials to your secret management tool as the secret will only appear once**
 
@@ -53,7 +53,7 @@ If these options do not appear, you might not have sufficient permissions to man
 1. Log in to https://citrix.cloud.com
 2. If you have access to more than one tenant, their names and Citrix Cloud IDs will be presented to you in a list format for you to select which one you want to sign in to.  Example below:
 
-![LoginScreen](../../doc_files/LoginScreen.png)
+![LoginScreen](././doc_files/LoginScreen.png)
 
 3. Once you sign in, the Tenant's Citrix Cloud ID is also presented in the top right corner of the screen as shown in an example here (ctxtsnaxa)
 
