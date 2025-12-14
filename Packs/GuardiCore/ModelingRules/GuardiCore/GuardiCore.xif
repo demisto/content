@@ -397,8 +397,8 @@ filter cefName ~= "Agent"
     xdm.event.id = id,
     xdm.source.host.hostname = shost,
     xdm.event.description = msg,
-    xdm.target.ipv4 = if(is_ipv4(parsed_cs1 -> ip) = TRUE, parsed_cs1),
-    xdm.target.ipv6 = if(is_ipv6(parsed_cs1 -> ip) = TRUE, parsed_cs1),
+    xdm.target.ipv4 = if(is_ipv4(parsed_cs1 -> ip) = TRUE, parsed_cs1 -> ip),
+    xdm.target.ipv6 = if(is_ipv6(parsed_cs1 -> ip) = TRUE, parsed_cs1 -> ip),
     xdm.target.host.os = trg_os,
     xdm.target.zone = parsed_cs1 -> Environment,
     xdm.target.host.os_family = if(
@@ -407,8 +407,13 @@ filter cefName ~= "Agent"
         trg_os ~= "Linux", XDM_CONST.OS_FAMILY_LINUX,
         trg_os ~= "Ubuntu", XDM_CONST.OS_FAMILY_UBUNTU),
     xdm.target.host.hostname = trg_hostname,
+    xdm.target.resource.name = trg_hostname,
     xdm.target.resource.type = parsed_cs1 -> Role,
-    xdm.target.resource.name = parsed_cs1 -> App,
+    xdm.target.application.name = parsed_cs1 -> App,
+    xdm.event.outcome = if(
+        msg IN ("Success*","*success*", "*status flag was raised*"), XDM_CONST.OUTCOME_SUCCESS,
+        msg ~= "[Ff]ail", XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_UNKNOWN),
     xdm.alert.severity = cefSeverity;
 
 /* ==========================================
@@ -439,7 +444,11 @@ filter cefName ~= "System"
    ========================================== */
 filter cefName ~= "Network"
 | alter
-    proto = to_string(proto)
+    proto = to_string(proto),
+    cs3_process_name = if(cs3 IN ("*\*"), arrayindex(regextract(cs3, "[^\\]+$"),0), cs3 IN ("*/*"), arrayindex(regextract(cs3, "[^\/]+$"),0)),
+    cs14_process_name =  if(cs14 IN ("*\*"), arrayindex(regextract(cs14, "[^\\]+$"),0), cs14 IN ("*/*"), arrayindex(regextract(cs14, "[^\/]+$"),0)),
+    cs15_process_name =  if(cs15 IN ("*\*"), arrayindex(regextract(cs15, "[^\\]+$"),0), cs15 IN ("*/*"), arrayindex(regextract(cs15, "[^\/]+$"),0)),
+    drpoc_process_name =  if(drpoc IN ("*\*"), arrayindex(regextract(cs15, "[^\\]+$"),0), drpoc IN ("*/*"), arrayindex(regextract(drpoc, "[^\/]+$"),0))
 
 | alter //XDM mapping
     xdm.observer.version = cefDeviceVersion,
@@ -739,8 +748,10 @@ filter cefName ~= "Network"
     xdm.event.outcome_reason = cs6,
     xdm.network.rule = cs7,
     xdm.target.user.identifier = cs12,
-    xdm.source.process.executable.path = cs13,
-    xdm.target.process.executable.path = coalesce(cs15, drpoc),
+    xdm.source.process.executable.filename = coalesce(cs3_process_name, cs14_process_name),
+    xdm.source.process.executable.path = coalesce(cs13, cs14),
+    xdm.target.process.executable.filename = cs15_process_name,
+    xdm.target.process.executable.path = coalesce(cs15, drpoc_process_name),
     xdm.target.application.name = cs16,
     xdm.observer.action = act,
     xdm.event.outcome = if(
@@ -761,7 +772,7 @@ filter cefName ~= "Label"
     xdm.event.description = msg;
 
 /* ==========================================
-   Label logs mapping
+   Incidents logs mapping
    ========================================== */
 filter cefName NOT IN ("System*", "Audit*", "Agent*", "Network*", "Label*")
 | alter //extract fields
