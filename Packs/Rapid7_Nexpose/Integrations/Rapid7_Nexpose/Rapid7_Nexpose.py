@@ -27,7 +27,7 @@ VALID_TAG_COLORS = ["blue", "green", "orange", "red", "purple", "default"]
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
-DEFAULT_BATCH_SIZE = 1000
+DEFAULT_BATCH_SIZE = 3000
 BASE_QUERY_FOR_ASSETS = """WITH asset_tags AS (
     SELECT
         dta.asset_id,
@@ -6960,7 +6960,12 @@ async def process_data_stream(
     batch_counter = 0
     current_batch: List[str] = []
     current_run_data_records = 0
-    snapshot_id = event_integration_context.get("snapshot_id") or str(round(time.time() * 1000))
+    snapshot_id = event_integration_context.get("snapshot_id", "")
+
+    if not snapshot_id:
+        snapshot_id = str(round(time.time() * 1000))
+        log(event_type, f"Did not get snapshot_id from context, will use {snapshot_id=}")
+        update_integration_context_by_event_type(event_type, {"snapshot_id": snapshot_id})
 
     # The start line for the *next* batch we will build
     # NOTE: raw line numbers are 1-based and inclusive.
@@ -7290,7 +7295,7 @@ async def process_and_send_events_to_xsiam(
 
     update_integration_context_by_event_type(
         event_type,
-        {"last_sent_line": total_lines_after_batch_raw, "total_records_ingested": new_total_records, "snapshot_id": snapshot_id},
+        {"last_sent_line": total_lines_after_batch_raw, "total_records_ingested": new_total_records},
     )
     demisto.updateModuleHealth({"assetsPulled": len(processed_events)})
     log(event_type, f"Running in interval = {batch_counter}. Finished updating module health.")
@@ -7422,6 +7427,7 @@ def rapid7_send_data_to_xsiam(
     if data_type == ASSETS:
         if not snapshot_id:
             snapshot_id = str(round(time.time() * 1000))
+            log(data_type, f"Did not get snapshot_id, will send {snapshot_id=}")
 
         # We are setting a time stamp ahead of the instance name since snapshot-ids must be configured in ascending
         # alphabetical order such that first_snapshot < second_snapshot etc.
@@ -7776,9 +7782,7 @@ async def run_all_collectors(
 
     try:
         context = get_integration_context()
-        # Check/Create ASSET Config
         await ensure_report_config_exists(client, "asset", context)
-        # Check/Create VULNERABILITY Config
         await ensure_report_config_exists(client, "vulnerability", context)
 
     except Exception as e:

@@ -3068,7 +3068,7 @@ async def test_fetch_assets_long_running_command(mocker):
 
     # Verify run_all_collectors was called at least once
     assert mock_run_all_collectors.call_count >= 1
-    mock_run_all_collectors.assert_called_with(mock_client_instance, batch_size=1000)
+    mock_run_all_collectors.assert_called_with(mock_client_instance, batch_size=3000)
 
     # Verify sleep was called
     assert mock_sleep.call_count >= 1
