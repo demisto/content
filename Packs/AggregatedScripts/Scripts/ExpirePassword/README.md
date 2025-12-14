@@ -9,12 +9,6 @@ This script expires users password for multiple services.
 | Script Type | python3 |
 | Cortex XSOAR Version | 6.10.0 |
 
-## Used In
-
----
-This script is used in the following playbooks and scripts.
-
-* ExpirePassword - Test
 
 ## Inputs
 
