@@ -1543,9 +1543,17 @@ script:
           description: "The maximum number of vulnerabilities to return."
           defaultValue: "50"
         - defaultValue: LAST_OBSERVED
+          auto: PREDEFINED
           description: The field by which to sort the results.
           name: sort_field
+          predefined:
+            - PLATFORM_SEVERITY
+            - CVSS_SCORE
+            - EPSS_SCORE
+            - CORTEX_VULNERABILITY_RISK_SCORE
+            - LAST_OBSERVED
         - auto: PREDEFINED
+          defaultValue: DESC
           description: The order in which to sort the results.
           name: sort_order
           predefined:
@@ -1604,6 +1612,21 @@ script:
             The email of the user assigned to the vulnerability. Accepts a comma-separated list. 
             Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities.
           isArray: true
+        - auto: PREDEFINED
+          description: The finding sources of the vulnerability. Accepts a comma-separated list.
+          isArray: true
+          name: finding_sources
+          predefined:
+            - CORTEX_AGENT
+            - CORTEX_AGENTLESS_SCANNER
+            - CORTEX_ATTACK_SURFACE_MANAGEMENT
+            - CORTEX_ATTACK_SURFACE_TESTING
+            - CORTEX_CLI_SCANNER
+            - CORTEX_CONTAINER_REGISTRY_SCANNER
+            - CORTEX_NETWORK_SCANNER
+            - CORTEX_SERVERLESS_FUNCTION_SCANNER
+            - QUALYS
+            - TENABLE
       outputs:
         - contextPath: Core.VulnerabilityIssue.ISSUE_ID
           description: The unique identifier for the vulnerability issue.
@@ -1649,6 +1672,9 @@ script:
           type: Boolean
         - contextPath: Core.VulnerabilityIssue.ASSET_IDS
           description: The unique identifier for the asset.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.FINDING_SOURCES
+          description: The finding sources that originally generated the security finding of the vulnerability.
           type: String
     - arguments:
         - description: Comma-separated list of IDs of the issues to get recommendations for (maximum 10 per request).
@@ -2548,6 +2574,175 @@ script:
           description: The IDs of the issues to process with the playbook.
           required: true
           isArray: true
+    - arguments:
+      - description: A comma-separated list of endpoint names.
+        name: endpoint_name
+        isArray: true
+      - description: A comma-separated list of endpoint types.
+        name: endpoint_type
+        isArray: true
+        auto: PREDEFINED
+        predefined:
+        - mobile
+        - server
+        - workstation
+        - containerized
+        - serverless
+      - description: A comma-separated list of endpoint connection statuses.
+        name: endpoint_status
+        isArray: true
+        auto: PREDEFINED
+        predefined:
+        - connected
+        - lost
+        - disconnected
+        - uninstalled
+        - vdi pending login
+        - forensics offline
+      - description: A comma-separated list of endpoint platforms.
+        name: platform
+        isArray: true
+        auto: PREDEFINED
+        predefined:
+        - windows
+        - mac
+        - linux
+        - android
+        - ios
+        - serverless
+      - description: A comma-separated list of operating system names (e.g., Windows 10, Ubuntu 24.04).
+        name: operating_system
+        isArray: true
+      - description: A comma-separated list of agent versions (e.g., 8.9.0.14028).
+        name: agent_version
+        isArray: true
+      - description: Indicates whether the endpoint is running an End-of-Life (EOL) agent version.
+        name: agent_eol
+        auto: PREDEFINED
+        predefined:
+        - 'true'
+        - 'false'
+      - description: A comma-separated list of OS versions (e.g., 10.0.22621).
+        name: os_version
+        isArray: true
+      - description: A comma-separated list of endpoint IP addresses.
+        name: ip_address
+        isArray: true
+      - description: A comma-separated list of domains.
+        name: domain
+        isArray: true
+      - description: A comma-separated list of assigned prevention policies.
+        name: assigned_prevention_policy
+        isArray: true
+        auto: PREDEFINED
+        predefined:
+        - pcastro
+        - Caas Default
+        - kris
+        - democloud
+        - Linux Default
+        - Android Default
+        - Serverless Function Default
+        - macOS Default
+        - iOS Default
+        - Windows Default
+        - bcpolicy
+      - description: A comma-separated list of endpoint tags.
+        name: tags
+        isArray: true
+      - description: A comma-separated list of endpoint IDs.
+        name: endpoint_id
+        isArray: true
+      - description: A comma-separated list of endpoint operational protection statuses.
+        name: operational_status
+        isArray: true
+        auto: PREDEFINED
+        predefined:
+        - protected
+        - partially protected
+        - unprotected
+      - description: A comma-separated list of cloud providers.
+        name: cloud_provider
+        isArray: true
+        auto: PREDEFINED
+        predefined:
+        - aws
+        - azure
+        - gcp
+        - alibaba
+        - oracle
+        - on_prem
+      - description: A comma-separated list of cloud regions.
+        name: cloud_region
+        isArray: true
+      - defaultValue: '0'
+        description: Page number for pagination. Default is 0.
+        name: page
+      - defaultValue: '100'
+        description: The number of endpoints to return per page. Default and maximum is 100.
+        name: page_size
+      name: core-list-endpoints
+      description: Retrieves endpoints based on the provided filters.
+      hidden: true
+      supportedModules:
+        - ENT_PLUS
+        - cloud
+        - cloud_runtime_security
+        - cloud_posture
+        - xsiam
+        - edr
+      outputs:
+      - contextPath: Core.Endpoint.endpoint_name
+        description: The endpoint name.
+        type: String
+      - contextPath: Core.Endpoint.endpoint_type
+        description: The endpoint type.
+        type: String
+      - contextPath: Core.Endpoint.endpoint_status
+        description: The endpoint status.
+        type: String
+      - contextPath: Core.Endpoint.platform
+        description: The endpoint platform.
+        type: String
+      - contextPath: Core.Endpoint.operating_system
+        description: The operating system of the endpoint.
+        type: String
+      - contextPath: Core.Endpoint.agent_version
+        description: The agent version installed on the endpoint.
+        type: String
+      - contextPath: Core.Endpoint.agent_eol
+        description: Is agent EOL.
+        type: String
+      - contextPath: Core.Endpoint.os_version
+        description: The operating system version.
+        type: String
+      - contextPath: Core.Endpoint.ip_address
+        description: The endpoint IP address.
+        type: String
+      - contextPath: Core.Endpoint.domain
+        description: The domain of the endpoint.
+        type: String
+      - contextPath: Core.Endpoint.assigned_prevention_policy
+        description: The assigned prevention policy.
+        type: String
+      - contextPath: Core.Endpoint.group_name
+        description: A list of group names the endpoint belongs to.
+        type: List
+      - contextPath: Core.Endpoint.tags
+        description: A list of tags assigned to the endpoint.
+        type: List
+      - contextPath: Core.Endpoint.endpoint_id
+        description: The unique endpoint ID.
+        type: String
+      - contextPath: Core.Endpoint.operational_status
+        description: The operational status of the endpoint.
+        type: String
+      - contextPath: Core.Endpoint.cloud_provider
+        description: The cloud provider associated with the endpoint.
+        type: String
+      - contextPath: Core.Endpoint.cloud_region
+        description: The cloud region of the endpoint.
+        type: String
   runonce: false
   script: "-"
   subtype: python3
