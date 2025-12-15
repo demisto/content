@@ -536,7 +536,6 @@ There is no context output for this command.
 
 ##### Human Readable Output
 
-![image](../../doc_files/edit_finding_command.png)
 
 ### splunk-job-create
 
