@@ -657,3 +657,94 @@ def test_incident_not_successful_with_raw_data(mocker):
     assert "Drilldown Enrichment Not Successful" in contents
     assert "**Raw Drilldown Searches Data:**" in contents
     assert "[\n{" in contents
+
+
+def test_drilldown_searches_from_label(mocker):
+    """
+    Given:
+        incident without splunkdrilldown in CustomFields but with drilldown_searches in labels
+    When:
+        Calling to SplunkShowDrilldown
+    Then:
+        Verifies that drilldown_searches is retrieved from labels and displayed correctly
+    """
+    drilldown_config = [{"name": "test_query_from_label", "search": "index=main | stats count"}]
+    incident = {
+        "CustomFields": {},
+        "labels": [
+            {"type": "drilldown_searches", "value": json.dumps(drilldown_config)},
+        ],
+    }
+    mocker.patch("demistomock.incident", return_value=incident)
+    res = SplunkShowDrilldown.main()
+    contents = res.get("Contents")
+    assert "Drilldown Configuration Status" in contents
+    assert "test_query_from_label" in contents
+    assert "index=main \\| stats count" in contents
+
+
+def test_drilldown_searches_priority_custom_fields_over_label(mocker):
+    """
+    Given:
+        incident with splunkdrilldown in CustomFields AND drilldown_searches in labels
+    When:
+        Calling to SplunkShowDrilldown
+    Then:
+        Verifies that CustomFields takes priority over labels
+    """
+    drilldown_config_custom = [{"name": "query_from_custom_field", "search": "index=custom"}]
+    drilldown_config_label = [{"name": "query_from_label", "search": "index=label"}]
+    incident = {
+        "CustomFields": {"splunkdrilldown": json.dumps(drilldown_config_custom)},
+        "labels": [
+            {"type": "drilldown_searches", "value": json.dumps(drilldown_config_label)},
+        ],
+    }
+    mocker.patch("demistomock.incident", return_value=incident)
+    res = SplunkShowDrilldown.main()
+    contents = res.get("Contents")
+    # Should use custom field, not label
+    assert "query_from_custom_field" in contents
+    assert "index=custom" in contents
+    assert "query_from_label" not in contents
+    assert "index=label" not in contents
+
+
+def test_drilldown_searches_from_label_with_enrichment_results(mocker):
+    """
+    Given:
+        incident with drilldown_searches in labels and successful enrichment results
+    When:
+        Calling to SplunkShowDrilldown
+    Then:
+        Verifies that enrichment results are displayed correctly
+    """
+    drilldown_config = [{"name": "test_query", "search": "index=main"}]
+    drilldown_results = [
+        {
+            "query_name": "test_query",
+            "query_search": "index=main",
+            "enrichment_status": "Enrichment successfully handled",
+            "query_results": [
+                {
+                    "_bkt": "main~Test1",
+                    "_time": "2024-05-16T11:26:32.000+00:00",
+                    "signature": "test_signature1",
+                }
+            ],
+        }
+    ]
+    incident = {
+        "CustomFields": {},
+        "labels": [
+            {"type": "drilldown_searches", "value": json.dumps(drilldown_config)},
+            {"type": "successful_drilldown_enrichment", "value": "true"},
+            {"type": "Drilldown", "value": json.dumps(drilldown_results)},
+        ],
+    }
+    mocker.patch("demistomock.incident", return_value=incident)
+    res = SplunkShowDrilldown.main()
+    contents = res.get("Contents")
+    assert "Drilldown Searches Results" in contents
+    assert "test_query" in contents
+    assert "test_signature1" in contents

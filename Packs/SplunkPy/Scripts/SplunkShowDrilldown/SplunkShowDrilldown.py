@@ -48,7 +48,14 @@ def main():
 
     labels = incident.get("labels", [])
     custom_fields = incident.get("CustomFields", {})
-    drilldown_searches = custom_fields.get("splunkdrilldown", "") or custom_fields.get("notabledrilldown", "")
+    drilldown_searches = custom_fields.get("splunkdrilldown", "")
+
+    # If drilldown_searches not found in custom fields, search in labels
+    if not drilldown_searches:
+        for label in labels:
+            if label.get("type") == "drilldown_searches":
+                drilldown_searches = label.get("value", "")
+                break
 
     # Check if enrichment is configured
     has_enrichment_status = False
