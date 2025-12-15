@@ -4724,14 +4724,15 @@ def main():  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
-    #######
-    is_gov = False
-    if is_gov:
-        switch_to_gov_account()
-    #######
+
     demisto.debug(f"Command being called is {command}")
     connector_id = get_connector_id()
     demisto.debug(f"{connector_id=}")
+    #######
+    account_id = get_from_args_or_params(params=params, args=args, key="subscription_id"),
+    if is_gov_account(connector_id, account_id): # type: ignore
+        switch_to_gov_account()
+    #######
     handle_proxy()
     try:
         commands_with_params_and_args = {
