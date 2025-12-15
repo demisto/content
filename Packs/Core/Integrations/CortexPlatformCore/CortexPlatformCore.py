@@ -3231,7 +3231,8 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults
     sort_order = args.get("sort_order", "DESC")
 
     default_limit = arg_to_number(args.get("limit")) or MAX_GET_EXCEPTION_RULES_LIMIT
-    offset = arg_to_number(args.get("page" , 0)) * default_limit if args.get("page") else 0
+    page_number = arg_to_number(args.get("page", 0)) or 0
+    offset = page_number * default_limit if args.get("page") else 0
     retrieve_all = argToBoolean(args.get("retrieve_all", False))
 
     base_limit = MAX_GET_EXCEPTION_RULES_LIMIT if retrieve_all else default_limit
@@ -3250,7 +3251,7 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults
     for table_name in table_names:
         records, raw_responses = get_webapp_data(
             client=client,
-            table_name=table_name,
+            table_name=str(table_name),
             filter_dict=exception_rule_filter,
             sort_field=sort_field,
             sort_order=sort_order,
