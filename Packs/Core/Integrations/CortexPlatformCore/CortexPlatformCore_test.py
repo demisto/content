@@ -5140,11 +5140,11 @@ def test_list_scripts_command_with_multiple_platforms():
     }
     client.get_webapp_data.return_value = mock_response
 
-    args = {"script_platforms": ["windows", "linux"], "limit": 50}
+    args: dict[str, list] = {"script_platforms": ["windows", "linux"], "limit": 50}
 
     result = list_scripts_command(client, args)
 
-    scripts = result.outputs["Scripts"]
+    scripts = result[0].outputs
     assert len(scripts) == 1
     assert scripts[0]["windows_supported"] is True
     assert scripts[0]["linux_supported"] is True
@@ -5181,12 +5181,12 @@ def test_list_scripts_command_with_script_name_filter():
     }
     client.get_webapp_data.return_value = mock_response
 
-    args = {"script_name": "test_script"}
+    args: dict[str, str] = {"script_name": "test_script"}
 
     result = list_scripts_command(client, args)
 
     client.get_webapp_data.assert_called_once()
-    scripts = result.outputs["Scripts"]
+    scripts = result[0].outputs
     assert len(scripts) == 1
     assert scripts[0]["name"] == "test_script"
 
@@ -5223,12 +5223,12 @@ def test_list_scripts_command_outputs_structure():
     }
     client.get_webapp_data.return_value = mock_response
 
-    args = {}
+    args: dict[str, str] = {}
 
     result = list_scripts_command(client, args)
 
-    assert result.outputs_key_field == "script_id"
-    assert result.raw_response == mock_response
+    assert result[0].outputs_key_field == "script_id"
+    assert result[0].raw_response == mock_response
     expected_script = {
         "name": "complete_script",
         "description": "Complete script with all platform support",
@@ -5239,7 +5239,7 @@ def test_list_scripts_command_outputs_structure():
         "script_id": "complete-id-2",
         "script_inputs": [{"name": "param1", "type": "string"}, {"name": "param2", "type": "int"}],
     }
-    assert result.outputs["Scripts"][0] == expected_script
+    assert result[0].outputs[0] == expected_script
 
 
 class TestGetAppsecSuggestion(unittest.TestCase):
