@@ -462,7 +462,7 @@ def main() -> None:
 
         # How much time before the first fetch to retrieve incidents
         first_fetch_time = None
-        if arg := demisto.params().get("first_fetch"):  # pylint: disable=SIM102
+        if arg := demisto.params().get("first_fetch"):
             if first_fetch_time_stamp := dateparser.parse(arg):  # pylint: disable=SIM102
                 first_fetch_time = first_fetch_time_stamp.isoformat()
 
@@ -516,6 +516,10 @@ def main() -> None:
         elif command == "test-module":
             test_res = orca_client.validate_api_key()
             return_results(test_res)
+
+        elif command == "orca-get-asset":
+            demisto.error("orca-get-asset command is deprecated.")
+            raise DemistoException("orca-get-asset command is deprecated and removed from Orca integration.")
 
         else:
             raise NotImplementedError(f"{command} is not an existing orca command")

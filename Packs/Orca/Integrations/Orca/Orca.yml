@@ -53,13 +53,12 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- display: Also Fetch informational alerts
+- display: Also Fetch informational alerts (deprecated)
   name: fetch_informational
   type: 8
   section: Collect
   advanced: true
   required: false
-  hidden: true
 - additionalinfo: If this checked, all existing alerts will be fetched
   display: Pull Existing Alerts
   name: pull_existing_alerts
