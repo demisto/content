@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "This release fixes a documentation issue in which the `pan-os-install-latest-content-update` command was described as returning installation status to Context path `Content.Install.Status` instead of the correct `Panorama.Content.Install.Status` path."
+}

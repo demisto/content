@@ -41,7 +41,7 @@ configuration:
   name: page_size
   defaultvalue: "500"
   type: 0
-  required: true
+  required: false
   section: Collect
 - display: Secure Connection
   name: secure_connection
@@ -102,6 +102,14 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Default base query to use in the ad-get-user command
+  additionalinfo: This value will only be used when no arguments were given to the ad-get-user command.
+  name: default_base_query
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  defaultvalue: '(&(objectClass=User)(objectCategory=person))'
 script:
   script: ''
   type: python
@@ -819,7 +827,7 @@ script:
     outputs:
     - contextPath: ActiveDirectory.ValidCredentials
       description: List of usernames that successfully logged in.
-  dockerimage: demisto/ldap:2.9.1.3529630
+  dockerimage: demisto/ldap:2.9.1.5650452
   ismappable: true
   isremotesyncout: true
   runonce: false

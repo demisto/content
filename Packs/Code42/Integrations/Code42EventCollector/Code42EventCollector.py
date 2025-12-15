@@ -1,4 +1,7 @@
 import hashlib
+from collections.abc import Iterable
+from enum import Enum
+from typing import Any
 
 import incydr
 from incydr.enums.file_events import EventSearchTerm
@@ -6,10 +9,6 @@ from incydr.enums.file_events import EventSearchTerm
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
-
-from typing import Any
-from collections.abc import Iterable
-from enum import Enum
 
 DEFAULT_FILE_EVENTS_MAX_FETCH = 50000
 DEFAULT_AUDIT_EVENTS_MAX_FETCH = 100000
@@ -126,11 +125,14 @@ class Client:
 
         sorted_file_events = sorted(file_events, key=lambda x: x.event.inserted)[:limit]
 
+        events = []
         for event in sorted_file_events:
-            event.eventType = EventType.FILE
-            event._time = event.event.inserted
+            event_dict = event.dict()
+            event_dict["eventType"] = EventType.FILE
+            event_dict["_time"] = event.event.inserted
+            events.append(event_dict)
 
-        return [event.dict() for event in sorted_file_events]
+        return events
 
 
 def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Iterable[str], keys_list_to_id: List[str]) -> List[dict]:
@@ -257,6 +259,8 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
     fetched_events = last_run.get(FileEventLastRun.FETCHED_IDS, {})
     pre_fetch_look_back = datetime.now(tz=timezone.utc) - FILE_EVENTS_LOOK_BACK
     file_events = client.get_file_events(file_event_time, limit=max_fetch_file_events + len(fetched_events))
+    if len(file_events) >= max_fetch_file_events:
+        new_last_run["nextTrigger"] = "0"
     dedup_file_events = dedup_fetched_events(
         file_events, last_run_fetched_event_ids=fetched_events, keys_list_to_id=["event", "id"]
     )
@@ -293,7 +297,9 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
         else (datetime.now() - timedelta(minutes=1))
     )
     last_fetched_audit_log_ids = set(last_run.get(AuditLogLastRun.FETCHED_IDS, []))
-    audit_logs = client.get_audit_logs(audit_log_time, limit=max_fetch_audit_events)  # type: ignore[arg-type]
+    audit_logs = client.get_audit_logs(audit_log_time, limit=max_fetch_audit_events + len(last_fetched_audit_log_ids))  # type: ignore[arg-type]
+    if len(audit_logs) >= max_fetch_audit_events:
+        new_last_run["nextTrigger"] = "0"
     audit_logs = dedup_fetched_events(audit_logs, last_run_fetched_event_ids=last_fetched_audit_log_ids, keys_list_to_id=["id"])
 
     if audit_logs:
@@ -320,16 +326,25 @@ def fetch_events(
     """
     Fetch audit-logs & file-events
     """
+    demisto.debug(f"Starting fetching events. Using {event_types_to_fetch=}, got {last_run=}.")
+    total_event_count: int = 0
+
     if "File" in event_types_to_fetch:
         file_events, file_events_last_run = fetch_file_events(
             client, last_run=last_run, max_fetch_file_events=max_fetch_file_events
         )
 
         last_run.update(file_events_last_run)
+
+        demisto.debug(f"Starting sending {len(file_events)} {EventType.FILE.value} events.")
+        # `demisto.updateModuleHealth` *not* called as part of `send_events_to_xsiam` since `multiple_threads=True`
         futures = send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
         if futures:
             tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
-        demisto.updateModuleHealth({f"{EventType.FILE} events sent": len(file_events)})
+        demisto.debug(f"Finished sending {len(file_events)} {EventType.FILE.value} events. Updating module health")
+        demisto.updateModuleHealth({"eventsPulled": len(file_events)})
+        total_event_count += len(file_events)
+
     if "Audit" in event_types_to_fetch:
         audit_logs, audit_logs_last_run = fetch_audit_logs(
             client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events
@@ -338,10 +353,17 @@ def fetch_events(
             log.pop("id", None)
 
         last_run.update(audit_logs_last_run)
+
+        demisto.debug(f"Starting sending {len(audit_logs)} {EventType.AUDIT.value} events.")
+        # `demisto.updateModuleHealth` *not* called as part of `send_events_to_xsiam` since `multiple_threads=True`
         futures = send_events_to_xsiam(audit_logs, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
         if futures:
             tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
-        demisto.updateModuleHealth({f"{EventType.AUDIT} events sent": len(audit_logs)})
+        demisto.debug(f"Finished sending {len(audit_logs)} {EventType.AUDIT.value} events. Updating module health")
+        demisto.updateModuleHealth({"eventsPulled": len(audit_logs)})
+        total_event_count += len(audit_logs)
+
+    demisto.debug(f"Finished fetching and sending {total_event_count} events. Setting {last_run=}.")
     demisto.setLastRun(last_run)
 
 

@@ -2,7 +2,7 @@
     "name": "URLhaus",
     "description": "URLhaus has the goal of sharing malicious URLs that are being used for malware distribution.",
     "support": "xsoar",
-    "currentVersion": "1.0.35",
+    "currentVersion": "1.0.38",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -25,6 +25,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

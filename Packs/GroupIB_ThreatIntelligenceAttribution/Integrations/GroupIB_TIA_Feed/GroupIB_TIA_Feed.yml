@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Group-IB Threat Intelligence & Attribution Feed
   version: -1
@@ -148,6 +145,13 @@ configuration:
   - WHITE
   type: 15
   required: false
+- display: 'Limit (items per request)'
+  name: limit
+  type: 0
+  section: Collect
+  defaultvalue: '100'
+  required: false
+  additionalinfo: Number of items requested per API page. Larger values reduce API round-trips but may increase response size. Server-side caps may apply.
 - display: ''
   name: feedExpirationPolicy
   type: 17
@@ -217,7 +221,7 @@ script:
     name: gibtia-get-indicators
     deprecated: false
     execution: false
-  dockerimage: demisto/vendors-sdk:1.0.0.3242986
+  dockerimage: demisto/vendors-sdk:1.0.0.5505539
   feed: true
   runonce: false
   script: '-'
@@ -229,3 +233,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+sectionorder:
+- Connect
+- Collect

@@ -510,8 +510,7 @@ tasks:
       id: 4a94bec7-faed-4e09-80ba-e5ca9e4f64cd
       version: -1
       name: Is Azure Network Security Groups integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false

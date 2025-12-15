@@ -121,4 +121,5 @@ Installation is fairly straight forward.
 OpenCVE is now running on `http://<server_ip>:8000`. Log in and subscribe to some vendors and products.
 
 7. Configure the integration.
+
  > **Note:** ⚠️ Remember to select the engine where OpenCVE is installed

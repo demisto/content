@@ -1,10 +1,32 @@
 import copy
+import json
 import random
-from unittest.mock import patch
 
-import demistomock as demisto
 import pytest
+from unittest.mock import patch, MagicMock
+import demistomock as demisto
+
 from CommonServerPython import DemistoException
+from Packs.Wiz.Integrations.Wiz.Wiz import (
+    ValidationResponse,
+    WizStatus,
+    WizSeverity,
+    WizIssueType,
+    get_fetch_issues_variables,
+    PULL_ISSUES_DEFAULT_VARIABLES,
+    DEFAULT_FETCH_ISSUE_STATUS,
+    apply_all_issue_filters,
+    apply_status_filter,
+    apply_severity_filter,
+    apply_wiz_filter,
+    validate_status,
+    validate_severity,
+    validate_issue_type,
+    validate_wiz_enum_parameter,
+    build_incidents,
+    apply_issue_type_filter,
+    validate_all_issues_parameters,
+)
 
 integration_params = {
     "url": "http://test.io",
@@ -114,22 +136,8 @@ def test_get_issue(checkAPIerrors):
 
 test_get_resource_response = {
     "data": {
-        "graphSearch": {
-            "totalCount": 1,
-            "maxCountReached": False,
-            "pageInfo": {"endCursor": "1", "hasNextPage": False, "__typename": "PageInfo"},
-            "nodes": [
-                {
-                    "entities": [
-                        {
-                            "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
-                            "name": "i_am_an_id",
-                            "type": "VIRTUAL_MACHINE",
-                            "properties": {"blah": "lots_of_blah_here"},
-                        }
-                    ]
-                }
-            ],
+        "cloudResources": {
+            "nodes": [{"id": "16da9341-6c72-46ba-948c-f0c057643e60", "name": "test_name_vm", "type": "VIRTUAL_MACHINE"}]
         }
     }
 }
@@ -139,15 +147,63 @@ test_get_resource_response = {
 def test_get_resource_by_id(checkAPIerrors):
     from Wiz import get_resource
 
-    result_response = {
-        "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
-        "name": "i_am_an_id",
-        "type": "VIRTUAL_MACHINE",
-        "properties": {"blah": "lots_of_blah_here"},
-    }
-
     res = get_resource(resource_id="i_am_an_id", resource_name="")
-    assert res == result_response
+    assert res == test_get_resource_response
+
+
+test_get_resources_response = {
+    "data": {
+        "cloudResources": {
+            "nodes": [
+                {
+                    "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
+                    "name": "view",
+                    "type": "ACCESS_ROLE",
+                    "subscriptionId": "12345678-2222-3333-1111-ff5fa2ff7f78",
+                    "subscriptionExternalId": "123456789",
+                    "graphEntity": {
+                        "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
+                        "providerUniqueId": None,
+                        "name": "view",
+                        "type": "ACCESS_ROLE",
+                        "projects": [
+                            {"id": "12345678-2222-3333-1111-ff5fa2ff1111"},
+                            {"id": "12345678-2222-3333-1111-ff5fa2ff2222"},
+                            {"id": "12345678-2222-3333-1111-ff5fa2ff3333"},
+                        ],
+                        "firstSeen": "2025-02-12T21:03:10.981466Z",
+                        "lastSeen": "2025-03-24T00:01:31Z",
+                    },
+                }
+            ]
+        }
+    }
+}
+
+
+@patch("Wiz.checkAPIerrors", return_value=test_get_resources_response)
+def test_get_resources(checkAPIerrors):
+    from Wiz import get_resources
+
+    res = get_resources(
+        search="search",
+        entity_type="ACCESS_ROLE",
+        subscription_external_ids="123456789",
+        provider_unique_ids="12345678-2222-3333-1111-ff5fa2ff7f78",
+    )
+    assert res == test_get_resources_response
+
+
+def test_get_resources_wrong_input(capfd):
+    from Wiz import get_resources
+
+    with capfd.disabled():
+        res = get_resources(search=None, entity_type=None, subscription_external_ids=None, provider_unique_ids=None)
+        assert "You should pass (at least) one of the following parameters" in res
+        assert "search" in res
+        assert "entity_type" in res
+        assert "provider_unique_ids" in res
+        assert "subscription_external_ids" in res
 
 
 test_get_resource_response_search = {
@@ -406,7 +462,20 @@ VALID_RESPONSE_JSON = {
         },
         "graphSearch": {"nodes": [{"entities": [{"id": "test_id"}]}]},
         "issue": {"note": None, "control": {"query": "blabla"}, "status": "CRITICAL", "resolutionReason": "blabla reason"},
-        "projects": {"nodes": [{"projectOwners": "owner-test", "securityChampions": "champion-test"}]},
+        "projects": {
+            "nodes": [
+                {
+                    "id": "12345678-cfa4-5268-a6a9-987654321",
+                    "name": "test-test-test",
+                    "isFolder": True,
+                    "archived": False,
+                    "businessUnit": "R&D",
+                    "description": "test description",
+                    "projectOwners": [{"id": "project@test.io", "name": "Test Owner", "email": "test.owner@wiz.io"}],
+                    "securityChampions": [{"id": "champion@test.io", "name": "Test Champion", "email": "test.champion@wiz.io"}],
+                }
+            ]
+        },
         "cloudResources": {
             "nodes": [{"id": "test_id", "name": "test_name", "type": "test_type", "properties": {"test": "test"}}]
         },
@@ -489,8 +558,8 @@ def test_get_project_team(mocker, capfd):
     with capfd.disabled():
         mocker.patch("Wiz.checkAPIerrors", return_value=VALID_RESPONSE_JSON)
         project = get_project_team("test_project")
-        assert project["projectOwners"] == "owner-test"
-        assert project["securityChampions"] == "champion-test"
+        assert project[0]["projectOwners"][0]["name"] == "Test Owner"
+        assert project[0]["securityChampions"][0]["name"] == "Test Champion"
 
         mocker.patch("Wiz.checkAPIerrors", side_effect=DemistoException("demisto exception"))
         project = get_project_team("test_project")
@@ -630,7 +699,7 @@ test_clear_issue_note_response = {
 }
 
 test_clear_issue_note_fail_response = (
-    "Error details: Only the user who created the note, can delete it.\nCheck server.log file for additional information"
+    "Error details: Only the user who created the note, can delete it.\n" "Check server.log file for additional information"
 )
 
 
@@ -852,7 +921,7 @@ def test_generate_auth_urls_fed():
 
 
 def test_token_url():
-    from Wiz import AUTH0_PREFIX, COGNITO_PREFIX, generate_auth_urls
+    from Wiz import COGNITO_PREFIX, AUTH0_PREFIX, generate_auth_urls
 
     cognito_allowlist = [
         "auth.app.wiz.io/oauth/token",
@@ -887,7 +956,7 @@ def test_good_token(capfd, mocker):
         good_token = str(random.randint(1, 1000))
         mocker.patch("requests.post", return_value=mocked_requests_get({"access_token": good_token}, 200))
 
-        from Wiz import AUTH_DEFAULT, generate_auth_urls, get_token, set_authentication_endpoint
+        from Wiz import get_token, set_authentication_endpoint, generate_auth_urls, AUTH_DEFAULT
 
         set_authentication_endpoint("https://auth.wiz.io/oauth/token")
         res = get_token()
@@ -1098,3 +1167,429 @@ def test_copy_to_forensics_account_invalid_id(mocker, capfd):
             "Resource with ID 12345678-1234-1234-1234-d25e16359c19 was not copied to Forensics Account. "
             "error: {'message': 'Resource not found'}"
         )
+
+
+import pytest
+from unittest.mock import patch
+
+
+# ===== BUILD INCIDENTS TESTS =====
+
+
+@pytest.mark.parametrize(
+    "issue,expected_has_incident",
+    [
+        (None, False),
+        ({}, True),
+        ({"id": "test-id"}, True),
+        ({"id": "test-id", "sourceRule": {"name": "Test Rule"}}, True),
+        ({"id": "test-id", "sourceRule": None}, True),
+        ({"id": "test-id", "createdAt": "2025-01-01T00:00:00Z"}, True),
+    ],
+)
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.translate_severity")
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
+def test_build_incidents(mock_demisto, mock_translate_severity, issue, expected_has_incident):
+    """Test build_incidents with various issue inputs"""
+    mock_translate_severity.return_value = "Medium"
+
+    result = build_incidents(issue)
+
+    if expected_has_incident:
+        assert "name" in result
+        assert "occurred" in result
+        assert "rawJSON" in result
+        assert "severity" in result
+        if issue and issue.get("id"):
+            assert issue["id"] in result["name"]
+        assert result["rawJSON"] == json.dumps(issue)
+        assert result["severity"] == "Medium"
+    else:
+        assert result == {}
+
+
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
+def test_build_incidents_exception(mock_demisto):
+    """Test build_incidents with exception handling"""
+    issue = {"id": "test-id"}
+
+    with patch("Packs.Wiz.Integrations.Wiz.Wiz.translate_severity", side_effect=Exception("Test error")):
+        with pytest.raises(Exception) as exc_info:
+            build_incidents(issue)
+
+        # Verify the exception message contains the expected content
+        assert "build_incidents: Error processing issue test-id: Test error" in str(exc_info.value)
+
+
+# ===== VALIDATION TESTS =====
+
+
+@pytest.mark.parametrize(
+    "parameter_value,enum_values,expected_valid,expected_values",
+    [
+        ("CRITICAL", ["CRITICAL", "HIGH", "MEDIUM"], True, ["CRITICAL"]),
+        ("CRITICAL,HIGH", ["CRITICAL", "HIGH", "MEDIUM"], True, ["CRITICAL", "HIGH"]),
+        (["CRITICAL", "HIGH"], ["CRITICAL", "HIGH", "MEDIUM"], True, ["CRITICAL", "HIGH"]),
+        ("INVALID", ["CRITICAL", "HIGH", "MEDIUM"], False, None),
+        ("CRITICAL,INVALID", ["CRITICAL", "HIGH", "MEDIUM"], False, None),
+        ("", ["CRITICAL", "HIGH", "MEDIUM"], True, None),
+        (None, ["CRITICAL", "HIGH", "MEDIUM"], True, None),
+    ],
+)
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
+def test_validate_wiz_enum_parameter(mock_demisto, parameter_value, enum_values, expected_valid, expected_values, capfd):
+    """Test validate_wiz_enum_parameter with various inputs"""
+    mock_enum_class = MagicMock()
+    mock_enum_class.values.return_value = enum_values
+
+    with capfd.disabled():
+        result = validate_wiz_enum_parameter(parameter_value, mock_enum_class, "test parameter")
+
+    assert result.is_valid == expected_valid
+    if expected_valid and parameter_value:
+        assert result.value == expected_values
+
+
+@pytest.mark.parametrize(
+    "issue_type,expected_valid",
+    [
+        ("TOXIC_COMBINATION", True),
+        ("CLOUD_CONFIGURATION", True),
+        ("THREAT_DETECTION", True),
+        ("INVALID_TYPE", False),
+        ("TOXIC_COMBINATION,THREAT_DETECTION", True),
+        (["TOXIC_COMBINATION", "CLOUD_CONFIGURATION"], True),
+        (None, True),
+        ("", True),
+    ],
+)
+def test_validate_issue_type(issue_type, expected_valid, capfd):
+    """Test validate_issue_type with various inputs"""
+    with capfd.disabled():
+        result = validate_issue_type(issue_type)
+    assert result.is_valid == expected_valid
+
+
+@pytest.mark.parametrize(
+    "severity,expected_valid",
+    [
+        ("CRITICAL", True),
+        ("HIGH", True),
+        ("MEDIUM", True),
+        ("LOW", True),
+        ("INFORMATIONAL", True),
+        ("INVALID_SEVERITY", False),
+        ("CRITICAL,HIGH", True),
+        (["CRITICAL", "HIGH"], True),
+        (None, True),
+        ("", True),
+    ],
+)
+def test_validate_severity(severity, expected_valid, capfd):
+    """Test validate_severity with various inputs"""
+    with capfd.disabled():
+        result = validate_severity(severity)
+    assert result.is_valid == expected_valid
+
+
+@pytest.mark.parametrize(
+    "status,expected_valid",
+    [
+        ("OPEN", True),
+        ("IN_PROGRESS", True),
+        ("REJECTED", True),
+        ("RESOLVED", True),
+        ("INVALID_STATUS", False),
+        ("OPEN,IN_PROGRESS", True),
+        (["OPEN", "RESOLVED"], True),
+        (None, True),
+        ("", True),
+    ],
+)
+def test_validate_status(status, expected_valid, capfd):
+    """Test validate_status with various inputs"""
+    with capfd.disabled():
+        result = validate_status(status)
+    assert result.is_valid == expected_valid
+
+
+@pytest.mark.parametrize(
+    "parameters,expected_success",
+    [
+        ({"issue_type": "TOXIC_COMBINATION", "status": "OPEN", "severity": "CRITICAL"}, True),
+        ({"issue_type": "INVALID_TYPE", "status": "OPEN", "severity": "CRITICAL"}, False),
+        ({"issue_type": "TOXIC_COMBINATION", "status": "INVALID_STATUS", "severity": "CRITICAL"}, False),
+        ({"issue_type": "TOXIC_COMBINATION", "status": "OPEN", "severity": "INVALID_SEVERITY"}, False),
+        ({}, True),
+        ({"issue_type": None, "status": None, "severity": None}, True),
+    ],
+)
+def test_validate_all_issues_parameters(parameters, expected_success, capfd):
+    """Test validate_all_issues_parameters with various parameter combinations"""
+    with capfd.disabled():
+        success, error_message, validated_values = validate_all_issues_parameters(parameters)
+
+    assert success == expected_success
+    if expected_success:
+        assert error_message is None
+        assert validated_values is not None
+    else:
+        assert error_message is not None
+
+
+# ===== FILTER APPLICATION TESTS =====
+
+
+@pytest.mark.parametrize(
+    "filter_value,api_field,equals_wrapper,expected_result",
+    [
+        ("CRITICAL", "severity", False, {"filterBy": {"severity": ["CRITICAL"]}}),
+        (["CRITICAL", "HIGH"], "severity", False, {"filterBy": {"severity": ["CRITICAL", "HIGH"]}}),
+        ("OPEN", "status", True, {"filterBy": {"status": {"equals": ["OPEN"]}}}),
+        (None, "severity", False, {}),
+        ("", "severity", False, {}),
+    ],
+)
+def test_apply_wiz_filter(filter_value, api_field, equals_wrapper, expected_result):
+    """Test apply_wiz_filter with various inputs"""
+    variables = {}
+    result = apply_wiz_filter(variables, filter_value, api_field, equals_wrapper)
+
+    if filter_value:
+        assert result == expected_result
+    else:
+        assert result == variables
+
+
+def test_apply_wiz_filter_nested_path():
+    """Test apply_wiz_filter with nested path"""
+    variables = {}
+    result = apply_wiz_filter(variables, "AWS", "cloudPlatform", True, "relatedEntity")
+
+    expected = {"filterBy": {"relatedEntity": {"cloudPlatform": {"equals": ["AWS"]}}}}
+    assert result == expected
+
+
+def test_apply_wiz_filter_existing_filterby():
+    """Test apply_wiz_filter with existing filterBy"""
+    variables = {"filterBy": {"existing": "value"}}
+    result = apply_wiz_filter(variables, "CRITICAL", "severity", False)
+
+    assert result["filterBy"]["existing"] == "value"
+    assert result["filterBy"]["severity"] == ["CRITICAL"]
+
+
+@pytest.mark.parametrize(
+    "severity_list,expected_filter",
+    [
+        (["CRITICAL"], {"filterBy": {"severity": ["CRITICAL"]}}),
+        (["CRITICAL", "HIGH"], {"filterBy": {"severity": ["CRITICAL", "HIGH"]}}),
+        (None, {}),
+    ],
+)
+def test_apply_severity_filter(severity_list, expected_filter):
+    """Test apply_severity_filter with various inputs"""
+    variables = {}
+    result = apply_severity_filter(variables, severity_list)
+
+    if severity_list:
+        assert result == expected_filter
+    else:
+        assert result == variables
+
+
+@pytest.mark.parametrize(
+    "status_list,expected_filter",
+    [
+        (["OPEN"], {"filterBy": {"status": ["OPEN"]}}),
+        (["OPEN", "IN_PROGRESS"], {"filterBy": {"status": ["OPEN", "IN_PROGRESS"]}}),
+        (None, {}),
+    ],
+)
+def test_apply_status_filter(status_list, expected_filter):
+    """Test apply_status_filter with various inputs"""
+    variables = {}
+    result = apply_status_filter(variables, status_list)
+
+    if status_list:
+        assert result == expected_filter
+    else:
+        assert result == variables
+
+
+@pytest.mark.parametrize(
+    "issue_type_list,expected_filter",
+    [
+        (["TOXIC_COMBINATION"], {"filterBy": {"type": ["TOXIC_COMBINATION"]}}),
+        (["TOXIC_COMBINATION", "THREAT_DETECTION"], {"filterBy": {"type": ["TOXIC_COMBINATION", "THREAT_DETECTION"]}}),
+        (None, {}),
+    ],
+)
+def test_apply_issue_type_filter(issue_type_list, expected_filter):
+    """Test apply_issue_type_filter with various inputs"""
+    variables = {}
+    result = apply_issue_type_filter(variables, issue_type_list)
+
+    if issue_type_list:
+        assert result == expected_filter
+    else:
+        assert result == variables
+
+
+def test_apply_all_issue_filters():
+    """Test apply_all_issue_filters with all filter types"""
+    variables = {}
+    validated_values = {"severity": ["CRITICAL", "HIGH"], "status": ["OPEN"], "issue_type": ["TOXIC_COMBINATION"]}
+
+    result = apply_all_issue_filters(variables, validated_values)
+
+    assert result["filterBy"]["severity"] == ["CRITICAL", "HIGH"]
+    assert result["filterBy"]["status"] == ["OPEN"]
+    assert result["filterBy"]["type"] == ["TOXIC_COMBINATION"]
+
+
+def test_apply_all_issue_filters_empty():
+    """Test apply_all_issue_filters with empty validated values"""
+    variables = {}
+    validated_values = {}
+
+    result = apply_all_issue_filters(variables, validated_values)
+
+    assert result == variables
+
+
+# ===== GET FETCH ISSUES VARIABLES TESTS =====
+
+
+@pytest.mark.parametrize(
+    "demisto_params,expected_uses_default",
+    [
+        ({}, True),
+        ({"issue_type": None, "status": None, "severity": None}, True),
+        ({"issue_type": "TOXIC_COMBINATION"}, False),
+        ({"status": "OPEN"}, False),
+        ({"severity": "CRITICAL"}, False),
+        ({"issue_type": "TOXIC_COMBINATION", "status": "OPEN"}, False),
+    ],
+)
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
+def test_get_fetch_issues_variables(mock_demisto, demisto_params, expected_uses_default):
+    """Test get_fetch_issues_variables with various argument combinations"""
+    mock_demisto.args.return_value = demisto_params
+    mock_demisto.info = MagicMock()
+    mock_demisto.params.return_value = demisto_params
+
+    max_fetch = 50
+    last_run = "2025-01-01T00:00:00Z"
+
+    result = get_fetch_issues_variables(max_fetch, last_run)
+
+    assert result["first"] == max_fetch
+    assert result["filterBy"]["createdAt"]["after"] == last_run
+    assert "relatedEntity" in result["filterBy"]
+
+    if expected_uses_default:
+        mock_demisto.info.assert_called_with("No issue type, status or severity provided, fetching default issues")
+        assert result["filterBy"]["status"] == DEFAULT_FETCH_ISSUE_STATUS
+
+    if demisto_params.get("issue_type"):
+        assert "type" in result["filterBy"]
+    if demisto_params.get("status") and not expected_uses_default:
+        assert "status" in result["filterBy"]
+    if demisto_params.get("severity"):
+        assert "severity" in result["filterBy"]
+
+
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.return_error")
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
+def test_get_fetch_issues_variables_validation_error(mock_demisto, mock_return_error):
+    """Test get_fetch_issues_variables with validation error"""
+    mock_demisto.params.return_value = {"issue_type": "INVALID_TYPE"}
+
+    get_fetch_issues_variables(50, "2025-01-01T00:00:00Z")
+
+    mock_return_error.assert_called_once()
+
+
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.demisto")
+def test_get_fetch_issues_variables_copies_default_variables(mock_demisto):
+    """Test that get_fetch_issues_variables properly copies default variables"""
+    mock_demisto.args.return_value = {}
+    mock_demisto.info = MagicMock()
+
+    max_fetch = 100
+    last_run = "2025-01-01T00:00:00Z"
+
+    result = get_fetch_issues_variables(max_fetch, last_run)
+
+    # Verify it includes default variables
+    for key, value in PULL_ISSUES_DEFAULT_VARIABLES.items():
+        assert result[key] == value
+
+    # Verify it doesn't modify the original
+    assert "first" not in PULL_ISSUES_DEFAULT_VARIABLES
+    assert "statusChangedAt" not in PULL_ISSUES_DEFAULT_VARIABLES
+
+
+# ===== ENUM CLASSES TESTS =====
+
+
+def test_wiz_issue_type_values():
+    """Test WizIssueType.values() returns expected values"""
+    values = WizIssueType.values()
+    expected = ["TOXIC_COMBINATION", "CLOUD_CONFIGURATION", "THREAT_DETECTION"]
+
+    assert all(value in values for value in expected)
+    assert len(values) == len(expected)
+
+
+def test_wiz_severity_values():
+    """Test WizSeverity.values() returns expected values"""
+    values = WizSeverity.values()
+    expected = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFORMATIONAL"]
+
+    assert all(value in values for value in expected)
+    assert len(values) == len(expected)
+
+
+def test_wiz_status_values():
+    """Test WizStatus.values() returns expected values"""
+    values = WizStatus.values()
+    expected = ["OPEN", "IN_PROGRESS", "REJECTED", "RESOLVED"]
+
+    assert all(value in values for value in expected)
+    assert len(values) == len(expected)
+
+
+# ===== VALIDATION RESPONSE TESTS =====
+
+
+def test_validation_response_success():
+    """Test ValidationResponse.create_success()"""
+    response = ValidationResponse.create_success(["test", "value"])
+
+    assert response.is_valid is True
+    assert response.error_message is None
+    assert response.value == ["test", "value"]
+
+
+def test_validation_response_error():
+    """Test ValidationResponse.create_error()"""
+    response = ValidationResponse.create_error("Test error message")
+
+    assert response.is_valid is False
+    assert response.error_message == "Test error message"
+    assert response.value is None
+
+
+def test_validation_response_to_dict():
+    """Test ValidationResponse.to_dict()"""
+    response = ValidationResponse.create_success(["test"])
+    response.severity_list = ["CRITICAL"]
+
+    result = response.to_dict()
+
+    assert result["is_valid"] is True
+    assert result["error_message"] is None
+    assert result["value"] == ["test"]
+    assert result["severity_list"] == ["CRITICAL"]

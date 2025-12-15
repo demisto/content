@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: MISP V3
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -1668,10 +1668,14 @@ script:
       - false_positive
       - expiration
       required: true
-    - description: ID of attribute to add sighting to (Must be filled if UUID is empty). Can be retrieved from the misp-search commands.
+    - description: ID of attribute to add sighting to (Must be filled if UUID or value is empty). Can be retrieved from the misp-search commands.
       name: id
-    - description: UUID of the attribute to add sighting to (Must be filled if ID is empty). Can be retrieved from the misp-search commands.
+    - description: UUID of the attribute to add sighting to (Must be filled if ID or value is empty). Can be retrieved from the misp-search commands.
       name: uuid
+    - description: Value of the attribute to add sighting to. (Must be filled if ID or UUID is empty). Adds sighting to all attributes with this value. Takes precedence over (UU)ID. Can be retrieved from the misp-search commands.
+      name: value
+    - description: Sighting source.
+      name: source
     description: Add sighting to an attribute.
     name: misp-add-sighting
   - arguments:
@@ -2733,7 +2737,131 @@ script:
     - contextPath: MISP.Role.role_name
       description: MISP role name.
       type: string
-  dockerimage: demisto/pymisp2:2.5.10.3545364
+  - arguments:
+    - description: ID of the warninglist.
+      name: id
+      required: true
+    description: Get a specific warninglist by its ID.
+    name: misp-get-warninglist
+    outputs:
+    - contextPath: MISP.Warninglist.ID
+      description: The ID of the warninglist.
+      type: number
+    - contextPath: MISP.Warninglist.Name
+      description: The warninglist's name.
+      type: string
+    - contextPath: MISP.Warninglist.Type
+      description: MISP warninglist type.
+      type: string
+    - contextPath: MISP.Warninglist.Description
+      description: Description of the warninglist.
+      type: string
+    - contextPath: MISP.Warninglist.Version
+      description: The warninglist version number.
+      type: number
+    - contextPath: MISP.Warninglist.Enabled
+      description: Whether the warninglist is enabled.
+      type: boolean
+    - contextPath: MISP.Warninglist.Default
+      description: Whether the warninglist is set as default.
+      type: boolean
+    - contextPath: MISP.Warninglist.Category
+      description: The category of the MISP warninglist.
+      type: string
+    - contextPath: MISP.Warninglist.Entries
+      description: The warninglist entries.
+      type: dict
+    - contextPath: MISP.Warninglist.Attributes
+      description: The attribute types for this warninglist.
+      type: dict
+  - arguments: []
+    description: Gets all warninglists from MISP
+    name: misp-get-warninglists
+    outputs:
+    - contextPath: MISP.Warninglist.ID
+      description: The ID of the warninglist.
+      type: number
+    - contextPath: MISP.Warninglist.Name
+      description: The warninglist's name.
+      type: string
+    - contextPath: MISP.Warninglist.Type
+      description: MISP warninglist type.
+      type: string
+    - contextPath: MISP.Warninglist.Description
+      description: Description of the warninglist.
+      type: string
+    - contextPath: MISP.Warninglist.Version
+      description: The warninglist version number.
+      type: number
+    - contextPath: MISP.Warninglist.Enabled
+      description: Whether the warninglist is enabled.
+      type: boolean
+    - contextPath: MISP.Warninglist.Default
+      description: Whether the warninglist is set as default.
+      type: boolean
+    - contextPath: MISP.Warninglist.Entries
+      description: The warninglist entries.
+      type: dict
+    - contextPath: MISP.Warninglist.Attributes
+      description: The attribute types for this warninglist.
+      type: dict
+  - arguments:
+    - name: id
+      description: ID of the warninglist to update.
+      required: true
+      type: number
+    - name: name
+      description: Updated name of the warninglist.
+    - name: type
+      description: Updated type of the warninglist.
+    - name: description
+      description: Updated description of the warninglist.
+    - name: enabled
+      description: Whether the warninglist is enabled.
+      type: boolean
+    - name: version
+      description: Updated version number of the warninglist.
+    - name: default
+      description: Whether the warninglist is set as default.
+      type: boolean
+    - name: values
+      description: Updated values of the warninglist.
+    - name: types
+      description: Updated valid attribute types for the warninglist.
+    description: Changes a warninglist in MISP.
+    name: misp-change-warninglist
+    outputs:
+    - contextPath: MISP.Warninglist.ID
+      description: The ID of the warninglist to be changed.
+      type: number
+    - contextPath: MISP.Warninglist.Name
+      description: The updated warninglist name.
+      type: string
+    - contextPath: MISP.Warninglist.Type
+      description: The updated warninglist type.
+      type: string
+    - contextPath: MISP.Warninglist.Description
+      description: The updated description of the warninglist.
+      type: string
+    - contextPath: MISP.Warninglist.Version
+      description: The updated warninglist version number.
+      type: number
+    - contextPath: MISP.Warninglist.Enabled
+      description: Whether the warninglist is enabled.
+      type: boolean
+    - contextPath: MISP.Warninglist.Default
+      description: Whether the warninglist is set as default.
+      type: boolean
+    - contextPath: MISP.Warninglist.Category
+      description: The updated category of the warninglist.
+      type: string
+    - contextPath: MISP.Warninglist.Entries
+      description: The warninglist entries.
+      type: dict
+    - contextPath: MISP.Warninglist.Attributes
+      description: The attribute types for this warninglist.
+      type: string
+  dockerimage: demisto/pymisp2:2.5.17.1.4892767
   runonce: false
   script: ''
   subtype: python3

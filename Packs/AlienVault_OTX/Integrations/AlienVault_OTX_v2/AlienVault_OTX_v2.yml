@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -27,6 +27,14 @@ configuration:
 - defaultvalue: '2'
   display: Indicator Threshold. The minimum number of pulses to consider the indicator as malicious.
   name: default_threshold
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- defaultvalue: '2'
+  display: Minimum number of validated sources to consider the indicator as benign.
+  additionalinfo: Specifies the minimum number of entries in the API response's "validation" field in order for the indicator to be considered benign.
+  name: min_valid_sources
   type: 0
   section: Collect
   advanced: true

@@ -2,7 +2,7 @@
     "name": "Microsoft Graph User",
     "description": "Use the Microsoft Graph integration to connect to and interact with user objects on Microsoft Platforms.",
     "support": "xsoar",
-    "currentVersion": "1.5.49",
+    "currentVersion": "1.5.60",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -26,6 +26,12 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr",
+        "cloud"
     ]
 }

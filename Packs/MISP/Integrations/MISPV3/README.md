@@ -2552,9 +2552,9 @@ Adds a tag to the given UUID event .
 `perm_tag_editor`
 
 When adding local tags, make sure to have the following:
-1. Host Organization Requirement: The most important requirement is that the user (or the API key) you are authenticating with must belong to the organization that is set as the MISP.host_org_id on your MISP instance. If this is not met, you will get a permission error even if you have perm_tagger and perm_tag_editor.
-2. Tag Existence: If the local tag you are trying to add does not already exist on your MISP instance, your user will also need the *perm_tag_editor* permission for it to be created. If it already exists, *perm_tagger* is sufficient. 
 
+1. Host Organization Requirement: The most important requirement is that the user (or the API key) you are authenticating with must belong to the organization that is set as the MISP.host_org_id on your MISP instance. If this is not met, you will get a permission error even if you have perm_tagger and perm_tag_editor.
+2. Tag Existence: If the local tag you are trying to add does not already exist on your MISP instance, your user will also need the *perm_tag_editor* permission for it to be created. If it already exists, *perm_tagger* is sufficient.
 
 #### Input
 
@@ -2677,8 +2677,9 @@ Adds a tag to the given UUID attribute.
 `perm_tag_editor`
 
 When adding local tags, make sure to have the following:
+
 1. Host Organization Requirement: The most important requirement is that the user (or the API key) you are authenticating with must belong to the organization that is set as the MISP.host_org_id on your MISP instance. If this is not met, you will get a permission error even if you have perm_tagger and perm_tag_editor.
-2. Tag Existence: If the local tag you are trying to add does not already exist on your MISP instance, your user will also need the *perm_tag_editor* permission for it to be created. If it already exists, *perm_tagger* is sufficient. 
+2. Tag Existence: If the local tag you are trying to add does not already exist on your MISP instance, your user will also need the *perm_tag_editor* permission for it to be created. If it already exists, *perm_tagger* is sufficient.
 
 #### Input
 
@@ -2870,8 +2871,10 @@ Add sighting to an attribute.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | Type of sighting to add. Possible values: "sighting", "false_positive", and "expiration". Possible values are: sighting, false_positive, expiration. | Required |
-| id | ID of attribute to add sighting to (Must be filled if UUID is empty). Can be retrieved from the misp-search commands. | Optional |
-| uuid | UUID of the attribute to add sighting to (Must be filled if ID is empty). Can be retrieved from the misp-search commands. | Optional |
+| id | ID of attribute to add sighting to (Must be filled if UUID or value is empty). Can be retrieved from the misp-search commands. | Optional |
+| uuid | UUID of the attribute to add sighting to (Must be filled if ID or value is empty). Can be retrieved from the misp-search commands. | Optional |
+| value | Value of the attribute to add sighting to. (Must be filled if ID or UUID is empty). Adds sighting to all attributes with this value. Takes precedence over (UU)ID. Can be retrieved from the misp-search commands. | Optional |
+| source | Sighting source. | Optional |
 
 #### Context Output
 
@@ -4347,3 +4350,223 @@ Display role names and role ids.
 >|id|name|
 >|---|---|
 >| 1 | rolename |
+
+### misp-get-warninglists
+
+***
+Gets all warninglists from MISP
+
+#### Base Command
+
+`misp-get-warninglists`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Warninglist.ID | number | The ID of the warninglist. |
+| MISP.Warninglist.Name | string | The warninglist's name. |
+| MISP.Warninglist.Type | string | MISP warninglist type. |
+| MISP.Warninglist.Description | string | Description of the warninglist. |
+| MISP.Warninglist.Version | number | The warninglist version number. |
+| MISP.Warninglist.Enabled | boolean | Whether the warninglist is enabled. |
+| MISP.Warninglist.Default | boolean | Whether the warninglist is set as default. |
+| MISP.Warninglist.Entries | dict | The warninglist entries. |
+| MISP.Warninglist.Attributes | dict | The valid attribute types for this warninglist. |
+
+#### Command Example
+
+```!misp-get-warninglists```
+
+#### Human Readable Output
+
+>### MISP
+>
+>|ID|Name|Type|Description|Version|Enabled|Default|Category|Attributes|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 1 | List | string | An example list | 1 | true | true | false_positive | hostname |
+>| 2 | Another list | cidr | An example of another list | 42 | false | false | false_positive | url |
+
+### misp-change-warninglist
+
+***
+Changes a warninglist in MISP.
+This command only changes the values supplied through the parameters of this command (in a non idempotent way).
+
+#### Base Command
+
+`misp-change-warninglist`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the warninglist to update. | Required |
+| name | Updated name of the warninglist. | Optional |
+| type | Updated type of the warninglist. | Optional |
+| description | Updated description of the warninglist. | Optional |
+| version | Updated version number of the warninglist. | Optional |
+| default | Whether the warninglist should be set as default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Warninglist.ID | number | The ID of the warninglist. |
+| MISP.Warninglist.Name | string | The warninglist's name. |
+| MISP.Warninglist.Type | string | MISP warninglist type. |
+| MISP.Warninglist.Description | string | Description of the warninglist. |
+| MISP.Warninglist.Version | number | The warninglist version number. |
+| MISP.Warninglist.Enabled | boolean | Whether the warninglist is enabled. |
+| MISP.Warninglist.Default | boolean | Whether the warninglist is set as default. |
+| MISP.Warninglist.Category | string | The category of the MISP warninglist. |
+| MISP.Warninglist.Entries | dict | The warninglist entries. |
+| MISP.Warninglist.Attributes | dict | The valid attribute types for this warninglist. |
+
+#### Command Example
+
+```!misp-change-warninglist id=1234 name="Changed list name" values="1.2.3.4,5.6.7.8" types="ip-src,ip-dst"```
+
+```json
+{
+    "MISP": {
+        "Warninglist": [ 
+            {
+                "ID": 1234,
+                "Name": "Changed list name",
+                "Type": "string",
+                "Description": "The entries in this list have been changed",
+                "Version": 42,
+                "Enabled": false,
+                "Default": false,
+                "Category": "false_positive",
+                "Attributes": [
+                    "ip-src",
+                    "ip-dst"
+                ],
+                "Entries": [
+                    {
+                        "Comment": null,
+                        "ID": null,
+                        "Value": "1.2.3.4",
+                        "WarninglistID": null
+                    },
+                    {
+                        "Comment": null,
+                        "ID": null,
+                        "Value": "5.6.7.8",
+                        "WarninglistID": null
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+>
+>### MISP Warninglist
+>
+>|ID|Name|Type|Description|Version|Enabled|Default|Category|Attributes|
+>|---|---|---|---|---|---|---|---|
+>| 1234 | Changed list name | string | An example of an existing description | 1 | true | true | false_positive | ip-src, ip-dst |
+
+>### Entries in MISP Warninglist
+>
+>|Value|
+>|---|
+>| 1.2.3.4 |
+>| 5.6.7.8 |
+
+### misp-get-warninglist
+
+***
+Get a specific warninglist by its ID.
+
+#### Base Command
+
+`misp-get-warninglist`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the warninglist. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Warninglist.ID | number | The ID of the warninglist. |
+| MISP.Warninglist.Name | string | The warninglist's name. |
+| MISP.Warninglist.Type | string | MISP warninglist type. |
+| MISP.Warninglist.Description | string | Description of the warninglist. |
+| MISP.Warninglist.Version | number | The warninglist version number. |
+| MISP.Warninglist.Enabled | boolean | Whether the warninglist is enabled. |
+| MISP.Warninglist.Default | boolean | Whether the warninglist is set as default. |
+| MISP.Warninglist.Category | string | The category of the MISP warninglist. |
+| MISP.Warninglist.Entries | unknown | The warninglist entries. |
+| MISP.Warninglist.Attributes | unknown | The valid attribute types for this warninglist. |
+
+#### Command Example
+
+```!misp-get-warninglist id=1234```
+
+#### Context Example
+
+```json
+{
+    "MISP": {
+        "Warninglist": [ 
+            {
+                "ID": 1234,
+                "Name": "Hello XSOAR!",
+                "Type": "string",
+                "Description": "The Quick Brown Fox Jumped Over The Lazy Dog",
+                "Version": 1,
+                "Enabled": false,
+                "Default": false,
+                "Category": "false_positive",
+                "Attributes": [
+                    "attrib1",
+                    "attrib2"
+                ],
+                "Entries": [
+                    {
+                        "ID": 12345,
+                        "Value": "test",
+                        "WarninglistID": 1,
+                        "Comment": null
+                    },
+                    {
+                        "ID": 56789,
+                        "Value": "another-test",
+                        "WarninglistID": 1,
+                        "Comment": null
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### MISP Warninglist
+>
+>|ID|Name|Type|Description|Version|Enabled|Default|Category|Attributes|
+>|---|---|---|---|---|---|---|---|
+>| 1234 | Example List Name | string | An example of a warninglist in MISP | 1 | true | true | false_positive | hostname |
+>
+>### Entries in MISP Warninglist
+>
+>|ID|Value|Description|
+>|---|---|---|
+>|123| hostname.example.local | An example of a hostname |

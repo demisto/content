@@ -194,33 +194,33 @@
 <pre>{
     "Cofense.Report": [
         {
-            "ReportBody": "Good day\n\n\nPlease arrange to provide the best offer for below attached Purchase Order\nThe requirement for our green field project in Berghofen,Dortmund.\nKindly get back to us\n\n \n\n\n1) Proforma invoice with bank details\n\n2) Delivery date \n\n3) FOB/CIF Port\n\n \n\n \n \nRegards,\n\nkahn Gotze\nSales &amp; Services Assistant\n", 
-            "ReportedAt": "2019-05-17T11:37:52.000Z", 
-            "ReporterId": 5328, 
-            "Tags": [], 
-            "ClusterId": null, 
-            "ID": 13232, 
-            "Location": "Processed", 
+            "ReportBody": "Good day\n\n\nPlease arrange to provide the best offer for below attached Purchase Order\nThe requirement for our green field project in Berghofen,Dortmund.\nKindly get back to us\n\n \n\n\n1) Proforma invoice with bank details\n\n2) Delivery date \n\n3) FOB/CIF Port\n\n \n\n \n \nRegards,\n\nkahn Gotze\nSales &amp; Services Assistant\n",
+            "ReportedAt": "2019-05-17T11:37:52.000Z",
+            "ReporterId": 5328,
+            "Tags": [],
+            "ClusterId": null,
+            "ID": 13232,
+            "Location": "Processed",
             "EmailAttachments": [
                 {
-                    "content_type": "application/octet-stream; name=ORDER#t571BA80.rar", 
-                    "size_in_bytes": 219777, 
-                    "decoded_filename": "ORDER#t571BA80.rar", 
+                    "content_type": "application/octet-stream; name=ORDER#t571BA80.rar",
+                    "size_in_bytes": 219777,
+                    "decoded_filename": "ORDER#t571BA80.rar",
                     "email_attachment_payload": {
-                        "sha256": "1e2c4ac7be08888c72c953adaeb79254e7e9b821988bfdad5d75d75b2467def1", 
-                        "id": 7037, 
-                        "mime_type": "application/x-rar; charset=binary", 
+                        "sha256": "1e2c4ac7be08888c72c953adaeb79254e7e9b821988bfdad5d75d75b2467def1",
+                        "id": 7037,
+                        "mime_type": "application/x-rar; charset=binary",
                         "md5": "e74c45a697651f3942f86fc5fce009df"
-                    }, 
-                    "id": 17831, 
+                    },
+                    "id": 17831,
                     "report_id": 13232
                 }
-            ], 
-            "ReportSubject": "NEW ORDER", 
-            "MatchPriority": 5, 
-            "Sha256": "ca2579c53bd4ff0fa70fe38ae09a893c9332b8dfeab6ca7a13b89a709d54c0bb", 
-            "CategoryId": 3, 
-            "CreatedAt": "2019-05-17T16:57:16.343Z", 
+            ],
+            "ReportSubject": "NEW ORDER",
+            "MatchPriority": 5,
+            "Sha256": "ca2579c53bd4ff0fa70fe38ae09a893c9332b8dfeab6ca7a13b89a709d54c0bb",
+            "CategoryId": 3,
+            "CreatedAt": "2019-05-17T16:57:16.343Z",
             "Md5": "f5a1766371c063414d8b6a616b19bad0"
         }
     ]
@@ -394,7 +394,7 @@
 <h5>Context Example</h5>
 <pre>{
     "Cofense.Reporter": {
-        "Email": "vishnuetp16@gmail.com", 
+        "Email": "vishnuetp16@gmail.com",
         "ID": "5328"
     }
 }
@@ -528,19 +528,19 @@
 <pre>{
     "Cofense.Report": [
         {
-            "ReportedAt": "2019-04-17T16:54:57.000Z", 
-            "ReporterId": 3280, 
-            "Reporter": "no-reply@server.com", 
-            "Tags": [], 
-            "ClusterId": null, 
-            "ID": 5760, 
-            "Location": "Processed", 
-            "EmailAttachments": [], 
-            "ReportSubject": "example.gmail.com Reset password instruction", 
-            "MatchPriority": 0, 
-            "Sha256": "4f6bc0d9c1217a2a6f327423e16b7a6e9294c68cfb33864541bd805fe4ab2d72", 
-            "CategoryId": 4, 
-            "CreatedAt": "2019-04-17T20:53:02.090Z", 
+            "ReportedAt": "2019-04-17T16:54:57.000Z",
+            "ReporterId": 3280,
+            "Reporter": "no-reply@server.com",
+            "Tags": [],
+            "ClusterId": null,
+            "ID": 5760,
+            "Location": "Processed",
+            "EmailAttachments": [],
+            "ReportSubject": "example.gmail.com Reset password instruction",
+            "MatchPriority": 0,
+            "Sha256": "4f6bc0d9c1217a2a6f327423e16b7a6e9294c68cfb33864541bd805fe4ab2d72",
+            "CategoryId": 4,
+            "CreatedAt": "2019-04-17T20:53:02.090Z",
             "Md5": "f13bbc172fe7d394828ccabb25c3c99e"
         }
     ]

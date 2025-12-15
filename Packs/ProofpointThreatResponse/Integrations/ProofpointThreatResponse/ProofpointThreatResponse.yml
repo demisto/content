@@ -1,5 +1,5 @@
 category: Network Security
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -728,6 +728,9 @@ script:
     - name: fetch_delta
       defaultValue: '6'
       description: The time frame (in hours) used to identify the size of batches when retrieving the messages. e.g., 12.
+    - name: check_exact_reception_time
+      defaultValue: 'true'
+      description: If true, the command checks for quarantined emails with the exact reception time of the email. If false, the verification of the quarantined email only uses the message ID and the recipient email.
     outputs:
     - contextPath: ProofPointTRAP.Quarantine
       description: Results of the email quarantine operation.
@@ -739,7 +742,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
 tests:
 - No test
 fromversion: 5.0.0

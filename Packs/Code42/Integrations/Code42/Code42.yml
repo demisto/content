@@ -2,16 +2,17 @@ category: Endpoint
 commonfields:
   id: Code42
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
 - defaultvalue: console.us.code42.com
   display: Code42 Console URL for your Code42 environment
   name: console_url
-  required: true
+  required: false
   type: 0
   section: Connect
+  hidden: true
 - defaultvalue: api.us.code42.com
   display: API Gateway URL for your Code42 environment
   name: api_url
@@ -183,7 +184,8 @@ script:
       description: The email of the user to create.
       name: email
       required: true
-    description: Creates a Code42 user.
+    deprecated: true
+    description: DEPRECATED. Use the Incydr console to create users.
     name: code42-user-create
     outputs:
     - contextPath: Code42.User.Username
@@ -199,7 +201,8 @@ script:
     - description: The username of the user to block.
       name: username
       required: true
-    description: Blocks a user in Code42.  A blocked user is not allowed to log in or restore files. Backups will continue if the user is still active.
+    deprecated: true
+    description: DEPRECATED. Use the Incydr console to block users.
     name: code42-user-block
     outputs:
     - contextPath: Code42.User.UserID
@@ -219,7 +222,8 @@ script:
     - description: The username of the user to unblock.
       name: username
       required: true
-    description: Removes a block, if one exists, on the user with the given user ID. Unblocked users are allowed to log in and restore.
+    deprecated: true
+    description: DEPRECATED. Use the Incydr console to unblock users.
     name: code42-user-unblock
     outputs:
     - contextPath: Code42.User.UserID
@@ -287,6 +291,45 @@ script:
       name: filename
     description: Downloads a file from Code42.
     name: code42-download-file
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+  - name: code42-download-file-by-xfc-id
+    description: Downloads a file from Incydr using the XFC Event ID.
+    arguments:
+      - description: The XFC Event ID of the file to download.
+        name: xfc_id
+        required: true
+      - description: The filename to save the file as.
+        name: filename
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -449,7 +492,7 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.3575721
+  dockerimage: demisto/py42:1.0.0.5470953
   isfetch: true
   runonce: false
   script: '-'

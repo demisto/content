@@ -202,6 +202,6 @@ defaultclassifier: AWS Feed Classifier
 defaultmapperin: AWS Feed Mapper
 tests:
 - No tests (auto formatted)
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

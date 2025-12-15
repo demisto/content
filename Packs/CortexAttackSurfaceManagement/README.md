@@ -1,3 +1,5 @@
+> **Note**: This pack works with Cortex Xpanse Expander 2.x and Cortex XSIAM 2.x. If you are using Cortex XSIAM 3.x, see the [Cortex Exposure Management](https://github.com/demisto/content/blob/master/Packs/CortexExposureManagement/README.md) pack, which contains playbooks and content for addressing identified ASM risks with Cortex XSIAM 3.x.
+
 The **Cortex Attack Surface Management** pack is supported by Cortex Xpanse Expander and the (Attack Surface Management) ASM module for Cortex XSIAM.
 
 [Cortex Xpanse](https://www.paloaltonetworks.com/cortex/cortex-xpanse) Expander and the Attack Surface Management (ASM) module for [Cortex XSIAM](https://www.paloaltonetworks.com/cortex/cortex-xsiam) are both best in class External Attack Surface Management solutions that strive to proactively reduce the frequency and severity of security incidents caused by internet-exposed risks. These solutions deliver comprehensive attack surface visibility by combining thorough, ML-enhanced asset attribution with continuous attack surface assessment. Any discovered risks are prioritized using contextual information and exploitability data, and findings are actioned through curated, automated playbooks to investigate, remediate, and summarize every new alert.
@@ -170,7 +172,7 @@ This playbook is used to pull information from Cortex Endpoint (XSIAM/XDR) syste
 
 #### Cortex ASM - Cortex Endpoint Remediation
 
-This playbook is used for remediating a single exposed Cortex Endpoint (XSIAM/XDR) by isolating the endpoint from the network using the "Isolate Endpoint" feature in XSIAM ([see XSIAM details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Isolate-an-Endpoint)) and XDR ([see XDR details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Isolate-an-Endpoint)).
+This playbook is used for remediating a single exposed Cortex Endpoint (XSIAM/XDR) by isolating the endpoint from the network using the "Isolate Endpoint" feature in XSIAM ([see XSIAM details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Isolate-an-endpoint)) and XDR ([see XDR details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Isolate-an-endpoint)).
 
 ![Cortex ASM - Cortex Endpoint Remediation](doc_files/Cortex_ASM_-_Cortex_Endpoint_Remediation.png)
 

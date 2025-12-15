@@ -35,7 +35,7 @@ For more information, see [this article](https://kcm.trellix.com/corporate/index
 
 ### Cortex XSIAM side
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
 ### Broker VM
 

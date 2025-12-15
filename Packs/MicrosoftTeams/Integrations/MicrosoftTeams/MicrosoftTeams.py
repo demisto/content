@@ -33,8 +33,8 @@ class FormType(Enum):  # Used for 'send-message', and by the MicrosoftTeamsAsk s
 EXTERNAL_FORM_URL_DEFAULT_HEADER = "Microsoft Teams Form"
 PARAMS: dict = demisto.params()
 BOT_ID: str = PARAMS.get("credentials", {}).get("identifier", "") or PARAMS.get("bot_id", "")
+IS_SINGLE_TENANT_BOT_TYPE: bool = PARAMS.get("is_single_tenant_bot_type") or False
 BOT_PASSWORD: str = PARAMS.get("credentials", {}).get("password", "") or PARAMS.get("bot_password", "")
-TENANT_ID: str = PARAMS.get("tenant_id", "")
 APP: Flask = Flask("demisto-teams")
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
 GRAPH_BASE_URL: str = "https://graph.microsoft.com"
@@ -194,6 +194,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         ],
         "microsoft-teams-message-send-to-chat": [
             Perms.USER_READ_ALL,
+            Perms.CHAT_READBASIC,
             Perms.CHAT_CREATE,
             Perms.CHATMESSAGE_SEND,
             Perms.APPCATALOG_READ_ALL,
@@ -325,7 +326,6 @@ def handle_teams_proxy_and_ssl():
 
 PROXIES, USE_SSL = handle_teams_proxy_and_ssl()
 
-
 """ HELPER FUNCTIONS """
 
 
@@ -353,7 +353,7 @@ def error_parser(resp_err: requests.Response, api: str = "graph") -> str:
         if api == "graph":
             error_codes = response.get("error_codes", [""])
             if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
-                reset_graph_auth(error_codes, response.get("error_description", ""))
+                reset_auth(error_codes, response.get("error_description", ""), graph_only=True)
 
             error = response.get("error", {})
             err_str = (
@@ -373,10 +373,13 @@ def error_parser(resp_err: requests.Response, api: str = "graph") -> str:
         return resp_err.text
 
 
-def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
+def reset_auth(error_codes: list = [], error_desc: str = "", graph_only: bool = False):
     """
-    Reset the Graph API authorization in the integration context.
-    This function clears the current graph authorization data: current_refresh_token, graph_access_token, graph_valid_until
+    Reset the cached API authorization data in the integration context.
+    This function clears the current authorization data: current graph/bot tokens, token validity, refresh tokens and bot type
+    :param error_codes: Error codes to log when resetting after token expiration
+    :param error_desc: Error description to output when resetting after token expiration
+    :param graph_only: Boolean to determine if only graph tokens should be reset
     """
 
     integration_context: dict = get_integration_context()
@@ -385,6 +388,10 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     integration_context.pop("graph_valid_until", "")
     integration_context[AUTHCODE_TOKEN_PARAMS] = "{}"
     integration_context[CREDENTIALS_TOKEN_PARAMS] = "{}"
+    if not graph_only:
+        integration_context.pop("bot_access_token", "")
+        integration_context.pop("bot_valid_until", "")
+        integration_context.pop("bot_type", "")
     set_integration_context(integration_context)
 
     if error_codes or error_desc:
@@ -396,14 +403,14 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
             "parameter and then run !microsoft-teams-auth-test to re-authenticate"
         )
 
-    demisto.debug("Successfully reset the current_refresh_token, graph_access_token and graph_valid_until.")
+    demisto.debug("Successfully reset the cached API authorization data.")
 
 
-def reset_graph_auth_command():
+def reset_auth_command():
     """
-    A wrapper function for the reset_graph_auth() which resets the Graph API authorization in the integration context.
+    A wrapper function for the reset_auth() which resets the cached API authorization in the integration context.
     """
-    reset_graph_auth()
+    reset_auth()
     return_results(CommandResults(readable_output="Authorization was reset successfully."))
 
 
@@ -785,7 +792,10 @@ def add_data_to_actions(card_json, data_value):
         # Check if this dictionary is an Action.Submit or Action.Execute
         if card_json.get("type") in ["Action.Submit", "Action.Execute"]:
             # Add the 'data' key with the provided value
-            card_json["data"] = data_value
+            if "data" in card_json:
+                card_json["data"].update(data_value)
+            else:
+                card_json["data"] = data_value
 
         # Only check nested elements within 'actions'
         if "actions" in card_json:
@@ -796,7 +806,30 @@ def add_data_to_actions(card_json, data_value):
             add_data_to_actions(card_json["card"], data_value)
 
 
-def process_adaptive_card(adaptive_card_obj: dict) -> dict:
+def handle_raw_adaptive_card(adaptive_card_obj: dict) -> dict:
+    """
+    Check if the adaptive card is already wrapped with the contentType and content keys, otherwise try to fix it.
+
+    :param adaptive_card_obj: The user supplied adaptive card
+    :return: Adaptive card with contentType and content keys
+    """
+    if (
+        "contentType" not in adaptive_card_obj
+        and "content" not in adaptive_card_obj
+        and adaptive_card_obj.get("type") == "AdaptiveCard"
+    ):
+        # This is a 'raw' adaptive card
+        wrapped_adaptive_card = {
+            "contentType": "application/vnd.microsoft.card.adaptive",
+            "content": adaptive_card_obj,
+        }
+        return wrapped_adaptive_card
+
+    # We are not completely sure this is a raw adaptive card so we will not modify it
+    return adaptive_card_obj
+
+
+def process_teams_ask_adaptive_card(adaptive_card_obj: dict) -> dict:
     """
     Processes adaptive cards coming from MicrosoftTeamsAsk. It will find all action elements
     of type Action.Submit or Action.Execute within adaptive_card_obj['adaptive_card'] and add entitlement,
@@ -805,7 +838,8 @@ def process_adaptive_card(adaptive_card_obj: dict) -> dict:
     :return: Adaptive card with entitlement.
     """
 
-    adaptive_card = adaptive_card_obj.get("adaptive_card", "")
+    adaptive_card = adaptive_card_obj.get("adaptive_card", {})
+    adaptive_card = handle_raw_adaptive_card(adaptive_card)
     data_obj: dict = {}
     data_obj["entitlement"] = str(adaptive_card_obj.get("entitlement", ""))
     data_obj["investigation_id"] = str(adaptive_card_obj.get("investigation_id", ""))
@@ -822,20 +856,44 @@ def get_bot_access_token() -> str:
     """
     integration_context: dict = get_integration_context()
     access_token: str = integration_context.get("bot_access_token", "")
-    valid_until: int = integration_context.get("bot_valid_until", int)
+    valid_until: int = integration_context.get("bot_valid_until", 0)
+    bot_type: str = "single-tenant" if IS_SINGLE_TENANT_BOT_TYPE else integration_context.get("bot_type", "multi-tenant")
     if access_token and valid_until and epoch_seconds() < valid_until:
         return access_token
-    url: str = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
+
     data: dict = {
         "grant_type": "client_credentials",
         "client_id": BOT_ID,
         "client_secret": BOT_PASSWORD,
         "scope": "https://api.botframework.com/.default",
     }
-    response: requests.Response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
+
+    if bot_type == "multi-tenant":
+        demisto.debug("Attempting authentication to the multi-tenant bot framework url")
+        url: str = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
+        response: requests.Response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
+        if response.json().get("error", "") == "unauthorized_client":
+            # Could not find bot-id in the common directory for multi-tenant bots, assume it is a single-tenant bot
+            demisto.debug("Failed to authenticate, falling back to single-tenant bot type")
+            bot_type = "single-tenant"
+
+    if bot_type == "single-tenant":
+        tenant_id = integration_context.get("tenant_id")
+        if not tenant_id:
+            raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
+        demisto.debug(f"Attempting authentication to the {tenant_id} tenant specific bot framework url")
+        url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+        response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
+
     if not response.ok:
+        if "bot_type" in integration_context:  # Clear cached bot type on authentication error to avoid issues
+            demisto.debug("Authentication failed, resetting cached bot type")
+            integration_context.pop("bot_type")
+            set_integration_context(integration_context)
+
         error = error_parser(response, "bot")
         raise ValueError(f"Failed to get bot access token [{response.status_code}] - {error}")
+
     try:
         response_json: dict = response.json()
         access_token = response_json.get("access_token", "")
@@ -846,6 +904,7 @@ def get_bot_access_token() -> str:
             expires_in -= time_buffer
         integration_context["bot_access_token"] = access_token
         integration_context["bot_valid_until"] = time_now + expires_in
+        integration_context["bot_type"] = bot_type
         set_integration_context(integration_context)
         return access_token
     except ValueError:
@@ -999,6 +1058,8 @@ channel was added to the bot in the Azure portal during setup.
 Refer to steps #13-14 of the "Creating the Demisto Bot using Microsoft Azure Portal" \
 section in the integration documentation for more information.
 
+If the problem is not resolved, see Troubleshooting step #5 in the integration documentation.
+
 (Error Message): {error}"""
 
             raise ValueError(f"Error code [{response.status_code}] in API call to Microsoft Teams:\n{error}")
@@ -1050,7 +1111,7 @@ def integration_health():
 
     api_health_output: list = [{"Bot Framework API Health": bot_framework_api_health, "Graph API Health": graph_api_health}]
 
-    adi_health_human_readable: str = tableToMarkdown("Microsoft API Health", api_health_output)
+    api_health_human_readable: str = tableToMarkdown("Microsoft API Health", api_health_output)
 
     mirrored_channels_output = []
     integration_context: dict = get_integration_context()
@@ -1073,13 +1134,9 @@ def integration_health():
     else:
         mirrored_channels_human_readable = "No mirrored channels."
 
-    demisto.results(
-        {
-            "ContentsFormat": formats["json"],
-            "Type": entryTypes["note"],
-            "HumanReadable": adi_health_human_readable + mirrored_channels_human_readable,
-            "Contents": adi_health_human_readable + mirrored_channels_human_readable,
-        }
+    res = api_health_human_readable + mirrored_channels_human_readable
+    return_results(
+        CommandResults(raw_response=res, readable_output=res, entry_type=EntryType.NOTE, content_format=EntryFormat.MARKDOWN)
     )
 
 
@@ -2355,15 +2412,18 @@ def send_message():
                 if entities:
                     conversation["body"]["mentions"] = entities
     else:  # Adaptive card
+        # This use case is relevant for TeamsAsk script when the entitlement is one of the keys under the adaptive_card
         entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
         if entitlement_match_ac:
-            adaptive_card_processed = process_adaptive_card(adaptive_card)
+            adaptive_card_processed = process_teams_ask_adaptive_card(adaptive_card)
             conversation = {"type": "message", "attachments": [adaptive_card_processed]}
+        else:
+            adaptive_card = handle_raw_adaptive_card(adaptive_card)
+            conversation = {"type": "message", "attachments": [adaptive_card]}
 
     service_url: str = integration_context.get("service_url", "")
     if not service_url:
         raise ValueError("Did not find service URL. Try messaging the bot on Microsoft Teams")
-
     res: dict = send_message_request(service_url, recipient, conversation, message_id, team_aad_id)
     results = CommandResults(
         outputs={"ID": res.get("id")},
@@ -2639,16 +2699,20 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
     if not service_url:
         raise ValueError("Did not find service URL. Try messaging the bot on Microsoft Teams")
 
+    integration_context["bot_name"] = recipient_name
+
+    if tenant_id != integration_context.get("tenant_id"):
+        # Update the tenant id in context immediately to avoid errors
+        demisto.debug(f"Saving tenant ID to context: {tenant_id=}")
+        integration_context["tenant_id"] = tenant_id
+        set_integration_context(integration_context)
+
     for member in members_added:
         member_id = member.get("id", "")
         if bot_id in member_id:
-            # The bot was added to a team, caching team ID and team members
             demisto.info(f"The bot was added to team {team_name}")
         else:
-            demisto.info(f"Someone was added to team {team_name}")
-        integration_context["tenant_id"] = tenant_id
-        integration_context["bot_name"] = recipient_name
-        break
+            demisto.info(f"A user was added to team {team_name}")
 
     team_members: list = get_team_members(service_url, team_id)
 
@@ -3327,14 +3391,11 @@ def test_module():
     """
     if not BOT_ID or not BOT_PASSWORD:
         raise DemistoException("Bot ID and Bot Password must be provided.")
-    if "Client" not in AUTH_TYPE:
-        raise DemistoException(
-            "Test module is available for Client Credentials only."
-            " For other authentication types use the !microsoft-teams-auth-test command"
-        )
 
-    get_bot_access_token()  # Tests token retrieval for Bot Framework API
-    return_results("ok")
+    raise DemistoException(
+        "Test module is unavailable for the Microsoft Teams Integration."
+        " Please use the !microsoft-teams-integration-health command to test connectivity."
+    )
 
 
 def generate_login_url_command():
@@ -3394,7 +3455,7 @@ def auth_type_switch_handling():
             f"The user switched the instance authentication type from {current_auth_type} to {AUTH_TYPE}.\n"
             f"Resetting the integration context."
         )
-        reset_graph_auth()
+        reset_auth()
         integration_context = get_integration_context()
         demisto.debug(f"Setting the current_auth_type in the integration context to {AUTH_TYPE}.")
         integration_context["current_auth_type"] = AUTH_TYPE
@@ -3529,7 +3590,7 @@ def main():  # pragma: no cover
         "microsoft-teams-channel-user-list": channel_user_list_command,
         "microsoft-teams-user-remove-from-channel": user_remove_from_channel_command,
         "microsoft-teams-generate-login-url": generate_login_url_command,
-        "microsoft-teams-auth-reset": reset_graph_auth_command,
+        "microsoft-teams-auth-reset": reset_auth_command,
         "microsoft-teams-token-permissions-list": token_permissions_list_command,
         "microsoft-teams-create-messaging-endpoint": create_messaging_endpoint_command,
         "microsoft-teams-message-update": message_update_command,

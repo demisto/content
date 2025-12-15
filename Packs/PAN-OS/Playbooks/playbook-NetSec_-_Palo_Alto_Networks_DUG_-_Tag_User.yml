@@ -2,8 +2,7 @@ id: NetSec - Palo Alto Networks DUG - Tag User
 version: -1
 fromversion: 5.0.0
 name: NetSec - Palo Alto Networks DUG - Tag User
-description: 'Block a user by tagging them in the Palo Alto Networks NGFW. This requires
-  PAN-OS 9.1 or higher.'
+description: 'Block a user by tagging them in the Palo Alto Networks NGFW. This requires PAN-OS 9.1 or higher.'
 starttaskid: "0"
 tasks:
   "0":
@@ -268,3 +267,5 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam

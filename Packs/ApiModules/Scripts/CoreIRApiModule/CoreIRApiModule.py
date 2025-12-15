@@ -9,6 +9,8 @@ import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
+from re import Match
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -145,6 +147,15 @@ ALERT_EVENT_AZURE_FIELDS = {
     "resourceType",
     "tenantId",
 }
+
+# Filter object query operators
+EQ = "EQ"
+NEQ = "NEQ"
+CONTAINS = "CONTAINS"
+IP_MATCH = "IP_MATCH"
+IPLIST_MATCH = "IPLIST_MATCH"
+IS_EMPTY = "IS_EMPTY"
+NIS_EMPTY = "NIS_EMPTY"
 
 RBAC_VALIDATIONS_VERSION = "8.6.0"
 RBAC_VALIDATIONS_BUILD_NUMBER = "992980"
@@ -302,6 +313,7 @@ class CoreClient(BaseClient):
         :param lte_modification_time_milliseconds: greater than modification time in milliseconds
         :return:
         """
+
         search_from = page_number * limit
         search_to = search_from + limit
 
@@ -386,6 +398,7 @@ class CoreClient(BaseClient):
 
         if len(filters) > 0:
             request_data["filters"] = filters
+
         res = self._http_request(
             method="POST",
             url_suffix="/incidents/get_incidents/",
@@ -396,6 +409,34 @@ class CoreClient(BaseClient):
         incidents = res.get("reply", {}).get("incidents", [])
 
         return incidents
+
+    def get_incident_data(
+        self, incident_id: str, alerts_limit: int, full_alert_fields: bool = False, remove_nulls_from_alerts: bool = True
+    ) -> dict:
+        """
+        Returns incident extra data by id
+        :param incident_id: The id of case
+        :param alerts_limit: Maximum number issues to get
+        :param full_alert_fields: Whether to return full alert fields
+        :return:
+        """
+        request_data = {
+            "incident_id": incident_id,
+            "alerts_limit": alerts_limit,
+            "full_alert_fields": full_alert_fields,
+            "drop_nulls": remove_nulls_from_alerts,
+        }
+
+        demisto.debug(f"Calling get_incident_extra_data with {request_data=}.")
+        response = self._http_request(
+            method="POST",
+            url_suffix="/incidents/get_incident_extra_data/",
+            json_data={"request_data": request_data},
+            headers=self._headers,
+            timeout=self.timeout,
+        )
+        demisto.debug(f"The response of get_incident_extra_data is: {response}.")
+        return response.get("reply", {})
 
     def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: Dict[Any, Any]) -> List[Any]:
         """Called from get_incidents if the command is fetch-incidents. Implement in child classes."""
@@ -1378,11 +1419,18 @@ class CoreClient(BaseClient):
 
 
 class AlertFilterArg:
-    def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
-        self.search_field = search_field
-        self.search_type = search_type
-        self.arg_type = arg_type
-        self.option_mapper = option_mapper
+    def __init__(self, search_field: str, search_type: str, arg_type: str, option_mapper: dict = {}):
+        self.search_field: str = search_field
+        self.search_type: str = search_type
+        self.arg_type: str = arg_type
+        self.option_mapper: dict = option_mapper
+
+    def get_search_value(self, value: str) -> str:
+        """Returns the value based on option mapping or original value."""
+        if self.option_mapper:
+            return self.option_mapper.get(value, value)
+
+        return value
 
 
 def catch_and_exit_gracefully(e):
@@ -1400,52 +1448,117 @@ def catch_and_exit_gracefully(e):
         raise e
 
 
-def init_filter_args_options():
+STATUS_PROGRESS = {"New": "STATUS_010_NEW", "In Progress": "STATUS_020_UNDER_INVESTIGATION", "Resolved": "STATUS_025_RESOLVED"}
+STATUS_PROGRESS_REVERSE = {value: key for key, value in STATUS_PROGRESS.items()}
+SEVERITY_STATUSES = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+SEVERITY_STATUSES_REVERSE = {value: key for key, value in SEVERITY_STATUSES.items()}
+
+ALERT_DOMAIN = {
+    "Security": "DOMAIN_SECURITY",
+    "Health": "DOMAIN_HEALTH",
+    "Hunting": "DOMAIN_HUNTING",
+    "IT": "DOMAIN_IT",
+    "Posture": "DOMAIN_POSTURE",
+}
+
+DETECTION_METHOD_HR_TO_MACHINE_NAME = {
+    "XDR Agent": "TRAPS",
+    "XDR Analytics": "MAGNIFIER",
+    "XDR Analytics BIOC": "ANALYTICS_BIOC",
+    "PAN NGFW": "FW",
+    "XDR BIOC": "BIOC",
+    "XDR IOC": "IOC",
+    "Threat Intelligence": "THREAT_INTELLIGENCE",
+    "XDR Managed Threat Hunting": "MTH",
+    "Correlation": "CORRELATION",
+    "Prisma Cloud": "PRISMA_CLOUD",
+    "Prisma Cloud Compute": "PRISMA_CLOUD_COMPUTE",
+    "ASM": "XPANSE",
+    "IoT Security": "IOT",
+    "Custom Alert": "CREATE_ALERT_PUBLIC_API",
+    "Health": "HEALTH",
+    "SaaS Attachments": "EMAIL_ATTACHMENT",
+    "Attack Path": "ATTACK_PATH",
+    "Cloud Network Analyzer": "CLOUD_NETWORK_ANALYZER",
+    "IaC Scanner": "CAS_IAC_SCANNER",
+    "CAS Secret Scanner": "CAS_SECRET_SCANNER",
+    "CI/CD Risks": "CAS_CI_CD_RISK_SCANNER",
+    "CLI Scanner": "CLI_SCANNER",
+    "CIEM Scanner": "CIEM_SCANNER",
+    "API Traffic Monitor": "API_TRAFFIC_MONITOR",
+    "API Posture Scanner": "API_POSTURE_SCANNER",
+    "Agentless Disk Scanner": "AGENTLESS_DISK_SCANNER",
+    "Kubernetes Scanner": "KUBERNETES_SCANNER",
+    "Compute Policy": "COMPUTE_POLICY",
+    "CSPM Scanner": "CSPM_SCANNER",
+    "CAS CVE Scanner": "CAS_CVE_SCANNER",
+    "CAS License Scanner": "CAS_LICENSE_SCANNER",
+    "Secrets Scanner": "SECRETS_SCANNER",
+    "SAST Scanner": "CAS_SAST_SCANNER",
+    "Data Policy": "DATA_POLICY",
+    "Attack Surface Test": "ATTACK_SURFACE_TEST",
+    "Package Operational Risk": "CAS_OPERATIONAL_RISK_SCANNER",
+    "Vulnerability Policy": "VULNERABILITY_POLICY",
+    "AI Security Posture": "AISPM_RULE_ENGINE",
+}
+
+
+def init_filter_args_options() -> dict[str, AlertFilterArg]:
     array = "array"
     dropdown = "dropdown"
     time_frame = "time_frame"
+    constant = "constant"
 
     return {
-        "alert_id": AlertFilterArg("internal_id", "EQ", array),
-        "severity": AlertFilterArg(
-            "severity", "EQ", dropdown, {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH"}
-        ),
+        "alert_id": AlertFilterArg("internal_id", EQ, array),
+        "severity": AlertFilterArg("severity", EQ, array, SEVERITY_STATUSES),
         "starred": AlertFilterArg(
             "starred",
-            "EQ",
+            EQ,
             dropdown,
             {
                 "true": True,
                 "False": False,
             },
         ),
-        "Identity_type": AlertFilterArg("Identity_type", "EQ", dropdown),
-        "alert_action_status": AlertFilterArg("alert_action_status", "EQ", dropdown, ALERT_STATUS_TYPES_REVERSE_DICT),
-        "agent_id": AlertFilterArg("agent_id", "EQ", array),
-        "action_external_hostname": AlertFilterArg("action_external_hostname", "CONTAINS", array),
-        "rule_id": AlertFilterArg("matching_service_rule_id", "EQ", array),
-        "rule_name": AlertFilterArg("fw_rule", "EQ", array),
-        "alert_name": AlertFilterArg("alert_name", "CONTAINS", array),
-        "alert_source": AlertFilterArg("alert_source", "CONTAINS", array),
-        "time_frame": AlertFilterArg("source_insert_ts", None, time_frame),
-        "user_name": AlertFilterArg("actor_effective_username", "CONTAINS", array),
-        "actor_process_image_name": AlertFilterArg("actor_process_image_name", "CONTAINS", array),
-        "causality_actor_process_image_command_line": AlertFilterArg("causality_actor_process_command_line", "EQ", array),
-        "actor_process_image_command_line": AlertFilterArg("actor_process_command_line", "EQ", array),
-        "action_process_image_command_line": AlertFilterArg("action_process_image_command_line", "EQ", array),
-        "actor_process_image_sha256": AlertFilterArg("actor_process_image_sha256", "EQ", array),
-        "causality_actor_process_image_sha256": AlertFilterArg("causality_actor_process_image_sha256", "EQ", array),
-        "action_process_image_sha256": AlertFilterArg("action_process_image_sha256", "EQ", array),
-        "action_file_image_sha256": AlertFilterArg("action_file_sha256", "EQ", array),
-        "action_registry_name": AlertFilterArg("action_registry_key_name", "EQ", array),
-        "action_registry_key_data": AlertFilterArg("action_registry_data", "CONTAINS", array),
-        "host_ip": AlertFilterArg("agent_ip_addresses", "IPLIST_MATCH", array),
-        "action_local_ip": AlertFilterArg("action_local_ip", "IP_MATCH", array),
-        "action_remote_ip": AlertFilterArg("action_remote_ip", "IP_MATCH", array),
-        "action_local_port": AlertFilterArg("action_local_port", "EQ", array),
-        "action_remote_port": AlertFilterArg("action_remote_port", "EQ", array),
-        "dst_action_external_hostname": AlertFilterArg("dst_action_external_hostname", "CONTAINS", array),
-        "mitre_technique_id_and_name": AlertFilterArg("mitre_technique_id_and_name", "CONTAINS", array),
+        "Identity_type": AlertFilterArg("Identity_type", EQ, dropdown),
+        "alert_action_status": AlertFilterArg("alert_action_status", EQ, dropdown, ALERT_STATUS_TYPES_REVERSE_DICT),
+        "agent_id": AlertFilterArg("agent_id", EQ, array),
+        "action_external_hostname": AlertFilterArg("action_external_hostname", CONTAINS, array),
+        "rule_id": AlertFilterArg("matching_service_rule_id", EQ, array),
+        "rule_name": AlertFilterArg("fw_rule", EQ, array),
+        "alert_name": AlertFilterArg("alert_name", CONTAINS, array),
+        "alert_source": AlertFilterArg("alert_source", CONTAINS, array, DETECTION_METHOD_HR_TO_MACHINE_NAME),
+        "time_frame": AlertFilterArg("source_insert_ts", "", time_frame),
+        "user_name": AlertFilterArg("actor_effective_username", CONTAINS, array),
+        "actor_process_image_name": AlertFilterArg("actor_process_image_name", CONTAINS, array),
+        "causality_actor_process_image_command_line": AlertFilterArg("causality_actor_process_command_line", EQ, array),
+        "actor_process_image_command_line": AlertFilterArg("actor_process_command_line", EQ, array),
+        "action_process_image_command_line": AlertFilterArg("action_process_image_command_line", EQ, array),
+        "actor_process_image_sha256": AlertFilterArg("actor_process_image_sha256", EQ, array),
+        "causality_actor_process_image_sha256": AlertFilterArg("causality_actor_process_image_sha256", EQ, array),
+        "action_process_image_sha256": AlertFilterArg("action_process_image_sha256", EQ, array),
+        "action_file_image_sha256": AlertFilterArg("action_file_sha256", EQ, array),
+        "action_registry_name": AlertFilterArg("action_registry_key_name", EQ, array),
+        "action_registry_key_data": AlertFilterArg("action_registry_data", CONTAINS, array),
+        "host_ip": AlertFilterArg("agent_ip_addresses", IPLIST_MATCH, array),
+        "action_local_ip": AlertFilterArg("action_local_ip", IP_MATCH, array),
+        "action_remote_ip": AlertFilterArg("action_remote_ip", IP_MATCH, array),
+        "action_local_port": AlertFilterArg("action_local_port", EQ, array),
+        "action_remote_port": AlertFilterArg("action_remote_port", EQ, array),
+        "dst_action_external_hostname": AlertFilterArg("dst_action_external_hostname", CONTAINS, array),
+        "mitre_technique_id_and_name": AlertFilterArg("mitre_technique_id_and_name", CONTAINS, array),
+        "alert_category": AlertFilterArg("alert_category", EQ, array),
+        "alert_domain": AlertFilterArg("alert_domain", EQ, array),
+        "alert_description": AlertFilterArg("alert_description", CONTAINS, array),
+        "os_actor_process_image_sha256": AlertFilterArg("os_actor_process_image_sha256", EQ, array),
+        "action_file_macro_sha256": AlertFilterArg("action_file_macro_sha256", EQ, array),
+        "status": AlertFilterArg("status.progress", EQ, array, STATUS_PROGRESS),
+        "not_status": AlertFilterArg("status.progress", NEQ, array, STATUS_PROGRESS),
+        "asset_ids": AlertFilterArg("asset_ids", EQ, array),
+        "assignee": AlertFilterArg("assigned_to_pretty", CONTAINS, array),
+        "unassigned": AlertFilterArg("assigned_to_pretty", IS_EMPTY, constant),
+        "assigned": AlertFilterArg("assigned_to_pretty", NIS_EMPTY, constant),
     }
 
 
@@ -1549,6 +1662,17 @@ def convert_time_to_epoch(time_to_convert: str) -> int:
             )
 
 
+def construct_query_building_block(search_field: str, search_type: str, search_value: str):
+    """
+    Constructs a query building block with search field, type, and value.
+    :param search_field: The field to search in
+    :param search_type: The type of search to perform
+    :param search_value: The value to search for
+    :return: A dictionary containing the search parameters
+    """
+    return {"SEARCH_FIELD": search_field, "SEARCH_TYPE": search_type, "SEARCH_VALUE": search_value}
+
+
 def create_filter_from_args(args: dict) -> dict:
     """
     Builds an XDR format filter dict for the xdr-get-alert command.
@@ -1556,9 +1680,9 @@ def create_filter_from_args(args: dict) -> dict:
     :return: The filter format built from args
     """
     valid_args = init_filter_args_options()
-    and_operator_list = []
-    start_time = args.pop("start_time", None)
-    end_time = args.pop("end_time", None)
+    and_operator_list: list[dict] = []
+    start_time = args.pop("start_time", "")
+    end_time = args.pop("end_time", "")
 
     if (start_time or end_time) and ("time_frame" not in args):
         raise DemistoException('Please choose "custom" under time_frame argument when using start_time and end_time arguments')
@@ -1566,7 +1690,8 @@ def create_filter_from_args(args: dict) -> dict:
     for arg_name, arg_value in args.items():
         if arg_name not in valid_args:
             raise DemistoException(f"Argument {arg_name} is not valid.")
-        arg_properties = valid_args.get(arg_name)
+
+        arg_properties: AlertFilterArg = valid_args.get(arg_name)  # type: ignore[assignment]
 
         # handle time frame
         if arg_name == "time_frame":
@@ -1574,8 +1699,8 @@ def create_filter_from_args(args: dict) -> dict:
             if arg_value == "custom":
                 if not start_time or not end_time:
                     raise DemistoException("Please provide start_time and end_time arguments when using time_frame as custom.")
-                start_time = convert_time_to_epoch(start_time)
-                end_time = convert_time_to_epoch(end_time)
+                start_time = convert_time_to_epoch(start_time)  # type: ignore[assignment]
+                end_time = convert_time_to_epoch(end_time)  # type: ignore[assignment]
                 search_type = "RANGE"
                 search_value: Union[dict, Optional[str]] = {"from": start_time, "to": end_time}
 
@@ -1592,26 +1717,34 @@ def create_filter_from_args(args: dict) -> dict:
                 {"SEARCH_FIELD": arg_properties.search_field, "SEARCH_TYPE": search_type, "SEARCH_VALUE": search_value}
             )
 
-        # handle array args, array elements should be seperated with 'or' op
+        elif arg_properties.arg_type == "array" and arg_properties.search_type == NEQ:
+            # Array args with negation operator elements should be separated with 'and' op
+            negation_and_list = []
+            arg_list = argToList(arg_value)
+            for arg_item in arg_list:
+                negation_and_list.append(
+                    construct_query_building_block(
+                        arg_properties.search_field, arg_properties.search_type, arg_properties.get_search_value(arg_item)
+                    )
+                )
+            and_operator_list.append({"AND": negation_and_list})
+
         elif arg_properties.arg_type == "array":
+            # Array args with EQ/Contains operator elements should be separated with 'or' op
             or_operator_list = []
             arg_list = argToList(arg_value)
             for arg_item in arg_list:
                 or_operator_list.append(
-                    {
-                        "SEARCH_FIELD": arg_properties.search_field,
-                        "SEARCH_TYPE": arg_properties.search_type,
-                        "SEARCH_VALUE": arg_item,
-                    }
+                    construct_query_building_block(
+                        arg_properties.search_field, arg_properties.search_type, arg_properties.get_search_value(arg_item)
+                    )
                 )
             and_operator_list.append({"OR": or_operator_list})
         else:
             and_operator_list.append(
-                {
-                    "SEARCH_FIELD": arg_properties.search_field,
-                    "SEARCH_TYPE": arg_properties.search_type,
-                    "SEARCH_VALUE": arg_properties.option_mapper.get(arg_value) if arg_properties.option_mapper else arg_value,
-                }
+                construct_query_building_block(
+                    arg_properties.search_field, arg_properties.search_type, arg_properties.get_search_value(arg_value)
+                )
             )
 
     return {"AND": and_operator_list}
@@ -1788,24 +1921,21 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
         return CommandResults(readable_output=f"Endpoint {endpoint_id} pending isolation.")
     if endpoint_status == "UNINSTALLED":
         raise ValueError(f"Error: Endpoint {endpoint_id}'s Agent is uninstalled and therefore can not be isolated.")
-    if endpoint_status == "DISCONNECTED":
-        if disconnected_should_return_error:
-            raise ValueError(f"Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.")
-        else:
-            return CommandResults(
-                readable_output=f"Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}.",
-                outputs={
-                    f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                    f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id
-                },
-            )
+    if endpoint_status == "DISCONNECTED" and disconnected_should_return_error:
+        raise ValueError(f"Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.")
+
     if is_isolated == "AGENT_PENDING_ISOLATION_CANCELLATION":
         raise ValueError(f"Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.")
     try:
         result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+        readable_output = (
+            f"Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}."
+            if endpoint_status == "DISCONNECTED"
+            else f"The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n"
+        )
 
         return CommandResults(
-            readable_output=f"The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n",
+            readable_output=readable_output,
             outputs={
                 f'{args.get("integration_context_brand", "CoreApiModule")}.'
                 f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id
@@ -1882,10 +2012,6 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
     standard_endpoints = []
     for single_endpoint in endpoints:
         status, is_isolated, hostname, ip = get_endpoint_properties(single_endpoint)
-        # in the `-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
-        # in the `endpoint` command we use the standard
-        if ip_as_string and ip and isinstance(ip, list):
-            ip = ip[0]
         os_type = convert_os_to_standard(single_endpoint.get("os_type", ""))
         endpoint = Common.Endpoint(
             id=single_endpoint.get("endpoint_id"),
@@ -3633,6 +3759,29 @@ ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
 
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
+    """
+    Get alerts by filter.
+
+    Args:
+        client (CoreClient): The Core client to use for the request.
+        args (Dict): The arguments for the command.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+
+    def fix_array_value(match: Match[str]) -> str:
+        """
+        Fixes malformed array values in the 'agent_id' custom_filter argument.
+        It converts a stringified list (e.g., "[\"a\",\"b\"]") into a proper JSON array.
+        """
+        array_content = match.group(1)
+        elements = [elem.strip().strip('"') for elem in array_content.split(",")]
+        fixed_array = json.dumps(elements)
+        # Return the full match with only SEARCH_VALUE fixed
+        full_match = match.group(0)
+        return full_match.replace(f'"[{array_content}]"', fixed_array)
+
     # get arguments
     request_data: dict = {"filter_data": {}}
     filter_data = request_data["filter_data"]
@@ -3642,8 +3791,11 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     args.pop("integration_name", None)
     custom_filter = {}
     filter_data["sort"] = [{"FIELD": sort_field, "ORDER": sort_order}]
-    offset = args.pop("offset", 0)
-    limit = args.pop("limit", 50)
+    offset = int(args.pop("offset", 0))
+    limit = int(args.pop("limit", 50))
+    if offset > limit:
+        raise DemistoException("starting offset cannot be greater than limit")
+
     filter_data["paging"] = {"from": int(offset), "to": int(limit)}
     if not args:
         raise DemistoException("Please provide at least one filter argument.")
@@ -3652,13 +3804,20 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     custom_filter_str = args.pop("custom_filter", None)
 
     if custom_filter_str:
-        for arg in args:
-            if arg not in ["time_frame", "start_time", "end_time"]:
-                raise DemistoException('Please provide either "custom_filter" argument or other filter arguments but not both.')
         try:
             custom_filter = json.loads(custom_filter_str)
+
+        except json.JSONDecodeError:
+            demisto.debug(
+                "Failed to load custom filter, trying to fix malformed array values in the agent_id custom_filter argument"
+            )  # noqa: E501
+            # Trying to fix malformed array values in the agent_id custom_filter argument
+            pattern = r'"SEARCH_FIELD":\s*"agent_id"[^}]*"SEARCH_VALUE":\s*"\[([^\]]+)\]"'
+            fixed_json_str = re.sub(pattern, fix_array_value, custom_filter_str)
+            custom_filter = json.loads(fixed_json_str)
+
         except Exception as e:
-            raise DemistoException("custom_filter format is not valid.") from e
+            raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
 
     filter_res = create_filter_from_args(args)
     if custom_filter:  # if exists, add custom filter to the built filter
@@ -3682,26 +3841,46 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
 
         context.append(alert)
 
-    human_readable = [
-        {
-            "Alert ID": alert.get("internal_id"),
-            "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
-            "Name": alert.get("alert_name"),
-            "Severity": alert.get("severity"),
-            "Category": alert.get("alert_category"),
-            "Action": alert.get("alert_action_status_readable"),
-            "Description": alert.get("alert_description"),
-            "Host IP": alert.get("agent_ip_addresses"),
-            "Host Name": alert.get("agent_hostname"),
-        }
-        for alert in context
-    ]
+    ALERT_OR_ISSUE = "Alert"
+    if is_platform():
+        ALERT_OR_ISSUE = "Issue"
+        human_readable = [
+            {
+                "Issue ID": alert.get("internal_id"),
+                "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
+                "Name": alert.get("alert_name"),
+                "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")),
+                "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress")),
+                "Category": alert.get("alert_category"),
+                "Action": alert.get("alert_action_status_readable"),
+                "Description": alert.get("alert_description"),
+                "Host IP": alert.get("agent_ip_addresses"),
+                "Host Name": alert.get("agent_hostname"),
+            }
+            for alert in context
+        ]
+    else:
+        human_readable = [
+            {
+                "Alert ID": alert.get("internal_id"),
+                "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
+                "Name": alert.get("alert_name"),
+                "Severity": alert.get("severity"),
+                "Status": alert.get("status.progress"),
+                "Category": alert.get("alert_category"),
+                "Action": alert.get("alert_action_status_readable"),
+                "Description": alert.get("alert_description"),
+                "Host IP": alert.get("agent_ip_addresses"),
+                "Host Name": alert.get("agent_hostname"),
+            }
+            for alert in context
+        ]
 
     return CommandResults(
-        outputs_prefix=f"{prefix}.Alert",
+        outputs_prefix=f"{prefix}.{ALERT_OR_ISSUE}",
         outputs_key_field="internal_id",
         outputs=context,
-        readable_output=tableToMarkdown("Alerts", human_readable),
+        readable_output=tableToMarkdown(f"{ALERT_OR_ISSUE}", human_readable),
         raw_response=raw_response,
     )
 

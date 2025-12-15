@@ -13,6 +13,7 @@ from CyberBlindspot import (
     CBS_CARD_FIELDS,
     CBS_CRED_FIELDS,
     CBS_DOMAIN_INFRINGE_FIELDS,
+    CBS_MALWARE_LOG_FIELDS,
 )
 
 """CONSTANTS"""
@@ -59,6 +60,12 @@ MODULES = [
         "CyberBlindspot.IncidentList",
         "CyberBlindspot.RemoteIncident",
         CBS_DOMAIN_INFRINGE_FIELDS,
+    ),
+    (
+        "malware_logs",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_MALWARE_LOG_FIELDS,
     ),
 ]
 
@@ -138,6 +145,12 @@ def mock_last_fetch_ids():
                     "RD-FA144D66C",
                     "RD-5049BCA31",
                     "RD-FBD354127",
+                ]
+            case "malware_logs":
+                return [
+                    "ML-904CE0968",
+                    "ML-DEAF1ABD5",
+                    "ML-919AE2387",
                 ]
             case _:
                 return [
@@ -309,6 +322,7 @@ def test_convert_time_string(mock_input, mock_args, mock_asserts, capfd, caplog)
         ("fetch_creds_response_valid.json", "cred_list_cmd_result_valid.json", MODULES[2][0]),
         ("fetch_domains_response_valid.json", "domain_list_cmd_result_valid.json", MODULES[3][0]),
         ("fetch_subdomains_response_valid.json", "subdomain_list_cmd_result_valid.json", MODULES[4][0]),
+        ("fetch_malware_logs_response_valid.json", "malware_logs_list_cmd_result_valid.json", MODULES[5][0]),
     ],
 )
 def test_map_and_create_incident(mock_input_file, mock_assert_file, mock_module):
@@ -352,6 +366,9 @@ def test_map_and_create_incident(mock_input_file, mock_assert_file, mock_module)
         ("", ([], []), ([], []), MODULES[4][0]),
         ("fetch_subdomains_response_valid.json", 2, ([], []), MODULES[4][0]),
         ("fetch_subdomains_response_valid.json", -2, ([], []), MODULES[4][0]),
+        ("", ([], []), ([], []), MODULES[5][0]),
+        ("fetch_malware_logs_response_valid.json", 2, ([], []), MODULES[5][0]),
+        ("fetch_malware_logs_response_valid.json", -2, ([], []), MODULES[5][0]),
     ],
 )
 def test_deduplicate_and_create_incidents(
@@ -524,6 +541,7 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
                     "screenshots": "The screenshot evidence if available",
                     "brand": "The organization the incident belongs to",
                     "timestamp": "The timestamp of when the record was created",
+                    "external_link": "External link to the remote platform",
                 }
             },
         ),
@@ -540,6 +558,7 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
                     "remarks": "Remarks about the incident",
                     "type": "Incident type",
                     "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
                     "card_number": "The compromised card's number.",
                     "cvv": "The compromised card's Card Verification Value (CVV).",
                     "expiry_month": "The compromised card's expiration month.",
@@ -560,6 +579,7 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
                     "remarks": "Remarks about the incident",
                     "type": "Incident type",
                     "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
                     "breach_source": "The source of breached data.",
                     "domain": "The domain related to the breached data.",
                     "email": "Email found in the breached data.",
@@ -582,6 +602,7 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
                     "remarks": "Remarks about the incident",
                     "type": "Incident type",
                     "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
                     "confirmation_time": "The time of infringement confirmation.",
                     "risks": "The potential difficulties carried by the infringement.",
                     "incident_status": "The status of the infringement incident.",
@@ -601,9 +622,44 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
                     "remarks": "Remarks about the incident",
                     "type": "Incident type",
                     "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
                     "confirmation_time": "The time of infringement confirmation.",
                     "risks": "The potential difficulties carried by the infringement.",
                     "incident_status": "The status of the infringement incident.",
+                }
+            },
+        ),
+        (
+            MODULES[5][0],
+            {
+                "CyberBlindspot Incident": {
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "timestamp": "The timestamp of when the record was created",
+                    "brand": "The organization the incident belongs to",
+                    "status": "Incident's current state of affairs",
+                    "severity": "The severity of the incident",
+                    "remarks": "Remarks about the incident",
+                    "type": "Incident type",
+                    "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
+                    "masked_password": "The masked password related to the breached data.",
+                    "password": "Password found in the breached data or compromised account.",
+                    "software": "The software related to the breached data.",
+                    "user": "The user related to the breached data.",
+                    "user_domain": "The domain of the user related to the breached data.",
+                    "website": "The website related to the breached data.",
+                    "sources": "The sources related to the breached data.",
+                    "source_uri": "The source URI related to the breached data.",
+                    "domain": "The domain related to the breached data or compromised device.",
+                    "hostname": "The hostname related to the breached data.",
+                    "stealer_family": "The family of the malware.",
+                    "compromise_details": "The details of the compromise.",
+                    "date_compromised": "The date the malware was compromised.",
+                    "computer_name": "The name of the computer that was compromised.",
+                    "operating_system": "The operating system of the computer that was compromised.",
+                    "malware_path": "The path of the malware.",
+                    "url_path": "The URL path of the malware.",
                 }
             },
         ),
@@ -780,6 +836,20 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_module,
             MODULES[4][0],
             MODULES[4][1],
         ),
+        (
+            "fetch_malware_logs_response_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "malware_logs_list_cmd_result_valid.json",
+            MODULES[5][0],
+            MODULES[5][1],
+        ),
+        (
+            False,
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            False,
+            MODULES[5][0],
+            MODULES[5][1],
+        ),
     ],
 )
 def test_ctm360_cbs_incident_list_command(
@@ -828,10 +898,11 @@ def test_ctm360_cbs_incident_list_command(
                 "status": "Member Feedback",
                 "coa": "Member Side Action",
                 "remarks": "New leaked_credential with severity High found",
+                "external_link": "https://platform.ctm360.com/cbs/threat_manager/incidents/COMX584598490058",
                 "first_seen": "27-12-2023 05:42:18 AM",
                 "last_seen": "27-12-2023 05:42:18 AM",
                 "screenshots": [{"filename": "screenshot1.png", "filepath": "29207a3d7f2ce17cd6309d1fc0f5ad7e"}],
-                "brand": "Mock Brand",
+                "brand": "RiskAssess Demo",
                 "timestamp": "1703655740964",
             },
             MODULES[0],
@@ -843,7 +914,7 @@ def test_ctm360_cbs_incident_list_command(
             MODULES[0],
         ),
         (
-            "card_details_response_valid.json",
+            "cred_details_response_valid.json",
             {"ticketId": "BC-0D7FDA777"},
             {
                 "first_seen": "24-11-2024 09:23:11 PM",
@@ -852,6 +923,7 @@ def test_ctm360_cbs_incident_list_command(
                 "domain": "example.local",
                 "type": "",
                 "remarks": "Pure Incubation Breach - yash.abc@example.local",
+                "external_link": "https://platform.ctm360.com/cbs/leaks/breached_credentials?filters=[]&searchQuery=BC-0D7FDA777&selectedSearchField=leak_id",
                 "email": "yash.abc@example.local",
                 "username": "yser",
                 "password": "ypass123!",
@@ -868,7 +940,7 @@ def test_ctm360_cbs_incident_list_command(
             MODULES[1],
         ),
         (
-            "cred_details_response_valid.json",
+            "card_details_response_valid.json",
             {"ticketId": "LC-A1E4B2F49"},
             {
                 "first_seen": "25-12-2024 09:16:59 AM",
@@ -877,8 +949,9 @@ def test_ctm360_cbs_incident_list_command(
                 "cvv": "123",
                 "expiry_month": 4,
                 "expiry_year": 2026,
-                "brand": "Demo Bank",
+                "brand": "RiskAssess Demo",
                 "id": "LC-A1E4B2F49",
+                "external_link": "https://platform.ctm360.com/cbs/leaks/compromised_cards?filters=[]&searchQuery=LC-A1E4B2F49&selectedSearchField=leak_id",
                 "status": "new",
                 "timestamp": "1735107419000",
                 "severity": "Low",
@@ -904,6 +977,7 @@ def test_ctm360_cbs_incident_list_command(
                 "severity": "High",
                 "type": "Domain Infringement",
                 "risks": ["Has A Record", "Has MX Record", "Newly registered when detected", "Has NS Record", "Has DNS Record"],
+                "external_link": "https://platform.ctm360.com/cbs/domains/registered/uYa30ZYB_inRxraHlAO4",
                 "status": "monitoring",
                 "incident_status": "member_feedback",
                 "brand": "RiskAssess Demo",
@@ -928,6 +1002,7 @@ def test_ctm360_cbs_incident_list_command(
                 "severity": "High",
                 "type": "Subdomain Infringement",
                 "risks": ["SSL issued on domain", "Has DNS Record", "Has NS Record"],
+                "external_link": "https://platform.ctm360.com/cbs/domains/registered/uYa30ZYB_inRxraHlAO4",
                 "status": "monitoring",
                 "brand": "RiskAssess Demo",
                 "timestamp": "1729904803311",
@@ -939,6 +1014,69 @@ def test_ctm360_cbs_incident_list_command(
             {"ticketId": "COMX165756654321"},
             {},
             MODULES[4],
+        ),
+        (
+            "malware_logs_details_response_valid.json",
+            {"ticketId": "ML-919AE2387"},
+            {
+                "brand": "RiskAssess Demo",
+                "compromise_details": [
+                    {
+                        "antiviruses": ["Windows Defender"],
+                        "clientAt": ["trybackme.io"],
+                        "computer_name": "DESKTOP-KPLOECB (DELL)",
+                        "date_compromised": "2025-05-23T03:48:49.000Z",
+                        "date_uploaded": "2025-05-23T08:51:12.080Z",
+                        "employeeAt": ["sit.edu.lb"],
+                        "employee_session_cookies": [
+                            {
+                                "domain": "trybackme.io",
+                                "expiry": "2025-07-25T23:04:06.000Z",
+                                "name": "SNID",
+                                "url": "trybackme.io",
+                                "value": "AILqd3Wz3s_6iqTeieieLAII1KgBAAQOBFY3RDT6ncttjkiZ4SJgKF00Gq3kHD07-D95EwhPEoflTkPv0PFXiUM"
+                                "adqwSnwNE4e",
+                            }
+                        ],
+                        "installed_software": None,
+                        "ip": "154.134.143.229",
+                        "malware_path": " C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\maxerste.exe",
+                        "operating_system": "Windows 10 Professionnel (10.0.19045) x64",
+                        "stealer": "[MA]154.134.143.229",
+                        "stealer_family": "Lumma",
+                        "type": "client",
+                    }
+                ],
+                "computer_name": "DESKTOP-KPLOECB (DELL)",
+                "date_compromised": "23-05-2025 03:48:49 AM",
+                "domain": "trybackme.io",
+                "external_link": "https://platform.ctm360.com/cbs/leaks/malware_logs/user_credentials_web_app?filters=[]&searchQuery=ML-919AE2387&selectedSearchField=leak_id",
+                "first_seen": "23-05-2025 09:35:21 PM",
+                "hostname": "trybackme.io",
+                "id": "ML-919AE2387",
+                "last_seen": "23-05-2025 09:35:21 PM",
+                "malware_path": " C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\maxerste.exe",
+                "masked_password": "***pezz753",
+                "operating_system": "Windows 10 Professionnel (10.0.19045) x64",
+                "password": "Suppezz753",
+                "remarks": "ML-919AE2387",
+                "source_uri": ["leak/malware_logs?path=eaf75fb8f9431fe403b9"],
+                "sources": ["Chr log files"],
+                "status": "new",
+                "stealer_family": ["Lumma"],
+                "timestamp": "1748036121189",
+                "type": "User Credentials Web App",
+                "user": "otronerfinn",
+                "user_domain": "",
+                "website": "trybackme.io",
+            },
+            MODULES[5],
+        ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            {},
+            MODULES[5],
         ),
     ],
 )
@@ -1069,6 +1207,12 @@ def test_ctm360_cbs_incident_request_takedown_command(response_file_name, mock_a
         (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
         (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
         (MODULES[4][0], "subdomain_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
+        (MODULES[5][0], "malware_logs_details_response_valid.json", "", ""),
+        (MODULES[5][0], "malware_logs_details_response_valid.json", STATUS_ENTRIES["wip"], "wip"),
+        (MODULES[5][0], "malware_logs_details_response_valid.json", STATUS_ENTRIES["closed"], "closed"),
+        (MODULES[5][0], "malware_logs_details_response_valid.json", STATUS_ENTRIES["resolved"], "resolved"),
+        (MODULES[5][0], "malware_logs_details_response_valid.json", STATUS_ENTRIES["disregarded"], "disregarded"),
+        (MODULES[5][0], "malware_logs_details_response_valid.json", STATUS_ENTRIES["unconfirmed"], "unconfirmed"),
     ],
 )
 def test_get_remote_data(mock_module, mock_response, mock_entry, mock_status, mock_client, mocker):

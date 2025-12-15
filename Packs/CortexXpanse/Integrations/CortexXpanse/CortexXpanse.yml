@@ -965,14 +965,26 @@ script:
     - name: limit
       description: Maximum number of assets to return. The maximum value is 100.
       defaultValue: "100"
+    - name: use_page_token
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to paginate the response data.  Set to true to paginate and receive a token indicating the location of the next page.
+    - name: next_page_token
+      description: A string representing the next page location when pagination is used.
     outputs:
     - contextPath: ASM.ExternalWebsite
       description: A list of the websites results assets.
+    - contextPath: ASM.ExternalWebsiteReply
+      description: Contextual information about the request including total count, result count, and next page token.
+    - contextPath: ASM.ExternalWebsiteReply.NextPageToken
+      description: The next page token for the request (for pagination).
     description: Get external websites assets.
   - name: asm-reset-last-run
     arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
   isFetchSamples: true
   isfetch: true
   script: ''

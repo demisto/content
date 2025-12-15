@@ -3,7 +3,6 @@ from enum import Enum
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-special = ["n", "t", "\\", '"', "'", "7", "r"]
 DEFAULT_LIMIT = 100
 DEFAULT_PAGE_SIZE = 100
 STARTING_PAGE_NUMBER = 1
@@ -50,6 +49,8 @@ def is_valid_args(args: Dict):
                         )
                     elif isinstance(value, str):
                         _ = bytes(value, "utf-8").decode("unicode_escape")
+                elif _key == "query":
+                    _ = bytes(value.replace("\\", "\\\\"), "utf-8").decode("unicode_escape")
                 else:
                     _ = bytes(value, "utf-8").decode("unicode_escape")
             except UnicodeDecodeError as ex:
@@ -192,6 +193,12 @@ def search_incidents(args: Dict):  # pragma: no cover
     all_found_incidents = add_incidents_link(apply_filters(all_found_incidents, args), platform)
     demisto.debug(f"Amount of incidents after filtering = {len(all_found_incidents)} before pagination")
     page = STARTING_PAGE_NUMBER
+
+    if all_found_incidents and "todate" not in args:
+        # In case todate is not part of the argumetns we add it to avoid duplications
+        first_incident = all_found_incidents[0]
+        args["todate"] = first_incident.get("created")
+        demisto.info(f"Setting todate argument to be {first_incident.get('created')} to avoid duplications")
 
     while more_pages and len(all_found_incidents) < limit:
         args["page"] = page

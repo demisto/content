@@ -1,10 +1,10 @@
 {
-    "name": "Chronicle",
-    "description": "Retrieve Chronicle detections, impacted assets, IOC matches, and 3P alerts to enrich your XSOAR workflows.",
+    "name": "Google SecOps",
+    "description": "Retrieve Google SecOps detections, impacted assets, IOC matches, and 3P alerts to enrich your XSOAR workflows.",
     "support": "partner",
-    "currentVersion": "4.1.5",
+    "currentVersion": "5.0.3",
     "certification": "certified",
-    "author": "Chronicle",
+    "author": "Google",
     "url": "https://go.chronicle.security/contact",
     "email": "chronicle-support@chronicle.security",
     "categories": [
@@ -56,10 +56,6 @@
         "AutoFocus": {
             "mandatory": false,
             "display_name": "AutoFocus"
-        },
-        "SlashNextPhishingIncidentResponse": {
-            "mandatory": false,
-            "display_name": "SlashNext Phishing Incident Response"
         },
         "ThreatExchange": {
             "mandatory": false,
@@ -292,7 +288,6 @@
         "RecordedFuture",
         "DomainTools",
         "AutoFocus",
-        "SlashNextPhishingIncidentResponse",
         "ThreatExchange",
         "SANS",
         "XForceExchange",
@@ -361,6 +356,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

@@ -1,4 +1,7 @@
 category: Endpoint
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: CrowdStrike OpenAPI
   version: -1
@@ -7,6 +10,7 @@ configuration:
   display: Cloud Base URL
   name: server_url
   required: true
+  section: Connect
   type: 15
   options:
   - https://api.crowdstrike.com
@@ -16,19 +20,23 @@ configuration:
 - display: Client ID
   displaypassword: Client Secret
   name: credentials
+  section: Connect
   required: true
   type: 9
 - display: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
   name: timeout
+  section: Connect
   defaultvalue: "10"
   type: 0
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
+  section: Connect
   type: 8
   required: false
 description: Use the CrowdStrike OpenAPI integration to interact with CrowdStrike APIs that do not have dedicated integrations in Cortex XSOAR, for example, CrowdStrike FalconX, etc.
@@ -25717,7 +25725,7 @@ script:
     - contextPath: CrowdStrike.deviceNetworkHistory.resources.history.timestamp
       description: ''
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.12.6151721
   runonce: false
   script: '-'
   subtype: python3

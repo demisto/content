@@ -1,5 +1,5 @@
 category: Forensics & Malware Analysis
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -31,7 +31,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   section: Collect
-  required: true
+  required: false
   type: 15
 - name: onprem
   display: On-Premise
@@ -782,6 +782,9 @@ script:
     - name: timeout
       description: The timeout for the polling in seconds.
       defaultValue: "1200"
+    - name: interval_in_seconds
+      description: The timeout for the interval in seconds.
+      defaultValue: "45"
     - name: hide_polling_output
       description: Hide polling output.
       deprecated: true
@@ -1273,7 +1276,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.3242986
+  dockerimage: demisto/vendors-sdk:1.0.0.5505539
 fromversion: 6.8.0
 tests:
 - testplaybook-JoeSecuirtyV2

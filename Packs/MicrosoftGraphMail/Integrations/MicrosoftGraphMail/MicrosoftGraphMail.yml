@@ -1,5 +1,5 @@
 category: Email
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -304,7 +304,7 @@ script:
     - description: User ID or principal ID (usually an email address in the format someuser@example.com).
       name: user_id
       required: true
-    - description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+    - description: The unique Exchange ID of the mail. This is not the same as the 'MessageID' key in the form '<message-id>'.
       name: message_id
       required: true
     - description: The folder ID.
@@ -403,7 +403,7 @@ script:
     - description: User ID or principal ID (usually an email address in the format someuser@example.com).
       name: user_id
       required: true
-    - description: The unique ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. You cannot use the the 'MessageID' key in the form '<message-id>'.
+    - description: The unique Exchange ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. This is not the same as the 'MessageID' key in the form '<message-id>'.
       name: message_id
       required: true
     - description: A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders.
@@ -418,7 +418,7 @@ script:
     - description: User ID or principal ID (usually an email address in the format someuser@example.com).
       name: user_id
       required: true
-    - description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+    - description: The unique Exchange ID of the mail. This is not the same as the 'MessageID' key in the form '<message-id>'.
       name: message_id
       required: true
     - description: ' A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). '
@@ -449,7 +449,7 @@ script:
     - description: User ID or principal ID (usually an email address in the format someuser@example.com).
       name: user_id
       required: true
-    - description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+    - description: The unique Exchange ID of the mail. This is not the same as the 'MessageID' key in the form '<message-id>'.
       name: message_id
       required: true
     - description: 'A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).'
@@ -645,7 +645,7 @@ script:
     name: msgraph-mail-delete-folder
     polling: true
   - arguments:
-    - description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+    - description: The unique Exchange ID of the mail. This is not the same as the 'MessageID' key in the form '<message-id>'.
       name: message_id
       required: true
     - description: The ID of the destination folder.
@@ -674,7 +674,7 @@ script:
     - description: User ID or principal ID (usually an email address in the format someuser@example.com).
       name: user_id
       required: true
-    - description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+    - description: The unique Exchange ID of the mail. This is not the same as the 'MessageID' key in the form '<message-id>'.
       name: message_id
       required: true
     - deprecated: true
@@ -1046,7 +1046,7 @@ script:
     - description: User ID or principal ID (usually an email address. E.g., user@example.com).
       name: user_id
       required: true
-    - description: Unique ID of the emails to update. You cannot use the 'MessageID' key in the form '<message-id>'. Can be a list of comma-separated values.
+    - description: The unique Exchange IDs of the mails to update. This is not the same as the 'MessageID' key in the form '<message-id>'. Can be a list of comma-separated values.
       isArray: true
       name: message_ids
       required: true
@@ -1148,9 +1148,9 @@ script:
     - description: The ID of the rule to delete.
       name: rule_id
       required: true
-    description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+    description: Deletes a specific email rule by ID from a user's mailbox using the Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4834757
   isfetch: true
   runonce: false
   script: '-'

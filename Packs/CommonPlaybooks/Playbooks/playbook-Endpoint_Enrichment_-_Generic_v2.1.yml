@@ -1326,7 +1326,7 @@ outputs:
   description: Link to the device details page in ExtraHop.
   type: string
 - contextPath: Endpoint.IPAddress
-  description: The endpoint IP address.
+  description: The endpoint IP address or list of IP addresses.
 - contextPath: Endpoint.ID
   description: The endpoint ID.
 - contextPath: Endpoint.Status
@@ -1375,8 +1375,3 @@ tests:
 - Block IP - Generic V3_Test
 fromversion: 5.0.0
 toversion: 6.7.9
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS

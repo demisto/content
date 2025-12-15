@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -143,8 +143,8 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: Unified gateway to security insights - all from a unified Microsoft Graph User API.
-display: Azure Active Directory Users
+description: The Entra ID Users integration (formerly Azure Active Directory Users) is a Unified gateway to security insights - all from a unified Microsoft Graph User API.
+display: Entra ID Users
 name: Microsoft Graph User
 script:
   commands:
@@ -159,12 +159,18 @@ script:
   - arguments:
     - description: User ID or userPrincipalName.
       name: user
+      prettyname: User
+      prettypredefined:
+        UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
       required: true
     description: |-
-      Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+      Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables the user 
       but does not terminate an existing session. Supported only in a self deployed app flow with the
       Permission: Directory.AccessAsUser.All(Delegated).
     name: msgraph-user-account-disable
+    prettyname: Disable User Account [EntraID]
+    quickaction: false
+    quickaction:platform: true
     compliantpolicies:
     - User Hard Remediation
   - arguments:
@@ -173,6 +179,9 @@ script:
       required: true
     description: Unblock a user.
     name: msgraph-user-unblock
+    prettyname: Enable User Account [EntraID]
+    quickaction: false
+    quickaction:platform: true
     compliantpolicies:
     - User Soft Remediation
   - arguments:
@@ -628,19 +637,77 @@ script:
     name: msgraph-user-change-password
     compliantpolicies:
     - User Soft Remediation
+  - name: msgraph-user-change-password-on-premise
+    description: |-
+      Changes the password of an on-premise user. See documentation for full permissions and roles to execute this command. 
+      Providing a password is required (password auto-generation is not supported).
+    polling: true
+    arguments:
+    - description: User ID or userPrincipalName to update password for.
+      name: user
+      required: true
+      secret: false
+    - description: The new password.
+      name: password
+      required: false
+      secret: true
+    - description: "The new password. This argument can be used in playbooks. Note: the value will NOT be hidden in logs."
+      name: nonsensitive_password
+      required: false
+      secret: false
+    - description: User ID or userPrincipalName to update password for.
+      name: password_method_id
+      hidden: true
+    - description: Polling url.
+      name: polling_url
+      hidden: true
+    outputs:
+    - contextPath: MSGraphUser.user
+      description: The user's ID.
+      type: String
+    - contextPath: MSGraphUser.status
+      description: The status of the operation.
+      type: String
+    - contextPath: MSGraphUser.polling_url
+      description: The polling url.
+      type: String
   - description: Tests connectivity to Microsoft Graph User.
     name: msgraph-user-test
   - arguments:
     - description: User ID or userPrincipalName.
       name: user
+      prettyname: User
+      prettypredefined:
+        UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
       required: true
     description: |-
       Revoke a user session by invalidating all refresh tokens issued to applications for a user.
       This command requires an administrator role.
       Permission required: Directory.AccessAsUser.All (Delegated).
     name: msgraph-user-session-revoke
+    prettyname: Terminate Existing Sessions [EntraID]
+    quickaction: false
+    quickaction:platform: true
     compliantpolicies:
     - User Soft Remediation
+  - arguments:
+      - description: User ID or userPrincipalName.
+        name: user
+        prettyname: User
+        prettypredefined:
+          UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
+        required: true
+    description: |-
+      Forces a user to reset their password the next time they log in.
+      Note that this action does not terminate the user’s current session.
+      If you also want to force the user to sign in again, use the msgraph-user-session-revoke command.
+      This operation is supported only when using a self-deployed app flow with the Directory.AccessAsUser.All delegated permission.
+    name: msgraph-user-force-reset-password
+    prettyname: Force Reset Password [EntraID]
+    quickaction: false
+    quickaction:platform: true
+    compliantpolicies:
+      - User Soft Remediation
   - arguments:
     - description: The Azure AD user ID.
       name: user_id
@@ -743,7 +810,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
   subtype: python3
@@ -751,3 +818,4 @@ script:
 tests:
 - Microsoft Graph User - Test
 fromversion: 5.0.0
+supportsquickactions: true

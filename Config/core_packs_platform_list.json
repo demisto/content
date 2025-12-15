@@ -9,7 +9,27 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam",
+                "edr",
+                "cloud_runtime_security",
+                "cloud"
+            ]
+        },
+        {
+            "id": "AIAgents",
+            "supportedModules": [
+                "agentix",
+                "asm",
+                "cloud",
+                "cloud_appsec",
+                "cloud_posture",
+                "cloud_runtime_security",
+                "edr",
+                "email_security",
+                "exposure_management",
+                "xsiam"
             ]
         },
         {
@@ -18,7 +38,13 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
             ]
         },
         {
@@ -30,7 +56,16 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "asm",
+                "cloud",
+                "cloud_appsec",
+                "cloud_posture",
+                "cloud_runtime_security",
+                "edr",
+                "exposure_management",
+                "xsiam"
             ]
         },
         {
@@ -41,7 +76,12 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "xsiam",
+                "edr"
             ]
         },
         {
@@ -53,7 +93,15 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "asm",
+                "exposure_management",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
             ]
         },
         {
@@ -62,7 +110,9 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
             ]
         },
         {
@@ -74,7 +124,14 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "exposure_management",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
             ]
         },
         {
@@ -83,7 +140,9 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
             ]
         },
         {
@@ -92,7 +151,13 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
             ]
         },
         {
@@ -104,7 +169,13 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
             ]
         },
         {
@@ -113,7 +184,9 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
             ]
         },
         {
@@ -122,7 +195,9 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
             ]
         },
         {
@@ -131,7 +206,9 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
             ]
         },
         {
@@ -143,7 +220,15 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "asm",
+                "exposure_management",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
             ]
         },
         {
@@ -152,7 +237,9 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
             ]
         },
         {
@@ -161,7 +248,12 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam",
+                "edr",
+                "cloud",
+                "cloud_runtime_security"
             ]
         },
         {
@@ -170,7 +262,12 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "xsiam",
+                "edr"
             ]
         },
         {
@@ -179,7 +276,9 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
             ]
         },
         {
@@ -188,7 +287,9 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
             ]
         },
         {
@@ -197,7 +298,9 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
             ]
         },
         {
@@ -206,7 +309,9 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
             ]
         },
         {
@@ -215,7 +320,9 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "xsiam"
             ]
         },
         {
@@ -226,7 +333,12 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "edr",
+                "cloud",
+                "cloud_runtime_security",
+                "xsiam"
             ]
         },
         {
@@ -237,7 +349,12 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "cloud",
+                "cloud_runtime_security",
+                "agentix",
+                "xsiam",
+                "edr"
             ]
         },
         {
@@ -249,7 +366,13 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
             ]
         },
         {
@@ -261,7 +384,31 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "Unit42ThreatIntelligencebyPaloAltoNetworks",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "edr",
+                "xsiam",
+                "cloud_runtime_security",
+                "cloud_posture"
             ]
         },
         {
@@ -273,7 +420,13 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
             ]
         },
         {
@@ -285,15 +438,55 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix",
+                "asm",
+                "exposure_management",
+                "cloud",
+                "cloud_runtime_security",
+                "cloud_posture",
+                "xsiam",
+                "edr"
             ]
         },
         {
             "id": "AWS",
-            "supportedModules":[
-                "C1", 
+            "supportedModules": [
+                "C1",
                 "C3",
-                "X5"
+                "X5",
+                "agentix",
+                "cloud_posture",
+                "cloud",
+                "cloud_runtime_security",
+                "xsiam",
+                "edr"
+            ]
+        },
+        {
+            "id": "GCP",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X5",
+                "cloud_posture",
+                "cloud",
+                "cloud_runtime_security",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "Azure",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X5",
+                "cloud_posture",
+                "cloud",
+                "cloud_runtime_security",
+                "agentix",
+                "xsiam"
             ]
         }
     ]

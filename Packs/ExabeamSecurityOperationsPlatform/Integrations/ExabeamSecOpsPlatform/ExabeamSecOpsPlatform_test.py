@@ -2,25 +2,15 @@ import json
 from datetime import datetime, timezone
 
 import pytest
+from pytest_mock import MockerFixture
 from CommonServerPython import CommandResults, DemistoException
-from ExabeamSecOpsPlatform import (
-    Client,
-    _parse_group_by,
-    case_search_command,
-    context_table_delete_command,
-    context_table_list_command,
-    convert_all_timestamp_to_datestring,
-    event_search_command,
-    fetch_incidents,
-    generic_search_command,
-    get_date,
-    get_limit,
-    process_string,
-    table_record_list_command,
-    transform_dicts,
-    transform_string,
-)
+from ExabeamSecOpsPlatform import Client
 from freezegun import freeze_time
+
+
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.loads(f.read())
 
 
 class MockClient(Client):
@@ -31,7 +21,7 @@ class MockClient(Client):
         return
 
 
-def test_event_search_command_success(mocker):
+def test_event_search_command_success(mocker: MockerFixture):
     """
     GIVEN:
         A mocked Exabeam client and valid search query arguments.
@@ -43,6 +33,8 @@ def test_event_search_command_success(mocker):
         It should search for logs using the Exabeam client and return a CommandResults object containing
         the search results in both structured and human-readable formats.
     """
+    from ExabeamSecOpsPlatform import event_search_command
+
     # Mock the response from the client's search_request method
     mock_response = {
         "rows": [
@@ -98,7 +90,7 @@ def test_event_search_command_success(mocker):
     assert expected_readable_output in response.readable_output
 
 
-def test_event_search_command_failure(mocker):
+def test_event_search_command_failure(mocker: MockerFixture):
     """
     GIVEN:
         A mocked Exabeam client and invalid search query arguments.
@@ -109,6 +101,8 @@ def test_event_search_command_failure(mocker):
     THEN:
         It should raise a DemistoException.
     """
+    from ExabeamSecOpsPlatform import event_search_command
+
     # Mocking the client to simulate a response with errors
     client = MockClient("", "", "", False, False)
     mocker.patch.object(client, "event_search_request", return_value={"errors": {"message": "Error occurred"}})
@@ -125,7 +119,7 @@ def test_event_search_command_failure(mocker):
         event_search_command(client, args)
 
 
-def test_get_date(mocker):
+def test_get_date(mocker: MockerFixture):
     """
     GIVEN:
         a mocked CommonServerPython.arg_to_datetime function returning a specific time string,
@@ -136,6 +130,8 @@ def test_get_date(mocker):
     THEN:
         it should return the date part of the provided time string in the 'YYYY-MM-DD' format.
     """
+    from ExabeamSecOpsPlatform import get_date
+
     time = "2024.05.01T14:00:00"
     expected_result = "2024-05-01T14:00:00Z"
 
@@ -157,6 +153,8 @@ def test_transform_string(input_str, expected_output):
     THEN:
         It should transform the input string according to the specified rules.
     """
+    from ExabeamSecOpsPlatform import transform_string
+
     assert transform_string(input_str) == expected_output
 
 
@@ -167,6 +165,12 @@ def test_transform_string(input_str, expected_output):
         ("key1:true", "key1:true"),
         ("", ""),
         ("key1:true AND key2:some value OR key3:another value", 'key1:true AND key2:"some value" OR key3:"another value"'),
+        ("rules.rule_id:WTC-HT-TOW-A", 'rules.rule_id:"WTC-HT-TOW-A"'),
+        ("hostname:TORONTO-SERVER", 'hostname:"TORONTO-SERVER"'),
+        ("user:ACTOR-123", 'user:"ACTOR-123"'),
+        ("device:AUTO-DEPLOY", 'device:"AUTO-DEPLOY"'),
+        ("timestamp:* TO *", 'timestamp:"*" TO *'),
+        ("value:100 TO value:200", 'value:"100" TO value:"200"'),
     ],
 )
 def test_process_string(input_str, expected_output):
@@ -179,6 +183,8 @@ def test_process_string(input_str, expected_output):
         It should correctly process the input string, splitting it based on logical operators and transforming each part using
         the 'transform_string' function.
     """
+    from ExabeamSecOpsPlatform import process_string
+
     assert process_string(input_str) == expected_output
 
 
@@ -237,6 +243,8 @@ def test_get_limit(args, expected_output):
         otherwise, it should return 3000 as the maximum limit.
         If the 'limit' argument is not present in the dictionary or is None, it should return 50 as the default limit.
     """
+    from ExabeamSecOpsPlatform import get_limit
+
     assert get_limit(args) == expected_output
 
 
@@ -252,6 +260,8 @@ def test_parse_group_by():
         it should return a parsed dictionary with non-empty elements based on the provided titles;
         empty elements should be removed.
     """
+    from ExabeamSecOpsPlatform import _parse_group_by
+
     entry = {
         "Id": "123",
         "Vendor": "Vendor X",
@@ -278,7 +288,7 @@ expired_expiry_time = (datetime(2024, 7, 23, 11, 0, tzinfo=timezone.utc)).isofor
     ],
 )
 @freeze_time("2024-07-23 12:00:00")
-def test_is_token_valid(mocker, access_token, expiry_time_str, expected_result):
+def test_is_token_valid(mocker: MockerFixture, access_token, expiry_time_str, expected_result):
     mocker.patch.object(Client, "_http_request", return_value={"access_token": "token", "expires_in": 0})
     client = Client(base_url="https://api.exabeam.com", client_id="abc123", client_secret="ABC123", verify=False, proxy=False)
 
@@ -295,7 +305,7 @@ def test_is_token_valid(mocker, access_token, expiry_time_str, expected_result):
         ),
     ],
 )
-def test_get_new_token(mocker, expected_response, expected_token):
+def test_get_new_token(mocker: MockerFixture, expected_response, expected_token):
     http_request = mocker.patch.object(Client, "_http_request", return_value=expected_response)
     client = Client(base_url="https://api.exabeam.com", client_id="abc123", client_secret="ABC123", verify=False, proxy=False)
 
@@ -383,7 +393,9 @@ def test_get_new_token(mocker, expected_response, expected_token):
         ),
     ],
 )
-def test_case_search_command(mocker, args, mock_response, expected_outputs, expected_readable_output):
+def test_case_search_command(mocker: MockerFixture, args, mock_response, expected_outputs, expected_readable_output):
+    from ExabeamSecOpsPlatform import case_search_command
+
     client = MockClient("", "", "", False, False)
     mocker.patch.object(client, "case_search_request", return_value=mock_response)
     mocker.patch.object(client, "get_case_request", return_value=mock_response)
@@ -395,7 +407,7 @@ def test_case_search_command(mocker, args, mock_response, expected_outputs, expe
     assert result.readable_output == expected_readable_output
 
 
-def test_case_search_request(mocker):
+def test_case_search_request(mocker: MockerFixture):
     data_dict = {
         "startTime": "2024-05-01T13:05:07.774Z",
         "endTime": "2024-06-21T13:05:07.774Z",
@@ -434,7 +446,9 @@ def test_case_search_request(mocker):
         ),
     ],
 )
-def test_context_table_list_command(mocker, args, mock_response, expected_outputs, expected_readable_output):
+def test_context_table_list_command(mocker: MockerFixture, args, mock_response, expected_outputs, expected_readable_output):
+    from ExabeamSecOpsPlatform import context_table_list_command
+
     client = MockClient("example.com", "", "", False, False)
 
     if "table_id" in args:
@@ -468,7 +482,9 @@ def test_context_table_list_command(mocker, args, mock_response, expected_output
         ),
     ],
 )
-def test_context_table_delete_command(mocker, args, mock_response, expected_output):
+def test_context_table_delete_command(mocker: MockerFixture, args, mock_response, expected_output):
+    from ExabeamSecOpsPlatform import context_table_delete_command
+
     client = MockClient("example.com", "", "", False, False)
     mock_delete = mocker.patch.object(client, "delete_context_table", return_value=mock_response)
 
@@ -493,7 +509,9 @@ def test_context_table_delete_command(mocker, args, mock_response, expected_outp
         )
     ],
 )
-def test_table_record_list_command(mocker, args, mock_response, expected_output):
+def test_table_record_list_command(mocker: MockerFixture, args, mock_response, expected_output):
+    from ExabeamSecOpsPlatform import table_record_list_command
+
     client = MockClient("example.com", "", "", False, False)
     mock_get = mocker.patch.object(client, "get_table_record_list", return_value=mock_response)
 
@@ -531,7 +549,9 @@ def test_table_record_list_command(mocker, args, mock_response, expected_output)
         ),
     ],
 )
-def test_generic_search_command(mocker, args, item_type, mock_response, expected_output, expected_prefix):
+def test_generic_search_command(mocker: MockerFixture, args, item_type, mock_response, expected_output, expected_prefix):
+    from ExabeamSecOpsPlatform import generic_search_command
+
     client = MockClient("example.com", "", "", False, False)
 
     if f"{item_type}_id" in args:
@@ -564,28 +584,83 @@ def test_generic_search_command(mocker, args, item_type, mock_response, expected
     ],
 )
 def test_transform_dicts(dict_input, dict_expected):
+    from ExabeamSecOpsPlatform import transform_dicts
+
     result = transform_dicts(dict_input)
     assert result == dict_expected
 
 
 @pytest.mark.parametrize(
-    "attributes_input, expected_output",
+    "attributes_input, key_suffix, expected_output",
     [
-        (
+        pytest.param(
             {"caseCreationTimestamp": 1672531200000000, "lastModifiedTimestamp": 1672617600000000},
+            "",
             {"caseCreationTimestamp": "2023-01-01T00:00:00Z", "lastModifiedTimestamp": "2023-01-02T00:00:00Z"},
+            id="No suffix. Expect keys overwritten",
+        ),
+        pytest.param(
+            {"approxLogTime": 1755685620000000},
+            "Formatted",
+            {"approxLogTime": 1755685620000000, "approxLogTimeFormatted": "2025-08-20T10:27:00Z"},
+            id="'Formatted' suffix. Expect new keys added",
         ),
     ],
 )
-def test_convert_all_timestamp_to_datestring(attributes_input, expected_output):
-    result = convert_all_timestamp_to_datestring(attributes_input)
+def test_convert_all_timestamp_to_datestring(attributes_input: dict, key_suffix: str, expected_output: dict):
+    from ExabeamSecOpsPlatform import convert_all_timestamp_to_datestring
+
+    result = convert_all_timestamp_to_datestring(attributes_input, key_suffix=key_suffix)
     assert result == expected_output
+
+
+def test_last_case_time_and_ids():
+    from ExabeamSecOpsPlatform import get_last_case_time_and_ids
+
+    formatted_cases = [
+        {"caseId": "A", "_time": "2025-01-01T00:00:00Z"},
+        {"caseId": "B", "_time": "2025-01-01T01:01:00Z"},
+        {"caseId": "C", "_time": "2025-01-01T01:01:00Z"},
+    ]
+
+    last_case_time, last_case_ids = get_last_case_time_and_ids(formatted_cases)
+
+    assert last_case_time == "2025-01-01T01:01:00Z"
+    assert last_case_ids == ["B", "C"]
 
 
 @pytest.mark.parametrize(
     "mock_response, params, last_run, expected_incidents, expected_last_run",
     [
-        (
+        pytest.param(
+            CommandResults(
+                outputs_prefix="ExabeamPlatform.Case",
+                readable_output="",
+                outputs=[
+                    {
+                        "caseId": "aa11",
+                        "alertName": "alert1",
+                        "caseCreationTimestamp": 1723212955501076,
+                    },
+                    {
+                        "caseId": "bb22",
+                        "alertName": "alert2",
+                        "caseCreationTimestamp": 1723212955501077,
+                    },
+                ],
+            ),
+            {"fetch_query": "priority:LOW", "max_fetch": "2", "first_fetch": "3 days"},
+            {"time": "2024-08-12T01:55:35Z", "last_ids": ["aa11"]},
+            [
+                {
+                    "Name": "alert2",
+                    "rawJSON": '{"caseId": "bb22", "alertName": "alert2", "caseCreationTimestamp": "2024-08-09T14:15:55Z"}',
+                }
+            ],
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["bb22"]},
+            id="different incident creation time",
+        ),
+        pytest.param(
             CommandResults(
                 outputs_prefix="ExabeamPlatform.Case",
                 readable_output="",
@@ -603,18 +678,56 @@ def test_convert_all_timestamp_to_datestring(attributes_input, expected_output):
                 ],
             ),
             {"fetch_query": "priority:LOW", "max_fetch": "2", "first_fetch": "3 days"},
-            {"time": "2024-08-12T01:55:36Z", "last_ids": ["aa11"]},
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11"]},
             [
                 {
                     "Name": "alert2",
                     "rawJSON": '{"caseId": "bb22", "alertName": "alert2", "caseCreationTimestamp": "2024-08-09T14:15:55Z"}',
-                }
+                },
             ],
-            {"time": "2024-08-09T14:15:55Z", "last_ids": ["bb22"]},
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11", "bb22"]},
+            id="same incident creation time, expected to add bb22 to last run and create incident just for bb22",
+        ),
+        pytest.param(
+            CommandResults(
+                outputs_prefix="ExabeamPlatform.Case",
+                readable_output="",
+                outputs=[
+                    {
+                        "caseId": "aa11",
+                        "alertName": "alert1",
+                        "caseCreationTimestamp": 1723212955501077,
+                    }
+                ],
+            ),
+            {"fetch_query": "priority:LOW", "max_fetch": "2", "first_fetch": "3 days"},
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11"]},
+            [],
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11"]},
+            id="same incident again, expected to keep it in last run and not create incident",
+        ),
+        pytest.param(
+            CommandResults(
+                outputs_prefix="ExabeamPlatform.Case",
+                readable_output="",
+                outputs=[{"caseId": "cc33", "alertName": "alert3", "caseCreationTimestamp": 1723213855501000}],
+            ),
+            {"fetch_query": "priority:LOW", "max_fetch": "2", "first_fetch": "3 days"},
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11", "bb22"]},
+            [
+                {
+                    "Name": "alert3",
+                    "rawJSON": '{"caseId": "cc33", "alertName": "alert3", "caseCreationTimestamp": "2024-08-09T14:30:55Z"}',
+                },
+            ],
+            {"time": "2024-08-09T14:30:55Z", "last_ids": ["cc33"]},
+            id="new incident, expected to create incident and update last run",
         ),
     ],
 )
-def test_fetch_incidents(mocker, mock_response, params, last_run, expected_incidents, expected_last_run):
+def test_fetch_incidents(mocker: MockerFixture, mock_response, params, last_run, expected_incidents, expected_last_run):
+    from ExabeamSecOpsPlatform import fetch_incidents
+
     client = MockClient("example.com", "", "", False, False)
 
     mocker.patch("ExabeamSecOpsPlatform.case_search_command", return_value=mock_response)
@@ -623,3 +736,124 @@ def test_fetch_incidents(mocker, mock_response, params, last_run, expected_incid
 
     assert incidents == expected_incidents
     assert updated_last_run == expected_last_run
+
+
+@freeze_time("2025-01-01T01:10:00Z")
+def test_fetch_events_success(mocker: MockerFixture):
+    from ExabeamSecOpsPlatform import fetch_events
+
+    mock_events = [
+        {"caseId": "B", "_time": "2025-01-01T00:00:00Z"},
+        {"caseId": "C", "_time": "2025-01-01T01:01:00Z"},
+        {"caseId": "D", "_time": "2025-01-01T01:02:00Z"},
+    ]
+    mock_new_start_time = "2025-01-01T01:02:00.000Z"
+    mock_new_last_fetched_ids = ["D"]
+    mock_get_cases_in_batches = mocker.patch(
+        "ExabeamSecOpsPlatform.get_cases_in_batches",
+        return_value=(mock_events, mock_new_start_time, mock_new_last_fetched_ids),
+    )
+
+    mock_client = MockClient("example.com", "", "", False, False)
+    max_fetch = 1000
+    prev_start_time = "2025-01-01T00:00:00Z"
+    prev_last_fetched_ids = ["A"]
+    last_run = {"time": prev_start_time, "last_ids": prev_last_fetched_ids}
+
+    events, next_run = fetch_events(mock_client, max_fetch, last_run)
+
+    assert events == mock_events
+    assert next_run == {"time": mock_new_start_time, "last_ids": mock_new_last_fetched_ids}
+
+    assert mock_get_cases_in_batches.call_count == 1
+    assert mock_get_cases_in_batches.call_args.kwargs == {
+        "client": mock_client,
+        "start_time": prev_start_time,
+        "end_time": "2025-01-01T01:10:00Z",  # Same as frozen time
+        "last_fetched_ids": prev_last_fetched_ids,
+        "max_fetch": max_fetch,
+    }
+
+
+@pytest.mark.parametrize(
+    "test_data_file_name",
+    [
+        pytest.param("fetch-events-no-cases.json", id="Empty batch"),
+        pytest.param("fetch-events-partial-batch.json", id="Partial batch"),
+        pytest.param("fetch-events-max-fetch.json", id="Max fetch less than batch size"),
+        pytest.param("fetch-events-duplicate-cases.json", id="Batch with duplicates"),
+    ],
+)
+def test_get_cases_in_batches(mocker: MockerFixture, test_data_file_name: str):
+    """
+    GIVEN:
+        - Responses from Exabeam API for case search.
+    WHEN:
+        - The `get_cases_in_batches` function is called.
+    THEN:
+        - Ensure the function returns the expected events and the correct start time and last fetched IDs.
+    """
+    from ExabeamSecOpsPlatform import get_cases_in_batches
+
+    test_data = util_load_json(f"test_data/{test_data_file_name}")
+
+    mock_client = MockClient("example.com", "", "", False, False)
+    mocker.patch.object(MockClient, "case_search_request", side_effect=test_data["mock_responses"])
+
+    events, start_time, last_fetched_ids = get_cases_in_batches(
+        client=mock_client,
+        start_time="2025-04-04T01:07:33Z",
+        end_time="2025-09-01T00:00:00Z",
+        last_fetched_ids=test_data["prev_last_fetched_ids"],
+        max_fetch=test_data["max_fetch"],
+    )
+
+    assert events == test_data["expected_events"]
+    assert start_time == test_data["expected_new_start_time"]
+    assert sorted(last_fetched_ids) == sorted(test_data["expected_new_last_fetched_ids"])
+
+
+@freeze_time("2025-01-01T01:10:00Z")
+def test_get_events_command(mocker: MockerFixture):
+    """
+    GIVEN:
+        - A mock client and arguments for the get_events function.
+    WHEN:
+        - The `get_events_command` function is called.
+    THEN:
+        - Ensure get_cases_in_batches is called with the correct arguments.
+        - Ensure tableToMarkdown is called with the correct arguments.
+        - Ensure the function returns the expected events and CommandResults.
+    """
+    from ExabeamSecOpsPlatform import get_events_command
+
+    mock_client = MockClient("example.com", "", "", False, False)
+    mock_events_data = [{"caseId": "123", "name": "Test Event", "_time": "2025-01-02T00:00:00Z"}]
+
+    mock_get_cases_in_batches = mocker.patch(
+        "ExabeamSecOpsPlatform.get_cases_in_batches",
+        return_value=(mock_events_data, "2025-01-02T00:00:00Z", ["123"]),
+    )
+    mock_table_to_markdown = mocker.patch("ExabeamSecOpsPlatform.tableToMarkdown")
+
+    args = {
+        "start_time": "1 day ago",
+        "end_time": "now",
+        "limit": "100",
+    }
+
+    events, results = get_events_command(mock_client, args)
+
+    assert events == mock_events_data
+    assert isinstance(results, CommandResults)
+
+    assert mock_get_cases_in_batches.call_count == 1
+    assert mock_get_cases_in_batches.call_args_list[0][1] == {
+        "client": mock_client,
+        "start_time": "2024-12-31T01:10:00Z",  # 1 day ago compared to frozen time
+        "end_time": "2025-01-01T01:10:00Z",  # current frozen time
+        "last_fetched_ids": [],
+        "max_fetch": 100,
+    }
+
+    assert mock_table_to_markdown.call_args_list[0][0] == ("Events", mock_events_data)

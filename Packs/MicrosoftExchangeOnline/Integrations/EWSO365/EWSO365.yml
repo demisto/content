@@ -57,7 +57,7 @@ configuration:
 - defaultvalue: Inbox
   display: Name of the folder from which to fetch incidents
   name: folder
-  required: true
+  required: false
   type: 0
   additionalinfo: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing.
   section: Collect
@@ -106,6 +106,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: When 'Mark fetched emails as read' is enabled and emails are fetched by modification time, emails will be re-fetched in the next cycle after being marked as read (due to metadata changes). This is expected behavior.
 - display: Timeout (in seconds) for HTTP requests to Exchange Server
   name: request_timeout
   type: 0
@@ -1009,11 +1010,13 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ews-auth-reset
     arguments: []
-  dockerimage: demisto/py3ews:5.5.1.3540100
+  dockerimage: demisto/py3ews:5.6.0.5331241
   isfetch: true
   script: ''
   subtype: python3
   type: python
 tests:
 - EWS search-mailbox test
+- EWS_O365_send_mail_test
+- EWS_O365_test
 fromversion: 5.0.0

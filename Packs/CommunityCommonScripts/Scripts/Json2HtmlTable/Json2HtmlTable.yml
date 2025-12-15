@@ -16,11 +16,11 @@ name: Json2HtmlTable
 script: '-'
 tags:
 - basescript
-- tansformer
+- transformer
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/py3-tools:1.0.0.3205634
+dockerimage: demisto/py3-tools:1.0.0.5475267
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

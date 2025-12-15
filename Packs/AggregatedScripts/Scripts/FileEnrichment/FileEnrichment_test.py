@@ -1,637 +1,159 @@
 import json
-import pytest
-from pytest_mock import MockerFixture
-from FileEnrichment import Brands, Command, CommandResults, ContextPaths, EntryType
-
-
-""" TEST CONSTANTS """
-
-MD5_HASH = "md5md5md5md5md5md5md5md5md5md5md"
-SHA_1_HASH = "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1"
-SHA_256_HASH = "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2"
+import demistomock as demisto
+from FileEnrichment import file_enrichment_script
 
 
 def util_load_json(path: str):
     with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
+        return json.load(f)
 
 
-@pytest.mark.parametrize(
-    "command, enabled_brands, expected_has_enabled_instance",
-    [
-        pytest.param(
-            Command("wildfire-get-verdict", {"file_hash": SHA_256_HASH}, Brands.WILDFIRE_V2),
-            [Brands.WILDFIRE_V2.value],
-            True,
-            id="Command brand active, other brand disabled",
-        ),
-        pytest.param(
-            Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR),
-            [Brands.WILDFIRE_V2.value],
-            False,
-            id="Command brand disabled, other brand active",
-        ),
-        pytest.param(
-            Command("core-get-endpoints", {"limit": 10}, Brands.CORE_IR),
-            [Brands.WILDFIRE_V2.value, Brands.CORE_IR.value],
-            True,
-            id="All brands active",
-        ),
-        pytest.param(
-            Command("wildfire-get-sample", {"sha256": SHA_256_HASH}, Brands.WILDFIRE_V2),
-            [],
-            False,
-            id="All brands disabled",
-        ),
-    ],
-)
-def test_command_has_enabled_instance(command: Command, enabled_brands: list[str], expected_has_enabled_instance: bool):
+def test_file_enrichment_script_end_to_end_with_files(mocker):
     """
     Given:
-        - Command objects with source brand and arguments dictionaries and modules context from `demisto.getModules()`.
-
+        - Two file hashes (both SHA256).
+        - TIM file results from test_data/mock_file_tim_results.json.
+        - Batch results from test_data/mock_file_batch_results.json (create + enrich + core-get-hash-analytics-prevalence).
     When:
-        - Calling `Command.has_enabled_instance`.
-
-    Assert:
-        - Ensure value is True if an integration instance of the brand is active. Otherwise, False.
+        - file_enrichment_script runs end-to-end (external_enrichment=True).
+    Then:
+        - FileEnrichmentV2 contains both hashes.
+        - For file1:
+            * Results has 2 entries (TIM + WildFire-v2).
+            * Hashes contain MD5 + SHA256.
+            * TIMScore=3, MaxScore=3, MaxVerdict=Malicious.
+            * Top-level Status == "Manual" (due to manuallyEditedFields.Score).
+            * TIM row in Results has NO Status/ModifiedTime (popped to top-level).
+        - For file2:
+            * Results has 2 entries (TIM + WildFire-v2), reliability Low.
     """
-    assert command.has_enabled_instance(enabled_brands) == expected_has_enabled_instance
+    # ---------- Load fixtures ----------
+    tim_pages = util_load_json("test_data/mock_file_tim_results.json")["pages"]
+    batch_blob = util_load_json("test_data/mock_file_batch_results.json")
 
+    file_list = [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",  # file1 SHA256
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",  # file2 SHA256
+    ]
 
-@pytest.mark.parametrize(
-    "original_human_readable, is_error, expected_readable_output",
-    [
-        pytest.param(
-            "This is a regular message",
-            False,
-            '#### Result for !wildfire-upload-url upload="http://www.example.com"\nThis is a regular message',
-            id="Note Entry",
-        ),
-        pytest.param(
-            "This is an error message",
-            True,
-            '#### Error for !wildfire-upload-url upload="http://www.example.com"\nThis is an error message',
-            id="Error Entry",
-        ),
-    ],
-)
-def test_command_prepare_human_readable(original_human_readable: str, is_error: bool, expected_readable_output: str):
-    """
-    Given:
-        - Command objects with source brand and arguments dictionaries.
+    mocker.patch.object(demisto, "args", return_value={"file_hash": ",".join(file_list)})
 
-    When:
-        - Calling `Command.prepare_human_readable`.
+    # ---------- Mock execute_command ONLY for extractIndicators ----------
+    def extractIndicators_side_effect(cmd, args=None, extract_contents=False, fail_on_error=True):
+        if cmd == "extractIndicators":
+            return [{"EntryContext": {"ExtractedIndicators": {"File": file_list}}}]
+        return []
 
-    Assert:
-        - Ensure correct human readable value with the appropriate title and message.
-    """
-    command = Command("wildfire-upload-url", {"upload": "http://www.example.com"}, Brands.WILDFIRE_V2)
+    mocker.patch("AggregatedCommandApiModule.execute_command", side_effect=extractIndicators_side_effect)
 
-    human_readable_command_results = command.prepare_human_readable(original_human_readable, is_error)
+    class _MockSearcher:
+        def __init__(self, pages):
+            self.pages = pages
 
-    assert human_readable_command_results.readable_output == expected_readable_output
+        def __iter__(self):
+            return iter(self.pages)
 
+    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_MockSearcher(tim_pages))
 
-def test_command_execute(mocker: MockerFixture):
-    """
-    Given:
-        - A Command object with source brand and an arguments dictionary.
-
-    When:
-        - Calling `Command.execute`.
-
-    Assert:
-        - Ensure correctly parsed entry context and human-readable CommandResults from the execution response.
-    """
-    command = Command("file", {"file": SHA_256_HASH})
-
-    demisto_execute_response = util_load_json("test_data/file_reputation_command_response.json")
-    mock_demisto_execute = mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
-
-    entry_context, readable_command_results = command.execute()
-
-    assert mock_demisto_execute.call_count == 1
-    assert entry_context[0] == demisto_execute_response[0]["EntryContext"]
-    assert readable_command_results[0].readable_output == (
-        f"#### Result for {command}\n{demisto_execute_response[0]['HumanReadable']}"
-    )
-
-
-def test_get_file_from_ioc_custom_fields():
-    """
-    Given:
-        - A File indicator with `CustomFields`.
-
-    When:
-        - Calling `get_file_from_ioc_custom_fields`.
-
-    Assert:
-        - Ensure correct `File` context that removes empty values and extracts `Name` and `Signature`.
-    """
-    from FileEnrichment import get_file_from_ioc_custom_fields
-
-    ioc_custom_fields = {
-        "fileextension": "ZIP",
-        "filetype": "application/zip",
-        "md5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
-        "sha1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
-        "sha256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
-        "size": 262291,
-        "ssdeep": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm",
-        "tags": ["checks-cpu-name", "checks-hostname"],
-        "stixid": None,  # expect to be removed (empty value)
-        "name": "Test Application.zip",
-        "associatedfilenames": ["Test Application.zip", "test_installer_x64.zip"],
-        "signatureauthentihash": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
-    }
-    file_indicator_context = get_file_from_ioc_custom_fields(ioc_custom_fields)
-
-    assert "stixid" not in file_indicator_context
-    assert file_indicator_context == {
-        "Extension": ioc_custom_fields["fileextension"],
-        "Type": ioc_custom_fields["filetype"],
-        "MD5": ioc_custom_fields["md5"],
-        "SHA1": ioc_custom_fields["sha1"],
-        "SHA256": ioc_custom_fields["sha256"],
-        "Size": ioc_custom_fields["size"],
-        "SSDeep": ioc_custom_fields["ssdeep"],
-        "Tags": ioc_custom_fields["tags"],
-        "AssociatedFileNames": ioc_custom_fields["associatedfilenames"],
-        "Name": ioc_custom_fields["name"],
-        "Signature": {
-            "Authentihash": ioc_custom_fields["signatureauthentihash"],
+    # ---------- Enabled modules/brands (BrandManager) ----------
+    mocker.patch.object(
+        demisto,
+        "getModules",
+        return_value={
+            "wf": {"state": "active", "brand": "WildFire-v2"},
+            "core": {"state": "active", "brand": "Cortex Core - IR"},
         },
-    }
-
-
-def test_classify_hashes_by_type():
-    """
-    Given:
-        - A list of file hashes of different types.
-
-    When:
-        - Calling `classify_hashes_by_type`
-
-    Assert:
-        - Classified hashes dictionary is as expected.
-    """
-    from FileEnrichment import classify_hashes_by_type
-
-    hashes = [MD5_HASH, SHA_1_HASH, SHA_256_HASH]
-    assert classify_hashes_by_type(hashes) == {"MD5": [MD5_HASH], "SHA1": [SHA_1_HASH], "SHA256": [SHA_256_HASH]}
-
-
-def test_flatten_list():
-    """
-    Given:
-        - A list of numbers that contains a nested list of numbers.
-
-    When:
-        - Calling `flatten_list`.
-
-    Assert:
-        - Ensure a flattened (non-nested) list of the same numbers.
-    """
-    from FileEnrichment import flatten_list
-
-    nested_list = [1, 2, 3, [4, 5], 4, 6, [7, [8]]]
-
-    assert flatten_list(nested_list) == [1, 2, 3, 4, 5, 4, 6, 7, 8]
-
-
-def test_merge_context_outputs():
-    """
-    Given:
-        - The per-command entry context from 5 commands.
-
-    When:
-        - Calling `merge_context_outputs`.
-
-    Assert:
-        - Ensure merged correct context output.
-    """
-    from FileEnrichment import merge_context_outputs
-
-    per_command_context = {
-        "findIndicators": util_load_json("test_data/search_file_indicator_expected.json")["Context"],
-        "file": util_load_json("test_data/file_reputation_command_expected.json")["Context"],
-        "wildfire-get-verdict": util_load_json("test_data/wildfire_verdict_command_expected.json")["Context"],
-        "core-get-hash-analytics-prevalence": util_load_json("test_data/ir_hash_analytics_command_expected.json")["Context"],
-    }
-
-    expected_merged_context = util_load_json("test_data/merged_context_expected.json")
-
-    assert merge_context_outputs(per_command_context, include_additional_fields=True) == expected_merged_context
-
-
-def test_execute_file_reputation(mocker: MockerFixture):
-    """
-    Given:
-        - The '!file' command with a SHA256 file hash.
-
-    When:
-        - Calling `execute_file_reputation`.
-
-    Assert:
-        - Ensure correct context output and human-readable output.
-    """
-    from FileEnrichment import execute_file_reputation
-
-    command = Command("file", {"file": SHA_256_HASH})
-
-    demisto_execute_response = util_load_json("test_data/file_reputation_command_response.json")
-    mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
-
-    context_output, readable_command_results = execute_file_reputation(command)
-
-    expected_output = util_load_json("test_data/file_reputation_command_expected.json")
-    assert context_output == expected_output["Context"]
-    assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
-
-
-def test_execute_wildfire_verdict(mocker: MockerFixture):
-    """
-    Given:
-        - The '!wildfire-get-verdict' command with a SHA256 file hash.
-
-    When:
-        - Calling `execute_wildfire_verdict`.
-
-    Assert:
-        - Ensure correct context output and human-readable output.
-    """
-    from FileEnrichment import execute_wildfire_verdict
-
-    command = Command("wildfire-get-verdict", {"hash": SHA_256_HASH}, Brands.WILDFIRE_V2)
-
-    demisto_execute_response = util_load_json("test_data/wildfire_verdict_command_response.json")
-    mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
-
-    context_output, readable_command_results = execute_wildfire_verdict(command)
-
-    expected_output = util_load_json("test_data/wildfire_verdict_command_expected.json")
-    assert context_output == expected_output["Context"]
-    assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
-
-
-def test_execute_ir_hash_analytics(mocker: MockerFixture):
-    """
-    Given:
-        - The '!core-get-hash-analytics-prevalence' command with a SHA256 file hash.
-
-    When:
-        - Calling `execute_ir_hash_analytics`.
-
-    Assert:
-        - Ensure correct context output and human-readable output.
-    """
-    from FileEnrichment import execute_ir_hash_analytics
-
-    command = Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR)
-
-    demisto_execute_response = util_load_json("test_data/ir_hash_analytics_command_response.json")
-    mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
-
-    context_output, readable_command_results = execute_ir_hash_analytics(command)
-
-    expected_output = util_load_json("test_data/ir_hash_analytics_command_expected.json")
-    assert context_output == expected_output["Context"]
-    assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
-
-
-def test_enrich_with_command_known_command(mocker: MockerFixture):
-    """
-    Given:
-        - The known '!core-get-hash-analytics-prevalence' command with a SHA256 hash and an active instance of the source brand.
-
-    When:
-        - Calling `enrich_with_command`.
-
-    Assert:
-        - Ensure the known file enrichment command is executed.
-    """
-    from FileEnrichment import enrich_with_command
-
-    mock_execution_function = mocker.patch("FileEnrichment.execute_ir_hash_analytics", return_value=("", ""))
-
-    command = Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR)
-
-    enrich_with_command(
-        command=command,
-        enabled_brands=[Brands.CORE_IR.value],
-        enrichment_brands=[],
-        per_command_context={},
-        verbose_command_results=[],
     )
 
-    assert mock_execution_function.call_count == 1
+    # ---------- Mock BatchExecutor.execute_list_of_batches using JSON ----------
+    def _fake_execute_list_of_batches(self, list_of_batches, brands_to_run=None, verbose=False):
+        out = []
 
+        create_items = list(batch_blob.get("createNewIndicator", []))
+        enrich_items = list(batch_blob.get("enrichIndicators", []))
+        core_items = list(batch_blob.get("coreGetHashAnalyticsPrevalence", []))
 
-def test_enrich_with_command_unknown_command():
-    """
-    Given:
-        - The unknown '!core-get-endpoints' command with a limit and an active instance of the source brand.
+        # Batch 0: CreateNewIndicatorsOnly
+        batch0_cmds = list_of_batches[0]
+        batch0_results = []
+        for _ in batch0_cmds:
+            item = create_items.pop(0) if create_items else {"Type": 1, "EntryContext": {}}
+            batch0_results.append([(item, "", "")])
+        out.append(batch0_results)
 
-    When:
-        - Calling `enrich_with_command`.
+        # Batch 1: enrichIndicators + core-get-hash-analytics-prevalence (one per SHA256)
+        batch1_cmds = list_of_batches[1]
+        batch1_results = []
+        for cmd in batch1_cmds:
+            if cmd.name == "enrichIndicators":
+                items = enrich_items or [{"Type": 1, "EntryContext": {}, "Metadata": {"brand": "WildFire-v2"}}]
+                batch1_results.append([(e, "", "") for e in items])
+            elif cmd.name == "core-get-hash-analytics-prevalence":
+                item = (
+                    core_items.pop(0)
+                    if core_items
+                    else {
+                        "Type": 1,
+                        "EntryContext": {},
+                        "Metadata": {"brand": "Cortex Core - IR"},
+                    }
+                )
+                batch1_results.append([(item, "", "")])
+            else:
+                batch1_results.append([({"Type": 1, "EntryContext": {}}, "", "")])
+        out.append(batch1_results)
 
-    Assert:
-        - Ensure a `ValueError` is raised with the appropriate error message.
-    """
-    from FileEnrichment import enrich_with_command
+        return out
 
-    command = Command("core-get-endpoints", {"limit": "10"}, Brands.CORE_IR)
-    enabled_brands = [Brands.CORE_IR.value]
+    mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", _fake_execute_list_of_batches)
 
-    with pytest.raises(ValueError, match="Unknown command: core-get-endpoints"):
-        enrich_with_command(
-            command=command,
-            enabled_brands=enabled_brands,
-            enrichment_brands=[],
-            per_command_context={},
-            verbose_command_results=[],
-        )
-
-
-def test_enrich_with_command_with_no_enabled_instance(mocker: MockerFixture):
-    """
-    Given:
-        - The known '!core-get-hash-analytics-prevalence' command with a SHA256 hash and a disabled instance of the source brand.
-
-    When:
-        - Calling `enrich_with_command`.
-
-    Assert:
-        - Ensure the command is not executed since there is no active instance of the source brand.
-    """
-    from FileEnrichment import enrich_with_command
-
-    mock_execution_function = mocker.patch("FileEnrichment.execute_file_reputation")
-
-    command = Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR)
-    enabled_brands = [Brands.CORE_IR.value]
-    enrichment_brands = [Brands.WILDFIRE_V2.value]
-
-    enrich_with_command(
-        command=command,
-        enabled_brands=enabled_brands,
-        enrichment_brands=enrichment_brands,
-        per_command_context={},
-        verbose_command_results=[],
-    )
-
-    assert mock_execution_function.call_count == 0
-
-
-def test_enrich_with_command_not_in_enrichment_brands(mocker: MockerFixture):
-    """
-    Given:
-        - The known '!wildfire-report' command with a SHA256 hash and an enabled instance of the source brand.
-
-    When:
-        - Calling `enrich_with_command`.
-
-    Assert:
-        - Ensure the command is not executed since there is no active instance of the source brand.
-    """
-    from FileEnrichment import enrich_with_command
-
-    mock_execution_function = mocker.patch("FileEnrichment.execute_file_reputation")
-
-    command = Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR)
-
-    enrich_with_command(
-        command=command,
-        enabled_brands=[Brands.CORE_IR.value],
-        enrichment_brands=["VirusTotal (API v3)"],
-        per_command_context={},
-        verbose_command_results=[],
-    )
-
-    assert mock_execution_function.call_count == 0
-
-
-def test_search_file_indicator(mocker: MockerFixture):
-    """
-    Given:
-        - A file indicator in the Threat Intelligence Module (TIM).
-
-    When:
-        - Calling `search_file_indicator`.
-
-    Assert:
-        - Ensure correct context output and human-readable output.
-    """
-    from FileEnrichment import search_file_indicator
-
-    indicator_search_results = util_load_json("test_data/search_file_indicator_response.json")
-    mocker.patch("FileEnrichment.IndicatorsSearcher.__iter__", return_value=iter(indicator_search_results))
-
-    per_command_context, verbose_command_results = {}, []
-    search_file_indicator(SHA_256_HASH, per_command_context, verbose_command_results)
-
-    expected_output = util_load_json("test_data/search_file_indicator_expected.json")
-    assert per_command_context["findIndicators"] == expected_output["Context"]
-    assert verbose_command_results[0].readable_output == expected_output["HumanReadable"]
-
-
-def test_run_external_enrichment(mocker: MockerFixture):
-    """
-    Given:
-        - A SHA256 file hash and enabled instances of all source brands.
-
-    When:
-        - Calling `run_external_enrichment`.
-
-    Assert:
-        - Ensure all the commands from all the source brands run with the correct arguments.
-    """
-    from FileEnrichment import run_external_enrichment
-
-    enabled_brands = [Brands.WILDFIRE_V2.value, Brands.CORE_IR.value]
-    enrichment_brands = [Brands.WILDFIRE_V2.value]
-
-    mock_enrich_with_command = mocker.patch("FileEnrichment.enrich_with_command")
-
-    run_external_enrichment(
-        hashes_by_type={"SHA256": [SHA_256_HASH]},
-        enabled_brands=enabled_brands,
-        enrichment_brands=enrichment_brands,
-        per_command_context={},
-        verbose_command_results=[],
-    )
-
-    assert mock_enrich_with_command.call_count == 3
-
-    # A. Run file reputation command
-    file_reputation_command = mock_enrich_with_command.call_args_list[0].kwargs["command"]
-
-    assert file_reputation_command.name == "file"
-    assert file_reputation_command.args == {"file": SHA_256_HASH, "using-brand": ",".join(enrichment_brands)}
-
-    # B. Run Wildfire Verdict command
-    wildfire_verdict_command = mock_enrich_with_command.call_args_list[1].kwargs["command"]
-
-    assert wildfire_verdict_command.name == "wildfire-get-verdict"
-    assert wildfire_verdict_command.args == {"hash": SHA_256_HASH}
-
-    # C. Run Core IR Hash Analytics command
-    hash_analytics_command = mock_enrich_with_command.call_args_list[2].kwargs["command"]
-
-    assert hash_analytics_command.name == "core-get-hash-analytics-prevalence"
-    assert hash_analytics_command.args == {"sha256": SHA_256_HASH}
-
-
-def test_summarize_command_results_successful_commands(mocker: MockerFixture):
-    """
-    Given:
-        - Per-command entry context and verbose command results with "NOTE" entry type.
-
-    When:
-        - Calling `summarize_command_results`.
-
-    Assert:
-        - Ensure summarized human-readable output has correct values of "Status", "Result", and "Message".
-        - Ensure final (aggregated) context output has correct "File" indicator "DBotScore" context.
-    """
-    from FileEnrichment import summarize_command_results
-
-    mock_table_to_markdown = mocker.patch("FileEnrichment.tableToMarkdown")
-
-    file_reputation_context = {"SHA256": SHA_256_HASH, "VTVendors": [], "Brand": "VirusTotal (API v3)"}
-    wildfire_report_context = {"SHA256": SHA_256_HASH, "WFReport": "Success", "Brand": str(Brands.WILDFIRE_V2)}
-
-    per_command_context = {
-        "file": {"FileEnrichment": [file_reputation_context]},
-        "wildfire-report": {"FileEnrichment": [wildfire_report_context]},
-    }
-
-    summary_command_results = summarize_command_results(
-        hashes_by_type={"SHA256": [SHA_256_HASH]},
-        per_command_context=per_command_context,
-        verbose_command_results=[CommandResults(readable_output="This is hash scan result", entry_type=EntryType.NOTE)],
+    # ---------- Act ----------
+    command_results = file_enrichment_script(
+        file_list=file_list,
         external_enrichment=True,
-        include_additional_fields=True,
+        verbose=True,
+        enrichment_brands=["WildFire-v2"],
+        additional_fields=False,
     )
+    outputs = command_results.outputs
 
-    table_to_markdown_kwargs = mock_table_to_markdown.call_args.kwargs
-    assert table_to_markdown_kwargs["name"] == f"File Enrichment result for {SHA_256_HASH}"
-    assert table_to_markdown_kwargs["t"] == [
-        {
-            "File": SHA_256_HASH,
-            "Status": "Done",  # Got "File" context from two commands
-            "Result": "Success",  # No error entries in command results
-            "Message": "Found data on file from 2 brands.",
-            "Brands": f"VirusTotal (API v3), {Brands.WILDFIRE_V2}",
-            "TIM Verdict": "Unknown",
-        }
-    ]
+    # ---------- Assert: FileEnrichmentV2 indicators ----------
+    enrichment_key = "FileEnrichment(val.Value && val.Value == obj.Value)"
+    enrichment_list = outputs.get(enrichment_key, [])
+    assert len(enrichment_list) == 2
 
-    assert summary_command_results.outputs == {
-        ContextPaths.FILE_ENRICHMENT.value: [file_reputation_context, wildfire_report_context]
-    }
+    enrichment_map = {item["Value"]: item for item in enrichment_list}
+    # In this scenario, Value will be the canonical TIM "value" (sha256) → same as file_list
+    assert set(enrichment_map.keys()) == set(file_list)
 
+    # ---- file1 assertions ----
+    f1 = enrichment_map[file_list[0]]
+    brands_present_f1 = {r.get("Brand") for r in f1["Results"]}
+    assert brands_present_f1 == {"TIM", "WildFire-v2"}
+    assert len(f1["Results"]) == 2
 
-def test_summarize_command_results_failed_commands(mocker: MockerFixture):
-    """
-    Given:
-        - Empty per-command entry context and verbose command results with "ERROR" entry type.
+    # Hashes aggregated from TIM indicator
+    hashes1 = f1.get("Hashes", {})
+    assert hashes1.get("MD5") is not None
+    assert hashes1.get("SHA256") == file_list[0]
 
-    When:
-        - Calling `summarize_command_results` with `external_enrichment set` to False.
+    # TIM row present but without Status/ModifiedTime (popped to top-level)
+    tim_row_f1 = next(r for r in f1["Results"] if r["Brand"] == "TIM")
+    assert "Status" not in tim_row_f1
+    assert "ModifiedTime" not in tim_row_f1
 
-    Assert:
-        - Ensure summarized human-readable output has correct values of "Status", "Result", and "Message".
-        - Ensure final (aggregated) context output is empty - consistent with the per-command context.
-    """
-    from FileEnrichment import summarize_command_results
+    # Top-level scores & status
+    assert f1["TIMScore"] == 3
+    assert f1["MaxScore"] == 3
+    assert f1["MaxVerdict"] == "Malicious"
+    assert f1["Status"] == "Manual"  # due to manuallyEditedFields.Score in TIM IOC
 
-    mock_table_to_markdown = mocker.patch("FileEnrichment.tableToMarkdown")
+    # ---- file2 assertions ----
+    f2 = enrichment_map[file_list[1]]
+    brands_present_f2 = {r.get("Brand") for r in f2["Results"]}
+    assert brands_present_f2 == {"TIM", "WildFire-v2"}
+    assert len(f2["Results"]) == 2
 
-    summary_command_results = summarize_command_results(
-        hashes_by_type={"SHA256": [SHA_256_HASH]},
-        per_command_context={},
-        verbose_command_results=[CommandResults(readable_output="This is an error message!", entry_type=EntryType.ERROR)],
-        external_enrichment=False,
-        include_additional_fields=False,
-    )
-
-    table_to_markdown_kwargs = mock_table_to_markdown.call_args.kwargs
-    assert table_to_markdown_kwargs["name"] == f"File Enrichment result for {SHA_256_HASH}"
-    assert table_to_markdown_kwargs["t"] == [
-        {
-            "File": SHA_256_HASH,
-            "Status": "Not Found",  # No "File" context from any command
-            "Result": "Failed",  # Error entry in command results
-            "Message": "Could not find data on file. Consider setting external_enrichment=true.",
-            "TIM Verdict": "Unknown",
-        }
-    ]
-
-    assert summary_command_results.outputs == {}
-
-
-def test_main_invalid_hashes(mocker: MockerFixture):
-    """
-    Given:
-        - Invalid file hashes.
-
-    When:
-        - Calling `main`
-
-    Assert:
-        - Ensure an error is returned with the appropriate error message.
-    """
-    from FileEnrichment import main
-
-    mocker.patch("FileEnrichment.demisto.args", return_value={"file_hash": "123,345"})
-    mocker.patch("FileEnrichment.demisto.error")  # mocked to avoid logging to STDERR when running unit test
-    mock_return_error = mocker.patch("FileEnrichment.return_error")
-
-    expected_error_message = (
-        "Failed to execute file-enrichment script. "
-        "Error: None of the file hashes are valid. Supported types are: MD5, SHA1, SHA256, and SHA512."
-    )
-
-    main()
-
-    assert mock_return_error.call_args[0][0] == expected_error_message
-
-
-@pytest.mark.parametrize(
-    "external_enrichment",
-    [
-        pytest.param(True, id="Enabled external enrichment"),
-        pytest.param(False, id="Disabled external enrichment"),
-    ],
-)
-def test_main_valid_hash(mocker: MockerFixture, external_enrichment: bool):
-    """
-    Given:
-        - A valid SHA256 file hash and external_enrichment boolean flag.
-
-    When:
-        - Calling `file_enrichment_script`
-
-    Assert:
-        - Ensure the correct functions are called, depending on the value of external_enrichment.
-    """
-    from FileEnrichment import file_enrichment_script
-
-    mock_search_file_indicator = mocker.patch("FileEnrichment.search_file_indicator")
-    mock_demisto_get_modules = mocker.patch("FileEnrichment.demisto.getModules")
-    mock_run_external_enrichment = mocker.patch("FileEnrichment.run_external_enrichment")
-    mock_summarize_command_results = mocker.patch("FileEnrichment.summarize_command_results")
-
-    args = {"file_hash": SHA_256_HASH, "external_enrichment": external_enrichment}
-    file_enrichment_script(args)
-
-    assert mock_search_file_indicator.call_count == 1
-
-    # Should not run if external_enrichment is False
-    assert mock_demisto_get_modules.call_count == int(external_enrichment)
-    assert mock_run_external_enrichment.call_count == int(external_enrichment)
-
-    assert mock_summarize_command_results.call_count == 1
+    wf2 = next(r for r in f2["Results"] if r["Brand"] == "WildFire-v2")
+    assert wf2["Score"] == 1
+    assert wf2.get("Reliability") == "Low"

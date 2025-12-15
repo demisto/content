@@ -1124,6 +1124,7 @@ Search configuration inventory on the Prisma Cloud platform using RQL language. 
 | search_id | Search ID. Can be used to rerun the same search. | Optional |
 | sort_direction | The direction to sort the results by. Both sort direction and field must be specified if sorting. Possible values are: asc, desc. Default is desc. | Optional |
 | sort_field | The field to sort the results by. Both sort direction and field must be specified if sorting. Possible values are: id, time, apiName, customerId, insertTs, json, cloudAccount, cloudRegion, stateId. Default is insertTs. | Optional |
+| heuristic_search | Enable heuristic search optimization for faster results. Default is true. | Optional |
 
 #### Context Output
 
@@ -2842,6 +2843,7 @@ Access keys are a secure way to enable programmatic access to the Prisma Cloud A
 A service account is a special Prisma Cloud identity used to access Prisma Cloud programmatically via API.
 
 To create a service account, see [Add Service Accounts On Prisma Cloud](https://docs.prismacloud.io/en/enterprise-edition/content-collections/administration/add-service-account-prisma-cloud)
+
 #### Base Command
 
 `prisma-cloud-access-key-create`
@@ -3004,11 +3006,13 @@ The following sections list the changes in this version.
 ### Commands
 
 #### The following commands were deprecated in this version because they are not supported by the API anymore
+
 - ***redlock-list-scans***
 - *redlock-get-scan-status***
 - ***redlock-get-scan-results***
 
 #### The following commands were replaced in this version
+
 - ***redlock-dismiss-alerts*** - this command is replaced by ***prisma-cloud-alert-dismiss***.
 - ***redlock-get-alert-details*** - this command is replaced by ***prisma-cloud-alert-get-details***.
 - ***redlock-get-remediation-details*** - this command is replaced by ***prisma-cloud-remediation-command-list***.
@@ -3021,6 +3025,7 @@ The following sections list the changes in this version.
 - *redlock-search-network* - this command is replaced by *prisma-cloud-network-search*.
 
 ## Additional Considerations for this version
+
 - "Risk detail" was removed from all commands because it is not supported by the API anymore.
 - Commands from the previous version were kept in order to make to transition from v1 to v2 easy for existing playbooks. We encourage to use the new version of each command.
 

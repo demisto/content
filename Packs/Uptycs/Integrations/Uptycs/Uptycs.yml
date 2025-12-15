@@ -1,5 +1,5 @@
 fromversion: 5.0.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 category: Analytics & SIEM
@@ -1530,7 +1530,7 @@ script:
     - name: filename
       required: true
       description: The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.
-  dockerimage: demisto/auth-utils:1.0.0.2025089
+  dockerimage: demisto/auth-utils:1.0.0.4165551
   isfetch: true
   runonce: true
   script: '-'

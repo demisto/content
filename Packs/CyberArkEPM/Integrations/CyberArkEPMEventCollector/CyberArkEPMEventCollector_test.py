@@ -197,8 +197,9 @@ def test_get_events_command(requests_mock, event_type):
     Then:
         - Validates that the function works as expected.
     """
-    from CommonServerPython import string_to_table_header
     from CyberArkEPMEventCollector import create_last_run, get_events_command
+
+    from CommonServerPython import string_to_table_header
 
     client = mocked_client(requests_mock)
     last_run_per_id = create_last_run(["id1", "id2"], "2023-01-01T00:00:00Z")
@@ -235,3 +236,44 @@ def test_fetch_events(requests_mock):
             "policy_audits": {"from_date": "2023-12-11T13:09:56.056Z", "next_cursor": "start"},
         }
     )
+
+
+@pytest.mark.parametrize(
+    "event_type, last_fetch, expected_next_cursor, expected_from_date",
+    [
+        # Test Case 1: Zero events with next_cursor="start" (pagination complete, no new events)
+        ("policy_audits", {"events": [], "next_cursor": "start"}, "start", "2023-01-01T00:00:00.000Z"),
+        # Test Case 2: Zero events with next_cursor="some_cursor" (pagination ongoing but empty page)
+        ("detailed_events", {"events": [], "next_cursor": "new_cursor_123"}, "new_cursor_123", "2023-01-01T00:00:00.000Z"),
+        # Test Case 3: Events exist with next_cursor="start" (pagination complete with events)
+        (
+            "policy_audits",
+            {"events": [{"_time": "2023-12-11T13:09:56.055Z"}, {"_time": "2023-12-11T13:09:56.056Z"}], "next_cursor": "start"},
+            "start",
+            "2023-12-11T13:09:56.057Z",
+        ),
+    ],
+)
+def test_prepare_next_run_with_zero_events(event_type, last_fetch, expected_next_cursor, expected_from_date):
+    """
+    Given:
+        - A last_run dict and last_fetch results.
+
+    When:
+        1. Zero events and next_cursor="start" (pagination complete with zero events)
+        2. Zero events and next_cursor="some_cursor" (pagination ongoing with zero events)
+        3. Events exist and next_cursor="start" (pagination complete with events)
+
+    Then:
+        1. next_cursor is always updated, even when 0 events are fetched
+        2. from_date is NOT updated when 0 events are fetched (to avoid crash)
+        3. from_date IS updated when events exist and pagination completes
+    """
+    from CyberArkEPMEventCollector import prepare_next_run
+
+    last_run = {"set123": {event_type: {"from_date": "2023-01-01T00:00:00.000Z", "next_cursor": "old_cursor"}}}
+
+    prepare_next_run("set123", event_type, last_run, last_fetch)
+
+    assert last_run["set123"][event_type]["next_cursor"] == expected_next_cursor
+    assert last_run["set123"][event_type]["from_date"] == expected_from_date

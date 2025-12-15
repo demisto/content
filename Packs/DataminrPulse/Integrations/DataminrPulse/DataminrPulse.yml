@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -731,7 +731,7 @@ script:
     - contextPath: DataminrPulse.Alerts.userTopHashtags
       description: User's top hashtags.
       type: Unknown
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

@@ -1,6 +1,5 @@
 Profiles execution time of tasks in a playbook or sub-playbook (if specified).  Provides minimum, maximum, and average task execution times in milliseconds as well as the state of each task: completed, error, notexecuted, started, and waiting.
 
-
 ## Script Data
 
 ---

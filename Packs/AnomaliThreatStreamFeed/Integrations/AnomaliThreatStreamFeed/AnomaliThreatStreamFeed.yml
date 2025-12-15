@@ -1,0 +1,159 @@
+category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Anomali ThreatStream Feed
+  version: -1
+configuration:
+- display: Fetch indicators
+  defaultvalue: 'true'
+  name: feed
+  type: 8
+  section: Collect
+  additionalinfo: Enable this checkbox to automatically pull indicators from the Anomali ThreatStream at regular intervals.
+- display: Fetch by
+  name: fetchBy
+  type: 15
+  defaultvalue: "Modified Time"
+  required: true
+  options:
+  - "Created Time"
+  - "Modified Time"
+  section: Collect
+- display: Server URL (e.g., https://www.test.com)
+  defaultvalue: https://api.threatstream.com
+  name: url
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: Confirm that the pre-filled URL matches the correct API endpoint for your Anomali ThreatStream instance.
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+  displaypassword: API Key
+  section: Connect
+- display: Feed Fetch Interval
+  defaultvalue: '240'
+  name: feedFetchInterval
+  type: 19
+  required: false
+  section: Collect
+- display: Confidence Threshold
+  name: confidenceThreshold
+  required: false
+  advanced: true
+  defaultvalue: '65'
+  section: Collect
+  type: 0
+  additionalinfo: Will only return indicators above the confidence threshold.
+- display: Source Reliability
+  defaultvalue: C - Fairly reliable
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  advanced: true
+  additionalinfo: Reliability of the source providing the intelligence data.
+  type: 15
+  section: Collect
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. Indicator's TLP will override the default value.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  defaultvalue: WHITE
+  required: false
+  section: Collect
+  advanced: true
+- display: Indicator Reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation. If not selected, Indicators' verdicts are determined by their Dbot score from the API. The default is Unknown.
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  type: 18
+  advanced: true
+  required: false
+  section: Collect
+- defaultvalue: indicatorType
+  display: ""
+  name: feedExpirationPolicy 
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  type: 17
+  advanced: true
+  required: false
+  section: Collect
+- display: Create relationships 
+  defaultvalue: 'true'
+  name: createRelationships
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  defaultvalue: 'false'
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Use the Anomali ThreatStream Feed Integration to fetch indicators from the Anomali ThreatStream.
+display: Anomali ThreatStream Feed
+name: Anomali ThreatStream Feed
+script:
+  commands:
+  - arguments:
+    - name: indicator_type 
+      auto: PREDEFINED
+      description: The indicator type to analyze. If not selected, indicators from all types are retrieved.
+      isArray: false
+      required: false
+      predefined:
+      - 'domain'
+      - 'ip'
+      - 'md5'
+      - 'url'
+      - 'email'
+    - name: limit
+      defaultValue: "10"
+      description: Maximum number of objects to return.
+      isArray: false
+      required: false
+      type: Number
+    - name: sort_by 
+      auto: PREDEFINED
+      defaultValue: 'Modified Time'
+      description: Sort the records in descending order according to the Created or Modified Time.
+      isArray: false
+      required: false
+      predefined:
+      - 'Created Time'
+      - 'Modified Time'
+    description: Gets indicators from the feed. This command is mainly used for testing and debugging purposes.
+    name: threatstream-feed-get-indicators
+  dockerimage: demisto/py3-tools:1.0.0.5475267
+  runonce: false
+  feed: true
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

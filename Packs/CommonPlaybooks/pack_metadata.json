@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "2.7.4",
+    "currentVersion": "2.7.23",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -387,6 +387,11 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "cloud",
+        "cloud_runtime_security",
+        "xsiam",
+        "edr"
     ]
 }

@@ -245,7 +245,7 @@ In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
 1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
 2. Go to the apps tab and add the **Syslog** app. If it already exists, click the **Syslog** app and then click **Configure**.

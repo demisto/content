@@ -1,5 +1,5 @@
 category: Email
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -40,6 +40,19 @@ configuration:
   type: 0
   section: Collect
   required: false
+- display: Collect all events
+  name: collect_all_events
+  type: 8
+  section: Collect
+  required: false
+  additionalinfo: Fetch all events instead of only open events.
+- display: Fetch mailbox mitigation details
+  name: mailbox_enrichment
+  defaultvalue: 'false'
+  type: 8
+  section: Collect
+  required: false
+  additionalinfo: Whether to fetch the affected mailbox mitigation details as part of the event data.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -66,15 +79,23 @@ script:
       name: since_time
     - auto: PREDEFINED
       defaultValue: 'false'
+      description: Set this argument to True in order to include the affected mailboxes mitigation details in the event data.
+      name: mailbox_enrichment
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Set this argument to True in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
       - 'true'
       - 'false'
       required: true
-    description: Gets events from Ironscales.
+    description: Gets events from Ironscales. This command is intended for development and debugging purposes and is to be used with caution as it may create duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
     name: ironscales-get-events
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetchevents: true
   script: ''
   subtype: python3

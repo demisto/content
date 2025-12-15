@@ -67,6 +67,7 @@ TAB_CLOSE_WAIT_TIME = 1
 DEFAULT_RETRIES_COUNT = 4
 DEFAULT_RETRY_WAIT_IN_SECONDS = 3
 PAGES_LIMITATION = 20
+SCREENSHOT_TIMEOUT = 60
 
 # chrome instance data keys
 INSTANCE_ID = "instance_id"
@@ -118,6 +119,7 @@ class RasterizeType(Enum):
     PNG = "png"
     PDF = "pdf"
     JSON = "json"
+    TEXT = "text"
 
 
 # endregion
@@ -125,7 +127,7 @@ class RasterizeType(Enum):
 # region utility classes
 
 
-def excepthook_recv_loop(args):
+def excepthook_recv_loop(args: threading.ExceptHookArgs) -> None:
     """
     Suppressing exceptions that might happen after the tab was closed.
     """
@@ -214,26 +216,27 @@ class PychromeEventHandler:
         self.path = path
         self.navigation_timeout = navigation_timeout
         self.is_private_network_url = False
+        self.document_url = ""
 
     def page_frame_started_loading(self, frameId):
-        demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}")
+        demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}, {self.tab.id=}, {self.path=}")
         self.start_frame = frameId
         if self.request_id:
             # We're in redirect
-            demisto.debug(f"Frame (reload) started loading: {frameId}, clearing {self.request_id=}")
+            demisto.debug(f"Frame (reload) started loading: {frameId}, clearing {self.request_id=}, {self.tab.id=}, {self.path=}")
             self.request_id = None
             self.response_received = False
             # self.start_frame = None
         else:
-            demisto.debug(f"Frame started loading: {frameId}, no request_id")
+            demisto.debug(f"Frame started loading: {frameId}, no request_id, {self.tab.id=}, {self.path=}")
 
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # noqa: F841
-        demisto.debug(f"PychromeEventHandler.network_data_received, {requestId=}")
+        demisto.debug(f"PychromeEventHandler.network_data_received, {requestId=}, {self.tab.id=}, {self.path=}")
         if requestId and not self.request_id:
-            demisto.debug(f"PychromeEventHandler.network_data_received, Using {requestId=}")
+            demisto.debug(f"PychromeEventHandler.network_data_received, Using {requestId=}, {self.tab.id=}, {self.path=}")
             self.request_id = requestId
         else:
-            demisto.debug(f"PychromeEventHandler.network_data_received, Not using {requestId=}")
+            demisto.debug(f"PychromeEventHandler.network_data_received, Not using {requestId=}, {self.tab.id=}, {self.path=}")
 
     def page_frame_stopped_loading(self, frameId):
         """
@@ -262,13 +265,18 @@ class PychromeEventHandler:
                 if self.path.lower().startswith("file://"):
                     frame_url = self.get_frame_tree_url()
                     if frame_url and frame_url.lower().startswith(CHROME_ERROR_URL):
-                        demisto.debug(f"Encountered chrome-error {frame_url=}, retrying...")
+                        demisto.debug(f"Encountered chrome-error {frame_url=}, {self.tab.id=}, {self.path=} retrying...")
                         self.retry_loading()
                     else:
-                        demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
+                        demisto.debug(
+                            "PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event, "
+                            f"{self.tab.id=}, {self.path=}"
+                        )
                         self.tab_ready_event.set()
                 else:
-                    demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
+                    demisto.debug(
+                        f"PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event, {self.tab.id=}, {self.path=}"
+                    )
                     self.tab_ready_event.set()
             except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
                 demisto.debug(f"page_frame_stopped_loading: Tab {self.tab.id=} for {self.path=} is stopping/stopped: {ex}")
@@ -287,7 +295,9 @@ class PychromeEventHandler:
         try:
             frame_tree_result = self.tab.Page.getFrameTree()
             frame_url = frame_tree_result.get("frameTree", {}).get("frame", {}).get("url", "")
-            demisto.debug(f"PychromeEventHandler.get_frame_tree_url, Frame URL: {frame_url}, Original path: {self.path}")
+            demisto.debug(
+                f"PychromeEventHandler.get_frame_tree_url, Frame URL: {frame_url}, Original path: {self.path}, {self.tab.id}"
+            )
             return frame_url
         except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
             # The tab is already stopping or has been stopped
@@ -296,7 +306,7 @@ class PychromeEventHandler:
             )
             return ""
         except Exception as ex:
-            demisto.debug(f"Unexpected error getting frame tree URL: {ex}")
+            demisto.debug(f"Unexpected error getting frame tree URL for {self.tab.id=}, {self.path=}: {ex}")
             return ""
 
     def retry_loading(self):
@@ -307,14 +317,16 @@ class PychromeEventHandler:
         if it encounters a Chrome error page. It sets the tab_ready_event when successful.
         """
         for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
-            demisto.debug(f"Retrying loading URL {self.path}. Attempt {retry_count}/{DEFAULT_RETRIES_COUNT}")
+            demisto.debug(f"Retrying loading URL {self.path}, {self.tab.id}. Attempt {retry_count}/{DEFAULT_RETRIES_COUNT}")
             try:
                 if self.navigation_timeout > 0:
                     self.tab.Page.navigate(url=self.path, _timeout=self.navigation_timeout)
                 else:
                     self.tab.Page.navigate(url=self.path)
             except Exception as e:
-                demisto.debug(f"Error during navigation attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}")
+                demisto.debug(
+                    f"Error during navigation to {self.tab.id=}, {self.path=} attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}"
+                )
 
             safe_sleep(DEFAULT_PAGE_LOAD_TIME / DEFAULT_RETRIES_COUNT + 1)
 
@@ -324,26 +336,30 @@ class PychromeEventHandler:
             if not frame_url:
                 demisto.debug(
                     f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Could not get frame URL. "
-                    f"Stopping after {DEFAULT_RETRIES_COUNT} retry attempts."
+                    f"Stopping after {DEFAULT_RETRIES_COUNT} retry attempts. "
+                    f"For {self.tab.id=}, {self.path=}"
                 )
                 self.tab_ready_event.set()
                 return
 
             if not frame_url.lower().startswith(CHROME_ERROR_URL):
-                demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} successful.")
+                demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} successful. {self.tab.id=}, {self.path=}")
                 self.tab_ready_event.set()
                 return
 
-            demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error.")
+            demisto.debug(
+                "Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error. "
+                f"{self.tab.id=}, {self.path=}"
+            )
 
-        demisto.debug(f"Max retries ({DEFAULT_RETRIES_COUNT}) reached, could not load the page.")
+        demisto.debug(f"Max retries ({DEFAULT_RETRIES_COUNT}) reached, could not load the page. {self.tab.id=}, {self.path=}")
         # Ensure we always set the event to prevent hanging
         self.tab_ready_event.set()
 
     def network_request_will_be_sent(self, documentURL: str, **kwargs):
         """Triggered when a request is sent by the browser, catches mailto URLs."""
-        demisto.debug(f"PychromeEventHandler.network_request_will_be_sent, {documentURL=}")
-
+        demisto.debug(f"PychromeEventHandler.network_request_will_be_sent, {documentURL=}, {self.tab.id=}, {self.path=}")
+        self.document_url = documentURL
         self.is_mailto = documentURL.lower().startswith("mailto:")
         self.is_private_network_url = is_private_network(documentURL)
         demisto.debug(f"Private network URL check for {documentURL=}: {self.is_private_network_url}")
@@ -351,8 +367,11 @@ class PychromeEventHandler:
         request_url = kwargs.get("request", {}).get("url", "")
 
         if any(value in request_url for value in BLOCKED_URLS):
+            demisto.info(
+                f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}"
+            )
             self.tab.Fetch.enable()
-            demisto.debug("Fetch events enabled.")
+            demisto.debug(f"Fetch events enabled. {self.tab.id=}, {self.path=}")
 
     def handle_request_paused(self, **kwargs):
         request_id = kwargs.get("requestId")
@@ -361,20 +380,271 @@ class PychromeEventHandler:
         # abort the request if the url inside blocked_urls param and its redirect request
         if any(value in request_url for value in BLOCKED_URLS) and not self.request_id:
             self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
-            demisto.debug(f"Request paused: {request_url=} , {request_id=}")
+            demisto.debug(f"Request paused: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
             self.tab.Fetch.disable()
-            demisto.debug("Fetch events disabled.")
+            demisto.debug(f"Fetch events disabled. {self.tab.id=}, {self.path=}")
+
+
+# endregion
+
+_EXTRACTION_JAVASCRIPT = """
+(function() {
+    // --- JSON Detection and Extraction (First Priority) ---
+    const contentType = (document.contentType ||
+                         document.querySelector('meta[http-equiv="Content-Type"]')?.content ||
+                         '').toLowerCase();
+    const isJson = contentType.includes('application/json') ||
+                   contentType.includes('application/ld+json');
+
+    if (isJson) {
+        const jsonContent = document.querySelector('pre') ?
+                            document.querySelector('pre').textContent :
+                            document.body.textContent;
+        return { type: 'json', content: jsonContent };
+    }
+
+    // --- Metadata and Tag Extraction ---
+    let metadataOutput = [];
+
+    // Function to safely extract content from a meta tag
+    function getMetaContent(selector) {
+        const element = document.querySelector(selector);
+        return element ? element.content.trim() : '';
+    }
+
+    // Extract Title, Description, and Tags from the <head>
+    const title = document.title.trim();
+    if (title) metadataOutput.push(`# ${title}`);
+
+    const description = getMetaContent('meta[name="description"]');
+    if (description) metadataOutput.push(`\\n**Description:** ${description}`);
+
+    const ogTags = getMetaContent('meta[property="og:tags"], meta[name="keywords"]');
+    if (ogTags) metadataOutput.push(`\\n**Tags:** ${ogTags}`);
+
+    // Append a separator after metadata
+    if (metadataOutput.length > 0) metadataOutput.push('\\n\\n---\\n\\n');
+
+    // --- HTML/Markdown Extraction ---
+    const MAIN_CONTENT_SELECTORS = 'main, article, [class*="pan-article-content-wrapper"], [class*="post-content"], '
+        + '#main-article-body, .entry-content, #content, #article-body';
+
+    const IGNORE_SELECTORS = 'nav, header, footer, aside, script, style, noscript, form, iframe, button, video, audio, '
+        + '[role="navigation"], [role="banner"], [role="contentinfo"], [role="complementary"], '
+        + '.sidebar, #comments, .comment-area, '
+        + '[class*="table-of-contents"], [id*="table-of-contents"], .article-sidebar-container, '
+        + '.related-content, .widget, .subscribe-form, .product-nav, .additional-resources, .share-buttons, '
+        + '.related-posts, .related-articles, [id^="related-articles"], [id^="related-resources"], '
+        + '[class*="product-list"], [class*="subscribe"], '
+        + '.share-widget, .tag-list, .article-footer, .resources-container, .products-and-services, '
+        + '[class*="nav-column"], [class*="mega-dropdown-menu"], [class*="services-list"], '
+        + '[class*="sub-menu-col"], [class*="tab-pane"], '
+        + '[class*="copyright"], [class*="footer-columns"], .pan-footer-container, [data-type*="script"], '
+        + '[class*="site-nav"], [class*="mobile-header"], [id^="main-nav-menu"]';
+
+    const traversalRoot = document.querySelector(MAIN_CONTENT_SELECTORS) || document.body;
+    const markdownOutput = metadataOutput;
+
+    function traverse(node) {
+        if (node.nodeType === 3) { // TEXT_NODE
+            const text = node.textContent.trim();
+            if (text) markdownOutput.push(text + ' ');
+        } else if (node.nodeType === 1) { // ELEMENT_NODE
+            if (node.matches(IGNORE_SELECTORS)) {
+                 return;
+            }
+
+            const tag = node.tagName.toLowerCase();
+            const children = Array.from(node.childNodes);
+
+            if (tag === 'div' && node.textContent.trim().length === 0 && node.children.length === 0) {
+                 return;
+            }
+
+            let [prefix, suffix, skipChildren] = ['', '', false];
+
+            switch (tag) {
+                case 'h1':
+                case 'h2':
+                case 'h3':
+                case 'h4':
+                case 'h5':
+                case 'h6':
+                    const level = parseInt(tag[1], 10);
+                    [prefix, suffix] = [`\\n\\n${'#'.repeat(level)} `, '\\n\\n'];
+                    break;
+
+                // Table support with proper markdown formatting
+                case 'table':
+                    [prefix, suffix] = ['\\n\\n', '\\n\\n'];
+                    break;
+                case 'thead':
+                    break;
+                case 'tbody':
+                    break;
+                case 'tr':
+                    const isHeaderRow = node.parentNode.tagName.toLowerCase() === 'thead';
+                    if (isHeaderRow) {
+                        // Header row
+                        [prefix, suffix] = ['| ', ' |\\n'];
+                    } else {
+                        // Check if this is first body row (need separator)
+                        const prevRow = node.previousElementSibling;
+                        const needsSeparator = !prevRow || prevRow.parentNode?.tagName?.toLowerCase() === 'thead';
+                        if (needsSeparator) {
+                            const colCount = node.querySelectorAll('td, th').length;
+                            const separator = '|' + ' --- |'.repeat(colCount) + '\\n';
+                            [prefix, suffix] = [separator + '| ', ' |\\n'];
+                        } else {
+                            [prefix, suffix] = ['| ', ' |\\n'];
+                        }
+                    }
+                    break;
+                case 'td':
+                case 'th':
+                    [prefix, suffix] = [' ', ' |'];
+                    break;
+
+                case 'p':
+                case 'div':
+                    [prefix, suffix] = ['\\n\\n', '\\n\\n'];
+                    break;
+
+                case 'li':
+                    const listSymbol = node.parentNode.tagName.toLowerCase() === 'ol'
+                        ? `${Array.from(node.parentNode.children).indexOf(node) + 1}. `
+                        : '* ';
+                    prefix = `\\n${listSymbol}`;
+                    break;
+
+                case 'a':
+                    const href = node.getAttribute('href');
+                    const text = node.textContent.trim();
+                    if (href && text && !href.toLowerCase().startsWith('mailto:')) {
+                        prefix = `[${text}](${href}) `;
+                        skipChildren = true;
+                    } else if (text) {
+                        prefix = text;
+                        skipChildren = true;
+                    }
+                    break;
+                case 'strong':
+                case 'b':
+                    [prefix, suffix] = ['**', '**'];
+                    break;
+                case 'br':
+                case 'hr':
+                    prefix = '\\n';
+                    break;
+                case 'pre':
+                    prefix = '\\n\\n```\\n';
+                    suffix = '\\n```\\n\\n';
+                    break;
+            }
+
+            markdownOutput.push(prefix);
+
+            if (!skipChildren) {
+                children.forEach(traverse);
+            }
+
+            markdownOutput.push(suffix);
+        }
+    }
+
+    traverse(traversalRoot);
+
+    // Final Cleanup
+    let finalContent = markdownOutput.join('').trim();
+
+    finalContent = finalContent.replace(/ +/g, ' ');
+    finalContent = finalContent.replace(/\\n\\n\\n+/g, '\\n\\n');
+    finalContent = finalContent.replace(/[ \\t]*\\n[ \\t]*/g, '\\n');
+    finalContent = finalContent.replace(/ ([.,;:!?])/g, '$1');
+    finalContent = finalContent.replace(/\\*\\*\\n\\n/g, '**');
+    finalContent = finalContent.replace(/\\*\\* \\*\\* /g, ' ');
+
+    // Table cleanup
+    finalContent = finalContent.replace(/\\|(\\s*?)\\|(\\s*?)-\\|/g, '|');
+    finalContent = finalContent.replace(/\\|\\s*?\\n/g, '\\n');
+    finalContent = finalContent.split('\\n').map(line => line.trim()).join('\\n');
+    finalContent = finalContent.trim();
+
+    return { type: 'html', content: finalContent };
+})();
+"""
+
+
+def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tuple[str, str]:
+    """
+    Executes the JavaScript to extract ONLY the structured content string.
+    For JSON content (detected by Content-Type), returns raw JSON. For HTML, returns markdown-formatted content.
+
+    The JavaScript handles both detection and extraction in a single call for optimal performance.
+
+    Returns:
+        tuple[str, str]: A tuple containing:
+            - str: The structured content string (JSON or Markdown).
+            - str: The final URL navigated to (as auxiliary data).
+    """
+    demisto.debug(f"Executing content-only extraction for tab {tab.id}")
+
+    try:
+        frame_tree_result = tab.Page.getFrameTree()
+        final_url = frame_tree_result.get("frameTree", {}).get("frame", {}).get("url", "N/A")
+    except Exception as ex:
+        demisto.debug(f"Could not get frame URL: {ex}")
+        final_url = "N/A"
+
+    try:
+        result = tab.Runtime.evaluate(expression=_EXTRACTION_JAVASCRIPT, returnByValue=True, _timeout=navigation_timeout)
+        extraction_result = result.get("result", {}).get("value", {})
+
+        content_type = extraction_result.get("type", "html")
+        raw_content = extraction_result.get("content", "").strip()
+
+        if content_type == "json":
+            try:
+                parsed_json = json.loads(raw_content)
+                content_string = json.dumps(parsed_json, separators=(", ", ": "), ensure_ascii=False)
+                demisto.debug(f"Successfully parsed and formatted JSON (detected by Content-Type) from {final_url}")
+            except json.JSONDecodeError as json_err:
+                demisto.debug(f"Could not parse JSON from {final_url}: {json_err}, returning raw content")
+                content_string = raw_content
+        else:
+            content_string = raw_content
+
+        if not content_string:
+            raise DemistoException("Extraction failed: Received empty content string from JavaScript execution.")
+
+        return content_string, final_url
+
+    except Exception as ex:
+        demisto.error(f"Failed to extract structured content from tab {tab.id}: {ex}")
+        return f"Extraction Error: {str(ex)}", final_url
 
 
 # endregion
 
 
-def count_running_chromes(port) -> int:
+def get_chrome_processes(port) -> list:
     try:
-        processes = subprocess.check_output(["ps", "auxww"], stderr=subprocess.STDOUT, text=True).splitlines()
+        processes = []
+        # get all the processes running on the machine
+        for pid in os.listdir("/proc"):
+            if pid.isdigit():
+                try:
+                    with open(f"/proc/{pid}/cmdline") as f:
+                        cmd = f.read().replace("\x00", " ").strip()
+                        if cmd:
+                            processes.append(f"{pid} {cmd}")
+                except Exception:
+                    pass
 
+        # identifiers the relevant chrome processes
         chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={port}"]
         chrome_renderer_identifiers = ["--type=renderer"]
+        # filter by the identifiers the relevant processes and get it as list
         chrome_processes = [
             process
             for process in processes
@@ -383,20 +653,16 @@ def count_running_chromes(port) -> int:
         ]
 
         demisto.debug(f"Detected {len(chrome_processes)} Chrome processes running on port {port}")
-        return len(chrome_processes)
-
-    except subprocess.CalledProcessError as e:
-        demisto.info(f"Error fetching process list: {e.output}")
-        return 0
+        return chrome_processes
     except Exception as e:
-        demisto.info(f"Unexpected exception when fetching process list, error: {e}")
-        return 0
+        demisto.info(f"Unexpected exception when fetching chrome process list, error: {e}")
+        return []
 
 
 def get_chrome_browser(port: str) -> pychrome.Browser | None:
     # Verify that the process has started
     for attempt in range(DEFAULT_RETRIES_COUNT):
-        running_chromes_count = count_running_chromes(port)
+        running_chromes_count = len(get_chrome_processes(port))
         if running_chromes_count < 1:
             demisto.debug(f"Attempt {attempt + 1}/{DEFAULT_RETRIES_COUNT}: Process not started yet, sleeping...")
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + attempt * 2)
@@ -601,26 +867,15 @@ def terminate_chrome(chrome_port: str = "", killall: bool = False) -> None:  # p
     Returns:
         None
     """
-    # get all the processes running on the machine
-    processes = subprocess.check_output(["ps", "auxww"], stderr=subprocess.STDOUT, text=True).splitlines()
-    # identifiers the relevant chrome processes
-    chrome_renderer_identifiers = ["--type=renderer"]
-    chrome_identifiers = ["chrome", "headless", f"--remote-debugging-port={chrome_port}"]
-    # filter by the identifiers the relevant processes and get it as list
-    process_in_list = [
-        process
-        for process in processes
-        if all(identifier in process for identifier in chrome_identifiers)
-        and not any(identifier in process for identifier in chrome_renderer_identifiers)
-    ]
+    process_in_list = get_chrome_processes(chrome_port)
 
     if killall:
         # fetch the pids of the processes
-        pids = [int(process.split()[1]) for process in process_in_list]
+        pids = [int(process.split()[0]) for process in process_in_list]
     else:
         # fetch the pid of the process. the list contain just one process with the given chrome_port
         process_string_representation = process_in_list[0]
-        pids = [int(process_string_representation.split()[1])]
+        pids = [int(process_string_representation.split()[0])]
 
     for pid in pids:
         # for each pid, get the process by it PID and terminate it
@@ -705,7 +960,7 @@ def chrome_manager_one_port() -> tuple[pychrome.Browser | None, str | None]:
     instance_id = demisto.callingContext.get("context", {}).get("IntegrationInstanceID", "None") or "None"
     chrome_options = demisto.params().get("chrome_options", "None")
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
-    demisto.debug(f" chrome_manager {chrome_instances_contents=} {chrome_options=} {instance_id=}")
+    demisto.debug(f"chrome_manager {chrome_instances_contents=} {chrome_options=} {instance_id=}")
     chrome_options_dict = {
         options[CHROME_INSTANCE_OPTIONS]: {"chrome_port": port} for port, options in chrome_instances_contents.items()
     }
@@ -738,7 +993,7 @@ def generate_chrome_port() -> str | None:
     random.shuffle(ports_list)
     demisto.debug(f"Searching for Chrome on these ports: {ports_list}")
     for chrome_port in ports_list:
-        len_running_chromes = count_running_chromes(chrome_port)
+        len_running_chromes = len(get_chrome_processes(chrome_port))
         demisto.debug(f"Found {len_running_chromes=} on port {chrome_port}")
 
         if len_running_chromes == 0:
@@ -771,30 +1026,36 @@ def setup_tab_event(
     return tab_event_handler, tab_ready_event
 
 
-def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> PychromeEventHandler:  # pragma: no cover
+def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_timeout) -> PychromeEventHandler:  # pragma: no cover
     tab_event_handler, tab_ready_event = setup_tab_event(browser, tab, path, navigation_timeout)
 
     try:
         demisto.info(f"Starting tab navigation to given path: {path} on {tab.id=}")
 
         allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-        demisto.debug(f"allTimeSamplingProfile before navigation {allTimeSamplingProfile=} on {tab.id=}")
+        demisto.debug(f"allTimeSamplingProfile before navigation {allTimeSamplingProfile=} on {tab.id=}, {path=}")
         heapUsage = tab.Runtime.getHeapUsage()
-        demisto.debug(f"heapUsage before navigation {heapUsage=} on {tab.id=}")
+        demisto.debug(f"heapUsage before navigation {heapUsage=} on {tab.id=}, {path=}")
 
         if navigation_timeout > 0:
             tab.Page.navigate(url=path, _timeout=navigation_timeout)
         else:
             tab.Page.navigate(url=path)
 
-        demisto.debug(f"Waiting for tab_ready_event on {tab.id=}")
-        tab_ready_event.wait(navigation_timeout)
-        demisto.debug(f"After waiting for tab_ready_event on {tab.id=}")
+        demisto.debug(f"Waiting for tab_ready_event on {tab.id=}, {path=}")
+
+        if not tab_ready_event.wait(navigation_timeout):
+            return_warning(
+                f"Warning: Rasterize failed to navigate to the specified path due to a timeout of {navigation_timeout} seconds,"
+                f" some content might be missing .\n{path=}"
+            )
+
+        demisto.debug(f"After waiting for tab_ready_event on {tab.id=}, {path=}")
 
         if wait_time > 0:
-            demisto.info(f"Sleeping before capturing screenshot, {wait_time=}, {tab.id=}")
+            demisto.info(f"Sleeping before capturing screenshot, {wait_time=}, {tab.id=}, {path=}")
         else:
-            demisto.debug(f"Not sleeping before capturing screenshot, {wait_time=}. {tab.id=}")
+            demisto.debug(f"Not sleeping before capturing screenshot, {wait_time=}. {tab.id=}, {path=}")
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
@@ -862,8 +1123,25 @@ def screenshot_image(
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
     if tab_event_handler.is_mailto:
-        demisto.info(f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}, {tab.id=}.')
-        return None, f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}'
+        # Determine the appropriate URL to display in the error message
+        display_url = tab_event_handler.document_url if tab_event_handler.document_url != tab_event_handler.path else path
+
+        # Create a more descriptive error message
+        if tab_event_handler.document_url != tab_event_handler.path:
+            # Handle redirect case where original URL redirects to mailto
+            error_msg = (
+                f'URLs that start with "mailto:" cannot be rasterized.\n'
+                f"Original URL: {path}\n"
+                f"Redirected to: {tab_event_handler.document_url}"
+            )
+            demisto.info(f"Mailto redirect detected - {error_msg}, tab_id={tab.id}")
+        else:
+            # Handle direct mailto URL case
+            error_msg = f'URLs that start with "mailto:" cannot be rasterized.\nURL: {display_url}'
+            demisto.info(f"Direct mailto URL detected - {error_msg}, tab_id={tab.id}")
+
+        return None, error_msg
+
     if tab_event_handler.is_private_network_url:
         demisto.info(
             'URLs that belong to the "This" Network (0.0.0.0/8), or'
@@ -877,20 +1155,22 @@ def screenshot_image(
     try:
         page_layout_metrics = tab.Page.getLayoutMetrics()
     except Exception as ex:
-        demisto.info(f"Failed to get tab LayoutMetrics due to {ex}")
+        demisto.info(f"Failed to get tab LayoutMetrics for {tab.id=} {path=} due to {ex}")
         raise ex
 
-    demisto.debug(f"{page_layout_metrics=} {tab.id=}.")
+    demisto.debug(f"{page_layout_metrics=} {tab.id=} {path=}.")
     css_content_size = page_layout_metrics["cssContentSize"]
     try:
         if full_screen:
             viewport = css_content_size
             viewport["scale"] = 1
-            screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True)["data"]
+            screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True, _timeout=SCREENSHOT_TIMEOUT)[
+                "data"
+            ]
         else:
-            screenshot_data = tab.Page.captureScreenshot()["data"]
+            screenshot_data = tab.Page.captureScreenshot(_timeout=SCREENSHOT_TIMEOUT)["data"]
     except Exception as ex:
-        demisto.info(f"Failed to capture screenshot due to {ex}, {tab.id=}")
+        demisto.info(f"Failed to capture screenshot due to {ex}, {tab.id=}, {path=}")
         raise ex
     # Make sure that the (asynchronous) screenshot data is available before continuing with execution
     screenshot_data, operation_time = backoff(screenshot_data)
@@ -900,24 +1180,24 @@ def screenshot_image(
         demisto.info(f"Screenshot image of {path=} on {tab.id=}, not available after {operation_time} seconds.")
 
     allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-    demisto.debug(f"allTimeSamplingProfile after screenshot {allTimeSamplingProfile=} on {tab.id=}")
+    demisto.debug(f"allTimeSamplingProfile after screenshot {allTimeSamplingProfile=} on {tab.id=}, {path=}")
     heapUsage = tab.Runtime.getHeapUsage()
-    demisto.debug(f"heapUsage after screenshot {heapUsage=} on {tab.id=}")
+    demisto.debug(f"heapUsage after screenshot {heapUsage=} on {tab.id=}, {path=}")
 
     captured_image = base64.b64decode(screenshot_data)
     if not captured_image:
-        demisto.info(f"Empty snapshot, {screenshot_data=}, {tab.id=}")
+        demisto.info(f"Empty snapshot, {screenshot_data=}, {tab.id=}, {path=}")
     else:
-        demisto.info(f"Captured snapshot, {len(captured_image)=}, {tab.id=}")
+        demisto.info(f"Captured snapshot, {len(captured_image)=}, {tab.id=}, {path=}")
 
     # Page URL, if needed
     if include_url:
-        demisto.debug(f"Including URL in image for path: {path}, {tab.id=}")
+        demisto.debug(f"Including URL in image for path: {path}, {tab.id=}, {path=}")
         captured_image_object = Image.open(BytesIO(captured_image))
-        demisto.debug(f"Original image size: {captured_image_object.size}, {tab.id=}")
+        demisto.debug(f"Original image size: {captured_image_object.size}, {tab.id=}, {path=}")
 
         image_with_url = Image.new(captured_image_object.mode, (css_content_size["width"], css_content_size["height"] + 20))
-        demisto.debug(f"New image size with URL: {image_with_url.size}, {tab.id=}")
+        demisto.debug(f"New image size with URL: {image_with_url.size}, {tab.id=}, {path=}")
 
         image_with_url.paste(captured_image_object, (0, 20))
         ImageDraw.Draw(image_with_url).text((0, 0), path, fill=(255, 255, 255))
@@ -925,7 +1205,7 @@ def screenshot_image(
         img_byte_arr = BytesIO()
         image_with_url.save(img_byte_arr, format="PNG")
         img_byte_arr = img_byte_arr.getvalue()
-        demisto.debug(f"Size of image with URL: {len(img_byte_arr)} bytes, {tab.id=}")
+        demisto.debug(f"Size of image with URL: {len(img_byte_arr)} bytes, {tab.id=}, {path=}")
 
         ret_value = img_byte_arr
     else:
@@ -934,26 +1214,28 @@ def screenshot_image(
     # Page source, if needed
     response_body = ""
     if include_source:
-        demisto.debug(f"screenshot_image, include_source, waiting for request_id, {tab.id=}")
+        demisto.debug(f"screenshot_image, include_source, waiting for request_id, {tab.id=}, {path=}")
         request_id, request_id_operation_time = backoff(tab_event_handler.request_id)
         if request_id:
-            demisto.debug(f"request_id available after {request_id_operation_time} seconds, {tab.id=}.")
+            demisto.debug(f"request_id available after {request_id_operation_time} seconds, {tab.id=}, {path=}.")
         else:
-            demisto.info(f"request_id not available after {request_id_operation_time} seconds, {tab.id=}.")
-        demisto.debug(f"Got {request_id=} after {request_id_operation_time} seconds, {tab.id=}.")
+            demisto.info(f"request_id not available after {request_id_operation_time} seconds, {tab.id=}, {path=}.")
+        demisto.debug(f"Got {request_id=} after {request_id_operation_time} seconds, {tab.id=}, {path=}.")
 
         try:
             response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)["body"]
-            demisto.debug(f"screenshot_image, {include_source=}, {response_body=}, {tab.id=}")
+            demisto.debug(f"screenshot_image, {include_source=}, {response_body=}, {tab.id=}, {path=}")
 
             response_body, operation_time = backoff(response_body)
             if response_body:
-                demisto.debug(f"Response Body available after {operation_time} seconds, {len(response_body)=}, {tab.id=}")
+                demisto.debug(
+                    f"Response Body available after {operation_time} seconds, {len(response_body)=}, {tab.id=}, {path=}"
+                )
             else:
-                demisto.info(f"Response Body not available after {operation_time} seconds, {tab.id=}.")
+                demisto.info(f"Response Body not available after {operation_time} seconds, {tab.id=}, {path=}.")
 
         except Exception as ex:  # This exception is raised when a non-existent URL is provided.
-            demisto.info(f"Exception when calling Network.getResponseBody with {request_id=}, {ex=}, {tab.id=}")
+            demisto.info(f"Exception when calling Network.getResponseBody with {request_id=}, {ex=}, {tab.id=}, {path=}")
             demisto.info(f"Failed to get URL body due to {ex}")
             response_body = "Failed to get URL body"
 
@@ -976,12 +1258,46 @@ def screenshot_pdf(
     # Make sure that the (asynchronous) PDF data is available before continuing with execution
     pdf_data, operation_time = backoff(pdf_data)
     if pdf_data:
-        demisto.debug(f"PDF Data available after {operation_time} seconds, {tab.id=}.")
+        demisto.debug(f"PDF Data available after {operation_time} seconds, {tab.id=}, {path=}.")
     else:
-        demisto.info(f"PDF Data not available after {operation_time} seconds, {tab.id=}.")
+        demisto.info(f"PDF Data not available after {operation_time} seconds, {tab.id=}, {path=}.")
 
     ret_value = base64.b64decode(pdf_data)
     return ret_value, None
+
+
+def extract_text_content(
+    browser: pychrome.Browser, tab: pychrome.Tab, path: str, wait_time: int, navigation_timeout: int
+):  # pragma: no cover
+    """Extracts structured text content from a web page using Chrome browser.
+
+    Args:
+        browser: The Chrome browser instance.
+        tab: The Chrome tab instance.
+        path: The URL or file path to extract content from.
+        wait_time: Time to wait before extracting content.
+        navigation_timeout: Maximum time to wait for page load.
+
+    Returns:
+        tuple: A tuple containing:
+            - str: The extracted content string.
+            - str: The final URL navigated to.
+
+    Raises:
+        DemistoException: If the URL is a mailto or private network URL.
+    """
+    tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
+
+    if tab_event_handler.is_mailto or tab_event_handler.is_private_network_url:
+        error_msg = f'Cannot rasterize "mailto:" or private network URLs. URL: {tab_event_handler.document_url}'
+        demisto.info(f"Blocked URL for text extraction - {error_msg}, tab_id={tab.id}")
+        return None, error_msg
+
+    demisto.debug(f"Executing extract_content_from_tab for TEXT, {path=}, {tab.id=}")
+
+    extracted_content, final_url = extract_content_from_tab(tab, navigation_timeout)
+
+    return extracted_content, final_url
 
 
 def rasterize_thread(
@@ -1035,6 +1351,11 @@ def rasterize_thread(
                 include_url=include_url,
                 include_source=True,
             )
+
+        elif rasterize_type == RasterizeType.TEXT or str(rasterize_type).lower() == RasterizeType.TEXT.value:
+            demisto.debug(f"Executing extract_text_content for TEXT, {path=}, {tab.id=}")
+            return extract_text_content(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout)
+
         else:
             raise DemistoException(f"Unsupported rasterization type: {rasterize_type}.")
 
@@ -1208,26 +1529,29 @@ def perform_rasterize(
 
                 # Start a new thread in group of max_tabs
                 rasterization_threads.append(
-                    executor.submit(
-                        rasterize_thread,
-                        browser=browser,
-                        chrome_port=chrome_port,
-                        path=current_path,
-                        rasterize_type=rasterize_type,
-                        wait_time=wait_time,
-                        offline_mode=offline_mode,
-                        navigation_timeout=navigation_timeout,
-                        include_url=include_url,
-                        full_screen=full_screen,
-                        width=width,
-                        height=height,
+                    (
+                        executor.submit(
+                            rasterize_thread,
+                            browser=browser,
+                            chrome_port=chrome_port,
+                            path=current_path,
+                            rasterize_type=rasterize_type,
+                            wait_time=wait_time,
+                            offline_mode=offline_mode,
+                            navigation_timeout=navigation_timeout,
+                            include_url=include_url,
+                            full_screen=full_screen,
+                            width=width,
+                            height=height,
+                        ),
+                        current_path,
                     )
                 )
             # Wait for all tasks to complete
             executor.shutdown(wait=True)
             demisto.info(
                 f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations,"
-                f"active tabs len: {len(browser.list_tab())}"
+                f"active tabs len: {len(browser.list_tab())}, {path=}"
             )
 
             chrome_instances_file_content: dict = read_json_file()  # CR fix name
@@ -1238,30 +1562,68 @@ def perform_rasterize(
 
             demisto.debug(
                 f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
-                f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}"
+                f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}, {path=}"
             )
             if not chrome_port:
-                demisto.debug("perform_rasterize: the chrome port was not found")
+                demisto.debug(f"perform_rasterize: the chrome port was not found, {path=}")
             elif rasterization_count >= MAX_RASTERIZATIONS_COUNT:
-                demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization")
+                demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization, {path=}")
                 terminate_chrome(chrome_port=chrome_port)
             else:
                 increase_counter_chrome_instances_file(chrome_port=chrome_port)
 
             # Get the results
-            for current_thread in rasterization_threads:
-                ret_value, response_body = current_thread.result()
-                if ret_value:
-                    rasterization_results.append((ret_value, response_body))
-                else:
-                    return_results(
-                        CommandResults(
-                            readable_output=str(response_body), entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING)
+            for current_thread, path in rasterization_threads:
+                try:
+                    ret_value, response_body = current_thread.result()
+                    if ret_value:
+                        rasterization_results.append((ret_value, response_body))
+                    else:
+                        return_results(
+                            CommandResults(
+                                readable_output=str(response_body),
+                                entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING),
+                            )
                         )
-                    )
+                except Exception as ex:
+                    error_msg = f"Failed to rasterize the path {path}, exception: {str(ex)}"
+                    demisto.debug(error_msg)
+                    return_err_or_warn(error_msg)
             return rasterization_results
 
     else:
+        chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
+        chrome_options_dict = {
+            options[CHROME_INSTANCE_OPTIONS]: {"chrome_port": port} for port, options in chrome_instances_contents.items()
+        }
+        chrome_options = demisto.params().get("chrome_options", "None")
+        chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
+
+        ps_aux_output = "\n".join(
+            subprocess.check_output(  # noqa: S602
+                "ps aux | grep chrom | grep port= | grep -- --headless",
+                shell=True,
+                text=True,
+                stderr=subprocess.STDOUT,
+            ).splitlines()
+        )
+        chrome_headless_content = "\n".join(
+            subprocess.check_output(["cat", CHROME_LOG_FILE_PATH], stderr=subprocess.STDOUT, text=True).splitlines()
+        )
+        df_output = "\n".join(subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        chromedriver = subprocess.check_output(["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
+        chrome_version = subprocess.check_output(["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
+
+        get_chrome_processes(chrome_port)
+        demisto.debug(f"{chrome_instances_contents=}")
+        demisto.debug(f"ps aux command result:\n{ps_aux_output}")
+        demisto.debug(f"chrome_headless.log:\n{chrome_headless_content}")
+        demisto.debug(f"df command result:\n{df_output}")
+        demisto.debug(f"free command result:\n{free_output}")
+        demisto.debug(f"chrome driver: {chromedriver}")
+        demisto.debug(f"chrome version: {chrome_version}")
+
         message = "Could not use local Chrome for rasterize command"
         demisto.error(message)
         return_error(message)
@@ -1450,6 +1812,13 @@ def get_list_item(list_of_items: list, index: int, default_value: str):
     return list_of_items[index]
 
 
+def process_urls(urls):
+    if isinstance(urls, str) and urls.startswith("["):
+        urls = argToList(urls)
+    urls = [urls] if isinstance(urls, str) else urls
+    return urls
+
+
 def add_filename_suffix(file_names: list, file_extension: str):
     ret_value = []
     for current_filename in file_names:
@@ -1459,8 +1828,7 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg("url")
-    #  Rasterize does not support array in `url`. Please consult the owner before changing this.
-    urls = [urls] if isinstance(urls, str) else urls
+    urls = process_urls(urls)
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
     rasterize_type = RasterizeType(demisto.args().get("type", "png").lower())
@@ -1521,6 +1889,84 @@ def rasterize_command():  # pragma: no cover
             demisto.results(res)
 
 
+def rasterize_extract_command():  # pragma: no cover
+    """Extracts structured text content from web pages.
+
+    This command uses Chrome browser to navigate to URLs and extract their text content
+    in a structured markdown format. It processes multiple URLs concurrently and returns
+    the extracted content along with metadata.
+
+    Args:
+        None (uses demisto.args() internally)
+
+    Command Arguments:
+        url: Single URL or list of URLs to extract content from
+        wait_time: Time in seconds to wait before extracting content (default: DEFAULT_WAIT_TIME)
+        max_page_load_time: Maximum time to wait for page load (default: DEFAULT_PAGE_LOAD_TIME)
+
+    Returns:
+        None (uses return_results() to output CommandResults)
+
+    Outputs:
+        For each URL, returns a CommandResults with:
+        - URL: The final URL after any redirects
+        - Content: The extracted markdown-formatted text content
+
+    Raises:
+        Errors are handled internally and returned as CommandResults with ERROR entry type
+    """
+    args = demisto.args()
+    urls = argToList(args.get("url"))
+
+    wait_time = int(args.get("wait_time", DEFAULT_WAIT_TIME))
+    navigation_timeout = int(args.get("max_page_load_time", DEFAULT_PAGE_LOAD_TIME))
+
+    demisto.debug(f"Starting rasterize-extract for URLs: {urls}")
+
+    rasterize_output = perform_rasterize(
+        path=urls, rasterize_type=RasterizeType.TEXT, wait_time=wait_time, navigation_timeout=navigation_timeout
+    )
+
+    results = []
+
+    for index, url in enumerate(urls):
+        result_tuple = rasterize_output[index]
+
+        if isinstance(result_tuple, str):
+            error_msg = result_tuple
+            results.append(
+                CommandResults(
+                    readable_output=f"Error rasterizing {url!r}:\n{error_msg}",
+                    entry_type=EntryType.ERROR,
+                )
+            )
+            continue
+
+        extracted_content, final_url = result_tuple
+
+        if isinstance(extracted_content, str) and extracted_content.startswith("Extraction Error:"):
+            results.append(
+                CommandResults(
+                    readable_output=f"Error extracting content from {url!r}:\n{extracted_content}",
+                    entry_type=EntryType.ERROR,
+                )
+            )
+            continue
+
+        outputs = {"URL": final_url, "Content": extracted_content}
+
+        results.append(
+            CommandResults(
+                outputs=outputs,
+                readable_output=f"### Content Extracted from: {final_url}\n---\n{extracted_content}",
+                outputs_prefix="Rasterize",
+                outputs_key_field="URL",
+            )
+        )
+
+    return_results(results)
+
+
 # endregion
 
 
@@ -1567,6 +2013,9 @@ def main():  # pragma: no cover
 
         elif demisto.command() == "rasterize":
             rasterize_command()
+
+        elif demisto.command() == "rasterize-extract":
+            rasterize_extract_command()
 
         else:
             raise NotImplementedError(f"command {command} is not supported")

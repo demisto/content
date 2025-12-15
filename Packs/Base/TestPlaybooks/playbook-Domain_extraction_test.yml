@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 1555,
-          "y": 210
+          "y": 195
         }
       }
     note: false
@@ -90,7 +90,7 @@ tasks:
       {
         "position": {
           "x": 1555,
-          "y": 380
+          "y": 370
         }
       }
     note: false
@@ -127,7 +127,7 @@ tasks:
       {
         "position": {
           "x": 1555,
-          "y": 540
+          "y": 515
         }
       }
     note: false
@@ -172,7 +172,7 @@ tasks:
       {
         "position": {
           "x": 1555,
-          "y": 710
+          "y": 690
         }
       }
     note: false
@@ -213,7 +213,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 880
+          "y": 865
         }
       }
     note: false
@@ -243,14 +243,14 @@ tasks:
       key:
         simple: invalid_domains
       value:
-        simple: "\"test.notexist\", \n\"test[.com\",\n\"bad_domain.com\""
+        simple: "\"test.notexist\", \n\"test[.com\",\n\"bad_domain.com\",\n\"www.walla.co.il`\",\n\"example.ps1\""
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1555,
-          "y": 1050
+          "y": 1040
         }
       }
     note: false
@@ -278,6 +278,8 @@ tasks:
       - "84"
       - "83"
       - "86"
+      - "87"
+      - "88"
     scriptarguments:
       value:
         simple: ${invalid_domains}
@@ -288,7 +290,7 @@ tasks:
       {
         "position": {
           "x": 1555,
-          "y": 1220
+          "y": 1215
         }
       }
     note: false
@@ -329,7 +331,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 880
+          "y": 865
         }
       }
     note: false
@@ -361,7 +363,7 @@ tasks:
       {
         "position": {
           "x": 1555,
-          "y": 1560
+          "y": 1565
         }
       }
     note: false
@@ -402,7 +404,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 880
+          "y": 865
         }
       }
     note: false
@@ -443,7 +445,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 880
+          "y": 865
         }
       }
     note: false
@@ -484,7 +486,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 880
+          "y": 865
         }
       }
     note: false
@@ -525,7 +527,7 @@ tasks:
       {
         "position": {
           "x": 2200,
-          "y": 880
+          "y": 865
         }
       }
     note: false
@@ -566,7 +568,7 @@ tasks:
       {
         "position": {
           "x": 2630,
-          "y": 880
+          "y": 865
         }
       }
     note: false
@@ -606,7 +608,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 695,
           "y": 1390
         }
       }
@@ -647,7 +649,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 1125,
           "y": 1390
         }
       }
@@ -689,7 +691,7 @@ tasks:
       {
         "position": {
           "x": 3060,
-          "y": 880
+          "y": 865
         }
       }
     note: false
@@ -729,7 +731,89 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 1555,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: dd18176b-6915-4661-808b-748d3cf3483f
+    type: condition
+    task:
+      id: dd18176b-6915-4661-808b-748d3cf3483f
+      version: -1
+      name: non extraction - www.walla.co.il`
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: www.walla.co.il`
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
           "x": 1985,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: abad1835-c3fc-443a-8c31-f93ad090cc60
+    type: condition
+    task:
+      id: abad1835-c3fc-443a-8c31-f93ad090cc60
+      version: -1
+      name: non extraction - example.ps1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: example.ps1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2415,
           "y": 1390
         }
       }
@@ -745,7 +829,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1580,
+        "height": 1610,
         "width": 3390,
         "x": 50,
         "y": 50

@@ -115,14 +115,24 @@ class Client(BaseClient):
         response = self._http_request(method="DELETE", url_suffix="restrictions", json_data=body)
         return response.get("data") or {}
 
-    def add_hash_to_blocklist_request(self, value, os_type, description="", source="") -> dict:
+    def add_hash_to_blocklist_request(self, value, sha256Value, os_type, description="", source="") -> dict:
         """
         Only supports adding to the Global block list
         """
         # We do not use the assign_params function, because if these values are empty or None, we still want them
         # sent to the server
 
-        data = {"value": value, "source": source, "osType": os_type, "type": "black_hash", "description": description}
+        value = value or ""
+        sha256Value = sha256Value or ""
+
+        data = {
+            "value": value,
+            "sha256Value": sha256Value,
+            "source": source,
+            "osType": os_type,
+            "type": "black_hash",
+            "description": description,
+        }
 
         filt = {"tenant": True}
 
@@ -131,21 +141,48 @@ class Client(BaseClient):
         response = self._http_request(method="POST", url_suffix="restrictions", json_data=body)
         return response.get("data") or {}
 
-    def add_hash_to_blocklists_request(self, value, os_type, site_ids, description="", source="") -> dict:
+    def add_hash_to_blocklists_request(
+        self,
+        value,
+        sha256Value,
+        os_type,
+        site_ids="",
+        description="",
+        source="",
+        group_ids="",
+        account_ids="",
+    ) -> dict:
         """
         Supports adding hashes to multiple scoped site blocklists
         """
-        demisto.debug(f"Site ids: {site_ids}")
-        # We do not use the assign_params function, because if these values are empty or None, we still want them
-        # sent to the server
-        for site_id in site_ids:
-            data = {"value": value, "source": source, "osType": os_type, "type": "black_hash", "description": description}
 
-            filt = {"siteIds": [site_id], "tenant": True}
+        filt = {}
+        if site_ids:
+            filt["siteIds"] = site_ids
+        if group_ids:
+            filt["groupIds"] = group_ids
+        if account_ids:
+            filt["accountIds"] = account_ids
+        # If no scoping fields, set tenant True for global
+        if not filt:
+            filt["tenant"] = True
 
-            body = {"data": data, "filter": filt}
-            demisto.debug(f"Site id: {site_id}")
-            response = self._http_request(method="POST", url_suffix="restrictions", json_data=body, ok_codes=[200])
+        value = value or ""
+        sha256Value = sha256Value or ""
+
+        data = {
+            "value": value,
+            "sha256Value": sha256Value,
+            "source": source,
+            "osType": os_type,
+            "type": "black_hash",
+            "description": description,
+        }
+
+        body = {"data": data, "filter": filt}
+        demisto.debug(f"Adding hash to blocklist with filter: {filt}")
+
+        response = self._http_request(method="POST", url_suffix="restrictions", json_data=body, ok_codes=[200])
         return response.get("data") or {}
 
     def get_blocklist_request(
@@ -367,11 +404,19 @@ class Client(BaseClient):
         response = self._http_request(method="GET", url_suffix=endpoint_url, params=params)
         return response.get("data", {})
 
+    def get_threat_analysis_request(self, threat_id):
+        endpoint_url = f"private/threats/{threat_id}/analysis"
+        response = self._http_request(method="GET", url_suffix=endpoint_url)
+        return response.get("data", {})
+
     def list_agents_request(self, params: dict):
         response = self._http_request(method="GET", url_suffix="agents", params=params)
         return response.get("data", {})
 
     def get_agent_request(self, agent_ids):
+        # Accepts a comma-separated string
+        if isinstance(agent_ids, list):
+            agent_ids = ",".join(agent_ids)
         params = {"ids": agent_ids}
 
         response = self._http_request(method="GET", url_suffix="agents", params=params)
@@ -694,6 +739,66 @@ class Client(BaseClient):
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
+    def create_bulk_ioc_request(self, iocs_from_file, account_ids):
+        endpoint_url = "threat-intelligence/iocs"
+        required_fields = {"source", "type", "value", "method", "validUntil", "name"}
+        normalized_iocs: list[dict] = []
+        for idx, ioc in enumerate(iocs_from_file):
+            if not isinstance(ioc, dict):
+                raise DemistoException(f"IOC at index {idx} is not an object.")
+            missing = [field for field in required_fields if field not in ioc or ioc.get(field) in (None, "")]
+            if missing:
+                raise DemistoException(f"IOC at index {idx} missing required field(s): {', '.join(missing)}")
+            # Normalize to API expectations (upper-case TYPE and METHOD)
+            ioc_type = ioc.get("type", "").strip().upper()
+            method = ioc.get("method", "").strip().upper()
+            # Build the outbound object preserving optional fields if present
+            outbound = {
+                "source": ioc.get("source", ""),
+                "type": ioc_type,
+                "method": method,
+                "value": ioc.get("value", ""),
+                "validUntil": ioc.get("validUntil", ""),
+                "name": ioc.get("name", ""),
+            }
+            # Optional fields as per current single-IOC code
+            for opt in ("externalId", "description"):
+                if opt in ioc and ioc.get(opt) not in (None, ""):
+                    outbound[opt] = ioc.get(opt)
+            normalized_iocs.append(outbound)
+
+        payload = {
+            "filter": {"accountIds": account_ids},
+            "data": normalized_iocs,
+        }
+        response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
+        return response.get("data", {})
+
+    def run_powerquery_request(self, sdl_url, sdl_api_key, query, start_time, end_time, priority, recurring, team_emails):
+        if not sdl_url.startswith("https://"):
+            raise DemistoException("Invalid URL: must start with https://")
+
+        headers = {
+            "Authorization": f"Bearer {sdl_api_key}",
+            "Content-Type": "application/json",
+        }
+
+        payload = {"query": query}
+        optional_params = {
+            "startTime": start_time,
+            "endTime": end_time,
+            "priority": priority,
+            "recurring": recurring,
+            "teamEmails": team_emails,
+        }
+
+        payload.update(
+            {param_name: param_value for param_name, param_value in optional_params.items() if param_value not in [None, ""]}
+        )
+        return self._http_request(
+            method="POST", full_url=f"{sdl_url.rstrip('/')}/api/powerQuery", headers=headers, json_data=payload
+        )
+
     def delete_ioc_request(self, account_ids, uuids):
         endpoint_url = "threat-intelligence/iocs"
         payload = {"filter": {"accountIds": account_ids, "uuids": uuids}}
@@ -787,6 +892,9 @@ class Client(BaseClient):
     def download_threat_file_request(self, endpoint_url):
         return self._http_request(method="GET", url_suffix=endpoint_url, resp_type="content")
 
+    def download_threat_cloud_file(self, url):
+        return self._http_request(method="GET", full_url=url, resp_type="content", headers={"Accept": "application/json"})
+
     def get_installed_applications_request(self, query_params):
         endpoint_url = "agents/applications"
         response = self._http_request(method="GET", url_suffix=endpoint_url, params=query_params)
@@ -795,6 +903,21 @@ class Client(BaseClient):
     def initiate_endpoint_scan_request(self, agent_ids):
         endpoint_url = "agents/actions/initiate-scan"
         payload = {"filter": {"ids": agent_ids}, "data": {}}
+        response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
+        return response.get("data", {})
+
+    def abort_endpoint_scan_request(self, agent_ids):
+        endpoint_url = "agents/actions/abort-scan"
+        payload = {"filter": {"ids": agent_ids}, "data": {}}
+        response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
+        return response.get("data", {})
+
+    def endpoint_fetch_logs_request(self, agent_ids, agent_logs, customer_facing_logs, platform_logs):
+        endpoint_url = "agents/actions/fetch-logs"
+        payload = {
+            "filter": {"ids": agent_ids},
+            "data": {"agentLogs": agent_logs, "customerFacingLogs": customer_facing_logs, "platformLogs": platform_logs},
+        }
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
@@ -943,6 +1066,23 @@ class Client(BaseClient):
         """
         # Returning updated dictionary with non-empty fields
         return {key: value for key, value in json_payload.items() if str(value)}
+
+    def threat_download_from_cloud_request(self, threat_id: str) -> dict[str, str]:
+        """
+        Returns Information to download the file for the given threat_id from the cloud
+
+        Parameters:
+        - threat_id (str): The threat_id to download the file for.
+
+        Returns:
+        - dict: A new JSON object containing information to download the file or a message, if it isn't available
+        """
+        endpoint_url = f"threats/{threat_id}/download-from-cloud"
+        response = self._http_request(method="GET", url_suffix=endpoint_url)
+        data: dict = response.get("data", {})
+        if "errors" in response:
+            data["message"] = response.get("errors", [{}])[0].get("detail", "An Unknown Error occurred")
+        return data
 
 
 """ COMMANDS + REQUESTS FUNCTIONS """
@@ -1768,6 +1908,106 @@ def create_ioc(client: Client, args: dict) -> CommandResults:
     )
 
 
+def create_bulk_ioc(client: Client, args: dict) -> CommandResults:
+    """
+    Add bulk IoC's to the Threat Intelligence database. . Relavent for API version 2.1
+    """
+    context_list = []
+
+    # Get arguments
+    entry_id = args.get("entry_id")
+    account_ids = argToList(args.get("account_ids"))
+
+    # Resolve file path from entry_id
+    try:
+        file_info = demisto.getFilePath(entry_id)
+    except Exception as e:
+        raise DemistoException(f"Failed to retrieve file info for entry_id={entry_id}. Error: {str(e)}")
+    if not file_info or not file_info.get("path"):
+        raise DemistoException(f"Could not resolve file path for entry_id={entry_id}")
+    file_path = file_info["path"]
+
+    # Load JSON array of IOC objects
+    try:
+        with open(file_path, encoding="utf-8") as json_ioc_list:
+            iocs_data = json.load(json_ioc_list)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Invalid JSON in uploaded file: {str(e)}")
+    except Exception as e:
+        raise DemistoException(f"Failed reading uploaded file {file_path}: {str(e)}")
+    if not isinstance(iocs_data, list):
+        raise DemistoException("Uploaded JSON must be an array of IOC objects.")
+
+    iocs = client.create_bulk_ioc_request(iocs_data, account_ids)
+
+    for ioc in iocs:
+        context_list.append(
+            {
+                "UUID": ioc.get("uuid"),
+                "Name": ioc.get("name"),
+                "Source": ioc.get("source"),
+                "Type": ioc.get("type"),
+                "Batch Id": ioc.get("batchId"),
+                "Creator": ioc.get("creator"),
+                "Scope": ioc.get("scope"),
+                "Scope Id": ioc.get("scopeId")[0],
+                "Valid Until": ioc.get("validUntil"),
+                "Description": ioc.get("description"),
+                "External Id": ioc.get("externalId"),
+            }
+        )
+
+    # Create readable output (markdown table)
+    readable_output = tableToMarkdown("SentinelOne - Create IOCs", context_list, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="SentinelOne.IOCs",
+        outputs_key_field="UUID",
+        outputs=context_list,
+        raw_response=iocs,
+    )
+
+
+def run_powerquery(client: Client, args: dict) -> CommandResults:
+    outputs = {}
+
+    # Get arguments
+    sdl_url = args.get("singularity_xdr_url")
+    sdl_api_key = args.get("singularity_xdr_api_key")
+    query = args.get("query")
+    start_time = args.get("start_time")
+    end_time = args.get("end_time")
+    priority = args.get("priority")
+    recurring = argToBoolean(args.get("recurring")) if args.get("recurring") else None
+    team_emails = argToList(args.get("team_emails")) or None
+
+    pq_response = client.run_powerquery_request(
+        sdl_url, sdl_api_key, query, start_time, end_time, priority, recurring, team_emails
+    )
+
+    # Extract columns and rows
+    columns = [col.get("name") for col in pq_response.get("columns", [])]
+    rows = pq_response.get("values", [])
+
+    table_data = [dict(zip(columns, row)) for row in rows]
+
+    summary = f"### SentinelOne PowerQuery Results\n" f"**Query:** `{args.get('query')}`  \n\n"
+
+    md = summary + tableToMarkdown("Query Output", table_data)
+
+    outputs = {
+        "status": pq_response.get("status"),
+        "matchingEvents": pq_response.get("matchingEvents"),
+        "omittedEvents": pq_response.get("omittedEvents"),
+        "results": table_data,
+    }
+
+    return CommandResults(
+        readable_output=md, outputs_prefix="SentinelOne.PowerQuery.Results", outputs=outputs, raw_response=pq_response
+    )
+
+
 def delete_ioc(client: Client, args: dict) -> CommandResults:
     """
     Deletes an IoC from the Threat Intelligence database. Relavent for API version 2.1
@@ -2102,6 +2342,36 @@ def fetch_threat_file(client: Client, args: dict) -> list[CommandResults]:
     ]
 
 
+def threat_download_from_cloud(client: Client, args: dict) -> list[CommandResults | list]:
+    """
+    Downloads the threat file uploaded to the cloud (Binary
+    """
+    threat_id: str = str(args.get("threat_id"))
+    response = client.threat_download_from_cloud_request(threat_id)
+    downloadable = False
+    files = []
+    if "downloadUrl" in response:
+        file_download_url = response["downloadUrl"]
+        try:
+            zip_file_data = client.download_threat_cloud_file(file_download_url)
+            zipped_file = fileResult(filename=response["fileName"], data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
+            files.append(zipped_file)
+            downloadable = True
+        except Exception:
+            zipped_file = "File not available for Download from BinaryVault"
+    context_entry = {"Downloadable": downloadable, "ID": threat_id, "ZippedFile": zipped_file}
+    return [
+        CommandResults(
+            readable_output=tableToMarkdown("Sentinel One - Download From Cloud", context_entry, removeNull=False),
+            outputs_prefix="SentinelOne.Threat",
+            outputs_key_field="ID",
+            outputs=context_entry,
+            raw_response=zipped_file,
+        ),
+        *files,
+    ]
+
+
 def get_alerts(client: Client, args: dict) -> CommandResults:
     """
     Get the Alerts from server. Relevant to API Version 2.1
@@ -2306,6 +2576,62 @@ def initiate_endpoint_scan(client: Client, args: dict) -> CommandResults:
         outputs_key_field="Agent ID",
         outputs=context_entries,
         raw_response=initiated,
+    )
+
+
+def abort_endpoint_scan(client: Client, args: dict) -> CommandResults:
+    """
+    Abort the endpoint virus scan on provided agent IDs
+    """
+    context_entries = []
+
+    agent_ids = argToList(args.get("agent_ids"))
+    aborted = client.abort_endpoint_scan_request(agent_ids)
+    if aborted.get("affected") and int(aborted.get("affected")) > 0:
+        updated = True
+        meta = f'Total of {aborted.get("affected")} provided agents were successfully aborted the scan'
+    else:
+        updated = False
+        meta = "No agents scan was aborted"
+    for agent_id in agent_ids:
+        context_entries.append({"Agent ID": agent_id, "Aborted": updated})
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sentinel One - Abort endpoint scan on provided Agent ID", context_entries, metadata=meta, removeNull=True
+        ),
+        outputs_prefix="SentinelOne.Agent",
+        outputs_key_field="Agent ID",
+        outputs=context_entries,
+        raw_response=aborted,
+    )
+
+
+def endpoint_fetch_logs(client: Client, args: dict) -> CommandResults:
+    """
+    Get the Agent and Endpoint logs from Agents for provided agent IDs
+    """
+    context = {}
+
+    agent_ids = argToList(args.get("agent_ids"))
+    agent_logs = argToBoolean(args.get("agents_logs"))
+    customer_facing_logs = argToBoolean(args.get("customer_facing_logs"))
+    platform_logs = argToBoolean(args.get("platform_logs"))
+
+    response = client.endpoint_fetch_logs_request(agent_ids, agent_logs, customer_facing_logs, platform_logs)
+    agents_affected = response.get("affected", 0)
+    context = {"Affected": agents_affected}
+    if agents_affected > 0:
+        meta = "Fetch logs operation was successfully executed for the provided agent(s)."
+    else:
+        meta = "No entity was affected."
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sentinel One - Get the Agent and Endpoint logs", context, metadata=meta, removeNull=True
+        ),
+        outputs_prefix="SentinelOne.Agent",
+        outputs_key_field="Affected",
+        outputs=context,
+        raw_response=response,
     )
 
 
@@ -2657,6 +2983,49 @@ def get_threat_summary_command(client: Client, args: dict) -> CommandResults:
         outputs_key_field="ID",
         outputs=context_entries,
         raw_response=threat_summary,
+    )
+
+
+def get_threat_analysis_command(client: Client, args: dict) -> CommandResults:
+    """
+    Get threat analysis
+    """
+    context_entries = {}
+
+    threat_id = args.get("threat_id")
+
+    # Make request and get raw response
+    threat_analysis_response = client.get_threat_analysis_request(threat_id)
+
+    # Parse response into context & content entries
+    if threat_analysis_response:
+        agent_detection_info = threat_analysis_response.get("agentDetectionInfo", {})
+        agent_realtime_info = threat_analysis_response.get("agentRealtimeInfo", {})
+        threat_info = threat_analysis_response.get("threatInfo", {})
+
+        # Build multi-section markdown (each dict → single row table)
+        readable_output = ""
+        if agent_detection_info:
+            readable_output += tableToMarkdown("SentinelOne - Agent Detection Info", [agent_detection_info], removeNull=True)
+
+        if agent_realtime_info:
+            readable_output += tableToMarkdown("SentinelOne - Agent Realtime Info", [agent_realtime_info], removeNull=True)
+
+        if threat_info:
+            readable_output += tableToMarkdown("SentinelOne - Threat Info", [threat_info], removeNull=True)
+
+        context_entries = {
+            "AgentDetectionInfo": agent_detection_info,
+            "AgentRealtimeInfo": agent_realtime_info,
+            "ThreatInfo": threat_info,
+        }
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="SentinelOne.Threat",
+        outputs_key_field="ThreatInfo.threatId",
+        outputs=context_entries,
+        raw_response=threat_analysis_response,
     )
 
 
@@ -3044,28 +3413,87 @@ def get_processes(client: Client, args: dict) -> CommandResults:
 
 def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
     """
-    Add a hash to the blocklist (SentinelOne Term: Blacklist)
+    Add a hash (SHA1 and/or SHA256) to the blocklist (SentinelOne Term: Blacklist)
     """
     sha1 = args.get("sha1")
-    if not sha1:
-        raise DemistoException("You must specify a valid SHA1 hash")
+    sha256 = args.get("sha256Value")
+
+    if not sha1 and not sha256:
+        raise DemistoException("You must specify at least one valid SHA1 or SHA256 hash")
+
+    # Build hash string for readable_output
+    if sha1 and sha256:
+        hash_str = f"sha1={sha1}, sha256={sha256}"
+    elif sha1:
+        hash_str = f"sha1={sha1}"
+    elif sha256:
+        hash_str = f"sha256={sha256}"
+    else:
+        hash_str = "no hash provided"
+
+    # Combine block_site_ids from integration params with site_ids from command args
+    block_site_ids = client.block_site_ids or []
+    site_ids_arg = argToList(args.get("site_ids")) if args.get("site_ids") else []
+    combined_site_ids = list(set(block_site_ids + site_ids_arg))
+    site_ids_str = ",".join(combined_site_ids) if combined_site_ids else None
+
+    group_ids = args.get("group_ids")
+    account_ids = args.get("account_ids")
 
     try:
-        if sites := client.block_site_ids:
-            demisto.debug(f"Adding sha1 {sha1} to sites {sites}")
+        # Scoped request if any scope provided
+        if site_ids_str or group_ids or account_ids:
+            scope_map = {
+                "site_ids": ("site", site_ids_str),
+                "group_ids": ("group", group_ids),
+                "account_ids": ("account", account_ids),
+            }
+            scope_parts = [f"{label}: {value}" for key, (label, value) in scope_map.items() if value]
+            scope_str = ", ".join(scope_parts) if scope_parts else "unknown"
+            demisto.debug(f"Adding {hash_str} to blocklist with scopes: {scope_str}")
+
             result = client.add_hash_to_blocklists_request(
                 value=sha1,
+                sha256Value=sha256,
                 description=args.get("description"),
                 os_type=args.get("os_type"),
-                site_ids=sites,
+                site_ids=site_ids_str,
+                group_ids=group_ids,
+                account_ids=account_ids,
                 source=args.get("source"),
             )
-            status = {"hash": sha1, "status": "Added to scoped blocklist"}
+
+            status = {"hash": sha1 or sha256, "status": f"Added to {scope_str} blocklist"}
+            if sha1:
+                status["sha1"] = sha1
+            if sha256:
+                status["sha256"] = sha256
+
+            # Add scope info dynamically
+            if site_ids_str:
+                status["site_ids"] = site_ids_str
+            if group_ids:
+                status["group_ids"] = group_ids
+            if account_ids:
+                status["account_ids"] = account_ids
+
         else:
+            # Global blocklist
+            demisto.debug(f"Adding {hash_str} to global blocklist")
             result = client.add_hash_to_blocklist_request(
-                value=sha1, description=args.get("description"), os_type=args.get("os_type"), source=args.get("source")
+                value=sha1,
+                sha256Value=sha256,
+                description=args.get("description"),
+                os_type=args.get("os_type"),
+                source=args.get("source"),
             )
-            status = {"hash": sha1, "status": "Added to global blocklist"}
+
+            status = {"hash": sha1 or sha256, "status": "Added to global blocklist"}
+            if sha1:
+                status["sha1"] = sha1
+            if sha256:
+                status["sha256"] = sha256
+
     except DemistoException as e:
         # When adding a hash to the blocklist that is already on the blocklist,
         # SentinelOne returns an error code, resuliting in the request raising an exception
@@ -3074,19 +3502,35 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         # already being on the list, it is ignored and the returned status is updated
         js = e.res.json()
         errors = js.get("errors")
-        if (
-            errors
-            and len(errors) == 1
-            and (error := errors[0]).get("code") == 4000030
-            and error.get("title") == "Already Exists Error"
-        ):
-            status = {"hash": sha1, "status": "Already on blocklist"}
-            result = js
+        if errors and len(errors) == 1:
+            error = errors[0]
+            code = error.get("code")
+            title = error.get("title")
+            detail = error.get("detail", "")
+
+            if code == 4000030 and title == "Already Exists Error":
+                status = {"hash": sha1 or sha256, "status": "Already on blocklist"}
+                if sha1:
+                    status["sha1"] = sha1
+                if sha256:
+                    status["sha256"] = sha256
+                result = js
+            elif code == 4000010 and title == "Validation Error":
+                status = {"hash": sha1 or sha256, "status": f"Error: Invalid siteId - {detail}"}
+                if sha1:
+                    status["sha1"] = sha1
+                if sha256:
+                    status["sha256"] = sha256
+                result = js
+            else:
+                raise e
         else:
             raise e
 
+    readable_output = f"{hash_str}: {status['status']}."
+
     return CommandResults(
-        readable_output=f"{sha1}: {status['status']}.",
+        readable_output=readable_output,
         outputs_prefix="SentinelOne.AddHashToBlocklist",
         outputs_key_field="Value",
         # `status` instead of `result` because we modify status based on the error/exception comments above
@@ -3095,30 +3539,51 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None) -> list[str | None]:
+def get_hash_ids_from_blocklist(
+    client: Client, hash_value: str, os_type: str = None, site_ids: str = None, group_ids: str = None, account_ids: str = None
+) -> list[str | None]:
     """
     Return the IDs of the hash from the blocklist. Helper function for remove_hash_from_blocklist
 
-    A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
+    A hash (SHA1 or SHA256) can occur more than once if it is blocked on more than one platform (Windows, MacOS, Linux)
     """
     ret: list = []
-    if client.block_site_ids:
+
+    # Combine block_site_ids from integration params with site_ids from function argument
+    block_site_ids = client.block_site_ids or []
+    site_ids_arg = argToList(site_ids) if site_ids else []
+    combined_site_ids = list(set(block_site_ids + site_ids_arg))
+    site_ids_str = ",".join(combined_site_ids) if combined_site_ids else None
+
+    if site_ids_str or group_ids or account_ids:
         PAGE_SIZE = 20
-        site_ids = ",".join(client.block_site_ids)
+        site_ids = site_ids_str
+        group_ids = group_ids
+        account_ids = account_ids
         block_list = client.get_blocklist_request(
             tenant=False,
             skip=0,
             limit=PAGE_SIZE,
             os_type=os_type,
             site_ids=site_ids,
+            group_ids=group_ids,
+            account_ids=account_ids,
+            # Sort by updatedAt to ensure the most recent entries are returned first
+            # This is important because the blocklist can have multiple entries for the same hash
             sort_by="updatedAt",
             sort_order="asc",
-            value_contains=sha1,
+            value_contains=hash_value,
         )
     else:
         PAGE_SIZE = 4
         block_list = client.get_blocklist_request(
-            tenant=True, skip=0, limit=PAGE_SIZE, os_type=os_type, sort_by="updatedAt", sort_order="asc", value_contains=sha1
+            tenant=True,
+            skip=0,
+            limit=PAGE_SIZE,
+            os_type=os_type,
+            sort_by="updatedAt",
+            sort_order="asc",
+            value_contains=hash_value,
         )
 
         # Validation check first
@@ -3126,9 +3591,14 @@ def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None) 
             raise DemistoException("Received more than 3 results when querying by hash. This condition should not occur")
 
     for block_entry in block_list:
-        # Second validation. E.g. if user passed in a hash value shorter than SHA1 length
-        if (value := block_entry.get("value")) and value.lower() == sha1.lower():
-            ret.append(block_entry.get("id"))
+        # Second validation. E.g. if user passed in a hash value shorter than SHA1/SHA256 length
+        candidates = [
+            block_entry.get("value"),
+            block_entry.get("sha256Value"),
+        ]
+        for candidate in candidates:
+            if candidate and candidate.lower() == hash_value.lower():
+                ret.append(block_entry.get("id"))
 
     return ret
 
@@ -3138,25 +3608,61 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
     Remove a hash from the blocklist (SentinelOne Term: Blacklist)
     """
     sha1 = args.get("sha1")
-    if not sha1:
-        raise DemistoException("You must specify a valid Sha1 hash")
+    sha256 = args.get("sha256Value")
     os_type = args.get("os_type", None)
-    hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type)
 
-    if not hash_ids:
-        status = {"hash": sha1, "status": "Not on blocklist"}
-        result = None
-    else:
-        result = []
-        numRemoved = 0
-        for hash_id in hash_ids:
-            numRemoved += 1
-            result.append(client.remove_hash_from_blocklist_request(hash_id=hash_id))
+    site_ids = args.get("site_ids")
+    group_ids = args.get("group_ids")
+    account_ids = args.get("account_ids")
 
-        status = {"hash": sha1, "status": f"Removed {numRemoved} entries from blocklist"}
+    hash_ids = []
+    # Separate lists: one for context (raw hashes), one for War Room readability
+    hash_values = []
+    readable_labels = []
+
+    try:
+        if sha1:
+            hash_values.append(sha1)
+            ids = get_hash_ids_from_blocklist(client, sha1, os_type, site_ids, group_ids, account_ids)
+            hash_ids.extend(ids)
+            readable_labels.append(f"sha1={sha1}")
+
+        if sha256:
+            hash_values.append(sha256)
+            ids = get_hash_ids_from_blocklist(client, sha256, os_type, site_ids, group_ids, account_ids)
+            hash_ids.extend(ids)
+            readable_labels.append(f"sha256={sha256}")
+
+        if not hash_ids:
+            status = {"hash": ", ".join(hash_values), "status": "Not on blocklist"}
+            result = None
+        else:
+            result = []
+            numRemoved = 0
+            for hash_id in set(hash_ids):
+                numRemoved += 1
+                result.append(client.remove_hash_from_blocklist_request(hash_id=hash_id))
+
+            status = {"hash": ", ".join(hash_values), "status": f"Removed {numRemoved} entries from blocklist"}
+
+    except DemistoException as e:
+        # Handle validation error for invalid siteId (4000010 error code)
+        js = e.res.json()
+        errors = js.get("errors")
+        if (
+            errors
+            and len(errors) == 1
+            and (error := errors[0]).get("code") == 4000010
+            and error.get("title") == "Validation Error"
+        ):
+            status = {"hash": ", ".join(hash_values), "status": f"Error: Invalid siteId - {error.get('detail')}"}
+            result = js
+        else:
+            # Reraise the exception if it's not the expected validation error
+            raise e
 
     return CommandResults(
-        readable_output=f"{sha1}: {status['status']}.",
+        readable_output=f"{', '.join(readable_labels)}: {status['status']}.",
         outputs_prefix="SentinelOne.RemoveHashFromBlocklist",
         outputs_key_field="Value",
         outputs=status,
@@ -3179,7 +3685,11 @@ def get_blocklist(client: Client, args: dict) -> CommandResults:
     group_ids = args.get("group_ids", None)
     site_ids = args.get("site_ids", None)
     account_ids = args.get("account_ids", None)
-    value = args.get("hash", None)
+    # Accept legacy 'hash' argument, fallback to sha1 or sha256
+    legacy_hash = args.get("hash")
+    sha1 = args.get("sha1")
+    sha256 = args.get("sha256Value")
+    value_contains = legacy_hash or sha1 or sha256
 
     contents = []
 
@@ -3192,8 +3702,12 @@ def get_blocklist(client: Client, args: dict) -> CommandResults:
         limit=limit,
         sort_by=sort_by,
         sort_order=sort_order,
-        value_contains=value,
+        value_contains=value_contains,
     )
+
+    def get_hash_from_block_entry(block: dict) -> str | None:
+        return block.get("value") or block.get("sha256Value")
+
     for block in block_list:
         contents.append(
             {
@@ -3207,7 +3721,7 @@ def get_blocklist(client: Client, args: dict) -> CommandResults:
                 "Type": block.get("type"),
                 "UpdatedAt": block.get("updatedAt"),
                 "UserId": block.get("userId"),
-                "Value": block.get("value"),
+                "Value": get_hash_from_block_entry(block),
             }
         )
 
@@ -4103,8 +4617,11 @@ def main():
             "sentinelone-fetch-threat-file": fetch_threat_file,
             "sentinelone-get-installed-applications": get_installed_applications,
             "sentinelone-initiate-endpoint-scan": initiate_endpoint_scan,
+            "sentinelone-abort-endpoint-scan": abort_endpoint_scan,
+            "sentinelone-endpoint-fetch-logs": endpoint_fetch_logs,
             "get-modified-remote-data": get_modified_remote_data_command,
             "update-remote-system": update_remote_system_command,
+            "sentinelone-run-powerquery": run_powerquery,
         },
         "2.0": {
             "sentinelone-mark-as-threat": mark_as_threat_command,
@@ -4113,6 +4630,7 @@ def main():
         },
         "2.1": {
             "sentinelone-threat-summary": get_threat_summary_command,
+            "sentinelone-threat-analysis": get_threat_analysis_command,
             "sentinelone-update-threats-verdict": update_threat_analyst_verdict,
             "sentinelone-update-alerts-verdict": update_alert_analyst_verdict,
             "sentinelone-create-star-rule": create_star_rule,
@@ -4129,6 +4647,7 @@ def main():
             "sentinelone-write-threat-note": write_threat_note,
             "sentinelone-get-threat-notes": get_threat_notes,
             "sentinelone-create-ioc": create_ioc,
+            "sentinelone-create-bulk-ioc": create_bulk_ioc,
             "sentinelone-delete-ioc": delete_ioc,
             "sentinelone-get-iocs": get_iocs,
             "sentinelone-create-power-query": create_power_query,
@@ -4145,6 +4664,7 @@ def main():
             "sentinelone-get-power-query-results": get_power_query_results,
             "sentinelone-list-installed-singularity-marketplace-applications": list_installed_singu_mark_apps_command,
             "sentinelone-get-service-users": get_service_users_command,
+            "sentinelone-threat-download-from-cloud": threat_download_from_cloud,
         },
         "commands_with_params": {
             "get-remote-data": get_remote_data_command,

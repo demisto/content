@@ -1,0 +1,915 @@
+id: MDR Escalation Process - Vectra XDR
+version: -1
+name: MDR Escalation Process - Vectra XDR
+description: This playbook retrieves the MDR ticket number associated with the given entity by parsing its notes. It then collects the entity's active detections, performs a detection assessment, and sends the results to the designated recipient via email.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bb80ae15-573a-4f39-8548-aafc043e8aab
+    type: start
+    task:
+      id: bb80ae15-573a-4f39-8548-aafc043e8aab
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 88a1165a-55fa-469b-856c-7c938068a31b
+    type: condition
+    task:
+      id: 88a1165a-55fa-469b-856c-7c938068a31b
+      version: -1
+      name: Is Vectra XDR Integration Enabled?
+      description: Check whether the Vectra XDR integration is active.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VectraXDR
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bbe936bc-196a-476f-8fd2-b21d0ef4079a
+    type: title
+    task:
+      id: bbe936bc-196a-476f-8fd2-b21d0ef4079a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: bc197e79-3174-4add-8316-8c53f55b521e
+    type: regular
+    task:
+      id: bc197e79-3174-4add-8316-8c53f55b521e
+      version: -1
+      name: Fetch Entity Active Detections
+      description: Returns a list of detections for a specified entity.
+      script: '|||vectra-entity-detection-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: inputs.entity_id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Entity Details.Answers.0
+                iscontext: true
+      entity_type:
+        complex:
+          root: inputs.entity_type
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Entity Details.Answers.1
+                iscontext: true
+          - operator: toLowerCase
+      extend-context:
+        simple: EntityDetection=results
+      page_size:
+        complex:
+          root: inputs.detection_assessment_limit
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4b5bb247-dddf-42b1-8de8-862f0d13c144
+    type: playbook
+    task:
+      id: 4b5bb247-dddf-42b1-8de8-862f0d13c144
+      version: -1
+      name: Detections Assessment - Vectra XDR
+      description: This playbook conducts a detection assessment and saves the result in context data.
+      playbookName: Detections Assessment - Vectra XDR
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      detection_id:
+        complex:
+          root: EntityDetection
+          accessor: id
+      detection_name:
+        complex:
+          root: EntityDetection
+          accessor: detection
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a1267b3a-830e-469a-8ac0-88c27017d573
+    type: regular
+    task:
+      id: a1267b3a-830e-469a-8ac0-88c27017d573
+      version: -1
+      name: Send Email
+      description: Send an email.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body:
+        complex:
+          root: VectraXDRMailBody
+      subject:
+        simple: MDR Escalation Notification - ${incident.incidentlink} [${incident.vectraxdrentityname}] - ${MDRTicketNumber}
+      to:
+        complex:
+          root: inputs.recipient_email
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Send Mail To.Answers.0
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f3d0553d-3014-46b4-8200-09d6903edec9
+    type: collection
+    task:
+      id: f3d0553d-3014-46b4-8200-09d6903edec9
+      version: -1
+      name: Provide Recipient Email Address.
+      description: Provide the recipient's email address.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide recipient email address for MDR escalation process
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Provide Recipient Email Address.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Provide recipient email address for MDR escalation process.
+        readonly: false
+      title: Send Mail To
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 46f16ef4-5097-4ef6-83a4-c870078f5b05
+    type: regular
+    task:
+      id: 46f16ef4-5097-4ef6-83a4-c870078f5b05
+      version: -1
+      name: Generate Mail Body
+      description: Generate an email body based on the detection assessment for Vectra MDR as part of the escalation response process.
+      scriptName: VectraXDRGenerateMailBody
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      body_content:
+        complex:
+          root: DetectionAssessmentResponse
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c3eb4b42-ab65-4964-80d1-7857a7e35011
+    type: regular
+    task:
+      id: c3eb4b42-ab65-4964-80d1-7857a7e35011
+      version: -1
+      name: List the Notes of an Entity
+      description: Returns a list of notes for a specified entity.
+      script: '|||vectra-entity-note-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: inputs.entity_id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Entity Details.Answers.0
+                iscontext: true
+      entity_type:
+        complex:
+          root: inputs.entity_type
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Entity Details.Answers.1
+                iscontext: true
+      extend-context:
+        simple: EntityNote=note
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 1f42268a-72a3-4dc2-8014-bd0072775b96
+    type: regular
+    task:
+      id: 1f42268a-72a3-4dc2-8014-bd0072775b96
+      version: -1
+      name: Set MDR Ticket Number
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: MDRTicketNumber
+      value:
+        complex:
+          root: EntityNote
+          transformers:
+          - operator: StringifyArray
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: \[MDR#[0-9]+\]
+              unpack_matches: {}
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 204ecb72-4ce7-4132-8102-38c882be9d3e
+    type: condition
+    task:
+      id: 204ecb72-4ce7-4132-8102-38c882be9d3e
+      version: -1
+      name: Is the MDR Ticket Number Available?
+      description: Check whether the MDR ticket number is mentioned in any note.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EntityNote
+                transformers:
+                - operator: StringifyArray
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: \[MDR#[0-9]+\]
+                    unpack_matches: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 22c7b008-5483-4cff-8196-22ad735f9fb8
+    type: condition
+    task:
+      id: 22c7b008-5483-4cff-8196-22ad735f9fb8
+      version: -1
+      name: Are the Entity ID and Entity Type available?
+      description: Check whether the entity ID and entity type are available.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.entity_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.entity_type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 2fdb4703-8a47-4add-8789-3526f62dc48f
+    type: collection
+    task:
+      id: 2fdb4703-8a47-4add-8789-3526f62dc48f
+      version: -1
+      name: Provide Entity ID and Entity Type.
+      description: Collect the entity id and entity type.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide Entity ID and Entity Type for MDR escalation process
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Provide Entity ID
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Use the "vectra-entity-list" to get the entity ID.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Provide Entity Type
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Account
+        - simple: Host
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Specify the type of the entity.
+        readonly: false
+      title: Entity Details
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 728d0d1f-a515-4161-8880-d58565c2a74a
+    type: condition
+    task:
+      id: 728d0d1f-a515-4161-8880-d58565c2a74a
+      version: -1
+      name: Is Recipient Email Address Provided?
+      description: Check whether the recipient email address is available.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.recipient_email
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 8dae0614-da87-4946-855a-52a2efeb6392
+    type: regular
+    task:
+      id: 8dae0614-da87-4946-855a-52a2efeb6392
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key:
+        simple: Entity Details,MDRTicketNumber,Send Mail To,DetectionAssessmentResponse,VectraXDRMailBody,Assessment for Detection,EntityDetection,EntityNote
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 856beb4c-76ef-46ac-8761-772bef7eff70
+    type: regular
+    task:
+      id: 856beb4c-76ef-46ac-8761-772bef7eff70
+      version: -1
+      name: Print MDR Ticket not found Message
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: No MDR ticket found in the notes.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 08d61c21-6bb7-4d4f-82d1-00f0934edad1
+    type: condition
+    task:
+      id: 08d61c21-6bb7-4d4f-82d1-00f0934edad1
+      version: -1
+      name: Is Mail Sender (New) Integration Enabled?
+      description: Check whether the Mail Sender (New) integration is active.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Mail Sender (New)
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_15_#default#": 0.56,
+      "10_9_yes": 0.51,
+      "11_12_#default#": 0.55,
+      "11_8_yes": 0.52,
+      "13_6_#default#": 0.57,
+      "13_7_yes": 0.48,
+      "16_2_#default#": 0.59,
+      "16_5_yes": 0.57,
+      "1_14_yes": 0.58,
+      "1_2_#default#": 0.26
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2775,
+        "width": 1040,
+        "x": -40,
+        "y": -110
+      }
+    }
+  }
+inputs:
+- key: entity_id
+  value:
+    complex:
+      root: incident
+      accessor: vectraxdrentityid
+  required: false
+  description: The ID of the entity.
+  playbookInputQuery:
+- key: entity_type
+  value:
+    complex:
+      root: incident
+      accessor: vectraxdrentitytype
+  required: false
+  description: The type of the entity.
+  playbookInputQuery:
+- key: recipient_email
+  value: {}
+  required: false
+  description: The recipient email address for MDR escalation process.
+  playbookInputQuery:
+- key: detection_assessment_limit
+  value:
+    simple: "50"
+  required: false
+  description: The number of the active detection to be assessed.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

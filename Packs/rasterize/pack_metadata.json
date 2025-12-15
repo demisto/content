@@ -2,7 +2,7 @@
     "name": "Rasterize",
     "description": "Converts URLs, PDF files, and emails to an image file or PDF file.",
     "support": "xsoar",
-    "currentVersion": "2.1.7",
+    "currentVersion": "2.1.23",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -25,6 +25,11 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "edr",
+        "cloud",
+        "cloud_runtime_security",
+        "xsiam"
     ]
 }

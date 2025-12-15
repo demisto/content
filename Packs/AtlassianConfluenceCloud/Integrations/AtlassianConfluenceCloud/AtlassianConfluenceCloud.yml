@@ -1,5 +1,5 @@
 category: Utilities
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -1962,85 +1962,152 @@ script:
     name: confluence-cloud-get-events
     description: Retrieves a list of events from the Atlassian Confluence Cloud instance.
     outputs:
-      - contextPath: ConfluenceCloud.Event.author.type
-        description: The type of author who created this event.
-        type: String
-      - contextPath: ConfluenceCloud.Event.author.displayName
-        description: The display name of the author who created this event.
-        type: String
-      - contextPath: ConfluenceCloud.Event.author.operations
-        description: Nullable. Author's operations.
-        type: String
-      - contextPath: ConfluenceCloud.Event.author.username
-        description: Username of the author of this event.
-        type: String
-      - contextPath: ConfluenceCloud.Event.author.userKey
-        description: User key of the author of this event.
-        type: String
-      - contextPath: ConfluenceCloud.Event.author.accountId
-        description: Account ID of the author of this event.
-        type: String
-      - contextPath: ConfluenceCloud.Event.author.accountType
-        description: Type of account of the author of this event.
-        type: String
-      - contextPath: ConfluenceCloud.Event.author.externalCollaborator
-        description: Deprecated. Is the author of this event an external collaborator.
-        type: Boolean
-      - contextPath: ConfluenceCloud.Event.author.isExternalCollaborator
-        description: Deprecated. Is the author of this event an external collaborator.
-        type: Boolean
-      - contextPath: ConfluenceCloud.Event.author.publicName
-        description: The public name of the author of this event.
-        type: String
-      - contextPath: ConfluenceCloud.Event.remoteAddress
-        description: The remote address from which the event was performed.
-        type: String
-      - contextPath: ConfluenceCloud.Event.creationDate
-        description: The creation date-time of the audit record, as a timestamp.
-        type: Number
-      - contextPath: ConfluenceCloud.Event.summary
-        description: Summary of the audit.
-        type: Strings
-      - contextPath: ConfluenceCloud.Event.description
-        description: Description of the audit.
-        type: String
-      - contextPath: ConfluenceCloud.Event.category
-        description: Category of the event.
-        type: String
-      - contextPath: ConfluenceCloud.Event.sysAdmin
-        description: Was the event created by a system administrator.
-        type: Boolean
-      - contextPath: ConfluenceCloud.Event.superAdmin
-        description: Was the event created by a super administrator.
-        type: Boolean
-      - contextPath: ConfluenceCloud.Event.affectedObject.name
-        description: Name of the object affected by the event.
-        type: String
-      - contextPath: ConfluenceCloud.Event.affectedObject.objectType
-        description: Type of the object affected by the event.
-        type: String
-      - contextPath: ConfluenceCloud.Event.changedValues.name
-        description: Name of the changed value.
-        type: String
-      - contextPath: ConfluenceCloud.Event.changedValues.oldValue
-        description: The old value before the change the event describes.
-        type: String
-      - contextPath: ConfluenceCloud.Event.changedValues.hiddenOldValue
-        description: The old hidden value before the change the event describes.
-        type: String
-      - contextPath: ConfluenceCloud.Event.changedValues.newValue
-        description: The new value after the change the event describes.
-        type: String
-      - contextPath: ConfluenceCloud.Event.changedValues.hiddenNewValue
-        description: The new hidden value after the change the event describes.
-        type: String
-      - contextPath: ConfluenceCloud.Event.associatedObjects.name
-        description: Name of the associated object.
-        type: String
-      - contextPath: ConfluenceCloud.Event.associatedObjects.objectType
-        description: Type of the associated object.
-        type: String
-  dockerimage: demisto/python3:3.11.10.115186
+    - contextPath: ConfluenceCloud.Event.author.type
+      description: The type of author who created this event.
+      type: String
+    - contextPath: ConfluenceCloud.Event.author.displayName
+      description: The display name of the author who created this event.
+      type: String
+    - contextPath: ConfluenceCloud.Event.author.operations
+      description: Nullable. Author's operations.
+      type: String
+    - contextPath: ConfluenceCloud.Event.author.username
+      description: Username of the author of this event.
+      type: String
+    - contextPath: ConfluenceCloud.Event.author.userKey
+      description: User key of the author of this event.
+      type: String
+    - contextPath: ConfluenceCloud.Event.author.accountId
+      description: Account ID of the author of this event.
+      type: String
+    - contextPath: ConfluenceCloud.Event.author.accountType
+      description: Type of account of the author of this event.
+      type: String
+    - contextPath: ConfluenceCloud.Event.author.externalCollaborator
+      description: Deprecated. Is the author of this event an external collaborator.
+      type: Boolean
+    - contextPath: ConfluenceCloud.Event.author.isExternalCollaborator
+      description: Deprecated. Is the author of this event an external collaborator.
+      type: Boolean
+    - contextPath: ConfluenceCloud.Event.author.publicName
+      description: The public name of the author of this event.
+      type: String
+    - contextPath: ConfluenceCloud.Event.remoteAddress
+      description: The remote address from which the event was performed.
+      type: String
+    - contextPath: ConfluenceCloud.Event.creationDate
+      description: The creation date-time of the audit record, as a timestamp.
+      type: Number
+    - contextPath: ConfluenceCloud.Event.summary
+      description: Summary of the audit.
+      type: Strings
+    - contextPath: ConfluenceCloud.Event.description
+      description: Description of the audit.
+      type: String
+    - contextPath: ConfluenceCloud.Event.category
+      description: Category of the event.
+      type: String
+    - contextPath: ConfluenceCloud.Event.sysAdmin
+      description: Was the event created by a system administrator.
+      type: Boolean
+    - contextPath: ConfluenceCloud.Event.superAdmin
+      description: Was the event created by a super administrator.
+      type: Boolean
+    - contextPath: ConfluenceCloud.Event.affectedObject.name
+      description: Name of the object affected by the event.
+      type: String
+    - contextPath: ConfluenceCloud.Event.affectedObject.objectType
+      description: Type of the object affected by the event.
+      type: String
+    - contextPath: ConfluenceCloud.Event.changedValues.name
+      description: Name of the changed value.
+      type: String
+    - contextPath: ConfluenceCloud.Event.changedValues.oldValue
+      description: The old value before the change the event describes.
+      type: String
+    - contextPath: ConfluenceCloud.Event.changedValues.hiddenOldValue
+      description: The old hidden value before the change the event describes.
+      type: String
+    - contextPath: ConfluenceCloud.Event.changedValues.newValue
+      description: The new value after the change the event describes.
+      type: String
+    - contextPath: ConfluenceCloud.Event.changedValues.hiddenNewValue
+      description: The new hidden value after the change the event describes.
+      type: String
+    - contextPath: ConfluenceCloud.Event.associatedObjects.name
+      description: Name of the associated object.
+      type: String
+    - contextPath: ConfluenceCloud.Event.associatedObjects.objectType
+      description: The type of the associated object.
+      type: String
+  - arguments:
+    - description: The ID of the Content that should be retrieved.
+      name: content_id
+      required: true
+    description: Retrieves a Content Item by its Content ID.
+    name: confluence-cloud-content-get   
+    outputs:
+    - contextPath: ConfluenceCloud.Content.id
+      description: The content ID.
+      type: String
+    - contextPath: ConfluenceCloud.Content.type
+      description: The type of the content (e.g., page, blogpost).
+      type: String
+    - contextPath: ConfluenceCloud.Content.ari
+      description: The Atlassian Resource Identifier (ARI) for the content.
+      type: String
+    - contextPath: ConfluenceCloud.Content.base64EncodedAri
+      description: The Base64 encoded ARI of the content.
+      type: String
+    - contextPath: ConfluenceCloud.Content.status
+      description: The status of the content (e.g., current, archived, draft).
+      type: String
+    - contextPath: ConfluenceCloud.Content.title
+      description: The title of the content.
+      type: String
+    - contextPath: ConfluenceCloud.Content.body
+      description: The body of the content.
+      type: Unknown
+    - contextPath: ConfluenceCloud.Content.body.storage.value
+      description: The raw storage-format value of the content body (may contain HTML/XML).
+      type: String
+    - contextPath: ConfluenceCloud.Content.body.storage.representation
+      description: The representation format of the body (e.g., storage, view).
+      type: String
+    - contextPath: ConfluenceCloud.Content.body.storage.embeddedContent
+      description: A list of embedded content objects in the body.
+      type: Unknown
+    - contextPath: ConfluenceCloud.Content.body.storage._expandable
+      description: Link to the content resource for the body.
+      type: String
+    - contextPath: ConfluenceCloud.Content.extensions.position
+      description: Position of the content in the page tree or order.
+      type: Number
+    - contextPath: ConfluenceCloud.Content._links.editui
+      description: Link to edit the content in the UI.
+      type: String
+    - contextPath: ConfluenceCloud.Content._links.webui
+      description: Web UI link to the content.
+      type: String
+    - contextPath: ConfluenceCloud.Content._links.edituiv2
+      description: Link to edit the content in the new UI.
+      type: String
+    - contextPath: ConfluenceCloud.Content._links.context
+      description: Context path of the Confluence instance.
+      type: String
+    - contextPath: ConfluenceCloud.Content._links.self
+      description: REST API self link for the content.
+      type: String
+    - contextPath: ConfluenceCloud.Content._links.tinyui
+      description: Tiny link to the content.
+      type: String
+    - contextPath: ConfluenceCloud.Content._links.collection
+      description: Link to the collection of content resources.
+      type: String
+    - contextPath: ConfluenceCloud.Content._links.base
+      description: Base URL of the Confluence site.
+      type: String
+  dockerimage: demisto/python3:3.12.11.4508456
   isfetchevents: true
   isfetchevents:xsoar: false
   runonce: false

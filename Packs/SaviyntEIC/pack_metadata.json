@@ -1,0 +1,37 @@
+{
+    "name": "Saviynt Enterprise Identity Cloud",
+    "description": "Saviynt Enterprise Identity Cloud (EIC) is a cloud-based platform that converges identity governance, administration, and privileged access management into a single, intelligent solution to help organizations secure and manage user identities.",
+    "support": "xsoar",
+    "currentVersion": "1.0.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM",
+        "Identity and Access Management"
+    ],
+    "tags": [
+        "IAM"
+    ],
+    "useCases": [
+        "Identity and Access Management"
+    ],
+    "keywords": [
+        "role",
+        "entitlements",
+        "on-prem",
+        "provision"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
+    ]
+}

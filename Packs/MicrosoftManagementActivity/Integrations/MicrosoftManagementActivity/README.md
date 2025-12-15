@@ -47,7 +47,12 @@ There are two application authentication methods available:
 | Incident type | The incident type to apply. | False |
 | Record types to fetch | A comma-separated list of the record types you want to fetch. Content records with a record type that is not specified will not be fetched. If this field is left empty, all record types will be fetched. | False |
 | Workloads to fetch | A comma-separated list of the workloads you want to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched. | False |
-| Operations to fetch | A comma-separated list of the operations you want to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched. | False |
+| Operations to fetch | A comma-separated list of the operations you want to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched. Important: This field is case-sensitive. | False |
+
+## Fetch Alerts
+
+The **operations to fetch** parameter is case-sensitive. For example, `DlpRuleMatch` and `DLPRuleMatch` are treated as distinct operations that retrieve information from different workloads.
+For more information, see [Microsoft's technical blog](https://techcommunity.microsoft.com/blog/microsoftsentinelblog/ingest-office-365-dlp-events-into-azure-sentinel/1031820) and [Splunk portal article](https://splunk.my.site.com/customer/s/article/Email-data-model-was-not-populated-with-the-management-activity-logs-of-splunk-addon-for-o365).
 
 ## Commands
 
@@ -330,6 +335,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ## Additional Information
+
 * Record types to fetch from should be set with numerical values from the [Microsoft documentation](https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype). For example, in order to fetch events of type **MailSubmission**, the value **29** should be set.
 * Note that the API only supports start times up to 7 days in the past when fetching. If the last fetch timestamp exceeds this limit, the integration automatically fetches data from 7 days ago.
 * The credentials are valid for a single instance only.

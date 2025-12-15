@@ -6,6 +6,7 @@ from typing import Any
 import CommonServerPython
 import FortiSandboxv2
 import pytest
+from FortiSandboxv2 import is_url
 
 TEST_DATA = "test_data"
 BASE_URL = "https://www.example.com"
@@ -841,3 +842,67 @@ def test_submission_job_report_command(requests_mock, mock_client: FortiSandboxv
         }
         # Retrieve the write calls to the mock file and assert the content
         assert handle.write.call_args[0][0] == b"Decoded Pikachu"
+
+
+def test_is_url_by_ftype():
+    """Test URL detection using ftype field"""
+    data = {"ftype": "WEBLink", "name": "not a url", "download_url": ""}
+    assert is_url(data) is True
+
+
+def test_is_url_by_http_name():
+    """Test URL detection using http name field"""
+    data = {"ftype": "File", "name": "http://example.com", "download_url": ""}
+    assert is_url(data) is True
+
+
+def test_is_url_by_https_name():
+    """Test URL detection using https name field"""
+    data = {"ftype": "File", "name": "https://example.com", "download_url": ""}
+    assert is_url(data) is True
+
+
+def test_is_url_empty_data():
+    """Test with empty data"""
+    assert is_url({}) is False
+
+
+def test_is_url_missing_fields():
+    """Test with missing fields"""
+    data = {
+        "name": "http://example.com"  # Missing other fields
+    }
+    assert is_url(data) is True  # Should still detect from name
+
+    data = {
+        "ftype": "File"  # Only has ftype
+    }
+    assert is_url(data) is False
+
+
+def test_build_indicator_unknown_type():
+    """
+    Test the build_indicator function with unknown indicator type.
+
+    Ensure:
+    - A ValueError is raised when the indicator type cannot be determined.
+    """
+    from FortiSandboxv2 import build_indicator
+
+    # Test data that doesn't contain URL or file hash information
+    test_data = {
+        "score": 3,
+        "malware_name": "test_malware",
+        "detail_url": "https://example.com/detail?sid=123",
+        "category": "test_category",
+    }
+
+    # The error message we expect to see
+    expected_error = "Could not determine indicator type"
+
+    # Verify that the function raises a ValueError with the expected message
+    with pytest.raises(CommonServerPython.DemistoException) as exc_info:
+        build_indicator(data=test_data, url=None, file_hash=None)
+
+    # Check that the error message contains our expected text
+    assert expected_error in str(exc_info.value)

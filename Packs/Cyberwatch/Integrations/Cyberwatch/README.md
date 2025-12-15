@@ -3259,3 +3259,435 @@ Get all details for a Security issue from Cyberwatch.
 >|id|sid|title|description|servers_count|cve_announcements_count|
 >|---|---|---|---|---|---|
 >| 47 | WSTG-INPV-05 | SQL Injection | An SQL injection attack... |  |  |
+
+### cyberwatch-list-sysadmin-assets
+
+---
+
+Get a list of assets from Cyberwatch Sysadmin (`/assets/servers`) view.
+
+#### Base Command
+
+`cyberwatch-list-sysadmin-assets`
+
+#### Input
+
+| **Argument Name** | **Description**                                                        | **Required** |
+| ----------------- | ---------------------------------------------------------------------- | ------------ |
+| page              | Get a specific Sysadmin asset page. If not specified, gets all assets. | Optional     |
+| per_page         | Number of Sysadmin assets per page. Default is 500.                    | Optional     |
+
+#### Context Output
+
+| **Path**                                     | **Type** | **Description**                        |
+| -------------------------------------------- | -------- | -------------------------------------- |
+| Cyberwatch.SysadminAsset.id                  | number   | Sysadmin Asset ID                      |
+| Cyberwatch.SysadminAsset.hostname            | string   | Sysadmin Asset hostname                |
+| Cyberwatch.SysadminAsset.last_communication | date     | Sysadmin Asset last communication date |
+| Cyberwatch.SysadminAsset.category            | string   | Sysadmin Asset category                |
+
+#### Command example
+
+`!cyberwatch-list-sysadmin-assets per_page=2`
+
+#### Context Example
+
+```json
+{
+  "Cyberwatch": {
+    "SysadminAsset": [
+      {
+        "id": 10,
+        "hostname": "srv-sysadmin-1",
+        "last_communication": "2025-06-01T10:00:00.000Z",
+        "category": "server",
+        "description": "first sysadmin asset"
+      },
+      {
+        "id": 11,
+        "hostname": "srv-sysadmin-2",
+        "last_communication": "2025-06-02T11:00:00.000Z",
+        "category": "server",
+        "description": "second sysadmin asset"
+      }
+    ]
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### Cyberwatch Sysadmin Assets
+>
+> | id | hostname       | last_communication | category |
+> | -- | -------------- | ------------------- | -------- |
+> | 10 | srv-sysadmin-1 | 2025-06-01T10:00:00 | server   |
+> | 11 | srv-sysadmin-2 | 2025-06-02T11:00:00 | server   |
+
+---
+
+### cyberwatch-fetch-sysadmin-asset
+
+---
+
+Get details for a Sysadmin Asset from Cyberwatch (`/assets/servers/<ID>`).
+
+#### Base Command
+
+`cyberwatch-fetch-sysadmin-asset`
+
+#### Input
+
+| **Argument Name** | **Description**                 | **Required** |
+| ----------------- | ------------------------------- | ------------ |
+| id                | The Sysadmin Asset ID to fetch. | Required     |
+
+#### Context Output
+
+| **Path**                                       | **Type** | **Description**                        |
+| ---------------------------------------------- | -------- | -------------------------------------- |
+| Cyberwatch.SysadminAsset.id                    | number   | Sysadmin Asset ID                      |
+| Cyberwatch.SysadminAsset.hostname              | string   | Sysadmin Asset hostname                |
+| Cyberwatch.SysadminAsset.description           | string   | Sysadmin Asset description             |
+| Cyberwatch.SysadminAsset.last_communication   | date     | Sysadmin Asset last communication date |
+| Cyberwatch.SysadminAsset.category              | string   | Sysadmin Asset category                |
+| Cyberwatch.SysadminAsset.deploying_period_id | number   | Deploying period ID                    |
+| Cyberwatch.SysadminAsset.rebooting_period_id | number   | Rebooting period ID                    |
+| Cyberwatch.SysadminAsset.policy_id            | number   | Policy ID                              |
+| Cyberwatch.SysadminAsset.ignoring_policy_id  | number   | Ignoring policy ID                     |
+
+#### Command example
+
+`!cyberwatch-fetch-sysadmin-asset id=10`
+
+#### Context Example
+
+```json
+{
+  "Cyberwatch": {
+    "SysadminAsset": {
+      "id": 10,
+      "hostname": "srv-sysadmin-1",
+      "description": "first sysadmin asset",
+      "last_communication": "2025-06-01T10:00:00.000Z",
+      "category": "server",
+      "deploying_period_id": 0,
+      "rebooting_period_id": 0,
+      "policy_id": 0,
+      "ignoring_policy_id": 0
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### Cyberwatch Sysadmin Asset
+>
+> | id | hostname       | description          | last_communication | category | deploying_period_id | rebooting_period_id | policy_id | ignoring_policy_id |
+> | -- | -------------- | -------------------- | ------------------- | -------- | --------------------- | --------------------- | ---------- | -------------------- |
+> | 10 | srv-sysadmin-1 | first sysadmin asset | 2025-06-01T10:00:00 | server   | 0                     | 0                     | 0          | 0                    |
+
+---
+
+### cyberwatch-list-compliance-assets
+
+---
+
+Get a list of assets from Cyberwatch Compliance (`/compliance/assets`) view.
+
+#### Base Command
+
+`cyberwatch-list-compliance-assets`
+
+#### Input
+
+| **Argument Name** | **Description**                                                          | **Required** |
+| ----------------- | ------------------------------------------------------------------------ | ------------ |
+| page              | Get a specific Compliance asset page. If not specified, gets all assets. | Optional     |
+| per_page         | Number of Compliance assets per page. Default is 500.                    | Optional     |
+
+#### Context Output
+
+| **Path**                                                     | **Type** | **Description**                         |
+| ------------------------------------------------------------ | -------- | --------------------------------------- |
+| Cyberwatch.ComplianceAsset.id                                | number   | Compliance Asset ID                     |
+| Cyberwatch.ComplianceAsset.hostname                          | string   | Compliance Asset hostname               |
+| Cyberwatch.ComplianceAsset.status                            | string   | Compliance status summary for the asset |
+| Cyberwatch.ComplianceAsset.compliance_rules_failed_count  | number   | Number of failed compliance rules       |
+| Cyberwatch.ComplianceAsset.compliance_rules_succeed_count | number   | Number of succeeded compliance rules    |
+
+#### Command example
+
+`!cyberwatch-list-compliance-assets per_page=2`
+
+#### Context Example
+
+```json
+{
+  "Cyberwatch": {
+    "ComplianceAsset": [
+      {
+        "id": 77,
+        "hostname": "comp-asset-1",
+        "status": "ok",
+        "compliance_rules_failed_count": 1,
+        "compliance_rules_succeed_count": 9
+      },
+      {
+        "id": 78,
+        "hostname": "comp-asset-2",
+        "status": "warning",
+        "compliance_rules_failed_count": 3,
+        "compliance_rules_succeed_count": 7
+      }
+    ]
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### Cyberwatch Compliance Assets
+>
+> | id | hostname     | status  | compliance_rules_failed_count | compliance_rules_succeed_count |
+> | -- | ------------ | ------- | -------------------------------- | --------------------------------- |
+> | 77 | comp-asset-1 | ok      | 1                                | 9                                 |
+> | 78 | comp-asset-2 | warning | 3                                | 7                                 |
+
+---
+
+### cyberwatch-fetch-compliance-asset
+
+---
+
+Get details for a Compliance Asset from Cyberwatch (`/compliance/assets/<ID>`).
+
+#### Base Command
+
+`cyberwatch-fetch-compliance-asset`
+
+#### Input
+
+| **Argument Name** | **Description**                   | **Required** |
+| ----------------- | --------------------------------- | ------------ |
+| id                | The Compliance Asset ID to fetch. | Required     |
+
+#### Context Output
+
+| **Path**                                                     | **Type** | **Description**                                       |
+| ------------------------------------------------------------ | -------- | ----------------------------------------------------- |
+| Cyberwatch.ComplianceAsset.id                                | number   | Compliance Asset ID                                   |
+| Cyberwatch.ComplianceAsset.hostname                          | string   | Compliance Asset hostname                             |
+| Cyberwatch.ComplianceAsset.status                            | string   | Compliance status summary for the asset               |
+| Cyberwatch.ComplianceAsset.compliance_rules_count          | number   | Total number of compliance rules evaluated            |
+| Cyberwatch.ComplianceAsset.compliance_rules_failed_count  | number   | Number of failed compliance rules                     |
+| Cyberwatch.ComplianceAsset.compliance_rules_succeed_count | number   | Number of succeeded compliance rules                  |
+| Cyberwatch.ComplianceAsset.compliance_repositories          | unknown  | List of compliance repositories attached to the asset |
+
+#### Command example
+
+`!cyberwatch-fetch-compliance-asset id=77`
+
+#### Context Example
+
+```json
+{
+  "Cyberwatch": {
+    "ComplianceAsset": {
+      "id": 77,
+      "hostname": "comp-asset-1",
+      "status": "ok",
+      "compliance_rules_count": 10,
+      "compliance_rules_failed_count": 1,
+      "compliance_rules_succeed_count": 9,
+      "compliance_repositories": [
+        { "id": 1, "name": "Security_Best_Practices", "description": null, "color": "#336699" }
+      ]
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### Cyberwatch Compliance Asset
+>
+> | id | hostname     | status | compliance_rules_count | compliance_rules_failed_count | compliance_rules_succeed_count | compliance_repositories                |
+> | -- | ------------ | ------ | ------------------------ | -------------------------------- | --------------------------------- | --------------------------------------- |
+> | 77 | comp-asset-1 | ok     | 10                       | 1                                | 9                                 | ***values***: Security_Best_Practices |
+
+---
+
+### cyberwatch-send-declarative-data-asset
+
+---
+
+Upload Declarative Data (airgap) built from hostname + JSON to Cyberwatch (via `/api/v2/cbw_scans/scripts`).
+The command first checks that the hostname already exists to avoid creating a new server.
+
+#### Base Command
+
+`cyberwatch-send-declarative-data-asset`
+
+#### Input
+
+| **Argument Name** | **Description**                                                      | **Required** |
+| ----------------- | -------------------------------------------------------------------- | ------------ |
+| hostname          | Asset hostname to associate with the Declarative Data.               | Required     |
+| data              | JSON string of key/value pairs to include (e.g. `{"meta": "test"}`). | Required     |
+
+#### Context Output
+
+| **Path**                                             | **Type** | **Description**                             |
+| ---------------------------------------------------- | -------- | ------------------------------------------- |
+| Cyberwatch.DeclarativeDataUpload.server_id          | number   | Server ID returned by API (created/updated) |
+| Cyberwatch.DeclarativeDataUpload.matched_server_id | number   | Existing server ID matched by hostname      |
+| Cyberwatch.DeclarativeDataUpload.status              | string   | Upload status                               |
+| Cyberwatch.DeclarativeDataUpload.message             | string   | Upload message or error                     |
+
+#### Command example
+
+`!cyberwatch-send-declarative-data-asset hostname="Hostname" data={"meta":"test|Cortex"}`
+
+#### Context Example
+
+```json
+{
+  "Cyberwatch": {
+    "DeclarativeDataUpload": {
+      "server_id": 191,
+      "matched_server_id": 191,
+      "status": "submitted",
+      "message": ""
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### Cyberwatch Declarative Data Upload
+>
+> | hostname | server_id | matched_server_id | status    | message |
+> | -------- | ---------- | ------------------- | --------- | ------- |
+> | Hostname | 191        | 191                 | submitted |         |
+
+---
+
+### cyberwatch-get-declarative-data-asset
+
+---
+
+Retrieve Declarative Data for a Cyberwatch server (`GET /api/v3/servers/{id}/info`).
+Returns the raw text blob.
+
+#### Base Command
+
+`cyberwatch-get-declarative-data-asset`
+
+#### Input
+
+| **Argument Name** | **Description**    | **Required** |
+| ----------------- | ------------------ | ------------ |
+| id                | Server ID to read. | Required     |
+
+#### Context Output
+
+| **Path**                       | **Type** | **Description**           |
+| ------------------------------ | -------- | ------------------------- |
+| Cyberwatch.DeclarativeData.id  | number   | Server ID                 |
+| Cyberwatch.DeclarativeData.raw | string   | Raw Declarative Data text |
+
+#### Command example
+
+`!cyberwatch-get-declarative-data-asset id=191`
+
+#### Context Example
+
+```json
+{
+  "Cyberwatch": {
+    "DeclarativeData": {
+      "id": 191,
+      "raw": "--cbw-info-part\nAnalysis: Declarative data\n\nHOSTNAME:Hostname\nARCH:AMD64\nTCP: 80\nTCP: 443\n\n--cbw-info-part\nAnalysis: Extra data\n\nCATEGORY:Server\n"
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### Cyberwatch Declarative Data (server 191)
+>
+> ```
+> --cbw-info-part
+> Analysis: Declarative data
+>
+> HOSTNAME:Hostname
+> ARCH:AMD64
+> TCP: 80
+> TCP: 443
+>
+> --cbw-info-part
+> Analysis: Extra data
+>
+> CATEGORY:Server
+> ```
+
+### Fetch Incidents
+
+Fetches new CVE incidents from Cyberwatch and creates Cortex XSOAR
+incidents.
+This is **not** an interactive command – it runs automatically on
+the integration’s **Fetch incidents** interval once the integration is
+configured as an Incident Fetcher.
+
+> **What is fetched?**
+> For every asset returned by *Asset filters*, the integration inspects
+> its active CVE announcements.
+> Each CVE that passes the *CVE filters* (see below) is turned into a
+> separate Cortex XSOAR incident.
+
+#### Fetch Parameters (configured in the integration instance)
+
+| **Parameter** | **Description**                                                                                                                                                                                                          | **Required / Default**                                                           |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| First fetch   | The date/time to start fetching from. Accepts absolute dates (e.g. `2024-01-01 00:00:00`) **or** relative durations (`3 days`, `12 hours`).                                                                              | *Optional* / **3 days**                                                          |
+| Max fetch     | Maximum number of incidents to fetch on one run.                                                                                                                                                        | *Optional* / **200**                                                             |
+| Asset filters | JSON object that will be passed verbatim to Cyberwatch’s *List assets* API (same fields as the **cyberwatch-list-assets** command).                                    | *Optional* / `{}` *(no filtering)*                                               |
+| CVE filters   | JSON object with the same fields accepted by **cyberwatch-list-cves** (e.g. `ignored`, `prioritized`, `min_cvss`, `min_epss`, `active`). Example: `{"ignored": false, "prioritized": true, "min_cvss": 7}` | *Optional* / `{"active": true, "ignored": false, "prioritized": true}` *(ignore CVEs marked “ignored” in Cyberwatch, only pushes prioritized and active ones)* |
+
+#### Incident JSON structure
+
+| **Field**         | **Type** | **Description**                                                                   |
+| ----------------- | -------- | --------------------------------------------------------------------------------- |
+| name              | string   | **CVE_CODE on Hostname**                                                          |
+| occurred          | date     | Time the CVE was **detected on the asset** ( `detected_at` ).                     |
+| rawJSON.**cve**   | object   | The CVE announcement as returned by Cyberwatch (`cve_code`, `score`, `epss`, …).  |
+
+#### Example incident (abridged)
+
+```json
+{
+  "name": "CVE-2025-0001 on srv1",
+  "occurred": "2025-06-01T00:00:00Z",
+  "rawJSON": {
+      "cve_code": "CVE-2025-0001",
+      "score": 7.8,
+      "epss": 0.9716,
+      "ignored": false,
+      "prioritized": true,
+      "detected_at": "2025-06-01T00:00:00Z"
+    }
+}
+
+```
+
+#### Notes & Best Practices
+
+* **Deduplication** – each incident ID is `"<CVE_CODE>-<ASSET_ID>"`, so the same CVE detected on two servers produces two separate incidents, while re-fetching the same CVE/asset pair will not create duplicates.
+* **Last run tracking** – the integration stores the UNIX timestamp of the most recent CVE it created. At every cycle it only considers announcements whose `detected_at` value is newer than that timestamp.
+* **Tuning the volume** – if you receive too many incidents, tighten *CVE filters* (for example `{"prioritized": true, "min_cvss": 9}`)
+
+Once the parameters are saved and **Fetch incidents** is enabled, new Cyberwatch vulnerabilities will start appearing as Cortex XSOAR incidents automatically.

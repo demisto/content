@@ -12,7 +12,7 @@ import json
 MOCK_URL = "https://api.sekoia.io"
 
 
-def util_load_json(path):
+def util_load_json(path) -> dict:
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
@@ -90,8 +90,8 @@ def test_undot():
     upload_test_data = util_load_json("test_data/SekoiaXDR_retrieve_events.json")
     result = SekoiaXDR.undot(upload_test_data)
 
-    assert "agent_id" in result
-    assert "agent.id" not in result
+    assert type(result) is dict
+    assert result["items"][0]["agent_id"]
 
 
 def test_filter_list_by_keys():
@@ -144,33 +144,24 @@ def test_check_id_in_context_with_mirroring(context_cache_with_mirroring):
     )
 
 
-def test_fetch_alerts_with_pagination(client, requests_mock):
-    first_mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_first_offset_call.json")
-    requests_mock.get(
-        MOCK_URL + "/v1/sic/alerts?limit=1&sort=created_at&offset=0",
-        json=first_mock_response,
-    )
-
-    second_mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_second_offset_call.json")
-    requests_mock.get(
-        MOCK_URL + "/v1/sic/alerts?limit=1&sort=created_at&offset=1",
-        json=second_mock_response,
-    )
+def test_fetch_alerts_asc_mode(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_get_alerts.json")
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
 
     args = {
+        "client": client,
         "alert_status": None,
         "alert_urgency": None,
         "alert_type": None,
-        "max_results": 1,
+        "max_results": 100,
         "alerts_created_at": None,
         "alerts_updated_at": None,
-        "sort_by": "created_at",
+        "sort_by": None,
     }
-    result = SekoiaXDR.fetch_alerts_with_pagination(client=client, **args)
 
+    result = SekoiaXDR.fetch_alerts_asc_mode(**args)
     assert len(result) == 2
-    assert result[0]["uuid"] == "80ee2ccc-11e3-4416"
-    assert result[1]["uuid"] == "07fe3fc0-ddb7-44f3"
+    assert result[0]["created_at"] < result[1]["created_at"]
 
 
 def test_handle_alert_events_query_finished_status(client, requests_mock):
@@ -269,10 +260,10 @@ def test_http_request_list(client, requests_mock, method, url_suffix, params, js
     mock_response = util_load_json(json_test_file)
     requests_mock.get(MOCK_URL + url_suffix, json=mock_response)
 
-    args = {"url_sufix": url_suffix, "method": method, "params": params}
+    args = {"url_suffix": url_suffix, "method": method, "params": params}
     result = SekoiaXDR.http_request_command(client=client, args=args)
 
-    assert result.outputs["items"] == mock_response["items"]
+    assert result.outputs == mock_response["items"]
 
 
 def test_list_alerts(client, requests_mock):

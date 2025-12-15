@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -110,9 +110,10 @@ configuration:
   type: 8
   required: false
   section: Collect
-description: Unit 42 feed of published IOCs, which contains known malicious indicators.
-display: Unit 42 ATOMs Feed
+description: Deprecated. Use the Unit42 Feed instead.
+display: Unit 42 ATOMs Feed (Deprecated)
 name: Unit42v2 Feed
+deprecated: true
 script:
   commands:
   - arguments:

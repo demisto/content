@@ -43,12 +43,19 @@ configuration:
   type: 8
   required: false
   section: Connect
-- display: Source Reliability
-  name: integrationReliability
+- display: Domain Result Type
+  name: domain_result_type
   type: 15
   required: false
-  additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
+  additionalinfo: "Result type of the domain command: Iris returns full investigate results; Verdict returns only the domain risk score"
+  defaultvalue: Iris
+  options:
+  - Iris
+  - Verdict
+  section: Collect
+- defaultvalue: B - Usually reliable
+  display: 'Source Reliability'
+  name: integrationReliability
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -57,68 +64,71 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  type: 15
+  required: false
   section: Collect
-- defaultvalue: indicatorType
-  display: ''
+  additionalinfo: Reliability of the source providing the intelligence data.
+- defaultvalue: 'indicatorType'
   name: feedExpirationPolicy
+  display: ''
+  type: 17
+  required: false
+  section: Collect
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  type: 17
-  required: false
-  section: Collect
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   required: false
   section: Collect
-- defaultvalue: 500
+- display: 'Guided Pivot Threshold'
   name: pivot_threshold
-  display: 'Guided Pivot Threshold'
+  defaultvalue: 500
   type: 1
   required: true
-  additionalinfo: When a small set of domains share an attribute (e.g. registrar), that can often be pivoted on in order to find other similar domains of interest. DomainTools tracks how many domains share each attribute and can highlight it for further investigation when the number of domains is beneath the set threshold.
   section: Connect
+  additionalinfo: When a small set of domains share an attribute (e.g. registrar), that can often be pivoted on in order to find other similar domains of interest. DomainTools tracks how many domains share each attribute and can highlight it for further investigation when the number of domains is beneath the set threshold.
 - display: 'Enabled on Monitoring Domains by Iris Search Hash'
   name: monitor_iris_search_hash
-  defaultvalue: Import Indicators Only
   type: 15
   required: false
+  section: Collect
+  defaultvalue: Import Indicators Only
   options:
   - Import Indicators Only
   - Create Incident and Import Indicators
-  section: Collect
-- display: Domaintools Iris Investigate Search Hash
+- display: 'Domaintools Iris Investigate Search Hash'
   name: domaintools_iris_search_hash
   type: 12
   required: false
-  additionalinfo: The DomainTools Iris Investigate Search hash
   section: Collect
+  additionalinfo: The DomainTools Iris Investigate Search hash
 - display: 'Enabled on Monitoring Domains by Iris Tags'
   name: monitor_iris_tags
-  defaultvalue: Import Indicators Only
   type: 15
   required: false
+  section: Collect
+  defaultvalue: Import Indicators Only
   options:
   - Import Indicators Only
   - Create Incident and Import Indicators
-  section: Collect
 - display: Domaintools Iris Tags
   name: domaintools_iris_tags
-  type: 12
   required: false
+  type: 12
   additionalinfo: The DomainTools Iris Tags (Values should be a comma separated value. e.g. (tag1,tag2))
   section: Collect
 - display: Maximum number of incidents to fetch
-  defaultvalue: '2'
   name: max_fetch
-  required: false
   type: 0
-  additionalinfo: This is a required field by XSOAR and should be set to 2, one for each possible feed type iris search hash and iris tags.
   section: Collect
+  defaultvalue: '2'
+  required: false
+  additionalinfo: This is a required field by XSOAR and should be set to 2, one for each possible feed type iris search hash and iris tags.
 - display: Incident type
   name: incidentType
   type: 13
@@ -132,7 +142,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-  additionalinfo: This is a required field by XSOAR and should be set to 2, one for each possible feed type iris search hash and iris tags.
+  additionalinfo: How far back in time to go when performing the first fetch.
   section: Collect
 description: Together, DomainTools and Cortex XSOAR automate and orchestrate the incident response process with essential domain profile, web crawl, SSL and infrastructure data. SOCs can create custom, automated workflows to trigger Indicator of Compromise (IoC) investigations, block threats based on connected infrastructure, and identify potentially malicious domains before weaponization. The DomainTools App for Cortex XSOAR is shipped with pre-built playbooks to enable automated enrichment, decision logic, ad-hoc investigations, and the ability to persist enriched intelligence.
 display: DomainTools Iris
@@ -2472,7 +2482,7 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Name of the domain returned by the query.
-  dockerimage: demisto/vendors-sdk:1.0.0.3242986
+  dockerimage: demisto/vendors-sdk:1.0.0.5505539
   runonce: false
   script: '-'
   type: python
@@ -2483,6 +2493,6 @@ script:
 tests:
 - No test - test 'DomainTools Iris - Test' was moved to NonCircleFolder
 fromversion: 5.0.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

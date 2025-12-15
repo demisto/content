@@ -1,4 +1,7 @@
 category: Messaging and Conferencing
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: MicrosoftGraphTeams
   version: -1
@@ -8,68 +11,81 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Token or Tenant ID
   display: Tenant ID
   hiddenusername: true
   name: tenant_id
   required: true
   type: 4
+  section: Connect
 - additionalinfo: ID or Client ID
   display: Client ID
   hiddenusername: true
   name: client_id
   required: true
   type: 4
+  section: Connect
 - additionalinfo: Key or Client Secret
   display: Client Secret
   hiddenusername: true
   name: secret
   type: 4
   required: false
+  section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   type: 4
   required: false
+  section: Connect
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   type: 4
   required: false
+  section: Connect
 - display: Use a self deployed Azure Application
   name: self_deployed
   type: 8
   required: false
   additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  section: Connect
 - display: Application redirect URI (for Authorization Code flow mode)
   name: redirect_uri
   type: 0
   required: false
+  section: Connect
 - additionalinfo: Authorization code on behalf of a user, used with self deployed Azure Applications.
   display: Authorization Code
   hiddenusername: true
   name: auth_code
   type: 4
   required: false
+  section: Connect
 - display: Email address of the XSOAR delegated Teams user (e.g. "example@demisto.com")
   name: delegated_user
   required: true
   type: 0
+  section: Connect
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - defaultvalue: "false"
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - defaultvalue: "true"
   display: Suppress Errors for Non Found Users
   name: handle_error
   type: 8
   required: false
+  section: Collect
 description: Microsoft Graph lets your app get authorized access to a user's Teams app in a personal or organization account.
 display: O365 Teams (Using Graph API)
 name: MicrosoftGraphTeams
@@ -302,7 +318,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-teams-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.5490413
   script: ''
   subtype: python3
   type: python

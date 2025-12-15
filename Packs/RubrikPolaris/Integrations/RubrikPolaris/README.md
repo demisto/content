@@ -11,10 +11,14 @@ This integration was integrated and tested with version 1.0.0 of Rubrik Security
 | Password |  | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
-| Event types to fetch as incidents | Event types to fetch as incidents.<br/>Note: Supports the listed options only. If not provided, it will fetch events for all listed options. | False |
+| RSC Fetch Types | Select RSC types to fetch as incidents.<br/><br/>Note: Supports the listed options only. If not provided, it will fetch all listed options. | False |
+| Event types to fetch as incidents | Event types to fetch as incidents.<br/>Note: Supports the listed options only. If not provided, it will fetch events for all listed options. Applies only when RSC fetch type is set to "Event". | False |
+| Threat Monitoring Match Types | Select Threat Monitoring Match Types to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "Threat Monitoring object". | False |
+| Threat Monitoring Object Types | Select Threat Monitoring Object Types to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "Threat Monitoring object". | False |
 | First fetch time | The time interval for the first fetch \(retroactive\). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/\#relative-dates. | False |
-| Fetch Limit (Maximum of 1000) | Maximum number of incidents to fetch every time. The maximum value is 1000. | False |
+| Fetch Limit (Maximum of 1000) | Maximum number of incidents to fetch every time. The maximum value is 1000.<br/><br/>Note: If both Threat Monitoring objects and events are selected, the limit is split equally to fetch both types optimally. | False |
 | Event Critical Severity Level Mapping | When an event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
+| Threat Monitoring Object Severity Level Mapping | When a threat monitoring object is fetched, this setting indicates what severity will get assigned within XSOAR. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Use system proxy settings | Whether to use XSOAR's system proxy settings to connect to the API. | False |
 | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
@@ -22,6 +26,7 @@ This integration was integrated and tested with version 1.0.0 of Rubrik Security
 ## Known Limitations
 
 * The *fetch-incidents* only ingests the events with **"Critical"** severity.
+* During the fetch cycle of threat monitoring objects, changing the filter parameters (Threat Monitoring Match Types or Threat Monitoring Object Types) may result in delayed ingestion of threat monitoring objects.
 
 ## Commands
 
@@ -2667,8 +2672,8 @@ Retrieve the suspicious list of files for a snapshot ID with detected file anoma
 | RubrikPolaris.SuspiciousFile.detectionTime | Date | The detection time of the anomaly. |
 | RubrikPolaris.SuspiciousFile.snapshotDate | Date | The snapshot date of the anomaly. |
 | RubrikPolaris.SuspiciousFile.encryption | String | The encryption standard of the anomaly. |
-| RubrikPolaris.SuspiciousFile.resolutionStatus | String | The resolution status of the anomaly. | 
-| RubrikPolaris.SuspiciousFile.anomalyType | String | The type of the anomaly. | 
+| RubrikPolaris.SuspiciousFile.resolutionStatus | String | The resolution status of the anomaly. |
+| RubrikPolaris.SuspiciousFile.anomalyType | String | The type of the anomaly. |
 | RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.strainId | String | The ID of the Ransomware Strain. |
 | RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalAffectedFiles | Number | The total number of affected files. |
 | RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalRansomwareNotes | Number | The total number of ransomware notes. |
@@ -3252,27 +3257,30 @@ Note: Run the "rubrik-radar-suspicious-file-list" command first to check the res
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| anomaly_type | The type of the anomaly.<br/><br/>Note: For Anomaly Type, users can execute the "rubrik-radar-suspicious-file-list" command. Possible values are: FILESYSTEM, HYPERVISOR. | Required | 
-| anomaly_id | The ID of the Anomaly or Activity Series ID.<br/><br/>Note: For Activity Series ID, users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY". | Required | 
-| workload_id | The workload ID (Snappable ID).<br/><br/>Note: Users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY" and get the value of "fid" from the context. | Required | 
-| false_positive_type | The type for marking the anomaly as a false positive. Possible values are: FP_TYPE_UNSPECIFIED, OS_UPDATE, APPLICATION_UPDATE, LOG_ROTATION, OTHER, NFA_SCHEDULED_MAINTENANCE, NFA_UNSCHEDULED_MAINTENANCE. | Optional | 
-| false_positive_reason | The reason for marking the anomaly as a false positive when the "false_positive_type" argument is set to OTHER. | Optional | 
+| anomaly_type | The type of the anomaly.<br/><br/>Note: For Anomaly Type, users can execute the "rubrik-radar-suspicious-file-list" command. Possible values are: FILESYSTEM, HYPERVISOR. | Required |
+| anomaly_id | The ID of the Anomaly or Activity Series ID.<br/><br/>Note: For Activity Series ID, users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY". | Required |
+| workload_id | The workload ID (Snappable ID).<br/><br/>Note: Users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY" and get the value of "fid" from the context. | Required |
+| false_positive_type | The type for marking the anomaly as a false positive. Possible values are: FP_TYPE_UNSPECIFIED, OS_UPDATE, APPLICATION_UPDATE, LOG_ROTATION, OTHER, NFA_SCHEDULED_MAINTENANCE, NFA_UNSCHEDULED_MAINTENANCE. | Optional |
+| false_positive_reason | The reason for marking the anomaly as a false positive when the "false_positive_type" argument is set to OTHER. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RubrikPolaris.AnomalyStatus.command_name | String | The name of the command. | 
-| RubrikPolaris.AnomalyStatus.anomaly_type | String | The type of the Anomaly. | 
-| RubrikPolaris.AnomalyStatus.anomaly_id | String | The ID of the Anomaly. | 
-| RubrikPolaris.AnomalyStatus.workload_id | String | The workload ID. | 
-| RubrikPolaris.AnomalyStatus.is_resloved | Boolean | Whether the Anomaly is resolved. | 
-| RubrikPolaris.AnomalyStatus.false_positive_type | String | The type of the false positive. | 
-| RubrikPolaris.AnomalyStatus.false_positive_reason | String | The reason for marking the Anomaly detection snapshot as a false positive. | 
+| RubrikPolaris.AnomalyStatus.command_name | String | The name of the command. |
+| RubrikPolaris.AnomalyStatus.anomaly_type | String | The type of the Anomaly. |
+| RubrikPolaris.AnomalyStatus.anomaly_id | String | The ID of the Anomaly. |
+| RubrikPolaris.AnomalyStatus.workload_id | String | The workload ID. |
+| RubrikPolaris.AnomalyStatus.is_resloved | Boolean | Whether the Anomaly is resolved. |
+| RubrikPolaris.AnomalyStatus.false_positive_type | String | The type of the false positive. |
+| RubrikPolaris.AnomalyStatus.false_positive_reason | String | The reason for marking the Anomaly detection snapshot as a false positive. |
 
 #### Command example
+
 ```!rubrik-radar-anomaly-status-update anomaly_id=00000000-0000-0000-0000-000000000001 anomaly_type=FILESYSTEM workload_id=00000000-0000-0000-0000-000000000002```
+
 #### Context Example
+
 ```json
 {
     "RubrikPolaris": {
@@ -3289,4 +3297,860 @@ Note: Run the "rubrik-radar-suspicious-file-list" command first to check the res
 
 #### Human Readable Output
 
->### Anomaly detection with the ID 00000000-0000-0000-0000-000000000001 resolved successfully.
+>### Anomaly detection with the ID 00000000-0000-0000-0000-000000000001 resolved successfully
+
+### rubrik-threat-monitoring-matched-object-list
+
+***
+List the matched objects for Threat Monitoring.
+
+#### Base Command
+
+`rubrik-threat-monitoring-matched-object-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cluster_id | The unique ID of the cluster. Supports comma separated values.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Optional |
+| object_type | Filter the objects based on the provided object types. Supports comma separated values.<br/><br/>Note: Values not included in the predefined options can be found in the documentation. | Optional |
+| object_name | Filter objects by their name. Supports partial matches. | Optional |
+| match_type | Filter the objects by the match type. Supports comma separated values.<br/><br/>Possible values are: INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME, INDICATOR_OF_COMPROMISE_TYPE_HASH, INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE. | Optional |
+| start_time | Filter the objects detected after this time.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z. Default is 7 days. | Optional |
+| limit | Number of results to retrieve in the response. The maximum allowed size is 1000. | Optional |
+| next_page_token | The next page cursor to retrieve the next set of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.ThreatMonitoring.objectFid | String | The unique identifier \(FID\) of the object. |
+| RubrikPolaris.ThreatMonitoring.objectName | String | The name of the matched object. |
+| RubrikPolaris.ThreatMonitoring.objectType | String | The type of the matched object. |
+| RubrikPolaris.ThreatMonitoring.matchType | Unknown | A list of match types found for the object. |
+| RubrikPolaris.ThreatMonitoring.filesMatched | Number | The number of files matched with the threat monitoring object. |
+| RubrikPolaris.ThreatMonitoring.lastDetection | Date | The timestamp of the most recent detection. |
+| RubrikPolaris.ThreatMonitoring.cluster.name | String | The name of the cluster the object belongs to. |
+| RubrikPolaris.ThreatMonitoring.cluster.id | String | The unique identifier of the cluster. |
+| RubrikPolaris.ThreatMonitoring.cluster.__typename | String | The GraphQL typename of the cluster object. |
+| RubrikPolaris.ThreatMonitoring.__typename | String | The GraphQL typename of the matched object. |
+| RubrikPolaris.PageToken.ThreatMonitoring.endCursor | String | The end cursor of the threat monitoring data. |
+| RubrikPolaris.PageToken.ThreatMonitoring.hasNextPage | Boolean | A flag indicating if there is a next page of threat monitoring data. |
+| RubrikPolaris.PageToken.ThreatMonitoring.hasPreviousPage | Boolean | A flag indicating if there is a previous page of threat monitoring data. |
+| RubrikPolaris.PageToken.ThreatMonitoring.name | String | The name of the threat monitoring data. |
+| RubrikPolaris.PageToken.ThreatMonitoring.total_matched_count | Number | The total number of matched objects. |
+| RubrikPolaris.PageToken.ThreatMonitoring.startCursor | String | The start cursor of the threat monitoring data. |
+
+#### Command example
+
+```!rubrik-threat-monitoring-matched-object-list begin_time="3 days"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "ThreatMonitoring": [
+            {   
+                "__typename": "dummy-typename",
+                "cluster": {
+                    "__typename": "dummy-typename",
+                    "id": "dummy-cluster-id-123",
+                    "name": "dummy-cluster-name"
+                },
+                "filesMatched": 1,
+                "lastDetection": "2025-01-01T00:00:00.000Z",
+                "matchType": [
+                    "dummy-match-type"
+                ],
+                "objectFid": "dummy-fid-789012",
+                "objectName": "dummy-object-name-456",
+                "objectType": "dummy-object-type"
+            }
+        ],
+        "PageToken": {
+            "ThreatMonitoring": {
+                "endCursor": "dummy-end-cursor",
+                "hasNextPage": true,
+                "hasPreviousPage": false,
+                "name": "rubrik-threat-monitoring-matched-object-list",
+                "startCursor": "dummy-start-cursor",
+                "total_matched_count": 2
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Threat Monitoring Object List
+>
+>|Object ID|Object Name|Object Type|Total Files Matched|Match Types|Last Detection Time|Cluster ID|Cluster Name|
+>|---|---|---|---|---|---|---|---|
+>| dummy-fid-789012 | dummy-object-name-456 | dummy-object-type | 0 | dummy-match-type | 2025-01-01T00:00:00.000Z | dummy-cluster-id-123 | dummy-cluster-name |
+>
+>Note: To retrieve the next set of results use, "next_page_token" = dummy-end-cursor
+
+### rubrik-threat-monitoring-matched-object-get
+
+***
+Get the matched object for Threat Monitoring.
+
+#### Base Command
+
+`rubrik-threat-monitoring-matched-object-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_id | The object ID for the threat monitoring object.<br/><br/>Note: Users can retrieve the object ID by executing the "rubrik-threat-monitoring-matched-object-list" command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.ThreatMonitoring.id | String | The ID of the threat monitoring data. |
+| RubrikPolaris.ThreatMonitoring.name | String | The name of the threat monitoring data. |
+| RubrikPolaris.ThreatMonitoring.objectType | String | The object type of the threat monitoring data. |
+| RubrikPolaris.ThreatMonitoring.slaAssignment | String | The SLA assignment of the threat monitoring data. |
+| RubrikPolaris.ThreatMonitoring.slaPauseStatus | String | The SLA pause status of the threat monitoring data. |
+| RubrikPolaris.ThreatMonitoring.effectiveSlaDomain.id | String | The ID of the effective SLA domain. |
+| RubrikPolaris.ThreatMonitoring.effectiveSlaDomain.name | String | The name of the effective SLA domain. |
+| RubrikPolaris.ThreatMonitoring.effectiveSlaDomain.version | String | The version of the effective SLA domain. |
+| RubrikPolaris.ThreatMonitoring.effectiveSlaDomain.__typename | String | The type name of the effective SLA domain. |
+| RubrikPolaris.ThreatMonitoring.snapshotDistribution.id | String | The ID of the snapshot distribution. |
+| RubrikPolaris.ThreatMonitoring.snapshotDistribution.totalCount | Integer | The total count of the snapshot distribution. |
+| RubrikPolaris.ThreatMonitoring.snapshotDistribution.scheduledCount | Integer | The scheduled count of the snapshot distribution. |
+| RubrikPolaris.ThreatMonitoring.snapshotDistribution.onDemandCount | Integer | The on-demand count of the snapshot distribution. |
+| RubrikPolaris.ThreatMonitoring.snapshotDistribution.retrievedCount | Integer | The retrieved count of the snapshot distribution. |
+| RubrikPolaris.ThreatMonitoring.snapshotDistribution.__typename | String | The type name of the snapshot distribution. |
+| RubrikPolaris.ThreatMonitoring.effectiveRetentionSlaDomain.id | String | The ID of the effective retention SLA domain. |
+| RubrikPolaris.ThreatMonitoring.effectiveRetentionSlaDomain.name | String | The name of the effective retention SLA domain. |
+| RubrikPolaris.ThreatMonitoring.effectiveRetentionSlaDomain.version | String | The version of the effective retention SLA domain. |
+| RubrikPolaris.ThreatMonitoring.effectiveRetentionSlaDomain.__typename | String | The type name of the effective retention SLA domain. |
+| RubrikPolaris.ThreatMonitoring.configuredSlaDomain.id | String | The ID of the configured SLA domain. |
+| RubrikPolaris.ThreatMonitoring.configuredSlaDomain.name | String | The name of the configured SLA domain. |
+| RubrikPolaris.ThreatMonitoring.configuredSlaDomain.version | String | The version of the configured SLA domain. |
+| RubrikPolaris.ThreatMonitoring.configuredSlaDomain.__typename | String | The type name of the configured SLA domain. |
+| RubrikPolaris.ThreatMonitoring.effectiveSlaSourceObject.fid | String | The FID of the effective SLA source object. |
+| RubrikPolaris.ThreatMonitoring.effectiveSlaSourceObject.name | String | The name of the effective SLA source object. |
+| RubrikPolaris.ThreatMonitoring.effectiveSlaSourceObject.objectType | String | The object type of the effective SLA source object. |
+| RubrikPolaris.ThreatMonitoring.effectiveSlaSourceObject.__typename | String | The type name of the effective SLA source object. |
+| RubrikPolaris.ThreatMonitoring.logicalPath.fid | String | The FID of the logical path. |
+| RubrikPolaris.ThreatMonitoring.logicalPath.name | String | The name of the logical path. |
+| RubrikPolaris.ThreatMonitoring.logicalPath.objectType | String | The object type of the logical path. |
+| RubrikPolaris.ThreatMonitoring.logicalPath.__typename | String | The type name of the logical path. |
+| RubrikPolaris.ThreatMonitoring.physicalPath.fid | String | The FID of the physical path. |
+| RubrikPolaris.ThreatMonitoring.physicalPath.name | String | The name of the physical path. |
+| RubrikPolaris.ThreatMonitoring.physicalPath.objectType | String | The object type of the physical path. |
+| RubrikPolaris.ThreatMonitoring.physicalPath.__typename | String | The type name of the physical path. |
+| RubrikPolaris.ThreatMonitoring.numWorkloadDescendants | Integer | The number of workload descendants. |
+| RubrikPolaris.ThreatMonitoring.allOrgs.id | String | The ID of the organization. |
+| RubrikPolaris.ThreatMonitoring.allOrgs.name | String | The name of the organization. |
+| RubrikPolaris.ThreatMonitoring.allOrgs.description | String | The description of the organization. |
+| RubrikPolaris.ThreatMonitoring.allOrgs.mfaStatus | String | The MFA status of the organization. |
+| RubrikPolaris.ThreatMonitoring.allOrgs.allUrls | String | The all URLs of the organization. |
+| RubrikPolaris.ThreatMonitoring.allOrgs.__typename | String | The type name of the organization. |
+| RubrikPolaris.ThreatMonitoring.securityMetadata.lowSensitiveHits | Integer | The low sensitive hits of the security metadata. |
+| RubrikPolaris.ThreatMonitoring.securityMetadata.mediumSensitiveHits | Integer | The medium sensitive hits of the security metadata. |
+| RubrikPolaris.ThreatMonitoring.securityMetadata.highSensitiveHits | Integer | The high sensitive hits of the security metadata. |
+| RubrikPolaris.ThreatMonitoring.securityMetadata.sensitivityStatus | String | The sensitivity status of the security metadata. |
+| RubrikPolaris.ThreatMonitoring.securityMetadata.isLaminarEnabled | Boolean | A flag indicating whether laminar is enabled for the security metadata. |
+| RubrikPolaris.ThreatMonitoring.securityMetadata.dataTypeResults.id | String | The ID of the data type result. |
+| RubrikPolaris.ThreatMonitoring.securityMetadata.dataTypeResults.name | String | The name of the data type result. |
+| RubrikPolaris.ThreatMonitoring.securityMetadata.dataTypeResults.totalHits | Integer | The total hits of the data type result. |
+| RubrikPolaris.ThreatMonitoring.securityMetadata.dataTypeResults.totalViolatedHits | Integer | The total violated hits of the data type result. |
+| RubrikPolaris.ThreatMonitoring.securityMetadata.dataTypeResults.__typename | String | The type name of the data type result. |
+| RubrikPolaris.ThreatMonitoring.securityMetadata.__typename | String | The type name of the security metadata. |
+| RubrikPolaris.ThreatMonitoring.__typename | String | The type name of the threat monitoring data. |
+
+#### Command example
+
+```!rubrik-threat-monitoring-matched-object-get object_id="00000000-0000-0000-0000-000000000001"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "ThreatMonitoring": {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "name": "DUMMY-NAME",
+            "objectType": "Dummy_Object_Type",
+            "slaAssignment": "Dummy_Assignment",
+            "slaPauseStatus": false,
+            "effectiveSlaDomain": {
+                "id": "dummy-sla-id",
+                "name": "Dummy_SLA_Domain",
+                "version": "v0",
+                "__typename": "Global_Sla_Reply"
+            },
+            "Snapshot_Distribution": {
+                "id": "dummy-snapshot-id",
+                "totalCount": 0,
+                "scheduledCount": 0,
+                "onDemandCount": 0,
+                "retrievedCount": 0,
+                "__typename": "Snapshot_Distribution"
+            },
+            "effectiveRetentionSlaDomain": null,
+            "configuredSlaDomain": {
+                "id": "dummy-configured-sla-id",
+                "name": "Dummy_Configured_SLA",
+                "version": "v0",
+                "__typename": "Global_Sla_Reply"
+            },
+            "effectiveSlaSourceObject": {
+                "fid": "dummy-fid-001",
+                "name": "DUMMY-SOURCE-NAME",
+                "objectType": "Dummy_Source_Type",
+                "__typename": "Path_Node"
+            },
+            "logicalPath": [
+                {
+                    "fid": "dummy-logical-fid-001",
+                    "name": "Dummy_Logical_Name1",
+                    "objectType": "Dummy_Logical_Type1",
+                    "__typename": "Path_Node"
+                },
+                {
+                    "fid": "dummy-logical-fid-002",
+                    "name": "Dummy_Logical_Name2",
+                    "objectType": "Dummy_Logical_Type2",
+                    "__typename": "Path_Node"
+                }
+            ],
+            "physicalPath": [
+                {
+                    "fid": "dummy-physical-fid-001",
+                    "name": "Dummy_Physical_Name1",
+                    "objectType": "Dummy_Physical_Type1",
+                    "__typename": "Path_Node"
+                },
+                {
+                    "fid": "dummy-physical-fid-002",
+                    "name": "Dummy_Physical_Name2",
+                    "objectType": "Dummy_Physical_Type2",
+                    "__typename": "Path_Node"
+                }
+            ],
+            "numWorkloadDescendants": 0,
+            "allOrgs": [],
+            "securityMetadata": null,
+            "__typename": "Vsphere_Vm"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Threat Monitoring Object Details
+>
+>|ID|Name|Object Type|SLA Assignment|Effective SLA Domain|SLA Pause Status|Configured SLA Domain|Effective SLA Source Object|Logical Path|Physical Path|NumWorkload Descendants|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| dummy-id-001 | DUMMY-NAME | Dummy_Object_Type | Dummy_Assignment | ***id***: dummy-sla-id<br>***name***: Dummy_SLA_Domain<br>***version***: v0 | false | ***id***: dummy-configured-sla-id<br>***name***: Dummy_Configured_SLA<br>***version***: v0 | ***fid***: dummy-fid-001<br>***name***: DUMMY-SOURCE-NAME<br>***objectType***: Dummy_Source_Type | **-** ***fid***: dummy-logical-fid-001<br> ***name***: Dummy_Logical_Name1<br> ***objectType***: Dummy_Logical_Type1<br>**-** ***fid***: dummy-logical-fid-002<br> ***name***: Dummy_Logical_Name2<br> ***objectType***: Dummy_Logical_Type2 | **-** ***fid***: dummy-physical-fid-001<br> ***name***: Dummy_Physical_Name1<br> ***objectType***: Dummy_Physical_Type1<br>**-** ***fid***: dummy-physical-fid-002<br> ***name***: Dummy_Physical_Name2<br> ***objectType***: Dummy_Physical_Type2 | 0 |
+
+### rubrik-threat-monitoring-matched-file-list
+
+***
+List the matched files for the Threat Monitoring object.
+
+#### Base Command
+
+`rubrik-threat-monitoring-matched-file-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_id | The object ID for the threat monitoring object.<br/><br/>Note: Users can retrieve the object ID by executing the "rubrik-threat-monitoring-matched-object-list" command. | Required |
+| file_name | Filter files by their name. Supports partial matches. | Optional |
+| limit | Number of results to retrieve in the response. The maximum allowed size is 1000. Default is 50. | Optional |
+| next_page_token | The next page cursor to retrieve the next set of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.ThreatMonitoringFile.filepath | String | The full path of the matched file. |
+| RubrikPolaris.ThreatMonitoringFile.detectedTime | Date | The timestamp when the file was detected. |
+| RubrikPolaris.ThreatMonitoringFile.fileName | String | The name of the matched file. |
+| RubrikPolaris.ThreatMonitoringFile.fileSize | Number | The size of the matched file in bytes. |
+| RubrikPolaris.ThreatMonitoringFile.matchedSnapshotDate | Date | The date of the snapshot where the match occurred. |
+| RubrikPolaris.ThreatMonitoringFile.matchedSnapshotFid | String | The FID of the snapshot where the match occurred. |
+| RubrikPolaris.ThreatMonitoringFile.isMatchedSnapshotExpired | Boolean | A flag indicating whether the matched snapshot has expired. |
+| RubrikPolaris.ThreatMonitoringFile.isFirstObservedSnapshotExpired | Boolean | A flag indicating whether the first observed snapshot has expired. |
+| RubrikPolaris.ThreatMonitoringFile.matchType | String | The type of indicator match. |
+| RubrikPolaris.ThreatMonitoringFile.isQuarantinedInFirstObservedSnapshot | Boolean | A flag indicating whether the file is quarantined in the first observed snapshot. |
+| RubrikPolaris.ThreatMonitoringFile.objectFid | String | The FID of the associated object. |
+| RubrikPolaris.ThreatMonitoringFile.firstObservedSnapshotFid | String | The FID of the first observed snapshot. |
+| RubrikPolaris.ThreatMonitoringFile.firstObservedSnapshotDate | Date | The date of the first observed snapshot. |
+| RubrikPolaris.ThreatMonitoringFile.objectType | String | The type of the associated object. |
+| RubrikPolaris.ThreatMonitoringFile.objectName | String | The name of the associated object. |
+| RubrikPolaris.ThreatMonitoringFile.matchId | Number | The ID of the match event. |
+| RubrikPolaris.ThreatMonitoringFile.__typename | String | The GraphQL typename of the file match object. |
+| RubrikPolaris.PageToken.ThreatMonitoringFile.endCursor | String | The end cursor of the threat monitoring file data. |
+| RubrikPolaris.PageToken.ThreatMonitoringFile.hasNextPage | Boolean | A flag indicating if there is a next page of threat monitoring file data. |
+| RubrikPolaris.PageToken.ThreatMonitoringFile.hasPreviousPage | Boolean | A flag indicating if there is a previous page of threat monitoring file data. |
+| RubrikPolaris.PageToken.ThreatMonitoringFile.name | String | The name of the threat monitoring file data. |
+| RubrikPolaris.PageToken.ThreatMonitoringFile.total_matched_count | Number | The total number of matched files. |
+| RubrikPolaris.PageToken.ThreatMonitoringFile.startCursor | String | The start cursor of the threat monitoring file data. |
+
+#### Command example
+
+```!rubrik-threat-monitoring-matched-file-list object_id="dummy-object-id"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "ThreatMonitoringFile": [
+            {
+                "filepath": "/dummy/path/file1.txt",
+                "detectedTime": "2025-01-01T00:00:00.000Z",
+                "fileName": "file1.txt",
+                "fileSize": 1234,
+                "matchedSnapshotDate": "2025-01-02T00:00:00.000Z",
+                "matchedSnapshotFid": "dummy-snapshot-fid-1",
+                "isMatchedSnapshotExpired": false,
+                "isFirstObservedSnapshotExpired": false,
+                "matchType": "DUMMY_TYPE",
+                "isQuarantinedInFirstObservedSnapshot": true,
+                "objectFid": "dummy-object-id",
+                "firstObservedSnapshotFid": "dummy-first-snapshot-fid-1",
+                "firstObservedSnapshotDate": "2025-01-02T00:00:00.000Z",
+                "objectType": "DummyObjectType",
+                "objectName": "dummy-object-name-1",
+                "matchId": 1111,
+                "__typename": "FileMatch"
+            },
+            {
+                "filepath": "/dummy/path/file2.txt",
+                "detectedTime": "2025-01-03T00:00:00.000Z",
+                "fileName": "file2.txt",
+                "fileSize": 5678,
+                "matchedSnapshotDate": "2025-01-04T00:00:00.000Z",
+                "matchedSnapshotFid": "dummy-snapshot-fid-2",
+                "isMatchedSnapshotExpired": true,
+                "isFirstObservedSnapshotExpired": true,
+                "matchType": "DUMMY_TYPE",
+                "isQuarantinedInFirstObservedSnapshot": false,
+                "objectFid": "dummy-object-id",
+                "firstObservedSnapshotFid": "dummy-first-snapshot-fid-2",
+                "firstObservedSnapshotDate": "2025-01-04T00:00:00.000Z",
+                "objectType": "DummyObjectType",
+                "objectName": "dummy-object-name-2",
+                "matchId": 2222,
+                "__typename": "FileMatch"
+            }
+        ],
+        "PageToken": {
+            "ThreatMonitoringFile": {
+                "startCursor": "dummy-start-cursor",
+                "endCursor": "dummy-end-cursor",
+                "hasNextPage": true,
+                "hasPreviousPage": false,
+                "name": "rubrik-threat-monitoring-matched-file-list",
+                "total_matched_count": 99
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Threat Monitoring File List
+>
+>|File Name|File Path|File Size|Matched Snapshot ID|Matched Snapshot Date|Matched Snapshot Expired|
+>|---|---|---|---|---|---|
+>| file1.txt | /dummy/path/file1.txt | 1234 | dummy-snapshot-fid-1 | 2025-01-02T00:00:00.000Z | false |
+>| file2.txt | /dummy/path/file2.txt | 5678 | dummy-snapshot-fid-2 | 2025-01-04T00:00:00.000Z | true |
+>
+>Note: To retrieve the next set of results use, "next_page_token" = dummy-end-cursor
+
+### rubrik-threat-monitoring-matched-file-get
+
+***
+Get the matched file for the Threat Monitoring object.
+
+#### Base Command
+
+`rubrik-threat-monitoring-matched-file-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| matched_snapshot_id | ID of the snapshot where the threat monitoring match was found.<br/><br/>Note: Users can retrieve the matched snapshot ID by executing the "rubrik-threat-monitoring-matched-file-list" command. | Required |
+| file_path | Path of the file.<br/><br/>Note: Users can retrieve the file path by executing the "rubrik-threat-monitoring-matched-file-list" command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.ThreatMonitoringFile.matchedFileMd5 | String | The MD5 hash of the matched file. |
+| RubrikPolaris.ThreatMonitoringFile.matchedFileSha1 | String | The SHA1 hash of the matched file. |
+| RubrikPolaris.ThreatMonitoringFile.matchedFileSha256 | String | The SHA256 hash of the matched file. |
+| RubrikPolaris.ThreatMonitoringFile.iocDetails.matchType | String | The type of IOC match. |
+| RubrikPolaris.ThreatMonitoringFile.iocDetails.intelFeedName | String | The name of the intelligence feed that provided the IOC. |
+| RubrikPolaris.ThreatMonitoringFile.iocDetails.malwareName | String | The name of the malware associated with the IOC. |
+| RubrikPolaris.ThreatMonitoringFile.iocDetails.iocRuleAuthor | String | The author of the IOC rule. |
+| RubrikPolaris.ThreatMonitoringFile.iocDetails.malwareDescription | String | The description of the malware associated with the IOC. |
+| RubrikPolaris.ThreatMonitoringFile.iocDetails.iocHashHex | String | The hash value of the IOC in hexadecimal format. |
+| RubrikPolaris.ThreatMonitoringFile.iocDetails.iocStatus | String | The status of the IOC. |
+| RubrikPolaris.ThreatMonitoringFile.iocDetails.__typename | String | The GraphQL typename of the IOC details. |
+| RubrikPolaris.ThreatMonitoringFile.isQuarantinedInFirstObservedSnapshot | Boolean | A flag indicating whether the file was quarantined in the first observed snapshot. |
+| RubrikPolaris.ThreatMonitoringFile.detectedSnapshotDate | String | The date when the file was detected in the snapshot. |
+| RubrikPolaris.ThreatMonitoringFile.firstDetectedSnapshotFid | String | The ID of the first snapshot where the file was detected. |
+| RubrikPolaris.ThreatMonitoringFile.filePath | String | The full path of the file. |
+| RubrikPolaris.ThreatMonitoringFile.fileName | String | The name of the file. |
+| RubrikPolaris.ThreatMonitoringFile.__typename | String | The GraphQL typename of the threat monitoring file. |
+
+#### Command example
+
+```!rubrik-threat-monitoring-matched-file-get matched_snapshot_id="test-id" file_path="/dummy/path/file1.txt"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "ThreatMonitoringFile": {
+            "matchedFileMd5": "00000000000000001",
+            "matchedFileSha1": "0000000000000000000000001",
+            "matchedFileSha256": "0000000000000000000000000000000000000000000000000000000000001",
+            "iocDetails": [
+                {
+                    "matchType": "IOC_HASH",
+                    "intelFeedName": "Dummy_Feed",
+                    "malwareName": "Dummy_Malware",
+                    "iocRuleAuthor": "Dummy_Author",
+                    "malwareDescription": "Dummy description for testing purposes",
+                    "iocHashHex": "00000000000000001",
+                    "iocStatus": "ACTIVE",
+                    "__typename": "IOCDetails"
+                }
+            ],
+            "isQuarantinedInFirstObservedSnapshot": false,
+            "detectedSnapshotDate": "2025-01-01T00:00:00.000Z",
+            "firstDetectedSnapshotFid": "00000000-0000-0000-0000-000000000001",
+            "filePath": "/dummy/path/file1.txt",
+            "fileName": "dummyfile.com",
+            "__typename": "ThreatMonitoringFileMatchDetailsV2"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Threat Monitoring File Details
+>
+>|File Name|File Path|File Hashes|IOC Details|First Detected Snapshot FID|Detected Snapshot Date|Quarantined In First Observed Snapshot|
+>|---|---|---|---|---|---|---|
+>| dummyfile.com | /dummy/path/file1.txt | ***MD5***: 00000000000000001<br>***SHA1***: 0000000000000000000000001<br>***SHA256***: 0000000000000000000000000000000000000000000000000000000000001 | **-** ***matchType***: IOC_HASH<br> ***intelFeedName***: Dummy_Feed<br> ***malwareName***: Dummy_Malware<br> ***iocRuleAuthor***: Dummy_Author<br> ***malwareDescription***: Dummy description for testing purposes<br> ***iocHashHex***: 00000000000000001<br> ***iocStatus***: ACTIVE | 00000000-0000-0000-0000-000000000001 | 2025-01-01T00:00:00.000Z | false |
+
+### rubrik-ioc-scan-list-v2
+
+***
+List details of the Turbo and Advance Threat Hunt.
+
+#### Base Command
+
+`rubrik-ioc-scan-list-v2`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cluster_id | The ID of the cluster whose IOC scans are to be listed. Supports comma separated values.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Optional |
+| ioc_match | Filter hunts on any matches.<br/><br/>Possible values are: MATCHES_FOUND, NO_MATCHES, UNSCANNED. | Optional |
+| hunt_status | Filter by hunt status.<br/><br/>Possible values are: ABORTED, CANCELED, CANCELING, FAILED, IN_PROGRESS, PARTIALLY_SUCCEEDED, PENDING, SUCCEEDED. | Optional |
+| quarantine_status | Filter by quarantine matches.<br/><br/>Possible values are: QUARANTINED_MATCHES, NO_QUARANTINED_MATCHES. | Optional |
+| start_time | Filter the threat hunts that started after this time.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z. Default is 7 days. | Optional |
+| end_time | Filter the threat hunts that ended before this time.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z. | Optional |
+| limit | Number of results to retrieve in the response. The maximum allowed size is 1000. Default is 50. | Optional |
+| next_page_token | The next page cursor to retrieve the next set of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.IOCScan.huntId | string | The unique identifier for the threat hunt. |
+| RubrikPolaris.IOCScan.name | string | The name of the threat hunt. |
+| RubrikPolaris.IOCScan.createdBy.id | string | The ID of the user who initiated the hunt. |
+| RubrikPolaris.IOCScan.createdBy.username | string | The username of the user who initiated the hunt. |
+| RubrikPolaris.IOCScan.createdBy.email | string | The email of the user who initiated the hunt. |
+| RubrikPolaris.IOCScan.createdBy.__typename | string | The GraphQL typename of the user object. |
+| RubrikPolaris.IOCScan.huntType | string | The type of the threat hunt. |
+| RubrikPolaris.IOCScan.startTime | date | The start time of the threat hunt. |
+| RubrikPolaris.IOCScan.status | string | The current status of the threat hunt. |
+| RubrikPolaris.IOCScan.stats.totalProcessedSnapshots | number | The total number of processed snapshots. |
+| RubrikPolaris.IOCScan.stats.totalAffectedObjects | number | The total number of affected objects. |
+| RubrikPolaris.IOCScan.stats.totalAffectedSnapshots | number | The total number of affected snapshots. |
+| RubrikPolaris.IOCScan.stats.totalUniqueMatchedPaths | number | The total number of unique matched file paths. |
+| RubrikPolaris.IOCScan.stats.totalSucceededScans | number | The total number of successful scans. |
+| RubrikPolaris.IOCScan.stats.totalSnapshotsScanned | number | The total number of snapshots scanned. |
+| RubrikPolaris.IOCScan.stats.totalUniqueQuarantinedPaths | number | The total number of unique quarantined file paths. |
+| RubrikPolaris.IOCScan.stats.totalObjectsScanned | number | The total number of objects scanned. |
+| RubrikPolaris.IOCScan.stats.totalIocs | number | The total number of IOCs used in the scan. |
+| RubrikPolaris.IOCScan.stats.__typename | string | The GraphQL typename of the stats object. |
+| RubrikPolaris.IOCScan.huntDetails.startTime | date | The start time of the detailed threat hunt process. |
+| RubrikPolaris.IOCScan.huntDetails.endTime | date | The end time of the detailed threat hunt process. |
+| RubrikPolaris.IOCScan.huntDetails.cluster.id | string | The ID of the cluster used in the hunt. |
+| RubrikPolaris.IOCScan.huntDetails.cluster.name | string | The name of the cluster used in the hunt. |
+| RubrikPolaris.IOCScan.huntDetails.cluster.__typename | string | The GraphQL typename of the cluster object. |
+| RubrikPolaris.IOCScan.huntDetails.config.name | string | The name of the configuration used in the hunt. |
+| RubrikPolaris.IOCScan.huntDetails.config.indicatorsOfCompromise | unknown | The list of indicators of compromise. |
+| RubrikPolaris.IOCScan.huntDetails.config.__typename | string | The GraphQL typename of the hunt config object. |
+| RubrikPolaris.IOCScan.huntDetails.__typename | string | The GraphQL typename of the hunt details object. |
+| RubrikPolaris.IOCScan.__typename | string | The GraphQL typename of the top-level threat hunt object. |
+| RubrikPolaris.PageToken.IOCScan.endCursor | string | The end cursor of the IOC scan data. |
+| RubrikPolaris.PageToken.IOCScan.hasNextPage | boolean | A flag indicating if there is a next page of IOC scan data. |
+| RubrikPolaris.PageToken.IOCScan.hasPreviousPage | boolean | A flag indicating if there is a previous page of IOC scan data. |
+| RubrikPolaris.PageToken.IOCScan.name | string | The name of the IOC scan data. |
+| RubrikPolaris.PageToken.IOCScan.startCursor | string | The start cursor of the IOC scan data. |
+| RubrikPolaris.PageToken.IOCScan.total_matched_count | number | The total number of matched IOC scans. |
+
+#### Command example
+
+```!rubrik-ioc-scan-list-v2 limit=1```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "IOCScan": [
+            {
+                "huntId": "dummy-hunt-id-0001",
+                "name": "Dummy Threat Hunt",
+                "createdBy": {
+                    "id": "client|dummy-user-id",
+                    "username": "dummyuser",
+                    "email": "dummyuser@example.com",
+                    "__typename": "User"
+                },
+                "huntType": "THREAT_HUNT_V2",
+                "startTime": "2025-07-01T00:00:00.000Z",
+                "status": "SUCCEEDED",
+                "stats": {
+                    "totalProcessedSnapshots": 10,
+                    "totalAffectedObjects": 2,
+                    "totalAffectedSnapshots": 1,
+                    "totalUniqueMatchedPaths": 3,
+                    "totalSucceededScans": 10,
+                    "totalSnapshotsScanned": 12,
+                    "totalUniqueQuarantinedPaths": 1,
+                    "totalObjectsScanned": 20,
+                    "totalIocs": 5,
+                    "__typename": "ThreatHuntStats"
+                },
+                "huntDetails": {
+                    "startTime": "2025-07-01T00:00:00.000Z",
+                    "endTime": "2025-07-01T01:00:00.000Z",
+                    "cluster": {
+                        "id": "dummy-cluster-id",
+                        "name": "Dummy Cluster",
+                        "__typename": "Cluster"
+                    },
+                    "config": {
+                        "name": "Dummy Hunt Config",
+                        "indicatorsOfCompromise": [],
+                        "__typename": "ThreatHuntConfig"
+                    },
+                    "__typename": "ThreatHuntDetails"
+                },
+                "__typename": "ThreatHunt"
+            }
+        ],
+        "PageToken": {
+            "IOCScan": {
+                "endCursor": "dummy-end-cursor",
+                "hasNextPage": true,
+                "hasPreviousPage": false,
+                "startCursor": "dummy-start-cursor",
+                "name": "rubrik-ioc-scan-list-v2",
+                "total_matched_count": 2
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IOC Scan List
+>
+>|Hunt ID|Hunt Type|Status|Start Time|
+>|---|---|---|---|
+>| dummy-hunt-id-0001 | THREAT_HUNT_V2 | SUCCEEDED | 2025-07-01T00:00:00.000Z |
+>
+>Note: To retrieve the next set of results use, "next_page_token" = dummy-end-cursor
+
+### rubrik-ioc-scan-results-v2
+
+***
+Retrieve details of the Turbo and Advance Threat Hunt.
+
+#### Base Command
+
+`rubrik-ioc-scan-results-v2`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hunt_id | The ID of the threat hunt.<br/><br/>Note: Users can retrieve the hunt ID by executing the "rubrik-ioc-scan-list-v2" command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.IOCScan.hunt_id | string | The ID of the threat hunt. |
+| RubrikPolaris.IOCScan.totalObjectFids | number | The total number of object FIDs involved in the threat hunt. |
+| RubrikPolaris.IOCScan.startTime | date | The start time of the threat hunt. |
+| RubrikPolaris.IOCScan.endTime | date | The end time of the threat hunt. |
+| RubrikPolaris.IOCScan.status | string | The current status of the threat hunt. |
+| RubrikPolaris.IOCScan.totalMatchedSnapshots | number | The total number of matched snapshots. |
+| RubrikPolaris.IOCScan.totalScannedSnapshots | number | The total number of scanned snapshots. |
+| RubrikPolaris.IOCScan.totalUniqueFileMatches | number | The total number of unique file matches. |
+| RubrikPolaris.IOCScan.clusters.id | string | The ID of the cluster. |
+| RubrikPolaris.IOCScan.clusters.name | string | The name of the cluster. |
+| RubrikPolaris.IOCScan.clusters.type | string | The type of the cluster. |
+| RubrikPolaris.IOCScan.clusters.__typename | string | The GraphQL typename of the cluster object. |
+| RubrikPolaris.IOCScan.baseConfig.name | string | The name of the base configuration used in the threat hunt. |
+| RubrikPolaris.IOCScan.baseConfig.notes | string | The notes added to the hunt configuration. |
+| RubrikPolaris.IOCScan.baseConfig.maxMatchesPerSnapshot | number | The maximum number of matches allowed per snapshot. |
+| RubrikPolaris.IOCScan.baseConfig.threatHuntType | string | The type of the threat hunt. |
+| RubrikPolaris.IOCScan.baseConfig.__typename | string | The GraphQL typename of the base configuration object. |
+| RubrikPolaris.IOCScan.baseConfig.ioc.__typename | string | The GraphQL typename of the IOC object. |
+| RubrikPolaris.IOCScan.baseConfig.ioc.iocList.__typename | string | The GraphQL typename of the IOC list container. |
+| RubrikPolaris.IOCScan.baseConfig.ioc.iocList.indicatorsOfCompromise.iocKind | string | The type of IOC. |
+| RubrikPolaris.IOCScan.baseConfig.ioc.iocList.indicatorsOfCompromise.iocValue | string | The value of the IOC indicator. |
+| RubrikPolaris.IOCScan.baseConfig.ioc.iocList.indicatorsOfCompromise.__typename | string | The GraphQL typename of the IOC indicator. |
+| RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.__typename | string | The GraphQL typename of the snapshot scan limit object. |
+| RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.scanLimit.__typename | string | The GraphQL typename of the scan limit configuration. |
+| RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.scanLimit.scanConfig.maxSnapshotsPerObject | number | The maximum snapshots to scan per object. |
+| RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.scanLimit.scanConfig.startTime | date | The start time for the snapshot scan window. |
+| RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.scanLimit.scanConfig.endTime | date | The end time for the snapshot scan window. |
+| RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.scanLimit.scanConfig.__typename | string | The GraphQL typename of the scan limit configuration. |
+| RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.scanLimit.objectSnapshotConfig | string | An object snapshot configuration. |
+| RubrikPolaris.IOCScan.baseConfig.fileScanCriteria | string | A file scan criteria. |
+| RubrikPolaris.IOCScan.threatHuntObjectMetrics.totalObjectsScanned | number | The total number of objects scanned during the hunt. |
+| RubrikPolaris.IOCScan.threatHuntObjectMetrics.totalAffectedObjects | number | The total number of affected objects. |
+| RubrikPolaris.IOCScan.threatHuntObjectMetrics.totalUnaffectedObjects | number | The total number of unaffected objects. |
+| RubrikPolaris.IOCScan.threatHuntObjectMetrics.totalObjectsUnscannable | number | The total number of objects that couldn't be scanned. |
+| RubrikPolaris.IOCScan.threatHuntObjectMetrics.unaffectedObjectsFromDb | number | The number of clean objects retrieved from the database. |
+| RubrikPolaris.IOCScan.threatHuntObjectMetrics.cleanRecoverableObjectLimit | number | The maximum number of clean recoverable objects allowed. |
+| RubrikPolaris.IOCScan.threatHuntObjectMetrics.__typename | string | The GraphQL typename of the object metrics reply. |
+| RubrikPolaris.IOCScan.__typename | string | The GraphQL typename of the root hunt details object. |
+
+#### Command example
+
+```!rubrik-ioc-scan-results-v2 hunt_id="test-hunt-id"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "IOCScan": {
+            "hunt_id": "test-hunt-id",
+            "totalObjectFids": 100,
+            "startTime": "2025-01-01T08:00:00.000Z",
+            "endTime": "2025-01-01T09:00:00.000Z",
+            "status": "SUCCEEDED",
+            "totalMatchedSnapshots": 10,
+            "totalScannedSnapshots": 200,
+            "totalUniqueFileMatches": 3,
+            "clusters": [
+                {
+                    "id": "dummy-cluster-id-123",
+                    "name": "Dummy_Cluster",
+                    "type": "DummyType",
+                    "__typename": "Cluster"
+                }
+            ],
+            "baseConfig": {
+                "name": "Dummy Threat Hunt Config",
+                "notes": "Dummy note here.",
+                "maxMatchesPerSnapshot": 0,
+                "threatHuntType": "TURBO_THREAT_HUNT",
+                "ioc": {
+                    "iocList": {
+                        "indicatorsOfCompromise": [
+                            {
+                                "iocKind": "IOC_HASH",
+                                "iocValue": "dummyhashvalue0000000000000000000001",
+                                "__typename": "IndicatorOfCompromise"
+                            },
+                            {
+                                "iocKind": "IOC_HASH",
+                                "iocValue": "dummyhashvalue0000000000000000000002",
+                                "__typename": "IndicatorOfCompromise"
+                            }
+                        ],
+                        "__typename": "IndicatorOfCompromiseInputOutputListType"
+                    },
+                    "__typename": "Ioc"
+                },
+                "snapshotScanLimit": {
+                    "scanLimit": {
+                        "scanConfig": {
+                            "maxSnapshotsPerObject": 5,
+                            "startTime": "2025-01-01T00:00:00.000Z",
+                            "endTime": "2025-01-10T00:00:00.000Z",
+                            "__typename": "SnapshotScanConfig"
+                        },
+                        "__typename": "ScanLimit"
+                    },
+                    "__typename": "HuntScanSnapshotLimit"
+                },
+                "__typename": "ThreatHuntBaseConfig"
+            },
+            "__typename": "ThreatHuntDetailsV2",
+            "threatHuntObjectMetrics": {
+                "totalObjectsScanned": 100,
+                "totalAffectedObjects": 5,
+                "totalUnaffectedObjects": 95,
+                "totalObjectsUnscannable": 0,
+                "unaffectedObjectsFromDb": 95,
+                "cleanRecoverableObjectLimit": 999,
+                "__typename": "ThreatHuntObjectMetricsReply"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IOC Scan Data
+>
+>|Hunt Name|Hunt Type|Status|IOC Details|Object Metrics|Scan Metrics|Start Time|End Time|
+>|---|---|---|---|---|---|---|---|
+>| Dummy Threat Hunt Config | TURBO_THREAT_HUNT | SUCCEEDED | **-** ***iocKind***: IOC_HASH<br> ***iocValue***: dummyhashvalue0000000000000000000001<br>**-** ***iocKind***: IOC_HASH<br> ***iocValue***: dummyhashvalue0000000000000000000002 | ***totalObjectsScanned***: 100<br>***totalAffectedObjects***: 5<br>***totalUnaffectedObjects***: 95<br>***totalObjectsUnscannable***: 0<br>***unaffectedObjectsFromDb***: 95<br>***cleanRecoverableObjectLimit***: 999 | ***totalMatchedSnapshots***: 10<br>***totalScannedSnapshots***: 200<br>***totalUniqueFileMatches***: 3 | 2025-01-01T08:00:00.000Z | 2025-01-01T09:00:00.000Z |
+
+### rubrik-turbo-ioc-scan
+
+***
+Start a new turbo threat hunt.
+
+#### Base Command
+
+`rubrik-turbo-ioc-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ioc | The value of the indicator to scan for. Supports comma separated values.<br/><br/>Note: Users can retrieve the Md5, SHA1 or SHA256 by executing the "rubrik-threat-monitoring-matched-file-get" command. | Required |
+| scan_name | Name of the new turbo threat hunt scan. Default is PAXSOAR-1.6.0. | Optional |
+| cluster_id | The ID of the cluster on which to perform a scan. If not provided, all the clusters will be scanned.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Optional |
+| start_time | Filter the snapshots from the provided date. Any snapshots taken before the provided date-time will be excluded.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.<br/><br/>For example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z. | Optional |
+| end_time | Filter the snapshots until the provided date. Any snapshots taken after the provided date-time will be excluded.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.<br/><br/>For example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z. | Optional |
+| max_snapshots_per_object | Maximum number of snapshots to scan per object. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.TurboIOCScan.huntId | String | The ID of the new turbo threat hunt. |
+| RubrikPolaris.TurboIOCScan.__typename | String | The type of the new turbo threat hunt. |
+
+#### Command example
+
+```!rubrik-turbo-ioc-scan ioc="00000000000000000001"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "TurboIOCScan": {
+            "huntId": "000000000-0000-0000-0000-000000001",
+            "__typename": "StartTurboThreatHuntReply"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>#### The new Turbo Threat Hunt started with ID: 000000000-0000-0000-0000-000000001
+
+### rubrik-advance-ioc-scan
+
+***
+Start a new advance threat hunt.
+
+#### Base Command
+
+`rubrik-advance-ioc-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_id | The Object ID of the system on which to perform the scan. Supports comma separated values.<br/><br/>Note: Users can get the list of object IDs by executing the "rubrik-polaris-object-list" command. | Required |
+| ioc_type | The type of the indicator to scan.<br/><br/>Note: To provide multiple IOCs use the argument "advance_ioc". Possible values are: INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME, INDICATOR_OF_COMPROMISE_TYPE_HASH, INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE. | Optional |
+| ioc_value | The value of the indicator to scan.<br/><br/>Note: To provide multiple IOCs use the argument "advance_ioc". | Optional |
+| scan_name | Name of the new advanced threat hunt scan. Default is PAXSOAR-1.6.0. | Optional |
+| advance_ioc | Json encoded Indicators Of Compromise to scan. Json keys signify the type of IOC and the corresponding list of values are the values of the IOC's. If provided, will ignore the ioc_type and ioc_value arguments.<br/><br/>Possible keys to indicate type of indicator: <br/>INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME, INDICATOR_OF_COMPROMISE_TYPE_HASH, INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE<br/><br/>Format Accepted:<br/>{<br/>"&lt;ioc_type1&gt;": ["&lt;ioc_value1&gt;", "&lt;ioc_value2&gt;"],<br/>"&lt;ioc_type2&gt;": "&lt;ioc_value3&gt;"<br/>}<br/><br/>Example:<br/>{<br/>"INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME": ["C:\\\\Users\\\\Malware_Executible.ps1", "\\\\bin\\\\Malware_Executible"],<br/>"INDICATOR_OF_COMPROMISE_TYPE_HASH": ["e5c1b9c44be582f895eaea3d3738c5b4", "f541b9844be897f895eaea3d3738cfb2"],<br/>"INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE": "rule match_everything {condition:true}"<br/>}. | Optional |
+| max_matches_per_snapshot | Maximum number of IOC matches allowed per snapshot. | Optional |
+| start_date | Filter the snapshots from the provided date. Any snapshots taken before the provided date-time will be excluded.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.<br/><br/>For example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z. | Optional |
+| end_date | Filter the snapshots until the provided date. Any snapshots taken after the provided date-time will be excluded.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.<br/><br/>For example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z. | Optional |
+| max_snapshots_per_object | Maximum number of snapshots to scan per object. | Optional |
+| min_file_size | Minimum size of the file in bytes that will be included in the scan. | Optional |
+| max_file_size | Maximum size of the file in bytes that will be included in the scan. | Optional |
+| paths_to_include | Paths to include in the scan. Supports comma separated values.<br/><br/>Format accepted: "path_to_include_1, path_to_include_2". | Optional |
+| paths_to_exclude | Paths to exclude from the scan. Supports comma separated values.<br/><br/>Format accepted: "path_to_exclude_1, path_to_exclude_2". | Optional |
+| paths_to_exempt | Paths to exempt from exclusion. Supports comma separated values.<br/><br/>Format accepted: "path_to_exempt_1, path_to_exempt_2". | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.AdvanceIOCScan.huntId | string | The ID of the new advance threat hunt. |
+| RubrikPolaris.AdvanceIOCScan.huntName | string | The name or label of the advanced threat hunt. |
+| RubrikPolaris.AdvanceIOCScan.config.huntType | string | The type of threat hunt configuration. |
+| RubrikPolaris.AdvanceIOCScan.config.clusterUuids | unknown | The list of cluster UUIDs included in the hunt config. |
+| RubrikPolaris.AdvanceIOCScan.config.objectFids | unknown | The list of object FIDs targeted by the hunt. |
+| RubrikPolaris.AdvanceIOCScan.config.__typename | string | The GraphQL typename for the HuntConfig object. |
+| RubrikPolaris.AdvanceIOCScan.status | string | The status of the threat hunt execution. |
+| RubrikPolaris.AdvanceIOCScan.__typename | string | The GraphQL typename for the HuntResponse object. |
+
+#### Command example
+
+```!rubrik-advance-ioc-scan object_id="obj-123" ioc_type="INDICATOR_OF_COMPROMISE_TYPE_HASH" ioc_value="test-ioc-value"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "AdvanceIOCScan": {
+            "huntId": "hunt-abc",
+            "huntName": "Test Hunt",
+            "config": {
+                "huntType": "THREAT_HUNT_V2",
+                "clusterUuids": ["cluster-1"],
+                "objectFids": ["obj-123"],
+                "__typename": "HuntConfig"
+            },
+            "status": "HUNT_TRIGGER_SUCCEEDED",
+            "__typename": "HuntResponse"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+> #### The new advance Threat Hunt started with ID: hunt-abc

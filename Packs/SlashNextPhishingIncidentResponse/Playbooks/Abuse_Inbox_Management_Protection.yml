@@ -1,9 +1,8 @@
 id: Abuse Inbox Management Protection
 version: -1
 name: Abuse Inbox Management Protection
-description: Analyzes the URLs, domains, and IPs in suspicious emails, reported by end users, 
-  and returns a binary verdict (malicious or benign) and forensic information including 
-  screenshot of attack page, threat name and type, threat status, and first/last seen date
+deprecated: true
+description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":

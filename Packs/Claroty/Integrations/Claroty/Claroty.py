@@ -5,15 +5,11 @@ from CommonServerUserPython import *
 
 """ IMPORTS """
 import json
-from distutils.util import strtobool
+
 from typing import Any
 
 import dateparser
 import requests
-import urllib3
-
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 
 class Filter:
@@ -258,7 +254,7 @@ def get_assets_command(client: Client, args: dict) -> tuple:
 
     result = client.get_assets(relevant_fields, sort_by, filters, limit)
 
-    should_enrich_assets = strtobool(args.get("should_enrich_assets", "False"))
+    should_enrich_assets = argToBoolean(args.get("should_enrich_assets", "False"))
     if should_enrich_assets:
         result = client.enrich_asset_results(result)
         relevant_fields.append("insights")
@@ -336,7 +332,7 @@ def query_alerts_command(client: Client, args: dict) -> tuple:
     if alert_severity:
         filters.append(Filter("severity", get_severity_filter(alert_severity), "gte"))
 
-    if strtobool(args.get("exclude_resolved_alerts", "False")):
+    if argToBoolean(args.get("exclude_resolved_alerts", "False")):
         filters = _add_exclude_resolved_alerts_filters(filters)
 
     site_id = demisto.params().get("site_id", None)

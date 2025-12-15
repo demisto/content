@@ -1,4 +1,4 @@
-Unified gateway to security insights - all from a unified Microsoft Graph User API.
+The Entra ID Users integration (formerly Azure Active Directory Users) is a Unified gateway to security insights - all from a unified Microsoft Graph User API.
 
 ## Authentication
 
@@ -10,7 +10,7 @@ Required Permissions:
 - User.ReadWrite.All - Application
 - User.Read - Delegated
 
-## Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)
+## Authorize Cortex XSOAR for Entra ID Users (Self deployed Azure App)
 
 There are two different authentication methods for a self-deployed configuration:
 
@@ -22,7 +22,7 @@ In order to use the msgraph-user-change-password command, you must configure wit
 
 Note: When using the Authorization Code flow, make sure the user you authenticate with has the correct roles in Azure AD in order to use the command.
 
-## Configure Azure Active Directory Users in Cortex
+## Configure Entra ID Users in Cortex
 
 | **Parameter**                                                          | **Description**                                                                                                                                                                                                                                                                                                                                        | **Required** |
 |------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
@@ -62,9 +62,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### msgraph-user-account-disable
 
 ***
-Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables the user
 but does not terminate an existing session. Supported only in a self deployed app flow with the
-Permission: Directory.AccessAsUser.All(Delegated)
+Permission: Directory.AccessAsUser.All(Delegated).
 
 #### Base Command
 
@@ -75,6 +75,10 @@ Permission: Directory.AccessAsUser.All(Delegated)
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user | User ID or userPrincipalName. | Required |
+
+#### Context Output
+
+There is no context output for this command.
 
 ### msgraph-user-unblock
 
@@ -94,6 +98,7 @@ Unblock a user.
 #### Command example
 
 ```!msgraph-user-unblock user=123456-abcd-7890-erty-987qwe987```
+
 #### Human Readable Output
 
 >"123456-abcd-7890-erty-987qwe987" unblocked. It might take several minutes for the changes to take affect across all applications.
@@ -102,7 +107,8 @@ Unblock a user.
 
 ***
 Updates the properties of a user object.
-Permissions: - User.ReadWrite (Delegated & Application)
+**Permissions**: - User.ReadWrite (Delegated & Application)
+**Permission For unblocking an admin/privileged user**: User.EnableDisableAccount.All (Application).
 
 #### Base Command
 
@@ -135,6 +141,7 @@ Permissions: - User.ReadWrite (Delegated & Application)
 #### Command example
 
 ```!msgraph-user-update user=123456-abcd-7890-erty-987qwe987 updated_fields="MobilePhone=050123456"```
+
 #### Context Example
 
 ```json
@@ -179,7 +186,7 @@ Permissions: - User.ReadWrite (Delegated & Application)
 
 ***
 Deletes an existing user.
-Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application)
+**Permissions**: Directory.AccessAsUser.All (Delegated), User.ReadWrite.All (Application)
 
 #### Base Command
 
@@ -195,7 +202,7 @@ Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Appl
 
 ***
 Creates a new user.
-Permissions: - User.ReadWrite.All (Delegated & Application)
+**Permissions**: User.ReadWrite.All (Delegated & Application)
 
 #### Base Command
 
@@ -241,7 +248,7 @@ Permissions: - User.ReadWrite.All (Delegated & Application)
 
 ***
 Retrieves the properties and relationships of a user object. For more information, visit: https://learn.microsoft.com/en-us/graph/api/user-get?view=graph-rest-1.0&tabs=http.
-Permissions: - User.Read (Delegated) - User.Read.All (Application).
+**Permissions**: User.Read (Delegated), User.Read.All (Application).
 
 #### Base Command
 
@@ -251,8 +258,8 @@ Permissions: - User.Read (Delegated) - User.Read.All (Application).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required | 
-| properties | A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone". For the list of possible properties and the relevant permissions, if needed, visit: https://learn.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties. | Optional | 
+| user | User ID or userPrincipalName. | Required |
+| properties | A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone". For the list of possible properties and the relevant permissions, if needed, visit: https://learn.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties. | Optional |
 
 #### Context Output
 
@@ -281,6 +288,7 @@ Permissions: - User.Read (Delegated) - User.Read.All (Application).
 #### Command example
 
 ```!msgraph-user-get user=123456-abcd-7890-erty-987qwe987```
+
 #### Context Example
 
 ```json
@@ -325,7 +333,7 @@ Permissions: - User.Read (Delegated) - User.Read.All (Application).
 
 ***
 Retrieves a list of user objects.
-Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
+**Permissions**: User.ReadBasic.All (Delegated), User.Read.All (Application)
 
 #### Base Command
 
@@ -487,6 +495,7 @@ Retrieves the direct reports for a user. Direct reports are the people who have 
 #### Command example
 
 ```!msgraph-direct-reports user=123456-abcd-7890-erty-987qwe987```
+
 #### Context Example
 
 ```json
@@ -556,6 +565,7 @@ Retrieves the properties from the manager of a user.
 #### Command example
 
 ```!msgraph-user-get-manager user=123456-abcd-7890-erty-987qwe987```
+
 #### Context Example
 
 ```json
@@ -611,6 +621,7 @@ There is no context output for this command.
 #### Command example
 
 ```!msgraph-user-assign-manager user=123456-abcd-7890-erty-987qwe987 manager=9627hp-sq12-b65m-4256h6h```
+
 #### Human Readable Output
 
 >A manager was assigned to user "123456-abcd-7890-erty-987qwe987". It might take several minutes for the changes to take effect across all applications.
@@ -658,8 +669,6 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->ok
-
 ### msgraph-user-session-revoke
 
 ***
@@ -679,6 +688,7 @@ Permission required: Directory.AccessAsUser.All (Delegated).
 
 #### Context Output
 
+There is no context output for this command.
 There is no context output for this command.
 
 ### msgraph-user-generate-login-url
@@ -705,6 +715,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. Click on the login URL to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -731,8 +742,8 @@ There is no context output for this command.
 ### msgraph-user-tap-policy-delete
 
 ***
-Deletes a specific TAP policy. 
-Permissions: - UserAuthenticationMethod.ReadWrite.All (Delegated) - UserAuthenticationMethod.ReadWrite.All (Application).
+Deletes a specific TAP policy.
+**Permissions**: UserAuthenticationMethod.ReadWrite.All (Delegated), UserAuthenticationMethod.ReadWrite.All (Application).
 
 #### Base Command
 
@@ -742,23 +753,24 @@ Permissions: - UserAuthenticationMethod.ReadWrite.All (Delegated) - UserAuthenti
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The Azure AD user ID. | Required | 
-| policy_id | Policy ID. | Required | 
+| user_id | The Azure AD user ID. | Required |
+| policy_id | Policy ID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command example
+
 ```!msgraph-user-tap-policy-delete policy_id=r4y67u4-69nh-h671-a4bj8922 user_id=123456-abcd-7890-erty-987qwe987"```
 
 ### msgraph-user-tap-policy-create
 
 ***
 Create a new TAP policy for a user.
-During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password. 
-A user can only have one Temporary Access Pass that's usable within its specified lifetime. 
-Permissions: - UserAuthenticationMethod.ReadWrite.All (Delegated) - UserAuthenticationMethod.ReadWrite.All (Application).
+During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password.
+A user can only have one Temporary Access Pass that's usable within its specified lifetime.
+**Permissions**: UserAuthenticationMethod.ReadWrite.All (Delegated), UserAuthenticationMethod.ReadWrite.All (Application).
 
 #### Base Command
 
@@ -768,25 +780,26 @@ Permissions: - UserAuthenticationMethod.ReadWrite.All (Delegated) - UserAuthenti
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The Azure AD user ID. | Required | 
-| zip_password | A password for the password-protected zip file that will include the password of the new TAP. | Required | 
-| lifetime_in_minutes | The duration of the TAP. Must be between 10 and 43200 (equivalent to 30 days). Default is 60. | Optional | 
-| is_usable_once | Determines if the pass is limited to a one-time use. If true, the pass can be used once; if false, the TAP can be used multiple times within its 'lifetime_in_minutes' setting. <br/>A multi-use Temporary Access Pass (isUsableOnce = false) can only be created and used for sign-in if it is allowed by the Temporary Access Pass authentication method policy.   . Possible values are: true, false. | Optional | 
-| start_time | The start time for the TAP (has to be a time in the future). Can be specified in ISO 8601 format - "YYYY-MM-DDThh:mm:ssZ",<br/>for example: "2025-03-26T00:00:00.000Z" or in a future relative time format, for example: "now", "in 2 days". Default is now. | Optional | 
+| user_id | The Azure AD user ID. | Required |
+| zip_password | A password for the password-protected zip file that will include the password of the new TAP. | Required |
+| lifetime_in_minutes | The duration of the TAP. Must be between 10 and 43200 (equivalent to 30 days). Default is 60. | Optional |
+| is_usable_once | Determines if the pass is limited to a one-time use. If true, the pass can be used once; if false, the TAP can be used multiple times within its 'lifetime_in_minutes' setting. <br/>A multi-use Temporary Access Pass (isUsableOnce = false) can only be created and used for sign-in if it is allowed by the Temporary Access Pass authentication method policy.   . Possible values are: true, false. | Optional |
+| start_time | The start time for the TAP (has to be a time in the future). Can be specified in ISO 8601 format - "YYYY-MM-DDThh:mm:ssZ",<br/>for example: "2025-03-26T00:00:00.000Z" or in a future relative time format, for example: "now", "in 2 days". Default is now. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphUser.TAPPolicy.ID | String | TAP policy's ID. | 
-| MSGraphUser.TAPPolicy.IsUsable | Bool | TAP policy's usability. | 
-| MSGraphUser.TAPPolicy.IsUsableOnce | Bool | TAP policy's once - usability. | 
-| MSGraphUser.TAPPolicy.CreatedDateTime | String | TAP policy's creation date and time. | 
-| MSGraphUser.TAPPolicy.MethodUsabilityReason | String | TAP policy's method usability reason. | 
-| MSGraphUser.TAPPolicy.LifetimeInMinutes | Int | TAP policy's lifetime in minutes. | 
-| MSGraphUser.TAPPolicy.StartDateTime | String | TAP policy's start date and time. | 
+| MSGraphUser.TAPPolicy.ID | String | TAP policy's ID. |
+| MSGraphUser.TAPPolicy.IsUsable | Bool | TAP policy's usability. |
+| MSGraphUser.TAPPolicy.IsUsableOnce | Bool | TAP policy's once - usability. |
+| MSGraphUser.TAPPolicy.CreatedDateTime | String | TAP policy's creation date and time. |
+| MSGraphUser.TAPPolicy.MethodUsabilityReason | String | TAP policy's method usability reason. |
+| MSGraphUser.TAPPolicy.LifetimeInMinutes | Int | TAP policy's lifetime in minutes. |
+| MSGraphUser.TAPPolicy.StartDateTime | String | TAP policy's start date and time. |
 
 #### Command example
+
 ```!msgraph-user-tap-policy-create user_id=123456-abcd-7890-erty-987qwe987 zip_password=123```
 
 ### msgraph-user-tap-policy-list
@@ -794,7 +807,7 @@ Permissions: - UserAuthenticationMethod.ReadWrite.All (Delegated) - UserAuthenti
 ***
 Lists all TAP policies for a user.
 This command will only return a single object in the collection as a user can have only one Temporary Access Pass (TAP) method.
-Permissions: - UserAuthenticationMethod.Read.All (Delegated) - UserAuthenticationMethod.Read.All (Application).
+**Permissions**: UserAuthenticationMethod.Read.All (Delegated), UserAuthenticationMethod.Read.All (Application).
 
 #### Base Command
 
@@ -804,20 +817,89 @@ Permissions: - UserAuthenticationMethod.Read.All (Delegated) - UserAuthenticatio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The Azure AD user ID. | Required | 
+| user_id | The Azure AD user ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphUser.TAPPolicy.ID | String | TAP policy's ID. | 
-| MSGraphUser.TAPPolicy.IsUsable | Bool | TAP policy's usability. | 
-| MSGraphUser.TAPPolicy.IsUsableOnce | Bool | TAP policy's once - usability. | 
-| MSGraphUser.TAPPolicy.CreatedDateTime | String | TAP policy's creation date and time. | 
-| MSGraphUser.TAPPolicy.MethodUsabilityReason | String | TAP policy's method usability reason. | 
-| MSGraphUser.TAPPolicy.LifetimeInMinutes | Int | TAP policy's lifetime in minutes. | 
-| MSGraphUser.TAPPolicy.StartDateTime | String | TAP policy's start date and time. | 
+| MSGraphUser.TAPPolicy.ID | String | TAP policy's ID. |
+| MSGraphUser.TAPPolicy.IsUsable | Bool | TAP policy's usability. |
+| MSGraphUser.TAPPolicy.IsUsableOnce | Bool | TAP policy's once - usability. |
+| MSGraphUser.TAPPolicy.CreatedDateTime | String | TAP policy's creation date and time. |
+| MSGraphUser.TAPPolicy.MethodUsabilityReason | String | TAP policy's method usability reason. |
+| MSGraphUser.TAPPolicy.LifetimeInMinutes | Int | TAP policy's lifetime in minutes. |
+| MSGraphUser.TAPPolicy.StartDateTime | String | TAP policy's start date and time. |
 
 #### Command example
+
 ```!msgraph-user-tap-policy-list user_id=123456-abcd-7890-erty-987qwe987```
 
+### msgraph-user-change-password-on-premise
+
+***
+Changes the password of an on-premise user. Requires the following permissions: -UserAuthenticationMethod.Read.All - delegated, Users.Read.All - delegated.
+Providing a password is required (password auto-generation is not supported).
+
+**Prerequisites and Configuration Requirements:**
+
+1. **Authentication Flow**: Must use **Authorization Code flow** with a **self-deployed Azure app**. Client Credentials flow is not supported for this command.
+
+2. **Required App Permissions**: The Azure app must have the following delegated permissions:
+   - `UserAuthenticationMethod.ReadWrite.All` - Delegated
+   - `Users.Read.All` - Delegated
+
+3. **Azure App Role Configuration**:
+   - The app must have the **Authorization Administrator** role granted to it through the Microsoft Entra Admin Center:
+     - Navigate to **Roles and administrators** → Search for **Authorization Administrator**
+     - Click **Authorization Administrator** → **Add assignments**.
+     - Select the app you want to configure the instance with and click **Save**.
+   - Additionally, create a new app role in the Azure Portal for the app you want to configure the instance with:
+     - Navigate to **App roles** → **Create Role App**
+     - Set **Value** to `UserAuthenticationMethod.ReadWrite.All`
+     - Set **Allowed member types** to `Both`.
+     - Click on **Create**.
+
+4. **User Role Requirements**: The logged-in user (authenticating via Authorization Code flow) must have the Authorization Administrator role in Azure AD.
+
+#### Base Command
+
+`msgraph-user-change-password-on-premise`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName to update password for. | Required |
+| password | The new password. | Optional |
+| nonsensitive_password | The new password. This argument can be used in playbooks, but note its value will NOT be hidden in logs. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!msgraph-user-change-password-on-premise user=123456-abcd-7890-erty-987qwe987 password=123456```
+
+### msgraph-user-force-reset-password
+
+***
+Forces a user to reset their password the next time they log in.
+Note that this action does not terminate the user’s current session.
+If you also want to force the user to sign in again, use the msgraph-user-session-revoke command.
+This operation is supported only when using a self-deployed app flow with the Directory.AccessAsUser.All delegated permission.
+
+#### Base Command
+
+`msgraph-user-force-reset-password`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+
+#### Context Output
+
+There is no context output for this command.

@@ -11,6 +11,13 @@ configuration:
   type: 0
   required: false
   section: Connect
+- displaypassword: Auth Key
+  hiddenusername: true
+  name: credentials
+  type: 9
+  section: Connect
+  required: false
+  additionalinfo: Starting June 30th 2025 this parameter is mandatory.
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability

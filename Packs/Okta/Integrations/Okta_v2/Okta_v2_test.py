@@ -548,7 +548,63 @@ def test_get_user_command_not_found_user(mocker):
     args = {"username": "test@this.com"}
     mocker.patch.object(client, "get_user", side_effect=Exception("Error in API call [404] - Not found"))
     readable, _, _ = get_user_command(client, args)
-    assert "User test@this.com was not found." in readable
+    assert readable == "User 'test@this.com' was not found."
+
+
+def test_get_user_command_email(mocker):
+    """
+    Given:
+        - User email parameter.
+    When:
+        - Running get_user_command with userEmail.
+    Then:
+        - Ensure that the user is found via email search and returned correctly.
+    """
+    args = {"userEmail": "isaac.brock@example.com", "verbose": "false"}
+    user_data = {
+        "id": "TestID",
+        "status": "ACTIVE",
+        "created": "2013-06-24T16:39:18.000Z",
+        "activated": "2013-06-24T16:39:19.000Z",
+        "statusChanged": "2013-06-24T16:39:19.000Z",
+        "lastLogin": "2013-06-24T17:39:19.000Z",
+        "lastUpdated": "2013-07-02T21:36:25.344Z",
+        "passwordChanged": "2013-07-02T21:36:25.344Z",
+        "profile": {
+            "login": "isaac.brock@example.com",
+            "firstName": "Isaac",
+            "lastName": "Brock",
+            "nickName": "issac",
+            "displayName": "Isaac Brock",
+            "email": "isaac.brock@example.com",
+            "secondEmail": "isaac@example.org",
+            "manager": "manager",
+            "managerEmail": "manager@test.com",
+        },
+    }
+    expected_context = {
+        "ID": "TestID",
+        "Username": "isaac.brock@example.com",
+        "DisplayName": "Isaac Brock",
+        "Email": "isaac.brock@example.com",
+        "Status": "ACTIVE",
+        "Type": "Okta",
+        "Created": "2013-06-24T16:39:18.000Z",
+        "Activated": "2013-06-24T16:39:19.000Z",
+        "StatusChanged": "2013-06-24T16:39:19.000Z",
+        "PasswordChanged": "2013-07-02T21:36:25.344Z",
+        "Manager": "manager",
+        "ManagerEmail": "manager@test.com",
+    }
+    expected_readable = "isaac.brock@example.com"
+
+    mocker.patch.object(client, "list_users", return_value=([user_data], None))
+    mock_get_user = mocker.patch.object(client, "get_user", return_value=user_data)
+    readable, outputs, _ = get_user_command(client, args)
+
+    assert outputs.get("Account(val.ID && val.ID === obj.ID)")[0] == expected_context
+    assert expected_readable in readable
+    mock_get_user.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -684,10 +740,16 @@ def test_delete_limit_param_function(url, expected_url):
     ],
 )
 def test_get_user_factors_command(mocker, args, expected_context):
+    mock_raw_response = MagicMock()
+    mock_raw_response.json.return_value = expected_context
+    mock_raw_response.headers = {"x-rate-limit-limit": "1", "x-rate-limit-remaining": "1", "x-rate-limit-reset": "1"}
     mocker.patch.object(client, "get_user_id", return_value="TestID")
-    mocker.patch.object(client, "get_user_factors", return_value=factors_data)
-    readable, outputs, _ = get_user_factors_command(client, args)
-    assert expected_context == outputs.get("Account(val.ID && val.ID === obj.ID)").get("Factor")[1]
+    mocker.patch.object(client, "_http_request", return_value=mock_raw_response)
+    mocker.patch.object(client, "get_readable_factors", return_value=[expected_context])
+
+    result = get_user_factors_command(client, args)
+    readable_output, outputs, raw_response = result
+    assert expected_context == outputs.get("Account(val.ID && val.ID === obj.ID)").get("Factor")[0]
     assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("ID") == args.get("userId") or "TestID"
 
 
@@ -723,6 +785,75 @@ def test_verify_push_factor_command(mocker, args, polling_response, result):
     _, outputs, _ = verify_push_factor_command(client, args)
     assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("ID") == "TestID"
     assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("VerifyPushResult") == result
+
+
+@pytest.mark.parametrize(
+    "args, polling_time, max_polling_calls, expected_calls, expected_result",
+    [
+        (
+            {"userId": "TestID", "factorId": "FactorID", "polling_time": "2", "max_polling_calls": "3"},
+            2,
+            3,
+            3,
+            "TIMEOUT",
+        ),
+        (
+            {"userId": "TestID", "factorId": "FactorID", "polling_time": "1", "max_polling_calls": "5"},
+            1,
+            5,
+            2,
+            "SUCCESS",
+        ),
+    ],
+)
+def test_verify_push_factor_command_polling_args(mocker, args, polling_time, max_polling_calls, expected_calls, expected_result):
+    """
+    Given:
+    - Arguments for verify_push_factor_command with custom polling_time and max_polling_calls
+
+    When:
+    - Running verify_push_factor_command with these arguments
+
+    Then:
+    - Ensure poll_verify_push is called with the correct polling_time and max_polling_calls
+    - Ensure time.sleep is called the expected number of times with the correct polling_time
+    - Verify the expected result is returned
+    """
+    # Mock the verify_push_factor method to return a response with a poll link
+    mocker.patch.object(client, "verify_push_factor", return_value=verify_push_factor_response)
+
+    # Mock time.sleep to avoid actual waiting during tests
+    mocker.patch("time.sleep")
+
+    # For the first test case (TIMEOUT), all responses should be "WAITING" until timeout
+    # For the second test case (SUCCESS), the second response should be "SUCCESS"
+    if expected_result == "TIMEOUT":
+        waiting_response = {"factorResult": "WAITING"}
+        timeout_response = {"factorResult": "TIMEOUT"}
+
+        # Mock http_request to return "WAITING" for all calls
+        mocker.patch.object(client, "http_request", side_effect=[waiting_response] * max_polling_calls)
+
+        # Mock poll_verify_push to simulate timeout
+        mocker.patch.object(client, "poll_verify_push", return_value=timeout_response)
+    else:
+        # For SUCCESS case, return SUCCESS on the second call
+        success_response = {"factorResult": "SUCCESS"}
+
+        # Mock poll_verify_push to return SUCCESS after some calls
+        mocker.patch.object(client, "poll_verify_push", return_value=success_response)
+
+    # Call the function
+    _, outputs, _ = verify_push_factor_command(client, args)
+
+    # Verify poll_verify_push was called with correct arguments
+    client.poll_verify_push.assert_called_once_with(
+        "https://test.com/api/v1/users/TestID/factors/FactorID/transactions/TransactionID", polling_time, max_polling_calls
+    )
+
+    # Verify the result
+    assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("ID") == "TestID"
+    assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("VerifyPushResult") == expected_result
 
 
 @pytest.mark.parametrize(
@@ -855,9 +986,16 @@ def test_get_readable_logs():
 
 def test_set_password_command():
     client = Client(base_url="https://demisto.com", api_token="XXX")
+    headers = {
+        "x-rate-limit-limit": "1",
+        "x-rate-limit-remaining": "1",
+        "x-rate-limit-reset": "1",
+    }
     with requests_mock.Mocker() as m:
-        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{"id": "1234"}])
-        mock_request = m.post("https://demisto.com/api/v1/users/1234", json={"passwordChanged": "2020-03-26T13:57:13.000Z"})
+        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{"id": "1234"}], headers=headers)
+        mock_request = m.post(
+            "https://demisto.com/api/v1/users/1234", json={"passwordChanged": "2020-03-26T13:57:13.000Z"}, headers=headers
+        )
 
         result = set_password_command(client, {"username": "test", "password": "a1b2c3"})
 
@@ -867,11 +1005,18 @@ def test_set_password_command():
 
 def test_set_temp_password_command():
     client = Client(base_url="https://demisto.com", api_token="XXX")
+    headers = {
+        "x-rate-limit-limit": "1",
+        "x-rate-limit-remaining": "1",
+        "x-rate-limit-reset": "1",
+    }
     with requests_mock.Mocker() as m:
-        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{"id": "1234"}])
-        m.post("https://demisto.com/api/v1/users/1234", json={"passwordChanged": "2023-03-22T10:15:26.000Z"})
+        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{"id": "1234"}], headers=headers)
+        m.post("https://demisto.com/api/v1/users/1234", json={"passwordChanged": "2023-03-22T10:15:26.000Z"}, headers=headers)
         m.post(
-            "https://demisto.com/api/v1/users/1234/lifecycle/expire_password?tempPassword=true", json={"tempPassword": "cAn5N3gx"}
+            "https://demisto.com/api/v1/users/1234/lifecycle/expire_password?tempPassword=true",
+            json={"tempPassword": "cAn5N3gx"},
+            headers=headers,
         )
 
         result = set_password_command(client, {"username": "test", "password": "a1b2c3", "temporary_password": "true"})
@@ -908,7 +1053,15 @@ def test_get_logs_command_with_limit(mocker, requests_mock, limit, logs_amount):
     client = Client(base_url="https://demisto.com", api_token="XXX")
     mocker.patch.object(Client, "get_paged_results", side_effect=mock_get_paged_results)
     mocker.patch.object(Client, "get_readable_logs", side_effect=mock_get_paged_results)
-    requests_mock.get(f"https://demisto.com/api/v1/logs?limit={limit}", json=LOGS[:limit])
+    requests_mock.get(
+        f"https://demisto.com/api/v1/logs?limit={limit}",
+        json=LOGS[:limit],
+        headers={
+            "x-rate-limit-limit": "1",
+            "x-rate-limit-remaining": "1",
+            "x-rate-limit-reset": "1",
+        },
+    )
     args = {"limit": limit}
     readable, outputs, raw_response = get_logs_command(client=client, args=args)
     assert len(outputs.get("Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)")) == logs_amount

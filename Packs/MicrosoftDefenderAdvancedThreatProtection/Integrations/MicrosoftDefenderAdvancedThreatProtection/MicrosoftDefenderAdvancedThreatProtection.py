@@ -6,6 +6,7 @@ from json import JSONDecodeError
 from typing import Any
 
 import urllib3
+import jwt
 from CommonServerPython import *
 from dateutil.parser import parse
 from MicrosoftApiModule import *  # noqa: E402
@@ -188,7 +189,7 @@ class HuntingQueryBuilder:
         insert_pos = query.find("|")
         if insert_pos == -1:
             return f"{query} | where {time_range_query}"
-        return f"{query[:insert_pos - 1]} | where {time_range_query} {query[insert_pos:]}"
+        return f"{query[:insert_pos]}| where {time_range_query} {query[insert_pos:]}"
 
     @staticmethod
     def get_filter_values(list_values: list | str | None) -> str | None:
@@ -350,17 +351,17 @@ class HuntingQueryBuilder:
             'DeviceEvents | where ActionType == "ScheduledTaskCreated" and InitiatingProcessAccountSid != "S-1-5-18" and'  # noqa: E501
         )
         REGISTRY_ENTRY_QUERY_PREFIX = 'DeviceRegistryEvents | where ActionType == "RegistryValueSet" and'
-        STARTUP_FOLDER_CHANGES_QUERY_PREFIX = 'DeviceFileEvents | where FolderPath contains @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" and ActionType == "FileCreated" and'  # noqa: E501
-        NEW_SERVICE_CREATED_QUERY_PREFIX = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services" and ActionType == "RegistryKeyCreated" and'  # noqa: E501
-        SERVICE_UPDATED_QUERY_PREFIX = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services" and ActionType has_any ("RegistryValueSet","RegistryKeyCreated") and'  # noqa: E501
+        STARTUP_FOLDER_CHANGES_QUERY_PREFIX = r"""DeviceFileEvents | where FolderPath contains @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" and ActionType == "FileCreated" and"""  # noqa: E501
+        NEW_SERVICE_CREATED_QUERY_PREFIX = r"""DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services" and ActionType == "RegistryKeyCreated" and"""  # noqa: E501
+        SERVICE_UPDATED_QUERY_PREFIX = r"""DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services" and ActionType has_any ("RegistryValueSet","RegistryKeyCreated") and"""  # noqa: E501
         FILE_REPLACED_QUERY_PREFIX = (
-            'DeviceFileEvents | where FolderPath contains @"C:\Program Files" and ActionType == "FileModified" and'  # noqa: E501
+            r"""DeviceFileEvents | where FolderPath contains @"C:\Program Files" and ActionType == "FileModified" and"""  # noqa: E501
         )
         NEW_USER_QUERY_PREFIX = 'DeviceEvents | where ActionType == "UserAccountCreated" and'
         NEW_GROUP_QUERY_PREFIX = 'DeviceEvents | where ActionType == "SecurityGroupCreated" and'
         GROUP_USER_CHANGE_QUERY_PREFIX = 'DeviceEvents | where ActionType == "UserAccountAddedToLocalGroup" and'
-        LOCAL_FIREWALL_CHANGE_QUERY_PREFIX = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy" and'  # noqa: E501
-        HOST_FILE_CHANGE_QUERY_PREFIX = 'DeviceFileEvents | where FolderPath contains @"C:\Windows\System32\drivers\etc\hosts" and ActionType == "FileModified" and'  # noqa: E501
+        LOCAL_FIREWALL_CHANGE_QUERY_PREFIX = r"""DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy" and"""  # noqa: E501
+        HOST_FILE_CHANGE_QUERY_PREFIX = r"""DeviceFileEvents | where FolderPath contains @"C:\Windows\System32\drivers\etc\hosts" and ActionType == "FileModified" and"""  # noqa: E501
 
         """QUERY SUFFIX"""
         SCHEDULE_JOB_QUERY_SUFFIX = "\n| project Timestamp, DeviceName, InitiatingProcessAccountDomain, InitiatingProcessAccountName, AdditionalFields\n| limit {}"  # noqa: E501
@@ -941,7 +942,7 @@ class HuntingQueryBuilder:
             return query
 
     class Tampering:
-        QUERY_PREFIX = 'let includeProc = dynamic(["sc.exe","net1.exe","net.exe", "taskkill.exe", "cmd.exe", "powershell.exe"]); let action = dynamic(["stop","disable", "delete"]); let service1 = dynamic([\'sense\', \'windefend\', \'mssecflt\']); let service2 = dynamic([\'sense\', \'windefend\', \'mssecflt\', \'healthservice\']); let params1 = dynamic(["-DisableRealtimeMonitoring", "-DisableBehaviorMonitoring" ,"-DisableIOAVProtection"]); let params2 = dynamic(["sgrmbroker.exe", "mssense.exe"]); let regparams1 = dynamic([\'reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows Defender"\', \'reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows Advanced Threat Protection"\']); let regparams2 = dynamic([\'ForceDefenderPassiveMode\', \'DisableAntiSpyware\']); let regparams3 = dynamic([\'sense\', \'windefend\']); let regparams4 = dynamic([\'demand\', \'disabled\']); let timeframe = 1d; DeviceProcessEvents'  # noqa: E501
+        QUERY_PREFIX = r"""let includeProc = dynamic(["sc.exe","net1.exe","net.exe", "taskkill.exe", "cmd.exe", "powershell.exe"]); let action = dynamic(["stop","disable", "delete"]); let service1 = dynamic(['sense', 'windefend', 'mssecflt']); let service2 = dynamic(['sense', 'windefend', 'mssecflt', 'healthservice']); let params1 = dynamic(["-DisableRealtimeMonitoring", "-DisableBehaviorMonitoring" ,"-DisableIOAVProtection"]); let params2 = dynamic(["sgrmbroker.exe", "mssense.exe"]); let regparams1 = dynamic(['reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender"', 'reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Advanced Threat Protection"']); let regparams2 = dynamic(['ForceDefenderPassiveMode', 'DisableAntiSpyware']); let regparams3 = dynamic(['sense', 'windefend']); let regparams4 = dynamic(['demand', 'disabled']); let timeframe = 1d; DeviceProcessEvents"""  # noqa: E501
         QUERY_SUFFIX = "\n| where InitiatingProcessFileName in~ (includeProc) | where (InitiatingProcessCommandLine has_any(action) and InitiatingProcessCommandLine has_any (service2) and InitiatingProcessParentFileName != 'cscript.exe') or (InitiatingProcessCommandLine has_any (params1) and InitiatingProcessCommandLine has 'Set-MpPreference' and InitiatingProcessCommandLine has '$true') or (InitiatingProcessCommandLine has_any (params2) and InitiatingProcessCommandLine has \"/IM\") or (InitiatingProcessCommandLine has_any (regparams1) and InitiatingProcessCommandLine has_any (regparams2) and InitiatingProcessCommandLine has '/d 1') or (InitiatingProcessCommandLine has_any(\"start\") and InitiatingProcessCommandLine has \"config\" and InitiatingProcessCommandLine has_any (regparams3) and InitiatingProcessCommandLine has_any (regparams4))| extend Account = iff(isnotempty(InitiatingProcessAccountUpn), InitiatingProcessAccountUpn, InitiatingProcessAccountName), Computer = DeviceName| project Timestamp, Computer, Account, AccountDomain, ProcessName = InitiatingProcessFileName, ProcessNameFullPath = FolderPath, Activity = ActionType, CommandLine = InitiatingProcessCommandLine, InitiatingProcessParentFileName\n| limit {}"  # noqa: E501
 
         def __init__(
@@ -1436,7 +1437,7 @@ class MsClient:
 
         Args:
             machine_id (str): Machine ID
-            comment (str): 	Comment to associate with the action
+            comment (str): Comment to associate with the action
             scan_type (str): Defines the type of the Scan (Quick, Full)
 
         Notes:
@@ -2309,6 +2310,16 @@ class MsClient:
         if filter_req:
             params["$filter"] = filter_req
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+
+    def get_decoded_token(self) -> dict:
+        """Retrieves the decoded JWT that contains auth information (including permissions).
+
+        Returns:
+            dict: Decoded JWT information.
+        """
+        access_token = self.ms_client.get_access_token()
+        # Verifying signature is not needed here since there is no integration logic that depends on the access permissions
+        return jwt.decode(access_token, options={"verify_signature": False})
 
 
 """ Commands """
@@ -3308,6 +3319,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
         for index in range(3):
             try:
                 response = client.get_machine_action_by_id(action_id)
+                demisto.debug(f"The response for get machine action details: {response}")
                 if response:
                     break
             except Exception as e:
@@ -3333,6 +3345,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
         )
         context_output = machine_actions_list
     entry_context = {"MicrosoftATP.MachineAction(val.ID === obj.ID)": context_output}
+    demisto.debug(f"The final entry context for get machine details: {entry_context}")
     return human_readable, entry_context, response
 
 
@@ -3360,6 +3373,27 @@ def request_download_investigation_package_command(client: MsClient, args: dict)
 
 def generate_login_url_command(client: MsClient):
     return generate_login_url(client.ms_client, MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS[client.endpoint_type])
+
+
+def list_auth_permissions_command(client: MsClient) -> CommandResults:
+    """Lists the auth permissions using the decoded JWT.
+
+    Args:
+        client (MsClient): Client to access Microsoft Defender Advanced Threat Protection (ATP) API.
+
+    Raises:
+        TypeError: If the decoded JWT is not a dictionary.
+
+    Returns:
+        CommandResults: Command results containing human-readable output.
+    """
+    decoded_token = client.get_decoded_token()
+    if not isinstance(decoded_token, dict):
+        raise TypeError(f"Expected decoded token dict. Got type: {type(decoded_token).__name__}.")
+
+    permissions = "\n".join(sorted(decoded_token.get("roles", [])))
+    human_readable = f"### Permissions\n{permissions}"
+    return CommandResults(readable_output=human_readable)
 
 
 def download_file_after_successful_status(client, res):
@@ -3407,10 +3441,10 @@ def get_machine_action_data(machine_action_response):
         "MachineID": machine_action_response.get("machineId"),
         "ComputerDNSName": machine_action_response.get("computerDnsName"),
         "CreationDateTimeUtc": machine_action_response.get("creationDateTimeUtc"),
-        "LastUpdateTimeUtc": machine_action_response.get("lastUpdateTimeUtc"),
+        "LastUpdateTimeUtc": machine_action_response.get("lastUpdateDateTimeUtc"),
         "RelatedFileInfo": {
-            "FileIdentifier": machine_action_response.get("fileIdentifier"),
-            "FileIdentifierType": machine_action_response.get("fileIdentifierType"),
+            "FileIdentifier": (machine_action_response.get("relatedFileInfo") or {}).get("fileIdentifier"),
+            "FileIdentifierType": (machine_action_response.get("relatedFileInfo") or {}).get("fileIdentifierType"),
         },
         "Commands": machine_action_response.get("commands"),
     }
@@ -3493,37 +3527,146 @@ def remove_app_restriction_command(client: MsClient, args: dict):
     return human_readable, entry_context, machine_action_response
 
 
-def stop_and_quarantine_file_command(client: MsClient, args: dict):
-    """Stop execution of a file on a machine and delete it.
+@polling_function(
+    name="microsoft-atp-stop-and-quarantine-file",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 10)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
+    requires_polling_arg=True,  # If user provides polling arg as false, dont poll
+)
+def stop_and_quarantine_file_command_polling(args: dict, client: MsClient):
+    """
+    Stops the execution of files on machines and quarantines them.
+    This command is asynchronous and polls for completion.
+
+    Args:
+        machine_id (list | str): A comma-separated list or a single machine ID.
+        file_hash (list | str): A comma-separated list or a single SHA1 file hash.
+        comment (str): A comment to associate with the action.
+        polling (bool): If true, the command will poll for completion. Default is true.
+        interval_in_seconds (int): The interval between polling attempts.
+        timeout_in_seconds (int): The timeout for the polling.
 
     Returns:
-         CommandResults
+        In case of polling: PollResult: An object containing the results and polling status.
+        In case of non-polling: CommandResult: An object containing the results.
     """
+
+    demisto.debug("Stop and Quarantine File command polling started")
     headers = ["ID", "Type", "Requestor", "RequestorComment", "Status", "MachineID", "ComputerDNSName"]
-    machine_ids = argToList(args.get("machine_id"))
-    file_sha1s = argToList(args.get("file_hash"))
-    comment = args.get("comment")
-    command_results = []
-    for machine_id, file_sha1 in product(machine_ids, file_sha1s):
-        machine_action_response = client.stop_and_quarantine_file(machine_id, file_sha1, comment)
-        action_data = get_machine_action_data(machine_action_response)
+
+    def _initial_call():
+        demisto.debug("First run: Initiating quarantine actions.")
+        machine_ids = argToList(args.get("machine_id"))
+        file_sha1s = argToList(args.get("file_hash"))
+        comment = args.get("comment")
+
+        action_ids_to_poll = []
+        all_context_outputs = []
+        all_api_raw_responses = []
+
+        for machine_id, file_sha1 in product(machine_ids, file_sha1s):
+            machine_action_response = {}
+            try:
+                demisto.debug(f"Initiating quarantine for file {file_sha1} on machine {machine_id}.")
+                machine_action_response = client.stop_and_quarantine_file(machine_id, file_sha1, comment)
+                machine_action_response["machineId"] = machine_id
+                context_output = get_machine_action_data(machine_action_response)
+                demisto.debug(f"Successfully initiated quarantine for file {file_sha1} on machine {machine_id}.")
+                action_ids_to_poll.append(context_output.get("ID"))
+
+            except Exception as e:
+                demisto.debug(f"Failed to initiate quarantine for file {file_sha1} on machine {machine_id}: {e}")
+                machine_action_response = {
+                    "requestorComment": comment,
+                    "status": "Failed",
+                    "machineId": machine_id,
+                    "id": None,
+                    "type": None,
+                    "scope": None,
+                    "requestor": None,
+                    "computerDnsName": None,
+                    "creationDateTimeUtc": None,
+                    "lastUpdateTimeUtc": None,
+                    "relatedFileInfo": {
+                        "fileIdentifier": file_sha1,
+                        "fileIdentifierType": None,
+                    },
+                    "commands": None,
+                }
+                context_output = get_machine_action_data(machine_action_response)
+
+            finally:
+                all_context_outputs.append(context_output)
+                all_api_raw_responses.append(machine_action_response)
+
         human_readable = tableToMarkdown(
-            f"Stopping the execution of a file on {machine_id} machine and deleting it:",
-            action_data,
+            name="Stopping and quarantine",
+            t=all_context_outputs,
             headers=headers,
             removeNull=True,
         )
 
-        command_results.append(
-            CommandResults(
-                outputs_prefix="MicrosoftATP.MachineAction",
-                outputs_key_field="id",
-                readable_output=human_readable,
-                outputs=action_data,
-                raw_response=machine_action_response,
-            )
+        command_results = CommandResults(
+            outputs_prefix="MicrosoftATP.MachineAction",
+            outputs_key_field="ID",
+            readable_output=human_readable,
+            outputs=all_context_outputs,
+            raw_response=all_api_raw_responses,
         )
-    return command_results
+
+        demisto.debug(f"Initiated {len(action_ids_to_poll)} quarantine actions. Polling for status...")
+        demisto.debug(f"args: {args}")
+        if not argToBoolean(args.get("polling", False)) or not action_ids_to_poll:
+            demisto.debug("No quarantine actions were initiated or polling is disabled. ")
+            continue_to_poll = False
+        else:
+            command_results.readable_output = "Quarantine operations are still in progress..."
+            continue_to_poll = True
+        return PollResult(
+            partial_result=command_results,
+            continue_to_poll=continue_to_poll,
+            args_for_next_run={"action_ids": action_ids_to_poll, "polling": argToBoolean(args.get("polling", False)), **args},
+            response=command_results,
+        )
+
+    def _polling_call():
+        all_context_outputs = []
+        all_api_raw_responses = []
+        action_ids = argToList(args.get("action_ids"))
+        action_statuses = []
+        for action_id in action_ids:
+            _, context, _ = get_machine_action_by_id_command(client, {"id": action_id})
+            all_api_raw_responses.append(context)
+            context_output = context.get("MicrosoftATP.MachineAction(val.ID === obj.ID)")
+            all_context_outputs.append(context_output)
+            action_statuses.append(context_output.get("Status", "Unknown"))
+
+        human_readable = tableToMarkdown(
+            name="Completed Quarantine",
+            t=all_context_outputs,
+            headers=headers,
+            removeNull=True,
+        )
+
+        command_results = CommandResults(
+            outputs_prefix="MicrosoftATP.MachineAction",
+            outputs_key_field="ID",
+            readable_output=human_readable,
+            outputs=all_context_outputs,
+            raw_response=all_api_raw_responses,
+        )
+
+        continue_to_poll = any(status in ["Pending", "InProgress"] for status in action_statuses)
+
+        # Return poll result with args for next poll and also return the results in case polling is disabled
+        return PollResult(
+            partial_result=command_results, continue_to_poll=continue_to_poll, args_for_next_run=args, response=command_results
+        )
+
+    if not args.get("action_ids"):
+        return _initial_call()
+    else:
+        return _polling_call()
 
 
 def get_investigations_by_id_command(client: MsClient, args: dict):
@@ -5242,7 +5385,7 @@ def add_backslash_infront_of_underscore_list(markdown_data: list[dict] | None) -
             dict = {}
             for k, v in dict_item.items():
                 if isinstance(v, str):
-                    v = str(v.replace("_", "\_"))
+                    v = str(v.replace("_", r"""\_"""))
                 dict[k] = v
             markdown_data_to_return.append(dict)
     return markdown_data_to_return
@@ -5560,6 +5703,76 @@ def get_file_context(file_info_response: dict[str, str], headers: list):
     return {key.capitalize(): value for (key, value) in file_info_response.items() if key in headers}
 
 
+def get_dbot_score(determination_type):
+    if determination_type == "Clean":
+        verdict = Common.DBotScore.GOOD
+    elif determination_type == "Unknown":
+        verdict = Common.DBotScore.NONE
+    else:
+        verdict = Common.DBotScore.BAD
+    return verdict
+
+
+def build_file_error_output(error_message, file_hash):
+    dbot_score = Common.DBotScore(
+        indicator=file_hash,
+        indicator_type=DBotScoreType.FILE,
+        integration_name=INTEGRATION_NAME,
+        score=Common.DBotScore.NONE,
+    )
+
+    indicator = get_dbot_indicator(dbot_type=DBotScoreType.FILE, dbot_score=dbot_score, value=file_hash)
+
+    readable_output = f"Unable to create indicator for file hash: {file_hash!r}.\nError: {error_message!r}"
+
+    result = CommandResults(readable_output=readable_output, indicator=indicator)
+    return result
+
+
+def build_file_output(raw_response, file_hash):
+    dbot_score = Common.DBotScore(
+        indicator=file_hash,
+        indicator_type=DBotScoreType.FILE,
+        integration_name=INTEGRATION_NAME,
+        score=get_dbot_score(raw_response.get("DeterminationType")),
+    )
+
+    file_object = Common.File(
+        md5=raw_response.get("Md5"),
+        sha1=raw_response.get("Sha1"),
+        sha256=raw_response.get("Sha256"),
+        file_type=raw_response.get("FileType"),
+        dbot_score=dbot_score,
+    )
+
+    result = CommandResults(
+        outputs_prefix="MicrosoftATP.File",
+        outputs_key_field="Sha1",
+        outputs=raw_response,
+        raw_response=raw_response,
+        indicator=file_object,
+    )
+    return result
+
+
+def file_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """Returns verdict for files
+
+    Returns:
+        CommandResults list.
+    """
+    file_hashes = argToList(args["file"])
+    results = []
+    for file_hash in file_hashes:
+        try:
+            file_info_response = client.get_file_data(file_hash)
+            results.append(build_file_output(get_file_data(file_info_response), file_hash))
+        except DemistoException as f:
+            error_message = f.res.json().get("error", {}).get("message", "")
+            results.append(build_file_error_output(error_message, file_hash))
+    return results
+
+
 def get_file_info_command(client: MsClient, args: dict):
     """Retrieves file info by a file hash (Sha1 or Sha256).
 
@@ -5629,28 +5842,38 @@ def create_endpoint_verdict(machine: dict):
 
 def create_filter_for_endpoint_command(hostnames, ips, ids):
     """
-    Creates a filter query for getting the machines according to the given args.
-    The query build is: "or" operator separetes the key and the value between each arg.
+    Creates an OData filter query using the 'in' operator to get machines.
+    This method avoids the 'node count limit' API error by grouping values.
 
-    For example,
-    for fields_to_values: {'computerDnsName': ['b.com', 'a.com'], 'lastIpAddress': ['1.2.3.4'], 'id': ['1','2']}
-    the result is: "computerDnsName eq 'b.com' or computerDnsName eq 'a.com' or lastIpAddress eq '1.2.3.4' or
-    id eq '1' or id eq '2'"
+    For example, for the input:
+    hostnames=['b.com', 'a.com'], ips=['1.2.3.4'], ids=['1','2']
+
+    The result will be:
+    "computerDnsName in ('b.com','a.com') or lastIpAddress in ('1.2.3.4') or id in ('1','2')"
 
     Args:
-        hostnames (list): Comma-separated list of computerDnsName.
-        ips (list): Comma-separated list of lastIpAddress.
-        ids (list): Comma-separated list of id.
+        hostnames (list): A list of computerDnsName strings.
+        ips (list): A list of lastIpAddress strings.
+        ids (list): A list of id strings.
 
-    Returns: A string that represents the filter query according the inputs.
+    Returns:
+        str: An efficient OData filter query string.
     """
-    fields_to_values = {"computerDnsName": hostnames, "lastIpAddress": ips, "id": ids}
-    return " or ".join(
-        f"{field_key} eq '{field_value}'"
-        for (field_key, field_value_list) in fields_to_values.items()
-        if field_value_list
-        for field_value in field_value_list
-    )
+    fields_to_values = {
+        "computerDnsName": hostnames,
+        "lastIpAddress": ips,
+        "id": ids,
+    }
+
+    filter_parts = []
+    for field, values in fields_to_values.items():
+        if values:
+            # Format each value with single quotes (e.g., 'value1')
+            formatted_values = [f"'{v}'" for v in values]
+            joined_values = ",".join(formatted_values)
+            filter_parts.append(f"{field} in ({joined_values})")
+
+    return " or ".join(filter_parts)
 
 
 def validate_args_endpoint_command(hostnames, ips, ids):
@@ -5869,7 +6092,7 @@ def run_polling_command(
         raise Exception(error_msg)
 
     elif command_status != "Completed" or action_status in ("InProgress", "Pending"):
-        demisto.debug("action status is not completed")
+        demisto.debug("action status is not completed, will poll again")
         # schedule next poll
         polling_args = {"interval_in_seconds": interval_in_secs, "polling": True, **args}
 
@@ -6097,8 +6320,8 @@ def main():  # pragma: no cover
     params_endpoint_type = params.get("endpoint_type") or "Worldwide"
     params_url = params.get("url")
     is_gcc = params.get("is_gcc", False)
-    tenant_id = params.get("tenant_id") or params.get("_tenant_id")
-    auth_id = params.get("_auth_id") or params.get("auth_id")
+    tenant_id = params.get("tenant_id") or params.get("_tenant_id") or params.get("_tenant_id_encrypted", {}).get("password")
+    auth_id = params.get("_auth_id") or params.get("auth_id") or params.get("_auth_id_encrypted", {}).get("password")
     enc_key = (params.get("credentials") or {}).get("password") or params.get("enc_key")
     use_ssl: bool = not params.get("insecure", False)
     proxy: bool = params.get("proxy", False)
@@ -6254,7 +6477,7 @@ def main():  # pragma: no cover
             return_outputs(*remove_app_restriction_command(client, args))
 
         elif command == "microsoft-atp-stop-and-quarantine-file":
-            return_results(stop_and_quarantine_file_command(client, args))
+            return_results(stop_and_quarantine_file_command_polling(args, client))
 
         elif command == "microsoft-atp-list-investigations":
             return_outputs(*get_investigations_by_id_command(client, args))
@@ -6325,6 +6548,9 @@ def main():  # pragma: no cover
         elif command == "endpoint":
             return_results(endpoint_command(client, args))
 
+        elif command == "file":
+            return_results(file_command(client, args))
+
         elif command in ("microsoft-atp-indicator-list", "microsoft-atp-indicator-get-by-id"):
             return_outputs(*list_indicators_command(client, args))
         elif command == "microsoft-atp-indicator-create-file":
@@ -6383,6 +6609,8 @@ def main():  # pragma: no cover
             return_results(generate_login_url_command(client))
         elif command == "microsoft-atp-auth-reset":
             return_results(reset_auth())
+        elif command == "microsoft-atp-list-auth-permissions":
+            return_results(list_auth_permissions_command(client))
 
     except Exception as err:
         # TODO Following the CIAC-12304 ticket, many commands, including fetch incidents, are deprecated.

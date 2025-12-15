@@ -457,7 +457,7 @@ Gets management logs. You can filter by multiple fields, which will be concatena
 ### core-get-audit-agent-reports
 
 ***
-Gets agent event reports. You can filter by multiple fields, which will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of reports from the start of the result set (start by counting from 0).
+ Gets agent event reports. You can filter by multiple fields, which are combined using an AND condition (OR is not supported). The maximum result set size is 100. The offset specifies the zero-based index of reports from the start of the result set (start by counting from 0).
 
 #### Base Command
 
@@ -506,7 +506,7 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 ### core-blocklist-files
 
 ***
-Block lists requested files which have not already been block listed or added to allow lists.
+Blocks requested files that are not already on the block list or the allow list.
 
 #### Base Command
 
@@ -559,7 +559,7 @@ Block lists requested files which have not already been block listed or added to
 ### core-allowlist-files
 
 ***
-Adds requested files to allow list if they are not already on block list or allow list.
+Adds requested files to the allow list if they are not already on the block list or the allow list.
 
 #### Base Command
 
@@ -647,7 +647,7 @@ Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
 ### core-get-quarantine-status
 
 ***
-Retrieves the quarantine status for a selected file.
+Retrieves the quarantine status of a selected file.
 
 #### Base Command
 
@@ -697,7 +697,7 @@ There is no context output for this command.
 ### core-restore-file
 
 ***
-Restores a quarantined file on requested endpoints.
+Restores a quarantined file on the requested endpoints.
 
 #### Base Command
 
@@ -707,7 +707,7 @@ Restores a quarantined file on requested endpoints.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Links the response action to the incident that triggered it. | Optional |
+| incident_id | Links a response action to the incident that triggered it. | Optional |
 | file_hash | String that represents the file in hash. Must be a valid SHA256 hash. | Required |
 | endpoint_id | String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined. | Optional |
 | action_id | For polling use. | Optional |
@@ -731,7 +731,7 @@ Restores a quarantined file on requested endpoints.
 ### core-endpoint-scan
 
 ***
-Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
+Runs a scan on a selected endpoint. To scan all endpoints, use the argument all=true. Scanning all endpoints may affect performance and cause latency.
 
 #### Base Command
 
@@ -778,7 +778,7 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 ### core-endpoint-scan-abort
 
 ***
-Cancel the selected endpoints scan. A scan can only be cancelled if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
+Cancels the scan on the selected endpoints. A scan can only be canceled if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Scanning all endpoints may impact performance and cause latency.
 
 #### Base Command
 
@@ -807,7 +807,7 @@ Cancel the selected endpoints scan. A scan can only be cancelled if the selected
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.endpointScan.actionId | Unknown | The action id of the abort scan request. |
+| Core.endpointScan.actionId | Unknown | The action ID of the abort scan request. |
 | Core.endpointScan.aborted | Boolean | Was the scan cancelled. |
 
 ### core-get-policy
@@ -1081,7 +1081,7 @@ Gets a list of device control violations filtered by selected fields. You can re
 ### core-retrieve-files
 
 ***
-Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
+Retrieves files from selected endpoints. You can retrieve up to 20 files from no more than 10 endpoints. At least one endpoint ID and one file path are required to run the command. After running the command, use the core-action-status-get command with the returned action_id to check the action status.
 
 #### Base Command
 
@@ -1119,7 +1119,7 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 ### core-retrieve-file-details
 
 ***
-View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, you can use the core-action-status-get command to check if this action completed successfully.
+Views the file retrieved by the core-retrieve-files command using the action ID. Before running this command, use the core-action-status-get command to check if the action completed successfully.
 
 #### Base Command
 
@@ -1135,7 +1135,7 @@ View the file retrieved by the core-retrieve-files command according to the acti
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File | Unknown | The file details command results. |
+| File | Unknown | The file details returned by the command. |
 | File.Name | String | The full file name \(including the file extension\). |
 | File.EntryID | String | The ID for locating the file in the War Room. |
 | File.Size | Number | The size of the file in bytes. |
@@ -1305,7 +1305,7 @@ Gets the code of a specific script in the script library.
 ### core-action-status-get
 
 ***
-Retrieves the status of the requested actions according to the action ID.
+Retrieves the status of the requested actions using the action ID.
 
 #### Base Command
 
@@ -1321,7 +1321,7 @@ Retrieves the status of the requested actions according to the action ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.GetActionStatus | Unknown | The action status command results. |
+| Core.GetActionStatus | Unknown | The results of the action status command. |
 | Core.GetActionStatus.endpoint_id | string | Endpoint ID. |
 | Core.GetActionStatus.status | string | The status of the specific endpoint ID. |
 | Core.GetActionStatus.action_id | number | The specified action ID. |
@@ -1358,7 +1358,7 @@ Retrieves the status of the requested actions according to the action ID.
 ### core-run-script (Deprecated)
 
 ***
-Deprecated. Use core-script-run instead.
+Deprecated. Use the core-script-run command instead.
 
 #### Base Command
 
@@ -1384,7 +1384,7 @@ Deprecated. Use core-script-run instead.
 ### core-run-snippet-code-script
 
 ***
-Initiates a new endpoint script execution action using the provided snippet code.
+Initiates a new endpoint script execution using the provided snippet code.
 
 #### Base Command
 
@@ -1420,7 +1420,7 @@ Initiates a new endpoint script execution action using the provided snippet code
 ### core-get-script-execution-status
 
 ***
-Retrieves the status of a script execution action.
+Retrieves the status of a script execution.
 
 #### Base Command
 
@@ -1436,7 +1436,7 @@ Retrieves the status of a script execution action.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.ScriptStatus.general_status | String | General status of the action, considering the status of all the endpoints. |
+| Core.ScriptStatus.general_status | String | The general status of the action, based on the status of all endpoints. |
 | Core.ScriptStatus.error_message | String | Error message regarding permissions for running APIs or the action doesn’t exist. |
 | Core.ScriptStatus.endpoints_timeout | Number | Number of endpoints in "timeout" status. |
 | Core.ScriptStatus.action_id | Number | ID of the action initiated. |
@@ -1452,7 +1452,7 @@ Retrieves the status of a script execution action.
 ### core-get-script-execution-results
 
 ***
-Retrieve the results of a script execution action.
+Retrieve the results of a script execution.
 
 #### Base Command
 
@@ -1468,7 +1468,7 @@ Retrieve the results of a script execution action.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.ScriptResult.action_id | Number | ID of the action initiated. |
+| Core.ScriptResult.action_id | Number | The ID of the initiated action. |
 | Core.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. |
 | Core.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. |
 | Core.ScriptResult.results.endpoint_name | String | Number of successfully retrieved files. |
@@ -1518,7 +1518,7 @@ Gets the files retrieved from a specific endpoint during a script execution.
 ### core-run-script-execute-commands
 
 ***
-Initiate a new endpoint script execution of shell commands.
+Initiates a new endpoint script execution of shell commands.
 
 #### Base Command
 
@@ -1594,7 +1594,7 @@ Initiates a new endpoint script execution to delete the specified file.
 ### core-run-script-file-exists
 
 ***
-Initiates a new endpoint script execution to check if file exists.
+Initiates a new endpoint script execution to check if a file exists.
 
 #### Base Command
 
@@ -1631,7 +1631,7 @@ Initiates a new endpoint script execution to check if file exists.
 ### core-run-script-kill-process
 
 ***
-Initiates a new endpoint script execution kill process.
+Initiates a new endpoint script execution to kill a process.
 
 #### Base Command
 
@@ -1686,7 +1686,7 @@ Returns information about an endpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.Hostname | String | The endpoint's hostname. |
+| Endpoint.Hostname | String | The hostname of the endpoint. |
 | Endpoint.OS | String | The endpoint's operation system. |
 | Endpoint.IPAddress | String | The endpoint's IP address. |
 | Endpoint.ID | String | The endpoint's ID. |
@@ -1723,7 +1723,7 @@ Reports to WildFire about incorrect hash verdict through Cortex.
 ### core-remove-allowlist-files
 
 ***
-Removes requested files from allow list.
+Removes the requested files from the allow list.
 
 #### Base Command
 
@@ -1741,7 +1741,7 @@ Removes requested files from allow list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.allowlist.removed_hashes | Number | Removed file hash |
+| Core.allowlist.removed_hashes | Number | The removed file hash.|
 
 #### Command example
 
@@ -1772,7 +1772,7 @@ Removes requested files from allow list.
 ### core-remove-blocklist-files
 
 ***
-Removes requested files from block list.
+Removes the requested files from the block list.
 
 #### Base Command
 
@@ -1790,7 +1790,7 @@ Removes requested files from block list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.blocklist.removed_hashes | Number | Removed fileHash from blocklist |
+| Core.blocklist.removed_hashes | Number | The removed file hash from the block list. |
 
 #### Command example
 
@@ -2905,7 +2905,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 ### core-script-run
 
 ***
-Initiates a new endpoint script execution action using a script from the script library and returns the results.
+Initiates a new endpoint script execution using a script from the script library and returns the results.
 
 #### Base Command
 
@@ -2994,7 +2994,7 @@ Initiates a new endpoint script execution action using a script from the script 
 ### core-terminate-process
 
 ***
-Terminate a process by its instance ID. Available only for XSIAM 2.4 and above.
+Terminates a process by its instance ID. Available only for XSIAM 2.4 and above.
 
 #### Base Command
 
@@ -3067,7 +3067,7 @@ Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and a
 | incident_id | The incident ID. | Optional |
 | action_id | The action ID. For polling use. | Optional |
 | interval_in_seconds | Interval in seconds between each poll. | Optional |
-| timeout_in_seconds | Polling timeout in seconds. | Optional |
+| timeout_in_seconds | The polling timeout in seconds. | Optional |
 
 #### Context Output
 
@@ -3105,81 +3105,6 @@ Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and a
 }
 ```
 
-### core-get-asset-details
-
-***
-Get asset information.
-
-#### Base Command
-
-`core-get-asset-details`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| asset_id | Asset unique identifier. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Core.CoreAsset | unknown | Asset additional information. |
-| Core.CoreAsset.xdm__asset__provider | unknown | The cloud provider or source responsible for the asset. |
-| Core.CoreAsset.xdm__asset__realm | unknown | The realm or logical grouping of the asset. |
-| Core.CoreAsset.xdm__asset__last_observed | unknown | The timestamp of when the asset was last observed, in ISO 8601 format. |
-| Core.CoreAsset.xdm__asset__type__id | unknown | The unique identifier for the asset type. |
-| Core.CoreAsset.xdm__asset__first_observed | unknown | The timestamp of when the asset was first observed, in ISO 8601 format. |
-| Core.CoreAsset.asset_hierarchy | unknown | The hierarchy or structure representing the asset. |
-| Core.CoreAsset.xdm__asset__type__category | unknown | The category type of the asset. |
-| Core.CoreAsset.xdm__cloud__region | unknown | The cloud region where the asset resides. |
-| Core.CoreAsset.xdm__asset__module_unstructured_fields | unknown | The unstructured fields or metadata associated with the asset module. |
-| Core.CoreAsset.xdm__asset__source | unknown | The originating source of the asset's information. |
-| Core.CoreAsset.xdm__asset__id | unknown | A unique identifier for the asset. |
-| Core.CoreAsset.xdm__asset__type__class | unknown | The classification or type class of the asset. |
-| Core.CoreAsset.xdm__asset__type__name | unknown | The specific name of the asset type. |
-| Core.CoreAsset.xdm__asset__strong_id | unknown | The strong or immutable identifier for the asset. |
-| Core.CoreAsset.xdm__asset__name | unknown | The name of the asset. |
-| Core.CoreAsset.xdm__asset__raw_fields | unknown | The raw fields or unprocessed data related to the asset. |
-| Core.CoreAsset.xdm__asset__normalized_fields | unknown | The normalized fields associated with the asset. |
-| Core.CoreAsset.all_sources | unknown | A list of all sources providing information about the asset. |
-
-##### Command Example
-
-```!core-get-asset-details asset_id=123```
-
-##### Context Example
-
-```
-{
-    "Core.CoreAsset": [
-        {
-            "asset_hierarchy": ["123"],
-            "xdm__asset__type__category": "Policy",
-            "xdm__cloud__region": "Global",
-            "xdm__asset__module_unstructured_fields": {},
-            "xdm__asset__source": "XSIAM",
-            "xdm__asset__id": "123",
-            "xdm__asset__type__class": "Identity",
-            "xdm__asset__normalized_fields": {},
-            "xdm__asset__first_observed": 100000000,
-            "xdm__asset__last_observed": 100000000,
-            "xdm__asset__name": "Fake Name",
-            "xdm__asset__type__name": "IAM",
-            "xdm__asset__strong_id": "FAKE ID"
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-
->| asset_hierarchy | xdm__asset__type__category | xdm__cloud__region | xdm__asset__module_unstructured_fields | xdm__asset__source | xdm__asset__id | xdm__asset__type__class | xdm__asset__normalized_fields | xdm__asset__first_observed | xdm__asset__last_observed | xdm__asset__name |
-xdm__asset__type__name | xdm__asset__strong_id |
->|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|123|Policy|Global||XSIAM|123|Identity||100000000|100000000|Fake Name|IAM|FAKE ID|
-
-
 ### core-execute-command
 
 ***
@@ -3193,33 +3118,33 @@ Run a shell command on a specific endpoint and return its result.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| polling_interval_in_seconds | Interval in seconds between each poll. Default is 10. | Optional | 
-| polling_timeout_in_seconds | Polling timeout in seconds. Default is 600. | Optional | 
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
-| command | List of shell commands to execute separeted by the defined command_separator argument. Set the is_raw_command argument to true to prevent splitting by the chosen separator. | Required | 
-| timeout | The maximum running time of the command. Default is 600. | Optional | 
-| incident_id | Link the response action to the triggered incident. | Optional | 
-| is_raw_command | Whether to pass the command as-is. When false, the command is split by the chosen command_separator argument and sent as a list of commands that are run independently. | Optional | 
-| command_separator | The separator used to split the command list. For example, using the default value (a comma), the string command1,command2 will be split into two separate commands, and each will be executed individually. Possible values are: ,, \|, /. Default is ,. | Optional | 
-| command_type | Type of shell command. Possible values are: powershell, native. | Optional | 
+| polling_interval_in_seconds | Interval in seconds between each poll. Default is 10. | Optional |
+| polling_timeout_in_seconds | Polling timeout in seconds. Default is 600. | Optional |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required |
+| command | List of shell commands to execute separeted by the defined command_separator argument. Set the is_raw_command argument to true to prevent splitting by the chosen separator. | Required |
+| timeout | The maximum running time of the command. Default is 600. | Optional |
+| incident_id | Link the response action to the triggered incident. | Optional |
+| is_raw_command | Whether to pass the command as-is. When false, the command is split by the chosen command_separator argument and sent as a list of commands that are run independently. | Optional |
+| command_separator | The separator used to split the command list. For example, using the default value (a comma), the string command1,command2 will be split into two separate commands, and each will be executed individually. Possible values are: ,, \|, /. Default is ,. | Optional |
+| command_type | Type of shell command. Possible values are: powershell, native. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.ScriptResult.action_id | Number | ID of the action initiated. | 
-| Core.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
-| Core.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
-| Core.ScriptResult.results.endpoint_name | String | Endpoint name. | 
-| Core.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
-| Core.ScriptResult.results.endpoint_status | String | Endpoint status. | 
-| Core.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
-| Core.ScriptResult.results.endpoint_id | String | Endpoint ID. | 
-| Core.ScriptResult.results.execution_status | String | Execution status of this endpoint. | 
-| Core.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. | 
-| Core.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. | 
-| Core.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
-| Core.ScriptResult.results.command | String | The command that was executed by the script. | 
+| Core.ScriptResult.action_id | Number | ID of the action initiated. |
+| Core.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. |
+| Core.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. |
+| Core.ScriptResult.results.endpoint_name | String | Endpoint name. |
+| Core.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. |
+| Core.ScriptResult.results.endpoint_status | String | Endpoint status. |
+| Core.ScriptResult.results.domain | String | Domain to which the endpoint belongs. |
+| Core.ScriptResult.results.endpoint_id | String | Endpoint ID. |
+| Core.ScriptResult.results.execution_status | String | Execution status of this endpoint. |
+| Core.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. |
+| Core.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. |
+| Core.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. |
+| Core.ScriptResult.results.command | String | The command that was executed by the script. |
 
 ##### Context Example
 
@@ -3300,15 +3225,13 @@ Run a shell command on a specific endpoint and return its result.
 | echo |  | dummy_id2 | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
 | echo hello | hello | dummy_id2 | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
 
-
 ### core-add-indicator-rule
 
 ***
-Upload IOCs Rule to XSIAM. 
+Upload IOCs Rule to XSIAM.
 When the ioc_object is defined, disregard any other provided arguments, as ioc_object takes precedence. Validate the indicator parameters when ioc_object is used.
 If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
 Adding the same indicator, but with different parameters, will update the existing rule.
-
 
 #### Base Command
 
@@ -3318,31 +3241,190 @@ Adding the same indicator, but with different parameters, will update the existi
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | **Required** |
 | --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| indicator | String that identifies the indicator you want to ingest into XSIAM.                                                                                                                                                                                                                                                                                                                                                                                                                                               | Required | 
-| type | Keyword identifying the type of indicator. Possible values are: HASH, IP, PATH, DOMAIN_NAME, FILENAME.                                                                                                                                                                                                                                                                                                                                                                                                             | Required | 
-| severity | Keyword identifying the indicator's severity. Possible values are: INFO, LOW, MEDIUM, HIGH, CRITICAL.                                                                                                                                                                                                                                                                                                                                                                                                              | Required | 
-| expiration_date | Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds. Also valid is the UTC date or relative timestamp to set the IOC rule expiration date, for example: '7 Days', '12 hours'. Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. If this indicator has no expiration, use Never.  If value is not given, the indicator receives the indicator's type default expiration date. | Optional | 
-| comment | Comment string.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional | 
-| reputation | Keyword representing the indicator's reputation. Possible values are: GOOD, BAD, SUSPICIOUS, UNKNOWN.                                                                                                                                                                                                                                                                                                                                                                                                              | Optional | 
-| reliability | Character representing the indicator's reliability rating. Valid values are A-F. A is the most reliable, F is the least. Possible values are: A, B, C, D, E, F.                                                                                                                                                                                                                                                                                                                                                    | Optional | 
-| class | String representing the indicator class (for example, "Malware").                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional | 
-| vendor_name | String representing the name of the vendor who reported this indicator.                                                                                                                                                                                                                                                                                                                                                                                                                                            | Optional | 
-| vendor_reputation | Keyword representing the vendor's reputation. Required when vendor_name is defined. Possible values are: GOOD, BAD, SUSPICIOUS, UNKNOWN.                                                                                                                                                                                                                                                                                                                                                                           | Optional | 
-| vendor_reliability | Character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. Required when vendor_reputation is defined. Possible values are: A, B, C, D, E, F.                                                                                                                                                                                                                                                                                                           | Optional | 
-| input_format | The input format selected, which determines how parameters are sent to the XDR API. Possible values are: CSV, JSON. Default is JSON.                                                                                                                                                                                                                                                                                                                                                                               | Optional | 
-| ioc_object | The JSON/CSV object contains the IOC details. Make sure a valid IOC object is passed. CSV Example: indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation,class<br/>1.1.1.1,IP,HIGH,1744874761000,test indicator,SUSPICIOUS,D,VirusTotal (API v3),A,GOOD,Malware .                                                                                                                                                                                | Optional | 
+| indicator | String that identifies the indicator you want to ingest into XSIAM.                                                                                                                                                                                                                                                                                                                                                                                                                                               | Required |
+| type | Keyword identifying the type of indicator. Possible values are: HASH, IP, PATH, DOMAIN_NAME, FILENAME.                                                                                                                                                                                                                                                                                                                                                                                                             | Required |
+| severity | Keyword identifying the indicator's severity. Possible values are: INFO, LOW, MEDIUM, HIGH, CRITICAL.                                                                                                                                                                                                                                                                                                                                                                                                              | Required |
+| expiration_date | Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds. Also valid is the UTC date or relative timestamp to set the IOC rule expiration date, for example: '7 Days', '12 hours'. Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. If this indicator has no expiration, use Never.  If value is not given, the indicator receives the indicator's type default expiration date. | Optional |
+| comment | Comment string.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional |
+| reputation | Keyword representing the indicator's reputation. Possible values are: GOOD, BAD, SUSPICIOUS, UNKNOWN.                                                                                                                                                                                                                                                                                                                                                                                                              | Optional |
+| reliability | Character representing the indicator's reliability rating. Valid values are A-F. A is the most reliable, F is the least. Possible values are: A, B, C, D, E, F.                                                                                                                                                                                                                                                                                                                                                    | Optional |
+| class | String representing the indicator class (for example, "Malware").                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional |
+| vendor_name | String representing the name of the vendor who reported this indicator.                                                                                                                                                                                                                                                                                                                                                                                                                                            | Optional |
+| vendor_reputation | Keyword representing the vendor's reputation. Required when vendor_name is defined. Possible values are: GOOD, BAD, SUSPICIOUS, UNKNOWN.                                                                                                                                                                                                                                                                                                                                                                           | Optional |
+| vendor_reliability | Character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. Required when vendor_reputation is defined. Possible values are: A, B, C, D, E, F.                                                                                                                                                                                                                                                                                                           | Optional |
+| input_format | The input format selected, which determines how parameters are sent to the XDR API. Possible values are: CSV, JSON. Default is JSON.                                                                                                                                                                                                                                                                                                                                                                               | Optional |
+| ioc_object | The JSON/CSV object contains the IOC details. Make sure a valid IOC object is passed. CSV Example: indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation,class<br/>1.1.1.1,IP,HIGH,1744874761000,test indicator,SUSPICIOUS,D,VirusTotal (API v3),A,GOOD,Malware .                                                                                                                                                                                | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.Indicator.indicator | String | String that identifies the indicator that was ingested into XSIAM. | 
-| Core.Indicator.type | String | Keyword identifying the type of indicator. | 
-| Core.Indicator.severity | String | Keyword identifying the indicator's severity. | 
-| Core.Indicator.expiration_date | Number | Integer representing the indicator's expiration timestamp. | 
-| Core.Indicator.comment | String | Comment string. | 
-| Core.Indicator.reputation | String | Keyword representing the indicator's reputation. | 
-| Core.Indicator.reliability | String | Keyword representing the indicator's reliability rating. | 
-| Core.Indicator.class | String | String representing the indicator class. | 
-| Core.Indicator.vendors | List | List representing the vendors who reported this indicator. | 
+| Core.Indicator.indicator | String | String that identifies the indicator that was ingested into XSIAM. |
+| Core.Indicator.type | String | Keyword identifying the type of indicator. |
+| Core.Indicator.severity | String | Keyword identifying the indicator's severity. |
+| Core.Indicator.expiration_date | Number | Integer representing the indicator's expiration timestamp. |
+| Core.Indicator.comment | String | Comment string. |
+| Core.Indicator.reputation | String | Keyword representing the indicator's reputation. |
+| Core.Indicator.reliability | String | Keyword representing the indicator's reliability rating. |
+| Core.Indicator.class | String | String representing the indicator class. |
+| Core.Indicator.vendors | List | List representing the vendors who reported this indicator. |
 
+### core-get-contributing-event
+
+***
+Retrieves contributing events for a specific correlation alert.
+Known limitation: the command is compatible **only** with correlation alerts, otherwise an error will be raised.
+
+##### Required Permissions
+
+Required Permissions For API call:
+`Alerts & Incidents` --> `View`
+
+Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
+
+#### Base Command
+
+`core-get-contributing-event`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | The alert ID's from where to retrieve the contributing events. | Required |
+| limit | The maximum number of contributing events to retrieve. Default is 50. | Optional |
+| page_number | The page number to retrieve. Minimum is 1. Default is 1. | Optional |
+| page_size | The page size. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.ContributingEvent.alertID | String | The alert ID. |
+| Core.ContributingEvent.events | Unknown | Contributing events per alert. |
+
+#### Command example
+
+```!core-get-contributing-event alert_ids=`[123456 , 123457]````
+
+#### Context Example
+
+```json
+{
+    "Core": {
+        "ContributingEvent": [
+            {
+                "alertID": "123456",
+                "events": [
+                    {
+                        "Domain": "WIN10X64",
+                        "Host_Name": "WIN10X64",
+                        "Logon_Type": "7",
+                        "Process_Name": "C:\\Windows\\System32\\svchost.exe",
+                        "Raw_Message": "An account was successfully logged on.",
+                        "Source_IP": "1.1.1.1",
+                        "User_Name": "xsoar",
+                        "111111": 15,
+                        "222222": 165298280000,
+                        "333333": "abcdef",
+                        "444444": 1,
+                        "555555": "ghijk",
+                        "_is_cardable": true,
+                        "_product": "XDR agent",
+                        "_time": 165298280000,
+                        "_vendor": "PANW",
+                        "insert_timestamp": 165298280001
+                    }
+                ]
+            },
+            {
+                "alert_id": "123457",
+                "events": [
+                    {
+                        "Domain": "WIN10X64",
+                        "Host_Name": "WIN10X64",
+                        "Logon_Type": "7",
+                        "Process_Name": "C:\\Windows\\System32\\svchost.exe",
+                        "Raw_Message": "An account was successfully logged on",
+                        "Source_IP": "1.1.1.1",
+                        "User_Name": "xsoar",
+                        "111111": 15,
+                        "222222": 165298280000,
+                        "333333": "abcdef",
+                        "444444": 1,
+                        "555555": "ghijk",
+                        "_is_cardable": true,
+                        "_product": "XDR agent",
+                        "_time": 165298280000,
+                        "_vendor": "PANW",
+                        "insert_timestamp": 165298280001
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Contributing events
+
+>|Alert _ Id|Events|
+>|---|---|
+>| 123456 | **-** ***Logon_Type***: 7<br/> ***User_Name***: xsoar<br/> ***Domain***: WIN10X64<br/> ***Source_IP***: 1.1.1.1<br/> ***Process_Name***: C:\Windows\System32\svchost.exe<br/> ***Host_Name***: WIN10X64<br/> ***Raw_Message***: An account was successfully logged on. ***_time***: 165298280000<br/> ***555555***: a1b2c3d4<br/> ***222222***: 165298280000<br/> ***333333***: abcdef<br/> ***111111***: 15<br/> ***444444***: 1<br/> ***insert_timestamp***: 165298280001<br/> ***_vendor***: PANW<br/> ***_product***: XDR agent<br/> ***_is_cardable***: true |
+>| 123457 | **-** ***Logon_Type***: 7<br/> ***User_Name***: xsoar<br/> ***Domain***: WIN10X64<br/> ***Source_IP***: 1.1.1.1<br/> ***Process_Name***: C:\Windows\System32\svchost.exe<br/> ***Host_Name***: WIN10X64<br/> ***Raw_Message***: An account was successfully logged on. ***_time***: 165298280000<br/> ***555555***: ghijk<br/> ***222222***: 165298280000<br/> ***333333***: abcdef<br/> ***111111***: 15<br/> ***444444***: 1<br/> ***insert_timestamp***: 165298280001<br/> **
+
+### core-block-ip
+
+***
+Command to quickly block malicious or suspicious IP addresses directly from the Cortex Core IR interface.
+Note: This action is only supported on XDR Agent version 8.9 and above.
+
+#### Base Command
+
+`core-block-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_list | List of agent IDs that support the operation. | Required |
+| addresses | List of IPv6 or IPv4 addresses to be added to the blocklist. | Required |
+| duration | Number of minutes to block (Max 518,400). The default is 300. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.ip_block_results | List | List of dictionaries each holds 3 fileds: ip_address, endpoint_id, reason. |
+
+#### Context Example
+
+```
+{
+    "Core.ip_block_results": [
+        {
+            "reason": "Success",
+            "ip_address": "1.1.1.1"
+            "endpoint_id": "1234"
+        },
+        {
+            "reason": "Failure: Endpoint Disconnected",
+            "ip_address": "1.1.1.1"
+            "endpoint_id": "12345"
+        },
+        {
+            "reason": "Failure: Unknown error",
+            "ip_address": "2.2.2.2"
+            "endpoint_id": "1234"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+
+|Reason|endpoint_id|ip_address|
+|---|---|---|
+| Success | AAA | 1.1.1.1 |
+| Failure: Endpoint Disconnected | AAA | 2.2.2.2 |

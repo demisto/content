@@ -125,7 +125,14 @@ The summary of the template structure in the templates is provided below.
         "latest_time": "<latest time>",
         "round_time": <round time>
       },
-      "conditions": <conditions>
+      "conditions": <conditions>,
+      "locking": {
+        "module": "<locking module>",
+        "name": "<name of lock>",
+        "info": "<info for lock>",
+        "timeout": <timeout>,
+        "using": "<instance name>"
+      }
     },
     "entry": {
       "type": "<widget type>",
@@ -219,6 +226,11 @@ Using Variable Substitution to pass the entire data to variables like `${.=val.u
 | .query.time_range.round_time.earliest_time | [Optional] The value (in seconds) used to round down the base time for `earliest_time`. | String or Number |
 | .query.time_range.round_time.latest_time | [Optional] The value (in seconds) used to round down the base time for `latest_time`. | String or Number |
 | .query.conditions | [Optional] Conditions for executing XQL: it will only be executed if the conditions evaluate to true or are not specified. If the conditions evaluate to false, the `.entry.default` will be applied if it is specified and the conditions defined for it are satisfied, otherwise, an empty record set will be returned. | Any |
+| .query.locking.module | [Optional] The locking module to use. Must be either `core-lock` or `demisto-lock` \(Default = core-lock\). | String |
+| .query.locking.name | [Optional] The lock name passed as the `name` parameter to the `core-lock-get` command. | String |
+| .query.locking.info | [Optional] Additional information provided for the lock instance via the `info` parameter of the `core-lock-get` command. | String |
+| .query.locking.timeout | [Optional] The timeout value (in seconds) passed to the `timeout` parameter of the `core-lock-get` command. | String or Number |
+| .query.locking.using | [Optional] The name of the Core Lock integration instance to execute the `core-lock-get` and `core-lock-release`. | String |
 
 This node supports [Variable Substitution](#variable-substitution) for all parameters.
 
@@ -1442,26 +1454,27 @@ Variables can be replaced by the standard Cortex XSIAM/XSOAR DT expression.
 
 In addition, it supports extended variables that start with `.`.
 <!-- markdownlint-disable MD005 -->
- - ${.recordset}
-   * It refers to the record set retrieved by the XQL query.
 
- - ${.query.string}
-   * It refers to the query string used in the XQL query.
+- ${.recordset}
+  - It refers to the record set retrieved by the XQL query.
 
- - ${.query.timeframe.from}
-   * It refers to the start time of the time frame in ISO 8601 time format in UTC applied in the XQL query.
+- ${.query.string}
+  - It refers to the query string used in the XQL query.
 
- - ${.query.timeframe.to}
-   * It refers to the end time of the time frame in ISO 8601 time format in UTC applied in the XQL query
+- ${.query.timeframe.from}
+  - It refers to the start time of the time frame in ISO 8601 time format in UTC applied in the XQL query.
 
- - ${.query.execution_id}
-   * It refers to the unique execution ID for the request query.
+- ${.query.timeframe.to}
+  - It refers to the end time of the time frame in ISO 8601 time format in UTC applied in the XQL query
 
- - ${.query.request_url}
-   * It refers to the URL path, including query parameters, used to search datasets in the XQL builder. (e.g., /xql/xql-search?phrase=dataset%3Dxdr_data&timeframe=%7B%22from%22%3A%201734190414000%2C%20%22to%22%3A%201734276814000%7D)
+- ${.query.execution_id}
+  - It refers to the unique execution ID for the request query.
 
- - ${.query.result_url}
-   * It refers to the URL path used to get the results of an executed query in the XQL builder. (e.g., /xql/xql-search/1234567890abcd_123456_inv)
+- ${.query.request_url}
+  - It refers to the URL path, including query parameters, used to search datasets in the XQL builder. (e.g., /xql/xql-search?phrase=dataset%3Dxdr_data&timeframe=%7B%22from%22%3A%201734190414000%2C%20%22to%22%3A%201734276814000%7D)
+
+- ${.query.result_url}
+  - It refers to the URL path used to get the results of an executed query in the XQL builder. (e.g., /xql/xql-search/1234567890abcd_123456_inv)
 
 <!-- markdownlint-enable MD005 -->
 
@@ -1492,6 +1505,15 @@ dataset = panw_ngfw_traffic_raw
 | comp approx_top(app, 10) as apps by _time
 | limit 240 // to allow retrieving up to 10 apps x 24 hours of records, as the default limit is 100.
 ```
+
+## Locking Queries
+
+In Cortex XSIAM and Cortex XDR, the number of concurrent XQL query executions via the REST API is limited to four.
+Submitting more queries than this may lead to errors.
+The script XQLDSHelper supports retry logic and can wait until execution becomes possible, but by holding onto an execution slot it might impact other playbooks running queries in parallel.
+To prevent this, exclusive locking is supported via the Core Lock or Demisto Lock mechanism.
+When `.query.locking` is enabled, XQLDSHelper acquires a lock during query execution and releases it afterward.
+This ensures that multiple queries do not run concurrently and allows coordinated execution alongside other playbooks.
 
 ## Sample Content Bundle
 

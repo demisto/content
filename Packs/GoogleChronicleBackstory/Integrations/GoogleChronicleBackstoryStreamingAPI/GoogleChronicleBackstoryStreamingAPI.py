@@ -13,13 +13,17 @@ from google.oauth2 import service_account
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 SCOPES = ["https://www.googleapis.com/auth/chronicle-backstory"]
+V1_ALPHA_API_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 MAX_CONSECUTIVE_FAILURES = 7
 
 BACKSTORY_API_V2_URL = "https://{}backstory.googleapis.com/v2"
+SECOPS_V1_ALPHA_URL = "https://chronicle.{}.rep.googleapis.com/v1alpha"
+OLDER_SECOPS_V1_ALPHA_URL = "https://{}-chronicle.googleapis.com/v1alpha"
 
 ENDPOINTS = {
     # Stream detections endpoint.
     "STREAM_DETECTIONS_ENDPOINT": "/detect/rules:streamDetectionAlerts",
+    "V1_ALPHA_STREAM_DETECTIONS_ENDPOINT": "/legacy:legacyStreamDetectionAlerts",
 }
 
 TIMEOUT = 300
@@ -30,7 +34,29 @@ IDEAL_SLEEP_TIME_BETWEEN_BATCHES = 30
 IDEAL_BATCH_SIZE = 200
 DEFAULT_FIRST_FETCH = "now"
 
-REGIONS = {"General": "", "Europe": "europe-", "Asia": "asia-southeast1-", "Europe-west2": "europe-west2-"}
+REGIONS = {
+    "General": "",
+    "Europe": "europe-",
+    "Asia": "asia-southeast1-",
+    "Europe-west2": "europe-west2-",
+    "Africa-south1": "af-south1-",
+    "Asia-northeast1": "asia-northeast1-",
+    "Asia-south1": "asia-south1-",
+    "Asia-southeast1": "asia-southeast1-",
+    "Asia-southeast2": "asia-southeast2-",
+    "Australia-southeast1": "australia-southeast1-",
+    "EU": "eu-",
+    "Europe-west3": "europe-west3-",
+    "Europe-west6": "europe-west6-",
+    "Europe-west9": "europe-west9-",
+    "Europe-west12": "europe-west12-",
+    "ME-central1": "me-central1-",
+    "ME-central2": "me-central2-",
+    "ME-west1": "me-west1-",
+    "Northamerica-northeast2": "northamerica-northeast2-",
+    "Southamerica-east1": "southamerica-east1-",
+    "US": "us-",
+}
 
 SEVERITY_MAP = {"unspecified": 0, "informational": 0.5, "low": 1, "medium": 2, "high": 3, "critical": 4}
 
@@ -63,18 +89,21 @@ class Client:
     requires service_account_credentials : a json formatted string act as a token access
     """
 
-    def __init__(self, params: dict[str, Any], proxy, disable_ssl):
+    def __init__(self, params: dict[str, Any], proxy, disable_ssl, use_v1_alpha: bool = False):
         """
         Initialize HTTP Client.
 
         :param params: parameter returned from demisto.params()
         :param proxy: whether to use environment proxy
         :param disable_ssl: whether to disable ssl
+        :param use_v1_alpha: whether to use v1 alpha api
         """
         encoded_service_account = str(params.get("credentials", {}).get("password", ""))
         service_account_credential = json.loads(encoded_service_account, strict=False)
         # Create a credential using the Google Developer Service Account Credential and Chronicle API scope.
-        self.credentials = service_account.Credentials.from_service_account_info(service_account_credential, scopes=SCOPES)
+        self.credentials = service_account.Credentials.from_service_account_info(
+            service_account_credential, scopes=V1_ALPHA_API_SCOPES if use_v1_alpha else SCOPES
+        )
         self.proxy = proxy
         self.disable_ssl = disable_ssl
         region = params.get("region", "")
@@ -85,6 +114,10 @@ class Client:
             self.region = REGIONS[region] if region.lower() != "other" else other_region
         else:
             self.region = REGIONS["General"]
+
+        if not self.region and use_v1_alpha:
+            self.region = REGIONS["US"]
+
         self.build_http_client()
 
         filter_alert_type = argToList(params.get("alert_type", []))
@@ -97,6 +130,15 @@ class Client:
         filter_rule_ids = argToList(params.get("rule_ids", []))
         self.filter_rule_ids = [rule_id.strip() for rule_id in filter_rule_ids if rule_id.strip()]
         self.filter_exclude_rule_ids = argToBoolean(params.get("exclude_rule_ids", False))
+
+        # V1 Alpha API parameters
+        self.project_id = service_account_credential.get("project_id", "")
+        self.project_instance_id = params.get("project_instance_id", "")
+        project_number = params.get("project_number", "")
+        self.project_number = project_number if project_number else self.project_id
+        url_format = params.get("url_format", "<chronicle>.<REGION>.<rep.googleapis.com>").lower()
+        self.use_new_url_format = url_format == "<chronicle>.<region>.<rep.googleapis.com>"
+        self.use_v1_alpha = use_v1_alpha
 
     def build_http_client(self):
         """
@@ -185,7 +227,7 @@ def validate_response(client: Client, url, method="GET", body=None):
         raise ValueError(MESSAGES["INVALID_JSON_RESPONSE"])
 
 
-def validate_configuration_parameters(param: dict[str, Any], command: str) -> tuple[Optional[datetime]]:
+def validate_configuration_parameters(param: dict[str, Any], command: str) -> tuple[Optional[datetime], Any]:
     """
     Check whether entered configuration parameters are valid or not.
 
@@ -195,7 +237,7 @@ def validate_configuration_parameters(param: dict[str, Any], command: str) -> tu
     :type command: str
     :param command: Name of the command being called.
 
-    :return: Tuple containing the first fetch timestamp.
+    :return: Tuple containing the first fetch timestamp and use v1 alpha.
     :rtype: Tuple[str]
     """
     # get configuration parameters
@@ -224,7 +266,25 @@ def validate_configuration_parameters(param: dict[str, Any], command: str) -> tu
             raise_exception_for_date_difference = date_difference_greater_than_expected
         if raise_exception_for_date_difference:
             raise ValueError(MESSAGES["INVALID_DELTA_TIME_FOR_STREAMING_DETECTIONS"])
-        return (first_fetch_datetime,)
+
+        use_v1_alpha = argToBoolean(param.get("use_v1_alpha", "false"))
+        project_instance_id = param.get("project_instance_id", "")
+        project_number = param.get("project_number", "")
+        project_location = param.get("region", "").lower()
+
+        if project_location == "other":
+            project_location = param.get("other_region", "").lower()
+
+        if use_v1_alpha and not project_instance_id:
+            raise ValueError("Please Provide the Google SecOps Project Instance ID to use V1 Alpha API.")
+
+        if use_v1_alpha and project_number and (not project_number.isnumeric() or project_number == "0"):
+            raise ValueError("Google SecOps Project Number should be a positive number.")
+
+        if use_v1_alpha and not project_location:
+            raise ValueError("Please Provide the valid region to use V1 Alpha API.")
+
+        return (first_fetch_datetime, use_v1_alpha)
 
     except json.decoder.JSONDecodeError:
         raise ValueError("User's Service Account JSON has invalid format.")
@@ -680,6 +740,35 @@ def filter_detections(
     return filtered_detections
 
 
+def create_url_path(client: Client) -> str:
+    """
+    Creates the URL path.
+
+    :type client: Client
+    :param client: The client object containing project ID, instance ID, and location.
+
+    :return: The constructed URL path.
+    :rtype: str
+    """
+    if client.use_v1_alpha:
+        project_number = client.project_number
+        project_instance_id = client.project_instance_id
+        project_location = client.region[:-1]
+        parent = f"projects/{project_number}/locations/{project_location}/instances/{project_instance_id}"
+
+        if client.use_new_url_format:
+            url = f"{SECOPS_V1_ALPHA_URL}/{parent}{ENDPOINTS['V1_ALPHA_STREAM_DETECTIONS_ENDPOINT']}"
+        else:
+            url = f"{OLDER_SECOPS_V1_ALPHA_URL}/{parent}{ENDPOINTS['V1_ALPHA_STREAM_DETECTIONS_ENDPOINT']}"
+
+        url = url.format(project_location)
+    else:
+        url = f"{BACKSTORY_API_V2_URL}{ENDPOINTS['STREAM_DETECTIONS_ENDPOINT']}"
+        url = url.format(client.region)
+
+    return url
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -696,9 +785,9 @@ def test_module(client_obj: Client, params: dict[str, Any]) -> str:
     :return: Raises ValueError if any error occurred during connection else returns 'ok'.
     :rtype: str
     """
-    demisto.debug(f'{CHRONICLE_STREAM_DETECTIONS} Running Test having Proxy {params.get("proxy")}')
+    demisto.debug(f"{CHRONICLE_STREAM_DETECTIONS} Running Test having Proxy {params.get('proxy')}")
 
-    response_code, disconnection_reason, _ = stream_detection_alerts(client_obj, {"detectionBatchSize": 1}, {}, True)
+    response_code, disconnection_reason, _, _ = stream_detection_alerts(client_obj, {"detectionBatchSize": 1}, {}, True)
     if response_code == 200 and not disconnection_reason:
         return "ok"
 
@@ -711,7 +800,7 @@ def test_module(client_obj: Client, params: dict[str, Any]) -> str:
     error_message = disconnection_reason
     if response_code in [400, 404, 403]:
         if response_code == 400:
-            error_message = f'{MESSAGES["INVALID_ARGUMENTS"]}.'
+            error_message = f"{MESSAGES['INVALID_ARGUMENTS']}."
         elif response_code == 404:
             if client_obj.region not in REGIONS.values():
                 error_message = MESSAGES["INVALID_REGION"]
@@ -743,7 +832,7 @@ def fetch_samples() -> list:
 
 def stream_detection_alerts(
     client: Client, req_data: dict[str, Any], integration_context: dict[str, Any], test_mode: bool = False
-) -> tuple[int, str, str]:
+) -> tuple[int, str, str, str]:
     """Makes one call to stream_detection_alerts, and runs until disconnection.
 
     Each call to stream_detection_alerts streams all detection alerts found after
@@ -805,11 +894,12 @@ def stream_detection_alerts(
         non-heartbeat detection batch or empty string if no such non-heartbeat
         detection batch was received).
     """
-    url = f"{BACKSTORY_API_V2_URL}{ENDPOINTS['STREAM_DETECTIONS_ENDPOINT']}"
+    url = create_url_path(client)
 
     response_code = 0
     disconnection_reason = ""
     continuation_time = ""
+    context_key = ""
 
     # Heartbeats are sent by the server, approximately every 15s. Even if
     # no new detections are being produced, the server sends empty
@@ -821,7 +911,7 @@ def stream_detection_alerts(
     # If no messages are received after this timeout, the client cancels
     # connection (then retries).
     with client.http_client.post(
-        url=url.format(client.region),
+        url=url,
         stream=True,
         data=req_data,
         timeout=TIMEOUT,
@@ -866,15 +956,28 @@ def stream_detection_alerts(
 
                 # When we reach this line, we have successfully received
                 # a non-heartbeat detection batch.
-                continuation_time = batch["continuationTime"]
+                if batch.get("nextPageToken"):
+                    context_key = "page_token"
+                    continuation_time = batch.get("nextPageToken", "")
+                elif batch.get("nextPageStartTime"):
+                    context_key = "continuation_time"
+                    continuation_time = batch.get("nextPageStartTime", "")
+                else:
+                    context_key = "continuation_time"
+                    continuation_time = batch.get("continuationTime", "")
+
                 if "detections" not in batch:
-                    demisto.info(f"{CHRONICLE_STREAM_DETECTIONS} Got a new continuationTime={continuation_time}, no detections.")
-                    integration_context.update({"continuation_time": continuation_time})
-                    set_integration_context(integration_context)
-                    demisto.debug(f"Updated integration context checkpoint with continuationTime={continuation_time}.")
+                    demisto.info(f"{CHRONICLE_STREAM_DETECTIONS} Got a new {context_key}={continuation_time}, no detections.")
+                    if continuation_time:
+                        integration_context.update({context_key: continuation_time})
+                        # Remove page_token from integration context if it is present to use page start time for pagination
+                        if context_key == "continuation_time":
+                            integration_context.pop("page_token", None)
+                        set_integration_context(integration_context)
+                        demisto.debug(f"Updated integration context checkpoint with {context_key}={continuation_time}.")
                     continue
                 else:
-                    demisto.info(f"{CHRONICLE_STREAM_DETECTIONS} Got detection batch with continuationTime={continuation_time}.")
+                    demisto.info(f"{CHRONICLE_STREAM_DETECTIONS} Got detection batch with {context_key}={continuation_time}.")
 
                 # Process the batch.
                 detections = batch["detections"]
@@ -893,9 +996,12 @@ def stream_detection_alerts(
 
                 demisto.debug(f"{CHRONICLE_STREAM_DETECTIONS} No. of detections received after filter: {len(detections)}.")
                 if not detections:
-                    integration_context.update({"continuation_time": continuation_time})
+                    integration_context.update({context_key: continuation_time})
+                    # Remove page_token from integration context if it is present to use page start time for pagination
+                    if context_key == "continuation_time":
+                        integration_context.pop("page_token", None)
                     set_integration_context(integration_context)
-                    demisto.debug(f"Updated integration context checkpoint with continuationTime={continuation_time}.")
+                    demisto.debug(f"Updated integration context checkpoint with {context_key}={continuation_time}.")
                     continue
                 user_rule_detections = []
                 chronicle_rule_detections = []
@@ -928,10 +1034,13 @@ def stream_detection_alerts(
                     set_integration_context(integration_context)
                 incidents = detection_incidents
                 incidents.extend(curatedrule_incidents)
-                integration_context.update({"continuation_time": continuation_time})
+                integration_context.update({context_key: continuation_time})
+                # Remove page_token from integration context if it is present to use page start time for pagination
+                if context_key == "continuation_time":
+                    integration_context.pop("page_token", None)
                 if not incidents:
                     set_integration_context(integration_context)
-                    demisto.debug(f"Updated integration context checkpoint with continuationTime={continuation_time}.")
+                    demisto.debug(f"Updated integration context checkpoint with {context_key}={continuation_time}.")
                     continue
                 total_ingested_incidents = 0
                 length_of_incidents = len(incidents)
@@ -954,9 +1063,9 @@ def stream_detection_alerts(
                     }
                 )
                 set_integration_context(integration_context)
-                demisto.debug(f"Updated integration context checkpoint with continuationTime={continuation_time}.")
+                demisto.debug(f"Updated integration context checkpoint with {context_key}={continuation_time}.")
 
-    return response_code, disconnection_reason, continuation_time
+    return response_code, disconnection_reason, continuation_time, context_key
 
 
 def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_time: datetime, test_mode: bool = False):
@@ -978,11 +1087,13 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
     integration_context: dict = get_integration_context()
     initial_continuation_time_str = initial_continuation_time.astimezone(timezone.utc).strftime(DATE_FORMAT)
     continuation_time = integration_context.get("continuation_time", initial_continuation_time_str)
+    page_token = integration_context.get("page_token")
 
     # Our retry loop uses exponential backoff with a retry limit.
     # For simplicity, we retry for all types of errors.
     consecutive_failures = 0
     disconnection_reason = ""
+    context_key = ""
     while True:
         try:
             if consecutive_failures > MAX_CONSECUTIVE_FAILURES:
@@ -992,7 +1103,15 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
                 sleep_duration = 2**consecutive_failures
                 generic_sleep_function(sleep_duration, error_statement=disconnection_reason)
 
-            req_data = {} if not continuation_time else {"continuationTime": continuation_time}
+            req_data = {}
+            if client.use_v1_alpha:
+                if page_token:
+                    req_data = {"pageToken": page_token}
+                else:
+                    req_data = {"pageStartTime": continuation_time}
+            elif continuation_time:
+                req_data = {"continuationTime": continuation_time}
+
             req_data.update({"detectionBatchSize": MAX_DETECTION_STREAM_BATCH_SIZE})
 
             # Connections may last hours. Make a new authorized session every retry loop
@@ -1000,7 +1119,7 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
             client.build_http_client()
 
             # This function runs until disconnection.
-            response_code, disconnection_reason, most_recent_continuation_time = stream_detection_alerts(
+            response_code, disconnection_reason, most_recent_continuation_time, context_key = stream_detection_alerts(
                 client, req_data, integration_context
             )
 
@@ -1008,9 +1127,14 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
                 consecutive_failures = 0
                 disconnection_reason = ""
                 continuation_time = most_recent_continuation_time
-                integration_context.update({"continuation_time": most_recent_continuation_time or continuation_time})
+                if context_key == "page_token":
+                    integration_context.update({context_key: most_recent_continuation_time})
+                else:
+                    integration_context.update({context_key: most_recent_continuation_time or continuation_time})
+                    # Remove page_token from integration context if it is present to use page start time for pagination
+                    integration_context.pop("page_token", None)
                 set_integration_context(integration_context)
-                demisto.debug(f"Updated integration context checkpoint with continuationTime={continuation_time}.")
+                demisto.debug(f"Updated integration context checkpoint with {context_key}={continuation_time}.")
                 if test_mode:
                     return integration_context
             else:
@@ -1030,7 +1154,19 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
                 # Retry with the same connection request as before.
         except RuntimeError as runtime_error:
             demisto.error(str(runtime_error))
-            if response_code == 400 and initial_continuation_time_str != continuation_time:
+            # Check if this is specifically a continuation time error (older than 7 days)
+            # Only show the continuation time message for specific error patterns
+            error_message = str(runtime_error).lower()
+            is_continuation_time_error = (
+                response_code == 400
+                and initial_continuation_time_str != continuation_time
+                and (
+                    "continuationtime cannot be older than 168h0m0s ago" in error_message
+                    or "request contains an invalid argument" in error_message
+                )
+                and not page_token
+            )
+            if is_continuation_time_error:
                 # The continuation time coming from integration context is older than 7 days. Update it to a 7 days.
                 new_continuation_time = arg_to_datetime(MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS).astimezone(  # type: ignore
                     timezone.utc
@@ -1069,10 +1205,10 @@ def main():
     command = demisto.command()
 
     try:
-        (first_fetch_timestamp,) = validate_configuration_parameters(params, command)
+        (first_fetch_timestamp, use_v1_alpha) = validate_configuration_parameters(params, command)
 
         # Initializing client Object
-        client_obj = Client(params, proxy, disable_ssl)
+        client_obj = Client(params, proxy, disable_ssl, use_v1_alpha)
 
         # trigger command based on input
         if command == "test-module":

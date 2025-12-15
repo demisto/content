@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -11,6 +11,20 @@ configuration:
   display: Server URL
   required: true
   type: 0
+  section: Connect
+- display: Account ID
+  name: account_id
+  type: 0
+  required: true
+  section: Connect
+- display: Authorization Type
+  name: auth_type
+  defaultvalue: Global API Key (Legacy)
+  options:
+  - API Token
+  - Global API Key (Legacy)
+  required: true
+  type: 15
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -24,6 +38,17 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- display: Event types to fetch
+  name: event_types_to_fetch
+  type: 16
+  defaultvalue: Account Audit Logs, User Audit Logs, Access Authentication Logs
+  section: Collect
+  advanced: true
+  options:
+  - Account Audit Logs
+  - User Audit Logs
+  - Access Authentication Logs
+  required: true
 - name: max_fetch_account_audit_logs
   defaultvalue: 5000
   section: Collect
@@ -45,28 +70,20 @@ configuration:
   advanced: true
   required: false
   type: 0
-- display: API email
+- display: API Email
   section: Connect
-  displaypassword: Global API key
+  displaypassword: Global API Key
   name: credentials
   type: 9
-  required: true
-- display: Account ID
-  name: account_id
-  type: 0
-  required: true
+  required: false  # Only needed if using "Global API key" auth type
+  additionalinfo: To use the Global API Key authorization type, provide an API Email and Global Key. These fields should be left blank if the API Token authorization type is selected.
+- displaypassword: API Token
+  hiddenusername: true
+  name: token_credentials
+  type: 9
   section: Connect
-- display: Event types to fetch
-  name: event_types_to_fetch
-  type: 16
-  defaultvalue: Account Audit Logs, User Audit Logs, Access Authentication Logs
-  section: Collect
-  advanced: true
-  options:
-  - Account Audit Logs
-  - User Audit Logs
-  - Access Authentication Logs
-  required: true
+  required: false  # Only needed if using "API token" auth type
+  additionalinfo: To use the API Token authorization type, provide an API Token. This field should be left blank if the Global API Key authorization type is selected.
 description: Cloudflare provides network and security products for consumers and businesses, utilizing reverse proxies for web traffic, edge computing, and a content distribution network to provide content across its network of servers.
 display: Cloudflare Zero Trust
 name: Cloudflare Zero Trust
@@ -97,7 +114,7 @@ script:
       isArray: true
     description: Gets events from Cloudflare Zero Trust.
     name: cloudflare-zero-trust-get-events
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.11.4417419
   isfetchevents: true
   runonce: false
   script: '-'

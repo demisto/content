@@ -9,6 +9,10 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 ## Configure Cofense Triage v3 in Cortex
 
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Cofense Triage v3.
+3. Click **Add instance** to create and configure a new integration instance.
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Server URL to connect to Cofense Triage. | True |
@@ -26,6 +30,8 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Trust any certificate (not secure) |  | False |
 | Incident type |  | False |
 | Fetch incidents |  | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Integration Settings Preferences
 
@@ -2792,6 +2798,7 @@ The following sections list the changes in this version.
 ### Commands
 
 #### The following commands were removed in this version
+
 - _cofense-search-reports_ - this command was replaced by cofense-report-list.
 - _cofense-search-inbox-reports_ - this command was replaced by cofense-report-list with argument 'report_location' .
 - _cofense-get-attachment_
@@ -2805,6 +2812,7 @@ The following sections list the changes in this version.
 The ability to mirror incident data has been added.
 
 #### The following commands were added in this version
+
 - _cofense-attachment-payload-list_
 - _cofense-category-list_
 - _cofense-cluster-list_

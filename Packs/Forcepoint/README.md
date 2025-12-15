@@ -5,6 +5,8 @@ This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
 
+Make sure you use Forcepoint API version 8.5.7 or later.
+
 You need to configure Forcepoint NGFW to forward Syslog messages in CEF format.
 
 Open Forcepoint NGFW interface, and follow these instructions;
@@ -30,7 +32,7 @@ In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
 

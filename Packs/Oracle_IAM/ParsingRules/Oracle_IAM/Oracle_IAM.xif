@@ -1,0 +1,4 @@
+[INGEST:vendor="oracle", product="oam", target_dataset="oracle_oam_raw", no_hit=keep]
+filter to_string(IAU_TSTZORIGINATING) ~= ".*\d{2}:\d{2}:\d{2}.*"
+| alter 
+	_time = IAU_TSTZORIGINATING;

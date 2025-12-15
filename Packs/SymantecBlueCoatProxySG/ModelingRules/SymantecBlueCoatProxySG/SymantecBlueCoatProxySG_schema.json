@@ -3,6 +3,14 @@
       "_raw_log": {
         "type": "string",
         "is_array": false
+      },
+      "parsed_fields": {
+        "type": "string",
+        "is_array": false
+      },
+      "raw_log_cleaned": {
+        "type": "string",
+        "is_array": false
       }
     }
   }

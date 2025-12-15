@@ -1,0 +1,28 @@
+{
+    "name": "Atlassian Jira Data Center",
+    "description": "Atlassian Jira Data Center Audit events",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Compliance",
+        "IT",
+        "Security"
+    ],
+    "useCases": [
+        "Compliance"
+    ],
+    "keywords": [
+        "Jira",
+        "Datacenter",
+        "Atlassian"
+    ],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}

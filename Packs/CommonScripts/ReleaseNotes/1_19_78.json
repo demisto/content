@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Moved clear-user-session,get-endpoint-data,block-external-ip to AggregatedScripts pack."
+}

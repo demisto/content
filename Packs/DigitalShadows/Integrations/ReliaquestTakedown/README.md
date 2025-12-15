@@ -5,7 +5,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure ReliaquestTakedown in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | DS SearchLight API URL | Enter the Digital Shadows SearchLight API URL. | True |
@@ -37,14 +36,15 @@ Create takedown command takes brand id, type, target and portal shortcode (optio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| brand_id | Brand Id. | Required | 
-| type | Takedown Type. | Required | 
-| target | Target URL. | Required | 
-| portal_id | Portal shortcode. | Optional | 
+| brand_id | Brand Id. | Required |
+| type | Takedown Type. | Required |
+| target | Target URL. | Required |
+| portal_id | Portal shortcode. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### rq-takedown-list-brand
 
 ***
@@ -62,6 +62,7 @@ Returns list of allowed brand details for takedown.
 #### Context Output
 
 There is no context output for this command.
+
 ### rq-takedown-create-comment
 
 ***
@@ -75,12 +76,13 @@ Create comment for a takedown.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| comment | Comment for takedown. Default is Investigate the tekedown. | Required | 
-| takedown_id | Takedown id. Default is UUID. | Required | 
+| comment | Comment for takedown. Default is Investigate the tekedown. | Required |
+| takedown_id | Takedown id. Default is UUID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### rq-takedown-upload-attachment
 
 ***
@@ -94,12 +96,13 @@ Uploads attachment for takedown.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | No description provided. | Required | 
-| takedown_id | No description provided. | Required | 
+| file_id | No description provided. | Required |
+| takedown_id | No description provided. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### rq-takedown-download-attachment
 
 ***
@@ -113,15 +116,17 @@ Downloads attachment for takedown.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| attachment_id | No description provided. | Required | 
+| attachment_id | No description provided. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and ReliaquestTakedown corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.

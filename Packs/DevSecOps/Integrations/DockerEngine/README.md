@@ -4212,7 +4212,7 @@ Create a secret
 | --- | --- | --- |
 | secretspec_name | User-defined name of the secret. | Optional |
 | secretspec_labels | User-defined key/value metadata. | Optional |
-| secretspec_data | Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5)) data to store as secret.  This field is only used to _create_ a secret, and is not returned by other endpoints. . | Optional |
+| secretspec_data | Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5)) data to store as secret.  This field is only used to *create* a secret, and is not returned by other endpoints. . | Optional |
 | secretspec_driver_Name | secretspec_driver Name. | Optional |
 | secretspec_driver_Options | secretspec_driver Options. | Optional |
 | secretspec_templating_Name | secretspec_templating Name. | Optional |
@@ -6537,7 +6537,7 @@ There are no input arguments for this command.
 | Docker.SystemInfo.CgroupDriver | String | The driver to use for managing cgroups.  |
 | Docker.SystemInfo.CgroupVersion | String | The version of the cgroup.  |
 | Docker.SystemInfo.NEventsListener | Number | Number of event listeners subscribed. |
-| Docker.SystemInfo.KernelVersion | String | Kernel version of the host.  On Linux, this information obtained from \`uname\`. On Windows this information is queried from the  kbd HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\ /kbd  registry value, for example _"10.0 14393 \(14393.1198.amd64fre.rs1_release_sec.170427-1353\)"_.  |
+| Docker.SystemInfo.KernelVersion | String | Kernel version of the host.  On Linux, this information obtained from \`uname\`. On Windows this information is queried from the  kbd HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\ /kbd  registry value, for example *"10.0 14393 \(14393.1198.amd64fre.rs1_release_sec.170427-1353\)"*.  |
 | Docker.SystemInfo.OperatingSystem | String | Name of the host's operating system, for example: "Ubuntu 16.04.2 LTS" or "Windows Server 2016 Datacenter"  |
 | Docker.SystemInfo.OSVersion | String | Version of the host's operating system   p    /  /p       Note  : The information returned in this field, including its   very existence, and the formatting of values, should not be considered   stable, and may change without notice.  |
 | Docker.SystemInfo.OSType | String | Generic type of the operating system of the host, as returned by the Go runtime \(\`GOOS\`\).  Currently returned values are "linux" and "windows". A full list of possible values can be found in the \[Go documentation\]\(https://golang.org/doc/install/source#environment\).  |

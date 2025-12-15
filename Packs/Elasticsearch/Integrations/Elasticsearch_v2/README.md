@@ -290,8 +290,8 @@ Search using ES|QL query (Elasticsearch 8.11 and above).
 
 | **Argument Name** | **Description**                                                                | **Required** |
 | --- |--------------------------------------------------------------------------------| --- |
-| query | The ES\|QL query string to execute using piped syntax (for example, FROM index | WHERE field == "value"). | Required | 
-| limit | Maximum number of results to return.                                           | Optional | 
+| query | The ES\|QL query string to execute using piped syntax (for example, FROM index | WHERE field == "value"). | Required |
+| limit | Maximum number of results to return.                                           | Optional |
 
 #### Context Output
 

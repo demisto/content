@@ -7,38 +7,48 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - display: Default Incident Caller ID
   name: defaultCallerId
   type: 0
   required: false
   additionalinfo: Add the default caller ID which is set when creating new TOPdesk incidents without providing a caller.
+  section: Collect
+  advanced: true
 - additionalinfo: Getting incidents with new style FIQL query is available only from TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as additional inline params as supported. More information is available in the TOPdesk integration documentation.
   display: The query to use when fetching incidents
   name: fetch_query
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Incident Mirroring Direction
   name: mirror_direction
   type: 15
@@ -53,6 +63,7 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   required: false
+  section: Collect
 - display: Comment Entry Tag
   name: comment_tag
   type: 0
@@ -62,6 +73,8 @@ configuration:
   - marketplacev2
   - platform
   required: false
+  section: Collect
+  advanced: true
 - defaultvalue: work_notes
   display: Work Note Entry Tag
   name: work_notes_tag
@@ -71,6 +84,8 @@ configuration:
   - marketplacev2
   - platform
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in TOPdesk.
   defaultvalue: ForTOPdesk
   display: File Entry Tag
@@ -80,6 +95,8 @@ configuration:
   name: file_tag
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: When selected, closing the TOPdesk ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored Cortex XSOAR Incident
@@ -89,6 +106,8 @@ configuration:
   name: close_incident
   type: 8
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in TOPdesk.
   defaultvalue: 'false'
   display: Close Mirrored TOPdesk Ticket
@@ -98,19 +117,27 @@ configuration:
   name: close_ticket
   type: 8
   required: false
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   required: false
+  section: Collect
+  advanced: true
 description: TOPdesk’s Enterprise Service Management software (ESM) lets your service teams join forces and process requests from a single platform.
 display: TOPdesk
 name: TOPdesk
@@ -2137,12 +2164,61 @@ script:
       description: TOPdesk incident's external links date.
       type: Date
   - arguments:
+    - description: The offset at which to start listing the assets at. Must be greater or equal to 0. Default is 0.
+      name: start
+      defaultValue: 0
+    - description: The amount of assets to be returned per request. Must be between 1 and 100 or 0 for all assets. Default is 50.
+      name: page_size
+      defaultValue: 50
+    - description: Supports a set of OData filters which can be combined with 'and' and 'or' assets. Filter expressions can also be grouped by parentheses. https://developers.topdesk.com/explorer/?page=assets#/Assets/getAssets.
+      name: filter
+    - description: Search assets by name.
+      name: search_term
+    - description: List only Archived or only Active devices. Leave empty for all.
+      name: archived
+      predefined:
+      - "true"
+      - "false"
+    - description: Additional fields to include in the response.
+      name: fields
+      predefined:
+      - 'archived,etag,id,text'
+      defaultValue: ''
+    description: Get list of assets.
+    name: topdesk-assets-list
+    outputs:
+    - contextPath: TOPdesk.Asset.Archived
+      description: Asset status, archived or not.
+      type: Boolean
+    - contextPath: TOPdesk.Asset.Etag
+      description: Asset entry date.
+      type: String
+    - contextPath: TOPdesk.Asset.Id
+      description: Unique ID of the Asset.
+      type: String
+    - contextPath: TOPdesk.Asset.Text
+      description: Asset freetext field, often the name of the asset.
+      type: String
+  - arguments:
+    - description: The Unique ID of the Asset.
+      name: asset_id
+      required: true
+    - description: "JSON format with the fields that you want to configure: {'asset_name':'testasset'}."
+      name: data
+      required: true
+    description: Update Asset Fields.
+    name: topdesk-asset-update
+    outputs:
+    - contextPath: TOPdesk.Asset
+      description: Dictionary of all Asset Data specific to company.
+      type: Dict
+  - arguments:
     - description: The caller ID for this incident. For an unregistered caller provide a name. For a list of registered persons or operator IDs run !topdesk-persons-list or !topdesk-operators-list.
       name: caller
       required: false
-    - auto: PREDEFINED
-      description: Status of the incident. Can only be set by operators.
+    - description: Status of the incident. Can only be set by operators.
       name: status
+      auto: PREDEFINED
       predefined:
       - firstLine
       - secondLine
@@ -2761,9 +2837,9 @@ script:
       name: id
     - description: The incident number. An ID or a number must be set. If both are set incident with relevant ID will be updated.
       name: number
-    - auto: PREDEFINED
-      description: Status of the incident. Can only be set by operators.
+    - description: Status of the incident. Can only be set by operators.
       name: status
+      auto: PREDEFINED
       predefined:
       - firstLine
       - secondLine
@@ -5748,7 +5824,9 @@ script:
     - contextPath: TOPdesk.Incident.ExternalLinks.Date
       description: TOPdesk incident's external links date.
       type: Date
-  - arguments:
+  - name: topdesk-incident-attachment-upload
+    description: Upload an attachment to an incident in TOPdesk.
+    arguments:
     - description: The incident ID. An ID or a number must be set. If both are set incident with relevant ID will be updated.
       name: id
     - description: The incident number. An ID or a number must be set. If both are set incident with relevant ID will be updated.
@@ -5766,8 +5844,6 @@ script:
       - 'false'
     - description: The description of the uploaded file.
       name: file_description
-    description: Upload an attachment to an incident in TOPdesk.
-    name: topdesk-incident-attachment-upload
     outputs:
     - contextPath: TOPdesk.Attachment.Id
       description: Attachment's ID.
@@ -5833,19 +5909,19 @@ script:
     - contextPath: TOPdesk.Action.Person
       description: Action's person.
       type: string
-  - name: get-mapping-fields
+  - arguments: []
     description: Returns the list of fields to map in outgoing mirroring.
-    arguments: []
+    name: get-mapping-fields
     outputs: []
-  - arguments:
+  - description: Gets remote data from a remote incident. This method does not update the current incident and should be used for debugging purposes only.
+    name: get-remote-data
+    arguments:
     - description: The remote incident ID.
       name: id
       required: true
     - defaultValue: '0'
       description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
-    description: Gets remote data from a remote incident. This method does not update the current incident and should be used for debugging purposes only.
-    name: get-remote-data
   - arguments:
     - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
@@ -5853,7 +5929,7 @@ script:
     name: get-modified-remote-data
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3720084
   isfetch: true
   script: ''
   subtype: python3
@@ -5867,3 +5943,6 @@ defaultmapperin: TOPdesk-incoming-mapper
 defaultmapperout: TOPdesk Outgoing Mapper
 tests:
 - No tests (auto formatted)
+sectionorder:
+- Connect
+- Collect

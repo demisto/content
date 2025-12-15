@@ -213,8 +213,8 @@ MODULE_DATA_EXTENDED_CONTEXT = [
 ]
 
 
-def is_html_response(response):
-    return "text\html" in response.headers.get("Content-Type", "").lower()
+def is_html_response(response: requests.Response):
+    return "text/html" in response.headers.get("Content-Type", "").lower()
 
 
 def get_html_from_response(response):

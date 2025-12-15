@@ -3784,7 +3784,7 @@ There are no arguments for this command.
 
 >### Tenant Information
 
->|Compute _Unit_ Expiration|Data _Enabled_ Pro _Per_ Endpoint|Forensics _ Expiration|Installed _ Prevent|Installed _Pro_ Tb|Prevent _ Expiration|Pro _Per_ Endpoint _ Expiration|Pro _Tb_ Expiration|Purchased _Compute_ Unit|Purchased _ Prevent|Purchased _Pro_ Per _ Endpoint|Purchased _Pro_ Tb|
+>|Compute *Unit* Expiration|Data *Enabled* Pro *Per* Endpoint|Forensics _ Expiration|Installed _ Prevent|Installed *Pro* Tb|Prevent _ Expiration|Pro *Per* Endpoint _ Expiration|Pro *Tb* Expiration|Purchased *Compute* Unit|Purchased _ Prevent|Purchased *Pro* Per _ Endpoint|Purchased *Pro* Tb|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  |  |  |  |  |  | May 7th 2025 06:59:59 | May 7th 2025 06:59:59 |  |  | ***agents***: 300 | ***tb***: 1 |
 

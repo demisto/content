@@ -2,7 +2,7 @@
     "name": "DNSOverHttps",
     "description": "Use this pack to make DNS queries over HTTPS to Cloudflare or Google DoH service.",
     "support": "community",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.10",
     "author": "Harri Ruuttila",
     "url": "",
     "email": "",
@@ -25,6 +25,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

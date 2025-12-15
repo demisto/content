@@ -1,18 +1,17 @@
 import json
 import re
 from datetime import datetime, timedelta
-from unittest.mock import MagicMock
+from typing import Any
+from unittest.mock import MagicMock, patch
 from urllib.parse import urlencode
 
 import demistomock as demisto
 import pytest
 import requests
 
-
 import ServiceNowv2
-import jwt
 
-from CommonServerPython import CommandResults, DemistoException, EntryType
+from CommonServerPython import CommandResults, DemistoException, EntryType, QuickActionPreview, EntryFormat
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
 from requests_mock import MockerCore
@@ -126,7 +125,6 @@ from test_data.response_constants import (
     RESPONSE_UPDATE_TICKET_SC_REQ,
     RESPONSE_UPLOAD_FILE,
     USER_RESPONSE,
-    JWT_PARAMS,
 )
 from test_data.result_constants import (
     EXPECTED_ADD_COMMENT_HR,
@@ -819,7 +817,10 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
         display_date_format="yyyy-MM-dd",
     )
     mocker.patch.object(client, "send_request", return_value=response)
-    result = command(client, args)
+    if command == create_ticket_command:
+        result = command(client, args, is_quick_action=True)
+    else:
+        result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
     assert expected_auto_extract == result[3]  # ignore_auto_extract is in the 4th place in the result of the command
 
@@ -827,7 +828,6 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
 @pytest.mark.parametrize(
     "command, args, response, expected_hr, expected_auto_extract",
     [
-        (delete_ticket_command, {"id": "1234"}, {}, "Ticket with ID 1234 was successfully deleted.", True),
         (
             add_link_command,
             {"id": "1234", "link": "http://www.demisto.com", "text": "demsito_link"},
@@ -1732,104 +1732,6 @@ def test_test_module(mocker):
     assert "Test button cannot be used when using OAuth 2.0" in str(e)
 
 
-def test_invalid_private_key():
-    """
-    Given:
-    - Invalid format of private key
-    When:
-    - creating the JWT
-    Then:
-    - Raise a Value error with informative message
-    """
-    params = {"private_key": "-----INVALID FORMAT----- test_token -----INVALID FORMAT-----", "kid": "test1", "sub": "test"}
-
-    with pytest.raises(ValueError) as e:
-        Client(
-            "server_url",
-            "sc_server_url",
-            "cr_server_url",
-            "username",
-            "password",
-            "verify",
-            "fetch_time",
-            "sysparm_query",
-            sysparm_limit=10,
-            timestamp_field="opened_at",
-            ticket_type="incident",
-            get_attachments=False,
-            incident_name="description",
-            oauth_params=OAUTH_PARAMS,
-            jwt_params=params,
-        )
-    assert "Invalid private key format" in str(e)
-
-
-def test_jwt_checker(mocker):
-    """
-    Given:
-    - private key
-    When:
-    - creating a jwt
-    Then:
-    - (a) that the return type is a string
-    - (b) validate the pem format
-    """
-
-    mocker.patch.object(jwt, "encode", return_value="")
-    client = Client(
-        "server_url",
-        "sc_server_url",
-        "cr_server_url",
-        "username",
-        "password",
-        "verify",
-        "fetch_time",
-        "sysparm_query",
-        sysparm_limit=10,
-        timestamp_field="opened_at",
-        ticket_type="incident",
-        get_attachments=False,
-        incident_name="description",
-        oauth_params=OAUTH_PARAMS,
-        jwt_params=JWT_PARAMS,
-    )
-    test_token = client.check_private_key(JWT_PARAMS["private_key"])
-    assert isinstance(test_token, str)
-    assert test_token.startswith("-----BEGIN PRIVATE KEY-----")
-    assert test_token.endswith("-----END PRIVATE KEY-----")
-
-
-def test_jwt_init(mocker):
-    """
-    Given:
-    - JWT credential
-    When:
-    - User connect using JWT authentication
-    Then:
-    - create jwt
-    """
-    mocker.patch("jwt.encode", return_value="test")
-    client = Client(
-        "server_url",
-        "sc_server_url",
-        "cr_server_url",
-        "username",
-        "password",
-        "verify",
-        "fetch_time",
-        "sysparm_query",
-        sysparm_limit=10,
-        timestamp_field="opened_at",
-        ticket_type="incident",
-        get_attachments=False,
-        incident_name="description",
-        oauth_params=OAUTH_PARAMS,
-        jwt_params=JWT_PARAMS,
-    )
-    jwt = client.create_jwt()
-    assert jwt == "test"
-
-
 def test_oauth_test_module(mocker):
     """
     Given:
@@ -2476,7 +2378,14 @@ TICKET_FIELDS = {
 
 def ticket_fields(*args, **kwargs):
     state = "7" if kwargs.get("ticket_type") == "incident" else "3"
-    assert args[0] == {"state": state}
+    if state == "7":
+        assert args[0] == {
+            "close_code": "Resolved by caller",
+            "close_notes": "This is the resolution note required by ServiceNow to move " "the incident to the Resolved state.",
+            "state": state,
+        }
+    else:
+        assert args[0] == {"state": state}
 
     return {"state": "3"}
 
@@ -2682,6 +2591,65 @@ def test_clear_fields_in_get_ticket_fields(args, expected_ticket_fields):
     else:
         res = get_ticket_fields(args)
         assert res == expected_ticket_fields
+
+
+def test_add_default_closure_fields_to_delta_sets_defaults():
+    """
+    Given a delta dict missing all closure fields,
+    When add_default_closure_fields_to_delta is called,
+    Then it sets all defaults.
+    """
+    from ServiceNowv2 import add_default_closure_fields_to_delta
+
+    delta = {}
+    result = add_default_closure_fields_to_delta(delta.copy())
+    assert result["close_code"] == "Resolved by caller"
+    assert (
+        result["close_notes"] == "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+    )
+
+
+def test_add_default_closure_fields_to_delta_preserves_existing():
+    """
+    Given a delta dict with some closure fields set,
+    When add_default_closure_fields_to_delta is called,
+    Then it does not overwrite existing fields.
+    """
+    from ServiceNowv2 import add_default_closure_fields_to_delta
+
+    delta = {"state": "6", "close_code": "Already closed"}
+    result = add_default_closure_fields_to_delta(delta.copy(), close_code="Resolved", close_notes="Closed.")
+    assert result["state"] == "6"  # Should not overwrite
+    assert result["close_code"] == "Already closed"  # Should not overwrite
+    assert result["close_notes"] == "Closed."  # Should set default if missing
+
+
+def test_add_default_closure_fields_to_delta_custom_values():
+    """
+    Given custom close_code and close_notes,
+    When add_default_closure_fields_to_delta is called,
+    Then it sets the custom values if missing in delta.
+    """
+    from ServiceNowv2 import add_default_closure_fields_to_delta
+
+    delta = {}
+    result = add_default_closure_fields_to_delta(delta.copy(), close_code="CustomCode", close_notes="CustomNotes")
+    assert result["close_code"] == "CustomCode"
+    assert result["close_notes"] == "CustomNotes"
+
+
+def test_add_default_closure_fields_to_delta_partial():
+    """
+    Given a delta dict missing some closure fields,
+    When add_default_closure_fields_to_delta is called,
+    Then it only sets missing fields.
+    """
+    from ServiceNowv2 import add_default_closure_fields_to_delta
+
+    delta = {"close_code": "Manual"}
+    result = add_default_closure_fields_to_delta(delta.copy(), close_code="CustomCode", close_notes="CustomNotes")
+    assert result["close_code"] == "Manual"  # Should not overwrite
+    assert result["close_notes"] == "CustomNotes"
 
 
 def test_clear_fields_for_update_remote_system():
@@ -3037,7 +3005,14 @@ def test_converts_close_code_or_state_to_close_reason(
 
 def ticket_fields_mocker(*args, **kwargs):
     state = "88" if kwargs.get("ticket_type") == "incident" else "90"
-    fields = {"state": state}
+    if state == "88":
+        fields = {
+            "close_code": "Resolved by caller",
+            "close_notes": "This is the resolution note required by ServiceNow to move " "the incident to the Resolved state.",
+            "state": state,
+        }
+    else:
+        fields = {"state": state}
     assert fields == args[0]
     return fields
 
@@ -3449,3 +3424,598 @@ def test_incident_id_not_in_last_fetched(mocker):
 
     # Assert that set_integration_context was never called because no incident ID was removed
     res.assert_not_called()
+
+
+class TestQuickActionPreview:
+    """
+    Unit tests for the QuickActionPreview dataclass.
+
+    Tests:
+        - Initialization with full data
+        - Initialization with partial data and logging missing fields
+        - Conversion of instance to context dictionary
+    """
+
+    @pytest.fixture
+    def full_data(self) -> dict[str, Any]:
+        """
+        Given a complete dataset,
+        When used to initialize QuickActionPreview,
+        Then it provides all necessary fields.
+        """
+        return {
+            "id": "123",
+            "title": "Test Ticket",
+            "description": "This is a test description.",
+            "status": "Open",
+            "assignee": "John Doe",
+            "creation_date": "2024-05-14T12:00:00Z",
+            "severity": "High",
+        }
+
+    @pytest.fixture
+    def partial_data(self) -> dict[str, Any]:
+        """
+        Given a dataset with some missing fields,
+        When used to initialize QuickActionPreview,
+        Then it simulates a scenario with incomplete data.
+        """
+        return {
+            "id": "456",
+            "title": None,
+            "description": "Another test description.",
+            "status": None,
+            "assignee": "Jane Doe",
+            "creation_date": None,
+            "severity": "Low",
+        }
+
+    def test_full_init(self, full_data: dict[str, Any]) -> None:
+        """
+        Given a full dataset,
+        When initializing QuickActionPreview,
+        Then all fields should be set correctly.
+        """
+        preview = QuickActionPreview(**full_data)
+        assert preview.id == full_data["id"]
+        assert preview.title == full_data["title"]
+        assert preview.status == full_data["status"]
+        assert preview.assignee == full_data["assignee"]
+
+    def test_partial_init_logs_missing_fields(self, mocker, partial_data: dict[str, Any]) -> None:
+        """
+        Given a partial dataset with missing fields,
+        When initializing QuickActionPreview,
+        Then demisto.debug should log the missing fields.
+        """
+        mock_debug = mocker.patch("demistomock.debug")
+        QuickActionPreview(**partial_data)
+        mock_debug.assert_called_once()
+        args, _ = mock_debug.call_args
+        assert "title" in args[0]
+        assert "status" in args[0]
+        assert "creation_date" in args[0]
+
+    def test_to_context(self, full_data: dict[str, Any]) -> None:
+        """
+        Given a fully initialized QuickActionPreview,
+        When calling to_context,
+        Then it should return the correct dictionary representation.
+        """
+        preview = QuickActionPreview(**full_data)
+        context = preview.to_context()
+        assert context == full_data
+
+
+@pytest.fixture
+def mock_client():
+    """
+    Pytest fixture to create a mocked ServiceNow Client instance.
+    This provides a fresh mock for each test function.
+    """
+    client = MagicMock(spec=Client)
+    client.ticket_type = "incident"
+    client.use_display_value = False
+    client.display_date_format = None
+    client.sys_param_limit = 50
+    client.sys_param_offset = 0
+    return client
+
+
+@pytest.fixture
+def mock_params():
+    """
+    Pytest fixture for mock integration parameters.
+    """
+    return {
+        "close_incident": "closed",
+        "file_tag_from_service_now": "file_from_snow",
+        "comment_tag_from_servicenow": "comment_from_snow",
+        "work_notes_tag_from_servicenow": "work_note_from_snow",
+        "server_close_custom_state": "",
+        "server_custom_close_code": "",
+    }
+
+
+def test_get_remote_data_ticket_not_found(mock_client: MagicMock, mock_params) -> None:
+    """
+    Tests that the function returns a 'Ticket was not found' message when client.get fails.
+
+    Args:
+        mock_client: The mocked ServiceNow client.
+        mock_params: The mocked integration parameters.
+    """
+    # Arrange
+    ticket_id = "INC12345"
+    last_update_ts = int((datetime.now() - timedelta(days=1)).timestamp())
+    args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
+
+    # Configure mock to return an empty result, simulating a non-existent ticket
+    mock_client.get.return_value = {"result": []}
+
+    # Act
+    result = get_remote_data_command(mock_client, args, mock_params)
+
+    # Assert
+    assert result == "Ticket was not found."
+    mock_client.get.assert_called_once_with(mock_client.ticket_type, ticket_id, use_display_value=False)
+
+
+@patch("ServiceNowv2.is_new_incident", return_value=False)
+def test_get_remote_data_no_updates(mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params) -> None:
+    """
+    Tests that the function returns an empty dictionary if the ticket has not been updated
+    since the last fetch.
+
+    Args:
+        mock_is_new_incident: Mock of is_new_incident function.
+        mock_client: The mocked ServiceNow client.
+        mock_params: The mocked integration parameters.
+    """
+    # Arrange
+    ticket_id = "INC12345"
+    # Last update from XSOAR is now, ticket was updated 1 hour ago
+    last_update_ts = int(datetime.now().timestamp())
+    ticket_updated_on = datetime.now() - timedelta(hours=1)
+
+    args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
+
+    ticket_data = {
+        "result": [
+            {
+                "sys_id": ticket_id,
+                "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        ]
+    }
+    mock_client.get.return_value = ticket_data
+
+    with patch("ServiceNowv2.demisto") as mock_demisto:
+        # isFetch is a parameter of the integration, so we mock it here
+        mock_demisto.params.return_value = {"isFetch": True}
+
+        # Act
+        result = get_remote_data_command(mock_client, args, mock_params)
+
+        # Assert
+        assert result == [{}]  # An empty dict inside a list indicates no incident update
+
+
+@patch("ServiceNowv2.is_new_incident", return_value=False)
+def test_get_remote_data_with_new_comments(mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params) -> None:
+    """
+    Tests that new comments are correctly fetched and formatted into entries when a ticket is updated.
+
+    Args:
+        mock_is_new_incident: Mock of is_new_incident function.
+        mock_client: The mocked ServiceNow client.
+        mock_params: The mocked integration parameters.
+    """
+    # Arrange
+    ticket_id = "INC12345"
+    last_update_ts = int((datetime.now() - timedelta(days=1)).timestamp())
+    ticket_updated_on = datetime.now()
+
+    args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
+
+    ticket_data = {
+        "result": [
+            {
+                "sys_id": ticket_id,
+                "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+                "short_description": "Updated description",
+            }
+        ]
+    }
+
+    comments_data = {
+        "result": [
+            {
+                "element": "comments",
+                "sys_created_by": "abel.tuter",
+                "sys_created_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+                "value": "This is a new comment.",
+            }
+        ]
+    }
+
+    mock_client.get.return_value = ticket_data
+    mock_client.get_ticket_attachment_entries.return_value = []
+    mock_client.query.return_value = comments_data
+
+    with patch("ServiceNowv2.demisto") as mock_demisto:
+        mock_demisto.params.return_value = {"isFetch": True}
+
+        # Act
+        result = get_remote_data_command(mock_client, args, mock_params)
+
+        # Assert
+        # Expecting a list with two items: the updated incident data and the new comment entry
+        assert isinstance(result, list)
+        assert len(result) == 2
+
+        # Check incident data
+        updated_incident = result[0]
+        assert updated_incident["short_description"] == "Updated description"
+
+        # Check entry data
+        comment_entry = result[1]
+        assert "This is a new comment." in comment_entry["Contents"]
+        assert comment_entry["Note"] is True
+
+
+@patch("ServiceNowv2.is_new_incident", return_value=False)
+def test_get_remote_data_with_new_attachment(mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params) -> None:
+    """
+    Tests that new file attachments are fetched and formatted correctly.
+
+    Args:
+        mock_is_new_incident: Mock of is_new_incident function.
+        mock_client: The mocked ServiceNow client.
+        mock_params: The mocked integration parameters.
+    """
+    # Arrange
+    ticket_id = "INC12345"
+    last_update_ts = int((datetime.now() - timedelta(days=1)).timestamp())
+    ticket_updated_on = datetime.now()
+
+    args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
+
+    ticket_data = {
+        "result": [
+            {
+                "sys_id": ticket_id,
+                "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        ]
+    }
+
+    attachment_entry = {"File": "evidence.txt", "FileID": "mock_file_id", "Tags": [mock_params["file_tag_from_service_now"]]}
+
+    mock_client.get.return_value = ticket_data
+    mock_client.get_ticket_attachment_entries.return_value = [attachment_entry]
+    mock_client.query.return_value = {"result": []}  # No new comments
+
+    with patch("ServiceNowv2.demisto") as mock_demisto:
+        mock_demisto.params.return_value = {"isFetch": True}
+
+        # Act
+        result = get_remote_data_command(mock_client, args, mock_params)
+
+        # Assert
+        assert isinstance(result, list)
+        assert len(result) == 2
+        assert result[1]["File"] == "evidence.txt"
+        assert result[1]["Tags"] == [mock_params["file_tag_from_service_now"]]
+
+
+@patch("ServiceNowv2.is_new_incident", return_value=False)
+def test_get_remote_data_incident_closed(mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params) -> None:
+    """
+    Tests that a closing entry is created when a ticket is found to be closed in ServiceNow.
+
+    Args:
+        mock_is_new_incident: Mock of is_new_incident function.
+        mock_client: The mocked ServiceNow client.
+        mock_params: The mocked integration parameters.
+    """
+    # Arrange
+    ticket_id = "INC12345"
+    last_update_ts = int((datetime.now() - timedelta(days=1)).timestamp())
+    ticket_updated_on = datetime.now()
+    args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
+
+    # state '7' corresponds to 'Closed' in the TICKET_STATES mapping
+    ticket_data = {
+        "result": [
+            {
+                "sys_id": ticket_id,
+                "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+                "state": "7",
+                "close_notes": "Issue resolved.",
+                "closed_at": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        ]
+    }
+
+    mock_client.get.return_value = ticket_data
+    mock_client.get_ticket_attachment_entries.return_value = []
+    mock_client.query.return_value = {"result": []}
+
+    with patch("ServiceNowv2.demisto") as mock_demisto:
+        mock_demisto.params.return_value = {"isFetch": True}
+
+        # Act
+        result = get_remote_data_command(mock_client, args, mock_params)
+
+        # Assert
+        assert isinstance(result, list)
+        assert len(result) == 2  # Incident update + closing note
+
+        # Find the closing entry
+        closing_entry = None
+        for entry in result:
+            if (
+                isinstance(entry, dict)
+                and entry.get("Type") == EntryType.NOTE
+                and isinstance(entry.get("Contents"), dict)
+                and entry["Contents"].get("dbotIncidentClose")
+            ):
+                closing_entry = entry
+                break
+
+        assert closing_entry is not None
+        assert closing_entry["Type"] == EntryType.NOTE
+        assert closing_entry["ContentsFormat"] == EntryFormat.JSON
+        assert closing_entry["Contents"]["dbotIncidentClose"] is True
+        assert closing_entry["Contents"]["closeNotes"] == "Issue resolved."
+        assert closing_entry["Contents"]["closeReason"] == "Resolved"
+
+
+def test_get_remote_data_preview_missing_id(mock_client: MagicMock) -> None:
+    """
+    Tests that the function raises a ValueError when the 'id' argument is missing.
+
+    Args:
+        mock_client: The mocked ServiceNow client.
+    """
+    # Arrange
+    args = {}  # 'id' is missing
+
+    # Act & Assert
+    with pytest.raises(ValueError, match=r"ServiceNow Ticket ID \('id'\) is required for preview."):
+        ServiceNowv2.get_remote_data_preview_command(mock_client, args)
+
+
+@patch("ServiceNowv2.DemistoException", DemistoException)  # Use the real exception for checking
+def test_get_remote_data_preview_api_error(mock_client: MagicMock) -> None:
+    """
+    Tests that the function raises a DemistoException when the client API call fails.
+
+    Args:
+        mock_client: The mocked ServiceNow client.
+    """
+    # Arrange
+    args = {"id": "INC12345"}
+    mock_client.get.side_effect = Exception("API connection failed")
+
+    # Act & Assert
+    with pytest.raises(DemistoException, match="Failed to fetch ticket INC12345 from ServiceNow. Error: API connection failed"):
+        ServiceNowv2.get_remote_data_preview_command(mock_client, args)
+
+
+@patch("ServiceNowv2.CommandResults", CommandResults)  # Use the real class to build the object
+@patch("ServiceNowv2.QuickActionPreview", QuickActionPreview)  # Use the real class to build the object
+def test_get_remote_data_preview_success(mock_client: MagicMock) -> None:
+    """
+    Tests the successful generation of a ticket preview.
+
+    Args:
+        mock_client: The mocked ServiceNow client.
+    """
+    # Arrange
+    ticket_id = "INC0010005"
+    args = {"id": ticket_id}
+
+    # A realistic API response with display_value sub-keys
+    mock_api_response = {
+        "result": {
+            "number": {"display_value": ticket_id},
+            "short_description": {"display_value": "Email server is down"},
+            "description": {"display_value": "Users are unable to send or receive emails."},
+            "state": {"display_value": "In Progress"},
+            "assigned_to": {"display_value": "Beth Anglin"},
+            "sys_created_on": {"display_value": "2024-01-01 10:00:00"},
+            "priority": {"display_value": "1 - Critical"},
+        }
+    }
+    mock_client.get.return_value = mock_api_response
+
+    # Act
+    result = ServiceNowv2.get_remote_data_preview_command(mock_client, args)
+
+    # Assert
+    # 1. Check that the client's get method was called correctly
+    mock_client.get.assert_called_once_with(mock_client.ticket_type, ticket_id, use_display_value=True)
+
+    # 2. Check the returned CommandResults object and its contents
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "QuickActionPreview"
+    assert result.outputs_key_field == "id"
+
+    # 3. Check the outputs, which should be the context from QuickActionPreview
+    expected_outputs = {
+        "id": "INC0010005",
+        "title": "Email server is down",
+        "description": "Users are unable to send or receive emails.",
+        "status": "In Progress",
+        "assignee": "Beth Anglin",
+        "creation_date": "2024-01-01 10:00:00",
+        "severity": "1 - Critical",
+    }
+    assert result.outputs == expected_outputs
+
+    # 4. Check the raw response
+    assert result.raw_response == mock_api_response
+
+
+@patch("ServiceNowv2.CommandResults", CommandResults)
+@patch("ServiceNowv2.QuickActionPreview", QuickActionPreview)
+def test_get_remote_data_preview_success_with_list_response(mock_client: MagicMock) -> None:
+    """
+    Tests successful preview generation when the API returns a list with one item.
+
+    Args:
+        mock_client: The mocked ServiceNow client.
+    """
+    # Arrange
+    ticket_id = "INC0010006"
+    args = {"id": ticket_id}
+
+    # API response as a list containing one dictionary
+    mock_api_response = {
+        "result": [
+            {
+                "number": {"display_value": ticket_id},
+                "short_description": {"display_value": "Network printer offline"},
+                "state": {"display_value": "New"},
+                # Other fields omitted for brevity
+            }
+        ]
+    }
+    mock_client.get.return_value = mock_api_response
+
+    # Act
+    result = ServiceNowv2.get_remote_data_preview_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert result.outputs["id"] == ticket_id
+    assert result.outputs["title"] == "Network printer offline"
+    assert result.outputs["status"] == "New"
+
+
+class UpdateRemoteSystemArgs:
+    def __init__(self, delta):
+        self.delta = delta
+
+
+# Sample delta dict to test mutation
+DEFAULT_DELTA = {"key": "value"}
+
+
+@pytest.mark.parametrize(
+    "state,ticket_type,custom_state,should_patch",
+    [
+        ("7", "incident", None, True),  # Given closed state (7)
+        ("6", "incident", None, True),  # Given resolved state (6)
+        ("9", "incident", "9", True),  # Given custom close state (match) and type incident
+        ("9", "problem", "9", False),  # Given custom state match but non-incident type
+        ("5", "incident", "9", False),  # Given wrong state
+        (None, "incident", None, False),  # Given missing state and no custom close state
+    ],
+)
+@patch("ServiceNowv2.add_default_closure_fields_to_delta")
+def test_set_default_fields_behavior(mock_add_defaults, state, ticket_type, custom_state, should_patch):
+    """
+    GIVEN: an UpdateRemoteSystemArgs object with a delta containing various 'state' values,
+    AND different combinations of ticket_type and custom_state,
+
+    WHEN: set_default_fields is called,
+
+    THEN: it should call add_default_closure_fields_to_delta and log a debug message
+         only if the state is "6", "7", or matches custom_state and ticket_type is "incident".
+    """
+    initial_delta = {"state": state} if state is not None else {}
+    args = UpdateRemoteSystemArgs(delta=initial_delta.copy())
+    modified_delta = initial_delta.copy()
+    modified_delta["close_code"] = "default_code"
+    modified_delta["close_notes"] = "default_notes"
+
+    mock_add_defaults.return_value = modified_delta
+
+    result = ServiceNowv2.set_default_fields(args, ticket_type, custom_state)
+
+    if should_patch:
+        mock_add_defaults.assert_called_once_with(initial_delta)
+        assert result.delta == modified_delta
+    else:
+        mock_add_defaults.assert_not_called()
+        assert result.delta == initial_delta
+
+
+def test_delete_ticket_command_success(mock_client: MagicMock):
+    """
+    Tests successful ticket deletion.
+    Verifies that when a ticket is successfully deleted, the function returns
+    the correct success status and message.
+    """
+
+    mock_client.delete = MagicMock(return_value="")
+    mock_client.get_table_name = MagicMock(return_value="incident")
+
+    args = {"id": "12345", "ticket_type": "incident"}
+
+    result = delete_ticket_command(mock_client, args)
+
+    assert "Ticket with ID 12345 was successfully deleted from incident table." in result.readable_output
+    assert result.outputs is not None
+    assert result.outputs["ID"] == "12345"
+    assert result.outputs["DeleteMessage"] == "Ticket with ID 12345 was successfully deleted from incident table."
+
+
+def test_delete_ticket_command_not_found(mock_client: MagicMock):
+    """
+    Tests ticket deletion when record is not found.
+    Verifies that when attempting to delete a non-existent ticket, the function
+    returns the correct failure status and error message.
+    """
+    mock_client.delete = MagicMock(return_value={"result": []})
+    mock_client.get_table_name.return_value = "incident"
+    args = {"id": "99999", "ticket_type": "incident"}
+
+    result = delete_ticket_command(mock_client, args)
+
+    assert "Failed to delete ticket 99999 from incident table. Record may not exist." in result.readable_output
+    assert result.outputs is not None
+    assert result.outputs["ID"] == "99999"
+    assert result.outputs["DeleteMessage"] == "Failed to delete ticket 99999 from incident table. Record may not exist."
+
+
+def test_client_jwt_param_usage(mocker):
+    """
+    Given:
+    - JWT params provided to the ServiceNow CMDB Client
+    When:
+    - Initializing the Client with jwt_params
+    Then:
+    - ServiceNowClient is instantiated with the same jwt_params
+    - The jwt attribute is set on the inner ServiceNowClient
+    """
+    jwt_params = {
+        "private_key": "-----BEGIN PRIVATE KEY-----test-----END PRIVATE KEY-----",
+        "kid": "test_kid",
+        "sub": "test_sub",
+        "aud": "test_aud",
+        "iss": "test_iss",
+    }
+    mocker.patch("ServiceNowApiModule.jwt.encode", return_value="jwt_token_stub")
+    client = Client(
+        "server_url",
+        "sc_server_url",
+        "cr_server_url",
+        "username",
+        "password",
+        "verify",
+        "fetch_time",
+        "sysparm_query",
+        sysparm_limit=10,
+        timestamp_field="opened_at",
+        ticket_type="incident",
+        get_attachments=False,
+        incident_name="description",
+        oauth_params=OAUTH_PARAMS,
+        jwt_params=jwt_params,
+    )
+    assert hasattr(client.snow_client, "jwt")
+    assert client.snow_client.jwt == "jwt_token_stub"

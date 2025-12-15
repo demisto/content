@@ -231,6 +231,6 @@ script:
 tests:
 - CSV_Feed_Test
 fromversion: 5.5.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

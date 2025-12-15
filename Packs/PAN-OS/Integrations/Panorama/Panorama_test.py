@@ -10,6 +10,7 @@ import requests_mock
 from CommonServerPython import CommandResults, DemistoException
 from defusedxml import ElementTree
 from freezegun import freeze_time
+from datetime import datetime
 from panos.device import Vsys
 from panos.firewall import Firewall
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
@@ -8298,7 +8299,7 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
     assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[0].args == (
         "Correlation",
-        "query and (match_time geq '2024/04/08 07:22:54')",
+        "(query) and (match_time geq '2024/04/08 07:22:54')",
         10,
         1,
         0,
@@ -8347,7 +8348,7 @@ def test_fetch_incidents_offset(mocker: MockerFixture):
     assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[0].args == (
         "Correlation",
-        "query and (match_time geq '2024/04/08 07:22:54')",
+        "(query) and (match_time geq '2024/04/08 07:22:54')",
         5,
         1,
         0,
@@ -8364,7 +8365,7 @@ def test_fetch_incidents_offset(mocker: MockerFixture):
     assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[1].args == (
         "Correlation",
-        "query and (match_time geq '2024/04/08 07:22:54')",
+        "(query) and (match_time geq '2024/04/08 07:22:54')",
         5,
         1,
         5,
@@ -8494,3 +8495,864 @@ def test_show_jobs_id_not_found(patched_run_op_command):
 
     with pytest.raises(DemistoException, match="The given ID 23 is not found in all devices of the topology."):
         UniversalCommand.show_jobs(topology=MockTopology(), id=23)
+
+
+@patch("Panorama.TemplateStack.refreshall")
+@patch("Panorama.Template.refreshall")
+@patch("Panorama.run_op_command")
+def test_pan_os_get_certificate_info_command(
+    patched_run_op_command, template_refreshall, template_stack_refreshall, mocker: MockerFixture, requests_mock: RequestsMock
+):
+    """
+    Test pan-os-get-certificate-expiration command.
+
+    This test validates that:
+    1. The command correctly fetches certificates from Panorama devices
+    2. The command correctly fetches certificates from Firewall devices
+    3. The command correctly fetches predefined certificates
+    4. The command returns appropriate output
+    """
+
+    from Panorama import pan_os_get_certificate_info_command
+
+    def side_effect_func(device, cmd, **kwargs):
+        if cmd == "request certificate show":
+            return load_xml_root_from_test_file("test_data/request_certificate_show.xml")
+        elif cmd == "show config running":
+            return load_xml_root_from_test_file("test_data/show_running_config.xml")
+        elif cmd == "show config pushed-template":
+            return load_xml_root_from_test_file("test_data/show_config_pushed_template.xml")
+        else:
+            return None
+
+    mock_template = MagicMock(spec=Template)
+    mock_template.devices = []
+    template_refreshall.return_value = [mock_template]
+
+    mock_template_stack = MagicMock(spec=TemplateStack)
+    mock_template_stack.devices = [MOCK_FIREWALL_1_SERIAL]
+    template_stack_refreshall.return_value = [mock_template_stack]
+
+    patched_run_op_command.side_effect = side_effect_func
+
+    # # Mock Panorama device
+    mock_panorama = MagicMock(spec=Panorama)
+    mock_panorama.hostname = "panorama.test"
+    mock_panorama_devices = [mock_panorama]
+
+    # # Mock Firewall device
+    mock_firewall = MagicMock(spec=Firewall)
+    mock_firewall.serial = MOCK_FIREWALL_1_SERIAL
+    mock_firewall.parent = MagicMock(get=lambda x: "panorama.test" if x == "hostname" else None)
+    mock_firewall_devices = [mock_firewall]
+
+    # Mock empty topology
+    mock_topology = MagicMock()
+    mock_topology.panorama_devices.return_value = mock_panorama_devices
+    mock_topology.firewall_devices.return_value = mock_firewall_devices
+
+    Panorama.URL = "https://1.1.1.1:443/api/"
+
+    # Define output of http request to "/config/predefined/certificate"
+    with open("test_data/config_predefined_certificate.txt") as f:
+        requests_mock.get(Panorama.URL, text=f.read())
+
+    result = pan_os_get_certificate_info_command(topology=mock_topology, args={"show_expired_only": False})
+
+    assert isinstance(result, CommandResults)
+
+    assert result.outputs == load_json("test_data/get_certificate_info_command.json")
+
+
+class TestDynamicUpdateCommands:
+    @pytest.mark.parametrize(
+        "update_type_str, expected_api_call",
+        [
+            ("APP_THREAT", "<request><content><upgrade><download><latest/></download></upgrade></content></request>"),
+            ("ANTIVIRUS", "<request><anti-virus><upgrade><download><latest/></download></upgrade></anti-virus></request>"),
+            ("WILDFIRE", "<request><wildfire><upgrade><download><latest/></download></upgrade></wildfire></request>"),
+            (
+                "GP",
+                "<request><global-protect-clientless-vpn><upgrade><download><latest/></download></upgrade></global-protect-clientless-vpn></request>",
+            ),
+        ],
+    )
+    def test_download_latest_dynamic_update_content(self, update_type_str, expected_api_call, mocker):
+        """Test that for each dynamic update type, the correct API call is made.
+
+        Args:
+            update_type_str (str): Type of dynamic update to download.
+            expected_api_call (str): Expected API call to download the given update type.
+        """
+        from Panorama import panorama_download_latest_dynamic_update_content
+        from Panorama import DynamicUpdateType
+
+        update_type = getattr(DynamicUpdateType, update_type_str)
+        mock_request = mocker.patch("Panorama.http_request", return_value={})
+        panorama_download_latest_dynamic_update_content(update_type=update_type, target="1337")
+        request_call_args = mock_request.call_args[1]
+        assert request_call_args["body"]["cmd"] == expected_api_call
+
+    def test_panorama_check_latest_dynamic_update_command(self, mocker):
+        """test_panorama_check_latest_dynamic_update_command Test function to check current status of dynamic updates.
+
+        Test the function that gathers information on latest available and currently installed dynamic updates using
+        sample PAN-OS API responses to ensure the data is processed and the function returns the expected reaponse.
+        """
+        from Panorama import panorama_check_latest_dynamic_update_command
+
+        # Side-effect function to return the proper NGFW API response for the requested dynamic update type
+        def side_effect_function(update_type, target):
+            if update_type.name == "APP_THREAT":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_app-threat.json")
+
+            elif update_type.name == "ANTIVIRUS":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_antivirus.json")
+
+            elif update_type.name == "WILDFIRE":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_wildfire.json")
+
+            elif update_type.name == "GP":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_gp.json")
+
+            else:
+                return None
+
+        mock_api_call = mocker.patch("Panorama.panorama_check_latest_dynamic_update_content")
+        mock_api_call.side_effect = side_effect_function
+
+        mock_return_results = mocker.patch("Panorama.return_results")
+
+        panorama_check_latest_dynamic_update_command({"target": "1337"})
+
+        # Prepare results for comparison
+        returned_commandresults: CommandResults = mock_return_results.call_args[0][0]
+        expected_returned_output = load_json("test_data/pan-os-check-latest-dynamic-update-status_expected-returned-outputs.json")
+        expected_returned_readable = (
+            "### Dynamic Update Status Summary\n|Update Type|Is Up To Date|Latest Available "
+            "Version|Currently Installed Version|\n|---|---|---|---|\n| Content | True | 8987-9481 | 8987-9481 |\n| "
+            "AntiVirus | False | 5212-5732 | 5211-5731 |\n| WildFire | False | 986250-990242 | 986026-990018 |\n| GP | "
+            "True | 98-260 | 98-260 |\n\n\n**Total Content Types Outdated: 2**"
+        )
+
+        assert returned_commandresults.outputs == expected_returned_output
+        assert returned_commandresults.readable_output == expected_returned_readable
+
+    def test_panorama_check_latest_dynamic_update_panorama_instance(self, mocker):
+        """
+        Given:
+            - A panorama instance (VSYS instance parameter is set to '').
+            - target argument is not specified (set to '').
+
+        When:
+            - Calling the panorama_check_latest_dynamic_update_command.
+
+        Then:
+            - Verify that an exception is raised askung the user to specify a target firewall
+            when running from a Panorama instance.
+
+        """
+        from Panorama import panorama_check_latest_dynamic_update_command
+
+        # VSYS global variable is set to '' by default, which means we are simulating a run from a Panorama instance.
+
+        mocker.patch("Panorama.VSYS", "")
+
+        with pytest.raises(DemistoException) as e:
+            panorama_check_latest_dynamic_update_command({"target": ""})
+        assert "When running from a Panorama instance, you must specify the target argument." in str(e.value)
+
+    def test_panorama_check_latest_dynamic_update_command_empty_response(self, mocker):
+        """
+        Tests the scenario were the response from the 'panorama_check_latest_dynamic_update_content' api call, includes no
+        entries - which means that the Firewall probably doesn't have any App/Threat or Antivirus, or Wildfire or GP
+        installed.
+
+        Given:
+            - a Panorama instance.
+            - Mock response for the 'panorama_check_latest_dynamic_update_content' api call, with no entries.
+
+        When:
+            - Calling the panorama_check_latest_dynamic_update_command.
+
+        Then:
+            - Verify that the outputs include no versions (all versions set to N/A).
+            - Verify that the expected debug log is created.
+
+        """
+        from Panorama import panorama_check_latest_dynamic_update_command
+
+        mocker.patch(
+            "Panorama.panorama_check_latest_dynamic_update_content",
+            return_value={
+                "response": {
+                    "@status": "success",
+                    "result": {"content-updates": {"@last-updated-at": "2025/06/11 13:40:16 PDT", "entry": []}},
+                }
+            },
+        )
+
+        mock_return_results = mocker.patch("Panorama.return_results")
+        mock_debug = mocker.patch.object(demisto, "debug")
+
+        panorama_check_latest_dynamic_update_command({"target": "1337"})
+
+        # Prepare results for comparison
+        returned_commandresults: CommandResults = mock_return_results.call_args[0][0]
+        expected_returned_output = {
+            "Content": {"LatestAvailable": {}, "CurrentlyInstalled": {}, "IsUpToDate": False},
+            "AntiVirus": {"LatestAvailable": {}, "CurrentlyInstalled": {}, "IsUpToDate": False},
+            "WildFire": {"LatestAvailable": {}, "CurrentlyInstalled": {}, "IsUpToDate": False},
+            "GP": {"LatestAvailable": {}, "CurrentlyInstalled": {}, "IsUpToDate": False},
+            "ContentTypesOutOfDate": {"Count": 4},
+        }
+        expected_returned_readable = (
+            "### Dynamic Update Status Summary\n|Update Type|Is Up To Date|Latest Available "
+            "Version|Currently Installed Version|\n|---|---|---|---|\n| Content | False | N/A | N/A |"
+            "\n| AntiVirus | False | N/A | N/A |\n| WildFire | False | N/A | N/A |\n| GP | False | N/A "
+            "| N/A |\n\n\n**Total Content Types Outdated: 4**"
+        )
+
+        assert mock_debug.call_args[0][0] == (
+            "No available updates " "(Firewall probably doesn't have any global-protect-clientless-vpn installed)."
+        )
+        assert returned_commandresults.outputs == expected_returned_output
+        assert returned_commandresults.readable_output == expected_returned_readable
+
+    def test_panorama_check_latest_dynamic_update_command_no_gp_license(self, mocker):
+        """
+        Tests the scenario were there is no Global Protect license on the Firewall.
+
+        Given:
+            - a Panorama instance.
+            - Mock response for the 'panorama_check_latest_dynamic_update_content' api call, with an exception regfarding the
+            GP missing license.
+
+        When:
+            - Calling the panorama_check_latest_dynamic_update_command.
+
+        Then:
+            - Verify that the outputs include the versions of the content, wildfire and antivirus, and the error message
+              egarding the gp missing license.
+            - Verify that the human readable output includes the versions of the versions of the content, wildfire and
+              antivirus, and the error message regarding the gp missing license.
+        """
+
+        from Panorama import panorama_check_latest_dynamic_update_command
+
+        # Side-effect function to return the proper NGFW API response for the requested dynamic update type
+        def side_effect_function(update_type, target):
+            if update_type.name == "APP_THREAT":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_app-threat.json")
+
+            elif update_type.name == "ANTIVIRUS":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_antivirus.json")
+
+            elif update_type.name == "WILDFIRE":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_wildfire.json")
+
+            elif update_type.name == "GP":
+                raise Exception("There is no Global Protext Gateway license on the box")
+
+            else:
+                return None
+
+        mock_api_call = mocker.patch("Panorama.panorama_check_latest_dynamic_update_content")
+        mock_api_call.side_effect = side_effect_function
+
+        mock_return_results = mocker.patch("Panorama.return_results")
+
+        panorama_check_latest_dynamic_update_command({"target": "1337"})
+
+        # Prepare results for comparison
+        returned_commandresults: CommandResults = mock_return_results.call_args[0][0]
+        expected_returned_output = load_json(
+            "test_data/pan-os-check-latest-dynamic-update-status_expected-returned-outputs-no-gp" "-license.json"
+        )
+        expected_returned_readable = (
+            "### Dynamic Update Status Summary\n|Update Type|Is Up To Date|Latest Available "
+            "Version|Currently Installed Version|\n|---|---|---|---|\n| Content | True | 8987-9481 | 8987-9481 |\n| "
+            "AntiVirus | False | 5212-5732 | 5211-5731 |\n| WildFire | False | 986250-990242 | 986026-990018 |\n| GP | "
+            "False | An Error received from Panorama API: 'There is no Global Protect Gateway license on the box.' |"
+            " N/A |\n\n\n**Total Content Types Outdated: 2**"
+        )
+
+        assert returned_commandresults.outputs == expected_returned_output
+        assert returned_commandresults.readable_output == expected_returned_readable
+
+    def test_panorama_check_latest_dynamic_update_command_no_wildfire_license(self, mocker):
+        """
+        Tests the scenario were there is no WildFire license on the Firewall.
+
+        Given:
+            - a Panorama instance.
+            - Mock response for the 'panorama_check_latest_dynamic_update_content' api call, with an exception regarding the
+            WildFire missing license.
+
+        When:
+            - Calling the panorama_check_latest_dynamic_update_command.
+
+        Then:
+            - Verify that the outputs include the versions of the content, antivirus and the error message regarding
+              the WildFire missing license.
+            - Verify that the human-readable output includes the versions of the versions of the content, antivirus and
+              the error message regarding the WildFire missing license.
+        """
+
+        from Panorama import panorama_check_latest_dynamic_update_command
+
+        # Side-effect function to return the proper NGFW API response for the requested dynamic update type
+        def side_effect_function(update_type, target):
+            if update_type.name == "APP_THREAT":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_app-threat.json")
+
+            elif update_type.name == "ANTIVIRUS":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_antivirus.json")
+
+            elif update_type.name == "GP":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_gp.json")
+
+            elif update_type.name == "WILDFIRE":
+                raise Exception("There is not wildfire license on the box")
+
+            else:
+                return None
+
+        mock_api_call = mocker.patch("Panorama.panorama_check_latest_dynamic_update_content")
+        mock_api_call.side_effect = side_effect_function
+
+        mock_return_results = mocker.patch("Panorama.return_results")
+
+        panorama_check_latest_dynamic_update_command({"target": "1337"})
+
+        # Prepare results for comparison
+        returned_commandresults: CommandResults = mock_return_results.call_args[0][0]
+        expected_returned_output = load_json(
+            "test_data/pan-os-check-latest-dynamic-update-status_expected-returned-outputs-no-wildfire" "-license.json"
+        )
+        expected_returned_readable = (
+            "### Dynamic Update Status Summary\n|Update Type|Is Up To Date|Latest Available "
+            "Version|Currently Installed Version|\n|---|---|---|---|\n|"
+            " Content | True | 8987-9481 | 8987-9481 |\n| "
+            "AntiVirus | False | 5212-5732 | 5211-5731 |\n|"
+            " WILDFIRE | False | An Error received from Panorama API: 'There is not wildfire license on the box.' | N/A |\n|"
+            " GP | True | 98-260 | 98-260 |\n\n\n"
+            "**Total Content Types Outdated: 1**"
+        )
+
+        assert returned_commandresults.outputs == expected_returned_output
+        assert returned_commandresults.readable_output == expected_returned_readable
+
+    @pytest.mark.parametrize(
+        "update_phase, job_id, api_response_payload",
+        [
+            (
+                "start-no-polling",
+                "",
+                {
+                    "response": {
+                        "@status": "success",
+                        "@code": "19",
+                        "result": {"msg": {"line": "Download job enqueued with jobid 1309"}, "job": "1309"},
+                    },
+                },
+            ),
+            (
+                "start-with-polling",
+                "",
+                {
+                    "response": {
+                        "@status": "success",
+                        "@code": "19",
+                        "result": {"msg": {"line": "Download job enqueued with jobid 1309"}, "job": "1309"},
+                    },
+                },
+            ),
+            (
+                "check",
+                "1309",
+                {
+                    "response": {
+                        "@status": "success",
+                        "result": {
+                            "job": {
+                                "tenq": "2025/06/15 10:55:53",
+                                "tdeq": "(null)",
+                                "id": "1311",
+                                "user": None,
+                                "type": "Downld",
+                                "status": "PEND",
+                                "queued": "YES",
+                                "stoppable": "yes",
+                                "result": "PEND",
+                                "tfin": None,
+                                "description": None,
+                                "positionInQ": "0",
+                                "progress": "0",
+                                "details": None,
+                                "warnings": None,
+                            }
+                        },
+                    },
+                },
+            ),
+            (
+                "finished",
+                "1309",
+                {
+                    "response": {
+                        "@status": "success",
+                        "result": {
+                            "job": {
+                                "tenq": "2025/06/15 10:34:51",
+                                "tdeq": "10:34:51",
+                                "id": "1309",
+                                "user": None,
+                                "type": "Downld",
+                                "status": "FIN",
+                                "queued": "NO",
+                                "stoppable": "no",
+                                "result": "OK",
+                                "tfin": "2025/06/15 10:34:53",
+                                "description": None,
+                                "positionInQ": "0",
+                                "progress": "2025/06/15 10:34:53",
+                                "details": {
+                                    "line": [
+                                        "File successfully downloaded",
+                                        "Successfully downloaded",
+                                        "Applications and Threats version: 8988-9483",
+                                    ]
+                                },
+                                "warnings": None,
+                            },
+                        },
+                    },
+                },
+            ),
+        ],
+    )
+    def test_panorama_download_latest_dynamic_update_command(self, update_phase, job_id, api_response_payload, mocker):
+        from Panorama import DynamicUpdateType
+        from Panorama import panorama_download_latest_dynamic_update_command
+        from CommonServerPython import ScheduledCommand
+
+        mocker.patch("Panorama.panorama_download_latest_dynamic_update_content", return_value=api_response_payload)
+        mocker.patch("Panorama.panorama_content_update_download_status", return_value=api_response_payload)
+
+        mock_command_return = mocker.patch("Panorama.return_results")
+
+        if update_phase == "start-no-polling":
+            """
+            Run the command for the first time, with an API response indicating the job has been enqueued.
+            Verify that the response contains job info with no subsquent scheduled command.
+            """
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "polling": "false"})
+            returned_results = mock_command_return.call_args[0][0]
+            assert returned_results.scheduled_command is None
+            assert returned_results.readable_output == "Content download JobID 1309 started on device 1337."
+
+        elif update_phase == "start-with-polling":
+            """
+            Run the command for the first time, with an API response indicating the job has been enqueued.
+            Verify that the response contains a ScheduledCommand object to poll for job status.
+            """
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337"})
+            returned_results = mock_command_return.call_args[0][0]
+            assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+
+        elif update_phase == "check":
+            """
+            Run the command as if a download has been started and check for the status of it.
+            Verify that when the API response shows that the job is still pending that a ScheduledCommand
+            object is returned to continue to poll for the download to complete.
+            """
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            returned_results = mock_command_return.call_args[0][0]
+            assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+
+        elif update_phase == "finished":
+            """
+            Run the command as if a download has been completed.
+            Verify that when the API response shows the job is finished that the function returns a CommandResult
+            that includes the expected outputs and does not continue to poll.
+            """
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            returned_results = mock_command_return.call_args[0][0]
+
+            assert isinstance(returned_results, dict)
+            assert returned_results["Contents"] == {
+                "response": {
+                    "@status": "success",
+                    "result": {
+                        "job": {
+                            "tenq": "2025/06/15 10:34:51",
+                            "tdeq": "10:34:51",
+                            "id": "1309",
+                            "user": None,
+                            "type": "Downld",
+                            "status": "FIN",
+                            "queued": "NO",
+                            "stoppable": "no",
+                            "result": "OK",
+                            "tfin": "2025/06/15 10:34:53",
+                            "description": None,
+                            "positionInQ": "0",
+                            "progress": "2025/06/15 10:34:53",
+                            "details": {
+                                "line": [
+                                    "File successfully downloaded",
+                                    "Successfully downloaded",
+                                    "Applications and Threats version: 8988-9483",
+                                ]
+                            },
+                            "warnings": None,
+                        }
+                    },
+                }
+            }
+            assert (
+                returned_results["HumanReadable"]
+                == "### AntiVirus update download status:\n|JobID|Status|Details|\n|---|---|---|\n| 1309 | Completed |"
+                " tenq: 2025/06/15 10:34:51<br>tdeq: 10:34:51<br>id: 1309<br>user: null<br>type: Downld<br>status: "
+                "FIN<br>queued: NO<br>stoppable: no<br>result: OK<br>tfin: 2025/06/15 10:34:53<br>description: "
+                'null<br>positionInQ: 0<br>progress: 2025/06/15 10:34:53<br>details: {"line": '
+                '["File successfully downloaded", "Successfully downloaded", "Applications and '
+                'Threats version: 8988-9483"]}<br>warnings: null |\n'
+            )
+            assert returned_results["EntryContext"] == {
+                "Panorama.AntiVirus.Download(val.JobID == obj.JobID)": {
+                    "JobID": "1309",
+                    "Status": "Completed",
+                    "Details": {
+                        "tenq": "2025/06/15 10:34:51",
+                        "tdeq": "10:34:51",
+                        "id": "1309",
+                        "user": None,
+                        "type": "Downld",
+                        "status": "FIN",
+                        "queued": "NO",
+                        "stoppable": "no",
+                        "result": "OK",
+                        "tfin": "2025/06/15 10:34:53",
+                        "description": None,
+                        "positionInQ": "0",
+                        "progress": "2025/06/15 10:34:53",
+                        "details": {
+                            "line": [
+                                "File successfully downloaded",
+                                "Successfully downloaded",
+                                "Applications and Threats version: 8988-9483",
+                            ]
+                        },
+                        "warnings": None,
+                    },
+                }
+            }
+
+    @pytest.mark.parametrize(
+        "install_phase, job_id, api_response_payload",
+        [
+            (
+                "start-no-polling",
+                "",
+                {
+                    "response": {
+                        "@status": "success",
+                        "@code": "19",
+                        "result": {"msg": {"line": "Content install job enqueued with jobid 1318"}, "job": "1318"},
+                    }
+                },
+            ),
+            (
+                "start-with-polling",
+                "",
+                {
+                    "response": {
+                        "@status": "success",
+                        "@code": "19",
+                        "result": {"msg": {"line": "Content install job enqueued with jobid 1318"}, "job": "1318"},
+                    }
+                },
+            ),
+            (
+                "check",
+                "1318",
+                {
+                    "response": {
+                        "@status": "success",
+                        "result": {
+                            "job": {
+                                "tenq": "2025/06/15 12:43:29",
+                                "tdeq": "12:43:29",
+                                "id": "1318",
+                                "user": None,
+                                "type": "Antivirus",
+                                "status": "ACT",
+                                "queued": "NO",
+                                "stoppable": "no",
+                                "result": "PEND",
+                                "tfin": None,
+                                "description": None,
+                                "positionInQ": "0",
+                                "progress": "20",
+                                "warnings": None,
+                                "details": None,
+                            }
+                        },
+                    }
+                },
+            ),
+            (
+                "finished",
+                "1318",
+                {
+                    "response": {
+                        "@status": "success",
+                        "result": {
+                            "job": {
+                                "tenq": "2025/06/15 12:43:29",
+                                "tdeq": "12:43:29",
+                                "id": "1318",
+                                "user": "admin",
+                                "type": "Antivirus",
+                                "status": "FIN",
+                                "queued": "NO",
+                                "stoppable": "no",
+                                "result": "OK",
+                                "tfin": "2025/06/15 12:44:21",
+                                "description": None,
+                                "positionInQ": "0",
+                                "progress": "2025/06/15 12:44:21",
+                                "details": {"line": "Job completed successfully"},
+                                "warnings": None,
+                            }
+                        },
+                    }
+                },
+            ),
+        ],
+    )
+    def test_panorama_install_latest_dynamic_update_command(self, install_phase, job_id, api_response_payload, mocker):
+        from Panorama import DynamicUpdateType
+        from Panorama import panorama_install_latest_dynamic_update_command
+        from CommonServerPython import ScheduledCommand
+
+        mocker.patch("Panorama.panorama_install_latest_dynamic_update", return_value=api_response_payload)
+        mocker.patch("Panorama.panorama_content_update_install_status", return_value=api_response_payload)
+
+        mock_command_return = mocker.patch("Panorama.return_results")
+
+        if install_phase == "start-no-polling":
+            """
+            Run the command for the first time, with an API response indicating the job has been enqueued.
+            Verify that the response contains job info with no subsequent scheduled command.
+            """
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "polling": "false"})
+            returned_results = mock_command_return.call_args[0][0]
+            assert returned_results.scheduled_command is None
+            assert returned_results.readable_output == "Content install JobID 1318 started on device 1337."
+
+        elif install_phase == "start-with-polling":
+            """
+            Run the command for the first time, with an API response indicating the job has been enqueued.
+            Verify that the response contains a ScheduledCommand object to poll for job status.
+            """
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337"})
+            returned_results = mock_command_return.call_args[0][0]
+            assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+
+        elif install_phase == "check":
+            """
+            Run the command as if an install has been started and check for the status of it.
+            Verify that when the API response shows that the job is still pending that a ScheduledCommand
+            object is returned to continue to poll for the install to complete.
+            """
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            returned_results = mock_command_return.call_args[0][0]
+            assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+
+        elif install_phase == "finished":
+            """
+            Run the command as if an install has been completed.
+            Verify that when the API response shows the job is finished that the function returns a CommandResult
+            that includes the expected outputs and does not continue to poll.
+            """
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            returned_results = mock_command_return.call_args[0][0]
+
+            assert isinstance(returned_results, dict)
+            assert returned_results["Contents"] == {
+                "response": {
+                    "@status": "success",
+                    "result": {
+                        "job": {
+                            "tenq": "2025/06/15 12:43:29",
+                            "tdeq": "12:43:29",
+                            "id": "1318",
+                            "user": "admin",
+                            "type": "Antivirus",
+                            "status": "FIN",
+                            "queued": "NO",
+                            "stoppable": "no",
+                            "result": "OK",
+                            "tfin": "2025/06/15 12:44:21",
+                            "description": None,
+                            "positionInQ": "0",
+                            "progress": "2025/06/15 12:44:21",
+                            "details": {"line": "Job completed successfully"},
+                            "warnings": None,
+                        }
+                    },
+                }
+            }
+            assert (
+                returned_results["HumanReadable"]
+                == "### AntiVirus update install status:\n|JobID|Status|Details|\n|---|---|---|\n| 1318 | Completed | "
+                "tenq: 2025/06/15 12:43:29<br>tdeq: 12:43:29<br>id: 1318<br>user: admin<br>type: Antivirus<br>"
+                "status: FIN<br>queued: NO<br>stoppable: no<br>result: OK<br>tfin: 2025/06/15 12:44:21<br>"
+                'description: null<br>positionInQ: 0<br>progress: 2025/06/15 12:44:21<br>details: {"line": '
+                '"Job completed successfully"}<br>warnings: null |\n'
+            )
+            assert returned_results["EntryContext"] == {
+                "Panorama.AntiVirus.Install(val.JobID == obj.JobID)": {
+                    "JobID": "1318",
+                    "Status": "Completed",
+                    "Details": {
+                        "tenq": "2025/06/15 12:43:29",
+                        "tdeq": "12:43:29",
+                        "id": "1318",
+                        "user": "admin",
+                        "type": "Antivirus",
+                        "status": "FIN",
+                        "queued": "NO",
+                        "stoppable": "no",
+                        "result": "OK",
+                        "tfin": "2025/06/15 12:44:21",
+                        "description": None,
+                        "positionInQ": "0",
+                        "progress": "2025/06/15 12:44:21",
+                        "details": {"line": "Job completed successfully"},
+                        "warnings": None,
+                    },
+                }
+            }
+
+
+@pytest.mark.parametrize(
+    ("vsys", "rules", "no_new_hits_since", "expected_cmd", "expected_datetime"),
+    [
+        (
+            "vsys1",
+            "Rule1",
+            "",
+            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys1"><rule-base><entry name="security"><rules>'
+            b"<list><member>Rule1</member></list></rules></entry></rule-base></entry></vsys-name></vsys>"
+            b"</rule-hit-count></show>",
+            None,
+        ),
+        (
+            "all",
+            "Rule1",
+            "",
+            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><list><member>Rule1</member>'
+            b"</list></rules></entry></rule-base></all></vsys></rule-hit-count></show>",
+            None,
+        ),
+        (
+            "all",
+            "all",
+            "",
+            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><all /></rules></entry>'
+            b"</rule-base></all></vsys></rule-hit-count></show>",
+            None,
+        ),
+        (
+            "all",
+            "Rule1, Rule2, Rule3",
+            "",
+            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><list><member>Rule1</member>'
+            b"<member>Rule2</member><member>Rule3</member></list></rules></entry></rule-base></all></vsys>"
+            b"</rule-hit-count></show>",
+            None,
+        ),
+        (
+            "vsys1",
+            "Rule1",
+            "2025/06/01 00:00:00",
+            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys1"><rule-base><entry name="security"><rules>'
+            b"<list><member>Rule1</member></list></rules></entry></rule-base></entry></vsys-name></vsys>"
+            b"</rule-hit-count></show>",
+            datetime.strptime("2025/06/01 00:00:00", "%Y/%m/%d %H:%M:%S"),
+        ),
+    ],
+)
+def test_get_rule_hitcounts(vsys, rules, no_new_hits_since, expected_cmd, expected_datetime, mock_topology, mocker):
+    """Test the get_rule_hitcounts function with various parameter combinations.  Verify that it properly
+        constructs the API call to retrieve the specified rule hitcount data.
+
+    Args:
+        vsys: Virtual system name or "all" for all virtual systems
+        rules: Rule names (single rule, multiple comma-separated rules, or "all")
+        no_new_hits_since: Date string for filtering rules with no new hits since this time
+        expected_cmd: Expected XML command that should be generated
+        expected_datetime: Expected parsed datetime object from no_new_hits_since
+        mock_topology: Mocked topology fixture
+        mocker: Pytest mocker fixture
+    """
+    from Panorama import get_rule_hitcounts
+
+    mock_get_hitcounts = mocker.patch("Panorama.FirewallCommand.get_hitcounts", return_value=True)
+
+    get_rule_hitcounts(mock_topology, "", "1.2.3.4", "security", vsys, rules, "false", no_new_hits_since)
+
+    cmd_result = mock_get_hitcounts.call_args[0][1]
+    no_new_hits_since_dt = mock_get_hitcounts.call_args[0][3]
+
+    assert cmd_result == expected_cmd
+    assert no_new_hits_since_dt == expected_datetime
+
+
+@freeze_time("2025-06-26 13:00:00 UTC")
+@pytest.mark.parametrize(
+    ("rulebase_type", "unused_only", "no_new_hits_since_dt", "length_expected"),
+    [
+        ("security", "false", None, 10),  # Should result in 10 returned records.
+        ("security", "true", None, 6),  # Should result in 6 returned records.
+        (
+            "security",
+            "false",
+            datetime.strptime("2025/06/26 00:00:00Z", "%Y/%m/%d %H:%M:%SZ"),
+            8,
+        ),  # Should result in 8 returned records.
+    ],
+)
+def test_get_hitcounts(rulebase_type, unused_only, no_new_hits_since_dt, length_expected, mock_topology, mocker):
+    """Test the FirewallCommand.get_hitcounts method with various filter parameters.  Verify it returns the correct
+        number of rules from the sample data based on the filter conditions.
+
+    Args:
+        rulebase_type: The type of rulebase to query (e.g., "security")
+        unused_only: Whether to filter for unused rules only ("true"/"false")
+        no_new_hits_since_dt: Optional datetime to filter rules with no new hits since this time
+        length_expected: Expected number of rules in the result
+        mock_topology: Mocked topology fixture
+        mocker: Pytest mocker fixture
+    """
+    from Panorama import FirewallCommand
+
+    rule_hitcounts_data = "test_data/get_rule_hitcounts_rule_hits.xml"
+    pushed_policy_data = "test_data/get_rule_hitcounts_pushed_policy.xml"
+    mocker.patch(
+        "Panorama.run_op_command",
+        side_effect=[
+            load_xml_root_from_test_file(rule_hitcounts_data),
+            load_xml_root_from_test_file(pushed_policy_data),
+        ],
+    )
+
+    mocker.patch("Panorama.demisto.callingContext", return_value={"context": {"IntegrationInstance": "Panorama_test_instance"}})
+
+    result = FirewallCommand.get_hitcounts(mock_topology, "", rulebase_type, no_new_hits_since_dt, None, None, unused_only)
+    assert result is not None
+    assert len(result) == length_expected

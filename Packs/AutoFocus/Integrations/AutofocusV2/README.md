@@ -1100,6 +1100,7 @@ The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search
 For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/scheduled-commands).
 
 ##### Tag Classes
+
 * Malware Family: group of malware that have shared properties or common functions.
 * Campaign:  targeted attack, which might include several incidents or sets of activities.
 * Actor: individual or group that initiates a campaign using malware families.

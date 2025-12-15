@@ -4,24 +4,14 @@ from CommonServerPython import *
 """ IMPORTS """
 import json
 import os
-import requests
 import urllib3
 import incydr
-import py42.sdk
-import py42.settings
-from datetime import datetime, UTC
+from incydr import EventQuery
+from _incydr_sdk.file_events.models.event import FileEventV2
+from _incydr_sdk.exceptions import WatchlistNotFoundError
+from datetime import datetime
 from uuid import UUID
-from py42.sdk.queries.fileevents.v2.file_event_query import FileEventQuery as FileEventQueryV2
-
-from py42.sdk.queries.fileevents.v2 import filters as v2_filters
-from py42.sdk.queries.fileevents.util import FileEventFilterStringField
-from py42.sdk.queries.alerts.alert_query import AlertQuery
-from py42.exceptions import Py42HTTPError
 from requests.exceptions import HTTPError
-
-
-class EventIdV2(FileEventFilterStringField):
-    _term = "event.id"
 
 
 # Disable insecure warnings
@@ -77,15 +67,6 @@ CODE42_ALERT_CONTEXT_FIELD_MAPPER = {
     "riskSeverity": "Severity",
 }
 
-FILE_CONTEXT_FIELD_MAPPER = {
-    "fileName": "Name",
-    "filePath": "Path",
-    "fileSize": "Size",
-    "md5Checksum": "MD5",
-    "sha256Checksum": "SHA256",
-    "osHostName": "Hostname",
-}
-
 SECURITY_EVENT_HEADERS = [
     "EventType",
     "FileName",
@@ -136,13 +117,15 @@ def _columnize_file_event(obj):
         return obj
 
 
-def format_file_events(events: List[dict]):
+def format_file_events(events: list):
     """
     Formats Code42 file events into a markdown table.
     """
     formatted_events = []
     for event in events:
         formatted = {}
+        if hasattr(event, "json") and callable(event.json):
+            event = json.loads(event.json())
         for k, v in event.items():
             column = _columnize_file_event(v)
             if column:
@@ -151,12 +134,15 @@ def format_file_events(events: List[dict]):
     return tableToMarkdown("", formatted_events, removeNull=True, sort_headers=False)
 
 
-def deduplicate_v2_file_events(events: List[dict]):
+def deduplicate_v2_file_events(events: List):
     """Takes a list of v2 file events and returns a new list removing any duplicate events."""
     unique = []
     id_set = set()
     for event in events:
-        _id = event["event"]["id"]
+        if isinstance(event, FileEventV2):
+            _id = event.event.id
+        else:
+            _id = event["event"]["id"]
         if _id not in id_set:
             id_set.add(_id)
             unique.append(event)
@@ -180,11 +166,9 @@ class Code42Client(BaseClient):
     Should do requests and return data
     """
 
-    def __init__(self, sdk, base_url, auth, api_url, verify=True, proxy=False, incydr_sdk=None):
-        super().__init__(base_url, verify=verify, proxy=proxy)
-        self._base_url = base_url
+    def __init__(self, auth, api_url, verify=True, proxy=False, incydr_sdk=None):
+        super().__init__(api_url, verify=verify, proxy=proxy)
         self._auth = auth
-        self._sdk = sdk
         self._incydr_sdk = incydr_sdk
         self._api_url = api_url
 
@@ -193,42 +177,44 @@ class Code42Client(BaseClient):
                 if os.environ.get(var):
                     del os.environ[var]
 
-        py42.settings.set_user_agent_suffix("Cortex XSOAR")
-        py42.settings.verify_ssl_certs = verify
-
-    @property
-    def sdk(self):
-        if self._sdk is None:
-
-            def api_client_provider():
-                r = requests.post(
-                    f"https://{self._base_url}/api/v3/oauth/token", params={"grant_type": "client_credentials"}, auth=self._auth
-                )
-                r.raise_for_status()
-                return r.json()["access_token"]
-
-            self._sdk = py42.sdk.SDKClient.from_jwt_provider(self._base_url, api_client_provider)
-        return self._sdk
-
     @property
     def incydr_sdk(self):
         if self._incydr_sdk is None:
+            version = get_pack_version()
             self._incydr_sdk = incydr.Client(
-                url=f"https://{self._api_url}", api_client_id=self._auth[0], api_client_secret=self._auth[1]
+                url=f"https://{self._api_url}",
+                api_client_id=self._auth[0],
+                api_client_secret=self._auth[1],
+                user_agent_prefix=f"Code42 - Cortex XSOAR/{version} (Code42; code42.com)",
             )
-            self._incydr_sdk.settings.user_agent_prefix = "Cortex XSOAR"
         return self._incydr_sdk
 
     # Alert methods
 
-    def fetch_alerts(self, start_time, event_severity_filter):
+    def fetch_alerts(self, start_query_time, last_fetch_timestamp, event_severity_filter, fetched_incidents):
         all_sessions = self.incydr_sdk.sessions.v1.iter_all(
-            start_time=start_time, severities=_get_severity_filter_value(event_severity_filter)
+            start_time=start_query_time,
+            severities=_get_severity_filter_value(event_severity_filter),
+            states=["OPEN", "OPEN_NEW_DATA"],
         )
         res = []
-        for page in all_sessions:
-            res.append(self._process_alert(page))
-        return res
+        # handle last fetch timestamp being something other than int
+        try:
+            last_fetch_timestamp = int(last_fetch_timestamp)
+        except (ValueError, TypeError):
+            last_fetch_timestamp = 0
+        next_last_fetch_timestamp = last_fetch_timestamp
+        for session in all_sessions:
+            if session.first_observed >= last_fetch_timestamp and session.session_id not in fetched_incidents:
+                res.append(self._process_alert(session))
+        for session in res:
+            if session.first_observed > next_last_fetch_timestamp:
+                next_last_fetch_timestamp = session.first_observed
+                fetched_incidents = []
+            if session.first_observed == next_last_fetch_timestamp:
+                fetched_incidents.append(session.session_id)
+
+        return res, next_last_fetch_timestamp, fetched_incidents
 
     def get_alert_details(self, alert_id):
         try:
@@ -246,94 +232,76 @@ class Code42Client(BaseClient):
         return id
 
     def get_user(self, username):
-        py42_res = self.sdk.users.get_by_username(username)
-        res = py42_res.data.get("users")
-        if not res:
+        try:
+            return self.incydr_sdk.users.v1.get_user(username)
+        except ValueError:
             raise Code42UserNotFoundError(username)
-        return res[0]
 
     def get_actor(self, username):
         return self.incydr_sdk.actors.v1.get_actor_by_name(username, prefer_parent=True)
 
-    def create_user(self, org_name, username, email):
-        org_uid = self._get_org_id(org_name)
-        response = self.sdk.users.create_user(org_uid, username, email)
-        return response.data
-
-    def block_user(self, username):
-        user_id = self._get_legacy_user_id(username)
-        self.sdk.users.block(user_id)
-        return user_id
-
-    def unblock_user(self, username):
-        user_id = self._get_legacy_user_id(username)
-        self.sdk.users.unblock(user_id)
-        return user_id
-
     def deactivate_user(self, username):
-        user_id = self._get_legacy_user_id(username)
-        self.sdk.users.deactivate(user_id)
+        user_id = self._get_user_id(username)
+        self.incydr_sdk.users.v1.deactivate(user_id)
         return user_id
 
     def reactivate_user(self, username):
-        user_id = self._get_legacy_user_id(username)
-        self.sdk.users.reactivate(user_id)
+        user_id = self._get_user_id(username)
+        self.incydr_sdk.users.v1.activate(user_id)
         return user_id
 
     def get_legal_hold_matter(self, matter_name):
-        matter_pages = self.sdk.legalhold.get_all_matters(name=matter_name)
-        for matter_page in matter_pages:
-            matters = matter_page["legalHolds"]
-            for matter in matters:
-                return matter
+        matterspage = self.incydr_sdk.legal_hold.v1.get_matters_page(name=matter_name)
+        if matterspage.matters:
+            return matterspage.matters[0]
         raise Code42LegalHoldMatterNotFoundError(matter_name)
 
     def add_user_to_legal_hold_matter(self, username, matter_name):
         user_uid = self._get_user_id(username)
         matter_id = self._get_legal_hold_matter_id(matter_name)
-        response = self.sdk.legalhold.add_to_matter(user_uid, matter_id)
-        return response.data
+        response = self.incydr_sdk.legal_hold.v1.add_custodian(user_id=user_uid, matter_id=matter_id)
+        return response
 
     def remove_user_from_legal_hold_matter(self, username, matter_name):
         user_uid = self._get_user_id(username)
         matter_id = self._get_legal_hold_matter_id(matter_name)
-        membership_id = self._get_legal_hold_matter_membership_id(user_uid, matter_id)
-        if membership_id:
-            self.sdk.legalhold.remove_from_matter(membership_id)
+        try:
+            self.incydr_sdk.legal_hold.v1.remove_custodian(user_id=user_uid, matter_id=matter_id)
             return user_uid, matter_id
-
-        raise Code42InvalidLegalHoldMembershipError(username, matter_name)
+        except HTTPError:
+            raise Code42InvalidLegalHoldMembershipError(username, matter_name)
 
     def get_org(self, org_name):
-        org_pages = self.sdk.orgs.get_all()
-        for org_page in org_pages:
-            orgs = org_page.data.get("orgs")
-            for org in orgs:
-                if org.get("orgName", "") == org_name:
-                    return org
+        orgs_list = self.incydr_sdk.orgs.v1.list()
+        for org in orgs_list:
+            if org.org_name == org_name:
+                return org
         raise Code42OrgNotFoundError(org_name)
 
-    def search_file_events(self, payload):
-        py42_res = self.sdk.securitydata.search_file_events(payload)
-        return py42_res.data.get("fileEvents")
+    def search_file_events(self, query):
+        result = self.incydr_sdk.file_events.v2.search(query)
+        file_events = result.file_events
+        while result.next_pg_token:
+            result = self.incydr_sdk.file_events.v2.search(query)
+            file_events.extend(result.file_events)
+        return file_events
 
     def download_file(self, hash_arg):
-        security_module = self.sdk.securitydata
-        if _hash_is_md5(hash_arg):
-            return security_module.stream_file_by_md5(hash_arg)
-        elif _hash_is_sha256(hash_arg):
-            return security_module.stream_file_by_sha256(hash_arg)
-        else:
+        if not (_hash_is_md5(hash_arg) or _hash_is_sha256(hash_arg)):
             raise Code42UnsupportedHashError
+        elif _hash_is_md5(hash_arg):
+            query = EventQuery().equals(term="file.hash.md5", values=hash_arg)
+            hash_arg = self.incydr_sdk.file_events.v2.search(query).file_events[0].file.hash.sha256
+        return self.incydr_sdk.files.v1.stream_file_by_sha256(hash_arg)
+
+    def download_file_by_xfc_id(self, xfc_id):
+        try:
+            return self.incydr_sdk.files.v1.stream_file_by_xfc_content_id(xfc_id)
+        except Exception as e:
+            raise Code42FileDownloadError(e)
 
     def _get_user_id(self, username):
-        user_id = self.get_user(username).get("userUid")
-        if user_id:
-            return user_id
-        raise Code42UserNotFoundError(username)
-
-    def _get_legacy_user_id(self, username):
-        user_id = self.get_user(username).get("userId")
+        user_id = self.get_user(username).user_id
         if user_id:
             return user_id
         raise Code42UserNotFoundError(username)
@@ -345,16 +313,8 @@ class Code42Client(BaseClient):
         raise Code42OrgNotFoundError(org_name)
 
     def _get_legal_hold_matter_id(self, matter_name):
-        matter_id = self.get_legal_hold_matter(matter_name).get("legalHoldUid")
+        matter_id = self.get_legal_hold_matter(matter_name).matter_id
         return matter_id
-
-    def _get_legal_hold_matter_membership_id(self, user_id, matter_id):
-        member_pages = self.sdk.legalhold.get_all_matter_custodians(legal_hold_uid=matter_id, user_uid=user_id)
-        for member_page in member_pages:
-            members = member_page["legalHoldMemberships"]
-            for member in members:
-                return member["legalHoldMembershipUid"]
-        return None
 
     def _process_alert(self, alert):
         # some important alert information is not returned directly by the API and must be inferred or queried.
@@ -371,8 +331,9 @@ class Code42Client(BaseClient):
             except HTTPError:
                 pass
         alert.rule_names = ", ".join(rule_name_list)
-        alert.beginTimeIso = datetime.fromtimestamp(alert.begin_time / 1000).replace(tzinfo=UTC).isoformat()
-        alert.alertUrl = f"{self._base_url}/app/#/alerts/review-alerts/{alert.session_id}"
+        alert.beginTimeIso = datetime.fromtimestamp(alert.begin_time / 1000).replace(tzinfo=timezone.utc).isoformat()
+        console_url = self._base_url.replace("api", "console", 1)
+        alert.alertUrl = f"{console_url}/app/#/alerts/review-alerts/{alert.session_id}"
         return alert
 
 
@@ -417,41 +378,9 @@ class Code42InvalidLegalHoldMembershipError(Exception):
         super().__init__(f"User '{username}' is not an active member of legal hold matter '{matter_name}'")
 
 
-class Code42SearchFilters:
-    def __init__(self):
-        self._filters = []
-
-    @property
-    def filters(self):
-        return self._filters
-
-    def to_all_query(self):
-        """Override"""
-
-    def append(self, _filter):
-        if _filter:
-            self._filters.append(_filter)
-
-    def extend(self, _filters):
-        if _filters:
-            self._filters.extend(_filters)
-
-    def append_result(self, value, create_filter):
-        """Safely creates and appends the filter to the working list."""
-        if not value:
-            return
-        _filter = create_filter(value)
-        self.append(_filter)
-
-
-class AlertQueryFilters(Code42SearchFilters):
-    """Class for simplifying building up an alert search query"""
-
-    def to_all_query(self):
-        query = AlertQuery.all(*self._filters)
-        query.page_size = 500
-        query.sort_direction = "asc"
-        return query
+class Code42FileDownloadError(Exception):
+    def __init__(self, exception):
+        super().__init__(f"Error downloading file: {exception}")
 
 
 @logger
@@ -461,24 +390,22 @@ def build_v2_query_payload(args):
     hostname = args.get("hostname")
     username = args.get("username")
     min_risk_score = arg_to_number(args.get("min_risk_score"), arg_name="min_risk_score") or 1
+    modified_risk_score = min_risk_score - 1
 
     if not _hash and not hostname and not username:
         raise Code42MissingSearchArgumentsError
 
-    filters = []
+    query = EventQuery().greater_than(term="risk.score", value=modified_risk_score)
     if _hash:
         if _hash_is_md5(_hash):
-            filters.append(v2_filters.file.MD5.eq(_hash))
+            query = query.equals(term="file.hash.md5", values=_hash)
         elif _hash_is_sha256(_hash):
-            filters.append(v2_filters.file.SHA256.eq(_hash))
+            query = query.equals(term="file.hash.sha256", values=_hash)
     if hostname:
-        filters.append(v2_filters.source.Name.eq(hostname))
+        query = query.equals(term="source.name", values=hostname)
     if username:
-        filters.append(v2_filters.user.Email.eq(username))
-    if min_risk_score > 0:
-        filters.append(v2_filters.risk.Score.greater_than(min_risk_score - 1))
+        query = query.equals(term="user.email", values=username)
 
-    query = FileEventQueryV2(*filters)
     return query
 
 
@@ -491,24 +418,8 @@ def _hash_is_md5(hash_arg):
 
 
 @logger
-def map_to_code42_event_context(obj):
-    code42_context = _map_obj_to_context(obj, CODE42_EVENT_CONTEXT_FIELD_MAPPER)
-    # FileSharedWith is a special case and needs to be converted to a list
-    shared_with_list = code42_context.get("FileSharedWith")
-    if shared_with_list:
-        shared_list = [u.get("cloudUsername") for u in shared_with_list if u.get("cloudUsername")]
-        code42_context["FileSharedWith"] = str(shared_list)
-    return code42_context
-
-
-@logger
 def map_to_code42_alert_context(obj):
     return _map_obj_to_context(obj, CODE42_ALERT_CONTEXT_FIELD_MAPPER)
-
-
-@logger
-def map_to_file_context(obj):
-    return _map_obj_to_context(obj, FILE_CONTEXT_FIELD_MAPPER)
 
 
 @logger
@@ -594,17 +505,18 @@ def file_events_search_command(client, args):
     page_size = arg_to_number(args.get("results"), arg_name="results")
     # If JSON payload is passed as an argument, ignore all other args and search by JSON payload
     if json_query is not None:
-        try:
-            query = FileEventQueryV2.from_dict(json.loads(json_query))
-        except KeyError as err:
-            return_error(f"Error parsing json query: {err}")
+        query = EventQuery.parse_obj(json.loads(json_query))
     else:
         query = build_v2_query_payload(args)
     try:
-        query.page_size = page_size
-        file_events = client.search_file_events(query)
+        query.page_size = page_size if page_size else 100
+        try:
+            file_events = client.search_file_events(query)
+        except Exception as err:
+            return_error(f"Error searching for file events: {err}")
         markdown_table = format_file_events(file_events)
         if add_to_context:
+            file_events = [json.loads(x.json()) for x in file_events]
             context = demisto.context()
             if "Code42" in context and "FileEvents" in context["Code42"]:
                 context_events = context["Code42"]["FileEvents"]
@@ -612,58 +524,43 @@ def file_events_search_command(client, args):
             return CommandResults(outputs_prefix="Code42.FileEvents", outputs=file_events, readable_output=markdown_table)
         else:
             return CommandResults(readable_output=markdown_table)
-    except Py42HTTPError as err:
+    except HTTPError as err:
         return_error(f"Error executing json query. Make sure your query is a V2 file event query. Error={err}")
 
 
 @logger
 def user_create_command(client, args):
-    org_name = args.get("orgname")
-    username = args.get("username")
-    email = args.get("email")
-    res = client.create_user(org_name, username, email)
-    outputs = {
-        "Username": res.get("username"),
-        "UserID": res.get("userUid"),
-        "Email": res.get("email"),
-    }
-    readable_outputs = tableToMarkdown("Code42 User Created", outputs)
+    outputs: dict = {}
+    readable_outputs = tableToMarkdown("Deprecated command - use the Incydr console to create users.", outputs)
     return CommandResults(
         outputs_prefix="Code42.User",
         outputs_key_field="UserID",
         outputs=outputs,
         readable_output=readable_outputs,
-        raw_response=res,
     )
 
 
 @logger
 def user_block_command(client, args):
-    username = args.get("username")
-    user_id = client.block_user(username)
-    outputs = {"UserID": user_id}
-    readable_outputs = tableToMarkdown("Code42 User Blocked", outputs)
+    outputs: dict = {}
+    readable_outputs = tableToMarkdown("Deprecated command - use the Incydr console to block users.", outputs)
     return CommandResults(
         outputs_prefix="Code42.User",
         outputs_key_field="UserID",
         outputs=outputs,
         readable_output=readable_outputs,
-        raw_response=user_id,
     )
 
 
 @logger
 def user_unblock_command(client, args):
-    username = args.get("username")
-    user_id = client.unblock_user(username)
-    outputs = {"UserID": user_id}
-    readable_outputs = tableToMarkdown("Code42 User Unblocked", outputs)
+    outputs: dict = {}
+    readable_outputs = tableToMarkdown("Deprecated command - use the Incydr console to unblock users.", outputs)
     return CommandResults(
         outputs_prefix="Code42.User",
         outputs_key_field="UserID",
         outputs=outputs,
         readable_output=readable_outputs,
-        raw_response=user_id,
     )
 
 
@@ -702,13 +599,11 @@ def legal_hold_add_user_command(client, args):
     username = args.get("username")
     matter_name = args.get("mattername")
     response = client.add_user_to_legal_hold_matter(username, matter_name)
-    legal_hold_info = response.get("legalHold")
-    user_info = response.get("user")
     outputs = {
-        "MatterID": legal_hold_info.get("legalHoldUid") if legal_hold_info else None,
-        "MatterName": legal_hold_info.get("name") if legal_hold_info else None,
-        "UserID": user_info.get("userUid") if legal_hold_info else None,
-        "Username": user_info.get("username") if user_info else None,
+        "MatterID": response.matter.matter_id if response.matter.matter_id else None,
+        "MatterName": response.matter.name if response.matter.name else None,
+        "UserID": response.custodian.user_id if response.custodian.user_id else None,
+        "Username": response.custodian.username if response.custodian.username else None,
     }
     readable_outputs = tableToMarkdown("Code42 User Added to Legal Hold Matter", outputs)
     return CommandResults(
@@ -716,7 +611,7 @@ def legal_hold_add_user_command(client, args):
         outputs_key_field="MatterID",
         outputs=outputs,
         readable_output=readable_outputs,
-        raw_response=response,
+        raw_response=json.loads(response.json()),
     )
 
 
@@ -746,17 +641,25 @@ def download_file_command(client, args):
 
 
 @logger
+def download_file_by_xfc_id_command(client, args):
+    file_xfc_event_id = args.get("xfc_id")
+    filename = args.get("filename") or file_xfc_event_id
+    response = client.download_file_by_xfc_id(file_xfc_event_id)
+    file_chunks = [c for c in response.iter_content(chunk_size=128) if c]
+    return fileResult(filename, data=b"".join(file_chunks))
+
+
+@logger
 def list_watchlists_command(client, args):
     watchlists_context = []
-    for page in client.sdk.watchlists.get_all():
-        for watchlist in page["watchlists"]:
-            watchlists_context.append(
-                {
-                    "WatchlistID": watchlist["watchlistId"],
-                    "WatchlistType": watchlist["listType"],
-                    "IncludedUsersCount": watchlist["stats"].get("includedUsersCount", 0),
-                }
-            )
+    for watchlist in client.incydr_sdk.watchlists.v2.iter_all():
+        watchlists_context.append(
+            {
+                "WatchlistID": watchlist.watchlist_id,
+                "WatchlistType": watchlist.list_type,
+                "IncludedUsersCount": watchlist.stats.included_users_count if watchlist.stats.included_users_count else 0,
+            }
+        )
 
     if not watchlists_context:
         CommandResults(
@@ -784,15 +687,15 @@ def list_watchlists_included_users(client, args):
         UUID(hex=watchlist)
         watchlist_id = watchlist
     except ValueError:
-        watchlist_id = client.sdk.watchlists._watchlists_service.watchlist_type_id_map.get(watchlist)
-        if watchlist_id is None:
+        try:
+            watchlist_id = client.incydr_sdk.watchlists.v2.get_id_by_name(watchlist)
+        except WatchlistNotFoundError:
             raise Code42InvalidWatchlistTypeError(watchlist)
     included_users_context = []
-    for page in client.sdk.watchlists.get_all_included_users(watchlist_id):
-        for user in page["includedUsers"]:
-            included_users_context.append(
-                {"Username": user["username"], "AddedTime": user["addedTime"], "WatchlistID": watchlist_id}
-            )
+    for user in client.incydr_sdk.watchlists.v2.iter_all_members(watchlist_id):
+        included_users_context.append(
+            {"Username": user.actor_name, "AddedTime": user.added_time.isoformat(), "WatchlistID": watchlist_id}
+        )
     readable_outputs = tableToMarkdown("Watchlists", included_users_context)
     return CommandResults(
         outputs_prefix="Code42.WatchlistUsers",
@@ -805,17 +708,21 @@ def list_watchlists_included_users(client, args):
 def add_user_to_watchlist_command(client, args):
     username = args.get("username")
     watchlist = args.get("watchlist")
-    user = client.get_user(username)
-    user_id = user["userUid"]
+    actor = client.get_actor(username)
+    actor_id = actor.actor_id
     try:
         UUID(hex=watchlist)
-        resp = client.sdk.watchlists.add_included_users_by_watchlist_id(user_id, watchlist)
+        watchlist_id = watchlist
     except ValueError:
-        resp = client.sdk.watchlists.add_included_users_by_watchlist_type(user_id, watchlist)
+        try:
+            watchlist_id = client.incydr_sdk.watchlists.v2.get_id_by_name(watchlist)
+        except WatchlistNotFoundError:
+            raise Code42InvalidWatchlistTypeError(watchlist)
+    client.incydr_sdk.watchlists.v2.add_included_actors(watchlist_id=watchlist_id, actor_ids=actor_id)
     return CommandResults(
         outputs_prefix="Code42.UsersAddedToWatchlists",
         outputs_key_field="Watchlist",
-        outputs={"Watchlist": watchlist, "Username": username, "Success": resp.status_code == 200},
+        outputs={"Watchlist": watchlist, "Username": username, "Success": True},
     )
 
 
@@ -875,17 +782,21 @@ def get_user_risk_profile(client, args):
 def remove_user_from_watchlist_command(client, args):
     username = args.get("username")
     watchlist = args.get("watchlist")
-    user = client.get_user(username)
-    user_id = user["userUid"]
+    actor = client.get_actor(username)
+    actor_id = actor.actor_id
     try:
         UUID(hex=watchlist)
-        resp = client.sdk.watchlists.remove_included_users_by_watchlist_id(user_id, watchlist)
+        watchlist_id = watchlist
     except ValueError:
-        resp = client.sdk.watchlists.remove_included_users_by_watchlist_type(user_id, watchlist)
+        try:
+            watchlist_id = client.incydr_sdk.watchlists.v2.get_id_by_name(watchlist)
+        except WatchlistNotFoundError:
+            raise Code42InvalidWatchlistTypeError(watchlist)
+    client.incydr_sdk.watchlists.v2.remove_included_actors(watchlist_id=watchlist_id, actor_ids=actor_id)
     return CommandResults(
         outputs_prefix="Code42.UsersRemovedFromWatchlists",
         outputs_key_field="Watchlist",
-        outputs={"Watchlist": watchlist, "Username": username, "Success": resp.status_code == 200},
+        outputs={"Watchlist": watchlist, "Username": username, "Success": True},
     )
 
 
@@ -936,10 +847,16 @@ class Code42SecurityIncidentFetcher:
         if remaining_incidents_from_last_run:
             return remaining_incidents_from_last_run
         start_query_time = self._get_start_query_time()
-        alerts = self._fetch_alerts(start_query_time)
+        fetched_incidents = (
+            self._last_run.get("incidents_at_last_fetch_timestamp")
+            if "incidents_at_last_fetch_timestamp" in self._last_run
+            else []
+        )
+        alerts, save_time, fetched_incidents = self._client.fetch_alerts(
+            start_query_time, self._try_get_last_fetch_time(), self._event_severity_filter, fetched_incidents
+        )
         incidents = [self._create_incident_from_alert(a) for a in alerts]
-        save_time = datetime.now(UTC).timestamp()
-        next_run = {"last_fetch": save_time}
+        next_run = {"last_fetch": save_time, "incidents_at_last_fetch_timestamp": fetched_incidents}
         return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit :]
 
     def _fetch_remaining_incidents_from_last_run(self):
@@ -956,20 +873,19 @@ class Code42SecurityIncidentFetcher:
         return None
 
     def _get_start_query_time(self):
-        start_query_time = self._try_get_last_fetch_time()
-
-        # Handle first time fetch, fetch incidents retroactively
-        if not start_query_time:
-            start_query_time, _ = parse_date_range(self._first_fetch_time, to_timestamp=True, utc=True)
-            start_query_time /= 1000
-
-        return start_query_time * 1000
+        last_fetch_time = self._try_get_last_fetch_time()
+        start_query_time, _ = parse_date_range(self._first_fetch_time, to_timestamp=True, utc=True)
+        last_fetch_time = last_fetch_time * 1000 if last_fetch_time else start_query_time
+        # if the last fetch was before the time we'd otherwise use, use last fetch to avoid missing anything
+        if last_fetch_time < start_query_time:
+            return last_fetch_time
+        return start_query_time
 
     def _try_get_last_fetch_time(self):
         return self._last_run.get("last_fetch")
 
-    def _fetch_alerts(self, start_query_time):
-        return self._client.fetch_alerts(start_query_time, self._event_severity_filter)
+    def _filter_fetched_incident_dict(self, incidents, filter_datetime):
+        return {key: value for key, value in incidents.items() if datetime.fromisoformat(value) > filter_datetime}
 
     def _create_incident_from_alert(self, alert):
         details = alert.dict()
@@ -1015,7 +931,6 @@ def fetch_incidents(
 def test_module(client):
     try:
         # Will fail if unauthorized
-        client.sdk.usercontext.get_current_tenant_id()
         client.incydr_sdk.actors.v1.get_page(page_size=1)
         return "ok"
     except Exception:
@@ -1062,13 +977,10 @@ def create_client():
     if not api_client_id.startswith("key-") or "@" in api_client_id:
         raise Exception(f"Got invalid API Client ID: {api_client_id}")
     password = demisto.params().get("credentials").get("password")
-    base_url = demisto.params().get("console_url")
     api_url = demisto.params().get("api_url")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
     return Code42Client(
-        base_url=base_url,
-        sdk=None,
         api_url=api_url,
         auth=(api_client_id, password),
         verify=verify_certificate,
@@ -1096,6 +1008,7 @@ def main():
         "code42-legalhold-add-user": legal_hold_add_user_command,
         "code42-legalhold-remove-user": legal_hold_remove_user_command,
         "code42-download-file": download_file_command,
+        "code42-download-file-by-xfc-id": download_file_by_xfc_id_command,
         "code42-watchlists-list": list_watchlists_command,
         "code42-watchlists-list-included-users": list_watchlists_included_users,
         "code42-watchlists-add-user": add_user_to_watchlist_command,

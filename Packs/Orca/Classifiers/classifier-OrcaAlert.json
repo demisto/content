@@ -3,9 +3,7 @@
     "description": "Classifies Orca Alert incidents.",
     "feed": false,
     "id": "Orca",
-    "keyTypeMap": {
-
-    },
+    "keyTypeMap": {},
     "name": "Orca Alert - Classification",
     "transformer": {
         "complex": null,
@@ -18,6 +16,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

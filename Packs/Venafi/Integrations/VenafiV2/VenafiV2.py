@@ -29,8 +29,9 @@ class Client(BaseClient):
          Log into the Venafi API using the provided credentials.
          If it's the first time logging in, it will create a new token, save it to the integration context, and log in.
          Otherwise,
-             - if the token is expired, it will use the refresh token, save it to the integration context, and log in.
+             - if the token is expired, it will use the refresh token (if not expired), save it to the integration context.
              - if the token is valid, it will log in.
+             - if both token and refresh token are expired, it will create a new token using credentials.
 
          Args:
              client_id (str): The client ID of the user.
@@ -42,32 +43,36 @@ class Client(BaseClient):
         """
 
         integration_context = get_integration_context()
-        if token := integration_context.get("token"):
-            expires_date = integration_context.get("expires")
-            if expires_date and not self.is_token_expired(expires_date):
+
+        if token := integration_context.get("access_token"):
+            access_until = integration_context.get("access_until")
+            if access_until and not self.is_token_expired(access_until):
+                demisto.debug("Access token is valid, will use it to login")
                 return token
-            else:
-                refresh_token = integration_context.get("refresh_token")
-                json_data = {"client_id": client_id, "refresh_token": refresh_token}
-                return self.create_new_token(json_data, is_token_exist=True)
+
+            elif refresh_token := integration_context.get("refresh_token"):
+                refresh_until = integration_context.get("refresh_until")
+                if refresh_until and not self.is_token_expired(refresh_until):
+                    demisto.debug("Refresh token is valid, will use it to get new access token")
+                    json_data = {"client_id": client_id, "refresh_token": refresh_token}
+                    return self.create_new_token(json_data, is_token_exist=True)
 
         json_data = {"username": username, "password": password, "client_id": client_id, "scope": "certificate"}
         return self.create_new_token(json_data, is_token_exist=False)
 
-    def is_token_expired(self, expires_date: str) -> bool:
+    def is_token_expired(self, expires_date: int) -> bool:
         """
         This method checks if the token is expired.
 
         Args:
-            expires_date (str): The expiration date of the token.
+            expires_date (int): The timestamp of the expiration date of the token.
 
         Returns:
             bool: True if the token is expired, False otherwise.
         """
 
-        utc_now = get_current_time()
-        expires_datetime = arg_to_datetime(expires_date)
-        return utc_now > expires_datetime
+        timestamp_utc_now = int(get_current_time().timestamp())
+        return timestamp_utc_now > expires_date
 
     def create_new_token(self, json_data: dict, is_token_exist: bool) -> str:
         """
@@ -93,28 +98,21 @@ class Client(BaseClient):
             data=json.dumps(json_data),
         )
 
-        new_token = access_token_obj.get("access_token", "")
-        expire_in = arg_to_number(access_token_obj.get("expires_in")) or 1
+        access_token = access_token_obj.get("access_token", "")
         refresh_token = access_token_obj.get("refresh_token", "")
-        self.store_token_in_context(new_token, refresh_token, expire_in)
+        access_until = arg_to_number(access_token_obj.get("expires")) or int(get_current_time().timestamp())
+        refresh_until = arg_to_number(access_token_obj.get("refresh_until")) or int(get_current_time().timestamp())
 
-        return new_token
+        set_integration_context(
+            {
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+                "access_until": access_until,
+                "refresh_until": refresh_until,
+            }
+        )
 
-    def store_token_in_context(self, token: str, refresh_token: str, expire_in: int) -> None:
-        """
-        This method stores the generated token and its expiration date in the integration context.
-
-        Args:
-            token (str): The generated authentication token.
-            refresh_token (str): The generated refresh token.
-            expire_in (int): The number of seconds until the token expires.
-
-        Returns:
-            None
-        """
-
-        expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
-        set_integration_context({"token": token, "refresh_token": refresh_token, "expire_date": str(expire_date)})
+        return access_token
 
     def get_certificates(self, args: dict[str, Any]) -> dict:
         """

@@ -1066,7 +1066,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 > frag  | /C | /E  [<task(s)>] [/H] [/M [n] | [/U] [/V]] [/I n]
 >
 > ere <task(s)> is omitted (traditional defrag), or as follows:
->	 | [/D] [/K] [/L] | /O | /X
+> [/D] [/K] [/L] | /O | /X
 >
 > , to track an operation already in progress on a volume:
 > frag  /T
@@ -1075,36 +1075,36 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >
 > lue Description
 >
->  Perform analysis on the specified volumes.
+> Perform analysis on the specified volumes.
 >
->  Perform the operation on all volumes.
+> Perform the operation on all volumes.
 >
->  Perform traditional defrag (this is the default).
+> Perform traditional defrag (this is the default).
 >
->  Perform the operation on all volumes except those specified.
+> Perform the operation on all volumes except those specified.
 >
->  Optimize the storage tiers on the specified volumes.
+> Optimize the storage tiers on the specified volumes.
 >
->  Run the operation at normal priority (default is low).
+> Run the operation at normal priority (default is low).
 >
->  n Tier optimization would run for at most n seconds on each volume.
+> n Tier optimization would run for at most n seconds on each volume.
 >
->  Perform slab consolidation on the specified volumes.
+> Perform slab consolidation on the specified volumes.
 >
->  Perform retrim on the specified volumes.
+> Perform retrim on the specified volumes.
 >
->  [n] Run the operation on each volume in parallel in the background.
->	 most n threads optimize the storage tiers in parallel.
+> [n] Run the operation on each volume in parallel in the background.
+> st n threads optimize the storage tiers in parallel.
 >
->  Perform the proper optimization for each media type.
+> Perform the proper optimization for each media type.
 >
->  Track an operation already in progress on the specified volume.
+> Track an operation already in progress on the specified volume.
 >
->  Print the progress of the operation on the screen.
+> Print the progress of the operation on the screen.
 >
->  Print verbose output containing the fragmentation statistics.
+> Print verbose output containing the fragmentation statistics.
 >
->  Perform free space consolidation on the specified volumes.
+> Perform free space consolidation on the specified volumes.
 >
 >Examples:
 >
@@ -5312,7 +5312,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >   * 7:      Dest : C:\temp2\
 >   * 0:
 >   * 9:     Files : *.*
->   * 10:      
+>   * 10:
 >   * 11:   Options : *.* /DCOPY:DA /COPY:DAT /R:1000000 /W:30
 >   * 0:
 >   * 13: ------------------------------------------------------------------------------

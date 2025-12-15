@@ -1,5 +1,5 @@
 category: Network Security
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -406,7 +406,7 @@ script:
     - contextPath: Microsoft365Defender.Hunt.query
       description: The query used, also acted as a key.
       type: String
-    - contextPath: Microsoft365Defender.Hunt.results.
+    - contextPath: Microsoft365Defender.Hunt.results
       description: The results of the query.
       type: Unknown
   - arguments:
@@ -495,14 +495,14 @@ script:
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.5490413
   isfetch: true
-  script: ''
-  subtype: python3
-  type: python
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
+  script: ''
+  subtype: python3
+  type: python
 fromversion: 5.5.0
 tests:
 - No tests

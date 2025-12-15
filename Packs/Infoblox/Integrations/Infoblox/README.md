@@ -1,6 +1,6 @@
-Infoblox enables you to receive metadata about IPs in your network and manages the DNS Firewall by configuring RPZs. It defines RPZ rules to block DNS resolution for malicious or unauthorized hostnames, or redirect clients to a walled garden by substituting responses. This integration was integrated and tested with version V2 of Infoblox
+Infoblox NIOS enables you to receive metadata about IPs in your network and manages the DNS Firewall by configuring RPZs. It defines RPZ rules to block DNS resolution for malicious or unauthorized hostnames, or redirect clients to a walled garden by substituting responses. This integration was integrated and tested with version V2 of Infoblox
 
-Configure Infoblox on XSOAR
+Configure Infoblox NIOS on XSOAR
 ---------------------------
 
 ##### Required Permissions
@@ -8,10 +8,10 @@ Configure Infoblox on XSOAR
 The API supports only HTTP Basic Authentication. Every user must have permissions that grants them access to the API.
 
 1. Navigate to **Settings** > **Integrations**  > **Servers & Services**.
-2. Search for Infoblox.
+2. Search for Infoblox NIOS.
 3. Click **Add instance** to create and configure a new integration instance.
     * **Name**: a textual name for the integration instance.
-    * **Server URL (e.g.,, https://example.net)**
+    * **Server URL (e.g. https://example.net)**
     * **User Name**
     * **Password**
     * **Trust any certificate (not secure)**
@@ -25,7 +25,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 
 1. [Get IP info: infoblox-get-ip](#infoblox-get-ip).
 2. [Searches IP related objects by a given IP: infoblox-search-related-objects-by-ip](#infoblox-search-related-objects-by-ip).
-3. [Lists all response policy rules that belong to the.g.,ven response policy zone: infoblox-list-response-policy-zone-rules](#infoblox-list-response-policy-zone-rules).
+3. [Lists all response policy rules that belong to the given response policy zone: infoblox-list-response-policy-zone-rules](#infoblox-list-response-policy-zone-rules).
 4. [List all response policy zones: infoblox-list-response-policy-zones](#infoblox-list-response-policy-zones).
 5. [Creates a response policy zone: infoblox-create-response-policy-zone](#infoblox-create-response-policy-zone).
 6. [Creates a response policy rule: infoblox-create-rpz-rule](#infoblox-create-rpz-rule).
@@ -46,6 +46,9 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 21. [Deletes a given response policy zone: infoblox-delete-response-policy-zone](#infoblox-delete-response-policy-zone).
 22. [List host information: infoblox-list-host-info](#infoblox-list-host-info).
 23. [List network information: infoblox-list-network-info](#infoblox-list-network-info).
+24. [Update a response policy zone rule: infoblox-update-rpz-rule](#infoblox-update-rpz-rule).
+25. [Create a host record: infoblox-create-host-record](#infoblox-create-host-record).
+26. [Look up a DHCP lease: infoblox-dhcp-lease-lookup](#infoblox-dhcp-lease-lookup).
 
 ### infoblox-get-ip
 
@@ -61,12 +64,12 @@ Get IP information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip  | The IP address for which to retrieve information, e.g.,, "192.168.1.1". Cannot be used in conjunction with `network` or `from/to_ip` arguments. | Optional |
-| network  | The network that the IP belongs in FQDN/CIDR format, e.g.,, "192.168.1.0/24". Cannot be used in conjunction with `ip` or `from/to_ip` arguments. | Optional |
-| from_ip  | The beginning of the IP range, e.g.,, "192.168.1.0". Must be used in conjunction with `to_ip`. | Optional |
-| to_ip  | The end of the IP range, e.g.,, "192.168.1.254". Must be used in conjunction with `from_ip`. | Optional |
+| ip  | The IP address for which to retrieve information, e.g. "192.168.1.1", "2001:db8::1". Cannot be used in conjunction with `network` or `from/to_ip` arguments. | Optional |
+| network  | The network that the IP belongs in FQDN/CIDR format, e.g. "192.168.1.0/24", "2001:db8::/64". Cannot be used in conjunction with `ip` or `from/to_ip` arguments. | Optional |
+| from_ip  | The beginning of the IP range, e.g. "192.168.1.0", "2001:db8::". Must be used in conjunction with `to_ip`. | Optional |
+| to_ip  | The end of the IP range, e.g. "192.168.1.254", "2001:db8::254". Must be used in conjunction with `from_ip`. | Optional |
 | status  | The status of the IP device. Used in conjunction with the `network` or `ip` argument. Possible values are `ACTIVE`, `UNUSED` and `USED`. | Optional |
-| extended_attrs  | Comma-separated key/value formatted filter for extended attributes, e.g.,, "Site=New York,OtherProp=MyValue". | Optional |
+| extended_attrs  | Comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue". | Optional |
 | max_results  | The maximum results to return. Maximum is 1000. Default is 50. | Optional |
 
 ##### Context Output
@@ -174,7 +177,7 @@ Searches IP related objects by a given IP.
 
 * * *
 
-Lists all response policy rules that belong to the.g.,ven response policy zone.
+Lists all response policy rules that belong to the given response policy zone.
 
 ##### Base Command
 
@@ -302,6 +305,9 @@ List all response policy zones.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | max_results | Maximum results to return. (Default is 50) | Optional |
+| fqdn | The name of the DNS zone in FQDN format. | Optional |
+| view | The name of the DNS view in which the zone resides. | Optional |
+| comment | The comment for the zone to retrieve. | Optional |
 
 ##### Context Output
 
@@ -443,7 +449,7 @@ List all response policy zones.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Response Policy Zones list (first 50 results)
+### Infoblox Integration - Response Policy Zones list (fetched 12 results)
 
 | **Disable** | **FQDN** | **Reference ID** | **Rpz Policy** | **Rpz Severity** | **Rpz Type** | **View** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -553,6 +559,7 @@ Creates a response policy rule.
 | Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
 | Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The zone to which this rule belongs. |
 | Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Canonical | string | Canonical value of the rule. |
 
 ##### Command Example
 
@@ -913,7 +920,7 @@ Creates a substitute rule of a SRV record.
 | port | The port of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive). | Required |
 | priority | The priority of the substitute rule for the SRV Record. Can be 0 to 65535 (inclusive). | Required |
 | target | The target of the substitute rule of the SRV record in FQDN format. This value can be in unicode format. | Required |
-| we.g.,t | The we.g.,t of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive). | Required |
+| weight | The weight of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive). | Required |
 
 ##### Context Output
 
@@ -929,7 +936,7 @@ Creates a substitute rule of a SRV record.
 
 ##### Command Example
 
-`!infoblox-create-srv-substitute-record-rule name="nightly-test-srv-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-srv-sub" port="22" priority="10" target="infoblow.com" we.g.,t="10"`
+`!infoblox-create-srv-substitute-record-rule name="nightly-test-srv-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-srv-sub" port="22" priority="10" target="infoblow.com" weight="10"`
 
 ##### Context Example
 
@@ -945,7 +952,7 @@ Creates a substitute rule of a SRV record.
         "Target": "infoblow.com",
         "Type": "record:rpz:srv",
         "View": "default",
-        "We.g.,t": 10,
+        "Weight": 10,
         "Zone": "infoblow.com"
     }
 }
@@ -955,7 +962,7 @@ Creates a substitute rule of a SRV record.
 
 ### Infoblox Integration - Response Policy Zone rule: nightly-test-srv-sub.infoblow.com has been created
 
-| **Comment** | **Disable** | **Name** | **Port** | **Priority** | **Reference ID** | **Target** | **Type** | **View** | **We.g.,t** | **Zone** |
+| **Comment** | **Disable** | **Name** | **Port** | **Priority** | **Reference ID** | **Target** | **Type** | **View** | **Weight** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | nightly-test-srv-sub | false | nightly-test-srv-sub.infoblow.com | 22  | 10  | record:rpz:srv/ZG5zLmJpbmRfc3J2JC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cvbmlnaHRseS10ZXN0LXNydi1zdWIvMTAvMTAvMjIvaW5mb2Jsb3cuY29t:nightly-test-srv-sub.infoblow.com/default | infoblow.com | record:rpz:srv | default | 10  | infoblow.com |
 
@@ -1338,6 +1345,7 @@ Searches a specific rule by its name.
 | Infoblox.RulesSearchResults.Name | string | The rule name. |
 | Infoblox.RulesSearchResults.ReferenceID | string | The reference ID of the rule. |
 | Infoblox.RulesSearchResults.View | string | The view of the definition. |
+| Infoblox.RulesSearchResults.Canonical | string | The canonical value of the rule. |
 
 ##### Command Example
 
@@ -1486,10 +1494,10 @@ Get all host records.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_name | The hostname to retrieve records for, e.g., localhost.test. | Optional |
-| extattrs | Comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue". | Optional |
+| host_name | The hostname to retrieve records for, e.g. localhost.test. | Optional |
+| extattrs | Comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue". | Optional |
 | max_results | The maximum number of records to return. Default is 50, maximum is 1000. | Optional |
-| additional_return_fields | Comma-separated list of additional fields to return for each host, e.g., extattrs,aliases. Default is extattrs. | Optional |
+| additional_return_fields | Comma-separated list of additional fields to return for each host, e.g. extattrs,aliases. Default is extattrs. | Optional |
 
 #### Context Output
 
@@ -1646,10 +1654,10 @@ List network information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pattern | Filter networks by pattern, e.g., '.0/24' for netmask, '192.168' for subnet. | Optional |
-| extattrs | comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue". | Optional |
+| pattern | Filter networks by pattern, e.g. '.0/24' for netmask, '192.168' for subnet. | Optional |
+| extattrs | comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue". | Optional |
 | max_results | The maximum number of records to return. Maximum is 1000. Default is 50. | Optional |
-| additional_return_fields | Comma separated list of additional fields to return for each host, e.g., extattrs,aliases. Default is extattrs. | Optional |
+| additional_return_fields | Comma separated list of additional fields to return for each host, e.g. extattrs,aliases. Default is extattrs. | Optional |
 
 #### Context Output
 
@@ -1729,3 +1737,308 @@ List network information.
 >|ExtendedAttributes|Name|NetworkView|Reference|
 >|---|---|---|---|
 >| Region: EMEA | 255.255.255.192/26 | default | network/ZG5zLm5ldHdvcmskMjU1LjI1NS4yNTUuMTkyLzI2LzA:255.255.255.192/26/default |
+
+### infoblox-update-rpz-rule
+
+***
+Update a response policy zone rule.
+
+#### Base Command
+
+`infoblox-update-rpz-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| reference_id | The reference ID of the existing RPZ rule to update. | Required |
+| name | The name of the response policy zone rule. | Required |
+| rule_type | The type of the response policy zone rule. Possible values are: Passthru, Block (No such domain), Block (No data), Substitute (domain name). | Required |
+| rp_zone | The zone to assign the rule to. | Required |
+| comment | The comment for this rule update. | Optional |
+| substitute_name | The substitute name to assign (substitute domain only). | Optional |
+| view | The DNS view in which the records are located. Default is default. | Optional |
+| additional_parameters | JSON object containing additional parameters (disable, use_ttl, ttl, extattrs) to update RPZ rule. Example: {"disable": true, "use_ttl": true, "ttl": 3600}. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | Rule name. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Canonical | string | Canonical value of the rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether the rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The comment for this rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Type | string | The object type as used in Infoblox. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | View of the definition. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+
+#### Command example
+
+```!infoblox-update-rpz-rule reference_id="record:rpz:cname/sample.example.com/default" name="sample.example.com" rp_zone="example.com" rule_type="PASSTHRU" comment="Updated passthru rule"```
+
+#### Context Example
+
+```json
+{
+    "Infoblox": {
+        "ModifiedResponsePolicyZoneRules": {
+            "Canonical": "",
+            "Comment": "Updated passthru rule",
+            "Disable": false,
+            "Extattrs": {},
+            "Name": "sample.example.com",
+            "ReferenceID": "record:rpz:cname/sample.example.com/default",
+            "Type": "record:rpz:cname",
+            "View": "default",
+            "Zone": "example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Infoblox Integration - Response Policy Zone rule: sample.example.com has been updated
+>
+>|Comment|Disable|Name|Reference ID|Type|View|Zone|
+>|---|---|---|---|---|---|---|
+>| Updated passthru rule | false | sample.example.com | record:rpz:cname/sample.example.com/default | record:rpz:cname | default | example.com |
+
+### infoblox-create-host-record
+
+***
+Creates a host record. Note: Either ipv4_address or ipv6_address is required.
+
+#### Base Command
+
+`infoblox-create-host-record`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the host in FQDN format '{name}.{zone}' (e.g. example.auth_zone). It must belong to an existing DNS zone. | Required |
+| view | The DNS view in which the records are located. Default is default. | Optional |
+| ipv4_address | The IPv4 addresses for the host record. Example: [{"ipv4addr": "192.168.1.0"}], [{"ipv4addr": "192.168.1.1", "configure_for_dhcp": true, "mac": "00:01:00:01:00:01"}]. | Optional |
+| ipv6_address | The IPv6 addresses for the host record. Example: [{"ipv6addr": "2001:db8::1"}], [{"ipv6addr": "2001:db8::2", "configure_for_dhcp": true, "duid": "00:01:00:01:0a:1a"}]. | Optional |
+| comment | The comment for this host record. | Optional |
+| aliases | The aliases for this host record. Example: ["alias1", "alias2"]. | Optional |
+| configure_for_dns | Whether to configure the host record for DNS. Possible values are: Yes, No. Default is Yes. | Optional |
+| extattrs | The extended attributes for this host record. Example: {"Site": {"value": "example"}}. | Optional |
+| additional_parameters | JSON object containing additional parameters to create host record. Example: {"use_ttl": true, "ttl": 3600, "disable": true}. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.Host.ReferenceID | String | The host record reference ID. |
+| Infoblox.Host.IPV4Addresses | String | The host IPv4 addresses. |
+| Infoblox.Host.IPV6Addresses | String | The host IPv6 addresses. |
+| Infoblox.Host.ConfigureForDNS | Boolean | Whether the host is configured for DNS. |
+| Infoblox.Host.Name | String | The host record name. |
+| Infoblox.Host.ExtendedAttributes | Unknown | The network extended attributes. |
+| Infoblox.Host.AdditionalFields | Unknown | The additional fields for network. |
+| Infoblox.Host.Aliases | String | The aliases for this host record. |
+| Infoblox.Host.AllowTelnet | Boolean | Whether the host is allowed to use telnet. |
+| Infoblox.Host.NetworkView | String | The network view of the host record. |
+| Infoblox.Host.View | String | The view of the host record. |
+| Infoblox.Host.Zone | String | The zone of the host record. |
+| Infoblox.Host.Disable | Boolean | Whether the host is disabled. |
+| Infoblox.Host.DNSName | String | The DNS name of the host record. |
+
+#### Command example
+
+```!infoblox-create-host-record name=example.com ipv4_address="[{\"ipv4addr\": \"0.0.0.1\"}]" ipv6_address="[{\"ipv6addr\": \"0000:000:0000::0000:000:001\", \"configure_for_dhcp\": false}]" configure_for_dns=false aliases="[\"example2.com\", \"example3.com\"]"```
+
+#### Context Example
+
+```json
+{
+    "Infoblox": {
+        "Host": {
+            "Aliases": [
+                "example2.com",
+                "example3.com"
+            ],
+            "AllowTelnet": false,
+            "ConfigureForDNS": false,
+            "DDNSProtected": false,
+            "DNSName": "example.com",
+            "Disable": false,
+            "DisableDiscovery": false,
+            "DnsAliases": [
+                "example2.com",
+                "example3.com"
+            ],
+            "Extattrs": {},
+            "IPV4Addresses": [
+                {
+                    "ConfigureForDHCP": false,
+                    "Host": "example.com",
+                    "IPV4Address": "0.0.0.1",
+                    "ReferenceID": "record:host_ipv4addr/12345:0.0.0.1/example.com/ "
+                }
+            ],
+            "IPV6Addresses": [
+                {
+                    "ConfigureForDHCP": false,
+                    "Host": "example.com",
+                    "IPV6Address": "0000:000:0000::0000:000:001",
+                    "ReferenceID": "record:host_ipv6addr/23456:0000:000:0000::0000:000:001/example.com/ "
+                }
+            ],
+            "Name": "example.com",
+            "NetworkView": "default",
+            "RRSetOrder": "cyclic",
+            "ReferenceID": "record:host/45678:example.com/ ",
+            "Type": "record:host",
+            "UseCLICredentials": false,
+            "UseSNMP3Credential": false,
+            "UseSNMPCredential": false,
+            "UseTTL": false,
+            "View": " ",
+            "Zone": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Host record created
+>
+>|Aliases|Allow Telnet|Configure For DNS|DDNS Protected|DNS Name|Disable|Disable Discovery|Dns Aliases|IPV4 Addresses|IPV6 Addresses|Name|Network View|RR Set Order|Reference ID|Type|Use CLI Credentials|Use SNMP3 Credential|Use SNMP Credential|Use TTL|View|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| example2.com,<br/>example3.com | false | false | false | example.com | false | false | example2.com,<br/>example3.com | **-** ***ReferenceID***: record:host_ipv4addr/12345:0.0.0.1/example.com/ <br/> ***ConfigureForDHCP***: false<br/> ***Host***: example.com<br/> ***IPV4Address***: 0.0.0.1 | **-** ***ReferenceID***: record:host_ipv6addr/23456:0000:000:0000::0000:000:001/example.com/ <br/> ***ConfigureForDHCP***: false<br/> ***Host***: example.com<br/> ***IPV6Address***: 0000:000:0000::0000:000:001 | example.com | default | cyclic | record:host/45678:example.com/  | record:host | false | false | false | false |   |
+
+### infoblox-dhcp-lease-lookup
+
+***
+Look up a DHCP lease.
+
+#### Base Command
+
+`infoblox-dhcp-lease-lookup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip_address | Lease IP address (IPv4 or IPv6). | Optional |
+| hardware | MAC address for IPv4 leases. Regex or exact search supported. | Optional |
+| hostname | Hostname sent via DHCP option 12. Regex/exact search. | Optional |
+| ipv6_duid | IPv6 DUID identifier for IPv6 leases. Regex/exact search. | Optional |
+| protocol | The protocol of the DHCP lease. Possible values are: IPV4, IPV6, BOTH. Default is BOTH. | Optional |
+| fingerprint | DHCP client fingerprint; case-insensitive or regex search. | Optional |
+| username | Specify the user associated with the lease request. | Optional |
+| limit | Specify the maximum number of leases to return. Default is 100. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.DHCPLease.ReferenceID | String | The DHCP lease reference ID. |
+| Infoblox.DHCPLease.Address | String | The DHCP lease address. |
+| Infoblox.DHCPLease.BindingState | String | The DHCP lease binding state. |
+| Infoblox.DHCPLease.ClientHostname | String | The DHCP lease client hostname. |
+| Infoblox.DHCPLease.CLTT | String | The DHCP lease client last transaction time. |
+| Infoblox.DHCPLease.Ends | String | The DHCP lease ends time. |
+| Infoblox.DHCPLease.Fingerprint | String | The DHCP lease fingerprint. |
+| Infoblox.DHCPLease.Hardware | String | The DHCP lease hardware address. |
+| Infoblox.DHCPLease.IPV6PrefixBits | String | The DHCP lease IPv6 prefix bits. |
+| Infoblox.DHCPLease.IsInvalidMAC | Boolean | The Flag indicating if the MAC address is invalid. |
+| Infoblox.DHCPLease.NetworkView | String | The network view of the DHCP lease record. |
+| Infoblox.DHCPLease.Network | String | The network of the DHCP lease record. |
+| Infoblox.DHCPLease.Protocol | String | The protocol of the DHCP lease record. |
+| Infoblox.DHCPLease.Starts | String | The DHCP lease starts time. |
+| Infoblox.DHCPLease.Variable | String | The DHCP lease variable. |
+| Infoblox.DHCPLease.UID | String | The unique identifier of the DHCP lease record. |
+
+#### Command example
+
+```!infoblox-dhcp-lease-lookup limit=3```
+
+#### Context Example
+
+```json
+{
+    "Infoblox": {
+        "DHCPLease": [
+            {
+                "Address": "0.0.0.2",
+                "BindingState": "FREE",
+                "CLTT": 1757322665,
+                "Ends": 1757365865,
+                "Fingerprint": "Microsoft Windows 10",
+                "Hardware": "00:00:00:00:00:02",
+                "IPV6PrefixBits": 0,
+                "IsInvalidMAC": false,
+                "Network": "0.0.0.5/20",
+                "NetworkView": "default",
+                "NeverEnds": false,
+                "NeverStarts": false,
+                "Protocol": "IPV4",
+                "ReferenceID": "lease/123:0.0.0.2/default",
+                "ServedBy": "0.0.0.0",
+                "ServerHostName": "infoblox.localdomain",
+                "Starts": 1757322665,
+                "TSTP": 1757365865,
+                "UID": "123",
+                "Variable": "vendor-class-identifier=\"MSFT 5.0\""
+            },
+            {
+                "Address": "0.0.0.3",
+                "BindingState": "ACTIVE",
+                "CLTT": 1757399758,
+                "ClientHostname": "CE",
+                "Ends": 1757442958,
+                "Fingerprint": "Ubuntu/Debian 5/Knoppix 6",
+                "Hardware": "00:00:00:00:00:03",
+                "IPV6PrefixBits": 0,
+                "IsInvalidMAC": false,
+                "Network": "0.0.0.5/20",
+                "NetworkView": "default",
+                "NeverEnds": false,
+                "NeverStarts": false,
+                "NextBindingState": "FREE",
+                "Protocol": "IPV4",
+                "ReferenceID": "lease/234:0.0.0.3/default",
+                "ServedBy": "0.0.0.0",
+                "ServerHostName": "infoblox.localdomain",
+                "Starts": 1757399758,
+                "UID": "234"
+            },
+            {
+                "Address": "0.0.0.4",
+                "BindingState": "ABANDONED",
+                "CLTT": 1757365722,
+                "ClientHostname": "rhel",
+                "Fingerprint": "Ubuntu/Debian 5/Knoppix 6",
+                "IPV6PrefixBits": 0,
+                "IsInvalidMAC": false,
+                "Network": "0.0.0.5/20",
+                "NetworkView": "default",
+                "NeverEnds": true,
+                "NeverStarts": false,
+                "NextBindingState": "FREE",
+                "Protocol": "IPV4",
+                "ReferenceID": "lease/345:0.0.0.4/default",
+                "ServedBy": "0.0.0.0",
+                "ServerHostName": "infoblox.localdomain",
+                "Starts": 1757365722
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### DHCP lease lookup, found 3 records
+>
+>|Address|Binding State|CLTT|Ends|Fingerprint|Hardware|IPV6 Prefix Bits|Is Invalid MAC|Network|Network View|Never Ends|Never Starts|Protocol|Reference ID|Served By|Server Host Name|Starts|TSTP|UID|Variable|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 0.0.0.2 | FREE | 1757322665 | 1757365865 | Microsoft Windows 10 | 00:00:00:00:00:02 | 0 | false | 0.0.0.5/20 | default | false | false | IPV4 | lease/123:0.0.0.2/default | 0.0.0.0 | infoblox.localdomain | 1757322665 | 1757365865 | 123 | vendor-class-identifier="MSFT 5.0" |
+>| 0.0.0.3 | ACTIVE | 1757399758 | 1757442958 | Ubuntu/Debian 5/Knoppix 6 | 00:00:00:00:00:03 | 0 | false | 0.0.0.5/20 | default | false | false | IPV4 | lease/234:0.0.0.3/default | 0.0.0.0 | infoblox.localdomain | 1757399758 |  | 234 |  |
+>| 0.0.0.4 | ABANDONED | 1757365722 |  | Ubuntu/Debian 5/Knoppix 6 |  | 0 | false | 0.0.0.5/20 | default | true | false | IPV4 | lease/345:0.0.0.4/default | 0.0.0.0 | infoblox.localdomain | 1757365722 |  |  |  |
