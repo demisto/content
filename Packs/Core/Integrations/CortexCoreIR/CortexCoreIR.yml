@@ -3659,6 +3659,13 @@ script:
     hidden: true
     description: Update tags of one or more endpoints.
     name: core-update-endpoint-tags
+    outputs:
+    - contextPath: Core.EndpointTags.SuccessMessage
+      description: The success message returned after updating endpoint tags.
+      type: string
+    - contextPath: Core.EndpointTags.FailureMessage
+      description: The error message returned when endpoint tags failed to update.
+      type: string
   - name: core-list-users
     description: Retrieve a list of the current users in your environment.
     arguments: []
