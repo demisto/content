@@ -121,7 +121,7 @@ class Client(BaseClient):
 
     def get_operations(self, search_date_option: str | None, continuation_token: str = None, limit: int = None, days: int = None):
         # TODO: remove
-        # return RES_EXAMPLE
+        return RES_EXAMPLE
 
         # get access token value
         integration_context = demisto.getIntegrationContext()
@@ -265,6 +265,9 @@ def days_since(timestamp_str) -> int:
 
     # Difference in days
     delta = now - dt
+    days = delta.days
+    if days<0:
+        return 0
     return delta.days
 
 
@@ -272,7 +275,6 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
     last_run_date = last_run.get("LastRun")
     days = 0
     if last_run_date:
-        # TODO: check this when the time is today
         days = days_since(last_run_date)
 
     operations, _ = client.get_operations_with_pagination(
