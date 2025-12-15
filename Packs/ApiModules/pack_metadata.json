@@ -11,7 +11,12 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "marketplaces": ["xsoar", "marketplacev2", "xpanse", "platform"],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "xpanse",
+        "platform"
+    ],
     "supportedModules": [
         "X1",
         "X3",
