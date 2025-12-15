@@ -598,7 +598,7 @@ script:
       name: channel
     - description: The new message content.
       name: message
-    - description: The team member the message to be edited was sent to.
+    - description: The team member the message to be edited was sent to. Accepts either the user's email address or user name.
       name: team_member
     - description: Whether or not an adaptive card is being updated.
       name: format_as_card

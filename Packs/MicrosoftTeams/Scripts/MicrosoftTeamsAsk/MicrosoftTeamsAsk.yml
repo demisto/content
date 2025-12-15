@@ -24,7 +24,7 @@ args:
 - description: A CSV list of additional options (in case more than 2 options are required. Used only for if the form type is "predefined-options"). Options cannot contain whitespaces.
   name: additional_options
 - default: true
-  description: Team member to which to send the question.
+  description: Team member to which to send the question. Accepts either the user's email address or user name.
   name: team_member
 - description: Task ID of the playbook task to close with the reply. If not provided, no playbook task will be closed.
   name: task_id
