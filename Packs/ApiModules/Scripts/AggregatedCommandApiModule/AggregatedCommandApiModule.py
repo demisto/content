@@ -85,7 +85,7 @@ class EntryResult:
                 "Arguments": self.args,
                 "Brand": self.brand,
                 "Status": self.status.value,
-                self.score_field_name: self.score if self.score else "",
+                self.score_field_name: self.score if self.score is not None else "",
                 "Message": self.message,
             }
         return {
