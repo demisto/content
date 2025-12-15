@@ -3398,7 +3398,7 @@ def parse_time_to_minutes():
     return None
 
 
-def splunk_get_indexes_command(service: client.Service, app):
+def splunk_get_indexes_command(service: client.Service, app: str = "-"):
     search_query = f"""| rest "/servicesNS/nobody/{app}/data/indexes/?count=-1&offset=0"
     | eval name=title, count=totalEventCount
     | table name, count"""
@@ -4095,7 +4095,7 @@ def main():  # pragma: no cover
     elif command == "splunk-results":
         splunk_results_command(service, args)
     elif command == "splunk-get-indexes":
-        splunk_get_indexes_command(service, app=connection_args.get("app"))
+        splunk_get_indexes_command(service, app=connection_args.get("app", "-"))
     elif command == "fetch-incidents":
         demisto.info("########### FETCH #############")
         fetch_incidents(service, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
