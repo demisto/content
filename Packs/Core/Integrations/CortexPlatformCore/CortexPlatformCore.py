@@ -3034,7 +3034,7 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
             script = scripts[0]
             script_uid = script["script_uid"]
             script_inputs = script["script_inputs"]
-            script_inputs_names = [input_param["name"] for input_param in script_inputs]
+            script_inputs_names = [input_param.get("name") for input_param in script_inputs]
             if script["script_inputs"] and not parameters:
                 raise ValueError(
                     f"Script '{script_name}' requires the following input parameters: {', '.join(script_inputs_names)}, "
