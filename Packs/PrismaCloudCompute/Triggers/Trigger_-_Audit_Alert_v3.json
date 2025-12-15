@@ -1,6 +1,6 @@
 {
   "trigger_id": "e3826de65301631f979be7d6c49d9671",
-  "id": "e3826de65301631f979be7d6c49d9671",
+  "id": "Prisma Cloud Compute - Audit Alert v3 Trigger",
   "playbook_id": "Prisma Cloud Compute - Audit Alert v3",
   "suggestion_reason": "Provides a comprehensive response to Prisma Cloud Compute audit alerts.",
   "description": "This trigger is responsible for running the Prisma Cloud Compute - Audit Alert v3 playbook on audit alerts.",

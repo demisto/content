@@ -1,6 +1,6 @@
 {
   "trigger_id": "0d1389eba67bdd284ab668368e230000",
-  "id": "0d1389eba67bdd284ab668368e230000",
+  "id": "Prisma Cloud - VM Alert Prioritization",
   "playbook_id": "Prisma Cloud - VM Alert Prioritization",
   "suggestion_reason": "Recommended for Prisma Cloud - VM Alert Prioritization alerts",
   "description": "This trigger is responsible for handling Prisma Cloud - VM Alert Prioritization alerts",

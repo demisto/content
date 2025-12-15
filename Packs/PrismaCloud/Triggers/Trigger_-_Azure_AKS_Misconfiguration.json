@@ -1,6 +1,6 @@
 {
   "trigger_id": "82719687c5d2aee11e490084dbe15fd8",
-  "id": "82719687c5d2aee11e490084dbe15fd8",
+  "id": "Azure AKS Misconfiguration",
   "playbook_id": "Prisma Cloud Remediation - Azure AKS Misconfiguration v2",
   "suggestion_reason": "Recommended for Azure AKS Misconfiguration alerts",
   "description": "This trigger is responsible for handling Azure AKS Misconfiguration alerts",

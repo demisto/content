@@ -1,5 +1,5 @@
 {
-  "id": "4604414a45bf3bdba97decbc840f46d8",
+  "id": "Trigger - GCP Public Access Misconfiguration",
   "name": "Trigger - GCP Public Access Misconfiguration",
   "trigger_id": "4604414a45bf3bdba97decbc840f46d8",
   "trigger_name": "Trigger - GCP Public Access Misconfiguration",
@@ -8,19 +8,19 @@
   "description": "Suggests a playbook that automatically remediates two high-severity misconfiguration issues caused by GCP Storage buckets accessible to allUsers or allAuthenticatedUsers.",
   "alerts_filter": {
     "filter": {
-        "OR": [
-            {
-            "SEARCH_FIELD": "matching_service_rule_id",
-            "SEARCH_TYPE": "WILDCARD",
-            "SEARCH_VALUE": "41f7a4b1-cad6-4fbf-b698-1fd11a8869a8"
-            },
-            {
-            "SEARCH_FIELD": "matching_service_rule_id",
-            "SEARCH_TYPE": "WILDCARD",
-            "SEARCH_VALUE": "9f08e13c-cdd6-4ad1-89f5-ffef6a71e432"
-            }
-        ]
+      "OR": [
+        {
+          "SEARCH_FIELD": "matching_service_rule_id",
+          "SEARCH_TYPE": "WILDCARD",
+          "SEARCH_VALUE": "41f7a4b1-cad6-4fbf-b698-1fd11a8869a8"
+        },
+        {
+          "SEARCH_FIELD": "matching_service_rule_id",
+          "SEARCH_TYPE": "WILDCARD",
+          "SEARCH_VALUE": "9f08e13c-cdd6-4ad1-89f5-ffef6a71e432"
         }
-    },
-    "fromVersion": "8.11.0"
+      ]
+    }
+  },
+  "fromVersion": "8.11.0"
 }

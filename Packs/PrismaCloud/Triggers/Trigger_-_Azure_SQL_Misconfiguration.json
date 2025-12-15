@@ -1,6 +1,6 @@
 {
   "trigger_id": "29cdd6d019dcaaea2d1ca79371f9f7cb",
-  "id": "29cdd6d019dcaaea2d1ca79371f9f7cb",
+  "id": "Azure SQL Misconfiguration",
   "playbook_id": "Prisma Cloud Remediation - Azure SQL Misconfiguration v2",
   "suggestion_reason": "Recommended for Azure SQL Misconfiguration alerts",
   "description": "This trigger is responsible for handling Azure SQL Misconfiguration alerts",

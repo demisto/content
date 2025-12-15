@@ -1,6 +1,6 @@
 {
   "trigger_id": "44e61bd26eec45c3264a384324567e90",
-  "id": "44e61bd26eec45c3264a384324567e90",
+  "id": "AWS EC2 Instance Misconfiguration",
   "playbook_id": "Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration v2",
   "suggestion_reason": "Recommended for AWS EC2 Instance Misconfiguration alerts",
   "description": "This trigger is responsible for handling AWS EC2 Instance Misconfiguration alerts",

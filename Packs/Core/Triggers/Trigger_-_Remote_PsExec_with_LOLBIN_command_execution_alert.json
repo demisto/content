@@ -1,6 +1,6 @@
 {
   "trigger_id": "155e823d9d56d1e3cec9061cd9c0523d",
-  "id": "155e823d9d56d1e3cec9061cd9c0523d",
+  "id": "Remote PsExec with LOLBIN command execution alert",
   "playbook_id": "Remote PsExec with LOLBIN command execution alert",
   "suggestion_reason": "Recommended for Remote PsExec with LOLBIN command execution alerts",
   "description": "This trigger is responsible for handling Remote PsExec with LOLBIN command execution alerts",

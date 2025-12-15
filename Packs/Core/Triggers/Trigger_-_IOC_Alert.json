@@ -1,6 +1,6 @@
 {
   "trigger_id": "674abe1c33857b48c54832d8244db1a8",
-  "id": "674abe1c33857b48c54832d8244db1a8",
+  "id": "IOC Alert",
   "playbook_id": "IOC Alert",
   "suggestion_reason": "Recommended for alerts triggered by XDR IOC",
   "description": "This trigger is responsible for XDR IOC alerts",

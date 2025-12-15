@@ -1,6 +1,6 @@
 {
   "trigger_id": "723030e7f5b76701564877846cd69eec",
-  "id": "723030e7f5b76701564877846cd69eec",
+  "id": "Possible External RDP Brute-Force",
   "playbook_id": "Possible External RDP Brute-Force",
   "suggestion_reason": "Recommended for External RDP Brute-Force alerts",
   "description": "This trigger is responsible for handling External RDP Brute-Force alerts",

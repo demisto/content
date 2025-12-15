@@ -1,6 +1,6 @@
 {
   "trigger_id": "546b06f5f92ffe83caf0e884a36df98d",
-  "id": "546b06f5f92ffe83caf0e884a36df98d",
+  "id": "T1059 - Command and Scripting Interpreter",
   "playbook_id": "T1059 - Command and Scripting Interpreter",
   "suggestion_reason": "Recommended for Alerts with evidence of MITRE technique “Command and Scripting Interpreter”",
   "description": "This trigger is responsible for handling T1059 - Command and Scripting Interpreter alerts",

@@ -1,6 +1,6 @@
 {
   "trigger_id": "faeb87b310ed46168838eef5fb9a246e",
-  "id": "faeb87b310ed46168838eef5fb9a246e",
+  "id": "Remediation playbook for AWS S3 Bucket Publicly accessible",
   "trigger_name": "Remediation playbook for AWS S3 Bucket Publicly accessible",
   "name": "Remediation playbook for AWS S3 Bucket Publicly accessible",
   "playbook_id": "AWS S3 Bucket Publicly Accessible - Remediate and Notify",

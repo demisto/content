@@ -1,6 +1,6 @@
 {
   "trigger_id": "714a581ffd144106a948bc9ad0cbd5ed",
-  "id": "714a581ffd144106a948bc9ad0cbd5ed",
+  "id": "Cortex Exposure Management RdpServer Remediation",
   "playbook_id": "Cortex EM - Remediation",
   "suggestion_reason": "Recommended for remediation of Cortex Exposure Management RdpServer issues",
   "description": "This automation rule is responsible for handling remediation of Cortex Exposure Management RdpServer issues",

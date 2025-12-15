@@ -1,6 +1,6 @@
 {
   "trigger_id": "c8a93aad286ff93763120c0e47696f82",
-  "id": "c8a93aad286ff93763120c0e47696f82",
+  "id": "Prisma Cloud Network API and Anomaly alerts",
   "playbook_id": "Prisma Cloud - Network API and Anomaly Incidents",
   "suggestion_reason": "Recommended for Prisma Cloud Network, API and Anomaly alerts",
   "description": "This trigger is responsible for handling  Prisma Cloud Network, API and Anomaly alerts",

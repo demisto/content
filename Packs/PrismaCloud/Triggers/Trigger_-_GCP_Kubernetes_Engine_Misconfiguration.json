@@ -1,6 +1,6 @@
 {
   "trigger_id": "7106713a54ef8482181fe37bbf7fda29",
-  "id": "7106713a54ef8482181fe37bbf7fda29",
+  "id": "GCP Kubernetes Engine Misconfiguration",
   "playbook_id": "Prisma Cloud Remediation - GCP Kubernetes Engine Misconfiguration v2",
   "suggestion_reason": "Recommended for GCP Kubernetes Engine Misconfiguration alerts",
   "description": "This trigger is responsible for handling GCP Kubernetes Engine Misconfiguration alerts",
