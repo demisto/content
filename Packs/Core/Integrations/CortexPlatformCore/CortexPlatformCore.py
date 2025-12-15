@@ -1581,12 +1581,24 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
     )
 
 
-def normalize_key(k: str) -> str:
-    if k.startswith("xdm.asset."):
-        return k.replace("xdm.asset.", "")
-    if k.startswith("xdm."):
-        return k.replace("xdm.", "")
-    return k
+def normalize_key(key: str) -> str:
+    """
+    Strips the prefixes 'xdm.asset.' or 'xdm.' from the beginning of the key,
+    if present, and returns the remaining key unchanged otherwise.
+
+    Args:
+        key (str): The original output key.
+
+    Returns:
+        str: The normalized key without XDM prefixes.
+    """
+    if key.startswith("xdm.asset."):
+        return key.replace("xdm.asset.", "")
+    
+    if key.startswith("xdm."):
+        return key.replace("xdm.", "")
+    
+    return key
 
 
 def search_assets_command(client: Client, args):

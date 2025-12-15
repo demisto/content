@@ -5206,3 +5206,38 @@ def test_run_playbook_command_client_call_parameters():
     run_playbook_command(mock_client, args)
 
     mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
+
+
+def test_normalize_key_with_xdm_asset_prefix():
+    """Test normalization of keys with 'xdm.asset.' prefix."""
+    from CortexPlatformCore import normalize_key
+    assert normalize_key("xdm.asset.name") == "name"
+    assert normalize_key("xdm.asset.id") == "id"
+    assert normalize_key("xdm.asset.type") == "type"
+    
+    assert normalize_key("xdm.asset.type.name") == "type.name"
+    assert normalize_key("xdm.asset.group.id") == "group.id"
+    assert normalize_key("xdm.asset.provider.region") == "provider.region"
+
+def test_normalize_key_with_xdm_prefix():
+    """Test normalization of keys with 'xdm.' prefix (but not 'xdm.asset.')."""
+    from CortexPlatformCore import normalize_key
+    assert normalize_key("xdm.source.ip") == "source.ip"
+    assert normalize_key("xdm.target.host") == "target.host"
+    assert normalize_key("xdm.event.type") == "event.type"
+        
+def test_normalize_key_without_prefix():
+    """Test that keys without XDM prefixes are returned unchanged."""
+    from CortexPlatformCore import normalize_key
+    # Regular field names
+    assert normalize_key("name") == "name"
+    assert normalize_key("id") == "id"
+    assert normalize_key("status") == "status"
+    
+    # Nested field names
+    assert normalize_key("user.name") == "user.name"
+    assert normalize_key("network.interface.type") == "network.interface.type"
+    
+    # Field names that contain 'xdm' but don't start with it
+    assert normalize_key("field.xdm.name") == "field.xdm.name"
+    assert normalize_key("some_xdm_field") == "some_xdm_field"
