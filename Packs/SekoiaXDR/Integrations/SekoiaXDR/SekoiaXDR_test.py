@@ -260,10 +260,10 @@ def test_http_request_list(client, requests_mock, method, url_suffix, params, js
     mock_response = util_load_json(json_test_file)
     requests_mock.get(MOCK_URL + url_suffix, json=mock_response)
 
-    args = {"url_sufix": url_suffix, "method": method, "params": params}
+    args = {"url_suffix": url_suffix, "method": method, "params": params}
     result = SekoiaXDR.http_request_command(client=client, args=args)
 
-    assert result.outputs["items"] == mock_response["items"]
+    assert result.outputs == mock_response["items"]
 
 
 def test_list_alerts(client, requests_mock):
