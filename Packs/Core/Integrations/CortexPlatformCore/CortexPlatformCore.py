@@ -3243,7 +3243,7 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults
 
     exception_rule_filter = build_exception_rules_filter(args)
 
-    if exception_rule_type in EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING.keys():
+    if exception_rule_type in EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING:
         table_names = [EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING.get(exception_rule_type)]
     else:
         table_names = [LEGACY_AGENT_EXCEPTIONS_TABLE, DISABLE_PREVENTION_RULES_TABLE]
