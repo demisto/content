@@ -1,0 +1,183 @@
+{
+    "description": "Maps Splunk Finding incoming fields.",
+    "feed": false,
+    "id": "Splunk Finding - Incoming Mapper",
+    "mapping": {
+        "Splunk Finding": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "owner": {
+                    "simple": "owner"
+                },
+                "Dest": {
+                    "simple": "dest"
+                },
+                "Splunk Dest Risk Object Type": {
+                    "simple": "dest_risk_object_type"
+                },
+                "Splunk Dest Risk Score": {
+                    "simple": "dest_risk_score"
+                },
+                "Splunk Disposition": {
+                    "simple": "disposition_label"
+                },
+                "Splunk Drilldown": {
+                    "simple": "drilldown_searches"
+                },
+                "Event Type": {
+                    "simple": "eventtype"
+                },
+                "Host Name": {
+                    "simple": "host"
+                },
+                "Event ID": {
+                    "simple": "event_id"
+                },
+                "Item Owner": {
+                    "simple": "owner"
+                },
+                "Source Priority": {
+                    "simple": "priority"
+                },
+                "Risk Score": {
+                    "simple": "risk_score"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "event_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "rule_description",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "orig_rule_description"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            },
+                            {
+                                "args": {
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "status_description"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            }
+                        ]
+                    }
+                },
+                "Rule Name": {
+                    "simple": "rule_name"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "rule_title",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "orig_rule_title"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            }
+                        ]
+                    }
+                },
+                "Splunk Security Domain": {
+                    "complex": {
+                        "filters": [],
+                        "root": "security_domain",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "orig_security_domain"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            }
+                        ]
+                    }
+                },
+                "Splunk Sensitivity": {
+                    "simple": "sensitivity"
+                },
+                "External Severity": {
+                    "simple": "severities"
+                },
+                "UUID": {
+                    "simple": "source_guid"
+                },
+                "Splunk Status": {
+                    "simple": "status_label"
+                },
+                "Tags": {
+                    "simple": "tag"
+                },
+                "Last Update Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "review_time",
+                        "transformers": [
+                            {
+                                "operator": "FirstArrayElement"
+                            },
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Splunk Urgency": {
+                    "simple": "urgency"
+                },
+                "Splunk Notes": {
+                    "simple": "splunk_notes"
+                }
+            }
+        }
+    },
+    "name": "Splunk Finding - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
+}

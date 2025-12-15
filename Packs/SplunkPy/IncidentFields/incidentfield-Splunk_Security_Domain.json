@@ -1,0 +1,41 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Splunk Finding"
+    ],
+    "caseInsensitive": true,
+    "cliName": "splunksecuritydomain",
+    "closeForm": false,
+    "content": true,
+    "description": "The security domain from Splunk.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_splunksecuritydomain",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Splunk Security Domain",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
+}
