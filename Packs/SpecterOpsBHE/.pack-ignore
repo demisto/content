@@ -1,9 +1,1 @@
-[file:README.md]
-ignore=VA100
-
-[file:SpecterOpsBHE_test.py]
-ignore=VA100
-
-[file:SpecterOpsBHE.py]
-ignore=VA100
 
