@@ -468,7 +468,7 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
 def replace_fixes_to_related_in_pr_body(pr: PullRequest) -> str:
     """
     Replace any 'fixes:' or 'fixed:' keywords in the PR body with 'relates: link to the issue'.
-    If none are found, append 'relates: link to the issue' at the end of the PR body.
+    If none are found, append 'relates: link to the issue' at the end of the PR body. test
 
     Args:
         pr (PullRequest): The PR object to edit.
