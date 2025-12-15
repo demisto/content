@@ -1334,7 +1334,7 @@ def convert_to_demisto_severity(severity: Optional[str]) -> int:
     if severity is None:
         return IncidentSeverity.LOW
 
-    return {"Low": IncidentSeverity.LOW, "Medium": IncidentSeverity.MEDIUM, "High": IncidentSeverity.HIGH}[severity]
+    return {"Informational": IncidentSeverity.INFO, "Low": IncidentSeverity.LOW, "Medium": IncidentSeverity.MEDIUM, "High": IncidentSeverity.HIGH}[severity]
 
 
 def get_included_severitires(severity: Optional[str]) -> list[str]:
@@ -1349,16 +1349,19 @@ def get_included_severitires(severity: Optional[str]) -> list[str]:
     if not severity:
         return []
 
-    severities = list(ALERT_SEVERITIES.keys()).copy()
+    # Normalize and validate severity
+    sev_key = severity.lower()
+    if sev_key not in ALERT_SEVERITIES:
+        return []
 
-    if severity.lower() == "medium":
-        severities.remove("low")
+    # ALERT_SEVERITIES maps severity -> numeric priority (lower number == higher severity)
+    # We want to return severities that are equal or higher than the requested severity.
+    requested_priority = ALERT_SEVERITIES[sev_key]
 
-    if severity.lower() == "high":
-        severities.remove("low")
-        severities.remove("medium")
-
-    return severities
+    # Sort severities by priority (high -> medium -> low -> informational) and include those
+    # whose priority is <= requested_priority (i.e., equal or higher severity).
+    sorted_severities = sorted(ALERT_SEVERITIES.items(), key=lambda kv: kv[1])
+    return [name for name, pr in sorted_severities if pr <= requested_priority]
 
 
 def try_convert(item, converter, error=None):
