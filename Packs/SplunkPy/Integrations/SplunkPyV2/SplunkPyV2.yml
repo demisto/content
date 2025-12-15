@@ -686,4 +686,5 @@ tests:
 - SplunkPy KV commands
 - SplunkPy parse-raw - Test
 - SplunkPy-Test-V2
-- SplunkPy KV commandsfromversion: 6.0.0
+- SplunkPy KV commands
+fromversion: 6.0.0
