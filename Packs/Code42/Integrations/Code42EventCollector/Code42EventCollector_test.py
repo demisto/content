@@ -160,6 +160,7 @@ def test_fetch_events_no_last_run(mocker):
         },
     )
     set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun")
+    update_module_health_mocker: MagicMock = mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "command", return_value="fetch-events")
     mocker.patch.object(
@@ -172,10 +173,12 @@ def test_fetch_events_no_last_run(mocker):
     file_events = send_events_mocker.call_args_list[0][0][0]
     assert len(file_events) == 1
     assert file_events[0]["eventType"] == Code42EventCollector.EventType.FILE
+    assert update_module_health_mocker.call_args_list[0][0][0] == {"eventsPulled": len(file_events)}
 
     audit_logs = send_events_mocker.call_args_list[1][0][0]
     assert len(audit_logs) == 1
     assert audit_logs[0]["eventType"] == Code42EventCollector.EventType.AUDIT
+    assert update_module_health_mocker.call_args_list[1][0][0] == {"eventsPulled": len(audit_logs)}
 
     last_run_expected_keys = {
         Code42EventCollector.FileEventLastRun.FETCHED_IDS,
@@ -219,6 +222,7 @@ def test_fetch_events_no_last_run_max_fetch_lower_than_available_events(mocker):
         },
     )
     set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun")
+    update_module_health_mocker: MagicMock = mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "command", return_value="fetch-events")
     mocker.patch.object(
@@ -232,11 +236,13 @@ def test_fetch_events_no_last_run_max_fetch_lower_than_available_events(mocker):
     assert len(file_events) == 500
     for file_event in file_events:
         assert file_event["eventType"] == Code42EventCollector.EventType.FILE
+    assert update_module_health_mocker.call_args_list[0][0][0] == {"eventsPulled": len(file_events)}
 
     audit_logs = send_events_mocker.call_args_list[1][0][0]
     assert len(audit_logs) == 500
     for audit_log in audit_logs:
         assert audit_log["eventType"] == Code42EventCollector.EventType.AUDIT
+    assert update_module_health_mocker.call_args_list[1][0][0] == {"eventsPulled": len(audit_logs)}
 
     last_run_expected_keys = {
         Code42EventCollector.FileEventLastRun.FETCHED_IDS,
@@ -282,6 +288,7 @@ def test_fetch_events_no_last_run_no_audit_logs_yes_file_events(mocker):
         },
     )
     set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun")
+    update_module_health_mocker: MagicMock = mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "command", return_value="fetch-events")
     mocker.patch.object(
@@ -295,9 +302,11 @@ def test_fetch_events_no_last_run_no_audit_logs_yes_file_events(mocker):
     assert len(file_events) == 100
     for file_event in file_events:
         assert file_event["eventType"] == Code42EventCollector.EventType.FILE
+    assert update_module_health_mocker.call_args_list[0][0][0] == {"eventsPulled": len(file_events)}
 
     audit_logs = send_events_mocker.call_args_list[1][0][0]
     assert len(audit_logs) == 0
+    assert update_module_health_mocker.call_args_list[1][0][0] == {"eventsPulled": len(audit_logs)}
 
     last_run_expected_keys = {
         Code42EventCollector.FileEventLastRun.FETCHED_IDS,
