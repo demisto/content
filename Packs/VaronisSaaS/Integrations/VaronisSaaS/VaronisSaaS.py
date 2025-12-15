@@ -1317,18 +1317,18 @@ class ThreatModelObjectMapper(BaseMapper):
 """
 
 
-def convert_to_demisto_severity(severity: Optional[str]) -> int:
+def convert_to_demisto_severity(severity: Optional[str]) -> float:
     """Maps Varonis severity to Cortex XSOAR severity
 
-    Converts the Varonis alert severity level ('Low', 'Medium',
-    'High') to Cortex XSOAR incident severity (1 to 4)
+    Converts the Varonis alert severity level ('Informational', 'Low', 'Medium',
+    'High') to Cortex XSOAR incident severity (0.5 to 4)
     for mapping.
 
     :type severity: ``str``
     :param severity: severity as returned from the Varonis API (str)
 
-    :return: Cortex XSOAR Severity (1 to 4)
-    :rtype: ``int``
+    :return: Cortex XSOAR Severity value (may be fractional for INFO)
+    :rtype: ``float``
     """
 
     if severity is None:
