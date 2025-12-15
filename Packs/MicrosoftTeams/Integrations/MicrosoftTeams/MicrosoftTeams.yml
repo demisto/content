@@ -815,7 +815,7 @@ script:
     - contextPath: MicrosoftTeams.Message.ID
       description: ID of the message sent.
       type: String
-  dockerimage: demisto/teams:1.0.0.4835986
+  dockerimage: demisto/teams:1.0.0.6091526
   longRunning: true
   longRunningPort: true
   script: ''
