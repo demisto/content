@@ -65,7 +65,7 @@ mock_alerts_response = {
             "OrcaScore": 4.7,
             "Recommendation": "Configure networking rules to allow incoming traffic from allowed IP addresses only.",
             "RemediationConsole": [
-                ">1. Sign in to **[Test Portal](https://test.test/)**.",
+                ">1. Sign in to **[Test Portal](https://test.test/)**.",  # disable-secrets-detection
                 ">2. Navigate to the **Network security groups** service.",
                 ">8. Click **Save**.",
             ],
@@ -165,7 +165,7 @@ mock_alerts_response = {
                 "**`az storage account update --name <storage account name",
             ],
             "RemediationConsole": [
-                ">1. Sign in to **[Test Portal](https://test.test/)**.",
+                ">1. Sign in to **[Test Portal](https://test.test/)**.",  # disable-secrets-detection
                 ">2. Click **Save**.",
             ],
             "RiskFindings": {
@@ -290,7 +290,7 @@ def test_test_module_fail(requests_mock, orca_client: OrcaClient, mocker) -> Non
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", status_code=400, json=mock_response)
     orca_client.validate_api_key()
     assert return_error_mock.call_count == 2
-    err_msg = err_msg = return_error_mock.call_args[1]["message"]
+    err_msg = return_error_mock.call_args[1]["message"]
     assert err_msg == "There is no Automation Rule assigned to API token"
 
 

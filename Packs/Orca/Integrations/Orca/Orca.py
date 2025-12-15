@@ -35,7 +35,7 @@ class OrcaClient:
             demisto.debug(str(e))
 
             # Try to get error message from response
-            response = e.res
+            response = e.res  # type: ignore[attr-defined]  # pylint: disable=E1101
             message = invalid_token_string
             if isinstance(response, Response):
                 message = response.json().get("error") or invalid_token_string
@@ -260,7 +260,7 @@ def get_incidents_from_alerts(alerts: List[dict[str, Any]]) -> List[dict[str, An
     demisto.info("get_incidents_from_alerts enter")
     incidents = []
     for alert in alerts:
-        alert["demisto_score"] = map_orca_score_to_demisto_score(orca_score=alert.get("RiskLevel"))
+        alert["demisto_score"] = map_orca_score_to_demisto_score(orca_score=alert.get("RiskLevel", ""))
         incident = get_incident_from_alert(alert=alert)
         incidents.append(incident)
 

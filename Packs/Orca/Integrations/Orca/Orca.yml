@@ -96,7 +96,7 @@ script:
       type: String
   - name: orca-get-asset
     arguments:
-      - description: Asset unique id
+      - description: Asset unique id.
         name: asset_unique_id
         required: true
     description: Get Description of An asset. Deprecated, disabled.
