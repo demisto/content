@@ -7,11 +7,25 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Cloud Services",
+        "IT Services",
+        "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Network",
+        "Security",
+        "IoT"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "AI",
+        "IoT",
+        "wireless",
+        "SD-WAN"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
