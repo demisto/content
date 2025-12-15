@@ -899,15 +899,17 @@ def update_endpoints_tags_command(client: Client, args: dict) -> List[CommandRes
     command_results = []
 
     if tags_to_add or tags_to_remove:
-        success_message = (f"Successfully updated tags for endpoint(s) {endpoint_ids}."
-        + (f" Added tags: {tags_to_add}" if tags_to_add else "")
-        + (f" Removed tags: {tags_to_remove}" if tags_to_remove else "")
-        + ".")
+        success_message = (
+            f"Successfully updated tags for endpoint(s) {endpoint_ids}."
+            + (f" Added tags: {tags_to_add}" if tags_to_add else "")
+            + (f" Removed tags: {tags_to_remove}" if tags_to_remove else "")
+            + "."
+        )
         command_results.append(
             CommandResults(
                 readable_output=success_message,
                 outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTags.SuccessMessage",
-                outputs = success_message,
+                outputs=success_message,
             )
         )
     if invalid_tags:
@@ -917,8 +919,7 @@ def update_endpoints_tags_command(client: Client, args: dict) -> List[CommandRes
                 readable_output=failure_message,
                 entry_type=4,
                 outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTags.FailureMessage",
-                outputs = failure_message,
-                
+                outputs=failure_message,
             )
         )
 
