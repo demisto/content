@@ -3105,7 +3105,7 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
 
 def build_column_mapping(column):
     """
-    (Refactored from previous step) Extracts the mapping of module NAME (ugly name)
+    Extracts the mapping of module NAME (ugly name)
     to PRETTY_NAME from the column definitions metadata.
     """
     mapping = {}
@@ -3116,6 +3116,10 @@ def build_column_mapping(column):
 
 
 def extract_mappings_from_view_def(view_def: dict, columns_to_map: set[str]):
+    """
+    Extracts the mapping of module listed in columns_to_map NAME (ugly name)
+    to PRETTY_NAME from the column definitions metadata.
+    """
     mapping = {}
     column_definitions = view_def.get("COLUMN_DEFINITIONS", [])
     for column in column_definitions:
