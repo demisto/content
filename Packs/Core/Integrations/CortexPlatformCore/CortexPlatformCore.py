@@ -1904,10 +1904,10 @@ def normalize_key(key: str) -> str:
     """
     if key.startswith("xdm.asset."):
         return key.replace("xdm.asset.", "")
-    
+
     if key.startswith("xdm."):
         return key.replace("xdm.", "")
-    
+
     return key
 
 
@@ -1963,12 +1963,8 @@ def search_assets_command(client: Client, args):
         argToList(args.get("asset_categories", "")),
     )
     filter.add_field(ASSET_FIELDS["asset_classes"], FilterType.EQ, argToList(args.get("asset_classes", "")))
-    filter.add_field(
-        ASSET_FIELDS["software_package_versions"], FilterType.EQ, argToList(software_package_versions)
-    )
-    filter.add_field(
-        ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(kubernetes_cluster_versions)
-    )
+    filter.add_field(ASSET_FIELDS["software_package_versions"], FilterType.EQ, argToList(software_package_versions))
+    filter.add_field(ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(kubernetes_cluster_versions))
     filter_str = filter.to_dict()
 
     demisto.debug(f"Search Assets Filter: {filter_str}")
@@ -1976,11 +1972,11 @@ def search_assets_command(client: Client, args):
     page_number = arg_to_number(args.get("page_number", 0))
     on_demand_fields = ["xdm.asset.tags"]
     version_fields = [
-        ('xdm.software_package.version', software_package_versions),
-        ('xdm.kubernetes.cluster.version', kubernetes_cluster_versions)
+        ("xdm.software_package.version", software_package_versions),
+        ("xdm.kubernetes.cluster.version", kubernetes_cluster_versions),
     ]
     on_demand_fields.extend([field for field, condition in version_fields if condition])
-        
+
     raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
     # Remove "xdm.asset." suffix from all keys in the response
     response = [{normalize_key(k): v for k, v in item.items()} for item in raw_response]
