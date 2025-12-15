@@ -4539,7 +4539,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.4885491
+  dockerimage: demisto/google-cloud-storage:1.0.0.5633894
 tests:
 - No tests
 supportsquickactions: true
