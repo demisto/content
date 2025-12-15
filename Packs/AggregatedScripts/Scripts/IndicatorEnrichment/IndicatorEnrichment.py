@@ -19,11 +19,19 @@ ERR_LIMIT_TEMPLATE = (
     "Note: This should be avoided if possible."
 )
 
+MSG_FATAL_EXECUTION_ERROR = "Fatal error while executing enrichment. View the logs or try again.\n{error}"
+
 
 class ValidationError(Exception):
     """
     Raised when business logic constraints are violated.
     This exception should result in a return_error action.
+    """
+
+
+class AllExecutionsFailedError(Exception):
+    """
+    Raised when none of the executions of the underlying enrichment scripts have succeeded.
     """
 
 
@@ -149,6 +157,7 @@ class EnrichmentResult:
         self.enriched_data: list[ContextResult] = []
         self.raw_context: ContextResult = {}
         self.markdown_sections: list[str] = []
+        self.execution_errors: List[str] = []
 
 
 class EnrichmentRequestBuilder:
@@ -171,7 +180,7 @@ class EnrichmentRequestBuilder:
         self.unknown_items: list[str] = []
         self.duplicates_count: int = 0
 
-    def get_validated_request(self) -> EnrichmentRequest:
+    def build_and_validate(self) -> EnrichmentRequest:
         """
         Orchestrates the creation of an EnrichmentRequest.
 
@@ -308,10 +317,11 @@ class EnrichmentService:
     Coordinates the execution of child enrichment commands based on the request.
     """
 
-    def __init__(self):
+    def __init__(self, request: EnrichmentRequest):
         self._result = EnrichmentResult()
+        self._request = request
 
-    def execute(self, request: EnrichmentRequest) -> EnrichmentResult:
+    def execute(self) -> EnrichmentResult:
         """
         Executes the enrichment plan.
 
@@ -322,10 +332,10 @@ class EnrichmentService:
             An EnrichmentResult object containing aggregated outputs.
         """
 
-        if not request.valid_indicators_by_type:
+        if not self._request.valid_indicators_by_type:
             return self._result
 
-        tasks = self._create_execution_plan(request)
+        tasks = self._create_enrichment_tasks()
 
         batch_output = BatchExecutor().execute_batch([t.command for t in tasks], brands_to_run=None, verbose=False)
 
@@ -334,15 +344,15 @@ class EnrichmentService:
 
         return self._result
 
-    def _create_execution_plan(self, request: EnrichmentRequest) -> list[EnrichmentTask]:
+    def _create_enrichment_tasks(self) -> list[EnrichmentTask]:
         """Creates a list of tasks mapping indicator types to configured Commands."""
         tasks = []
-        for type_enum, indicators in request.valid_indicators_by_type.items():
-            cmd = self._build_command(type_enum, indicators, request.sub_command_arguments)
+        for type_enum, indicators in self._request.valid_indicators_by_type.items():
+            cmd = self._build_command(type_enum, indicators)
             tasks.append(EnrichmentTask(type_enum, cmd))
         return tasks
 
-    def _build_command(self, type_enum: IndicatorType, indicators: list[str], extra_args: dict) -> Command:
+    def _build_command(self, type_enum: IndicatorType, indicators: list[str]) -> Command:
         """
         Constructs a single XSOAR Command pointing to the corresponding underlying script based on the type given..
 
@@ -355,7 +365,7 @@ class EnrichmentService:
             Command: A command object which can later be executed.
         """
         cmd_args = {type_enum.argument_key: indicators}
-        cmd_args.update(extra_args)
+        cmd_args.update(self._request.sub_command_arguments)
 
         return Command(
             name=type_enum.command_name,
@@ -375,12 +385,13 @@ class EnrichmentService:
 
         for entry, hr, err in task_output:
             if err:
+                self._result.execution_errors.append(err)
                 self._result.markdown_sections.append(f"### Error from {task.command.name}\n{err}")
                 continue
 
             valid_hr = hr
             if not valid_hr and isinstance(entry, dict):
-                valid_hr = entry.get("HumanReadable")
+                valid_hr = entry.get("HumanReadable", "")
 
             if valid_hr:
                 human_readable_strings.append(valid_hr)
@@ -429,6 +440,11 @@ class ResponseFormatter:
         Returns:
             A populated CommandResults object.
         """
+        # Fatal Error Check: If we tried to enrich but got 0 results and >0 errors
+        if not result.enriched_data and result.execution_errors:
+            combined_errors = "\n".join(result.execution_errors)
+            raise AllExecutionsFailedError(MSG_FATAL_EXECUTION_ERROR.format(error=combined_errors))
+
         markdown = self._format_markdown(result, request)
         context = self._format_context(result, request)
         return CommandResults(readable_output=markdown, outputs=context)
@@ -506,9 +522,10 @@ def main():
     """
     try:
         enrichment_request_builder = EnrichmentRequestBuilder(demisto.args())
-        validated_request = enrichment_request_builder.get_validated_request()
+        validated_request = enrichment_request_builder.build_and_validate()
 
-        result = EnrichmentService().execute(validated_request)
+        indicator_enrichment_executor = EnrichmentService(validated_request)
+        result = indicator_enrichment_executor.execute()
 
         command_results = ResponseFormatter().format(result, validated_request)
 
@@ -521,8 +538,12 @@ def main():
         demisto.debug(f"Validation Error: {error_message}")
         return_error(str(error_message))
 
+    except AllExecutionsFailedError as error_message:
+        demisto.debug(f"Failed to execute !indicator-enrichment. Error: {error_message}\n{str(traceback.format_exc())}")
+        return_error(str(error_message))
+
     except Exception as system_error:
-        demisto.error(traceback.format_exc())
+        demisto.error(f"Failed to execute !indicator-enrichment. Error: {str(traceback.format_exc())}")
         return_error(f"Failed to execute !indicator-enrichment. Error: {str(system_error)}")
 
 
