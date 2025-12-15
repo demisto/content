@@ -1,5 +1,6 @@
 from __future__ import annotations 
 
+import hashlib
 import json
 import random
 import time
@@ -355,6 +356,34 @@ class TimeoutSettings(BaseModel):
         return httpx.Timeout(connect=self.connect, read=self.read, write=self.write, pool=self.pool)
 
 
+class DeduplicationConfig(BaseModel):
+    """Configuration for event deduplication.
+    
+    Enables deduplication of events that occur at the same timestamp, preventing
+    duplicates when overlapping time windows are queried.
+    
+    **Logic:**
+    1. Tracks the latest timestamp seen in collected events.
+    2. For events at that timestamp, tracks a set of unique keys (or hashes).
+    3. When new events arrive:
+       - If timestamp > latest_timestamp: Update latest_timestamp, clear keys, add new key.
+       - If timestamp == latest_timestamp: Check if key exists. If not, add key and collect.
+       - If timestamp < latest_timestamp: Ignore (already collected).
+       
+    **Key Generation:**
+    - If `key_path` is provided, uses the value at that path as the unique key.
+    - If `key_path` is NOT provided, hashes the entire event JSON to generate a key.
+    
+    Args:
+        timestamp_path: Path to the timestamp field in the event (required).
+        key_path: Path to the unique key field (optional). If None, hashes the event.
+    """
+    model_config = ConfigDict(extra='forbid')
+
+    timestamp_path: str
+    key_path: Optional[str] = None
+
+
 class PaginationConfig(BaseModel):
     """Configuration for API pagination handling.
     
@@ -418,6 +447,7 @@ class CollectorRequest(BaseModel):
     headers: Optional[Dict[str, str]] = None
     data_path: Optional[str] = None
     pagination: Optional[PaginationConfig] = None
+    deduplication: Optional[DeduplicationConfig] = None
     stream: bool = False
     timeout: Optional[TimeoutSettings] = None
     state_key: Optional[StateKey] = None
@@ -429,6 +459,28 @@ class CollectorRequest(BaseModel):
         if not v.startswith("/"):
             raise ValueError(f"endpoint must start with '/', got: {v}")
         return v
+
+
+@dataclass
+class DeduplicationState:
+    """State for event deduplication."""
+    latest_timestamp: Optional[Union[str, int, float]] = None
+    seen_keys: List[str] = field(default_factory=list)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "latest_timestamp": self.latest_timestamp,
+            "seen_keys": self.seen_keys,
+        }
+
+    @classmethod
+    def from_dict(cls, raw: Optional[Dict[str, Any]]) -> "DeduplicationState":
+        if not raw:
+            return cls()
+        return cls(
+            latest_timestamp=raw.get("latest_timestamp"),
+            seen_keys=raw.get("seen_keys", []),
+        )
 
 
 @dataclass
@@ -476,6 +528,7 @@ class CollectorState:
         page: Current page number for page-based pagination
         offset: Current offset value for offset-based pagination
         last_event_id: Last processed event ID (for deduplication)
+        deduplication: State for event deduplication (timestamp and keys)
         partial_results: Events from incomplete pages (preserved on timeout)
         metadata: Custom metadata dictionary for storing additional state
     """
@@ -483,6 +536,7 @@ class CollectorState:
     page: Optional[int] = None
     offset: Optional[int] = None
     last_event_id: Optional[EventID] = None
+    deduplication: Optional[DeduplicationState] = None
     partial_results: List[Any] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
@@ -492,6 +546,7 @@ class CollectorState:
             "page": self.page,
             "offset": self.offset,
             "last_event_id": self.last_event_id,
+            "deduplication": self.deduplication.to_dict() if self.deduplication else None,
             "partial_results": self.partial_results,
             "metadata": self.metadata,
         }
@@ -505,6 +560,7 @@ class CollectorState:
             page=raw.get("page"),
             offset=raw.get("offset"),
             last_event_id=raw.get("last_event_id"),
+            deduplication=DeduplicationState.from_dict(raw.get("deduplication")),
             partial_results=raw.get("partial_results", []),
             metadata=raw.get("metadata", {}),
         )
@@ -1208,6 +1264,82 @@ class CollectorLogger:
         return f"[CollectorClient:{self.collector_name}:{level}] {message} | extra={extra_str}"
 
 
+class DeduplicationEngine:
+    def __init__(self, config: Optional[DeduplicationConfig], state: CollectorState):
+        self.config = config
+        self.state = state
+        if self.config and not self.state.deduplication:
+            self.state.deduplication = DeduplicationState()
+
+    def process(self, events: List[Any]) -> List[Any]:
+        """Filter duplicate events and update state.
+        
+        Args:
+            events: List of raw events.
+            
+        Returns:
+            List of unique events.
+        """
+        if not self.config or not self.state.deduplication:
+            return events
+
+        unique_events: List[Any] = []
+        dedup_state = self.state.deduplication
+        
+        # Sort events by timestamp to ensure correct processing order
+        # This is crucial if the API returns events out of order
+        try:
+            sorted_events = sorted(
+                events,
+                key=lambda e: _get_value_by_path(e, self.config.timestamp_path) or ""
+            )
+        except Exception:
+            # If sorting fails (e.g. mixed types), process as-is
+            sorted_events = events
+
+        for event in sorted_events:
+            timestamp = _get_value_by_path(event, self.config.timestamp_path)
+            if timestamp is None:
+                # If we can't determine timestamp, we can't deduplicate safely
+                # Default to accepting the event
+                unique_events.append(event)
+                continue
+
+            # Normalize timestamp to string for comparison
+            timestamp_str = str(timestamp)
+            
+            # Generate unique key
+            if self.config.key_path:
+                key_val = _get_value_by_path(event, self.config.key_path)
+                key = str(key_val) if key_val is not None else ""
+            else:
+                # Hash the entire event
+                event_str = json.dumps(event, sort_keys=True)
+                key = hashlib.sha256(event_str.encode("utf-8")).hexdigest()
+
+            # Compare with state
+            latest = str(dedup_state.latest_timestamp) if dedup_state.latest_timestamp is not None else None
+            
+            if latest is None or timestamp_str > latest:
+                # New latest timestamp found
+                dedup_state.latest_timestamp = timestamp
+                dedup_state.seen_keys = [key]
+                unique_events.append(event)
+            elif timestamp_str == latest:
+                # Same timestamp, check if key seen
+                if key not in dedup_state.seen_keys:
+                    dedup_state.seen_keys.append(key)
+                    unique_events.append(event)
+                else:
+                    # Duplicate, ignore
+                    pass
+            else:
+                # Older timestamp, ignore
+                pass
+                
+        return unique_events
+
+
 class PaginationEngine:
     def __init__(self, config: Optional[PaginationConfig], state: CollectorState):
         self.config = config or PaginationConfig()
@@ -1751,6 +1883,40 @@ class CollectorClient:
 
     def request_sync(self, request: CollectorRequest) -> httpx.Response:
         return anyio.run(self._request, request)
+
+    def deduplicate_events(self, events: List[Any], state: Optional[CollectorState] = None) -> List[Any]:
+        """Deduplicate events based on the blueprint configuration.
+        
+        This method filters out duplicate events using the configured deduplication logic.
+        It updates the provided state (or creates a new one) with the latest timestamp and seen keys.
+        
+        **Usage:**
+        
+        ```python
+        # Collect raw events
+        result = client.collect_events_sync()
+        
+        # Deduplicate
+        unique_events = client.deduplicate_events(result.events, result.state)
+        ```
+        
+        Args:
+            events: List of raw events to deduplicate.
+            state: Optional state object to update. If None, uses a temporary state.
+            
+        Returns:
+            List of unique events.
+        """
+        if not self.blueprint.request.deduplication:
+            return events
+            
+        # Use provided state or create a temporary one if None
+        # Note: If state is None, we won't be persisting the deduplication state across runs,
+        # which defeats the purpose for inter-run deduplication. But it works for intra-run.
+        working_state = state or CollectorState()
+        
+        engine = DeduplicationEngine(self.blueprint.request.deduplication, working_state)
+        return engine.process(events)
 
     async def collect_events(
         self,
@@ -2352,12 +2518,23 @@ class CollectorClient:
         metadata: Dict[str, Any] = {"requests": {}}
         cursor = None
         last_event = None
+        deduplication = None
+        
         for executor in executors:
             metadata["requests"][executor.state_key] = executor.pagination.state.to_dict()
             # Take first non-None values (mainly for single-request backward compatibility)
             cursor = cursor or executor.pagination.state.cursor
             last_event = last_event or executor.pagination.state.last_event_id
-        return CollectorState(cursor=cursor, last_event_id=last_event, metadata=metadata)
+            # Preserve deduplication state if present
+            if executor.pagination.state.deduplication:
+                deduplication = executor.pagination.state.deduplication
+                
+        return CollectorState(
+            cursor=cursor,
+            last_event_id=last_event,
+            deduplication=deduplication,
+            metadata=metadata
+        )
 
     @staticmethod
     def _is_state_exhausted(state: CollectorState) -> bool:
@@ -2459,6 +2636,25 @@ class CollectorBlueprintBuilder:
             params=params,
             headers=headers,
             state_key=state_key,
+        )
+        return self
+
+    def with_deduplication(
+        self,
+        timestamp_path: str,
+        key_path: Optional[str] = None,
+    ) -> "CollectorBlueprintBuilder":
+        """Configure event deduplication.
+        
+        Args:
+            timestamp_path: Path to the timestamp field in the event (required).
+            key_path: Path to the unique key field (optional). If None, hashes the event.
+        """
+        if not self._request:
+            raise CollectorConfigurationError("Must call with_endpoint() before with_deduplication()")
+        self._request.deduplication = DeduplicationConfig(
+            timestamp_path=timestamp_path,
+            key_path=key_path,
         )
         return self
     
@@ -2666,11 +2862,13 @@ __all__ = [
     "CollectorBlueprint",
     "CollectorRequest",
     "PaginationConfig",
+    "DeduplicationConfig",
     "RetryPolicy",
     "RateLimitPolicy",
     "TimeoutSettings",
     "CollectorRunResult",
     "CollectorState",
+    "DeduplicationState",
     "APIKeyAuthHandler",
     "BearerTokenAuthHandler",
     "BasicAuthHandler",

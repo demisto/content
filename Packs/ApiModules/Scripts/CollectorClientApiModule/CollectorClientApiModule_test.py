@@ -48,6 +48,8 @@ from CollectorClientApiModule import (
     CollectorCircuitOpenError,
     CollectorRetryError,
     CollectorBlueprintBuilder,
+    DeduplicationConfig,
+    DeduplicationState,
 )
 
 
@@ -82,6 +84,107 @@ def build_blueprint(**kwargs) -> CollectorBlueprint:
     )
     defaults.update(kwargs)
     return CollectorBlueprint(request=base_request, **defaults)
+
+
+@respx.mock
+def test_deduplication_with_key():
+    """Test deduplication using a unique key field."""
+    respx.get("https://api.example.com/v1/events").mock(
+        return_value=Response(200, json={"data": {"events": [
+            {"id": 1, "time": "2023-01-01T10:00:00Z"},
+            {"id": 2, "time": "2023-01-01T10:00:00Z"},
+            {"id": 1, "time": "2023-01-01T10:00:00Z"},  # Duplicate ID at same time
+            {"id": 3, "time": "2023-01-01T10:00:01Z"},  # New time
+        ]}, "meta": {"next_cursor": None}})
+    )
+
+    request = CollectorRequest(
+        endpoint="/v1/events",
+        data_path="data.events",
+        deduplication=DeduplicationConfig(timestamp_path="time", key_path="id")
+    )
+    blueprint = build_blueprint(request=request)
+    client = CollectorClient(blueprint)
+
+    result = client.collect_events_sync()
+    unique_events = client.deduplicate_events(result.events, result.state)
+
+    assert len(unique_events) == 3
+    ids = [e["id"] for e in unique_events]
+    assert ids == [1, 2, 3]
+    
+    # Verify state
+    assert result.state.deduplication.latest_timestamp == "2023-01-01T10:00:01Z"
+    assert result.state.deduplication.seen_keys == ["3"]
+
+
+@respx.mock
+def test_deduplication_with_hash():
+    """Test deduplication using event hashing (no key_path)."""
+    respx.get("https://api.example.com/v1/events").mock(
+        return_value=Response(200, json={"data": {"events": [
+            {"msg": "A", "time": "2023-01-01T10:00:00Z"},
+            {"msg": "B", "time": "2023-01-01T10:00:00Z"},
+            {"msg": "A", "time": "2023-01-01T10:00:00Z"},  # Duplicate content at same time
+        ]}, "meta": {"next_cursor": None}})
+    )
+
+    request = CollectorRequest(
+        endpoint="/v1/events",
+        data_path="data.events",
+        deduplication=DeduplicationConfig(timestamp_path="time")
+    )
+    blueprint = build_blueprint(request=request)
+    client = CollectorClient(blueprint)
+
+    result = client.collect_events_sync()
+    unique_events = client.deduplicate_events(result.events, result.state)
+
+    assert len(unique_events) == 2
+    msgs = [e["msg"] for e in unique_events]
+    assert msgs == ["A", "B"]
+
+
+@respx.mock
+def test_deduplication_state_persistence(integration_context):
+    """Test that deduplication state persists and filters events across runs."""
+    # Run 1: Collect initial events
+    respx.get("https://api.example.com/v1/events").mock(
+        return_value=Response(200, json={"data": {"events": [
+            {"id": 1, "time": "2023-01-01T10:00:00Z"},
+        ]}, "meta": {"next_cursor": None}})
+    )
+
+    request = CollectorRequest(
+        endpoint="/v1/events",
+        data_path="data.events",
+        deduplication=DeduplicationConfig(timestamp_path="time", key_path="id")
+    )
+    blueprint = build_blueprint(request=request)
+    client = CollectorClient(blueprint)
+
+    result1 = client.collect_events_sync()
+    unique_events1 = client.deduplicate_events(result1.events, result1.state)
+    assert len(unique_events1) == 1
+    
+    # Save state
+    state = result1.state
+    
+    # Run 2: Collect overlapping events
+    respx.get("https://api.example.com/v1/events").mock(
+        return_value=Response(200, json={"data": {"events": [
+            {"id": 1, "time": "2023-01-01T10:00:00Z"},  # Duplicate from prev run
+            {"id": 2, "time": "2023-01-01T10:00:00Z"},  # New event at same time
+            {"id": 3, "time": "2023-01-01T10:00:01Z"},  # New event at new time
+        ]}, "meta": {"next_cursor": None}})
+    )
+    
+    result2 = client.collect_events_sync(resume_state=state)
+    unique_events2 = client.deduplicate_events(result2.events, result2.state)
+    
+    assert len(unique_events2) == 2
+    ids = [e["id"] for e in unique_events2]
+    assert ids == [2, 3]
 
 
 @respx.mock
@@ -636,6 +739,19 @@ def test_builder_with_page_pagination():
     assert blueprint.request.pagination.mode == "page"
     assert blueprint.request.pagination.page_param == "p"
     assert blueprint.request.pagination.start_page == 0
+
+
+def test_builder_with_deduplication():
+    """Test builder with deduplication configuration."""
+    blueprint = (
+        CollectorBlueprintBuilder("Test", "https://api.example.com")
+        .with_endpoint("/v1/events")
+        .with_deduplication(timestamp_path="created_at", key_path="uuid")
+        .build()
+    )
+    assert blueprint.request.deduplication is not None
+    assert blueprint.request.deduplication.timestamp_path == "created_at"
+    assert blueprint.request.deduplication.key_path == "uuid"
 
 
 def test_builder_with_bearer_auth():
