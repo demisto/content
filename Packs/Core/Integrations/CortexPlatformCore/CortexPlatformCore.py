@@ -2926,8 +2926,9 @@ def list_scripts_command(client: Client, args: dict) -> CommandResults:
     """
     page_number = arg_to_number(args.get("page_number")) or 0
     page_size = arg_to_number(args.get("page_size")) or MAX_SCRIPTS_LIMIT
-    page_size = page_number * MAX_SCRIPTS_LIMIT + page_size
-    page_number = page_number * MAX_SCRIPTS_LIMIT
+    start_index = page_number * MAX_SCRIPTS_LIMIT
+    end_index = start_index + min(page_size, MAX_SCRIPTS_LIMIT)
+    
     filter_builder = FilterBuilder()
     filter_builder.add_field(
         ScriptManagement.FIELDS["script_name"],
@@ -2941,8 +2942,9 @@ def list_scripts_command(client: Client, args: dict) -> CommandResults:
     request_data = build_webapp_request_data(
         table_name=SCRIPTS_TABLE,
         filter_dict=filter_builder.to_dict(),
-        limit=MAX_SCRIPTS_LIMIT,
+        limit=end_index,
         sort_field="MODIFICATION_TIME",
+        start_page=start_index,
     )
 
     response = client.get_webapp_data(request_data)
