@@ -3081,6 +3081,17 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
 
 
 def validate_start_end_times(start_time, end_time):
+    """
+    Validate that start_time and end_time are provided correctly and represent
+    a time range of at least two hours.
+
+    Args:
+        start_time (str | None): Start time in "HH:MM" format.
+        end_time (str | None): End time in "HH:MM" format.
+
+    Raises:
+        DemistoException: If only one of the times is provided or the time range is less than two hours.
+    """
     if (start_time and not end_time) or (end_time and not start_time):
         raise DemistoException("Both start_time and end_time must be provided together.")
 
@@ -3156,6 +3167,18 @@ def get_endpoint_update_version_command(client, args):
 
 
 def update_endpoint_version_command(client, args):
+    """
+    Update the agent version on one or more endpoints, optionally scheduling
+    the update by days and time window.
+
+    Args:
+        client: API client used to communicate with the backend service.
+        args (dict): Command arguments provided by the user. 
+
+    Returns:
+        CommandResults: Object containing a human-readable summary and outputs
+        with the endpoint IDs and the resulting group action ID (if created).
+    """
     filter_builder = FilterBuilder()
     endpoint_ids = argToList(args.get("endpoint_ids", ""))
     filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_ids)
