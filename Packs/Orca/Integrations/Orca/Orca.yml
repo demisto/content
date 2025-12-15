@@ -94,6 +94,16 @@ script:
     - contextPath: Orca.Manager.Alerts
       description: All alerts.
       type: String
+  - name: orca-get-asset
+    arguments:
+      - description: Asset unique id
+        name: asset_unique_id
+        required: true
+    description: Get Description of An asset. Deprecated, disabled.
+    outputs:
+      - contextPath: Orca.Manager.Asset
+        description: Asset description.
+        type: String
   - name: orca-set-alert-severity
     description: Change severity for the alert.
     arguments:
