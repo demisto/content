@@ -3208,7 +3208,7 @@ def update_endpoint_version_command(client, args):
 
     Args:
         client: API client used to communicate with the backend service.
-        args (dict): Command arguments provided by the user. 
+        args (dict): Command arguments provided by the user.
 
     Returns:
         CommandResults: Object containing a human-readable summary and outputs
