@@ -449,6 +449,44 @@ script:
     description: |-
       Retrieves a list of user objects.
       Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application).
+    name: msgraph-user-get-by-sam
+  - arguments:
+    - description: The onPremisesSamAccountName.
+      name: user
+      required: true
+    - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
+      name: properties
+    description: |- 
+      Retrieves the properties and relationships of a user object by its onPremisesSamAccountName. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+      Permissions: - User.Read (Delegated) - User.Read.All (Application).
+    name: msgraph-user-get-owned-devices
+  - arguments:
+    - description: The User ID or userPrincipalName of the user for which to get the owned devices properties.
+      name: user
+      required: true
+    description: |- 
+      Retrieves the properties from the owned devices of a user.
+    name: msgraph-user-get-auth-methods
+  - arguments:
+    - description: The User ID or userPrincipalName of the user for which to get the MFA methods properties.
+      name: user
+      required: true
+    description: |- 
+      Retrieves the properties from the owned devices of a user.
+    name: msgraph-user-get-groups
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    description: |- 
+      Retrieves the groups a user is part of.
+    name: msgraph-user-validate-password
+  - arguments:
+    - description: The password to validate.
+      name: password
+      required: true
+    description: |- 
+      Validates whether a password is valid according to the password policies.
     name: msgraph-user-list
     outputs:
     - contextPath: MSGraphUser.ID

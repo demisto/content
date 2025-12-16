@@ -231,6 +231,52 @@ class MsGraphClient:
         except Exception as e:
             raise e
 
+    def get_user_by_sam(self, user, properties):
+        user_data = self.ms_client.http_request(
+            method="GET",
+            url_suffix="users",
+            headers={"ConsistencyLevel": "eventual"},
+            params={
+                "$select": properties,
+                "$filter": f"onPremisesSamAccountName eq {repr(quote(user))}",
+                "$count": "true",
+            },
+        )
+        user_data.pop("@odata.context", None)
+        return user_data
+
+    def get_groups(self, user):
+        try:
+            group_data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/memberOf")
+            # clean up the response
+            group_data.pop("@odata.context", None)
+            return group_data
+        except NotFoundError as e:
+            demisto.debug(f"User {user} was not found")
+            return {"NotFound": e.message}
+        except Exception as e:
+            raise e
+
+    def get_owned_devices(self, user):
+        data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/ownedDevices")
+        data.pop("@odata.context", None)
+        data.pop("@odata.type", None)
+        return data
+
+    def get_auth_methods(self, user):
+        data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/authentication/methods")
+        data.pop("@odata.context", None)
+        data.pop("@odata.type", None)
+        return data
+
+    def validate_password(self, password) -> Dict:
+        response = self.ms_client.http_request(
+            method="POST",
+            full_url="https://graph.microsoft.com/beta/users/validatePassword",
+            json_data={"password": password},
+        )
+        return response
+
     def list_users(self, properties, page_url, filters):
         if page_url:
             response = self.ms_client.http_request(method="GET", url_suffix="users", full_url=page_url)
@@ -641,6 +687,65 @@ def get_user_command(client: MsGraphClient, args: dict):
     return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=user_data)
 
 
+def get_user_by_sam_command(client: MsGraphClient, args: dict):
+    user = args.get("user")
+    properties = args.get("properties", "id,displayName,jobTitle,mobilePhone,mail")
+    users_data = client.get_user_by_sam(user, properties)
+    users_readable, users_outputs = parse_outputs(users_data)
+    outputs = {"MSGraphUser(val.ID == obj.ID)": users_outputs}
+    human_readable = tableToMarkdown(name="All Graph Users", t=users_readable, removeNull=True)
+
+    return human_readable, outputs, users_data
+
+
+def get_groups_command(client: MsGraphClient, args: Dict):
+    user = args.get("user")
+    try:
+        group_data = client.get_groups(user)
+    except DemistoException as e:
+        raise e
+    # In case the request returned a 404 error display a proper message to the war room
+    if group_data.get("NotFound", ""):
+        error_message = group_data.get("NotFound")
+        human_readable = f"### User {user} was not found.\nMicrosoft Graph Response: {error_message}"
+        return human_readable, {}, error_message
+    user_readable, user_outputs = parse_outputs(group_data["value"])
+    human_readable = tableToMarkdown(name=f"{user} group data", t=user_readable, removeNull=True)
+    outputs = {"MSGraphUser(val.ID == obj.ID)": user_outputs}
+    return human_readable, outputs, group_data
+
+
+@suppress_errors_with_404_code
+def get_owned_devices_command(client: MsGraphClient, args: Dict):
+    user = args.get("user")
+    manager_data = client.get_owned_devices(user)
+    manager_readable, manager_outputs = parse_outputs(manager_data)
+    human_readable = tableToMarkdown(name=f"{user} - owned devices", t=manager_readable, removeNull=True)
+    outputs = {"MSGraphUserOwnedDevices(val.User == obj.User)": {"User": user, "OwnedDevices": manager_outputs}}
+    return human_readable, outputs, manager_data
+
+
+@suppress_errors_with_404_code
+def get_auth_methods_command(client: MsGraphClient, args: Dict):
+    user = args.get("user")
+    data = client.get_auth_methods(user)
+    readable, outputs = parse_outputs(data)
+    human_readable = tableToMarkdown(name=f"{user} - auth methods", t=readable, removeNull=True)
+    outputs = {"MSGraphUserAuthMethods(val.User == obj.User)": {"User": user, "AuthMethods": outputs}}
+    return human_readable, outputs, data
+
+
+def validate_password_command(client: MsGraphClient, args: Dict):
+    password = args.get("password")
+    try:
+        validation_response = client.validate_password(password)
+    except DemistoException as e:
+        raise e
+    human_readable = tableToMarkdown(name="Validate Password", t=validation_response, removeNull=True)
+    outputs = {"Password Is valid": validation_response.get("isValid")}
+    return human_readable, outputs, validation_response
+
+
 def list_users_command(client: MsGraphClient, args: dict):
     properties = args.get("properties", "id,displayName,jobTitle,mobilePhone,mail")
     next_page = args.get("next_page", None)
@@ -921,6 +1026,11 @@ def main():
         "msgraph-user-create": create_user_command,
         "msgraph-user-get-delta": get_delta_command,
         "msgraph-user-get": get_user_command,
+        "msgraph-user-get-by-sam": get_user_by_sam_command,
+        "msgraph-user-get-groups": get_groups_command,
+        "msgraph-user-get-owned-devices": get_owned_devices_command,
+        "msgraph-user-get-auth-methods": get_auth_methods_command,
+        "msgraph-user-validate-password": validate_password_command,
         "msgraph-user-list": list_users_command,
         "msgraph-direct-reports": get_direct_reports_command,
         "msgraph-user-get-manager": get_manager_command,
