@@ -54,7 +54,7 @@ WEBAPP_COMMANDS = [
     "core-get-appsec-issues",
     "core-update-case",
     "core-list-endpoints",
-    "core-get-exception-rules",
+    "core-list-exception-rules",
     "core-update-case",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
