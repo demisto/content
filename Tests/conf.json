@@ -812,7 +812,7 @@
         },
         {
             "integrations": "Microsoft Graph Mail Single User",
-            "playbookID": "MicrosoftGraphMailSingleUser-Test_dev",
+            "playbookID": "MicrosoftGraphMailSingleUser-Test_dev"
         },
         {
             "integrations": "MicrosoftGraphMail",

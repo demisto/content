@@ -829,7 +829,6 @@ class MicrosoftClient(BaseClient):
         if "ok_codes" not in kwargs and not self._ok_codes:
             kwargs["ok_codes"] = (200, 201, 202, 204, 206, 404)
         token = self.get_access_token(resource=resource, scope=scope)
-        print(f"{token=}")
         default_headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
 
         if headers:
