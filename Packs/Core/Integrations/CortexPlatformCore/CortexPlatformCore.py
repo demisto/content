@@ -3307,7 +3307,7 @@ def list_system_users_command(client, args):
         data = data[:MAX_GET_SYSTEM_USERS_LIMIT]
 
     return CommandResults(
-        readable_output=tableToMarkdown("MAYA System Users", data, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("System Users", data, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.User",
         outputs_key_field="user_email",
         outputs=data,
