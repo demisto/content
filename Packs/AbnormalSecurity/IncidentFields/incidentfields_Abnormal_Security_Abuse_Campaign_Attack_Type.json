@@ -26,6 +26,6 @@
     "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
-    "threshold": 72,
+    "threshold": 73,
     "fromVersion": "6.0.0"
 }
