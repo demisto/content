@@ -455,9 +455,9 @@ class TestEnrichmentRequestBuilder:
         """
         Scenario: Standard list input with one IP and one Domain.
         """
-        raw_args = {"indicator_list": "1.1.1.1, google.com"}
+        raw_args = {"indicator_list": "1.1.1.1, example.com"}
 
-        mock_arg_to_list.side_effect = lambda arg, transform=None: ["1.1.1.1", "google.com"]
+        mock_arg_to_list.side_effect = lambda arg, transform=None: ["1.1.1.1", "example.com"]
         mock_auto_detect.side_effect = lambda x: "IP" if "1.1.1.1" in x else "Domain"
 
         builder = EnrichmentRequestBuilder(raw_args)
@@ -465,7 +465,7 @@ class TestEnrichmentRequestBuilder:
 
         assert request.total_valid_count == 2
         assert "1.1.1.1" in request.valid_indicators_by_type[IndicatorType.IP]
-        assert "google.com" in request.valid_indicators_by_type[IndicatorType.DOMAIN]
+        assert "example.com" in request.valid_indicators_by_type[IndicatorType.DOMAIN]
 
     def test_build_and_validate_deduplication_text_vs_list(self, mock_execute_command, mock_arg_to_list, mock_auto_detect):
         """
