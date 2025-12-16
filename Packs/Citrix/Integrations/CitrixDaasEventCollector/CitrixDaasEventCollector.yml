@@ -46,9 +46,9 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Citrix daas services simplify delivery and management of Citrix technologies.
-display: Citrix Daas
-name: CitrixDaas
+description: Citrix DaaS services simplify delivery and management of Citrix technologies.
+display: Citrix DaaS
+name: CitrixDaaS
 script:
   commands:
   - name: citrix-daas-get-events

@@ -9,7 +9,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 """ CONSTANTS """
 
 VENDOR = "Citrix"
-PRODUCT = "Daas"
+PRODUCT = "DaaS"
 # max value
 RECORDS_REQUEST_LIMIT = 1000
 ACCESS_TOKEN_CONST = "access_token"
@@ -79,7 +79,7 @@ class Client(BaseClient):
 
         access_token = token_res.get("access_token")
         if not access_token:
-            raise DemistoException("Failed to obtain access token from Citrix daas response.")
+            raise DemistoException("Failed to obtain access token from Citrix DaaS response.")
 
         demisto.setIntegrationContext({ACCESS_TOKEN_CONST: access_token})
         demisto.debug("access token created")
@@ -112,7 +112,7 @@ class Client(BaseClient):
 
         sites = res.get("sites", [])
         if not sites:
-            raise DemistoException("Failed to obtain sites from Citrix daas response.")
+            raise DemistoException("Failed to obtain sites from Citrix DaaS response.")
 
         site_id = sites[0].get("id")
         demisto.setIntegrationContext({SITE_ID_CONST: site_id})

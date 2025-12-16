@@ -13,7 +13,6 @@ PRODUCT = "Cloud"
 # max value
 RECORDS_REQUEST_LIMIT = 200
 ACCESS_TOKEN_CONST = "access_token"
-SOURCE_LOG_TYPE = "systemlog"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 
 

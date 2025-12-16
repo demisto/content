@@ -1,6 +1,6 @@
-Citrix daas services simplify delivery and management of Citrix technologies.
+Citrix DaaS services simplify delivery and management of Citrix technologies.
 
-## Configure Citrix Daas in Cortex
+## Configure Citrix DaaS in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
