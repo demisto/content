@@ -56,7 +56,7 @@ alter
             outcome_reason IN("*Outside authorized hours*", "*Unauthorized workstation*", "Denied (Conditional access applied*", "*Changing password is required*"), "auth_policy_access_violation",
             "NOT_SPECIFIED");
 
-[MODEL: dataset = "silverfort_admin_console_raw"]
+[MODEL: dataset = silverfort_admin_console_raw]
 
 filter cefdeviceeventclassid = "Authentication" AND app ~= "SSO|SAML|OIDC"
 | call silverfort_admin_console_authentication_fields
