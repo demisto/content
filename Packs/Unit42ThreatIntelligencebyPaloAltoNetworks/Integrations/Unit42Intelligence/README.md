@@ -324,12 +324,12 @@ Enrich a file hash with Unit 42 threat intelligence context.
 
 ### URL Enrichment Format Requirements
 
-To ensure successful URL enrichment and avoid HTTP 400 errors, please adhere to the following requirements:
+To ensure successful URL enrichment and avoid HTTP 400 errors, follow these guidelines:
 
 **URL Length**
 
 - Maximum recommended length: **2000 characters**
-- This is the observed maximum length for URL arguments in similar indicator submission commands within the Cortex platform
+- Observed maximum length for URL arguments in similar indicator submission commands within the Cortex platform
 
 **Special Characters**
 
