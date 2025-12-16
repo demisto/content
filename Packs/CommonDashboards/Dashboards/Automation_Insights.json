@@ -329,7 +329,8 @@
     "name": "Automation Insights",
     "isPredefined": true,
     "marketplaces": [
-        "platform"
+        "platform",
+        "marketplacev2"
     ],
     "fromVersion": "8.0.0",
     "description": "",
