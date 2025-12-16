@@ -14,6 +14,8 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
+MAX_GET_ENDPOINTS_LIMIT = 100
+AGENTS_TABLE = "AGENTS_TABLE"
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -24,6 +26,9 @@ ASSET_FIELDS = {
     "asset_realms": "xdm.asset.realm",
     "asset_group_ids": "xdm.asset.group_ids",
     "asset_categories": "xdm.asset.type.category",
+    "asset_classes": "xdm.asset.type.class",
+    "software_package_versions": "xdm.software_package.version",
+    "kubernetes_cluster_versions": "xdm.kubernetes.cluster.version",
 }
 
 APPSEC_SOURCES = [
@@ -47,6 +52,7 @@ WEBAPP_COMMANDS = [
     "core-create-appsec-policy",
     "core-get-appsec-issues",
     "core-update-case",
+    "core-list-endpoints",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -105,6 +111,68 @@ class CaseManagement:
     TAGS = {
         "DOM:Security": "DOM:1",
         "DOM:Posture": "DOM:5",
+    }
+
+
+class Endpoints:
+    ENDPOINT_TYPE = {
+        "mobile": "AGENT_TYPE_MOBILE",
+        "server": "AGENT_TYPE_SERVER",
+        "workstation": "AGENT_TYPE_WORKSTATION",
+        "containerized": "AGENT_TYPE_CONTAINERIZED",
+        "serverless": "AGENT_TYPE_SERVERLESS",
+    }
+    ENDPOINT_STATUS = {
+        "connected": "STATUS_010_CONNECTED",
+        "lost": "STATUS_020_LOST",
+        "disconnected": "STATUS_040_DISCONNECTED",
+        "uninstalled": "STATUS_050_UNINSTALLED",
+        "vdi pending login": "STATUS_060_VDI_PENDING_LOG_ON",
+        "forensics offline": "STATUS_070_FORENSICS_OFFLINE",
+    }
+    ENDPOINT_PLATFORM = {
+        "windows": "AGENT_OS_WINDOWS",
+        "mac": "AGENT_OS_MAC",
+        "linux": "AGENT_OS_LINUX",
+        "android": "AGENT_OS_ANDROID",
+        "ios": "AGENT_OS_IOS",
+        "serverless": "AGENT_OS_SERVERLESS",
+    }
+    ENDPOINT_OPERATIONAL_STATUS = {
+        "protected": "PROTECTED",
+        "partially protected": "PARTIALLY_PROTECTED",
+        "unprotected": "UNPROTECTED",
+    }
+    ASSIGNED_PREVENTION_POLICY = {
+        "pcastro": "0a80deae95e84a90a26e0586a7a6faef",
+        "Caas Default": "236a259c803d491484fc5f6d0c198676",
+        "kris": "31987a7fb890406ca70287c1fc582cbf",
+        "democloud": "44fa048803db4a8f989125a3887baf68",
+        "Linux Default": "705e7aae722f45c5ab2926e2639b295f",
+        "Android Default": "874e0fb9979c44459ca8f2dfdb3f03d9",
+        "Serverless Function Default": "c68bb058bbf94bbcb78d748191978d3b",
+        "macOS Default": "c9fd93fcee42486fb270ae0acbb7e0fb",
+        "iOS Default": "dc2e804c147f4549a6118c96a5b0d710",
+        "Windows Default": "e1f6b443a1e24b27955af39b4c425556",
+        "bcpolicy": "f32766a625db4cc29b5dddbfb721fe58",
+    }
+    ENDPOINT_FIELDS = {
+        "endpoint_name": "HOST_NAME",
+        "endpoint_type": "AGENT_TYPE",
+        "endpoint_status": "AGENT_STATUS",
+        "platform": "OS_TYPE",
+        "operating_system": "OS_DESC",
+        "agent_version": "AGENT_VERSION",
+        "agent_eol": "SUPPORTED_VERSION",
+        "os_version": "OS_VERSION",
+        "ip_address": "IP",
+        "domain": "DOMAIN",
+        "assigned_prevention_policy": "ACTIVE_POLICY",
+        "tags": "TAGS",
+        "endpoint_id": "AGENT_ID",
+        "operational_status": "OPERATIONAL_STATUS",
+        "cloud_provider": "CLOUD_PROVIDER",
+        "cloud_region": "CLOUD_REGION",
     }
 
 
@@ -282,6 +350,7 @@ class FilterBuilder:
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
         IS_EMPTY = ("IS_EMPTY", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
+        ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
 
     AND = "AND"
     OR = "OR"
@@ -707,14 +776,26 @@ class Client(CoreClient):
         Returns:
             dict: The response containing playbook suggestions.
         """
-        reply = self._http_request(
+        return self._http_request(
             method="POST",
             json_data={"alert_internal_id": issue_id},
             headers=self._headers,
             url_suffix="/incident/get_playbook_suggestion_by_alert/",
         )
 
-        return reply
+    def get_playbooks_metadata(self):
+        return self._http_request(
+            method="GET",
+            headers=self._headers,
+            full_url="/xsoar/playbooks/metadata",
+        )
+
+    def get_quick_actions_metadata(self):
+        return self._http_request(
+            method="GET",
+            headers=self._headers,
+            full_url="/xsoar/quickactions",
+        )
 
     def appsec_remediate_issue(self, request_body):
         return self._http_request(
@@ -810,7 +891,7 @@ class Client(CoreClient):
         )
 
 
-def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
+def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     """
     Append Application Security - related suggestions to the recommendation data.
 
@@ -824,23 +905,211 @@ def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommenda
     Returns:
         tuple[list, dict]: Updated headers and recommendation including AppSec additions.
     """
+    alert_source = issue.get("alert_source")
+    if alert_source not in APPSEC_SOURCES:
+        return {}
+
+    recommendation = {}
     manual_fix = issue.get("extended_fields", {}).get("action")
-    recommendation["remediation"] = manual_fix if manual_fix else recommendation.get("remediation")
+    if manual_fix:
+        recommendation["remediation"] = manual_fix
+
     fix_suggestion = client.get_appsec_suggested_fix(issue_id)
     demisto.debug(f"AppSec fix suggestion: {fix_suggestion}")
 
-    # Avoid situations where existingCodeBlock is dirty, leaving suggestedCodeBlock empty.
-    if fix_suggestion and fix_suggestion.get("suggestedCodeBlock"):
+    if fix_suggestion and isinstance(fix_suggestion, dict) and fix_suggestion.get("suggestedCodeBlock"):
         recommendation.update(
             {
                 "existing_code_block": fix_suggestion.get("existingCodeBlock", ""),
                 "suggested_code_block": fix_suggestion.get("suggestedCodeBlock", ""),
             }
         )
-        headers.append("existing_code_block")
-        headers.append("suggested_code_block")
+    demisto.debug(f"{recommendation=} for {issue=}")
 
-    return headers, recommendation
+    return recommendation
+
+
+def populate_playbook_and_quick_action_suggestions(
+    client: Client, issue_id: str, pb_id_to_data: dict, qa_name_to_data: dict
+) -> dict:
+    """
+    Fetches playbook and quick-action suggestions for a given issue
+    and updates the recommendation dictionary accordingly.
+
+    Returns:
+        recommendation
+    """
+    recommendation = {}
+
+    response = client.get_playbook_suggestion_by_issue(issue_id)
+    suggestions = response.get("reply", {})
+    demisto.debug(f"Playbooks and quick action {suggestions=} for {issue_id=}")
+
+    if not suggestions:
+        return {}
+
+    # Playbook suggestion
+    playbook_id = suggestions.get("playbook_id")
+    suggestion_rule_id = suggestions.get("suggestion_rule_id")
+
+    if playbook_id:
+        recommendation["playbook_suggestions"] = {
+            "playbook_id": playbook_id,
+            "suggestion_rule_id": suggestion_rule_id,
+        }
+        pb_data = pb_id_to_data.get(playbook_id)
+        if pb_data:
+            recommendation["playbook_suggestions"].update(pb_data)
+
+    # Quick action suggestion
+    quick_action_id = suggestions.get("quick_action_id", None)
+    quick_action_suggestion_rule_id = suggestions.get("quick_action_suggestion_rule_id", None)
+
+    if quick_action_id:
+        recommendation["quick_action_suggestions"] = {
+            "name": quick_action_id,
+            "suggestion_rule_id": quick_action_suggestion_rule_id,
+        }
+        qa_data = qa_name_to_data.get(quick_action_id)
+        if qa_data:
+            recommendation["quick_action_suggestions"].update(qa_data)
+
+    return recommendation
+
+
+def map_qa_name_to_data(qas_metadata) -> dict:
+    """
+    Maps each quick-action command name to its metadata, filtering hidden arguments
+    and removing empty fields.
+
+    Returns:
+        dict: command_name → metadata.
+    """
+    if not isinstance(qas_metadata, list):
+        return {}
+
+    qa_name_to_data = {}
+
+    for item in qas_metadata:
+        brand = item.get("brand")
+        category = item.get("category")
+
+        for cmd in item.get("commands", []):
+            cmd_name = cmd.get("name")
+            arguments = cmd.get("arguments", [])
+            filtered_args = [arg for arg in arguments if not arg.get("hidden", False)]
+            qa_name_to_data[cmd_name] = remove_empty_elements(
+                {
+                    "brand": brand,
+                    "category": category,
+                    "description": cmd.get("description"),
+                    "pretty_name": cmd.get("prettyName"),
+                    "arguments": filtered_args,
+                }
+            )
+
+    return qa_name_to_data
+
+
+def map_pb_id_to_data(pbs_metadata) -> dict:
+    """
+    Maps each playbook ID to its corresponding data to enable fast lookups.
+
+    Args:
+        pbs_metadata: List of playbook metadata dictionaries.
+
+    Returns:
+        dict: Mapping of playbook ID to its data from the metadata list.
+    """
+    if not isinstance(pbs_metadata, list):
+        return {}
+
+    pb_id_to_data = {}
+    for pb_metadata in pbs_metadata:
+        pb_id = pb_metadata.get("id")
+        if pb_id:
+            pb_id_to_data[pb_id] = remove_empty_elements({"name": pb_metadata.get("name"), "comment": pb_metadata.get("comment")})
+
+    return pb_id_to_data
+
+
+def create_issue_recommendations_readable_output(issue_ids: list[str], all_recommendations: list[dict]) -> str:
+    """
+    Create readable output for issue recommendations with dynamic headers based on content.
+
+    Args:
+        issue_ids: List of issue IDs being processed
+        all_recommendations: Complete recommendation data used to determine headers and create readable output
+
+    Returns:
+        str: Formatted markdown table string for readable output
+    """
+    # Base headers that are always present
+    headers = [
+        "issue_id",
+        "issue_name",
+        "severity",
+        "description",
+        "remediation",
+    ]
+
+    # Flags to track what headers we need to append
+    append_appsec_headers = False
+    append_playbook_suggestions_header = False
+    append_quick_action_suggestions_header = False
+
+    readable_recommendations = []
+
+    # Single loop to both check for headers and create readable recommendations
+    for recommendation in all_recommendations:
+        # Check what headers we need to append
+        if not append_appsec_headers and ("existing_code_block" in recommendation or "suggested_code_block" in recommendation):
+            append_appsec_headers = True
+        if not append_playbook_suggestions_header and "playbook_suggestions" in recommendation:
+            append_playbook_suggestions_header = True
+        if not append_quick_action_suggestions_header and "quick_action_suggestions" in recommendation:
+            append_quick_action_suggestions_header = True
+
+        # Create readable recommendation
+        readable_rec = recommendation.copy()
+
+        # Simplify playbook suggestions for readable output (show only name)
+        if "playbook_suggestions" in readable_rec and isinstance(readable_rec["playbook_suggestions"], dict):
+            pb_suggestions = readable_rec["playbook_suggestions"]
+            readable_rec["playbook_suggestions"] = {
+                "name": pb_suggestions.get("name", ""),
+                "playbook_id": pb_suggestions.get("playbook_id", ""),
+            }
+
+        # Simplify quick action suggestions for readable output (show only pretty_name)
+        if "quick_action_suggestions" in readable_rec and isinstance(readable_rec["quick_action_suggestions"], dict):
+            qa_suggestions = readable_rec["quick_action_suggestions"]
+            readable_rec["quick_action_suggestions"] = {
+                "name": qa_suggestions.get("name", ""),
+                "pretty_name": qa_suggestions.get("pretty_name", ""),
+            }
+
+        readable_recommendations.append(readable_rec)
+
+    # Add conditional headers based on what we found
+    if append_appsec_headers:
+        headers.extend(["existing_code_block", "suggested_code_block"])
+
+    if append_playbook_suggestions_header:
+        headers.append("playbook_suggestions")
+
+    if append_quick_action_suggestions_header:
+        headers.append("quick_action_suggestions")
+
+    # Create the readable output table
+    issue_readable_output = tableToMarkdown(
+        f"Issue Recommendations for {issue_ids}",
+        readable_recommendations,
+        headerTransform=string_to_table_header,
+        headers=headers,
+    )
+
+    return issue_readable_output
 
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
@@ -848,17 +1117,17 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     Get comprehensive recommendations for an issue, including remediation steps and playbook suggestions.
     Retrieves issue data with remediation field using the generic /api/webapp/get_data endpoint.
     """
-    issue_id = args.get("issue_id")
-    if not issue_id:
-        raise DemistoException("issue_id is required.")
+    issue_ids = argToList(args.get("issue_ids"))
+    if len(issue_ids) > 10:
+        raise DemistoException("Please provide a maximum of 10 issue IDs per request.")
 
     filter_builder = FilterBuilder()
-    filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
+    filter_builder.add_field("internal_id", FilterType.EQ, issue_ids)
 
     request_data = build_webapp_request_data(
         table_name="ALERTS_VIEW_TABLE",
         filter_dict=filter_builder.to_dict(),
-        limit=1,
+        limit=10,
         sort_field="source_insert_ts",
         sort_order="DESC",
         on_demand_fields=[],
@@ -870,48 +1139,50 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     issue_data = reply.get("DATA", [])
 
     if not issue_data:
-        raise DemistoException(f"No issue found with ID: {issue_id}")
+        raise DemistoException(f"No issues found with IDs: {issue_ids}")
 
-    issue = issue_data[0]
+    # Call the endpoint here to avoid calling it for each issue.
+    pbs_metadata = client.get_playbooks_metadata() or []
+    qas_metadata = client.get_quick_actions_metadata() or []
+    pb_id_to_data = map_pb_id_to_data(pbs_metadata)
+    qa_name_to_data = map_qa_name_to_data(qas_metadata)
+    all_recommendations = []
 
-    # Get playbook suggestions
-    playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
-    playbook_suggestions = playbook_response.get("reply", {})
-    demisto.debug(f"{playbook_response=}")
+    for issue in issue_data:
+        current_issue_id = issue.get("internal_id")
 
-    recommendation = {
-        "issue_id": issue.get("internal_id") or issue_id,
-        "issue_name": issue.get("alert_name"),
-        "severity": issue.get("severity"),
-        "description": issue.get("alert_description"),
-        "remediation": issue.get("remediation"),
-        "playbook_suggestions": playbook_suggestions,
-    }
+        # Base recommendation
+        recommendation = {
+            "issue_id": current_issue_id,
+            "issue_name": issue.get("alert_name"),
+            "severity": issue.get("severity"),
+            "description": issue.get("alert_description"),
+            "remediation": issue.get("remediation"),
+        }
 
-    headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+        # --- Playbook and Quick Action Suggestions ---
+        recommendation_pb_qa = populate_playbook_and_quick_action_suggestions(
+            client, current_issue_id, pb_id_to_data, qa_name_to_data
+        )
+        recommendation.update(recommendation_pb_qa)
 
-    if issue.get("alert_source") in APPSEC_SOURCES:
-        headers, recommendation = get_appsec_suggestion(client, headers, issue, recommendation, issue_id)
+        # --- AppSec ---
+        appsec_recommendation = get_appsec_suggestion(client, issue, current_issue_id)
+        if appsec_recommendation:
+            recommendation.update(appsec_recommendation)
 
-    readable_output = tableToMarkdown(
-        f"Issue Recommendations for {issue_id}",
-        [recommendation],
-        headerTransform=string_to_table_header,
-        headers=headers,
+        all_recommendations.append(recommendation)
+
+    # Final header adjustments
+    issue_readable_output = create_issue_recommendations_readable_output(
+        issue_ids=issue_ids, all_recommendations=all_recommendations
     )
 
-    if playbook_suggestions:
-        readable_output += "\n" + tableToMarkdown(
-            "Playbook Suggestions",
-            playbook_suggestions,
-            headerTransform=string_to_table_header,
-        )
-
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=issue_readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.IssueRecommendations",
         outputs_key_field="issue_id",
-        outputs=recommendation,
+        outputs=all_recommendations,
         raw_response=response,
     )
 
@@ -1061,6 +1332,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         argToList(args.get("severity")),
         VULNERABILITIES_SEVERITY_MAPPING,
     )
+    filter_builder.add_field("FINDING_SOURCES", FilterType.CONTAINS_IN_LIST, argToList(args.get("finding_sources")))
     filter_builder.add_field("ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id")))
     filter_builder.add_time_range_field("LAST_OBSERVED", args.get("start_time"), args.get("end_time"))
     filter_builder.add_field_with_mappings(
@@ -1101,6 +1373,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         "HAS_KEV",
         "EXPLOITABLE",
         "ASSET_IDS",
+        "FINDING_SOURCES",
     ]
     filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
 
@@ -1618,6 +1891,26 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
     )
 
 
+def normalize_key(key: str) -> str:
+    """
+    Strips the prefixes 'xdm.asset.' or 'xdm.' from the beginning of the key,
+    if present, and returns the remaining key unchanged otherwise.
+
+    Args:
+        key (str): The original output key.
+
+    Returns:
+        str: The normalized key without XDM prefixes.
+    """
+    if key.startswith("xdm.asset."):
+        return key.replace("xdm.asset.", "")
+
+    if key.startswith("xdm."):
+        return key.replace("xdm.", "")
+
+    return key
+
+
 def search_assets_command(client: Client, args):
     """
     Search for assets in XDR based on the provided filters.
@@ -1634,6 +1927,8 @@ def search_assets_command(client: Client, args):
                          - asset_group_names (list[str]): List of asset group names to search for.
     """
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
+    software_package_versions = args.get("software_package_versions", "")
+    kubernetes_cluster_versions = args.get("kubernetes_cluster_versions", "")
     filter = FilterBuilder()
     filter.add_field(
         ASSET_FIELDS["asset_names"],
@@ -1667,20 +1962,28 @@ def search_assets_command(client: Client, args):
         FilterType.EQ,
         argToList(args.get("asset_categories", "")),
     )
+    filter.add_field(ASSET_FIELDS["asset_classes"], FilterType.EQ, argToList(args.get("asset_classes", "")))
+    filter.add_field(ASSET_FIELDS["software_package_versions"], FilterType.EQ, argToList(software_package_versions))
+    filter.add_field(ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(kubernetes_cluster_versions))
     filter_str = filter.to_dict()
 
     demisto.debug(f"Search Assets Filter: {filter_str}")
     page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
     page_number = arg_to_number(args.get("page_number", 0))
     on_demand_fields = ["xdm.asset.tags"]
+    version_fields = [
+        ("xdm.software_package.version", software_package_versions),
+        ("xdm.kubernetes.cluster.version", kubernetes_cluster_versions),
+    ]
+    on_demand_fields.extend([field for field, condition in version_fields if condition])
+
     raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
     # Remove "xdm.asset." suffix from all keys in the response
-    response = [
-        {k.replace("xdm.asset.", "") if k.startswith("xdm.asset.") else k: v for k, v in item.items()} for item in raw_response
-    ]
+    response = [{normalize_key(k): v for k, v in item.items()} for item in raw_response]
     return CommandResults(
         readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
+        outputs_key_field="id",
         outputs=response,
         raw_response=raw_response,
     )
@@ -2635,6 +2938,154 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
+def map_endpoint_format(endpoint_list: list) -> list:
+    """
+    Maps and prepares endpoints data for consistent output formatting.
+
+    Args:
+        endpoint_list (list): Raw endpoint list from client response.
+
+    Returns:
+        dict: Formatted endpoint results with markdown table and outputs.
+    """
+    map_output_endpoint_fields = {v: k for k, v in Endpoints.ENDPOINT_FIELDS.items()}
+
+    map_output_endpoint_type = {v: k for k, v in Endpoints.ENDPOINT_TYPE.items()}
+
+    map_output_endpoint_status = {v: k for k, v in Endpoints.ENDPOINT_STATUS.items()}
+
+    map_output_endpoint_platform = {v: k for k, v in Endpoints.ENDPOINT_PLATFORM.items()}
+
+    map_output_endpoint_operational_status = {v: k for k, v in Endpoints.ENDPOINT_OPERATIONAL_STATUS.items()}
+
+    map_output_assigned_prevention_policy = {v: k for k, v in Endpoints.ASSIGNED_PREVENTION_POLICY.items()}
+
+    # A dispatcher for easy lookup:
+    nested_mappers = {
+        "endpoint_type": map_output_endpoint_type,
+        "endpoint_status": map_output_endpoint_status,
+        "platform": map_output_endpoint_platform,
+        "operational_status": map_output_endpoint_operational_status,
+        "assigned_prevention_policy": map_output_assigned_prevention_policy,
+    }
+    mapped_list = []
+
+    for outputs in endpoint_list:
+        mapped_item = {}
+
+        for raw_key, raw_value in outputs.items():
+            # Step 1: map backend key → prettified_output_key
+            if raw_key not in map_output_endpoint_fields:
+                continue
+
+            prettified_output_key = map_output_endpoint_fields[raw_key]
+
+            # Step 2: map nested values (policy ID, status, etc.)
+            if prettified_output_key in nested_mappers:
+                mapper = nested_mappers[prettified_output_key]
+                friendly_value = mapper.get(raw_value, raw_value)
+            else:
+                friendly_value = raw_value
+
+            mapped_item[prettified_output_key] = friendly_value
+
+        mapped_list.append(mapped_item)
+
+    return mapped_list
+
+
+def build_endpoint_filters(args: dict):
+    """
+    Build a FilterBuilder for endpoint queries from provided arguments.
+
+    Args:
+        args (dict): Command arguments.
+
+    Returns:
+        FilterBuilder: Object with filters applied.
+    """
+    operational_status = [
+        Endpoints.ENDPOINT_OPERATIONAL_STATUS[operational_status]
+        for operational_status in argToList(args.get("operational_status"))
+    ]
+    endpoint_type = [Endpoints.ENDPOINT_TYPE[endpoint_type] for endpoint_type in argToList(args.get("endpoint_type"))]
+    endpoint_status = [Endpoints.ENDPOINT_STATUS[status] for status in argToList(args.get("endpoint_status"))]
+    platform = [Endpoints.ENDPOINT_PLATFORM[platform] for platform in argToList(args.get("platform"))]
+    assigned_prevention_policy = [
+        Endpoints.ASSIGNED_PREVENTION_POLICY[assigned] for assigned in argToList(args.get("assigned_prevention_policy"))
+    ]
+    agent_eol = args.get("agent_eol")
+    supported_version = arg_to_bool_or_none(agent_eol) if agent_eol else None
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_status"], FilterType.EQ, endpoint_status)
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["operational_status"], FilterType.EQ, operational_status)
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_type"], FilterType.EQ, endpoint_type)
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["platform"], FilterType.EQ, platform)
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["assigned_prevention_policy"], FilterType.EQ, assigned_prevention_policy)
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_name"], FilterType.EQ, argToList(args.get("endpoint_name")))
+    filter_builder.add_field(
+        Endpoints.ENDPOINT_FIELDS["operating_system"], FilterType.CONTAINS, argToList(args.get("operating_system"))
+    )
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["agent_version"], FilterType.EQ, argToList(args.get("agent_version")))
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["os_version"], FilterType.EQ, argToList(args.get("os_version")))
+    filter_builder.add_field(
+        Endpoints.ENDPOINT_FIELDS["ip_address"], FilterType.ADVANCED_IP_MATCH_EXACT, argToList(args.get("ip_address"))
+    )
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["domain"], FilterType.EQ, argToList(args.get("domain")))
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["tags"], FilterType.EQ, argToList(args.get("tags")))
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_id"], FilterType.EQ, argToList(args.get("endpoint_id")))
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["cloud_provider"], FilterType.EQ, argToList(args.get("cloud_provider")))
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["cloud_region"], FilterType.EQ, argToList(args.get("cloud_region")))
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["agent_eol"], FilterType.EQ, supported_version)
+    filter_dict = filter_builder.to_dict()
+
+    return filter_dict
+
+
+def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of endpoints from the server, applies filters, maps the data, and returns
+    it as CommandResults for Cortex XSOAR.
+
+    Args:
+        client (Client): The integration client used to fetch data.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: Contains the formatted table, raw response, and outputs.
+    """
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("page_size")) or MAX_GET_ENDPOINTS_LIMIT
+    limit = min(limit, MAX_GET_ENDPOINTS_LIMIT)
+    page_from = page * limit
+    page_to = page * limit + limit
+    filter_dict = build_endpoint_filters(args)
+
+    request_data = build_webapp_request_data(
+        table_name=AGENTS_TABLE,
+        filter_dict=filter_dict,
+        limit=page_to,
+        sort_field="AGENT_NAME",
+        sort_order="ASC",
+        start_page=page_from,
+    )
+    demisto.info(f"{request_data=}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+    data = map_endpoint_format(data)
+    demisto.debug(f"Endpoint data after mapping and formatting: {data}")
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Endpoints", data, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Endpoint",
+        outputs_key_field="endpoint_id",
+        outputs=data,
+        raw_response=data,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -2754,6 +3205,9 @@ def main():  # pragma: no cover
             return_results(update_case_command(client, args))
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
+
+        elif command == "core-list-endpoints":
+            return_results(core_list_endpoints_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
