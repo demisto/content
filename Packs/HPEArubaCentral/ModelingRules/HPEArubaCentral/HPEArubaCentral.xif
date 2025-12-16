@@ -2,9 +2,9 @@
 /*
 Mapping Audit events
 */
-| filter ts != null and timestamp = null
+filter ts != null and timestamp = null
 | alter
-    xdm.event.original_event_type = "Audit"
+    xdm.event.original_event_type = "Audit",
     xdm.event.type = classification ,
     xdm.event.description = description ,
     xdm.event.id = id ,
@@ -13,14 +13,14 @@ Mapping Audit events
     xdm.source.user.upn = if(user contains "@", user, null),
     xdm.source.user.username =  if(user not contains "@", user, null),
     xdm.source.user.groups = arraycreate(gid),
-    xdm.target.host.device_id = `target`
+    xdm.target.host.device_id = `target`;
 
 /*
 Mapping Network events
 */
-| filter ts = null and timestamp != null
+filter ts = null and timestamp != null
 | alter
-    xdm.event.original_event_type = "Networking"
+    xdm.event.original_event_type = "Networking",
     xdm.event.type = event_type,
     xdm.event.description = description, 
     xdm.event.id = event_uuid,
@@ -28,8 +28,8 @@ Mapping Network events
     level ~= "ALERT|Alert",XDM_CONST.LOG_LEVEL_ALERT, level ~= "CRITICAL|Critical",XDM_CONST.LOG_LEVEL_CRITICAL,level ~= "ERROR|Error",XDM_CONST.LOG_LEVEL_ERROR,
     level~="NOTICE|Notice", XDM_CONST.LOG_LEVEL_NOTICE,level~= "DEBUG|Debug",XDM_CONST.LOG_LEVEL_DEBUG, level),
     xdm.source.host.hostname = hostname,
-    xdm.source.host.mac_addresses = client_mac,
+    xdm.source.host.mac_addresses = arraycreate(client_mac),
     xdm.source.user.groups = arraycreate(group_name),
-    xdm.intermediate.host.mac_addresses = coalesce(device_mac, bssid),
+    xdm.intermediate.host.mac_addresses = arraycreate(coalesce(device_mac, bssid)),
     xdm.intermediate.host.device_id = device_serial,
-    xdm.intermediate.host.device_category = device_type
+    xdm.intermediate.host.device_category = device_type;
