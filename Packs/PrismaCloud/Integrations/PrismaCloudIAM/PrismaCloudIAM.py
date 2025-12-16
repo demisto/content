@@ -33,7 +33,7 @@ class Client(BaseClient):
         self._customer_name = customer_name
 
     def test(self):
-        """Tests connectivity with the application."""
+        """Tests connectivity with the application.."""
         self.login()
         return "ok"
 

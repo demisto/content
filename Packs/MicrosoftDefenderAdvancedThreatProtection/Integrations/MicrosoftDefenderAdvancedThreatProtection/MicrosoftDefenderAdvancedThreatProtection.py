@@ -84,7 +84,7 @@ class FileStatisticsAPIParser:
 
     @classmethod
     def from_raw_response(cls, raw_response: dict):
-        """Creates an instance from the file stats API raw response body (ignores extra fields, if any).
+        """Creates an instance from the file stats API raw response body (ignores extra fields, if any)..
 
         Args:
             raw_response (dict): File stats API response

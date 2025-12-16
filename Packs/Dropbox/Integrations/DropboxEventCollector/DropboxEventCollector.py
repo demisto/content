@@ -87,7 +87,7 @@ class DropboxEventsGetter(IntegrationGetEvents):
                 break
 
 
-# ----------------------------------------- Authentication Functions -----------------------------------------
+# ------------------------------------------------ Authentication Functions -----------------------------------------
 
 
 def start_auth_command(base_url: str, app_key: str) -> CommandResults:  # pragma: no cover

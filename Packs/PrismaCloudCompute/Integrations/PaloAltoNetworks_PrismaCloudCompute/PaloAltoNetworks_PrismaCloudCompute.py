@@ -86,7 +86,7 @@ class PrismaCloudComputeClient(BaseClient):
         **kwargs,
     ):
         """
-        Extends the _http_request method of BaseClient.
+        Extends the _http_request method of BaseClient..
         If self._project is available, a 'project=projectID' query param is automatically added to all requests.
         """
         # if project is given add it to params and call super method

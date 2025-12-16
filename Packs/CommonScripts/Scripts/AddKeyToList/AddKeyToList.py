@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-"""AddKeyToList
+"""AddKeyToList.
 Adds/Updates a Key to a JSON-backed List
 """
 

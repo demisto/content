@@ -1,7 +1,7 @@
 id: Cloud Data Exfiltration Response
 version: -1
 name: Cloud Data Exfiltration Response
-description: "## Cloud Data Exfiltration Response\n\nThe Cloud Data Exfiltration Response playbook is designed to address data exfiltration activity alerts in the cloud environment. This playbook is intended for handling \"An identity performed a suspicious download of multiple cloud storage object\" alert.\nThe playbook supports AWS, GCP, and Azure and executes the following:\n- Enrichment involved assets. \n- Determines the appropriate verdict based on the data collected from the enrichment. \n- Cloud Persistence Threat Hunting:\n  - Conducts threat hunting activities to identify any cloud persistence techniques\n- Verdict Handling:\n  - Handles false positives identified during the investigation\n  - Handles true positives by initiating appropriate response actions"
+description: "##  Cloud Data Exfiltration Response\n\nThe Cloud Data Exfiltration Response playbook is designed to address data exfiltration activity alerts in the cloud environment. This playbook is intended for handling \"An identity performed a suspicious download of multiple cloud storage object\" alert.\nThe playbook supports AWS, GCP, and Azure and executes the following:\n- Enrichment involved assets. \n- Determines the appropriate verdict based on the data collected from the enrichment. \n- Cloud Persistence Threat Hunting:\n  - Conducts threat hunting activities to identify any cloud persistence techniques\n- Verdict Handling:\n  - Handles false positives identified during the investigation\n  - Handles true positives by initiating appropriate response actions"
 starttaskid: "0"
 tasks:
   "0":

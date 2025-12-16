@@ -51,7 +51,7 @@ class Client(BaseClient):
         return response
 
     def list_external_service_request(self, search_params: list[dict]) -> dict[str, Any]:
-        """Get a list of all your external services using the '/assets/get_external_services/' endpoint.
+        """Get a list of all your external services using the '/assets/get_external_services/' endpoint..
 
         Args:
             search_params (list): list of search parameters to add to the API call body.

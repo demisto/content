@@ -50,7 +50,7 @@ class AlibabaEventsClient(IntegrationEventsClient):
         try:
             response = self.session.request(**self.request.dict(by_alias=True))
             if response.status_code >= 400:
-                demisto.debug(f"An error occurred - raw response is: {response.json()}")
+                demisto.debug(f"An error occurred - raw response is.: {response.json()}")
             response.raise_for_status()
             return response
         except Exception as exc:
