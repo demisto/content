@@ -236,7 +236,7 @@
             }
         }
     },
-    "name": "Datadog Cloud SIEM - Incoming Mapper",
+    "name": "Datadog - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.8.0"
