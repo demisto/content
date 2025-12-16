@@ -3230,6 +3230,7 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults
     Retrieves Disable Prevention Rules and Legacy Agent Exceptions using the
     generic /api/webapp/get_data endpoint, handling pagination.
     """
+
     exception_rule_type = args.get("type")
     sort_field = args.get("sort_field", "MODIFICATION_TIME")
     sort_order = args.get("sort_order", "DESC")
@@ -3306,7 +3307,7 @@ def list_system_users_command(client, args):
         data = data[:MAX_GET_SYSTEM_USERS_LIMIT]
 
     return CommandResults(
-        readable_output=tableToMarkdown("System Users", data, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("MAYA System Users", data, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.User",
         outputs_key_field="user_email",
         outputs=data,
@@ -3333,7 +3334,6 @@ def main():  # pragma: no cover
     xsoar_api_url = "/xsoar"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
-
     try:
         timeout = int(demisto.params().get("timeout", 120))
     except ValueError as e:
@@ -3433,7 +3433,7 @@ def main():  # pragma: no cover
             return_results(update_case_command(client, args))
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
-        elif command == "core-get-exception-rules":
+        elif command == "core-list-exception-rules":
             return_results(list_exception_rules_command(client, args))
         elif command == "core-list-system-users":
             return_results(list_system_users_command(client, args))
