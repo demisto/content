@@ -2789,14 +2789,14 @@ script:
       - contextPath: Core.EndpointUpdateVersion.distributions.version
         description: The version of the endpoint update.
         type: String
-      - contextPath: Core.EndpointUpdateVersion.distributions.greater
-        description: The account of the given endpoints that are greater than the version.
+      - contextPath: Core.EndpointUpdateVersion.distributions.endpoints_with_higher_version_count
+        description: The account of the given endpoints that are higher than the version.
         type: String
-      - contextPath: Core.EndpointUpdateVersion.distributions.equal
+      - contextPath: Core.EndpointUpdateVersion.distributions.endpoints_with_same_version_count
         description: The account of the given endpoints that are equal to the version.
         type: String
-      - contextPath: Core.EndpointUpdateVersion.distributions.less
-        description: The account of the given endpoints that are less than the version.
+      - contextPath: Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count
+        description: The account of the given endpoints that are lower than the version.
         type: String
     - arguments: 
       - description: A comma-separated list of endpoint IDs.

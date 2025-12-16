@@ -3159,9 +3159,9 @@ def transform_distributions(response):
             new_item = remove_empty_elements(
                 {
                     "platform": platform,
-                    "less": item.get("less"),
-                    "greater": item.get("greater"),
-                    "equal": item.get("equal"),
+                    "endpoints_with_lower_version_count": item.get("less"),
+                    "endpoints_with_higher_version_count": item.get("greater"),
+                    "endpoints_with_same_version_count": item.get("equal"),
                     "version": item.get("version"),
                 }
             )
