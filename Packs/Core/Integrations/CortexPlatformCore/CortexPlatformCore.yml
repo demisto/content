@@ -1449,6 +1449,28 @@ script:
         isArray: true
       - name: asset_categories
         description: A Comma-separated list of asset categories to search for. (e.g., "category1,category2").
+      - name: asset_classes
+        description: A comma-separated list of asset classes to search for.
+        auto: PREDEFINED
+        predefined:
+        - AI
+        - API
+        - Application
+        - Code
+        - Compute
+        - Data
+        - Device
+        - External Surface
+        - Identity
+        - Management
+        - Network
+        - Organization
+        - Other
+        - Security Services
+      - name: software_package_versions
+        description: A comma-separated list of software package versions to search for. (e.g., "0.23.0,5.2.0").
+      - name: kubernetes_cluster_versions
+        description: A comma-separated list of Kubernetes cluster versions to search for. (e.g., "1.22,1.3").
       name: core-search-assets
       description: Retrieves asset from the Cortex platform using optional filter criteria.
       outputs:
@@ -1490,6 +1512,10 @@ script:
         description: The related cases breakdown of the asset.
       - contextPath: Core.Asset.provider
         description: The asset provider.
+      - contextPath: Core.Asset.kubernetes.cluster.version
+        description: The Kubernetes cluster version of the asset.
+      - contextPath: Core.Asset.software_package.version
+        description: The software package version of the asset.
     - arguments:
         - description: The maximum number of groups to return.
           defaultValue: "50"
@@ -1543,9 +1569,17 @@ script:
           description: "The maximum number of vulnerabilities to return."
           defaultValue: "50"
         - defaultValue: LAST_OBSERVED
+          auto: PREDEFINED
           description: The field by which to sort the results.
           name: sort_field
+          predefined:
+            - PLATFORM_SEVERITY
+            - CVSS_SCORE
+            - EPSS_SCORE
+            - CORTEX_VULNERABILITY_RISK_SCORE
+            - LAST_OBSERVED
         - auto: PREDEFINED
+          defaultValue: DESC
           description: The order in which to sort the results.
           name: sort_order
           predefined:
@@ -1604,6 +1638,21 @@ script:
             The email of the user assigned to the vulnerability. Accepts a comma-separated list. 
             Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities.
           isArray: true
+        - auto: PREDEFINED
+          description: The finding sources of the vulnerability. Accepts a comma-separated list.
+          isArray: true
+          name: finding_sources
+          predefined:
+            - CORTEX_AGENT
+            - CORTEX_AGENTLESS_SCANNER
+            - CORTEX_ATTACK_SURFACE_MANAGEMENT
+            - CORTEX_ATTACK_SURFACE_TESTING
+            - CORTEX_CLI_SCANNER
+            - CORTEX_CONTAINER_REGISTRY_SCANNER
+            - CORTEX_NETWORK_SCANNER
+            - CORTEX_SERVERLESS_FUNCTION_SCANNER
+            - QUALYS
+            - TENABLE
       outputs:
         - contextPath: Core.VulnerabilityIssue.ISSUE_ID
           description: The unique identifier for the vulnerability issue.
@@ -1649,6 +1698,9 @@ script:
           type: Boolean
         - contextPath: Core.VulnerabilityIssue.ASSET_IDS
           description: The unique identifier for the asset.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.FINDING_SOURCES
+          description: The finding sources that originally generated the security finding of the vulnerability.
           type: String
     - arguments:
         - description: Comma-separated list of IDs of the issues to get recommendations for (maximum 10 per request).
@@ -2791,7 +2843,7 @@ script:
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.4885491
+  dockerimage: demisto/google-cloud-storage:1.0.0.5633894
 tests:
   - No tests
 fromversion: 6.2.0
