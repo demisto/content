@@ -772,6 +772,9 @@ def test_main_function_success(mocker):
         return_value={"account_name": "teststorage", "sku": "Standard_LRS", "kind": "StorageV2", "location": "eastus"},
     )
 
+    # mock is_gov_account
+    mocker.patch("Azure.is_gov_account", return_value=False)
+
     # Mock return_results
     mock_return_results = mocker.patch("Azure.return_results")
 
@@ -3258,7 +3261,7 @@ class TestGetCommandResource:
         """Test that a default command returns DEFAULT_RESOURCE."""
         command = "azure-nsg-security-rule-update"
         resource = get_command_resource(command)
-        assert resource == DEFAULT_RESOURCE
+        assert resource == f"{DEFAULT_RESOURCE}/"
 
     def test_storage_container_command(self):
         """Test that a storage-container command returns STORAGE_RESOURCE."""
@@ -3316,7 +3319,7 @@ class TestGetAzureClient:
             proxy=False,
             tenant_id="test-tenant-id",
             enc_key=None,
-            resource=DEFAULT_RESOURCE,
+            resource=f"{DEFAULT_RESOURCE}/",
             scope=DEFAULT_SCOPE,
             headers={"Authorization": "Bearer test-token", "Content-Type": "application/json", "Accept": "application/json"},
         )
