@@ -324,7 +324,7 @@ Enrich a file hash with Unit 42 threat intelligence context.
 
 ### URL Enrichment Format Requirements
 
-To ensure successful URL enrichment and avoid HTTP 400 errors, please adhere to the following requirements:
+To ensure successful URL enrichment and avoid HTTP 400 errors, follow these guidelines:
 
 **URL Length**
 
