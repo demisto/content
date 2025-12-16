@@ -1574,7 +1574,7 @@ tasks:
                     delimiter: {}
                     filters:
                       value:
-                        simple: NT AUTHORITY\SYSTEM
+                        simple: NT AUTHORITY\\SYSTEM
                     ignore_case: {}
                     match_exact: {}
                 - operator: uniq
