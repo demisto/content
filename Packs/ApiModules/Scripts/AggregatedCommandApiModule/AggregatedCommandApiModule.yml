@@ -9,7 +9,7 @@ comment: Common Aggregated Command API Module, provides generic Infrastructure f
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/python3:3.12.11.4819260
+dockerimage: demisto/python3:3.12.12.6204436
 fromversion: 6.10.0  
 tests:
 - No tests (auto formatted)
