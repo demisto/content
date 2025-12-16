@@ -331,7 +331,7 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
         demisto.debug(f"Error when calling get-user-data:\n{err_info_msg}")
 
     # Check for no available integrations
-    if any("No entries" in (r.get("HumanReadable") or "") for r in res):
+    if any("### User(s) data\n**No entries.**\n" == (r.get("HumanReadable") or "") for r in res):
         raise DemistoException(
             f"No integrations were found for the brands {args.get('brands')}. Please verify the brand instances setup."
         )
