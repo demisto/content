@@ -183,7 +183,6 @@ script:
     - name: quarantines
       description: List of Quarantine Names to be in the Search Use only if you Specify
         Quarantine Type as 'pvo'
-      defaultValue: Prohibited-Words,Suspect-SPAM,SDR_DOMAIN
     - name: quarantine_type
       auto: PREDEFINED
       predefined:
