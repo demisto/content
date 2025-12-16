@@ -1,13 +1,21 @@
 category: Database
 sectionorder:
 - Connect
-- Collect
 - Collect Issues
 - Collect Events
 commonfields:
   id: Elasticsearch v2
   version: -1
 configuration:
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  advanced: true
+  section: Collect 
+  hidden:
+  - xsoar
 - display: Server URL
   name: url
   required: false
