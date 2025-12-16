@@ -12,7 +12,7 @@ filter ts != null and timestamp = null
     xdm.source.ipv6 = if(is_ipv6(ip_addr) = TRUE, ip_addr),
     xdm.source.user.upn = if(user contains "@", user, null),
     xdm.source.user.username =  if(user not contains "@", user, null),
-    xdm.source.user.groups = arraycreate(gid),
+    xdm.source.user.groups = arraycreate(to_string(gid)),
     xdm.target.host.device_id = `target`;
 
 /*
@@ -29,7 +29,7 @@ filter ts = null and timestamp != null
     level~="NOTICE|Notice", XDM_CONST.LOG_LEVEL_NOTICE,level~= "DEBUG|Debug",XDM_CONST.LOG_LEVEL_DEBUG, level),
     xdm.source.host.hostname = hostname,
     xdm.source.host.mac_addresses = arraycreate(client_mac),
-    xdm.source.user.groups = arraycreate(group_name),
+    xdm.source.user.groups = arraycreate(to_string(group_name)),
     xdm.intermediate.host.mac_addresses = arraycreate(coalesce(device_mac, bssid)),
     xdm.intermediate.host.device_id = device_serial,
     xdm.intermediate.host.device_category = device_type;
