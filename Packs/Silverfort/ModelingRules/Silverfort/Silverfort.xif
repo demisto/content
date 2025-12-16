@@ -43,7 +43,7 @@ alter
 [RULE: silverfort_admin_console_authentication_story_fields]
 alter
     xdm.source.port = to_integer(0),git
-    xdm.source.user.user_type = XDM_CONST.USER_TYPE_REGULAR,
+    xdm.source.user.user_type = if(suser ~= "\$$" OR suser ~= "^(http|host|cifs|krbtgt|mssql|nfs)\/" OR suser ~= "\/",XDM_CONST.USER_TYPE_MACHINE_ACCOUNT, XDM_CONST.USER_TYPE_REGULAR),
     xdm.target.port = to_integer(0),
     xdm.logon.type = XDM_CONST.LOGON_TYPE_INTERACTIVE,
     xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
