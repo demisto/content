@@ -3424,17 +3424,44 @@ def splunk_results_command(service: client.Service, args: dict[str, Any]) -> str
     return None
 
 
-def splunk_get_indexes_command(service: client.Service) -> None:
-    indexes = service.indexes
-    indexes_names = []
-    for index in indexes:
-        index_json = {"name": index.name, "count": index["totalEventCount"]}
-        indexes_names.append(index_json)
+def splunk_get_indexes_command(service: client.Service, app: str = "-"):
+    search_query = f"""| rest "/servicesNS/nobody/{app}/data/indexes/?count=-1&offset=0"
+    | eval name=title, count=totalEventCount
+    | table name, count"""
+
+    indexesNames = []
+
+    # Try the first approach: REST API query
+    try:
+        demisto.debug("Attempting to get indexes using REST API query approach")
+        for item in results.JSONResultsReader(service.jobs.oneshot(query=search_query, output_mode=OUTPUT_MODE_JSON)):
+            if handle_message(item):
+                continue
+            indexesNames.append(item)
+        demisto.debug(f"Successfully retrieved {len(indexesNames)} indexes using REST API query approach")
+    except Exception as e:
+        # Log the error and fall back to the second approach
+        demisto.error(f"Failed to get indexes using REST API query approach: {e!s}")
+        demisto.debug("Falling back to direct API approach using service.indexes")
+
+        try:
+            # Second approach: Direct API using service.indexes
+            indexes = service.indexes
+            for index in indexes:
+                index_json = {"name": index.name, "count": index["totalEventCount"]}
+                indexesNames.append(index_json)
+            demisto.debug(f"Successfully retrieved {len(indexesNames)} indexes using direct API approach")
+        except Exception as fallback_error:
+            demisto.error(f"Failed to get indexes using direct API approach: {fallback_error!s}")
+            raise DemistoException(
+                f"Failed to retrieve indexes using both methods. " f"REST API error: {e!s}. Direct API error: {fallback_error!s}"
+            )
+
     return_results(
         CommandResults(
             content_format=EntryFormat.JSON,
-            raw_response=json.dumps(indexes_names),
-            readable_output=tableToMarkdown("Splunk Indexes names", indexes_names, ""),
+            raw_response=json.dumps(indexesNames),
+            readable_output=tableToMarkdown("Splunk Indexes names", indexesNames, ""),
         )
     )
 
@@ -4175,7 +4202,7 @@ def main() -> None:  # pragma: no cover
     elif command == "splunk-results":
         splunk_results_command(service, args)
     elif command == "splunk-get-indexes":
-        splunk_get_indexes_command(service)
+        splunk_get_indexes_command(service, app=connection_args.get("app", "-"))
     elif command == "fetch-incidents":
         demisto.info("########### FETCH #############")
         fetch_incidents(service, mapper)
