@@ -319,3 +319,31 @@ Enrich a file hash with Unit 42 threat intelligence context.
 >|Value|Verdict|Verdict Category|Seen By|First Seen|Last Seen|
 >|---|---|---|---|---|---|
 >| 123456abcdef | malicious |  | wf_sample |  |  |
+
+## Known Limitations
+
+### URL Enrichment Format Requirements
+
+To ensure successful URL enrichment and avoid HTTP 400 errors, please adhere to the following requirements:
+
+**URL Length**
+
+- Maximum recommended length: **2000 characters**
+- This is the observed maximum length for URL arguments in similar indicator submission commands within the Cortex platform
+
+**Special Characters**
+
+- URLs must be properly encoded
+- Characters like commas (`,`), less-than (`<`), and greater-than (`>`) can cause parsing conflicts or API request failures (Status 400)
+- Remove or URL-encode these characters before submission
+
+**Comma Handling**
+
+- If a URL contains a comma, the playbook task supplying the input must enclose the URL within a JSON list format to ensure it is treated as a single string, even if it is the only URL
+- Example: `["https://example.com/path?param=value,value2"]`
+
+**General Guidelines**
+
+- Ensure URLs are valid and well-formed
+- Use proper URL encoding for special characters
+- Test URLs with special characters in a non-production environment first
