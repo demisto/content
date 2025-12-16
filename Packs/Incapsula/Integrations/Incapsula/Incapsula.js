@@ -55,7 +55,7 @@ var sendRequestV2 = function(url, method, body, queryName) {
     }
 }
 
-var incapPolicyList = function(args) {
+var incapListPolicy = function(args) {
     var url = base + '/v2/policies';
     if (args.policy_id) {
         url += '/' + args.policy_id;
@@ -73,7 +73,7 @@ var incapPolicyList = function(args) {
         url += '?' + queryParams.join('&');
     }
 
-    var response = sendRequestV2(url, 'GET', null, 'incap-policy-list');
+    var response = sendRequestV2(url, 'GET', null, 'incap-list-policy');
     
     return {
         Type: entryTypes.note,
@@ -81,7 +81,7 @@ var incapPolicyList = function(args) {
         ContentsFormat: formats.json,
         HumanReadable: tableToMarkdown('Policies', response),
         EntryContext: {
-            'Incapsula.Policies': response
+            'Incapsula.Policy': response
         }
     };
 }
@@ -93,17 +93,18 @@ var incapPolicyCreate = function(args) {
     var body = {};
     
     // Required fields
-    body.policy_name = args.policy_name;
+    body.policyName = args.policy_name;
     body.enabled = args.enabled === 'true';
-    body.policy_id = parseInt(args.policy_id); // Required for copy, but also seems required by API definition provided
-    body.setting_action = args.setting_action;
-    body.policy_setting_type = args.policy_setting_type;
-    body.policy_summary = args.policy_summary;
+    body.policySummary = args.policy_summary;
     
     // Optional fields
-    if (args.account_id) body.account_id = args.account_id;
-    if (args.policy_description) body.policy_description = args.policy_description;
-    if (args.policy_type) body.policy_type = args.policy_type;
+    if (args.policy_id) body.policyId = parseInt(args.policy_id);
+    if (args.source_policy_id) body.sourcePolicyId = parseInt(args.source_policy_id);
+    if (args.setting_action) body.settingsAction = args.setting_action;
+    if (args.policy_setting_type) body.policySettingType = args.policy_setting_type;
+    if (args.account_id) body.accountId = args.account_id;
+    if (args.policy_description) body.description = args.policy_description;
+    if (args.policy_type) body.policyType = args.policy_type;
     
     // Array fields
     if (args.ips) body.ips = args.ips;
@@ -112,12 +113,19 @@ var incapPolicyCreate = function(args) {
     if (args.urls) body.urls = args.urls;
     
     // JSON/ID fields
-    if (args.default_policy_config_raw_json) body.default_policy_config_raw_json = args.default_policy_config_raw_json;
-    if (args.default_policy_config_json_entry_id) body.default_policy_config_json_entry_id = parseInt(args.default_policy_config_json_entry_id);
-    if (args.policy_settings_raw_json) body.policy_settings_raw_json = args.policy_settings_raw_json;
-    if (args.policy_settings_entry_id) body.policy_settings_entry_id = parseInt(args.policy_settings_entry_id);
-    if (args.policy_data_exceptions_config_raw_json) body.policy_data_exceptions_config_raw_json = args.policy_data_exceptions_config_raw_json;
-    if (args.policy_data_exceptions_json_entry_id) body.policy_data_exceptions_json_entry_id = parseInt(args.policy_data_exceptions_json_entry_id);
+    if (args.policy_raw_json) {
+        var rawJson = JSON.parse(args.policy_raw_json);
+        for (var key in rawJson) {
+            body[key] = rawJson[key];
+        }
+    }
+    if (args.policy_raw_json_entry_id) {
+        var fileContent = getFileByEntryID(args.policy_raw_json_entry_id);
+        var rawJson = JSON.parse(fileContent);
+        for (var key in rawJson) {
+            body[key] = rawJson[key];
+        }
+    }
 
     var response = sendRequestV2(url, 'POST', body, 'incap-policy-create');
     
@@ -127,7 +135,7 @@ var incapPolicyCreate = function(args) {
         ContentsFormat: formats.json,
         HumanReadable: tableToMarkdown('Policy Created', response),
         EntryContext: {
-            'Incapsula.Policies': response
+            'Incapsula.Policy': response
         }
     };
 }
@@ -140,17 +148,17 @@ var incapPolicyUpdate = function(args) {
     var body = {};
     
     // Required fields
-    body.policy_name = args.policy_name;
+    body.policyName = args.policy_name;
     body.enabled = args.enabled === 'true';
-    body.policy_id = parseInt(args.policy_id);
-    body.setting_action = args.setting_action;
-    body.policy_setting_type = args.policy_setting_type;
-    body.policy_summary = args.policy_summary;
+    body.policyId = parseInt(args.policy_id);
+    body.settingsAction = args.setting_action;
+    body.policySettingType = args.policy_setting_type;
+    body.policySummary = args.policy_summary;
     
     // Optional fields
-    if (args.account_id) body.account_id = args.account_id;
-    if (args.policy_description) body.policy_description = args.policy_description;
-    if (args.policy_type) body.policy_type = args.policy_type;
+    if (args.account_id) body.accountId = args.account_id;
+    if (args.policy_description) body.description = args.policy_description;
+    if (args.policy_type) body.policyType = args.policy_type;
     
     // Array fields
     if (args.ips) body.ips = args.ips;
@@ -159,12 +167,19 @@ var incapPolicyUpdate = function(args) {
     if (args.urls) body.urls = args.urls;
     
     // JSON/ID fields
-    if (args.default_policy_config_raw_json) body.default_policy_config_raw_json = args.default_policy_config_raw_json;
-    if (args.default_policy_config_json_entry_id) body.default_policy_config_json_entry_id = parseInt(args.default_policy_config_json_entry_id);
-    if (args.policy_settings_raw_json) body.policy_settings_raw_json = args.policy_settings_raw_json;
-    if (args.policy_settings_entry_id) body.policy_settings_entry_id = parseInt(args.policy_settings_entry_id);
-    if (args.policy_data_exceptions_config_raw_json) body.policy_data_exceptions_config_raw_json = args.policy_data_exceptions_config_raw_json;
-    if (args.policy_data_exceptions_json_entry_id) body.policy_data_exceptions_json_entry_id = parseInt(args.policy_data_exceptions_json_entry_id);
+    if (args.policy_config_raw_json) {
+        var rawJson = JSON.parse(args.policy_config_raw_json);
+        for (var key in rawJson) {
+            body[key] = rawJson[key];
+        }
+    }
+    if (args.policy_config_json_entry_id) {
+        var fileContent = getFileByEntryID(args.policy_config_json_entry_id);
+        var rawJson = JSON.parse(fileContent);
+        for (var key in rawJson) {
+            body[key] = rawJson[key];
+        }
+    }
 
     var response = sendRequestV2(url, method, body, 'incap-policy-update');
     
@@ -174,7 +189,7 @@ var incapPolicyUpdate = function(args) {
         ContentsFormat: formats.json,
         HumanReadable: tableToMarkdown('Policy Modified', response),
         EntryContext: {
-            'Incapsula.Policies': response
+            'Incapsula.Policy': response
         }
     };
 }
@@ -197,7 +212,7 @@ var incapPolicyDelete = function(args) {
     };
 }
 
-var incapAssetOnPolicyCheck = function(args) {
+var incapCheckAssetOnPolicy = function(args) {
     var policyId = args.policy_id;
     var assetType = args.asset_type;
     var assetId = args.asset_id;
@@ -207,7 +222,7 @@ var incapAssetOnPolicyCheck = function(args) {
         url += '?account_id=' + args.account_id;
     }
 
-    var response = sendRequestV2(url, 'GET', null, 'incap-asset-on-policy-check');
+    var response = sendRequestV2(url, 'GET', null, 'incap-check-asset-on-policy');
     
     return {
         Type: entryTypes.note,
@@ -220,7 +235,7 @@ var incapAssetOnPolicyCheck = function(args) {
     };
 }
 
-var incapAssetOnPolicyApply = function(args) {
+var incapOverrideAssetInPolicy = function(args) {
     var policyId = args.policy_id;
     var assetType = args.asset_type;
     var assetId = args.asset_id;
@@ -230,7 +245,7 @@ var incapAssetOnPolicyApply = function(args) {
         url += '?account_id=' + args.account_id;
     }
 
-    var response = sendRequestV2(url, 'PATCH', null, 'incap-asset-on-policy-apply');
+    var response = sendRequestV2(url, 'PATCH', null, 'incap-override-asset-in-policy');
     
     return {
         Type: entryTypes.note,
@@ -373,18 +388,18 @@ switch (command) {
             return 'ok';
         }
         return 'not cool';
-    case 'incap-policy-list':
-        return incapPolicyList(args);
+    case 'incap-list-policy':
+        return incapListPolicy(args);
     case 'incap-policy-create':
         return incapPolicyCreate(args);
     case 'incap-policy-update':
         return incapPolicyUpdate(args);
     case 'incap-policy-delete':
         return incapPolicyDelete(args);
-    case 'incap-asset-on-policy-check':
-        return incapAssetOnPolicyCheck(args);
-    case 'incap-asset-on-policy-apply':
-        return incapAssetOnPolicyApply(args);
+    case 'incap-check-asset-on-policy':
+        return incapCheckAssetOnPolicy(args);
+    case 'incap-override-asset-in-policy':
+        return incapOverrideAssetInPolicy(args);
     default:
         return sendRequest(base + urlDict[command], encodeToURLQuery(args).substr(1), urlDict[command]);
 }

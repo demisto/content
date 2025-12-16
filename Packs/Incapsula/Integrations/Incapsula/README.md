@@ -1808,14 +1808,14 @@ Use this operation to view the highest peak values and highest average values fo
 
 There is no context output for this command.
 
-### incap-policy-list
+### incap-list-policy
 
 ***
 Retrieves all policies associated with the account or a specific policy if policy_id is provided.
 
 #### Base Command
 
-`incap-policy-list`
+`incap-list-policy`
 
 #### Input
 
@@ -1829,12 +1829,12 @@ Retrieves all policies associated with the account or a specific policy if polic
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Incapsula.Policies | unknown | The policies information. |
-| Incapsula.Policies.policy_id | string | The policy ID. |
-| Incapsula.Policies.policy_name | string | The policy name. |
-| Incapsula.Policies.enabled | boolean | Whether the policy is enabled. |
-| Incapsula.Policies.setting_action | string | The action to take when the policy is triggered. |
-| Incapsula.Policies.policy_setting_type | string | The type of policy setting. |
+| Incapsula.Policy | unknown | The policies information. |
+| Incapsula.Policy.policy_id | string | The policy ID. |
+| Incapsula.Policy.policy_name | string | The policy name. |
+| Incapsula.Policy.enabled | boolean | Whether the policy is enabled. |
+| Incapsula.Policy.setting_action | string | The action to take when the policy is triggered. |
+| Incapsula.Policy.policy_setting_type | string | The type of policy setting. |
 
 ### incap-policy-create
 
@@ -1851,34 +1851,31 @@ Add a new policy or copy an existing policy.
 | --- | --- | --- |
 | policy_name | The name of the policy. | Required |
 | enabled | Whether the policy is enabled. Possible values are: true, false. | Required |
-| policy_id | The ID of the policy (required for copying an existing policy). | Required |
-| setting_action | The action to take when the policy is triggered. Possible values are: BLOCK, ALLOW, ALERT, BLOCK_USER, BLOCK_IP, IGNORE, HIDDEN_ALERT, MASK. | Required |
-| policy_setting_type | The type of policy setting. Possible values are: IP, GEO, URL, CROSS_SITE_SCRIPTING, ILLEGAL_RESOURCE_ACCESS, REMOTE_FILE_INCLUSION, SQL_INJECTION, RESP_DATA_LEAK. | Required |
+| policy_id | The ID of the policy. | Optional |
+| source_policy_id | Optional to clone full policy data. | Optional |
+| setting_action | The action to take when the policy is triggered. Possible values are: BLOCK, ALLOW, ALERT, BLOCK_USER, BLOCK_IP, IGNORE, HIDDEN_ALERT, MASK. | Optional |
+| policy_setting_type | The type of policy setting. Possible values are: IP, GEO, URL, CROSS_SITE_SCRIPTING, ILLEGAL_RESOURCE_ACCESS, REMOTE_FILE_INCLUSION, SQL_INJECTION, RESP_DATA_LEAK. | Optional |
 | policy_summary | A summary of the policy. | Required |
 | account_id | Account ID to create the policy for a different sub-account. | Optional |
 | policy_description | A description of the policy. | Optional |
-| policy_type | The type of policy. Possible values are: ACL, WHITELIST, WAF_RULES. | Optional |
+| policy_type | The type of policy. Possible values are: ACL, WHITELIST, WAF_RULES, FILE_UPLOAD. | Optional |
 | ips | Comma-separated list of IPs. | Optional |
 | countries | Comma-separated list of countries. | Optional |
 | continents | Comma-separated list of continents. | Optional |
 | urls | Comma-separated list of URLs. | Optional |
-| default_policy_config_raw_json | Raw JSON for default policy configuration. | Optional |
-| default_policy_config_json_entry_id | Entry ID for default policy configuration JSON. | Optional |
-| policy_settings_raw_json | Raw JSON for policy settings. | Optional |
-| policy_settings_entry_id | Entry ID for policy settings JSON. | Optional |
-| policy_data_exceptions_config_raw_json | Raw JSON for policy data exceptions configuration. | Optional |
-| policy_data_exceptions_json_entry_id | Entry ID for policy data exceptions JSON. | Optional |
+| _policy_raw_json | A json with the full body of the policy. | Optional |
+| policy_raw_json_entry_id | Entry Id of the file that contains JSON representation of the _policy_raw_json. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Incapsula.Policies | unknown | The created policy information. |
-| Incapsula.Policies.policy_id | string | The policy ID. |
-| Incapsula.Policies.policy_name | string | The policy name. |
-| Incapsula.Policies.enabled | boolean | Whether the policy is enabled. |
-| Incapsula.Policies.setting_action | string | The action to take when the policy is triggered. |
-| Incapsula.Policies.policy_setting_type | string | The type of policy setting. |
+| Incapsula.Policy | unknown | The created policy information. |
+| Incapsula.Policy.policy_id | string | The policy ID. |
+| Incapsula.Policy.policy_name | string | The policy name. |
+| Incapsula.Policy.enabled | boolean | Whether the policy is enabled. |
+| Incapsula.Policy.setting_action | string | The action to take when the policy is triggered. |
+| Incapsula.Policy.policy_setting_type | string | The type of policy setting. |
 
 ### incap-policy-update
 
@@ -1896,34 +1893,30 @@ Modify an existing policy (partial or full update).
 | policy_name | The name of the policy. | Required |
 | enabled | Whether the policy is enabled. Possible values are: true, false. | Required |
 | policy_id | The ID of the policy to modify. | Required |
-| setting_action | The action to take when the policy is triggered. Possible values are: BLOCK, ALLOW, ALERT, BLOCK_USER, BLOCK_IP, IGNORE, HIDDEN_ALERT, MASK. | Required |
-| policy_setting_type | The type of policy setting. Possible values are: IP, GEO, URL, CROSS_SITE_SCRIPTING, ILLEGAL_RESOURCE_ACCESS, REMOTE_FILE_INCLUSION, SQL_INJECTION, RESP_DATA_LEAK. | Required |
+| setting_action | The action to take when the policy is triggered. Possible values are: BLOCK, ALLOW, ALERT, BLOCK_USER, BLOCK_IP, IGNORE, HIDDEN_ALERT, MASK. | Optional |
+| policy_setting_type | The type of policy setting. Possible values are: IP, GEO, URL, CROSS_SITE_SCRIPTING, ILLEGAL_RESOURCE_ACCESS, REMOTE_FILE_INCLUSION, SQL_INJECTION, RESP_DATA_LEAK. | Optional |
 | policy_summary | A summary of the policy. | Required |
 | update_type | The type of update (Full or Partial). Default is Partial. Possible values are: Full, Partial. | Optional |
 | account_id | Account ID. | Optional |
 | policy_description | A description of the policy. | Optional |
-| policy_type | The type of policy. Possible values are: ACL, WHITELIST, WAF_RULES. | Optional |
+| policy_type | The type of policy. Possible values are: ACL, WHITELIST, WAF_RULES, FILE_UPLOAD. | Optional |
 | ips | Comma-separated list of IPs. | Optional |
 | countries | Comma-separated list of countries. | Optional |
 | continents | Comma-separated list of continents. | Optional |
 | urls | Comma-separated list of URLs. | Optional |
-| default_policy_config_raw_json | Raw JSON for default policy configuration. | Optional |
-| default_policy_config_json_entry_id | Entry ID for default policy configuration JSON. | Optional |
-| policy_settings_raw_json | Raw JSON for policy settings. | Optional |
-| policy_settings_entry_id | Entry ID for policy settings JSON. | Optional |
-| policy_data_exceptions_config_raw_json | Raw JSON for policy data exceptions configuration. | Optional |
-| policy_data_exceptions_json_entry_id | Entry ID for policy data exceptions JSON. | Optional |
+| policy_config_raw_json | Raw JSON for policy configuration. | Optional |
+| policy_config_json_entry_id | Entry ID for policy configuration JSON. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Incapsula.Policies | unknown | The modified policy information. |
-| Incapsula.Policies.policy_id | string | The policy ID. |
-| Incapsula.Policies.policy_name | string | The policy name. |
-| Incapsula.Policies.enabled | boolean | Whether the policy is enabled. |
-| Incapsula.Policies.setting_action | string | The action to take when the policy is triggered. |
-| Incapsula.Policies.policy_setting_type | string | The type of policy setting. |
+| Incapsula.Policy | unknown | The modified policy information. |
+| Incapsula.Policy.policy_id | string | The policy ID. |
+| Incapsula.Policy.policy_name | string | The policy name. |
+| Incapsula.Policy.enabled | boolean | Whether the policy is enabled. |
+| Incapsula.Policy.setting_action | string | The action to take when the policy is triggered. |
+| Incapsula.Policy.policy_setting_type | string | The type of policy setting. |
 
 ### incap-policy-delete
 
@@ -1945,14 +1938,14 @@ Delete an existing policy.
 
 There is no context output for this command.
 
-### incap-asset-on-policy-check
+### incap-check-asset-on-policy
 
 ***
 Check whether the policy is applied on the asset.
 
 #### Base Command
 
-`incap-asset-on-policy-check`
+`incap-check-asset-on-policy`
 
 #### Input
 
@@ -1972,14 +1965,14 @@ Check whether the policy is applied on the asset.
 | Incapsula.AssetOnPolicy.policy_id | string | The policy ID. |
 | Incapsula.AssetOnPolicy.asset_type | string | Type of asset on which the policy is applied. |
 
-### incap-asset-on-policy-apply
+### incap-override-asset-in-policy
 
 ***
 Overwrite applied assets in a policy.
 
 #### Base Command
 
-`incap-asset-on-policy-apply`
+`incap-override-asset-in-policy`
 
 #### Input
 
