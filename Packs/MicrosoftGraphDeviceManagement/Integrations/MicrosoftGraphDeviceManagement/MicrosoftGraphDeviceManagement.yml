@@ -991,3 +991,4 @@ script:
 fromversion: 5.0.0
 tests:
 - MSGraph_DeviceManagement_Test
+- MSGraph_DeviceManagement_Test_self_deployed_prod
