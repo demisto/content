@@ -6907,8 +6907,10 @@ class TestTransformDistributions:
             "platform_count": 2,
             "total_count": 100,
             "distributions": [
-                {"platform": "windows", "less": 10, "greater": 20, "equal": 70, "version": "1.0.0"},
-                {"platform": "linux", "less": 5, "greater": 15, "equal": 80, "version": "2.0.0"},
+                {"platform": "windows", "endpoints_with_lower_version_count": 10, "endpoints_with_higher_version_count": 20, 
+                 "endpoints_with_same_version_count": 70, "version": "1.0.0"},
+                {"platform": "linux", "endpoints_with_lower_version_count": 5, "endpoints_with_higher_version_count": 15, 
+                 "endpoints_with_same_version_count": 80, "version": "2.0.0"},
             ],
         }
 
