@@ -104,6 +104,9 @@ class Client(BaseClient):
                 INSTANCE_ID_CONST: instance_id,
             }
         )
+
+        demisto.info(f"context EXPIRES_IN={int(time.time()) + expires_in - SECONDS_30}")
+
         if refresh_token:
             integration_context.update({REFRESH_TOKEN_CONST: refresh_token})
         demisto.setIntegrationContext(integration_context)
@@ -119,6 +122,8 @@ class Client(BaseClient):
         instance_id = oproxy_response.get(INSTANCE_ID_CONST)
         # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
         # an empty string to an int.
+
+        demisto.info(f"oproxy_response EXPIRES_IN={oproxy_response.get(EXPIRES_IN)}")
         expires_in = int(oproxy_response.get(EXPIRES_IN, MINUTES_60) or 0)
         if not access_token or not api_url or not instance_id:
             raise DemistoException(
