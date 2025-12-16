@@ -967,7 +967,8 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         NGSIEM_DETECTION_FETCH_TYPE,
         THIRD_PARTY_DETECTION_FETCH_TYPE,
         NGSIEM_INCIDENT_FETCH_TYPE,
-        NGSIEM_AUTOMATED_LEADS_FETCH_TYPE
+        NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
+        NGSIEM_INCIDENT_FETCH_TYPE,
     ):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
@@ -3527,7 +3528,7 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdstrikeFalconMsg: Start fetch NGSIEM Automated Lead")
         demisto.debug(f"CrowdStrikeFalconMsg: Current NGSIEM Automated Lead last_run_object: {ngsiem_automated_lead_last_run}")
 
-        fetch_ngsiem_automated_leads, ngsiem_automated_lead_last_run = fetch_detections_by_product_type(
+        fetched_ngsiem_automated_leads, ngsiem_automated_lead_last_run = fetch_detections_by_product_type(
             ngsiem_automated_lead_last_run,
             look_back=look_back,
             fetch_query=params.get("automated_leads_fetch_query", ""),
@@ -3537,7 +3538,17 @@ def fetch_items(command="fetch-incidents"):
             start_time_key="created_timestamp",
             is_fetch_events=False
         )
-        items.extend(fetch_ngsiem_automated_leads)
+        demisto.debug(f"{fetched_ngsiem_automated_leads=}")
+        for lead in fetched_ngsiem_automated_leads:
+            raw_lead =  json.loads(lead.get("rawJSON", "{}"))
+            lead["Pattern Id"] = ", ".join([str(mitre_attack["pattern_id"]) for mitre_attack in raw_lead["mitre_attack"]])
+            lead["MITRE Tactic ID"] = [mitre_attack["tactic_id"] for mitre_attack in raw_lead["mitre_attack"]]
+            lead["MITRE Tactic Name"] = [mitre_attack["tactic"] for mitre_attack in raw_lead["mitre_attack"]]
+            lead["MITRE Technique ID"] = [mitre_attack["technique_id"] for mitre_attack in raw_lead["mitre_attack"]]
+            lead["MITRE Technique Name"] = [mitre_attack["technique"] for mitre_attack in raw_lead["mitre_attack"]]
+
+        demisto.debug(f"{fetched_ngsiem_automated_leads=}")
+        items.extend(fetched_ngsiem_automated_leads)
 
     # Fetch Indicators of Misconfiguration (IOM) - supported for fetch-incidents command only.
     if not is_fetch_events and IOM_FETCH_TYPE in fetch_incidents_or_detections:

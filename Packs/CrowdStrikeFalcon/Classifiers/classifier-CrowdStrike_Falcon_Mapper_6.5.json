@@ -1634,7 +1634,45 @@
 					"simple": "severity"
 				}
 			}
-		}
+		},
+        "CrowdStrike Falcon NGSIEM Automated Lead":{
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Agent ID": {
+					"simple": "agent_id"
+				},
+				"CrowdStrike Falcon Crawled Timestamp": {
+					"simple": "crawled_timestamp"
+				},
+				"Device Id": {
+					"simple": "device.device_id"
+				},
+				"Display Name": {
+					"simple": "display_name"
+				},
+				"Last Update Time": {
+					"simple": "updated_timestamp"
+				},
+				"Lead Id": {
+					"simple": "lead_id"
+				},
+				"Lead Type": {
+					"simple": "lead_type"
+				},
+				"Risk Score": {
+					"simple": "score"
+				},
+				"State": {
+					"simple": "status"
+				},
+				"Vendor Product": {
+					"simple": "product"
+				},
+				"occurred": {
+					"simple": "created_timestamp"
+				}
+			}
+        }
     },
     "name": "CrowdStrike Falcon Mapper",
     "type": "mapping-incoming",

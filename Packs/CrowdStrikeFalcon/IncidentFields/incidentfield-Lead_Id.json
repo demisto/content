@@ -1,10 +1,10 @@
 {
-    "id": "incident_crowdstrikefalconpatternid",
+    "id": "incident_crowdstrikefalconleadid",
     "version": -1,
-    "modified": "2023-06-14T13:56:35.287509044Z",
-    "name": "CrowdStrike Falcon Pattern ID",
+    "modified": "2025-12-14T08:51:57.954175058Z",
+    "name": "CrowdStrike Falcon Lead Id",
     "ownerOnly": false,
-    "cliName": "crowdstrikefalconpatternid",
+    "cliName": "crowdstrikefalconleadid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -19,12 +19,6 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "CrowdStrike Falcon IDP Detection",
-        "CrowdStrike Falcon On-Demand Scans Detection",
-        "CrowdStrike Falcon OFP Detection",
-        "CrowdStrike Falcon Third Party Detection",
-        "CrowdStrike Falcon NGSIEM Detection",
-        "CrowdStrike Falcon NGSIEM Incident",
         "CrowdStrike Falcon NGSIEM Automated Lead"
     ],
     "associatedToAll": false,
