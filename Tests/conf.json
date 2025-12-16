@@ -6353,6 +6353,7 @@
         "MicrosoftGraphMail-Test_dev_no_oproxy",
         "MicrosoftGraphMail-Test_dev",
         "MicrosoftGraphMail-Test_prod",
+        "MicrosoftGraphMailSingleUser-Test_dev",
         "Microsoft Defender Advanced Threat Protection - Test dev",
         "Microsoft Defender Advanced Threat Protection - Test prod",
         "Microsoft Defender Advanced Threat Protection - Test",
