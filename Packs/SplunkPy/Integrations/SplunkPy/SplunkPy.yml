@@ -327,7 +327,7 @@ configuration:
   section: Collect
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk.
-description: Runs queries on Splunk servers.
+description: Run queries on Splunk and fetch Notable Events (Splunk ES versions up to 8.2).
 display: SplunkPy
 name: SplunkPy
 script:

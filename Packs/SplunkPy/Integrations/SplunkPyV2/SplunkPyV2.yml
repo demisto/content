@@ -288,7 +288,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: Run queries on Splunk servers and fetch Finding Events (Splunk ES 8.2+).
+description: Run queries on Splunk and fetch Finding Events (Splunk ES 8.2+).
 display: SplunkPy v2
 name: SplunkPy v2
 script:

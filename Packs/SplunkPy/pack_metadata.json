@@ -1,6 +1,6 @@
 {
     "name": "Splunk",
-    "description": "Run queries on Splunk servers.",
+    "description": "Fetch events as incidents and search Splunk",
     "support": "xsoar",
     "currentVersion": "4.0.1",
     "author": "Cortex XSOAR",
