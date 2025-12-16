@@ -28,7 +28,7 @@ filter ts = null and timestamp != null
     level ~= "ALERT|Alert",XDM_CONST.LOG_LEVEL_ALERT, level ~= "CRITICAL|Critical",XDM_CONST.LOG_LEVEL_CRITICAL,level ~= "ERROR|Error",XDM_CONST.LOG_LEVEL_ERROR,
     level~="NOTICE|Notice", XDM_CONST.LOG_LEVEL_NOTICE,level~= "DEBUG|Debug",XDM_CONST.LOG_LEVEL_DEBUG, level),
     xdm.source.host.hostname = hostname,
-    xdm.source.host.mac_addresses = arraycreate(client_mac),
+    xdm.source.host.mac_addresses = arraycreate(to_string(client_mac)),
     xdm.source.user.groups = arraycreate(to_string(group_name)),
     xdm.intermediate.host.mac_addresses = arraycreate(coalesce(device_mac, bssid)),
     xdm.intermediate.host.device_id = device_serial,
