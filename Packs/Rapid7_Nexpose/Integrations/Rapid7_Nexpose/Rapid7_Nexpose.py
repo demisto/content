@@ -2494,7 +2494,11 @@ class InsightVMClient:
 
                 # 1. Handle Retryable Errors
                 if response.status in RETRYABLE_STATUSES:
-                    demisto.debug(f"API returned retryable status {response.status}: {response.message}")
+                    try:
+                        message = response.message
+                    except AttributeError:
+                        message = "No message from Rapid7"
+                    demisto.debug(f"API returned retryable status {response.status}: {message}")
                     response.close()  # Close connection before retrying
                     continue
 
