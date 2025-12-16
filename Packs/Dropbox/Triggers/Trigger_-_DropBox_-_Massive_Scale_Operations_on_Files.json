@@ -1,6 +1,6 @@
 {
   "trigger_id": "ba1d7a7c593a407fabc124262e39ff63",
-  "id": "DropBox - Massive Scale Operations on Files Response",
+  "id": "ba1d7a7c593a407fabc124262e39ff63",
   "playbook_id": "DropBox - Massive scale operations on files",
   "suggestion_reason": "Recommended for DropBox massive file alterations, and massive file downloads alerts.",
   "description": "This trigger is responsible for handling 'DropBox - Massive File Alterations' and 'DropBox - Massive File Downloads' alerts",

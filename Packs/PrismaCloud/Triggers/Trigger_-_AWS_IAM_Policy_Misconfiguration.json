@@ -1,6 +1,6 @@
 {
   "trigger_id": "3abc6225418901f71303bdaf73df7ae9",
-  "id": "AWS IAM Policy Misconfiguration",
+  "id": "3abc6225418901f71303bdaf73df7ae9",
   "playbook_id": "Prisma Cloud Remediation - AWS IAM Policy Misconfiguration v2",
   "suggestion_reason": "Recommended for AWS IAM Policy Misconfiguration alerts",
   "description": "This trigger is responsible for handling AWS IAM Policy Misconfiguration alerts",

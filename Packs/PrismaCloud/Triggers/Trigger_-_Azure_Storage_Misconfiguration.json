@@ -1,6 +1,6 @@
 {
   "trigger_id": "f9e54dc16b690386b07866af8464e368",
-  "id": "Azure Storage Misconfiguration",
+  "id": "f9e54dc16b690386b07866af8464e368",
   "playbook_id": "Prisma Cloud Remediation - Azure Storage Misconfiguration v2",
   "suggestion_reason": "Recommended for Azure Storage Misconfiguration alerts",
   "description": "This trigger is responsible for handling Azure Storage Misconfiguration alerts",

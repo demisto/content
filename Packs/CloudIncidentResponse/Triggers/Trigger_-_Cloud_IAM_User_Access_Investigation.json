@@ -1,6 +1,6 @@
 {
   "trigger_id": "39f9b9dce947a6af186c75c72709c716",
-  "id": "Cloud IAM User Access Investigation",
+  "id": "39f9b9dce947a6af186c75c72709c716",
   "playbook_id": "Cloud IAM User Access Investigation",
   "suggestion_reason": "Recommended for Cloud IAM user access alerts",
   "description": "This trigger is responsible for handling Cloud IAM user access investigation alerts",

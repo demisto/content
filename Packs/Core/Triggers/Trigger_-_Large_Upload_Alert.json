@@ -1,6 +1,6 @@
 {
   "trigger_id": "770cf66716cb3206fb3c07a5f010f8f8",
-  "id": "Large Upload Alert",
+  "id": "770cf66716cb3206fb3c07a5f010f8f8",
   "playbook_id": "Large Upload Alert",
   "suggestion_reason": "Recommended for large upload alerts",
   "description": "This trigger is responsible for handling \"core - Large Upload\" alerts",

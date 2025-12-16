@@ -1,6 +1,6 @@
 {
   "trigger_id": "73545719a1bdeba6ba91f6a16044c021",
-  "id": "NGFW Scanning Alerts",
+  "id": "73545719a1bdeba6ba91f6a16044c021",
   "playbook_id": "NGFW Scan",
   "suggestion_reason": "Recommended for NGFW scan related alerts",
   "description": "This trigger is responsible for handling alerts involving scanning activity identified by our NGFW",

@@ -1,6 +1,6 @@
 {
   "trigger_id": "714a581ffd144106a948bc9ad0cbd5ef",
-  "id": "Cortex Exposure Management SshServer Remediation",
+  "id": "714a581ffd144106a948bc9ad0cbd5ef",
   "playbook_id": "Cortex EM - Remediation",
   "suggestion_reason": "Recommended for remediation of Cortex Exposure Management SshServer issues",
   "description": "This automation rule is responsible for handling remediation of Cortex Exposure Management SshServer issues",

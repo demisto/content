@@ -1,6 +1,6 @@
 {
   "trigger_id": "478f3161aac3290efb445b0841eb1366",
-  "id": "WildFire and Wildfire Post detection",
+  "id": "478f3161aac3290efb445b0841eb1366",
   "playbook_id": "WildFire Malware",
   "suggestion_reason": "Recommended for alerts triggered by WildFire",
   "description": "This trigger is responsible for handling WildFire Malware alerts",

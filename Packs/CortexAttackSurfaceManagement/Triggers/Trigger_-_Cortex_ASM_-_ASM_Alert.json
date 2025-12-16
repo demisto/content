@@ -1,6 +1,6 @@
 {
   "trigger_id": "7ccbb03cb795734415a0b6924a8d7aed",
-  "id": "ASM",
+  "id": "7ccbb03cb795734415a0b6924a8d7aed",
   "playbook_id": "Cortex ASM - ASM Alert",
   "suggestion_reason": "Recommended for ASM alerts",
   "description": "This trigger is responsible for handling ASM alerts",

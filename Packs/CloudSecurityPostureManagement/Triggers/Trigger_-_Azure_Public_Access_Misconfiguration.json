@@ -1,5 +1,5 @@
 {
-  "id": "Trigger - Azure Public Access Misconfiguration",
+  "id": "db2b912b8286de56121200b97129c49f",
   "name": "Trigger - Azure Public Access Misconfiguration",
   "trigger_id": "db2b912b8286de56121200b97129c49f",
   "trigger_name": "Trigger - Azure Public Access Misconfiguration",
@@ -8,24 +8,24 @@
   "description": "Suggests a playbook that automatically remediates three high-severity misconfiguration issues caused by publicly accessible Azure Blob containers, overly permissive Azure VM disks, or Storage Accounts with default Allow network access.",
   "alerts_filter": {
     "filter": {
-      "OR": [
-        {
-          "SEARCH_FIELD": "matching_service_rule_id",
-          "SEARCH_TYPE": "WILDCARD",
-          "SEARCH_VALUE": "c085d057-d5a4-4118-afdf-f653e6b47995"
-        },
-        {
-          "SEARCH_FIELD": "matching_service_rule_id",
-          "SEARCH_TYPE": "WILDCARD",
-          "SEARCH_VALUE": "6a3ba52c-1a0e-4359-aba5-e417ca280270"
-        },
-        {
-          "SEARCH_FIELD": "matching_service_rule_id",
-          "SEARCH_TYPE": "WILDCARD",
-          "SEARCH_VALUE": "0c8ba0ca-2414-4d62-897c-4b57a291ae2b"
+        "OR": [
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "c085d057-d5a4-4118-afdf-f653e6b47995"
+            },
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "6a3ba52c-1a0e-4359-aba5-e417ca280270"
+            },
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "0c8ba0ca-2414-4d62-897c-4b57a291ae2b"
+            }
+        ]
         }
-      ]
-    }
-  },
-  "fromVersion": "8.11.0"
+    },
+    "fromVersion": "8.11.0"
 }
