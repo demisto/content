@@ -12,3 +12,9 @@ ignore=BA127
 
 [file:FileEnrichment.yml]
 ignore=BA127
+
+[file:IndicatorEnrichment.yml]
+ignore=BA127
+
+[file:IndicatorEnrichment.yml]
+ignore=SC101
