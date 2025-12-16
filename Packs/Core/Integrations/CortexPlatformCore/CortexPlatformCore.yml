@@ -2788,7 +2788,7 @@ script:
           description: Page number to return. Ignored if 'retrieve_all' is set to true.
           name: page
         - auto: PREDEFINED
-          defaultValue: "true"
+          defaultValue: "false"
           description: Return all exception rules.
           name: retrieve_all
           predefined:

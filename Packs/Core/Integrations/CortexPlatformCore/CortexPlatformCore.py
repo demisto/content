@@ -3196,17 +3196,17 @@ def get_webapp_data(
     raw_responses = []
 
     limit = max_limit if retrieve_all else base_limit
-    current_offset = offset
-    current_limit = offset + limit
-
+    paging_from = offset
+    paging_to = offset + limit
     while True:
+        demisto.debug(f"get_webapp_data pagination: {paging_from}, {paging_to}")
         request_data = build_webapp_request_data(
             table_name=table_name,
             filter_dict=filter_dict.to_dict(),
             sort_field=sort_field,
             sort_order=sort_order,
-            limit=current_limit,
-            start_page=current_offset,
+            limit=paging_to,
+            start_page=paging_from,
         )
         response = client.get_webapp_data(request_data)
         raw_responses.append(copy.deepcopy(response))
@@ -3216,11 +3216,11 @@ def get_webapp_data(
 
         all_records.extend(data)
 
-        if not retrieve_all or len(data) < current_limit:
+        if not retrieve_all or len(data) < limit:
             break
 
-        current_offset += limit
-        current_limit = current_offset + limit
+        paging_from += limit
+        paging_to += limit
 
     return all_records, raw_responses
 
@@ -3253,6 +3253,7 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults
     readable_output_lines = []
 
     for table_name in table_names:
+        demisto.debug(f"Retrieving {table_name}")
         records, raw_responses = get_webapp_data(
             client=client,
             table_name=str(table_name),
@@ -3267,6 +3268,7 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults
 
         all_raw_responses.extend(raw_responses)
 
+        demisto.debug(f"Retrieved {len(records)} records")
         if records:
             view_def = client.get_webapp_view_def({"table_name": table_name})
             hr_output = postprocess_exception_rules_response(view_def, records)
