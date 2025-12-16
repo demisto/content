@@ -2,90 +2,92 @@ commonfields:
   id: CiscoSMA
   version: -1
 name: CiscoSMA
-display: Cisco Security Management Appliance
+display: CiscoSMA
 category: Email
-description: The Security Management Appliance (SMA) is used to centralize services from Email Security Appliances (ESAs) and Web Security Appliances (WSAs).
+description: |-
+  The Security Management Appliance (SMA) is used to centralize services from Email Security Appliances (ESAs) and Web Security Appliances (WSAs).
+  This Integration utilizes the full capabilities of Cisco SMA.
 configuration:
-- name: base_url
-  display: Server URL
+- display: Server URL
+  name: base_url
   type: 0
   required: true
   additionalinfo: Base URL, e.g., https://XXX.eu.iphmx.com
-- name: credentials
-  display: Username
-  required: true
-  type: 9
-  additionalinfo: ""
+- display: Username
   displaypassword: Password
-- name: max_fetch
-  display: Maximum incidents per fetch
-  defaultvalue: 50
+  name: credentials
+  type: 9
+  required: true
+  additionalinfo: Username and password for authentication.
+- display: Maximum incidents per fetch
+  name: max_fetch
+  defaultvalue: "50"
   type: 0
-  additionalinfo: Default is 50. Maximum is 100.
   required: false
-- name: first_fetch
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
+  additionalinfo: Default is 50. Maximum is 100.
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
+  name: first_fetch
   defaultvalue: 7 days
   type: 0
+  required: false
   additionalinfo: |-
     Timestamp in ISO format or <number> <time unit>,
     e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-  required: false
-- name: filter_by
-  display: Filter by
+- display: Filter by
+  name: filter_by
   type: 15
-  additionalinfo: Message field by which to filter the results.
+  required: false
   options:
   - from_address
   - to_address
   - subject
-  required: false
-- name: filter_operator
-  display: Filter operator
+  additionalinfo: Message field by which to filter the results.
+- display: Filter operator
+  name: filter_operator
   type: 15
+  required: false
+  options:
+  - contains
+  - is
+  - begins_with
+  - ends_with
+  - does_not_contain
   additionalinfo: Operator on the message field.
-  options:
-  - contains
-  - is
-  - begins_with
-  - ends_with
-  - does_not_contain
-  required: false
-- name: filter_value
-  display: Filter value
+- display: Filter value
+  name: filter_value
   type: 0
+  required: false
   additionalinfo: The value to search for.
-  required: false
-- name: recipient_filter_operator
-  display: Recipient filter operator
+- display: Recipient filter operator
+  name: recipient_filter_operator
   type: 15
-  additionalinfo: Recipient operator filter.
+  required: false
   options:
   - contains
   - is
   - begins_with
   - ends_with
   - does_not_contain
-  required: false
-- name: recipient_filter_value
-  display: Recipient filter value
+  additionalinfo: Recipient operator filter.
+- display: Recipient filter value
+  name: recipient_filter_value
   type: 0
+  required: false
   additionalinfo: Recipient filter value to fetch by message field.
-  required: false
-- name: timeout
-  display: Timeout
+- display: Timeout
+  name: timeout
+  defaultvalue: "60"
   type: 0
-  defaultvalue: '60'
-  additionalinfo: HTTP requests timeout in seconds. The default is 60 seconds.
   required: false
-- name: proxy
-  display: Use system proxy settings
-  defaultvalue: 'false'
+  additionalinfo: HTTP requests timeout in seconds. The default is 60 seconds.
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
   type: 8
   required: false
-- name: insecure
-  display: Trust any certificate (not secure)
-  defaultvalue: 'false'
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Incident type
@@ -96,35 +98,35 @@ configuration:
   name: isFetch
   type: 8
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
 script:
   script: ''
   type: python
-  subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
-  isfetch: true
   commands:
   - name: cisco-sma-spam-quarantine-message-search
-    description: Search messages in the spam quarantine.
     arguments:
     - name: start_date
+      required: true
       description: |-
         Start date in ISO format or <number> <time unit>,
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-      required: true
     - name: end_date
+      required: true
       description: |-
         End date in ISO format or <number> <time unit>,
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-      required: true
     - name: filter_by
-      description: Field by which to filter the results.
       auto: PREDEFINED
       predefined:
       - from_address
       - to_address
       - subject
+      description: Field by which to filter the results.
     - name: filter_operator
-      description: Filter operator.
       auto: PREDEFINED
       predefined:
       - contains
@@ -132,10 +134,10 @@ script:
       - begins_with
       - ends_with
       - does_not_contain
+      description: Filter operator.
     - name: filter_value
       description: The value to search for. This is a user defined value, e.g., filterValue=abc.com.
     - name: recipient_filter_operator
-      description: Recipient operator filter.
       auto: PREDEFINED
       predefined:
       - contains
@@ -143,22 +145,23 @@ script:
       - begins_with
       - ends_with
       - does_not_contain
+      description: Recipient operator filter.
     - name: recipient_filter_value
       description: Recipient filter value.
     - name: order_by
-      description: How the results should be ordered.
       auto: PREDEFINED
       predefined:
       - from_address
       - date
       - subject
       - size
+      description: How the results should be ordered.
     - name: order_dir
-      description: Direction in which the results should be ordered.
       auto: PREDEFINED
       predefined:
       - asc
       - desc
+      description: Direction in which the results should be ordered.
     - name: page
       description: |-
         Page number of paginated results.
@@ -166,84 +169,183 @@ script:
     - name: page_size
       description: Number of results per page. Maximum value is 100.
     - name: limit
-      defaultValue: 50
       description: The maximum number of records to retrieve.
+      defaultValue: "50"
+    - name: recipient_filter_by
+      auto: PREDEFINED
+      predefined:
+      - contains
+      - is
+      - begins_with
+      - ends_with
+      - does_not_contain
+      description: Recipient operator filter in Quarantined Messages Search
+    - name: quarantines
+      description: List of Quarantine Names to be in the Search Use only if you Specify
+        Quarantine Type as 'pvo'
+      defaultValue: Prohibited-Words,Suspect-SPAM,SDR_DOMAIN
+    - name: quarantine_type
+      auto: PREDEFINED
+      predefined:
+      - spam
+      - pvo
+      description: Quarantine lists ('spam', 'pvo')
+    - name: envelope_sender_filter_by
+      auto: PREDEFINED
+      predefined:
+      - contains
+      - starts_with
+      - ends_with
+      - matches_exactly
+      - does_not_contain
+      - does_not_start_with
+      - does_not_end_with
+      - does_not_match
+      description: Sender operator filter in Quarantined Messages Search
+    - name: envelope_sender_filter_value
+      description: Sender filter value.
+    - name: subject_filter_by
+      auto: PREDEFINED
+      predefined:
+      - contains
+      - starts_with
+      - ends_with
+      - matches_exactly
+      - does_not_contain
+      - does_not_start_with
+      - does_not_end_with
+      - does_not_match
+      description: Subject operator filter in Quarantined Messages Search
+    - name: subject_filter_value
+      description: Subject filter value.
+    - name: envelope_recipient_filter_by
+      auto: PREDEFINED
+      predefined:
+      - contains
+      - starts_with
+      - ends_with
+      - matches_exactly
+      - does_not_contain
+      - does_not_start_with
+      - does_not_end_with
+      - does_not_match
+      description: Recipient operator filter in Quarantined Messages Search
+    - name: envelope_recipient_filter_value
+      description: Recipient filter value.
     outputs:
-    - type: String
-      contextPath: CiscoSMA.SpamQuarantineMessage.envelopeRecipient
+    - contextPath: CiscoSMA.SpamQuarantineMessage.esaMid
+      description: Message Tracker ID.
+      type: number
+    - contextPath: CiscoSMA.SpamQuarantineMessage.recipient
       description: Message recipient.
-    - type: String
-      contextPath: CiscoSMA.SpamQuarantineMessage.toAddress
-      description: Message recipient.
-    - type: String
-      contextPath: CiscoSMA.SpamQuarantineMessage.subject
+      type: String
+    - contextPath: CiscoSMA.SpamQuarantineMessage.subject
       description: Message subject.
-    - type: String
-      contextPath: CiscoSMA.SpamQuarantineMessage.date
+      type: String
+    - contextPath: CiscoSMA.SpamQuarantineMessage.date
       description: Message date.
-    - type: String
-      contextPath: CiscoSMA.SpamQuarantineMessage.fromAddress
+      type: String
+    - contextPath: CiscoSMA.SpamQuarantineMessage.sender
       description: Message sender.
-    - type: String
-      contextPath: CiscoSMA.SpamQuarantineMessage.size
+      type: String
+    - contextPath: CiscoSMA.SpamQuarantineMessage.size
       description: Message size.
-    - type: Number
-      contextPath: CiscoSMA.SpamQuarantineMessage.mid
+      type: String
+    - contextPath: CiscoSMA.SpamQuarantineMessage.mid
       description: Message ID.
+      type: Number
+    - contextPath: CiscoSMA.SpamQuarantineMessage.inQuarantines
+      description: Quarantine Name.
+      type: string
+    description: Search messages in the spam quarantine.
   - name: cisco-sma-spam-quarantine-message-get
-    description: Get spam quarantine message.
     arguments:
     - name: message_id
-      description: Message ID.
       required: true
+      description: Message ID.
+    - name: quarantine_type
+      auto: PREDEFINED
+      predefined:
+      - spam
+      - pvo
+      description: Quarantine lists ('spam','pvo')
     outputs:
-    - type: String
-      contextPath: CiscoSMA.SpamQuarantineMessage.envelopeRecipient
+    - contextPath: CiscoSMA.SpamQuarantineMessage.envelopeRecipient
       description: Message recipient.
-    - type: String
-      contextPath: CiscoSMA.SpamQuarantineMessage.toAddress
+      type: String
+    - contextPath: CiscoSMA.SpamQuarantineMessage.toAddress
       description: Message recipient.
-    - type: String
-      contextPath: CiscoSMA.SpamQuarantineMessage.messageBody
+      type: String
+    - contextPath: CiscoSMA.SpamQuarantineMessage.messageBody
       description: Message body.
-    - type: String
-      contextPath: CiscoSMA.SpamQuarantineMessage.date
+      type: String
+    - contextPath: CiscoSMA.SpamQuarantineMessage.date
       description: Message date.
-    - type: String
-      contextPath: CiscoSMA.SpamQuarantineMessage.fromAddress
+      type: String
+    - contextPath: CiscoSMA.SpamQuarantineMessage.fromAddress
       description: Message sender.
-    - type: String
-      contextPath: CiscoSMA.SpamQuarantineMessage.subject
+      type: String
+    - contextPath: CiscoSMA.SpamQuarantineMessage.subject
       description: Message subject.
-    - type: Number
-      contextPath: CiscoSMA.SpamQuarantineMessage.mid
+      type: String
+    - contextPath: CiscoSMA.SpamQuarantineMessage.mid
       description: Message ID.
+      type: Number
+    - contextPath: CiscoSMA.SpamQuarantineMessage.messagePartDetails
+      description: Message Part Details
+      type: string
+    description: Get spam quarantine message.
   - name: cisco-sma-spam-quarantine-message-release
+    arguments:
+    - name: message_ids
+      required: true
+      description: Comma-separated list of message IDs.
+      isArray: true
+    - name: quarantine_type
+      auto: PREDEFINED
+      predefined:
+      - spam
+      - pvo
+      description: Quarantine lists ('spam','pvo')
+    - name: quarantine_name
+      auto: PREDEFINED
+      predefined:
+      - Prohibited-Words
+      - Suspect-SPAM
+      - SDR_DOMAIN
+      description: Quarantine Name to be released from - Use only if you Specify Quarantine
+        Type as 'pvo'
     description: Release spam quarantined message.
-    arguments:
-    - name: message_ids
-      description: Comma-separated list of message IDs.
-      required: true
-      isArray: true
-    outputs: []
   - name: cisco-sma-spam-quarantine-message-delete
-    description: Delete spam quarantined message.
     arguments:
     - name: message_ids
-      description: Comma-separated list of message IDs.
       required: true
+      description: Comma-separated list of message IDs.
       isArray: true
-    outputs: []
+    - name: quarantine_type
+      auto: PREDEFINED
+      predefined:
+      - spam
+      - pvo
+      description: Quarantine lists ('spam','pvo')
+    - name: quarantine_name
+      auto: PREDEFINED
+      predefined:
+      - Prohibited-Words
+      - Suspect-SPAM
+      - SDR_DOMAIN
+      description: Quarantine Name to be released from - Use only if you Specify Quarantine
+        Type as 'pvo'
+    description: Delete spam quarantined message.
   - name: cisco-sma-list-entry-get
-    description: Get spam quarantine blocklist/safelist entry.
     arguments:
     - name: entry_type
-      description: List entry type.
       required: true
       auto: PREDEFINED
       predefined:
       - blocklist
       - safelist
+      description: List entry type.
     - name: page
       description: |-
         Page number of paginated results.
@@ -251,77 +353,77 @@ script:
     - name: page_size
       description: Number of results per page. Maximum value is 100.
     - name: limit
-      defaultValue: 50
       description: The maximum number of records to retrieve.
+      defaultValue: "50"
     - name: order_by
-      description: How the results should be ordered.
       auto: PREDEFINED
       predefined:
       - recipient
       - sender
+      description: How the results should be ordered.
     - name: order_dir
-      description: Direction in which the results should be ordered.
       auto: PREDEFINED
       predefined:
       - asc
       - desc
+      description: Direction in which the results should be ordered.
     - name: view_by
-      description: View results by.
-      defaultValue: recipient
       auto: PREDEFINED
       predefined:
       - recipient
       - sender
+      description: View results by.
+      defaultValue: recipient
     - name: search
       description: |-
         Search for recipients or senders in blocklist/safelist with 'contains' operator.
         e.g., test@test.com, test.com
         This is only supported for the argument view_by=recipient.
     outputs:
-    - type: String
-      contextPath: CiscoSMA.ListEntry.Blocklist.senderList
+    - contextPath: CiscoSMA.ListEntry.Blocklist.senderList
       description: Sender list.
-    - type: String
-      contextPath: CiscoSMA.ListEntry.Blocklist.recipientAddress
+      type: String
+    - contextPath: CiscoSMA.ListEntry.Blocklist.recipientAddress
       description: Recipient address.
-    - type: String
-      contextPath: CiscoSMA.ListEntry.Blocklist.recipientList
+      type: String
+    - contextPath: CiscoSMA.ListEntry.Blocklist.recipientList
       description: Recipient list.
-    - type: String
-      contextPath: CiscoSMA.ListEntry.Blocklist.senderAddress
+      type: String
+    - contextPath: CiscoSMA.ListEntry.Blocklist.senderAddress
       description: Sender address.
-    - type: String
-      contextPath: CiscoSMA.ListEntry.Safelist.senderList
+      type: String
+    - contextPath: CiscoSMA.ListEntry.Safelist.senderList
       description: Sender list.
-    - type: String
-      contextPath: CiscoSMA.ListEntry.Safelist.recipientAddress
+      type: String
+    - contextPath: CiscoSMA.ListEntry.Safelist.recipientAddress
       description: Recipient address.
-    - type: String
-      contextPath: CiscoSMA.ListEntry.Safelist.recipientList
+      type: String
+    - contextPath: CiscoSMA.ListEntry.Safelist.recipientList
       description: Recipient list.
-    - type: String
-      contextPath: CiscoSMA.ListEntry.Safelist.senderAddress
+      type: String
+    - contextPath: CiscoSMA.ListEntry.Safelist.senderAddress
       description: Sender address.
+      type: String
+    description: Get spam quarantine blocklist/safelist entry.
   - name: cisco-sma-list-entry-add
-    description: Add spam quarantine blocklist/safelist entry.
     arguments:
     - name: entry_type
-      description: List entry type.
       required: true
       auto: PREDEFINED
       predefined:
       - blocklist
       - safelist
+      description: List entry type.
     - name: view_by
+      auto: PREDEFINED
+      predefined:
+      - recipient
+      - sender
       description: |-
         Add list entry by recipient/sender.
         When view_by = recipient: recipient_addresses and sender_list are mandatory.
         When view_by = sender: sender_addresses and recipient_list are mandatory.
       defaultValue: recipient
-      auto: PREDEFINED
-      predefined:
-      - recipient
-      - sender
     - name: recipient_addresses
       description: A comma-separated list of recipients to add.
       isArray: true
@@ -334,27 +436,26 @@ script:
     - name: recipient_list
       description: A comma-separated list of recipients to add.
       isArray: true
-    outputs: []
+    description: Add spam quarantine blocklist/safelist entry.
   - name: cisco-sma-list-entry-append
-    description: Append spam quarantine blocklist/safelist entry.
     arguments:
     - name: entry_type
-      description: List entry type.
       required: true
       auto: PREDEFINED
       predefined:
       - blocklist
       - safelist
+      description: List entry type.
     - name: view_by
+      auto: PREDEFINED
+      predefined:
+      - recipient
+      - sender
       description: |-
         Append list entry by recipient/sender.
         When view_by = recipient: recipient_addresses and sender_list are mandatory.
         When view_by = sender: sender_addresses and recipient_list are mandatory.
       defaultValue: recipient
-      auto: PREDEFINED
-      predefined:
-      - recipient
-      - sender
     - name: recipient_list
       description: A comma-separated list of recipients to append.
       isArray: true
@@ -364,27 +465,26 @@ script:
       description: A comma-separated list of recipients to append.
     - name: sender_addresses
       description: A comma-separated list of senders to append.
-    outputs: []
+    description: Append spam quarantine blocklist/safelist entry.
   - name: cisco-sma-list-entry-edit
-    description: Edit the spam quarantine blocklist/safelist entry. Using this command will override the existing value.
     arguments:
     - name: entry_type
-      description: List entry type.
       required: true
       auto: PREDEFINED
       predefined:
       - blocklist
       - safelist
+      description: List entry type.
     - name: view_by
+      auto: PREDEFINED
+      predefined:
+      - recipient
+      - sender
       description: |-
         Edit list entry by recipient/sender.
         When view_by = recipient: recipient_addresses and sender_list are mandatory.
         When view_by = sender: sender_addresses and recipient_list are mandatory.
       defaultValue: recipient
-      auto: PREDEFINED
-      predefined:
-      - recipient
-      - sender
     - name: recipient_list
       description: A comma-separated list of recipients to edit.
       isArray: true
@@ -394,47 +494,46 @@ script:
       description: A comma-separated list of recipients to edit.
     - name: sender_addresses
       description: A comma-separated list of senders to edit.
-    outputs: []
+    description: Edit the spam quarantine blocklist/safelist entry. Using this command
+      will override the existing value.
   - name: cisco-sma-list-entry-delete
-    description: Delete a spam quarantine blocklist/safelist entry.
     arguments:
     - name: entry_type
-      description: List entry type.
       required: true
       auto: PREDEFINED
       predefined:
       - blocklist
       - safelist
+      description: List entry type.
     - name: view_by
+      auto: PREDEFINED
+      predefined:
+      - recipient
+      - sender
       description: |-
         Delete list entry by recipient/sender.
         When view_by = recipient: recipient_list is mandatory.
         When view_by = sender: sender_list is mandatory.
       defaultValue: recipient
-      auto: PREDEFINED
-      predefined:
-      - recipient
-      - sender
     - name: recipient_list
       description: A comma-separated list of recipients to delete.
       isArray: true
     - name: sender_list
       description: A comma-separated list of senders to delete.
       isArray: true
-    outputs: []
+    description: Delete a spam quarantine blocklist/safelist entry.
   - name: cisco-sma-message-search
-    description: Search tracking messages.
     arguments:
     - name: start_date
+      required: true
       description: |-
         Start date in ISO format or <number> <time unit>,
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-      required: true
     - name: end_date
+      required: true
       description: |-
         End date in ISO format or <number> <time unit>,
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-      required: true
     - name: page
       description: |-
         Page number of paginated results.
@@ -442,42 +541,42 @@ script:
     - name: page_size
       description: Number of results per page. Maximum value is 100.
     - name: limit
-      defaultValue: 50
       description: The maximum number of records to retrieve.
+      defaultValue: "50"
     - name: sender_filter_operator
-      description: Sender filter operator.
       auto: PREDEFINED
       predefined:
       - contains
       - is
       - begins_with
+      description: Sender filter operator.
     - name: sender_filter_value
       description: Sender filter value.
     - name: recipient_filter_operator
-      description: Recipient filter operator.
       auto: PREDEFINED
       predefined:
       - contains
       - is
       - begins_with
+      description: Recipient filter operator.
     - name: recipient_filter_value
       description: Recipient filter value.
     - name: subject_filter_operator
-      description: Subject filter operator.
       auto: PREDEFINED
       predefined:
       - contains
       - is
       - begins_with
+      description: Subject filter operator.
     - name: subject_filter_value
       description: Subject filter value.
     - name: attachment_name_operator
-      description: Attachment name operator.
       auto: PREDEFINED
       predefined:
       - contains
       - is
       - begins_with
+      description: Attachment name operator.
     - name: attachment_name_value
       description: Attachment name value.
     - name: cisco_host
@@ -493,442 +592,437 @@ script:
         Syntax: <key>=<value>;<key>=<value>;<key>=<value>
         E.g.,  graymail=True;message_delivered=True.
     outputs:
-    - type: String
-      contextPath: CiscoSMA.Message.hostName
+    - contextPath: CiscoSMA.Message.hostName
       description: Email gateway hostname.
-    - type: String
-      contextPath: CiscoSMA.Message.friendly_from
+      type: String
+    - contextPath: CiscoSMA.Message.friendly_from
       description: Friendly formatted sender email address.
-    - type: String
-      contextPath: CiscoSMA.Message.isCompleteData
+      type: String
+    - contextPath: CiscoSMA.Message.isCompleteData
       description: Is complete data pulled?.
-    - type: String
-      contextPath: CiscoSMA.Message.messageStatus
+      type: String
+    - contextPath: CiscoSMA.Message.messageStatus
       description: Message delivery status.
-    - type: String
-      contextPath: CiscoSMA.Message.recipientMap
+      type: String
+    - contextPath: CiscoSMA.Message.recipientMap
       description: Recipients list.
-    - type: String
-      contextPath: CiscoSMA.Message.senderIp
+      type: String
+    - contextPath: CiscoSMA.Message.senderIp
       description: Sender IP address.
-    - type: String
-      contextPath: CiscoSMA.Message.mailPolicy
+      type: String
+    - contextPath: CiscoSMA.Message.mailPolicy
       description: Matched mail policy.
-    - type: String
-      contextPath: CiscoSMA.Message.senderGroup
+      type: String
+    - contextPath: CiscoSMA.Message.senderGroup
       description: Matched sender group.
-    - type: String
-      contextPath: CiscoSMA.Message.subject
+      type: String
+    - contextPath: CiscoSMA.Message.subject
       description: Subject of email message.
-    - type: Number
-      contextPath: CiscoSMA.Message.dcid
+      type: String
+    - contextPath: CiscoSMA.Message.dcid
       description: Delivery Connection ID.
-    - type: String
-      contextPath: CiscoSMA.Message.mid
+      type: Number
+    - contextPath: CiscoSMA.Message.mid
       description: Message ID.
-    - type: String
-      contextPath: CiscoSMA.Message.senderDomain
+      type: String
+    - contextPath: CiscoSMA.Message.senderDomain
       description: Domain of email message sender.
-    - type: String
-      contextPath: CiscoSMA.Message.finalSubject
+      type: String
+    - contextPath: CiscoSMA.Message.finalSubject
       description: Extended email subject.
-    - type: String
-      contextPath: CiscoSMA.Message.direction
+      type: String
+    - contextPath: CiscoSMA.Message.direction
       description: Message direction, incoming or outgoing.
-    - type: Number
-      contextPath: CiscoSMA.Message.icid
-      description: An Injection Connection ID (ICID) is a numerical identifier for an individual SMTP connection to the system.
-    - type: String
-      contextPath: CiscoSMA.Message.replyTo
+      type: String
+    - contextPath: CiscoSMA.Message.icid
+      description: An Injection Connection ID (ICID) is a numerical identifier for
+        an individual SMTP connection to the system.
+      type: Number
+    - contextPath: CiscoSMA.Message.replyTo
       description: Email message reply to.
-    - type: String
-      contextPath: CiscoSMA.Message.timestamp
+      type: String
+    - contextPath: CiscoSMA.Message.timestamp
       description: Time of email message.
-    - type: String
-      contextPath: CiscoSMA.Message.messageID
+      type: String
+    - contextPath: CiscoSMA.Message.messageID
       description: Extended message ID.
-    - type: String
-      contextPath: CiscoSMA.Message.verdictChart
+      type: String
+    - contextPath: CiscoSMA.Message.verdictChart
       description: Verdict visual chart ID.
-    - type: String
-      contextPath: CiscoSMA.Message.recipient
+      type: String
+    - contextPath: CiscoSMA.Message.recipient
       description: Recipients email addresses list.
-    - type: String
-      contextPath: CiscoSMA.Message.sender
+      type: String
+    - contextPath: CiscoSMA.Message.sender
       description: Sender email address.
-    - type: String
-      contextPath: CiscoSMA.Message.serialNumber
+      type: String
+    - contextPath: CiscoSMA.Message.serialNumber
       description: Cisco ESA email gateway serial number.
-    - type: Number
-      contextPath: CiscoSMA.Message.allIcid
+      type: String
+    - contextPath: CiscoSMA.Message.allIcid
       description: ICIDs list.
-    - type: String
-      contextPath: CiscoSMA.Message.sbrs
+      type: Number
+    - contextPath: CiscoSMA.Message.sbrs
       description: Sender Base Reputation Scores.
+      type: String
+    description: Search tracking messages.
   - name: cisco-sma-message-details-get
-    description: Get more details on the message.
     arguments:
     - name: serial_number
+      required: true
       description: Email gateway serial number.
-      required: true
     - name: message_ids
-      description: Message ID list.
       required: true
+      description: Message ID list.
       isArray: true
     - name: injection_connection_id
       description: Injection connection ID.
     - name: delivery_connection_id
       description: Delivery connection ID.
     outputs:
-    - type: String
-      contextPath: CiscoSMA.Message.sdrAge
+    - contextPath: CiscoSMA.Message.sdrAge
       description: Sender Domain Reputation age.
-    - type: String
-      contextPath: CiscoSMA.Message.attachments
+      type: String
+    - contextPath: CiscoSMA.Message.attachments
       description: Message attachments.
-    - type: String
-      contextPath: CiscoSMA.Message.hostName
+      type: String
+    - contextPath: CiscoSMA.Message.hostName
       description: Email gateway hostname.
-    - type: String
-      contextPath: CiscoSMA.Message.direction
+      type: String
+    - contextPath: CiscoSMA.Message.direction
       description: Message direction, incoming or outgoing.
-    - type: Boolean
-      contextPath: CiscoSMA.Message.isCompleteData
+      type: String
+    - contextPath: CiscoSMA.Message.isCompleteData
       description: Is complete data pulled?.
-    - type: String
-      contextPath: CiscoSMA.Message.messageStatus
+      type: Boolean
+    - contextPath: CiscoSMA.Message.messageStatus
       description: Message delivery status.
-    - type: String
-      contextPath: CiscoSMA.Message.mailPolicy
+      type: String
+    - contextPath: CiscoSMA.Message.mailPolicy
       description: Matched mail policy.
-    - type: String
-      contextPath: CiscoSMA.Message.senderGroup
+      type: String
+    - contextPath: CiscoSMA.Message.senderGroup
       description: Matched sender group.
-    - type: String
-      contextPath: CiscoSMA.Message.subject
+      type: String
+    - contextPath: CiscoSMA.Message.subject
       description: Email message subject.
-    - type: Boolean
-      contextPath: CiscoSMA.Message.showSummaryTimeBox
+      type: String
+    - contextPath: CiscoSMA.Message.showSummaryTimeBox
       description: Whether to show the summary time box.
-    - type: String
-      contextPath: CiscoSMA.Message.sdrCategory
+      type: Boolean
+    - contextPath: CiscoSMA.Message.sdrCategory
       description: Sender Domain Reputation category.
-    - type: String
-      contextPath: CiscoSMA.Message.mid
+      type: String
+    - contextPath: CiscoSMA.Message.mid
       description: Message ID.
-    - type: String
-      contextPath: CiscoSMA.Message.sendingHostSummary.reverseDnsHostname
+      type: String
+    - contextPath: CiscoSMA.Message.sendingHostSummary.reverseDnsHostname
       description: Sending host reverse DNS hostname.
-    - type: String
-      contextPath: CiscoSMA.Message.sendingHostSummary.ipAddress
+      type: String
+    - contextPath: CiscoSMA.Message.sendingHostSummary.ipAddress
       description: Sending host IP address.
-    - type: String
-      contextPath: CiscoSMA.Message.sendingHostSummary.sbrsScore
+      type: String
+    - contextPath: CiscoSMA.Message.sendingHostSummary.sbrsScore
       description: Sending host Sender Base Reputation scores.
-    - type: String
-      contextPath: CiscoSMA.Message.smtpAuthId
+      type: String
+    - contextPath: CiscoSMA.Message.smtpAuthId
       description: SMTP auth ID.
-    - type: String
-      contextPath: CiscoSMA.Message.midHeader
+      type: String
+    - contextPath: CiscoSMA.Message.midHeader
       description: Message ID header.
-    - type: String
-      contextPath: CiscoSMA.Message.timestamp
+      type: String
+    - contextPath: CiscoSMA.Message.timestamp
       description: Email message time.
-    - type: Boolean
-      contextPath: CiscoSMA.Message.showDLP
+      type: String
+    - contextPath: CiscoSMA.Message.showDLP
       description: Whether the DLP report is available.
-    - type: String
-      contextPath: CiscoSMA.Message.messageSize
+      type: Boolean
+    - contextPath: CiscoSMA.Message.messageSize
       description: Email message size.
-    - type: String
-      contextPath: CiscoSMA.Message.sdrThreatLevels
+      type: String
+    - contextPath: CiscoSMA.Message.sdrThreatLevels
       description: Sender Domain Reputation threat levels.
-    - type: String
-      contextPath: CiscoSMA.Message.sdrReputation
+      type: String
+    - contextPath: CiscoSMA.Message.sdrReputation
       description: Sender Domain Reputation.
-    - type: Boolean
-      contextPath: CiscoSMA.Message.showURL
+      type: String
+    - contextPath: CiscoSMA.Message.showURL
       description: Whether the URL report is available.
-    - type: String
-      contextPath: CiscoSMA.Message.recipient
+      type: Boolean
+    - contextPath: CiscoSMA.Message.recipient
       description: Message recipient email address.
-    - type: String
-      contextPath: CiscoSMA.Message.sender
+      type: String
+    - contextPath: CiscoSMA.Message.sender
       description: Message sender email address.
-    - type: Boolean
-      contextPath: CiscoSMA.Message.showAMP
+      type: String
+    - contextPath: CiscoSMA.Message.showAMP
       description: Whether the AMP report is available.
-    - type: String
-      contextPath: CiscoSMA.Message.summary.timestamp
+      type: Boolean
+    - contextPath: CiscoSMA.Message.summary.timestamp
       description: Event summary time.
-    - type: String
-      contextPath: CiscoSMA.Message.summary.description
+      type: String
+    - contextPath: CiscoSMA.Message.summary.description
       description: Event summary description.
-    - type: Boolean
-      contextPath: CiscoSMA.Message.summary.lastEvent
+      type: String
+    - contextPath: CiscoSMA.Message.summary.lastEvent
       description: Whether the event summary is the last event.
-    - type: Number
-      contextPath: CiscoSMA.Message.allIcid
+      type: Boolean
+    - contextPath: CiscoSMA.Message.allIcid
       description: ICIDs list.
-    - type: String
-      contextPath: CiscoSMA.Message.headerFrom
+      type: Number
+    - contextPath: CiscoSMA.Message.headerFrom
       description: Email header from.
+      type: String
+    description: Get more details on the message.
   - name: cisco-sma-message-amp-details-get
-    description: Get message AMP summary details.
     arguments:
     - name: serial_number
+      required: true
       description: Email gateway serial number.
-      required: true
     - name: message_ids
-      description: Message ID list.
       required: true
+      description: Message ID list.
       isArray: true
     outputs:
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.sdrAge
+    - contextPath: CiscoSMA.AMPDetail.sdrAge
       description: Sender Domain Reputation age.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.attachments
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.attachments
       description: Message attachments.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.hostName
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.hostName
       description: Email gateway hostname.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.direction
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.direction
       description: Message direction, incoming or outgoing.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.messageStatus
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.messageStatus
       description: Message delivery status.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.senderGroup
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.senderGroup
       description: Matched sender group.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.subject
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.subject
       description: Email message subject.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.sdrCategory
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.sdrCategory
       description: Sender Domain Reputation category.
-    - type: Number
-      contextPath: CiscoSMA.AMPDetail.mid
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.mid
       description: Message ID.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.ampDetails.timestamp
+      type: Number
+    - contextPath: CiscoSMA.AMPDetail.ampDetails.timestamp
       description: AMP event summary details timestamp.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.ampDetails.description
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.ampDetails.description
       description: AMP event summary details description.
-    - type: Boolean
-      contextPath: CiscoSMA.AMPDetail.ampDetails.lastEvent
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.ampDetails.lastEvent
       description: AMP event summary details last event.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.smtpAuthId
+      type: Boolean
+    - contextPath: CiscoSMA.AMPDetail.smtpAuthId
       description: SMTP auth ID.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.midHeader
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.midHeader
       description: Message ID header.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.timestamp
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.timestamp
       description: Email message time.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.messageSize
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.messageSize
       description: Email message size.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.sdrThreatLevels
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.sdrThreatLevels
       description: Sender Domain Reputation threat levels.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.sdrReputation
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.sdrReputation
       description: Sender Domain Reputation.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.recipient
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.recipient
       description: Message recipient email address.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.sender
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.sender
       description: Message sender email address.
-    - type: Boolean
-      contextPath: CiscoSMA.AMPDetail.showAMPDetails
+      type: String
+    - contextPath: CiscoSMA.AMPDetail.showAMPDetails
       description: Whether to show AMP details.
-    - type: Number
-      contextPath: CiscoSMA.AMPDetail.allIcid
+      type: Boolean
+    - contextPath: CiscoSMA.AMPDetail.allIcid
       description: ICIDs list.
-    - type: String
-      contextPath: CiscoSMA.AMPDetail.headerFrom
+      type: Number
+    - contextPath: CiscoSMA.AMPDetail.headerFrom
       description: Email header from.
+      type: String
+    description: Get message AMP summary details.
   - name: cisco-sma-message-dlp-details-get
-    description: Get message DLP summary details.
     arguments:
     - name: serial_number
+      required: true
       description: Email gateway serial number.
-      required: true
     - name: message_ids
-      description: Message ID list.
       required: true
+      description: Message ID list.
       isArray: true
     outputs:
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.direction
+    - contextPath: CiscoSMA.DLPDetail.direction
       description: Message direction, incoming or outgoing.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.smtpAuthId
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.smtpAuthId
       description: SMTP auth ID.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.sdrAge
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.sdrAge
       description: Sender Domain Reputation age.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.sender
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.sender
       description: Message sender email address.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.midHeader
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.midHeader
       description: Message ID header.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.timestamp
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.timestamp
       description: Email message time.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.sdrCategory
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.sdrCategory
       description: Sender Domain Reputation category.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.hostName
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.hostName
       description: Email gateway hostname.
-    - type: Number
-      contextPath: CiscoSMA.DLPDetail.mid
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.mid
       description: Message ID.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.attachments
+      type: Number
+    - contextPath: CiscoSMA.DLPDetail.attachments
       description: Message attachments.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.messageSize
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.messageSize
       description: Email message size.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.dlpDetails.violationSeverity
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.dlpDetails.violationSeverity
       description: DLP details violation severity.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.dlpDetails.dlpMatchedContent.messagePartMatch.classifier
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.dlpDetails.dlpMatchedContent.messagePartMatch.classifier
       description: DLP matched content classifier.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.dlpDetails.dlpMatchedContent.messagePartMatch.classifierMatch
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.dlpDetails.dlpMatchedContent.messagePartMatch.classifierMatch
       description: DLP matched content classifier match.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.dlpDetails.dlpMatchedContent.messagePart
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.dlpDetails.dlpMatchedContent.messagePart
       description: DLP matched content message part.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.dlpDetails.mid
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.dlpDetails.mid
       description: DLP message ID.
-    - type: Number
-      contextPath: CiscoSMA.DLPDetail.dlpDetails.riskFactor
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.dlpDetails.riskFactor
       description: DLP risk factor.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.dlpDetails.dlpPolicy
+      type: Number
+    - contextPath: CiscoSMA.DLPDetail.dlpDetails.dlpPolicy
       description: DLP policy.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.sdrThreatLevels
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.sdrThreatLevels
       description: Sender Domain Reputation threat levels.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.sdrReputation
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.sdrReputation
       description: Sender Domain Reputation.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.messageStatus
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.messageStatus
       description: Message delivery status.
-    - type: Number
-      contextPath: CiscoSMA.DLPDetail.allIcid
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.allIcid
       description: ICIDs list.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.senderGroup
+      type: Number
+    - contextPath: CiscoSMA.DLPDetail.senderGroup
       description: Matched sender group.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.recipient
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.recipient
       description: Message recipient email address.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.subject
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.subject
       description: Email message subject.
-    - type: String
-      contextPath: CiscoSMA.DLPDetail.headerFrom
+      type: String
+    - contextPath: CiscoSMA.DLPDetail.headerFrom
       description: Email header from.
+      type: String
+    description: Get message DLP summary details.
   - name: cisco-sma-message-url-details-get
-    description: Get message URL summary details.
     arguments:
     - name: serial_number
+      required: true
       description: Email gateway serial number.
-      required: true
     - name: message_ids
-      description: Message ID list.
       required: true
+      description: Message ID list.
       isArray: true
     outputs:
-    - type: String
-      contextPath: CiscoSMA.URLDetail.sdrAge
+    - contextPath: CiscoSMA.URLDetail.sdrAge
       description: Sender Domain Reputation age.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.attachments
+      type: String
+    - contextPath: CiscoSMA.URLDetail.attachments
       description: Message attachments.
-    - type: Boolean
-      contextPath: CiscoSMA.URLDetail.showURLDetails
+      type: String
+    - contextPath: CiscoSMA.URLDetail.showURLDetails
       description: Whether to show URL event details.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.urlDetails.timestamp
+      type: Boolean
+    - contextPath: CiscoSMA.URLDetail.urlDetails.timestamp
       description: URL event details timestamp.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.urlDetails.description
+      type: String
+    - contextPath: CiscoSMA.URLDetail.urlDetails.description
       description: URL event details description.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.hostName
+      type: String
+    - contextPath: CiscoSMA.URLDetail.hostName
       description: Email gateway hostname.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.direction
+      type: String
+    - contextPath: CiscoSMA.URLDetail.direction
       description: Message direction, incoming or outgoing.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.messageStatus
+      type: String
+    - contextPath: CiscoSMA.URLDetail.messageStatus
       description: Message delivery status.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.senderGroup
+      type: String
+    - contextPath: CiscoSMA.URLDetail.senderGroup
       description: Matched sender group.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.subject
+      type: String
+    - contextPath: CiscoSMA.URLDetail.subject
       description: Email message subject.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.sdrCategory
+      type: String
+    - contextPath: CiscoSMA.URLDetail.sdrCategory
       description: Sender Domain Reputation category.
-    - type: Number
-      contextPath: CiscoSMA.URLDetail.mid
+      type: String
+    - contextPath: CiscoSMA.URLDetail.mid
       description: Message ID.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.smtpAuthId
+      type: Number
+    - contextPath: CiscoSMA.URLDetail.smtpAuthId
       description: SMTP auth ID.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.midHeader
+      type: String
+    - contextPath: CiscoSMA.URLDetail.midHeader
       description: Message ID header.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.timestamp
+      type: String
+    - contextPath: CiscoSMA.URLDetail.timestamp
       description: Email message time.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.messageSize
+      type: String
+    - contextPath: CiscoSMA.URLDetail.messageSize
       description: Email message size.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.sdrThreatLevels
+      type: String
+    - contextPath: CiscoSMA.URLDetail.sdrThreatLevels
       description: Sender Domain Reputation threat levels.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.sdrReputation
+      type: String
+    - contextPath: CiscoSMA.URLDetail.sdrReputation
       description: Sender Domain Reputation.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.recipient
+      type: String
+    - contextPath: CiscoSMA.URLDetail.recipient
       description: Message recipient Email address.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.sender
+      type: String
+    - contextPath: CiscoSMA.URLDetail.sender
       description: Message sender email address.
-    - type: Number
-      contextPath: CiscoSMA.URLDetail.allIcid
+      type: String
+    - contextPath: CiscoSMA.URLDetail.allIcid
       description: ICIDs list.
-    - type: String
-      contextPath: CiscoSMA.URLDetail.headerFrom
+      type: Number
+    - contextPath: CiscoSMA.URLDetail.headerFrom
       description: Email header from.
+      type: String
+    description: Get message URL summary details.
   - name: cisco-sma-report-get
-    description: |-
-      Get statistics reports.
-      Note that each report type is compatible with different arguments.
-      Refer to the following link ("ESA Reporting" section in the file) in order to view the dedicated arguments for each report type.
-      https://www.cisco.com/c/dam/en/us/td/docs/security/security_management/sma/sma12-0/AsyncOS-API-Addendum-GD_General_Deployment.xlsx.
     arguments:
     - name: report_type
-      description: Report Type.
-      defaultValue: mail_incoming_traffic_summary
       auto: PREDEFINED
       predefined:
       - mail_incoming_traffic_summary
@@ -936,52 +1030,77 @@ script:
       - mail_vof_threat_summary
       - mail_vof_specific_threat_summary
       - mail_amp_threat_summary
+      description: Report Type.
+      defaultValue: mail_incoming_traffic_summary
     - name: custom_report_type
       description: |-
         Custom report type.
         Specify this argument in order to get a report that does not exist in the report_type argument.
     - name: start_date
+      required: true
       description: |-
         Start date in ISO format or <number> <time unit>,
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-      required: true
     - name: end_date
+      required: true
       description: |-
         End date in ISO format or <number> <time unit>,
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-      required: true
     - name: device_group_name
       description: The device group name.
       defaultValue: Hosted_Cluster
     - name: device_name
       description: The device name.
     - name: order_by
-      description: Specify the attribute by which to order the data in the response. For example, orderBy=total_clean_recipients.
+      description: Specify the attribute by which to order the data in the response.
+        For example, orderBy=total_clean_recipients.
     - name: order_dir
-      description: The report order direction. Specify sort direction.
       auto: PREDEFINED
       predefined:
       - asc
       - desc
+      description: The report order direction. Specify sort direction.
     - name: top
       description: Specify the number of records with the highest values to return.
     - name: filter_value
       description: The value to search for.
     - name: filter_by
-      description: The filter field to use. Filter the data to be retrieved according to the filter property and value.
+      description: The filter field to use. Filter the data to be retrieved according
+        to the filter property and value.
     - name: filter_operator
-      description: Filter the response data based on the value specified.
       auto: PREDEFINED
       predefined:
       - begins_with
       - is
+      description: Filter the response data based on the value specified.
     outputs:
-    - type: String
-      contextPath: CiscoSMA.Report.type
+    - contextPath: CiscoSMA.Report.type
       description: Report type.
-    - type: Number
-      contextPath: CiscoSMA.Report.resultSet
+      type: String
+    - contextPath: CiscoSMA.Report.resultSet
       description: Report results summary.
+      type: Number
+    description: |-
+      Get statistics reports.
+      Note that each report type is compatible with different arguments.
+      Refer to the following link ("ESA Reporting" section in the file) in order to view the dedicated arguments for each report type.
+      https://www.cisco.com/c/dam/en/us/td/docs/security/security_management/sma/sma12-0/AsyncOS-API-Addendum-GD_General_Deployment.xlsx.
+  - name: cisco-sma-spam-quarantine-attachment-download
+    arguments:
+    - name: message_id
+    - name: attachment_id
+    description: Download Attachment from Quarantined Message in Policies, Virus and
+      Outbreak
+  - name: cisco-sma-spam-quarantine-message-send-copy
+    arguments:
+    - name: quarantine_name
+    - name: message_id
+    - name: recipients
+    description: Sends a Copy of a quarantined message to recipients
+  dockerimage: demisto/python3:3.12.8.3296088
+  isfetch: true
+  runonce: false
+  subtype: python3
 fromversion: "6.2.0"
 tests:
 - No tests (auto formatted)
