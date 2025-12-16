@@ -1,0 +1,111 @@
+commonfields:
+  id: SpecterOpsBHE
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: SpecterOpsBHE
+display: SpecterOpsBHE
+category: Network Security
+image: data:image/png;base64,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
+description: This integration enables automated retrieval of attack path findings
+  from BloodHound into Cortex XSOAR, streamlining incident creation and investigation.
+detaileddescription: "## BloodHound Enterprise\nBloodHound Enterprise is a powerful
+  tool for reducing risk in Active Directory and Microsoft Azure environments. This
+  integration enables automated retrieval of attack path findings from BloodHound
+  into Cortex XSOAR, streamlining incident creation and investigation.\n\n### Details
+  for BloodHound Enterprise workflow:\n\nPlease configure the instance by providing
+  following mandatory details:\n- **(Required)** BloodHound Enterprise Domain ( eg.
+  https://example.bloodhoundenterprise.io)\n- **(Required)** Token ID \n- **(Required)**
+  Token Key\n- Proxy URL\n- Proxy URL Username\n- Proxy URL Password\n- Finding Environment\n-
+  Finding category\n\n### To Fetch Attack Paths from BHE:\n- **(Required)** Please
+  select the Fetches incidents checkbox.\n- Please set the Incident Type to “SpecterOpsBHE
+  Attack Path”.\n- **(Required)** Incidents Fetch Interval - Please choose a time
+  interval for fetching attack paths (Default is 10 mins) .\n\n### Steps to get BloodHound
+  Enterprise API Token ID and Token Key\n- Log in to your BloodHound Enterprise (BHE)
+  tenant.\n- From the left sidebar, navigate to My Profile.\n- Select API Key Management.\n-
+  Click Create Token.\n- Enter a descriptive name for the token and click Save.\n-
+  Copy and securely store the displayed API Key/ID pair, then click Close.\n\n\n"
+configuration:
+- display: BloodHound Enterprise Domain
+  name: url
+  type: 0
+  required: true
+  additionalinfo: BloodHound Enterprise Domain
+- section: Connect
+  display: Token ID
+  displaypassword: Token Key
+  name: token_id
+  type: 0
+  required: true
+  additionalinfo: BloodHound Enterprise API Token ID
+- display: Token Key
+  name: token_key
+  type: 4
+  required: true
+  additionalinfo: BloodHound Enterprise API Token Key
+- display: Proxy URL
+  name: proxy_url
+  type: 0
+  required: false
+- display: Proxy URL Username
+  name: proxy_username
+  type: 0
+  required: false
+- display: Proxy URL Password
+  name: proxy_password
+  type: 4
+  required: false
+- display: Finding Environment
+  name: finding_domain
+  defaultvalue: all
+  type: 0
+  required: false
+  additionalinfo: Select a environment to fetch attack path, by default its "all".
+- display: Finding Category
+  name: finding_category
+  defaultvalue: all
+  type: 0
+  required: false
+  additionalinfo: Select a category to fetch attack paths, by default its "all".
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "10"
+  type: 19
+  required: false
+  additionalinfo: 'Set the interval for fetching attack paths:'
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  commands:
+  - name: bhe-get-object-id
+    arguments:
+    - name: object_names
+      required: true
+      description: Object name associated with Object Id
+      isArray: true
+    description: Fetches object Id using Object Name
+  - name: bhe-fetch-asset-info
+    arguments:
+    - name: object_ids
+      required: true
+      description: Object Id to fetch asset information
+      isArray: true
+    description: Fetches Asset Info using Object Id
+  - name: bhe-does-path-exist
+    arguments:
+    - name: FromPrincipal
+      description: Start node
+    - name: ToPrincipal
+      description: End node
+    description: Check if path exists between two nodes
+  type: python
+  dockerimage: demisto/python3:3.12.8.1983910
+  subtype: python3
+  isfetch: true
+  runonce: false
+  isFetchSamples: true

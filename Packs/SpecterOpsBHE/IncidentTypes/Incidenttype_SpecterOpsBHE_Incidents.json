@@ -1,0 +1,50 @@
+{
+	"IncidentTypes": [
+		{
+			"id": "SpecterOpsBHE Attack Path",
+			"version": 6,
+			"cacheVersn": 0,
+			"sequenceNumber": 2027125,
+			"primaryTerm": 1,
+			"modified": "2025-10-30T14:08:40.274372593Z",
+			"sizeInBytes": 903,
+			"packID": "",
+			"packName": "",
+			"itemVersion": "",
+			"fromServerVersion": "",
+			"toServerVersion": "",
+			"definitionId": "",
+			"isOverridable": false,
+			"vcShouldIgnore": false,
+			"vcShouldKeepItemLegacyProdMachine": false,
+			"commitMessage": "",
+			"shouldCommit": false,
+			"locked": false,
+			"name": "SpecterOpsBHE Attack Path",
+			"prevName": "SpecterOpsBHE Attack Path",
+			"color": "#bed474",
+			"playbookId": "0dc47116-a483-4843-8c13-2a32ca06a93d",
+			"hours": 0,
+			"days": 0,
+			"weeks": 0,
+			"hoursR": 0,
+			"daysR": 0,
+			"weeksR": 0,
+			"system": false,
+			"readonly": false,
+			"default": false,
+			"autorun": false,
+			"preProcessingScript": "",
+			"closureScript": "",
+			"disabled": false,
+			"reputationCalc": 0,
+			"onChangeRepAlg": 0,
+			"layout": "e6aa0b9d-db0a-420e-8dca-7a474e79d752",
+			"detached": false,
+			"extractSettings": {
+				"mode": "Specific",
+				"fieldCliNameToExtractSettings": {}
+			}
+		}
+	]
+}
