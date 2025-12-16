@@ -26,6 +26,9 @@ ASSET_FIELDS = {
     "asset_realms": "xdm.asset.realm",
     "asset_group_ids": "xdm.asset.group_ids",
     "asset_categories": "xdm.asset.type.category",
+    "asset_classes": "xdm.asset.type.class",
+    "software_package_versions": "xdm.software_package.version",
+    "kubernetes_cluster_versions": "xdm.kubernetes.cluster.version",
 }
 
 APPSEC_SOURCES = [
@@ -1888,6 +1891,26 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
     )
 
 
+def normalize_key(key: str) -> str:
+    """
+    Strips the prefixes 'xdm.asset.' or 'xdm.' from the beginning of the key,
+    if present, and returns the remaining key unchanged otherwise.
+
+    Args:
+        key (str): The original output key.
+
+    Returns:
+        str: The normalized key without XDM prefixes.
+    """
+    if key.startswith("xdm.asset."):
+        return key.replace("xdm.asset.", "")
+
+    if key.startswith("xdm."):
+        return key.replace("xdm.", "")
+
+    return key
+
+
 def search_assets_command(client: Client, args):
     """
     Search for assets in XDR based on the provided filters.
@@ -1904,6 +1927,8 @@ def search_assets_command(client: Client, args):
                          - asset_group_names (list[str]): List of asset group names to search for.
     """
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
+    software_package_versions = args.get("software_package_versions", "")
+    kubernetes_cluster_versions = args.get("kubernetes_cluster_versions", "")
     filter = FilterBuilder()
     filter.add_field(
         ASSET_FIELDS["asset_names"],
@@ -1937,20 +1962,28 @@ def search_assets_command(client: Client, args):
         FilterType.EQ,
         argToList(args.get("asset_categories", "")),
     )
+    filter.add_field(ASSET_FIELDS["asset_classes"], FilterType.EQ, argToList(args.get("asset_classes", "")))
+    filter.add_field(ASSET_FIELDS["software_package_versions"], FilterType.EQ, argToList(software_package_versions))
+    filter.add_field(ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(kubernetes_cluster_versions))
     filter_str = filter.to_dict()
 
     demisto.debug(f"Search Assets Filter: {filter_str}")
     page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
     page_number = arg_to_number(args.get("page_number", 0))
     on_demand_fields = ["xdm.asset.tags"]
+    version_fields = [
+        ("xdm.software_package.version", software_package_versions),
+        ("xdm.kubernetes.cluster.version", kubernetes_cluster_versions),
+    ]
+    on_demand_fields.extend([field for field, condition in version_fields if condition])
+
     raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
     # Remove "xdm.asset." suffix from all keys in the response
-    response = [
-        {k.replace("xdm.asset.", "") if k.startswith("xdm.asset.") else k: v for k, v in item.items()} for item in raw_response
-    ]
+    response = [{normalize_key(k): v for k, v in item.items()} for item in raw_response]
     return CommandResults(
         readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
+        outputs_key_field="id",
         outputs=response,
         raw_response=raw_response,
     )
