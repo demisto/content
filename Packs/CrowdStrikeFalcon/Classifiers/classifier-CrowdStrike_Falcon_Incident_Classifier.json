@@ -17,7 +17,8 @@
         "OFP detection": "CrowdStrike Falcon OFP Detection",
         "thirdparty_detection": "CrowdStrike Falcon Third Party Detection",
         "ngsiem_detection": "CrowdStrike Falcon NGSIEM Detection",
-        "ngsiem_incident": "CrowdStrike Falcon NGSIEM Incident"
+        "ngsiem_incident": "CrowdStrike Falcon NGSIEM Incident",
+        "ngsiem_automated_lead": "CrowdStrike Falcon Automated Lead"
 
 	},
 	"transformer": {
