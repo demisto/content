@@ -1482,7 +1482,9 @@ class STIX2XSOARParser(BaseClient):
             fields.update(assign_params(**custom_fields))
             if score:
                 attack_pattern["score"] = score
-        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
+
+        tags = list((set(attack_pattern_obj.get("labels", []))).union(set(self.tags)))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
 
         attack_pattern["fields"] = fields
 
@@ -1721,7 +1723,8 @@ class STIX2XSOARParser(BaseClient):
             if score:
                 tool["score"] = score
 
-        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
+        tags = list((set(tool_obj.get("labels", []))).union(set(self.tags)))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
 
         tool["fields"] = fields
 
@@ -1793,7 +1796,9 @@ class STIX2XSOARParser(BaseClient):
             fields.update(assign_params(**custom_fields))
             if score:
                 campaign["score"] = score
-        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
+
+        tags = list((set(campaign_obj.get("labels", []))).union(set(self.tags)))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
         campaign["fields"] = fields
 
         if self.enrichment_excluded:
@@ -1833,7 +1838,9 @@ class STIX2XSOARParser(BaseClient):
             fields.update(assign_params(**custom_fields))
             if score:
                 intrusion_set["score"] = score
-        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
+
+        tags = list((set(intrusion_set_obj.get("labels", []))).union(set(self.tags)))
+        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
 
         if self.enrichment_excluded:
             intrusion_set["enrichmentExcluded"] = self.enrichment_excluded
