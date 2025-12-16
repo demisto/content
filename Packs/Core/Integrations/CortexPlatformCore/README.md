@@ -927,19 +927,19 @@ Updates the version of the given endpoint to the target version supplied.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | A comma-separated list of endpoint IDs. | Required | 
-| platform | The platform of the endpoints. Possible values are: windows, macos, linux. | Required | 
-| version | The target version for updating the endpoints. | Required | 
-| start_time | From which time to apply the update. In format of "HH:MM". A minimum of two hours is required between the start time and the end time. | Optional | 
-| end_time | Until which time the update may run. In format of "HH:MM". | Optional | 
-| days | Comma-separated list of days the update may run. Possible values are: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday. | Optional | 
+| endpoint_ids | A comma-separated list of endpoint IDs. | Required |
+| platform | The platform of the endpoints. Possible values are: windows, macos, linux. | Required |
+| version | The target version for updating the endpoints. | Required |
+| start_time | From which time to apply the update. In format of "HH:MM". A minimum of two hours is required between the start time and the end time. | Optional |
+| end_time | Until which time the update may run. In format of "HH:MM". | Optional |
+| days | Comma-separated list of days the update may run. Possible values are: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.EndpointUpdate.endpoint_ids | String | The IDs of the endpoints on which the update run. | 
-| Core.EndpointUpdate.action_id | String | The ID of the update action. 0 means that the action failed. | 
+| Core.EndpointUpdate.endpoint_ids | String | The IDs of the endpoints on which the update run. |
+| Core.EndpointUpdate.action_id | String | The ID of the update action. 0 means that the action failed. |
 
 ### core-get-endpoint-update-version
 
@@ -954,17 +954,16 @@ Retrieves endpoint update versions for the provided endpoint ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | A comma-separated list of endpoint IDs. | Required | 
+| endpoint_ids | A comma-separated list of endpoint IDs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.EndpointUpdateVersion.total_count | String | Total number of endpoints. | 
-| Core.EndpointUpdateVersion.platform_count | String | Number of endpoints per platform. | 
-| Core.EndpointUpdateVersion.distributions.platform | String | The platform of the endpoint update. | 
-| Core.EndpointUpdateVersion.distributions.version | String | The version of the endpoint update. | 
-| Core.EndpointUpdateVersion.distributions.endpoints_with_higher_version_count | String | The account of the given endpoints that are higher than the version. | 
-| Core.EndpointUpdateVersion.distributions.endpoints_with_same_version_count | String | The account of the given endpoints that are equal to the version. | 
-| Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count | String | The account of the given endpoints that are lower than the version. | 
-
+| Core.EndpointUpdateVersion.total_count | String | Total number of endpoints. |
+| Core.EndpointUpdateVersion.platform_count | String | Number of endpoints per platform. |
+| Core.EndpointUpdateVersion.distributions.platform | String | The platform of the endpoint update. |
+| Core.EndpointUpdateVersion.distributions.version | String | The version of the endpoint update. |
+| Core.EndpointUpdateVersion.distributions.endpoints_with_higher_version_count | String | The account of the given endpoints that are higher than the version. |
+| Core.EndpointUpdateVersion.distributions.endpoints_with_same_version_count | String | The account of the given endpoints that are equal to the version. |
+| Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count | String | The account of the given endpoints that are lower than the version. |
