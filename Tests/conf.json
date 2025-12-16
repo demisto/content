@@ -811,6 +811,10 @@
             "instance_names": "ms_graph_mail_dev"
         },
         {
+            "integrations": "Microsoft Graph Mail Single User",
+            "playbookID": "MicrosoftGraphMailSingleUser-Test_dev",
+        },
+        {
             "integrations": "MicrosoftGraphMail",
             "timeout": 900,
             "playbookID": "MicrosoftGraphMail-Test_dev_no_oproxy",
