@@ -1,4 +1,6 @@
 import copy
+import traceback
+from datetime import datetime
 
 import demistomock as demisto  # noqa: F401
 
@@ -10,6 +12,10 @@ from CrowdStrikeApiModule import *  # noqa: E402
 from CommonServerUserPython import *  # noqa
 
 urllib3.disable_warnings()
+
+
+# DIAGNOSTIC VERSION - Enhanced logging for XSUP-60131
+# This version adds comprehensive logging to diagnose indicator creation issues
 
 
 XSOAR_TYPES_TO_CROWDSTRIKE = {
@@ -78,6 +84,19 @@ INDICATOR_TO_CROWDSTRIKE_RELATION_DICT: Dict[str, Any] = {
 CROWDSTRIKE_INDICATOR_RELATION_FIELDS = ["reports", "actors", "malware_families", "vulnerabilities", "relations"]
 
 
+def diagnostic_log(message: str, level: str = "info"):
+    """Enhanced logging function with timestamp and level"""
+    timestamp = datetime.utcnow().isoformat()
+    formatted_message = f"[DIAGNOSTIC {timestamp}] {message}"
+
+    if level == "error":
+        demisto.error(formatted_message)
+    elif level == "debug":
+        demisto.debug(formatted_message)
+    else:
+        demisto.info(formatted_message)
+
+
 def kill_chain_standard_values(phases: list | None):
     """
     Will convert crowdstrike's return values for kill chain to our standard kill chain syntax.
@@ -136,32 +155,38 @@ class Client(CrowdStrikeClient):
         self.create_relationships = create_relationships
 
     def get_indicators(self, params):
-        response = super().http_request(method="GET", params=params, url_suffix="intel/combined/indicators/v1", timeout=30,
-                                        ok_codes=(200, 401))
+        diagnostic_log(f"Making API request with params: {params}")
+        response = super().http_request(
+            method="GET", params=params, url_suffix="intel/combined/indicators/v1", timeout=30, ok_codes=(200, 401)
+        )
 
-        if response.get('errors') and response['errors'][0].get('code') == 401:
-            demisto.info(f'request failed with status code is 401, error: {str(response["errors"][0])}, regenerate token')
+        if response.get("errors") and response["errors"][0].get("code") == 401:
+            diagnostic_log(f'Request failed with 401, regenerating token. Error: {str(response["errors"][0])}', "error")
             self._token = self._get_token()
-            self._headers = {'Authorization': 'bearer ' + self._token}
+            self._headers = {"Authorization": "bearer " + self._token}
             response = super().http_request(method="GET", params=params, url_suffix="intel/combined/indicators/v1", timeout=30)
+            diagnostic_log("Token regenerated, request retried successfully")
 
+        resource_count = len(response.get("resources", []))
+        diagnostic_log(f"API response received with {resource_count} resources")
         return response
 
     def get_actors_names_request(self, params_string):
-        response = self._http_request(method="GET", url_suffix=f"intel/entities/actors/v1?{params_string}", timeout=30,
-                                    ok_codes=(200,401))
+        response = self._http_request(
+            method="GET", url_suffix=f"intel/entities/actors/v1?{params_string}", timeout=30, ok_codes=(200, 401)
+        )
 
-        if response.get('errors') and response['errors'][0].get('code') == 401:
-            demisto.info(f'request failed with status code is 401, error: {str(response["errors"][0])}, regenerate token')
+        if response.get("errors") and response["errors"][0].get("code") == 401:
+            diagnostic_log(f'Actors request failed with 401, error: {str(response["errors"][0])}', "error")
             self._token = self._get_token()
-            self._headers = {'Authorization': 'bearer ' + self._token}
+            self._headers = {"Authorization": "bearer " + self._token}
             response = self._http_request(method="GET", url_suffix=f"intel/entities/actors/v1?{params_string}", timeout=30)
 
         if "resources" not in response:
             raise DemistoException("Get actors request completed. Parse error: could not find resources in response.")
         return response["resources"]
 
-    def fetch_indicators(self, limit: int, offset: int = 0, fetch_command: bool = False, manual_last_run: int = 0) -> list:
+    def fetch_indicators(self, limit: int, offset: int = 0, fetch_command: bool = False, manual_last_run: int = 0) -> tuple:
         """Get indicators from CrowdStrike API
 
         Args:
@@ -171,8 +196,10 @@ class Client(CrowdStrikeClient):
             manual_last_run: The minimum timestamp to fetch indicators by
 
         Returns:
-            (list): parsed indicators
+            tuple: (parsed indicators list, new_marker_time)
         """
+        diagnostic_log(f"=== FETCH INDICATORS START === limit={limit}, offset={offset}, fetch_command={fetch_command}")
+
         indicators: list[dict] = []
         filter_string = f"({self.filter_string})" if self.filter_string else ""
         if self.type:
@@ -188,16 +215,24 @@ class Client(CrowdStrikeClient):
                 f"{filter_string}+(last_updated:>={manual_last_run})" if filter_string else f"(last_updated:>={manual_last_run})"
             )
 
+        new_last_marker_time = None
+
         if fetch_command:
+            context_before = demisto.getIntegrationContext()
+            diagnostic_log(f"Integration context BEFORE fetch: {json.dumps(context_before)}")
+
             if last_run := self.get_last_run():
                 filter_string = f"{filter_string}+({last_run})" if filter_string else f"({last_run})"
+                diagnostic_log(f"Using existing last_run marker: {last_run}")
             else:
+                diagnostic_log("No last_run found, handling first fetch")
                 filter_string, indicators = self.handle_first_fetch_context_or_pre_2_1_0(filter_string)
                 if indicators:
                     limit = limit - len(indicators)
+                    diagnostic_log(f"First fetch returned {len(indicators)} indicators, adjusting limit to {limit}")
 
         if filter_string or not fetch_command:
-            demisto.debug(f"{filter_string=}")
+            diagnostic_log(f"Final filter string: {filter_string}")
             params = assign_params(
                 include_deleted=self.include_deleted,
                 limit=limit,
@@ -212,30 +247,26 @@ class Client(CrowdStrikeClient):
             # need to fetch all indicators after the limit
             if resources := response.get("resources", []):
                 new_last_marker_time = resources[-1].get("_marker")
+                diagnostic_log(f"Retrieved {len(resources)} resources, new marker: {new_last_marker_time}")
             else:
                 new_last_marker_time = demisto.getIntegrationContext().get("last_marker_time")
                 last_marker_time_for_debug = new_last_marker_time or "No data yet"
-                demisto.debug(
-                    f"There are no indicators, using last_marker_time={last_marker_time_for_debug} from Integration Context"
-                )
+                diagnostic_log(f"No resources returned, keeping existing marker: {last_marker_time_for_debug}")
 
-            if fetch_command:
-                context = demisto.getIntegrationContext()
-                demisto.info(f"last_marker_time before updating: {context.get('last_marker_time')}")
-                context.update({"last_marker_time": new_last_marker_time})
-                demisto.setIntegrationContext(context)
-                demisto.info(f"set last_run to: {new_last_marker_time}")
-
-            indicators.extend(
-                self.create_indicators_from_response(
-                    response,
-                    self.get_actors_names_request,
-                    self.tlp_color,
-                    self.feed_tags,
-                    self.create_relationships,
-                )
+            # DIAGNOSTIC: Don't update context here - return marker to be updated after successful creation
+            diagnostic_log(f"Parsing {len(response.get('resources', []))} indicators from response")
+            parsed_from_response = self.create_indicators_from_response(
+                response,
+                self.get_actors_names_request,
+                self.tlp_color,
+                self.feed_tags,
+                self.create_relationships,
             )
-        return indicators
+            diagnostic_log(f"Successfully parsed {len(parsed_from_response)} indicators")
+            indicators.extend(parsed_from_response)
+
+        diagnostic_log(f"=== FETCH INDICATORS END === Total indicators: {len(indicators)}, New marker: {new_last_marker_time}")
+        return indicators, new_last_marker_time
 
     def handle_first_fetch_context_or_pre_2_1_0(self, filter_string: str) -> tuple[str, list[dict]]:
         """
@@ -254,10 +285,12 @@ class Client(CrowdStrikeClient):
                 1. filter_string with the _marker key - str.
                 2. parse indicator that retrieved - list[dict].
         """
+        diagnostic_log("Handling first fetch or pre-2.1.0 context")
         filter_for_first_fetch = filter_string
         if last_run := demisto.getIntegrationContext().get("last_updated") or self.first_fetch:
             last_run = f"last_updated:>={int(last_run)}"
             filter_for_first_fetch = f"{filter_string}+({last_run})" if filter_string else f"({last_run})"
+            diagnostic_log(f"Using last_updated or first_fetch: {last_run}")
 
         params = assign_params(
             include_deleted=self.include_deleted,
@@ -272,7 +305,7 @@ class Client(CrowdStrikeClient):
         # it allows fetching following indicators better.
         if resources := response.get("resources", []):
             _marker = resources[-1].get("_marker")
-            demisto.debug(f"Importing the indicator marker in first time: {_marker=}")
+            diagnostic_log(f"First fetch: extracted marker {_marker}")
             last_run = f"_marker:>'{_marker}'"
             parse_indicator = self.create_indicators_from_response(
                 response, self.get_actors_names_request, self.tlp_color, self.feed_tags, self.create_relationships
@@ -281,7 +314,7 @@ class Client(CrowdStrikeClient):
             return filter_string, parse_indicator
 
         # In case no indicator is returned
-        demisto.debug("No indicator returned")
+        diagnostic_log("First fetch: No indicator returned")
         return "", []
 
     @staticmethod
@@ -294,10 +327,10 @@ class Client(CrowdStrikeClient):
 
         """
         if last_run := demisto.getIntegrationContext().get("last_marker_time"):
-            demisto.info(f"get last_run: {last_run}")
+            diagnostic_log(f"Retrieved last_marker_time from context: {last_run}")
             params = f"_marker:>'{last_run}'"
         else:
-            demisto.debug("There is no last_run (last_marker_time in Integration Context)")
+            diagnostic_log("No last_marker_time found in Integration Context")
             params = ""
         return params
 
@@ -319,10 +352,15 @@ class Client(CrowdStrikeClient):
 
         parsed_indicators: list = []
         indicator: dict = {}
+        skipped_count = 0
+        skipped_types = {}
 
         for resource in raw_response["resources"]:
             if not (type_ := auto_detect_indicator_type_from_cs(resource["indicator"], resource["type"])):
-                demisto.debug(f"Indicator {resource['indicator']} of type {resource['type']} is not supported in XSOAR, skipping")
+                skipped_count += 1
+                cs_type = resource["type"]
+                skipped_types[cs_type] = skipped_types.get(cs_type, 0) + 1
+                diagnostic_log(f"SKIPPED: Indicator {resource['indicator']} of type {cs_type} not supported", "debug")
                 continue
             indicator = {
                 "type": type_,
@@ -353,6 +391,10 @@ class Client(CrowdStrikeClient):
                 indicator["relationships"] = relationships
             parsed_indicators.append(indicator)
 
+        if skipped_count > 0:
+            diagnostic_log(f"SUMMARY: Skipped {skipped_count} unsupported indicators. Breakdown: {skipped_types}", "info")
+
+        diagnostic_log(f"Created {len(parsed_indicators)} indicator objects from {len(raw_response['resources'])} resources")
         return parsed_indicators
 
     @staticmethod
@@ -418,7 +460,7 @@ def create_relationships(field: str, indicator: dict, resource: dict, get_actors
         resource["actors"] = change_actors_from_id_to_name(resource["actors"], get_actors_names_request_func)
     for relation in resource[field]:
         if field == "relations" and not CROWDSTRIKE_TO_XSOAR_TYPES.get(relation.get("type")):
-            demisto.debug(f"The related indicator type {relation.get('type')} is not supported in XSOAR.")
+            diagnostic_log(f"Related indicator type {relation.get('type')} not supported", "debug")
             continue
         if field == "relations":
             related_indicator_type = auto_detect_indicator_type_from_cs(relation["indicator"], relation["type"])
@@ -476,7 +518,7 @@ def auto_detect_indicator_type_from_cs(value: str, crowdstrike_resource_type: st
 
 
 def fetch_indicators_command(client: Client):
-    """fetch indicators from the Crowdstrike Intel
+    """fetch indicators from the Crowdstrike Intel - DIAGNOSTIC VERSION
 
     Args:
         client: Client object
@@ -484,11 +526,86 @@ def fetch_indicators_command(client: Client):
     Returns:
         list of indicators(list)
     """
-    parsed_indicators = client.fetch_indicators(fetch_command=True, limit=client.limit)
-    # we submit the indicators in batches
-    for b in batch(parsed_indicators, batch_size=2000):
-        demisto.createIndicators(b)
-    return parsed_indicators
+    diagnostic_log("=" * 80)
+    diagnostic_log("FETCH INDICATORS COMMAND STARTED")
+    diagnostic_log("=" * 80)
+
+    try:
+        # Fetch indicators and get the new marker
+        parsed_indicators, new_marker = client.fetch_indicators(fetch_command=True, limit=client.limit)
+
+        diagnostic_log(f"Fetched {len(parsed_indicators)} indicators to create")
+
+        # Track creation success
+        total_indicators = len(parsed_indicators)
+        successfully_created = 0
+        failed_batches = []
+
+        # we submit the indicators in batches
+        batch_num = 0
+        for b in batch(parsed_indicators, batch_size=2000):
+            batch_num += 1
+            batch_size = len(b)
+            diagnostic_log(f"Processing batch {batch_num} with {batch_size} indicators")
+
+            try:
+                # Attempt to create indicators
+                diagnostic_log(f"Calling demisto.createIndicators for batch {batch_num}...")
+                start_time = datetime.utcnow()
+
+                demisto.createIndicators(b)
+
+                end_time = datetime.utcnow()
+                duration = (end_time - start_time).total_seconds()
+
+                successfully_created += batch_size
+                diagnostic_log(f"✓ Batch {batch_num} created successfully in {duration:.2f} seconds")
+
+            except Exception as e:
+                error_msg = str(e)
+                error_trace = traceback.format_exc()
+                diagnostic_log(f"✗ FAILED to create batch {batch_num}: {error_msg}", "error")
+                diagnostic_log(f"Stack trace: {error_trace}", "error")
+                failed_batches.append({"batch_num": batch_num, "size": batch_size, "error": error_msg})
+                # Continue processing other batches
+
+        # Log summary
+        diagnostic_log("=" * 80)
+        diagnostic_log("INDICATOR CREATION SUMMARY:")
+        diagnostic_log(f"  Total fetched: {total_indicators}")
+        diagnostic_log(f"  Successfully created: {successfully_created}")
+        diagnostic_log(f"  Failed: {total_indicators - successfully_created}")
+        diagnostic_log(f"  Success rate: {(successfully_created/total_indicators*100) if total_indicators > 0 else 0:.1f}%")
+
+        if failed_batches:
+            diagnostic_log(f"  Failed batches: {len(failed_batches)}", "error")
+            for fb in failed_batches:
+                diagnostic_log(f"    - Batch {fb['batch_num']} ({fb['size']} indicators): {fb['error']}", "error")
+
+        # CRITICAL: Only update marker if at least some indicators were created successfully
+        if successfully_created > 0 and new_marker:
+            context = demisto.getIntegrationContext()
+            old_marker = context.get("last_marker_time")
+            context.update({"last_marker_time": new_marker})
+            demisto.setIntegrationContext(context)
+            diagnostic_log(f"✓ Updated last_marker_time: {old_marker} -> {new_marker}")
+        elif successfully_created == 0:
+            diagnostic_log("✗ NO INDICATORS CREATED - NOT updating marker to prevent data loss!", "error")
+        else:
+            diagnostic_log("No new marker to update")
+
+        diagnostic_log("=" * 80)
+        diagnostic_log("FETCH INDICATORS COMMAND COMPLETED")
+        diagnostic_log("=" * 80)
+
+        return parsed_indicators
+
+    except Exception as e:
+        error_msg = str(e)
+        error_trace = traceback.format_exc()
+        diagnostic_log(f"CRITICAL ERROR in fetch_indicators_command: {error_msg}", "error")
+        diagnostic_log(f"Stack trace: {error_trace}", "error")
+        raise
 
 
 def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandResults:
@@ -501,11 +618,16 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
     Returns:
         readable_output, raw_response
     """
+    diagnostic_log("CROWDSTRIKE-INDICATORS-LIST command started")
 
     offset = arg_to_number(args.get("offset", 0)) or 0
     limit = arg_to_number(args.get("limit", 50)) or 50
     last_run = arg_to_number(args.get("last_run", 0)) or 0
-    parsed_indicators = client.fetch_indicators(limit=limit, offset=offset, fetch_command=False, manual_last_run=last_run)
+
+    parsed_indicators, _ = client.fetch_indicators(limit=limit, offset=offset, fetch_command=False, manual_last_run=last_run)
+
+    diagnostic_log(f"Retrieved {len(parsed_indicators)} indicators for list command")
+
     if outputs := copy.deepcopy(parsed_indicators):
         for indicator in outputs:
             indicator["id"] = indicator.get("rawJSON", {}).get("id")
@@ -529,9 +651,12 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
 
 
 def test_module(client: Client, args: dict) -> str:
+    diagnostic_log("TEST-MODULE command started")
     try:
-        client.fetch_indicators(limit=client.limit, fetch_command=False)
-    except Exception:
+        parsed_indicators, _ = client.fetch_indicators(limit=client.limit, fetch_command=False)
+        diagnostic_log(f"Test successful - fetched {len(parsed_indicators)} indicators")
+    except Exception as e:
+        diagnostic_log(f"Test failed: {str(e)}", "error")
         raise Exception("Could not fetch CrowdStrike Indicator Feed\n\nCheck your API key and your connection to CrowdStrike.")
     return "ok"
 
@@ -540,7 +665,11 @@ def reset_last_run():
     """
     Reset the last run from the integration context
     """
+    diagnostic_log("RESET-FETCH-INDICATORS command - clearing integration context")
+    old_context = demisto.getIntegrationContext()
+    diagnostic_log(f"Old context: {json.dumps(old_context)}")
     demisto.setIntegrationContext({})
+    diagnostic_log("Integration context cleared successfully")
     return CommandResults(readable_output="Fetch history deleted successfully")
 
 
@@ -574,7 +703,7 @@ def main() -> None:
 
     try:
         command = demisto.command()
-        demisto.info(f"Command being called is {demisto.command()}")
+        diagnostic_log(f"Command being called: {command}")
 
         client = Client(
             credentials=credentials,
@@ -610,6 +739,9 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
+        error_trace = traceback.format_exc()
+        diagnostic_log(f"CRITICAL ERROR in main: {str(e)}", "error")
+        diagnostic_log(f"Stack trace: {error_trace}", "error")
         return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
