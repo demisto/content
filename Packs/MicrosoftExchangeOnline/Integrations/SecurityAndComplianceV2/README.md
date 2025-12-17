@@ -37,10 +37,15 @@ To set up the integration and register the application in Azure, follow these st
 3. **Register a New App**: Click **New registration**, provide a name, and register the app.
 4. **Add API Permissions**:
    - Under **Manage**, select **API permissions** > **Add a permission**.
-   - Select **APIs my organization uses**.
-   - Search for "Office 365 Exchange Online".
-   - Select **Delegated permissions** and search for `Exchange.Manage`.
-   - Check the box and click **Add permissions**.
+     - Select **APIs my organization uses**.
+     - Search for "Office 365 Exchange Online".
+     - Select **Delegated permissions** and search for `Exchange.Manage`.
+     - Check the box and click **Add permissions**.
+   - Again select **Add a permission**.
+     - Select **APIs my organization uses**.
+     - Search for "Microsoft Graph".
+     - Select **Delegated permissions** and search for `eDiscovery.ReadWrite.All`.
+     - Check the box and click **Add permissions**.
    - Ensure the permissions are granted by selecting **Grant admin consent for [Your Organization]**.
 
 #### 2. Enable "Allow Public Client Flows"
