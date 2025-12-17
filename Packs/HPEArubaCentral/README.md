@@ -30,13 +30,21 @@ The pack includes the **HPE Aruba Central Event Collector** integration that all
 #### How to generate Client ID and Client Secret
 
 1. Go to the Aruba Central portal and navigate to Accounts Home > Global Settings > API Gateway.
-
     * Admin users: Navigate to System Apps & Tokens.
     * Non-admin users: Navigate to My Apps & Tokens.
+2. Click the **My Apps & Tokens**.
+3. Click **+ Add Apps & Tokens**.
+4. In the **New Token** pop-up window:
+    4.1 Enter the **Application Name**.
+    4.2 Optional - enter the **Redirect URL**.
+    4.3 Select the application type from the **Application** drop-down.  
 
-2. Click **+ Add Apps & Tokens**.
-3. Fill in the required details and click _Generate_.
-4. Once created, the new credentials can be viewed in the My Apps & Tokens tab.  
+    ![Client ID and Client Secret](./././doc_files/new_token_image1.png)  
+
+5. Click _Generate_.
+6. Once created, the new credentials can be viewed in the **My Apps & Tokens tab**.  
+![Client ID and Client Secret](./././doc_files/client_id_and_secret_image2.png)  
+
 For more details on how to create Application & Token click [here](https://developer.arubanetworks.com/central/docs/api-gateway-creating-application-token)
 
 #### Product Documentation
