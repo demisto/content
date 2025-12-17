@@ -143,7 +143,7 @@ class Client:
             events.append(event_dict)
 
         demisto.debug(f"Finished {EventType.FILE.value} events query. Got {len(sorted_file_events)} events.")
-        return [event.dict() for event in sorted_file_events]
+        return events
 
 
 def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Iterable[str], keys_list_to_id: List[str]) -> List[dict]:
