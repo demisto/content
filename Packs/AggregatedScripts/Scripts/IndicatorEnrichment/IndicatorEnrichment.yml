@@ -1,0 +1,1162 @@
+name: indicator-enrichment
+comment: "Enriches indicators from a provided list or a block of free text. This script detects the indicator type and runs the correct underlying enrichment script. Currently supports: IP, URL, Domain, CVE, and File."
+commonfields:
+  id: indicator-enrichment
+  version: -1
+
+# ------------------ Input Arguments -----------------------
+args:
+- description: |
+    Accepts a list of indicators to enrich.
+    - From CLI: Provide a comma-separated list.  
+      If an indicator contains a comma, wrap the indicators in a JSON array.  
+      Example: "[\"https://example.com/search?tags=red,yellow,green\", \"https://example2.com\"]".
+    - From Context: Pass JSON arrays directly, without modification.
+  name: indicator_list
+  required: false
+  isArray: true
+- name: text
+  description: "Free text to be parsed for indicators. The script will run !extractIndicators to retrieve the underlying indicators within the text."
+  required: false
+- name: external_enrichment
+  description: "Whether to call external integrations for enrichment:
+    - 'true': enrich using enabled external integrations (e.g., VirusTotal (API v3), AlienVault OTX v2) and run internal commands.
+    - 'false': use only existing TIM data and run internal commands; skip external integrations.
+    If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided."
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: brands
+  description: |
+    A comma separated list of integration brands to run enrichment against.  
+    Example: `"VirusTotal (API v3), AlienVault OTX v2"`.
+    - If provided, only the selected brands are used. Specifying brands will force enable external_enrichment.
+    - If left empty, the script runs enrichment on all enabled integrations.
+  isArray: true
+  required: false
+- name: additional_fields
+  description: |
+    When set to true, the output for each enrichment command  includes an `AdditionalFields` object for each of the indicator results.  
+    `AdditionalFields` contains all fields returned by TIM or the integrations
+    that are not part of the standard output keys: `Address`, `DetectionEngines`, 
+    `PositiveDetections`, `Score`, and `Brand`.  
+    When set to false, only the standard keys are returned.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  defaultValue: 'false'
+- name: raw_context
+  description: If true, will also append the underlying enrichment command outputs to the context. (For backwards compatibility).
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: ignore_indicator_limit
+  description: "By default, the script enforces a 100 indicator limit to maintain performance. If more than 100 unique indicators are found, the script will stop and return an error. Set this argument to true to bypass this limit and process all found indicators. Note: Bypassing the limit is not recommended as it may impact performance."
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+
+
+# ------------------ Outputs -----------------------
+outputs:
+# ===== Primary Script Outputs =====
+- contextPath: IndicatorEnrichment.Status
+  description: The overall status of the script execution. "Success", "Failed".
+  type: String
+- contextPath: IndicatorEnrichment.Message
+  description: A success message if the command runs successfully, otherwise a message that contains the error.
+  type: String
+- contextPath: IndicatorEnrichment.Results
+  description: A list of all indicators found.
+  type: Array
+- contextPath: IndicatorEnrichment.Results.Type
+  description: The detected indicator type (e.g., "IP", "URL") that triggered this enrichment.
+  type: String
+# ---------- The outputs from the underlying scripts ----------------
+- contextPath: IndicatorEnrichment.Results.Value
+  description: The indicator value. (e.g, IP, URL).
+  type: string
+- contextPath: IndicatorEnrichment.Results.MaxScore
+  description: The max score of all the indicators found.
+  type: number
+- contextPath: IndicatorEnrichment.Results.MaxVerdict
+  description: The max verdict of all the indicators found.
+  type: string
+- contextPath: IndicatorEnrichment.Results.TIMScore
+  description: The TIM score of the indicator.
+  type: number
+- contextPath: IndicatorEnrichment.TIMCVSS
+  description: The max CVSS of the indicator.
+  type: number
+- contextPath: IndicatorEnrichment.Results.Status
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
+  type: string
+- contextPath: IndicatorEnrichment.Results.ModifiedTime
+  description: The time the indicator was last modified.
+  type: Date
+# IndicatorEnrichment.Results results main keys
+- contextPath: IndicatorEnrichment.Results.Results
+  description: A list of all the underlying script results for the valid indicators.
+  type: array
+- contextPath: IndicatorEnrichment.Results.Results.Source
+  description: The source of the indicator.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Results.Brand
+  description: The brand of the indicator.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Results.DetectionEngines
+  description: The detection engines of the indicator.
+  type: number
+- contextPath: IndicatorEnrichment.Results.Results.PositiveDetections
+  description: The positive detections of the indicator.
+  type: number
+- contextPath: IndicatorEnrichment.Results.Results.ASOwner
+  description: Registered owner of the Autonomous System announcing the IP prefix.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Results.Score
+  description: The score of the indicator.
+  type: number
+- contextPath: IndicatorEnrichment.Results.Results.Verdict
+  description: The verdict of the indicator.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Results.Address
+  description: The IP address of the indicator.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Data
+  description: The URL of the indicator.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Name
+  description: The Domain of the indicator.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Results.Reliability
+  description: The reliability of the Brand.
+  type: string
+
+# IndicatorEnrichment.Results results additional fields
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields
+  description: All fields extracted from the indicator other then the main keys ("Brand", "Score", "Verdict", "DetectionEngines", "PositiveDetections", "Address").
+  type: list
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Relationships.EntityA
+  description: The source of the relationship.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Category
+  description: The category associated with the indicator.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.ASN
+  description: 'The autonomous system name for the IP address, for example: "AS8948".'
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Hostname
+  description: The hostname that is mapped to this IP address.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.DNS
+  description: A list of IP objects resolved by DNS.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Geo.Location
+  description: 'The geolocation where the IP address or Domain is located, in the format: latitude:longitude.'
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Geo.Country
+  description: The country in which the IP address is located.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Geo.Description
+  description: Additional information about the location.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Malicious.Vendor
+  description: The vendor reporting the IP address as malicious.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Malicious.Description
+  description: A description explaining why the IP address was reported as malicious.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Tags
+  description: (List) Tags of the Indicator.
+  type: Unknown
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.FeedRelatedIndicators.value
+  description: Indicators that are associated with the given indicator value.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.FeedRelatedIndicators.type
+  description: The type of the indicators that are associated with the given indicator value.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.FeedRelatedIndicators.description
+  description: The description of the indicators that are associated with the given indicator value.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.MalwareFamily
+  description: The malware family associated with the given indicator.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Organization.Name
+  description: The organization of the IP.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Organization.Type
+  description: The organization type of the IP.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Region
+  description: The region in which the IP is located.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Port
+  description: Ports that are associated with the Indicator.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Internal
+  description: Whether or not the indicator is internal or external.
+  type: Bool
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.UpdatedDate
+  description: The date that the indicator was last updated.
+  type: Date
+# =========== Start of Domain Specific ===============
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Billing
+  description: Billing address of the domain.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Tech.Country
+  description: The country of the domain technical contact.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Tech.Name
+  description: The name of the domain technical contact.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Tech.Organization
+  description: The organization of the domain technical contact.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Tech.Email
+  description: The email address of the domain technical contact.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.DomainIDNName
+  description: The internationalized domain name (IDN) of the domain.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.ExpirationDate
+  description: The expiration date of the domain.
+  type: Date
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.DomainStatus
+  description: The status of the domain.
+  type: Date
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.NameServers
+  description: (List<String>) Name servers of the domain.
+  type: Unknown
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Organization
+  description: The organization of the domain.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Subdomains
+  description: (List<String>) Subdomains of the domain.
+  type: Unknown
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Admin.Country
+  description: The country of the domain administrator.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Admin.Email
+  description: The email address of the domain administrator.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Admin.Name
+  description: The name of the domain administrator.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Admin.Phone
+  description: The phone number of the domain administrator.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Registrant.Country
+  description: The country of the registrant.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Registrant.Email
+  description: The email address of the registrant.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Registrant.Name
+  description: The name of the registrant.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Registrant.Phone
+  description: The phone number to receive abuse reports.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.NameServers
+  description: (List<String>) Name servers of the domain.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.CreationDate
+  description: The date that the domain was created.
+  type: Date
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.UpdatedDate
+  description: The date that the domain was last updated.
+  type: Date
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.ExpirationDate
+  description: The expiration date of the domain.
+  type: Date
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.Registrant.Name
+  description: The name of the registrant.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.Registrant.Email
+  description: The email address of the registrant.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.Registrant.Phone
+  description: The phone number of the registrant.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.Registrar.Name
+  description: The name of the registrar, for example, GoDaddy.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.Registrar.AbuseEmail
+  description: The email address of the contact to report abuse.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.Registrar.AbusePhone
+  description: The phone number of the contact to report abuse.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.Admin.Name
+  description: The name of the domain administrator.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.Admin.Email
+  description: The email address of the domain administrator.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.Admin.Phone
+  description: The phone number of the domain administrator.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.WHOIS.History
+  description: List of Whois objects.
+  type: String
+# =========== End of Domain Specific ===============
+# =========== Start of CVE Specific ================
+- contextPath: IndicatorEnrichment.Results.Results.CVSS
+  description: The CVSS of the indicator.
+  type: number
+- contextPath: IndicatorEnrichment.Results.Results.Description
+  description: The description of the indicator.
+  type: string
+- contextPath: IndicatorEnrichment.Results.Results.Published
+  description: The published date of the indicator.
+  type: string
+# =========== End of CVE Specific =================
+
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.CreationDate
+  description: The date when the domain was created.
+  type: Date
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.ExpirationDate
+  description: The expiration date of the domain.
+  type: Date
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Registrar.Abuse.Name
+  description: The name of the contact for reporting abuse.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Registrar.Abuse.Address
+  description: The address of the contact for reporting abuse.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Registrar.Abuse.Country
+  description: The country of the contact for reporting abuse.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Registrar.Abuse.Network
+  description: The network of the contact for reporting abuse.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Registrar.Abuse.Phone
+  description: The phone number of the contact for reporting abuse.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Registrar.Abuse.Email
+  description: The email address of the contact for reporting abuse.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Campaign
+  description: The campaign associated with the Indicator.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.TrafficLightProtocol
+  description: The Traffic Light Protocol (TLP) color that is suitable for the IP/Domain.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.CommunityNotes.note
+  description: Notes on the IP that were given by the community.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.CommunityNotes.timestamp
+  description: The time in which the note was published.
+  type: Date
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Publications.source
+  description: The source in which the article was published.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Publications.title
+  description: The name of the article.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Publications.link
+  description: A link to the original article.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.Publications.timestamp
+  description: The time in which the article was published.
+  type: Date
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.ThreatTypes.threatcategory
+  description: The threat category associated to this indicator by the source vendor, for example, Phishing, Control, TOR, etc.
+  type: String
+- contextPath: IndicatorEnrichment.Results.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence
+  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category. For example, a confidence level of 90 for the 'malware' threat type category means that the vendor is confident that its 90% malware.
+  type: String
+# ---------- Core.AnalyticsPrevalence.Ip ----------------
+- contextPath: Core.AnalyticsPrevalence.Ip.value
+  description: Whether the IP address is prevalent or not.
+  type: Boolean
+- contextPath: Core.AnalyticsPrevalence.Ip.data.global_prevalence.value
+  description: The global prevalence of the IP.
+  type: Number
+- contextPath: Core.AnalyticsPrevalence.Ip.data.local_prevalence.value
+  description: The local prevalence of the IP.
+  type: Number
+- contextPath: Core.AnalyticsPrevalence.Ip.data.prevalence.value
+  description: The prevalence of the IP.
+  type: Number
+# ---------------- EndpointData ----------------
+- contextPath: EndpointData.Hostname.value
+  description: The endpoint's hostname.
+  type: String
+- contextPath: EndpointData.Hostname.source
+  description: The vendor from which the hostname of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.EntityA.value
+  description: The source of the relationship.
+  type: String
+- contextPath: EndpointData.EntityA.source
+  description: The vendor from which EntityA of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.EntityB.value
+  description: The destination of the relationship.
+  type: String
+- contextPath: EndpointData.EntityB.source
+  description: The vendor from which EntityB of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Relationship.value
+  description: The name of the relationship.
+  type: String
+- contextPath: EndpointData.Relationship.source
+  description: The vendor from which the relationship of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.EntityAType.value
+  description: The type of the source of the relationship.
+  type: String
+- contextPath: EndpointData.EntityAType.source
+  description: The vendor from which the type of the source of the relationship of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.EntityBType.value
+  description: The type of the destination of the relationship.
+  type: String
+- contextPath: EndpointData.EntityBType.source
+  description: The vendor from which the type of the destination of the relationship of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.ID.value
+  description: The endpoint's ID.
+  type: String
+- contextPath: EndpointData.ID.source
+  description: The vendor from which the ID of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.IPAddress
+  description: The endpoint's IP address.
+  type: String
+- contextPath: EndpointData.Domain.value
+  description: The endpoint's domain.
+  type: String
+- contextPath: EndpointData.Domain.source
+  description: The vendor from which the domain of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.MACAddress.value
+  description: The endpoint's MAC address.
+  type: String
+- contextPath: EndpointData.MACAddress.source
+  description: The vendor from which the MAC address of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.DHCPServer.value
+  description: The DHCP server of the endpoint.
+  type: String
+- contextPath: EndpointData.DHCPServer.source
+  description: The vendor from which the DHCP server of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.OS.value
+  description: The endpoint's operating system.
+  type: String
+- contextPath: EndpointData.OS.source
+  description: The vendor from which the operating system of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.OSVersion.value
+  description: The endpoint's operating system version.
+  type: String
+- contextPath: EndpointData.OSVersion.source
+  description: The vendor from which the operating system version of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.BIOSVersion.value
+  description: The endpoint's BIOS version.
+  type: String
+- contextPath: EndpointData.BIOSVersion.source
+  description: The vendor from which the BIOS version of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Model.value
+  description: The model of the machine or device.
+  type: String
+- contextPath: EndpointData.Model.source
+  description: The vendor from which the model of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Memory.value
+  description: Amount of memory on this endpoint.
+  type: Integer
+- contextPath: EndpointData.Memory.source
+  description: The vendor from which the amount of memory of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Processors.value
+  description: The number of processors.
+  type: Integer
+- contextPath: EndpointData.Processors.source
+  description: The vendor from which the processors of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Processor.value
+  description: The model of the processor.
+  type: String
+- contextPath: EndpointData.Processor.source
+  description: The vendor from which the processor of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.IsIsolated.value
+  description: The endpoint's isolation status.
+  type: String
+- contextPath: EndpointData.IsIsolated.source
+  description: The vendor from which the isolation of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Status.value
+  description: The endpoint's status.
+  type: String
+- contextPath: EndpointData.Status.source
+  description: The vendor from which the status of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Vendor.value
+  description: The integration name of the endpoint vendor.
+  type: String
+- contextPath: EndpointData.Vendor.source
+  description: The vendor from which the Vendor of this endpoint was retrieved.
+  type: String
+
+# ---------- Failed indicator enrichments ----------------
+- contextPath: IndicatorEnrichment.Failed
+  description: Audit log of all the inputs/indicators that were not successfully sent to an enrichment script. Weather the type is unsupported, unknown or some internal fatal error.
+  type: Array
+- contextPath: IndicatorEnrichment.Failed.Value
+  description: The indicator value that failed.
+  type: String
+- contextPath: IndicatorEnrichment.Failed.Type
+  description: The detected type of the indicator that failed.
+  type: String
+- contextPath: IndicatorEnrichment.Failed.Error
+  description: The reason for the failure (e.g., "Unsupported indicator type").
+  type: String
+
+# ===== Raw Context Outputs (for raw_context=true) =====
+
+# ================= IP Enrichment =================
+# IPEnrichment
+- contextPath: IPEnrichment.Value
+  description: The IP address.
+  type: string
+- contextPath: IPEnrichment.MaxScore
+  description: The max score of all the indicators found.
+  type: number
+- contextPath: IPEnrichment.MaxVerdict
+  description: The max verdict of all the indicators found.
+  type: string
+- contextPath: IPEnrichment.TIMScore
+  description: The TIM score of the IP address.
+  type: number
+- contextPath: IPEnrichment.Results
+  description: A list of all indicators found for the IP address.
+  type: array
+- contextPath: IPEnrichment.Status
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
+  type: string
+- contextPath: IPEnrichment.ModifiedTime
+  description: The time the indicator was last modified.
+  type: Date
+# IPEnrichment results main keys
+- contextPath: IPEnrichment.Results.Source
+  description: The source of the indicator.
+  type: string
+- contextPath: IPEnrichment.Results.Brand
+  description: The brand of the indicator.
+  type: string
+- contextPath: IPEnrichment.Results.DetectionEngines
+  description: The detection engines of the indicator.
+  type: number
+- contextPath: IPEnrichment.Results.PositiveDetections
+  description: The positive detections of the indicator.
+  type: number
+- contextPath: IPEnrichment.Results.ASOwner
+  description: Registered owner of the Autonomous System announcing the IP prefix.
+  type: string
+- contextPath: IPEnrichment.Results.Score
+  description: The score of the indicator.
+  type: number
+- contextPath: IPEnrichment.Results.Verdict
+  description: The verdict of the indicator.
+  type: string
+- contextPath: IPEnrichment.Results.Address
+  description: The IP address of the indicator.
+  type: string
+- contextPath: IPEnrichment.Results.Reliability
+  description: The reliability of the Brand.
+  type: string
+# IPEnrichment results additional fields
+- contextPath: IPEnrichment.Results.AdditionalFields
+  description: All fields extracted from the indicator other then the main keys ("Brand", "Score", "Verdict", "DetectionEngines", "PositiveDetections", "Address").
+  type: list
+- contextPath: IPEnrichment.Results.AdditionalFields.Relationships.EntityA
+  description: The source of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.AdditionalFields.Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.AdditionalFields.Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.AdditionalFields.Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.AdditionalFields.Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.AdditionalFields.ASN
+  description: 'The autonomous system name for the IP address, for example: "AS8948".'
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Hostname
+  description: The hostname that is mapped to this IP address.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Geo.Location
+  description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Geo.Country
+  description: The country in which the IP address is located.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Geo.Description
+  description: Additional information about the location.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Malicious.Vendor
+  description: The vendor reporting the IP address as malicious.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Malicious.Description
+  description: A description explaining why the IP address was reported as malicious.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Tags
+  description: (List) Tags of the IP.
+  type: Unknown
+- contextPath: IPEnrichment.Results.AdditionalFields.FeedRelatedIndicators.value
+  description: Indicators that are associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.FeedRelatedIndicators.type
+  description: The type of the indicators that are associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.FeedRelatedIndicators.description
+  description: The description of the indicators that are associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.MalwareFamily
+  description: The malware family associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Organization.Name
+  description: The organization of the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Organization.Type
+  description: The organization type of the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Region
+  description: The region in which the IP is located.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Port
+  description: Ports that are associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Internal
+  description: Whether or not the IP is internal or external.
+  type: Bool
+- contextPath: IPEnrichment.Results.AdditionalFields.UpdatedDate
+  description: The date that the IP was last updated.
+  type: Date
+- contextPath: IPEnrichment.Results.AdditionalFields.Registrar.Abuse.Name
+  description: The name of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Registrar.Abuse.Address
+  description: The address of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Registrar.Abuse.Country
+  description: The country of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Registrar.Abuse.Network
+  description: The network of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Registrar.Abuse.Phone
+  description: The phone number of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Registrar.Abuse.Email
+  description: The email address of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Campaign
+  description: The campaign associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.TrafficLightProtocol
+  description: The Traffic Light Protocol (TLP) color that is suitable for the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.CommunityNotes.note
+  description: Notes on the IP that were given by the community.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.CommunityNotes.timestamp
+  description: The time in which the note was published.
+  type: Date
+- contextPath: IPEnrichment.Results.AdditionalFields.Publications.source
+  description: The source in which the article was published.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Publications.title
+  description: The name of the article.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Publications.link
+  description: A link to the original article.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Publications.timestamp
+  description: The time in which the article was published.
+  type: Date
+- contextPath: IPEnrichment.Results.AdditionalFields.ThreatTypes.threatcategory
+  description: The threat category associated to this indicator by the source vendor, for example, Phishing, Control, TOR, etc.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence
+  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category. For example, a confidence level of 90 for the 'malware' threat type category means that the vendor is confident that its 90% malware.
+  type: String
+# ================= Domain Enrichment =================
+- contextPath: DomainEnrichment.Value
+  description: The Domain.
+  type: string
+- contextPath: DomainEnrichment.MaxScore
+  description: The max score of all the indicators found.
+  type: number
+- contextPath: DomainEnrichment.MaxVerdict
+  description: The max verdict of all the indicators found.
+  type: string
+- contextPath: DomainEnrichment.Results
+  description: List of all indicators found for the domain.
+  type: array
+- contextPath: DomainEnrichment.TIMScore
+  description: The TIM score of the domain.
+  type: number
+- contextPath: DomainEnrichment.Status
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
+  type: string
+- contextPath: DomainEnrichment.ModifiedTime
+  description: The time the indicator was last modified.
+  type: Date
+# DomainEnrichment Main Keys
+- contextPath: DomainEnrichment.Results.Brand
+  description: The brand of the indicator.
+  type: string
+- contextPath: DomainEnrichment.Results.Score
+  description: The score of the indicator.
+  type: number
+- contextPath: DomainEnrichment.Results.Verdict
+  description: The verdict of the indicator.
+  type: string
+- contextPath: DomainEnrichment.Results.DetectionEngines
+  description: The detection engines of the indicator.
+  type: number
+- contextPath: DomainEnrichment.Results.PositiveDetections
+  description: The positive detections of the indicator.
+  type: number
+- contextPath: DomainEnrichment.Results.Name
+  description: The Domain.
+  type: string
+- contextPath: DomainEnrichment.Results.Reliability
+  description: The reliability of the Brand.
+  type: string
+# DomainEnrichment Additional Fields
+- contextPath: DomainEnrichment.Results.AdditionalFields
+  description: All fields extracted from the indicator other then the main keys ("Brand", "Score", "Verdict", "DetectionEngines", "PositiveDetections", "Name").
+
+  type: Object
+- contextPath: DomainEnrichment.Results.AdditionalFields.Relationships.EntityA
+  description: The source of the relationship.
+  type: string
+- contextPath: DomainEnrichment.Results.AdditionalFields.Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: DomainEnrichment.Results.AdditionalFields.Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: DomainEnrichment.Results.AdditionalFields.Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: DomainEnrichment.Results.AdditionalFields.Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: DomainEnrichment.Results.AdditionalFields.DNS
+  description: A list of IP objects resolved by DNS.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.CreationDate
+  description: The date when the domain was created.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.UpdatedDate
+  description: The date when the domain was last updated.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.ExpirationDate
+  description: The expiration date of the domain.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.DomainStatus
+  description: The status of the domain.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.NameServers
+  description: (List<String>) Name servers of the domain.
+  type: Unknown
+- contextPath: DomainEnrichment.Results.AdditionalFields.Organization
+  description: The organization of the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Subdomains
+  description: (List<String>) Subdomains of the domain.
+  type: Unknown
+- contextPath: DomainEnrichment.Results.AdditionalFields.Admin.Country
+  description: The country of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Admin.Email
+  description: The email address of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Admin.Name
+  description: The name of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Admin.Phone
+  description: The phone number of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Registrant.Country
+  description: The country of the registrant.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Registrant.Email
+  description: The email address of the registrant.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Registrant.Name
+  description: The name of the registrant.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Registrant.Phone
+  description: The phone number to receive abuse reports.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Tags
+  description: (List) Tags of the domain.
+  type: Unknown
+- contextPath: DomainEnrichment.Results.AdditionalFields.FeedRelatedIndicators.value
+  description: Indicators that are associated with the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.FeedRelatedIndicators.type
+  description: The type of the indicators that are associated with the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.FeedRelatedIndicators.description
+  description: The description of the indicators that are associated with the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.MalwareFamily
+  description: The malware family associated with the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.DomainStatus
+  description: The status of the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.NameServers
+  description: (List<String>) Name servers of the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.CreationDate
+  description: The date that the domain was created.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.UpdatedDate
+  description: The date that the domain was last updated.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.ExpirationDate
+  description: The expiration date of the domain.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrant.Name
+  description: The name of the registrant.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrant.Email
+  description: The email address of the registrant.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrant.Phone
+  description: The phone number of the registrant.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrar.Name
+  description: The name of the registrar, for example, GoDaddy.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrar.AbuseEmail
+  description: The email address of the contact to report abuse.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrar.AbusePhone
+  description: The phone number of the contact to report abuse.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Admin.Name
+  description: The name of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Admin.Email
+  description: The email address of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Admin.Phone
+  description: The phone number of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.History
+  description: List of Whois objects.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Malicious.Vendor
+  description: The vendor reporting the domain as malicious.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Malicious.Description
+  description: Reason the domain was reported as malicious.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.DomainIDNName
+  description: The internationalized domain name (IDN) of the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Port
+  description: Ports associated with the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Internal
+  description: Whether the domain is internal or external.
+  type: Bool
+- contextPath: DomainEnrichment.Results.AdditionalFields.Category
+  description: The category associated with the indicator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Campaign
+  description: The campaign associated with the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.TrafficLightProtocol
+  description: The Traffic Light Protocol (TLP) color that is suitable for the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.ThreatTypes.threatcategory
+  description: The threat category associated to this indicator by the source vendor, for example, Phishing, Control, TOR, etc.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence
+  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category. For example, a confidence of 90 for the threat type category 'malware' means the vendor estimates a 90% likelihood that it is malware.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Geo.Location
+  description: 'The geolocation where the domain address is located, in the format: latitude:longitude.'
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Geo.Country
+  description: The country in which the domain address is located.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Geo.Description
+  description: Additional information about the location.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Tech.Country
+  description: The country of the domain technical contact.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Tech.Name
+  description: The name of the domain technical contact.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Tech.Organization
+  description: The organization of the domain technical contact.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Tech.Email
+  description: The email address of the domain technical contact.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.CommunityNotes.note
+  description: Notes on the domain that were given by the community.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.CommunityNotes.timestamp
+  description: Time the note was published.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.Publications.source
+  description: The source where the article was published.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Publications.title
+  description: The name of the article.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Publications.link
+  description: A link to the original article.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Publications.timestamp
+  description: Time the article was published.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.Billing
+  description: Billing address of the domain.
+  type: String
+# ================= URL Enrichment =================
+- contextPath: URLEnrichment.Value
+  description: The URL.
+  type: string
+- contextPath: URLEnrichment.MaxScore
+  description: The max score of all the indicators found.
+  type: number
+- contextPath: URLEnrichment.MaxVerdict
+  description: The max verdict of all the indicators found.
+  type: string
+- contextPath: URLEnrichment.Results
+  description: List of all indicators found for the URL.
+  type: array
+- contextPath: URLEnrichment.TIMScore
+  description: The TIM score of the URL.
+  type: number
+- contextPath: URLEnrichment.Status
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
+  type: string
+- contextPath: URLEnrichment.ModifiedTime
+  description: The time the indicator was last modified.
+  type: Date
+# URLEnrichment Main Keys
+- contextPath: URLEnrichment.Results.Brand
+  description: The brand of the indicator.
+  type: string
+- contextPath: URLEnrichment.Results.Score
+  description: The score of the indicator.
+  type: number
+- contextPath: URLEnrichment.Results.Verdict
+  description: The verdict of the indicator.
+  type: string
+- contextPath: URLEnrichment.Results.DetectionEngines
+  description: The detection engines of the indicator.
+  type: number
+- contextPath: URLEnrichment.Results.PositiveDetections
+  description: The positive detections of the indicator.
+  type: number
+- contextPath: URLEnrichment.Results.Data
+  description: The URL it self.
+  type: string
+- contextPath: URLEnrichment.Results.Reliability
+  description: The reliability of the Brand.
+  type: string
+# URLEnrichment Additional Fields
+- contextPath: URLEnrichment.Results.AdditionalFields
+  description: All fields extracted from the indicator other then the main keys ("Brand", "Score", "Verdict", "DetectionEngines", "PositiveDetections", "Data").
+  type: Object
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.EntityA
+  description: The source of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.AdditionalFields.Category
+  description: The category associated with the indicator.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Malicious.Vendor
+  description: The vendor reporting the URL as malicious.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Malicious.Description
+  description: A description of the malicious URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Tags
+  description: (List) Tags of the URL.
+  type: Unknown
+- contextPath: URLEnrichment.Results.AdditionalFields.FeedRelatedIndicators.value
+  description: Indicators that are associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.FeedRelatedIndicators.type
+  description: The type of the indicators that are associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.FeedRelatedIndicators.description
+  description: The description of the indicators that are associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.MalwareFamily
+  description: The malware family associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Port
+  description: Ports that are associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Internal
+  description: Whether or not the URL is internal or external.
+  type: Bool
+- contextPath: URLEnrichment.Results.AdditionalFields.Campaign
+  description: The campaign associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.TrafficLightProtocol
+  description: The Traffic Light Protocol (TLP) color that is suitable for the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.ThreatTypes.threatcategory
+  description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence
+  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.ASN
+  description: "The autonomous system name for the URL, for example: 'AS8948'."
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.ASOwner
+  description: The autonomous system owner of the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.GeoCountry
+  description: The country in which the URL is located.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Organization
+  description: The organization of the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.CommunityNotes.note
+  description: Notes on the URL that were given by the community.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.CommunityNotes.timestamp
+  description: The time in which the note was published.
+  type: Date
+- contextPath: URLEnrichment.Results.AdditionalFields.Publications.source
+  description: The source in which the article was published.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Publications.title
+  description: The name of the article.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Publications.link
+  description: A link to the original article.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Publications.timestamp
+  description: The time in which the article was published.
+  type: Date
+# ================= CVE Enrichment =================
+- contextPath: CVEEnrichment.Value
+  description: The CVE.
+  type: string
+- contextPath: CVEEnrichment.TIMCVSS
+  description: The max CVSS of the indicator.
+  type: number
+- contextPath: CVEEnrichment.Results
+  description: List of all indicators found for the CVE.
+  type: array
+- contextPath: CVEEnrichment.Status
+  description: The status of the indicator.
+  type: string
+# CVEEnrichment Main Keys
+- contextPath: CVEEnrichment.Results.Brand
+  description: The brand of the indicator.
+  type: string
+- contextPath: CVEEnrichment.Results.CVSS
+  description: The CVSS of the indicator.
+  type: number
+- contextPath: CVEEnrichment.Results.Description
+  description: The description of the indicator.
+  type: string
+- contextPath: CVEEnrichment.Results.Published
+  description: The published date of the indicator.
+  type: string
+- contextPath: CVEEnrichment.Results.Status
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
+  type: string
+- contextPath: CVEEnrichment.Results.ModifiedTime
+  description: The time the indicator was last modified.
+  type: Date
+# CVEEnrichment Additional Fields
+- contextPath: CVEEnrichment.Results.AdditionalFields
+  description: All fields extracted from the indicator other then the main keys ("ID", "Brand", "CVSS", "Description", "Published", "CVSS").
+  type: Object
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityA
+  description: The source of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.AdditionalFields.Modified
+  description: The timestamp of when the CVE was last modified.
+  type: Date
+# --------------------------------------------------
+script: '-'
+tags:
+- basescript
+- enrichment
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.12.6204436
+fromversion: 6.10.0
+tests:
+- No tests

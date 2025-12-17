@@ -556,6 +556,10 @@ Retrieves asset from the Cortex platform using optional filter criteria.
 | asset_providers | Comma-separated list of asset providers to search for. (e.g., "provider1,provider2"). | Optional |
 | asset_realms | Comma-separated list of asset realms to search for. (e.g., "realm1,realm2"). | Optional |
 | asset_groups | A JSON encoded string representing a list of asset groups to search for. (e.g., `["group1", "group2"]`).<br/>. | Optional |
+| asset_categories | A Comma-separated list of asset categories to search for. (e.g., "category1,category2"). | Optional |
+| asset_classes | A comma-separated list of asset classes to search for. Possible values are: AI, API, Application, Code, Compute, Data, Device, External Surface, Identity, Management, Network, Organization, Other, Security Services. | Optional |
+| software_package_versions | A comma-separated list of software package versions to search for. (e.g., "0.23.0,5.2.0"). | Optional |
+| kubernetes_cluster_versions | A comma-separated list of Kubernetes cluster versions to search for. (e.g., "1.22,1.3"). | Optional |
 
 #### Context Output
 
@@ -580,6 +584,8 @@ Retrieves asset from the Cortex platform using optional filter criteria.
 | Core.Asset.cloud.region | unknown | The cloud region of the asset. |
 | Core.Asset.related_cases.cases_breakdown | unknown | The related cases breakdown of the asset. |
 | Core.Asset.provider | unknown | The asset provider. |
+| Core.Asset.kubernetes.cluster.version | unknown | The Kubernetes cluster version of the asset. |
+| Core.Asset.software_package.version | unknown | The software package version of the asset. |
 
 ### core-get-issue-recommendations
 
@@ -594,7 +600,7 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | The ID of the issue to get recommendations for. | Required |
+| issue_ids | Comma-separated list of IDs of the issues to get recommendations for (maximum 10 per request). | Required |
 
 #### Context Output
 
@@ -607,6 +613,19 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. |
 | Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
 | Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
+| Core.IssueRecommendations.playbook_suggestions.name | String | The name of the suggested playbook. |
+| Core.IssueRecommendations.playbook_suggestions.comment | String | An explanation of the suggested playbook. |
+| Core.IssueRecommendations.quick_action_suggestions.name | String | The name of the suggested quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.suggestion_rule_id | String | The ID of the suggestion quick action rule that generated this recommendation. |
+| Core.IssueRecommendations.quick_action_suggestions.brand | String | The brand of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.category | String | The category of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.description | String | An explanation of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.pretty_name | String | The display name of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.name | String | The argument name. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.prettyName | String | The argument display name. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.prettyPredefined | String | The argument predefined display value. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.description | String | The argument description. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.required | String | Whether the argument is required. |
 | Core.IssueRecommendations.existing_code_block | String | Original vulnerable code. |
 | Core.IssueRecommendations.suggested_code_block | String | Code block fix suggestion. |
 
