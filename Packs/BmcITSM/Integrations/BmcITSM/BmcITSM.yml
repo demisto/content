@@ -1168,23 +1168,14 @@ script:
     arguments:
     - name: template_id
       description: The instance ID of the template to use. The ID can be retrieved by executing the bmc-itsm-task-template-list command.
-      defaultValue: ""
     - name: summary
-      description: The task ticket summary.
-      required: true
-      defaultValue: ""
+      description: The task ticket summary. Required when the template_id argument is not provided.
     - name: customer_company
       description: The name of the customer company.
-      required: false
-      defaultValue: ""
     - name: details
-      description: The task ticket detailed description.
-      required: true
-      defaultValue: ""
+      description: The task ticket detailed description. Required when the template_id argument is not provided.
     - name: root_ticket_type
-      description: The parent ticket type.
-      required: true
-      defaultValue: ""
+      description: The parent ticket type. Required when the template_id argument is not provided.
       auto: PREDEFINED
       predefined:
       - change request
@@ -1193,9 +1184,7 @@ script:
       - known error
       - work order
     - name: root_request_id
-      description: "The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. Use Display ID for work orders."
-      required: true
-      defaultValue: ""
+      description: "The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. Use Display ID for work orders. Required when the template_id argument is not provided."
     - name: root_request_name
       description: "The display name of the parent ticket in the task ticket. If not provided, the parent ticket displayID is displayed."
       defaultValue: ""
@@ -1207,9 +1196,7 @@ script:
       - Real
       - Simulation
     - name: status
-      description: The task status.
-      required: true
-      defaultValue: ""
+      description: The task status. Required when the template_id argument is not provided.
       auto: PREDEFINED
       predefined:
       - Staged
@@ -1232,9 +1219,7 @@ script:
       predefined:
       - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.'
     - name: priority
-      description: The task ticket priority.
-      required: true
-      defaultValue: ""
+      description: The task ticket priority. Required when the template_id argument is not provided.
       auto: PREDEFINED
       predefined:
       - Critical
@@ -1242,9 +1227,7 @@ script:
       - Medium
       - Low
     - name: location_company
-      description: The company associated with the task process.
-      required: true
-      defaultValue: ""
+      description: The company associated with the task process. Required when the template_id argument is not provided.
     - name: support_company
       description: The technical support team associated with the company.
       defaultValue: ""
