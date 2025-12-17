@@ -94,7 +94,7 @@ class Client:
             audit_logs,
             key=lambda _log: _log["_time"],  # type: ignore[arg-type, return-value]
         )[:limit]
-        demisto.debug(f"Starting {EventType.AUDIT.value} logs query. Got {len(sorted_audit_logs)} events.")
+        demisto.debug(f"Finished {EventType.AUDIT.value} logs query. Got {len(sorted_audit_logs)} events.")
         return sorted_audit_logs
 
     def get_file_events(
