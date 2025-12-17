@@ -382,7 +382,12 @@ def get_user_from_pr_body(pr: PullRequest) -> str:
     - Found User
     """
     body = pr.body
-    matcher = re.search(PR_AUTHOR_PATTERN, body)
+    matcher = None
+    try:
+        matcher = re.search(PR_AUTHOR_PATTERN, body)
+    except Exception as e:
+        print(f"Error while searching for PR author: {e} |\n{body=}")
+        
     if matcher:
         return matcher.groups()[0]
     return ""
