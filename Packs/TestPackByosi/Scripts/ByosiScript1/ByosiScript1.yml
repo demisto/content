@@ -1,0 +1,20 @@
+commonfields:
+  id: byosi-script-1
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.12.6204436
+enabled: true
+engineinfo: {}
+name: byosi-script-1
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

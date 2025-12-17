@@ -1,0 +1,21 @@
+{
+    "name": "TestPackByosi",
+    "description": "TEST PACK",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Barry",
+    "url": "",
+    "email": "",
+    "created": "2025-12-17T13:46:40Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "barryyosi-panw"
+    ]
+}
