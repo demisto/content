@@ -1558,6 +1558,295 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: The result product.
       type: String
+  - arguments:
+    - description: XQL query string. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query.
+      name: query
+      required: true
+    - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+      name: time_frame
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    - description: The maximum number of returned fields per result.
+      name: max_fields
+      defaultValue: 20
+    - description: The name of the query.
+      name: query_name
+      required: true
+    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    description: |-
+      Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+      unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+    polling: true
+    name: xdr-xql-generic-query-internal
+    outputs:
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_name
+      description: The given name of the query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.status
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
+      description: Integer representing the number of results returned.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
+      description: Floating number representing the number of query units available for you to use.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
+      description: Result time.
+      type: Date
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_hostname
+      description: The agent host name.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses
+      description: The agent IP addresses.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
+      description: Host MAC address.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
+      description: Parent user name.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
+      description: The name of the process that initiated the activity.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
+      description: Path of the initiating process.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
+      description: Command line arguments of the initiator.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
+      description: Initiator process ID.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
+      description: The SHA256 value of the initiator.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
+      description: Initiator signer.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
+      description: 'Signing status of the initiator. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
+      description: The name of the process that initiated the causality chain.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
+      description: Causality group owner path of the initiating process.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
+      description: Command line arguments of the causality group owner.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
+      description: Causality group owner process ID.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
+      description: The SHA256 value of the causality group owner.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
+      description: Causality group owner signer.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
+      description: 'Signing status of the causality group owner. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
+      description: The type of the causality group owner.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
+      description: The name of the operating system that initiated the activity.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
+      description: Operating system parent path.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
+      description: Command line arguments of the operating system parent.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
+      description: Operating system parent process ID.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
+      description: The SHA256 value of the operating system parent.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
+      description: The result vendor.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._product
+      description: The result product.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_install_type
+      description: Initiator install type.
+      type: String
+  - description: Retrieve the amount of query quota available and used.
+    name: xdr-xql-get-quota-internal
+    outputs:
+    - contextPath: PaloAltoNetworksXQL.Quota.license_quota
+      description: Amount of daily quota allocated to your tenant based on your license type and size.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.Quota.additional_purchased_quota
+      description: Amount of query quota purchased.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.Quota.used_quota
+      description: Amount of query quota used over the past 24 hours.
+      type: Number
+  - arguments:
+    - description: Integer representing the unique execution ID generated by the response to start an XQL query API.
+      name: query_id
+      required: true
+    - description: The maximum number of returned fields per result.
+      name: max_fields
+      defaultValue: 20
+    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    - description: The XQL query.
+      name: query
+      hidden: true
+    - description: Time in relative date or range format.
+      name: time_frame
+      hidden: true
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    - description: The name of the command.
+      name: command_name
+      hidden: true
+    - description: The name of the query.
+      name: query_name
+      hidden: true
+    description: |-
+      Retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+      unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+    polling: true
+    name: xdr-xql-get-query-results-internal
+    outputs:
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_name
+      description: The given name of the query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.status
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
+      description: Integer representing the number of results returned.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
+      description: Floating number representing the number of query units available for you to use.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
+      description: Result time.
+      type: Date
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_hostname
+      description: The agent host name.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses
+      description: The agent IP addresses.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
+      description: Host MAC address.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
+      description: Parent user name.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
+      description: The name of the process that initiated the activity.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
+      description: Path of the initiating process.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
+      description: Command line arguments of the initiator.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
+      description: Initiator process ID.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
+      description: The SHA256 value of the initiator.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
+      description: Initiator signer.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
+      description: 'Signing status of the initiator. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
+      description: The name of the process that initiated the causality chain.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
+      description: Causality group owner path of the initiating process.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
+      description: Command line arguments of the causality group owner.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
+      description: Causality group owner process ID.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
+      description: The SHA256 value of the causality group owner.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
+      description: Causality group owner signer.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
+      description: 'Signing status of the causality group owner. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
+      description: The type of the causality group owner.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
+      description: The name of the operating system that initiated the activity.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
+      description: Operating system parent path.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
+      description: Command line arguments of the operating system parent.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
+      description: Operating system parent process ID.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
+      description: The SHA256 value of the operating system parent.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
+      description: The result vendor.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._product
+      description: The result product.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_install_type
+      description: Initiator install type.
+      type: String
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
