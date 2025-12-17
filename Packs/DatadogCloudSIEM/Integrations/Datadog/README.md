@@ -1,11 +1,11 @@
-## Datadog Cloud SIEM
+## Datadog
 
 Datadog is an observability service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform.
 
 The SaaS platform integrates and automates infrastructure monitoring, application performance monitoring and log management to provide unified, real-time observability of our customers' entire technology stack.
 This integration was integrated and tested with version 2.12.0 of datadog-api-client.
 
-## Configure Datadog Cloud SIEM in Cortex
+## Configure Datadog in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
