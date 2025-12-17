@@ -44,7 +44,7 @@
         "CrowdStrike Falcon OFP Detection",
         "CrowdStrike Falcon Third Party Detection",
         "CrowdStrike Falcon NGSIEM Detection",
-        "CrowdStrike Falcon Intelligence Recon  notification"
+        "CrowdStrike Falcon Intelligence Recon notification"
     ],
     "breachScript": "",
     "caseInsensitive": true,

@@ -1384,7 +1384,7 @@
 									"conditions": {
 										"isContext": false,
 										"value": {
-											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{display_name}  + \" - Detection ID: \" + #{composite_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n     \"condition\": \"#{incident_type} == 'On-Demand Scans detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n     \"condition\": \"#{incident_type} == 'OFP detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n     \"condition\": \"#{incident_type} == 'ngsiem_detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n     \"condition\": \"#{incident_type} == 'thirdparty_detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n   \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{composite_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
+											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{display_name}  + \" - Detection ID: \" + #{composite_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'Recon notifications'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n     \"condition\": \"#{incident_type} == 'On-Demand Scans detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n     \"condition\": \"#{incident_type} == 'OFP detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n     \"condition\": \"#{incident_type} == 'ngsiem_detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n     \"condition\": \"#{incident_type} == 'thirdparty_detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n   \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{composite_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
 										}
 									},
 									"flags": {
@@ -1575,7 +1575,93 @@
                     "simple": "in_mirror_error"
                 }
             }
-        }
+        },
+		"CrowdStrike Falcon Intelligence Recon notification": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"CrowdStrike Falcon Actor slug": {
+					"simple": "notification.actor_slug"
+				},
+				"CrowdStrike Falcon Item author": {
+					"simple": "notification.item_author"
+				},
+				"CrowdStrike Falcon Item author id": {
+					"simple": "notification.item_author_id"
+				},
+				"CrowdStrike Falcon Item date": {
+					"simple": "notification.item_date"
+				},
+				"CrowdStrike Falcon Item id": {
+					"simple": "notification.item_id"
+				},
+				"CrowdStrike Falcon Item site": {
+					"simple": "notification.item_site"
+				},
+				"CrowdStrike Falcon Item site Id": {
+					"simple": "notification.item_site_id"
+				},
+				"CrowdStrike Falcon Item type": {
+					"simple": "notification.item_type"
+				},
+				"CrowdStrike Falcon Role Id": {
+					"simple": "notification.rule_id"
+				},
+				"CrowdStrike Falcon Role creator name": {
+					"simple": "notification.rule_creator_name"
+				},
+				"CrowdStrike Falcon Role creator uid": {
+					"simple": "notification.rule_creator_uid"
+				},
+				"CrowdStrike Falcon Role priority": {
+					"simple": "notification.rule_priority"
+				},
+				"CrowdStrike Falcon Role topic": {
+					"simple": "notification.rule_topic"
+				},
+				"Last Update Time": {
+					"simple": "notification.updated_date"
+				},
+				"Rule Name": {
+					"simple": "notification.rule_name"
+				},
+				"Source Category": {
+					"simple": "notification.source_category"
+				},
+				"State": {
+					"simple": "notification.status"
+				},
+				"name": {
+					"simple": "id"
+				},
+				"occurred": {
+					"simple": "notification.created_date"
+				},
+				"severity": {
+					"simple": "notification.rule_priority"
+				},
+                "CrowdStrike Falcon At Accounts": {
+					"simple": "details.iocs.at_accounts"
+				},
+				"CrowdStrike Falcon IOC CVES": {
+					"simple": "details.iocs.cves"
+				},
+				"CrowdStrike Falcon IOC Domains": {
+					"simple": "details.ioc.domains"
+				},
+				"CrowdStrike Falcon IOC Emails": {
+					"simple": "details.ioc.emails"
+				},
+				"CrowdStrike Falcon IOC Hashtags": {
+					"simple": "details.ioc.hashtags"
+				},
+				"CrowdStrike Falcon IOC Types": {
+					"simple": "details.ioc_types"
+				},
+				"CrowdStrike Falcon IOC Urls": {
+					"simple": "details.ioc.urls"
+				}
+			}
+		}
     },
     "name": "CrowdStrike Falcon Mapper",
     "type": "mapping-incoming",

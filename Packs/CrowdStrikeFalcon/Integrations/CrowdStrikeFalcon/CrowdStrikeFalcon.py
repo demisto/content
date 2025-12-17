@@ -89,7 +89,7 @@ HEADERS = {
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(PARAMS.get("incidents_per_fetch", 15))
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = RECON_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_TIMEOUT = 30
 
 DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST = 60
@@ -339,6 +339,9 @@ CS_FALCON_INCIDENT_INCOMING_ARGS = [
     "incident_id",
     "assigned_to_uid",
     "assigned_to_name",
+]
+CS_FALCON_RECON_INCOMING_ARGS = [
+    "notification.status"
 ]
 
 MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
@@ -2600,7 +2603,10 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.THIRD_PARTY
     if IncidentType.RECON.value in remote_incident_id:
         return IncidentType.RECON
-    #TODO
+    
+    incident_type = demisto.incident().get("type")
+    if IncidentType.RECON.value in incident_type.lower():
+        return IncidentType.RECON
     
     demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
     return None
@@ -2716,11 +2722,9 @@ def get_remote_recon_data(remote_incident_id: str):
     mirrored_data = mirrored_data_list[0]
 
     updated_object = {"incident_type": RECON_NOTIFICATION}
-    #, "status": demisto.get(mirrored_data, "notification.status", "")
-    incoming_arg = "notification.status"
-    set_updated_object(updated_object, mirrored_data, [incoming_arg])
+    set_updated_object(updated_object, mirrored_data, CS_FALCON_RECON_INCOMING_ARGS)
     
-    demisto.debug(f"in get_remote_recon_data {mirrored_data=} {incoming_arg=} {updated_object=}")
+    demisto.debug(f"in get_remote_recon_data {mirrored_data=} {CS_FALCON_RECON_INCOMING_ARGS=} {updated_object=}")
     return mirrored_data, updated_object, RECON_NOTIFICATION
 
 
@@ -2790,7 +2794,7 @@ def get_modified_recon_ids(last_update_timestamp: str) -> List[str]:
         (e.g., ['Recon_ID1', 'Recon_ID2', ...]).
     """
     ids, _, _ = recon_notifications_pagination(
-            filter=f"status:['in-progress','closed-false-positive','closed-true-positive']+updated_timestamp:>'{last_update_timestamp}'",
+            filter=f"status:['in-progress','closed-false-positive','closed-true-positive']+updated_date:>'{last_update_timestamp}'",
             api_limit=MAX_FETCH_SIZE,
             recon_offset=0,
             fetch_limit=MAX_FETCH_SIZE,
@@ -3659,9 +3663,6 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdStrikeFalconMsg: Start fetch Recon Notifications")
         demisto.debug(f"CrowdStrikeFalconMsg: Current Recon Notifications last_run object: {recon_last_run}")
 
-        if LEGACY_VERSION:
-            raise DemistoException(f"{RECON_FETCH_TYPE} is not supported in legacy version.")
-
         fetched_recon_notifications, recon_last_run = fetch_recon_incidents(recon_last_run)
         items.extend(fetched_recon_notifications)
 
@@ -3850,11 +3851,11 @@ def parse_ioa_iom_incidents(
 
 def get_recon_notification_ids_for_fetch(
     filter: str,
-    recon_offset: int,
+    recon_offset: Optional[int],
     limit: int = INCIDENTS_PER_FETCH,
     sort: str = "created_date|desc",
     query: str = ""
-) -> tuple[list[str], int | None, int]:
+) -> tuple[list[str], int, int]:
     # Build query params
     params = assign_params(
         filter=filter,
@@ -3864,20 +3865,18 @@ def get_recon_notification_ids_for_fetch(
         q=query
     )
     demisto.debug(f"Recon notifications query params: {params=}")
-    # The limit of this request is 10K
+    # The API limit of this request(limit + offset) is 10K
     raw = http_request("GET", "/recon/queries/notifications/v1", params=params)
 
     ids = raw.get("resources", [])
-    pagination = demisto.get(raw, "meta.pagination") or {}
+    pagination = dict_safe_get(raw, ["meta", "pagination"]) or {}
 
     total = pagination.get("total", 0)
-    current_offset = pagination.get("offset", 0)
-    page_limit = pagination.get("limit", limit)
+    offset = pagination.get("offset", 0)
 
     demisto.debug(f"Recon notifications pagination object: {pagination=}")
 
-    next_offset = current_offset + page_limit
-    return ids, next_offset, total
+    return ids, offset, total
 
 
 def get_recon_notifications_detailed(notification_ids: list[str]) -> list[dict[str, Any]]:
@@ -3892,12 +3891,11 @@ def get_recon_notifications_detailed(notification_ids: list[str]) -> list[dict[s
     """
     if not notification_ids:
         return []
-    query_params = "&".join(f"ids={resource_id}" for resource_id in notification_ids)
 
     all_resources: list[dict[str, Any]] = []
     offset = 0
     while True:
-        query_params = query_params+f"&offset={offset}"
+        query_params = {"ids": notification_ids, "offset": offset}
         demisto.debug(f"Recon notifications detailed request params: {query_params=}")
         raw = http_request(
             method="GET",
@@ -3905,13 +3903,11 @@ def get_recon_notifications_detailed(notification_ids: list[str]) -> list[dict[s
             params=query_params
         )
 
-        resources = raw.get("resources", [])
-        all_resources.extend(resources)
+        all_resources.extend(raw.get("resources", []))
 
-        pagination = demisto.get(raw, "meta.pagination") or {}
+        pagination = dict_safe_get(raw, ["meta", "pagination"], {})
         total = pagination.get("total", 0)
-        limit = pagination.get("limit")
-
+        limit = pagination.get("limit", 0)
         offset = pagination.get("offset", 0) + limit
 
         demisto.debug(f"{offset=}, {total=}, {limit=} for detailed notifications")
@@ -3967,35 +3963,23 @@ def recon_notifications_pagination(
     """
 
     fetch_query = demisto.params().get("recon_fetch_query", "")
+    demisto.debug(f"Doing Recon pagination with: {filter=}, {recon_offset=}, {api_limit=}, {fetch_limit=}")
 
-    total_collected = 0
-    next_offset = recon_offset or 0
-    collected_ids: list[str] = []
-    collected_notifications_detailed: list[dict[str,Any]] = []
-
-    while total_collected < fetch_limit:
-        demisto.debug(f"Doing Recon pagination with: {filter=}, {api_limit=}, {next_offset=}, {fetch_limit=}")
-
-        ids, next_offset, remote_total = get_recon_notification_ids_for_fetch(
-            filter=filter,
-            recon_offset=next_offset,
-            limit=min(api_limit, fetch_limit - total_collected),
-            query=fetch_query
-        )
-        collected_ids.extend(ids)
-        total_collected += len(ids)
-        demisto.debug(f"Pagination results: {total_collected=}, {next_offset=}")
-        if is_fetch:
-            full_notifications_deta = get_recon_notifications_detailed(notification_ids=ids)
-            collected_notifications_detailed.extend(full_notifications_deta)
-        if next_offset > remote_total:
-            next_offset = None
-            break
-        # if total_collected >= fetch_limit or next_offset == 0:
+    ids, offset, remote_total = get_recon_notification_ids_for_fetch(
+        filter=filter,
+        recon_offset=recon_offset,
+        limit=min(MAX_FETCH_SIZE, fetch_limit),
+        query=fetch_query
+    )
+    demisto.debug(f"Pagination results: {len(ids)=}, {offset=}")
+    if is_fetch:
+        full_notifications_deta = get_recon_notifications_detailed(notification_ids=ids)
+    
+    next_offset = offset + len(ids) if offset + len(ids) < remote_total else 0
     
     if not is_fetch:
-        return collected_ids, [], None
-    return collected_ids, collected_notifications_detailed, next_offset
+        return ids, [], None
+    return ids, full_notifications_deta, next_offset
 
 
 def recon_notification_to_incident(recon_notification: dict[str, Any], incident_type: str) -> dict[str, Any]:
@@ -4016,19 +4000,18 @@ def recon_notification_to_incident(recon_notification: dict[str, Any], incident_
         "name": recon_notification.get("id"),
         "occurred": dict_safe_get(recon_notification, ["notification", "created_date"], ""),
         "severity": dict_safe_get(recon_notification, ["notification", "rule_priority"], ""),
-        "incident_type": RECON_NOTIFICATION,
         "rawJSON": json.dumps(recon_notification | incident_metadata),
     }
     return incident_context
 
 
 def create_recon_filter(
-    is_paginating: bool, last_fetch_filter: str, last_created_timestamp: str, first_fetch_timestamp: str) -> str:
+    is_paginating: bool, last_fetch_filter: str, last_created_date: str, first_fetch_timestamp: str) -> str:
     """Retrieve the Recon filter that will be used in the current fetch round.
     Args:
         is_paginating (bool): Whether we are doing pagination or not.
         last_fetch_filter (str): The last fetch filter that was used in the previous round.
-        last_created_timestamp (str): The last created timestamp.
+        last_created_date (str): The last created timestamp.
         first_fetch_timestamp (str): The first fetch timestamp.
 
     Raises:
@@ -4037,7 +4020,7 @@ def create_recon_filter(
     Returns:
         str: The Recon filter that will be used in the current fetch.
     """
-    filter = "created_timestamp:"
+    filter = "created_date:"
     if is_paginating:
         if not last_fetch_filter:
             raise DemistoException("Last fetch filter must not be empty when doing pagination")
@@ -4045,14 +4028,14 @@ def create_recon_filter(
         filter = last_fetch_filter
         demisto.debug(f"Doing pagination, using the same query as the previous round. Filter is {filter}")
     else:
-        if last_created_timestamp == first_fetch_timestamp:
+        if last_created_date == first_fetch_timestamp:
             # First fetch,
-            filter = f"{filter}>='{last_created_timestamp}'"
-            demisto.debug(f"First fetch, looking for created_timestamp >= {last_created_timestamp=}. Filter is {filter}")
+            filter = f"{filter}>='{last_created_date}'"
+            demisto.debug(f"First fetch, looking for created_date >= {last_created_date=}. Filter is {filter}")
         else:
             # Not first fetch,
-            filter = f"{filter}>'{last_created_timestamp}'"
-            demisto.debug(f"Not first fetch, looking for created_timestamp > {last_created_timestamp=}. Filter is {filter}")
+            filter = f"{filter}>'{last_created_date}'"
+            demisto.debug(f"Not first fetch, looking for created_date > {last_created_date=}. Filter is {filter}")
     return filter
 
 
@@ -4075,7 +4058,7 @@ def fetch_recon_incidents(recon_last_run: Dict[str, Any]) -> tuple[List[Dict], D
     last_ids, recon_offset, last_created, first_fetch_ts = get_current_fetch_data(
         last_run_object=recon_last_run,
         date_format=DATE_FORMAT,
-        last_date_key="last_created_timestamp",
+        last_date_key="last_created_date",
         next_token_key="recon_offset",
         last_fetched_ids_key="last_resource_ids",
     )
@@ -4083,7 +4066,7 @@ def fetch_recon_incidents(recon_last_run: Dict[str, Any]) -> tuple[List[Dict], D
     filter = create_recon_filter(
         is_paginating=bool(recon_offset),
         last_fetch_filter=recon_last_run.get("last_fetch_filter", ""),
-        last_created_timestamp=last_created,
+        last_created_date=last_created,
         first_fetch_timestamp=first_fetch_ts,
     )
     demisto.debug(f"Recon fetch filter: {filter=}")
@@ -4098,9 +4081,9 @@ def fetch_recon_incidents(recon_last_run: Dict[str, Any]) -> tuple[List[Dict], D
         fetched_data=notifications_detailed,
         last_date=last_created,
         last_fetched_ids=last_ids,
-        date_key="notification.created_timestamp",
+        date_key="notification.created_date",
         id_key="id",
-        date_format=DATE_FORMAT,
+        date_format=RECON_DATE_FORMAT,
         is_paginating=bool(new_offset),
         to_incident_context=recon_notification_to_incident,
         incident_type=RECON_NOTIFICATION,
@@ -4109,7 +4092,7 @@ def fetch_recon_incidents(recon_last_run: Dict[str, Any]) -> tuple[List[Dict], D
 
     updated_run = {
         "recon_offset": new_offset,
-        "last_created_timestamp": new_created_ts,
+        "last_created_date": new_created_ts,
         "last_fetch_filter": filter,
         "last_resource_ids": fetched_ids or last_ids,
     }
@@ -6145,8 +6128,6 @@ def upload_batch_custom_ioc_command(
 
 
 def module_test():
-    print(f"AAA-{demisto.incident()}")
-    return demisto.incident().get("type")
     try:
         get_token(new_token=True)
     except ValueError:

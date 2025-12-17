@@ -19,7 +19,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "CrowdStrike Falcon Intelligence Recon  notification"
+        "CrowdStrike Falcon Intelligence Recon notification"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -27,5 +27,8 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }
