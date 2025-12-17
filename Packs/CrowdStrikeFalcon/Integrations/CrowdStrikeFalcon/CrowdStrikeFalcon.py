@@ -3330,24 +3330,19 @@ def set_last_run_per_type(last_run: list, index: LastRunIndex, data: dict, is_fe
     Returns:
         The updated last_run list.
     """
-    demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type1")
+    demisto.debug(f"CrowdStrikeFalconMsg: set_last_run_per_type with {index=}")
     if not isinstance(data, dict):
-        demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type2")
         return_error(f"Invalid data type : last_run is a list of dictionary, expected dictionary, got {type(data).__name__}")
-    demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type3")
     last_run_length = TOTAL_FETCH_TYPE_XSIAM if is_fetch_events else TOTAL_FETCH_TYPE_XSOAR
-    demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type4")
     if index >= last_run_length:
         return_error(f"Invalid last_run index {index}, cannot exceed {last_run_length - 1}")
     if index < 0:
         return_error(f"Invalid last_run index {index}, index cannot be negative")
-    demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type5")
     # Extend the list if necessary to accommodate the fetch_type index
     while len(last_run) <= index:
         last_run.append({})
-    demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type6")
     last_run[index] = data
-    demisto.debug(f"CrowdStrikeFalconMsg: set_last_run_per_type7 {last_run}")
+    demisto.debug(f"CrowdStrikeFalconMsg: {last_run}")
 
 
 def get_last_run_per_type(last_run: list, fetch_type: LastRunIndex) -> dict:
@@ -3420,6 +3415,8 @@ def fetch_items(command="fetch-incidents"):
         ioa_last_run = get_last_run_per_type(last_run, LastRunIndex.IOA)
         third_party_detection_last_run = get_last_run_per_type(last_run, LastRunIndex.THIRD_PARTY_DETECTIONS)
         ngsiem_detection_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_DETECTIONS)
+        ngsiem_incident_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_INCIDENTS)
+        ngsiem_automated_lead_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_AUTOMATED_LEADS)
 
     demisto.debug(f"CrowdstrikeFalconMsg: Selected fetch types: {fetch_incidents_or_detections}")
 
@@ -3536,18 +3533,8 @@ def fetch_items(command="fetch-incidents"):
             product_type="automated-lead",
             detection_name_prefix=NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
             start_time_key="created_timestamp",
-            is_fetch_events=False
+            is_fetch_events=False,
         )
-        demisto.debug(f"{fetched_ngsiem_automated_leads=}")
-        for lead in fetched_ngsiem_automated_leads:
-            raw_lead =  json.loads(lead.get("rawJSON", "{}"))
-            lead["Pattern Id"] = ", ".join([str(mitre_attack["pattern_id"]) for mitre_attack in raw_lead["mitre_attack"]])
-            lead["MITRE Tactic ID"] = [mitre_attack["tactic_id"] for mitre_attack in raw_lead["mitre_attack"]]
-            lead["MITRE Tactic Name"] = [mitre_attack["tactic"] for mitre_attack in raw_lead["mitre_attack"]]
-            lead["MITRE Technique ID"] = [mitre_attack["technique_id"] for mitre_attack in raw_lead["mitre_attack"]]
-            lead["MITRE Technique Name"] = [mitre_attack["technique"] for mitre_attack in raw_lead["mitre_attack"]]
-
-        demisto.debug(f"{fetched_ngsiem_automated_leads=}")
         items.extend(fetched_ngsiem_automated_leads)
 
     # Fetch Indicators of Misconfiguration (IOM) - supported for fetch-incidents command only.
@@ -3746,7 +3733,7 @@ def fetch_detections_by_product_type(
     detections_type: str,
     detection_name_prefix: str,
     start_time_key: str,
-    is_fetch_events: bool = False,
+    is_fetch_events: bool = False
 ) -> tuple[List, dict]:
     """The fetch logic for idp, ods and mobile detections.
 
@@ -3811,6 +3798,7 @@ def fetch_detections_by_product_type(
             incidents_res=detections, last_run=current_fetch_info, fetch_limit=INCIDENTS_PER_FETCH, id_field="name"
         )
 
+    demisto.debug(f"CrowdstrikeFalconMsg: last_run before update: {current_fetch_info}")
     current_fetch_info = update_last_run_object(
         last_run=current_fetch_info,
         incidents=detections,
@@ -3823,6 +3811,7 @@ def fetch_detections_by_product_type(
         date_format=DETECTION_DATE_FORMAT,
         new_offset=offset,
     )
+    demisto.debug(f"CrowdstrikeFalconMsg: last_run after update: {current_fetch_info}")
     demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch {detections_type}. Fetched {len(detections)}")
     return detections, current_fetch_info
 

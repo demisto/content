@@ -1670,8 +1670,23 @@
 				},
 				"occurred": {
 					"simple": "created_timestamp"
+				},
+                "Pattern ID": {
+                    "simple": "mitre_attack.pattern_id"
+                },
+                "MITRE Tactic ID": {
+					"simple": "mitre_attack.tactic_id"
+				},
+				"MITRE Tactic Name": {
+					"simple": "mitre_attack.tactic"
+				},
+				"MITRE Technique ID": {
+					"simple": "mitre_attack.technique_id"
+				},
+				"MITRE Technique Name": {
+					"simple": "mitre_attack.technique"
 				}
-			}
+            }
         }
     },
     "name": "CrowdStrike Falcon Mapper",
