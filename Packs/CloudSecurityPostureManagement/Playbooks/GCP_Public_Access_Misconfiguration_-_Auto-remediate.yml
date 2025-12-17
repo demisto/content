@@ -1,0 +1,746 @@
+description: |-
+  Automatically remediates 2 GCP public access misconfigurations:
+  1. GCP Storage buckets are publicly accessible to all users
+  2. GCP Storage buckets are publicly accessible to all authenticated users
+
+  The playbook removes public IAM policy bindings by deleting 'allUsers' and 'allAuthenticatedUsers' entities from the bucket's Access Control List respectively.
+
+  Optional stakeholder notification is available via the "Notify Stakeholders" sub-playbook by setting enableNotifications input to 'yes' (default: 'no'). When enabled, configure at least one recipient (email, Slack channel, or Teams channel) in the Notify Stakeholders playbook inputs. The playbook automatically updates the issue status to "Resolved - Fixed" upon successful remediation.
+id: GCP Public Access Misconfiguration - Auto-remediate
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - enableNotifications
+  name: General (Inputs group)
+inputs:
+- description: |-
+    Options: yes/no
+    Choose if you wish to notify stakeholders about the remediation actions taken. The recipients need to be configured in the Playbook Triggered header of the "Notify Stakeholders" sub-playbook. If no recipients are provided, the playbook will pause to ask for an input.
+  key: enableNotifications
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: "no"
+name: GCP Public Access Misconfiguration - Auto-remediate
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+sourceplaybookid: AWS EC2 Instance Misconfiguration - Remediate and Notify
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "48"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Playbook Triggered header"
+      id: 882d4fc2-def7-42ec-83a7-5fae15d43824
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 882d4fc2-def7-42ec-83a7-5fae15d43824
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 210
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "49"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        simple: ${issue.asset_ids}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex Core - Platform
+      description: Get asset information.
+      id: 760d9a11-0994-4d59-8e3c-f80a80c7b1ce
+      iscommand: true
+      name: Get Asset details
+      script: Cortex Core - Platform|||core-get-asset-details
+      type: regular
+      version: -1
+    taskid: 760d9a11-0994-4d59-8e3c-f80a80c7b1ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 580
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Done"
+      id: f1c8cc4d-de91-4565-8a4c-d8f2272c1a7e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: f1c8cc4d-de91-4565-8a4c-d8f2272c1a7e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1575,
+          "y": 2330
+        }
+      }
+  "15":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "52"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: |-
+          # Remediation Action taken
+          **${remediation_action}**
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Save note to issue war room about the remediation action taken.
+      id: 14b5f729-804c-49a0-8705-3c208111664e
+      iscommand: false
+      name: Print remediation action taken
+      script: Print
+      type: regular
+      version: -1
+    taskid: 14b5f729-804c-49a0-8705-3c208111664e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1650
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      status:
+        simple: Resolved - Fixed
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Sets the status of the issue to Resolved - Fixed
+      id: 8c64d8bf-60b0-4684-863c-4fae535865ab
+      iscommand: true
+      name: Update Issue status to Resolved - Fixed
+      script: Builtin|||setIssueStatus
+      type: regular
+      version: -1
+    taskid: 8c64d8bf-60b0-4684-863c-4fae535865ab
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2150
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Section header to launch remediation steps.
+      id: ad6d8ab9-f91f-437a-84d5-5dfd7311210a
+      iscommand: false
+      name: Launch Remediation Steps
+      type: title
+      version: -1
+    taskid: ad6d8ab9-f91f-437a-84d5-5dfd7311210a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 940
+        }
+      }
+  "31":
+    continueonerrortype: ""
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: 'Please configure and enable an instance of the GCP integration and
+          re-run this playbook. '
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints message to war room to indicate GCP integration instance
+        is not active.
+      id: ef0747da-62af-44b6-841c-10b740489553
+      iscommand: false
+      name: Print - enable GCP and re-run this playbook
+      script: Print
+      type: regular
+      version: -1
+    taskid: ef0747da-62af-44b6-841c-10b740489553
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 2150
+        }
+      }
+  "34":
+    continueonerrortype: ""
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: The chosen playbook is not applicable to the selected issue. The issue was not remediated and remains unresolved.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints message to war room that this playbook is not applicable.
+      id: 82f8f008-e622-4b53-8279-d5617d89894e
+      iscommand: false
+      name: Print - playbook not applicable
+      script: Print
+      type: regular
+      version: -1
+    taskid: 82f8f008-e622-4b53-8279-d5617d89894e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1912.5,
+          "y": 2150
+        }
+      }
+  "37":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: issue.ruleid
+          operator: isEqualString
+          right:
+            value:
+              simple: 41f7a4b1-cad6-4fbf-b698-1fd11a8869a8
+        - left:
+            iscontext: true
+            value:
+              simple: issue.matching_service_rule_id
+          operator: isEqualString
+          right:
+            value:
+              simple: 41f7a4b1-cad6-4fbf-b698-1fd11a8869a8
+      label: all users
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: issue.ruleid
+          operator: isEqualString
+          right:
+            value:
+              simple: 9f08e13c-cdd6-4ad1-89f5-ffef6a71e432
+        - left:
+            iscontext: true
+            value:
+              simple: issue.matching_service_rule_id
+          operator: isEqualString
+          right:
+            value:
+              simple: 9f08e13c-cdd6-4ad1-89f5-ffef6a71e432
+      label: authenticated users
+    continueonerrortype: ""
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      all users:
+      - "40"
+      authenticated users:
+      - "63"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if remediation is available for the issue ruleid.
+      id: 9cb69d16-401b-4f2a-8933-bf17e0e673bd
+      iscommand: false
+      name: Check the type of remediation
+      type: condition
+      version: -1
+    taskid: 9cb69d16-401b-4f2a-8933-bf17e0e673bd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1110
+        }
+      }
+  "40":
+    continueonerrortype: ""
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "55"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entity:
+        simple: allUsers
+      project_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      resource_name:
+        simple: ${Core.CoreAsset.xdm__asset__name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: GCP
+      description: Removes an entity from a bucket's Access Control List.
+      id: 773f45df-a390-44db-8c9f-e79b63574312
+      iscommand: true
+      name: Disable public access to GCP Storage Bucket
+      script: GCP|||gcp-storage-bucket-policy-delete
+      type: regular
+      version: -1
+    taskid: 773f45df-a390-44db-8c9f-e79b63574312
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1290
+        }
+      }
+  "48":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: issue.ruleid
+          operator: inList
+          right:
+            value:
+              simple: 41f7a4b1-cad6-4fbf-b698-1fd11a8869a8, 9f08e13c-cdd6-4ad1-89f5-ffef6a71e432
+        - left:
+            iscontext: true
+            value:
+              simple: issue.matching_service_rule_id
+          operator: inList
+          right:
+            value:
+              simple: 41f7a4b1-cad6-4fbf-b698-1fd11a8869a8, 9f08e13c-cdd6-4ad1-89f5-ffef6a71e432
+      label: "yes"
+    continueonerrortype: ""
+    id: "48"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if remediation is available for the issue ruleid.
+      id: 05ca59c9-6719-461d-8971-1092c8ca9851
+      iscommand: false
+      name: Is playbook applicable?
+      type: condition
+      version: -1
+    taskid: 05ca59c9-6719-461d-8971-1092c8ca9851
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 400
+        }
+      }
+  "49":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: state
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: GCP
+                root: modules
+          operator: isEqualString
+          right:
+            value:
+              simple: active
+      label: "yes"
+    continueonerrortype: ""
+    id: "49"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      id: d8d5ac06-9340-4b3b-855a-806966681b5d
+      iscommand: false
+      name: Is GCP integration available?
+      type: condition
+      version: -1
+    taskid: d8d5ac06-9340-4b3b-855a-806966681b5d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 760
+        }
+      }
+  "52":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.enableNotifications
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: "yes"
+    continueonerrortype: ""
+    id: "52"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "65"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Checks if notifications are enabled based on the playbook inputs."
+      id: 586d87f0-567d-4c4d-8aec-f90dfd2e2a1f
+      iscommand: false
+      name: Is notification enabled?
+      type: condition
+      version: -1
+    taskid: 586d87f0-567d-4c4d-8aec-f90dfd2e2a1f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1830
+        }
+      }
+  "55":
+    continueonerrortype: ""
+    id: "55"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediation_action
+      value:
+        simple: |-
+          Public IAM policy bindings were removed from GCS bucket - ${Core.CoreAsset.xdm__asset__name}
+          Equivalent gcp command:
+          gcloud storage buckets get-iam-policy gs://${Core.CoreAsset.xdm__asset__name}
+          gcloud storage buckets remove-iam-policy-binding gs://${Core.CoreAsset.xdm__asset__name} --member=allUsers --role=<all roles from above>
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: b264cb92-eff8-4884-8727-dd826854e731
+      iscommand: false
+      name: Save remediation action
+      script: Set
+      type: regular
+      version: -1
+    taskid: b264cb92-eff8-4884-8727-dd826854e731
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1470
+        }
+      }
+  "63":
+    continueonerrortype: ""
+    id: "63"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "64"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entity:
+        simple: allAuthenticatedUsers
+      project_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      resource_name:
+        simple: ${Core.CoreAsset.xdm__asset__name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: GCP
+      description: Removes an entity from a bucket's Access Control List.
+      id: 3abc990b-8c57-405a-86c6-d8f46c9e32e3
+      iscommand: true
+      name: Disable public access to GCP Storage Bucket
+      script: GCP|||gcp-storage-bucket-policy-delete
+      type: regular
+      version: -1
+    taskid: 3abc990b-8c57-405a-86c6-d8f46c9e32e3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1082.5,
+          "y": 1290
+        }
+      }
+  "64":
+    continueonerrortype: ""
+    id: "64"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediation_action
+      value:
+        simple: |-
+          Public IAM policy bindings were removed from GCS bucket - ${Core.CoreAsset.xdm__asset__name}
+          Equivalent gcp command:
+          gcloud storage buckets get-iam-policy gs://${Core.CoreAsset.xdm__asset__name}
+          gcloud storage buckets remove-iam-policy-binding gs://${Core.CoreAsset.xdm__asset__name} --member=allAuthenticatedUsers --role=<all roles from above>
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: a483ea87-7f1a-4838-83e9-d310dccf374e
+      iscommand: false
+      name: Save remediation action
+      script: Set
+      type: regular
+      version: -1
+    taskid: a483ea87-7f1a-4838-83e9-d310dccf374e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1082.5,
+          "y": 1470
+        }
+      }
+  "65":
+    continueonerrortype: ""
+    id: "65"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Subject:
+        simple: Issue ${issue.name} has been resolved
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook automates notifying stakeholders via Slack v3, Microsoft
+        Teams, or email. You have the flexibility to notify other teams via Slack,
+        Microsoft Teams or Email by configuring the necessary integration. This playbook
+        requires existing integrations with Slack, Microsoft Teams, Mail Sender or
+        Gmail to perform these actions. If none of these integrations are found in
+        your account, the playbook will exit with no action.
+      id: a8b05634-dfbd-4843-8547-1857de96220d
+      iscommand: false
+      name: Notify Stakeholders
+      playbookId: Notify Stakeholders
+      type: playbook
+      version: -1
+    taskid: a8b05634-dfbd-4843-8547-1857de96220d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1990
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "37_40_all users": 0.63,
+      "48_5_yes": 0.51,
+      "52_20_#default#": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2180,
+        "width": 1732.5,
+        "x": 560,
+        "y": 210
+      }
+    }
+  }
+fromversion: 8.11.0

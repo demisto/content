@@ -176,6 +176,20 @@ def test_validate_configuration_parameters_with_invalid_credentials():
         validate_configuration_parameters(integration_params, "test-module")
 
 
+@pytest.mark.parametrize("project_number", ["invalid", "-123", "0"])
+def test_validate_configuration_parameters_with_invalid_project_number(capfd, project_number):
+    """Test case scenario for validating the configuration parameters with invalid project number."""
+    integration_params = GENERIC_INTEGRATION_PARAMS.copy()
+    integration_params["use_v1_alpha"] = True
+    integration_params["project_instance_id"] = "test_instance"
+    integration_params["project_number"] = project_number
+    capfd.close()
+    with pytest.raises(ValueError) as e:
+        validate_configuration_parameters(integration_params, "test-module")
+
+    assert str(e.value) == "Google SecOps Project Number should be a positive number."
+
+
 def test_parse_error_message_with_invalid_json(capfd):
     """Test case scenario for parsing error message with invalid json."""
     capfd.close()
