@@ -249,7 +249,7 @@ class Client(BaseClient):
             else:
                 return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
-    def delete_http_request(self, full_url: str, payload: dict = None, **kwargs):
+    def delete_http_request(self, full_url: str, payload: dict = None, params: dict = None, **kwargs):
         """
         DELETE HTTP Request
 
@@ -259,6 +259,7 @@ class Client(BaseClient):
         :return dict: Response object
         """
         kwargs = self.add_common_params(kwargs)
+        params and kwargs.update(params)
         full_url = full_url + "?" + urllib.parse.urlencode(kwargs)
         headers = {"content-type": "application/json"}
         resp = requests.delete(
@@ -374,7 +375,7 @@ class Client(BaseClient):
             "action": "delete",
         }
         client_url = self.base_url + url_suffix
-        return self.post_http_request(full_url=client_url,payload=payload,params={})
+        return self.post_http_request(full_url=client_url, payload=payload, params={})
 
     def get_threat_data(self, page: int, page_size: int, query: str):
         """
@@ -402,7 +403,7 @@ class Client(BaseClient):
         url_suffix = "ingestion/saved-searches/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, None, **params)
+        return self.get_http_request(client_url, {}, None, params=params)
 
     def get_server_collections(self, page: int, page_size: int):
         """
@@ -415,7 +416,7 @@ class Client(BaseClient):
         url_suffix = "publishing/collection/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, None, **params)
+        return self.get_http_request(client_url, {}, params=params)
 
     def get_actions(self, page: int, page_size: int, params: dict[str, Any]):
         """
@@ -430,7 +431,7 @@ class Client(BaseClient):
         client_url = self.base_url + url_suffix
         params["page"] = page
         params["page_size"] = page_size
-        return self.get_http_request(client_url, **params)
+        return self.get_http_request(client_url, params=params)
 
     def add_indicator_as_false_positive(self, object_ids: List[str], object_type: str):
         """
@@ -504,12 +505,12 @@ class Client(BaseClient):
 
         return self.post_http_request(client_url, payload, {})
 
-    def saved_result_set(self, page: int, page_size: int, label_name: str, version: str = None):
+    def saved_result_set(self, page: str, page_size: str, label_name: str = None, version: str = None):
         """
         Saved Result Set
 
-        :param int page: Paginated number from where data will be polled
-        :param int page_size: Size of the result
+        :param str page: Paginated number from where data will be polled
+        :param str page_size: Size of the result
         :param str label_name: Label name used to get the data from the rule
         :param str query: CQL query to get specific data
         :param str version: Saved Result Set version
@@ -692,7 +693,7 @@ class Client(BaseClient):
         url_suffix = f"ingestion/threat-data/vulnerability/{obj_id}/product-details/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, None, **params)
+        return self.get_http_request(client_url, {}, None, params=params)
 
     def get_vulnerability_cvss_score(self, obj_id: str, page: int, page_size: int):
         """
@@ -706,7 +707,7 @@ class Client(BaseClient):
         url_suffix = f"ingestion/threat-data/vulnerability/{obj_id}/cvss-score/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, None, **params)
+        return self.get_http_request(client_url, {}, None, params=params)
 
     def get_vulnerability_source_description(self, obj_id: str, source_id: str, page: int, page_size: int):
         """
@@ -721,7 +722,7 @@ class Client(BaseClient):
         url_suffix = f"ingestion/threat-data/vulnerability/{obj_id}/source-description/"
         client_url = self.base_url + url_suffix
         params = {"source_id": source_id, "page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, None, **params)
+        return self.get_http_request(client_url, {}, None, params=params)
 
 
 """ HELPER FUNCTIONS """
@@ -1866,13 +1867,13 @@ def make_request(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     response = {}
 
     if type == "GET":
-        response = client.get_http_request(client_url, body, **params)
+        response = client.get_http_request(client_url, body, params=params)
     elif type == "POST":
-        response = client.post_http_request(client_url, body, params)
+        response = client.post_http_request(client_url, body, params=params)
     elif type == "PUT":
-        response = client.put_http_request(client_url, body, params)
+        response = client.put_http_request(client_url, body, params=params)
     elif type == "DELETE":
-        response = client.delete_http_request(client_url, body, **params)
+        response = client.delete_http_request(client_url, body, params=params)
 
     resp = response.get("data", {})
 

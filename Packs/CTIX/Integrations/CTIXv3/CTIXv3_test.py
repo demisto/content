@@ -281,7 +281,7 @@ def test_get_whitelist_iocs_command(requests_mock):
 def test_remove_whitelisted_ioc_command(requests_mock):
     mock_id = "foo"
     mock_response = util_load_json("test_data/remove_whitelist_ioc.json")
-    requests_mock.delete(f"{BASE_URL}conversion/allowed_indicators/{mock_id}/", json=mock_response)
+    requests_mock.post(f"{BASE_URL}conversion/allowed_indicators/bulk-actions/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
