@@ -1,0 +1,163 @@
+commonfields:
+  id: SAPBTP
+  version: -1
+name: SAPBTP
+display: SAP BTP (Business Technology Platform)
+category: Cloud Services
+description: SAP Business Technology Platform (BTP) is a cloud platform for building, integrating, and extending enterprise applications with data, analytics, AI, and automation.
+sectionorder:
+- Connect
+- Collect
+configuration:
+- name: url
+  display: API URL (Audit Log Service)
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: SAP Service Key field 'url' for Audit Log API (e.g., https://auditlog-management.cfapps.<region>.hana.ondemand.com).
+- name: token_url
+  display: Token URL (Authentication Service)
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: For Non-mTLS use 'uaa.url' (e.g., https://<subdomain>.authentication.<region>.hana.ondemand.com). For mTLS use 'uaa.certurl' (e.g., https://<subdomain>.authentication.cert.<region>.hana.ondemand.com).
+- name: auth_type
+  display: Authentication Type
+  required: true
+  type: 15
+  section: Connect
+  defaultvalue: Non-mTLS
+  options:
+  - mTLS
+  - Non-mTLS
+  additionalinfo: Select authentication method. mTLS (recommended) requires Certificate + Private Key. Non-mTLS requires Client Secret.
+- name: client_id
+  display: Client ID
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: SAP Service Key field 'uaa.clientid'. Required for both mTLS and Non-mTLS authentication.
+- name: certificate
+  display: Certificate
+  required: false
+  type: 12
+  section: Connect
+  additionalinfo: Required for mTLS authentication (recommended). Body of certificate.pem file in PEM format.
+- name: private_key
+  display: Private Key
+  required: false
+  type: 14
+  section: Connect
+  additionalinfo: Required for mTLS authentication (recommended). Body of key.pem file in PEM format.
+- name: client_secret
+  display: Client Secret
+  displaypassword: Client Secret
+  required: false
+  type: 9
+  section: Connect
+  hiddenusername: true
+  additionalinfo: Required for Non-mTLS authentication. SAP Service Key field 'uaa.clientsecret'.
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Connect
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  defaultvalue: "false"
+  type: 8
+  section: Connect
+  advanced: true
+- name: max_fetch
+  display: The maximum number of audit logs per fetch
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+  defaultvalue: "5000"
+  additionalinfo: Maximum number of events to fetch per cycle (default 5000).
+script:
+  commands:
+  - name: sap-btp-get-events
+    description: |-
+      Gets events from SAP BTP Audit Log. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+    deprecated: false
+    arguments:
+    - name: start_time
+      description: >-
+        The start time to fetch events from.
+        Supports relative time (e.g., "3 days ago", "2 hours", "now")
+        or specific absolute dates (ISO 8601 format, e.g., "2024-12-01" or "2024-12-01T10:00:00Z").
+    - name: end_time
+      description: >-
+        The end time to fetch events until.
+        Supports relative time (e.g., "1 hour ago", "now")
+        or specific absolute dates (ISO 8601 format, e.g., "2024-12-01" or "2024-12-01T10:00:00Z").
+    - name: limit
+      description: Maximum number of events to retrieve.
+    - name: should_push_events
+      description: Set to true to push events to XSIAM (use with caution to avoid duplicates).
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: SAPBTP.Event.uuid
+      description: Unique identifier of the event.
+      type: String
+    - contextPath: SAPBTP.Event.user
+      description: User associated with the event.
+      type: String
+    - contextPath: SAPBTP.Event.time
+      description: Timestamp of the event.
+      type: Date
+    - contextPath: SAPBTP.Event.ip
+      description: IP address associated with the event.
+      type: String
+    - contextPath: SAPBTP.Event.data
+      description: Event data payload.
+      type: Unknown
+  isfetchevents: true
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 8.11.0
+triggers:
+  - conditions:
+      - name: auth_type
+        operator: equal
+        value: Non-mTLS
+    effects:
+      - name: client_secret
+        action:
+          required: true
+      - name: certificate
+        action:
+          hidden: true
+      - name: private_key
+        action:
+          hidden: true
+  - conditions:
+      - name: auth_type
+        operator: equal
+        value: mTLS
+    effects:
+      - name: client_secret
+        action:
+          hidden: true
+      - name: certificate
+        action:
+          required: true
+      - name: private_key
+        action:
+          required: true
+marketplaces:
+- marketplacev2
+tests:
+- No tests (auto formatted)
