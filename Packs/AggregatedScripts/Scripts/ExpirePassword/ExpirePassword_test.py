@@ -690,7 +690,16 @@ def test_main_failure_no_success(mock_demisto, mock_run_command, mock_return_res
             "",
         ),
         # Okta command fails
-        ([{"HumanReadable": "Failed to execute okta-expire-password command. Error: User testuser failed to expire", "Type": 4, "Metadata": {"instance": "inst1"}}], ""),
+        (
+            [
+                {
+                    "HumanReadable": "Failed to execute okta-expire-password command. Error: User testuser failed to expire",
+                    "Type": 4,
+                    "Metadata": {"instance": "inst1"},
+                }
+            ],
+            "",
+        ),
     ]
 
     main()
