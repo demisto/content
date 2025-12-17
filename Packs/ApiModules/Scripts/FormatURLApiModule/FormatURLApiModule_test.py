@@ -257,12 +257,12 @@ FORMAT_REFANG = [
 
 FORMAT_HTML_ENTITIES = [
     (
-        "https://example.com?marketing.comunicacion@mahle.com=NBh0Q9Alr9d=634&amp;r=737NBh0Q9Alr9/",  # disable-secrets-detection
-        "https://example.com?marketing.comunicacion@mahle.com=NBh0Q9Alr9d=634&r=737NBh0Q9Alr9/",
+        "https://example.com?marketing.comunicacion@example.com=NBh0Q9Alr9d=634&amp;r=737NBh0Q9Alr9/",  # disable-secrets-detection
+        "https://example.com?marketing.comunicacion@example.com=NBh0Q9Alr9d=634&r=737NBh0Q9Alr9/",
     ),  # disable-secrets-detection
     # Multiple &amp; entities
     (
-        "https://test.com?a=1&amp;b=2&amp;c=3",  # disable-secrets-detection
+        "https://test.com?a=1&amp;amp;b=2&amp;c=3",  # disable-secrets-detection
         "https://test.com?a=1&b=2&c=3",
     ),  # disable-secrets-detection
     # Other HTML entities
