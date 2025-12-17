@@ -1,5 +1,5 @@
 {
-    "description": "Maps incoming Trend Micro Vision One alerts.",
+    "description": "Maps incoming Trend Vision One alerts.",
     "feed": false,
     "id": "Trend Micro Vision One V3 XDR - Incoming Mapper",
     "mapping": {
@@ -509,6 +509,31 @@
                 },
                 "severity": {
                     "simple": "severity"
+                },
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_id",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
                 }
             }
         }
