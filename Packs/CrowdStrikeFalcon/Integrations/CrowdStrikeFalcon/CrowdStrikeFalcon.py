@@ -45,7 +45,7 @@ IOM_FETCH_TYPE = "Indicator of Misconfiguration"
 IOA_FETCH_TYPE = "Indicator of Attack"
 NGSIEM_DETECTION_FETCH_TYPE = "NGSIEM Detection"
 THIRD_PARTY_DETECTION_FETCH_TYPE = "Third Party Detection"
-RECON_FETCH_TYPE = "Recon Notifications"
+RECON_FETCH_TYPE = "Recon notifications"
 
 ENDPOINT_DETECTION = "detection"
 
