@@ -115,7 +115,6 @@ class Client(BaseClient):
         if not sites:
             raise DemistoException("Failed to obtain sites from Citrix DaaS response.")
 
-        #TODO: add test
         if len(sites) == 1:
             site_id = sites[0].get("id")
         else:
@@ -320,7 +319,7 @@ def main():
             customer_id=params.get("customer_id"),
             client_id=params.get("client_id"),
             client_secret=params.get("credentials", {}).get("password"),
-            site_name = params.get("site_name"),
+            site_name = params.get("site_name", ""),
             verify=not params.get("insecure"),
             proxy=params.get("proxy"),
         )

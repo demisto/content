@@ -45,7 +45,7 @@ def test_request_access_token(mocker):
     Then:
         - The token should be returned and stored in integration context.
     """
-    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", False, True)
+    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", None, False, True)
 
     mock_http = mocker.patch.object(client, "_http_request", return_value={"access_token": "abc123"})
     token = client.request_access_token()
@@ -55,16 +55,16 @@ def test_request_access_token(mocker):
     demisto.setIntegrationContext.assert_called_once_with({"access_token": "abc123"})
 
 
-def test_get_site_id(mocker):
+def test_get_site_id_one_site(mocker):
     """
     Given:
         - A valid access token in integration context.
     When:
-        - Calling `get_site_id` to obtain the site ID.
+        - Calling `get_site_id` to obtain the site ID when one site exists.
     Then:
         - The site ID should be returned and stored in integration context.
     """
-    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", False, True)
+    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", None, False, True)
     demisto.getIntegrationContext.return_value = {"access_token": "token123"}
 
     mock_resp = MagicMock()
@@ -78,6 +78,30 @@ def test_get_site_id(mocker):
     demisto.setIntegrationContext.assert_called_once_with({"site_id": "site123"})
 
 
+def test_get_site_id_site_name_parameter(mocker):
+    """
+    Given:
+        - A valid access token in integration context and site_name parameter.
+    When:
+        - Calling `get_site_id` to obtain the site ID when 2 site exists.
+    Then:
+        - The site ID should be returned and stored in integration context according to the site_name parameter.
+    """
+    client = Client("https://api.citrixcloud.com", "cust", "id", "secret","site 2", False, True)
+    demisto.getIntegrationContext.return_value = {"access_token": "token123"}
+
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = {"sites": [{"id": "site_1","displayName":"site 1"},{"id": "site_2","displayName":"site 2"}]}
+
+    mocker.patch.object(client, "_http_request", return_value=mock_resp)
+
+    site_id = client.get_site_id()
+    assert site_id == "site_2"
+    demisto.setIntegrationContext.assert_called_once_with({"site_id": "site_2"})
+
+
+
 def test_get_operations(mocker):
     """
     Given:
@@ -87,7 +111,7 @@ def test_get_operations(mocker):
     Then:
         - The function should return a JSON response with operation records.
     """
-    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", False, True)
+    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", None, False, True)
     demisto.getIntegrationContext.return_value = {"access_token": "token123", "site_id": "site123"}
 
     mock_resp = MagicMock()
@@ -109,7 +133,7 @@ def test_get_operations_with_pagination(mocker):
     Then:
         - The function should merge pages and return all operations with `_time` set.
     """
-    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", False, True)
+    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", None, False, True)
 
     responses = [
         {"Items": [{"Id": "op1", "FormattedStartTime": "2024-01-01T00:00:00Z"}], "ContinuationToken": "abc"},
@@ -139,7 +163,7 @@ def test_get_events_command_returns_results(mocker):
     Then:
         - A CommandResults object is returned containing the event data.
     """
-    client = Client("url", "cust", "id", "secret", False, True)
+    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", None, False, True)
     mocker.patch.object(
         client,
         "get_operations_with_pagination",
@@ -164,7 +188,7 @@ def test_fetch_events_command_first_run(mocker):
             the first event in the list (descending order).
         - The function get_operations_with_pagination search_date_option argument value is "LastMinute".
     """
-    client = Client("url", "cust", "id", "secret", False, True)
+    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", None, False, True)
     get_operations_mocker = mocker.patch.object(
         client,
         "get_operations_with_pagination",
@@ -193,7 +217,7 @@ def test_fetch_events_command_sets_last_run(mocker):
     Then:
         - The function should return events and set a new LastRun value.
     """
-    client = Client("url", "cust", "id", "secret", False, True)
+    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", None, False, True)
     mocker.patch.object(
         client, "get_operations_with_pagination", return_value=([{"_time": "2024-01-01T00:00:00Z", "Id": "id1"}], {})
     )
@@ -214,7 +238,7 @@ def test_module_test_command_returns_ok(mocker):
     Then:
         - The result should be 'ok', indicating a successful connection and fetch logic.
     """
-    client = Client("url", "cust", "id", "secret", False, True)
+    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", None, False, True)
     mocker.patch("CitrixDaasEventCollector.get_events_command", return_value="ok")
 
     result = module_test_command(client, {})
