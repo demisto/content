@@ -54,6 +54,28 @@ Get events from Exabeam Security Operations Platform.
 | ExabeamPlatform.Event.parsed | String | Whether the event has been parsed. | 
 | ExabeamPlatform.Event.rawLogs | String | The raw logs associated with the event. | 
 
+### exabeam-platform-get-events
+
+***
+Get cases from Exabeam Security Operations Platform as Cortex XSIAM events. This command is supported in Cortex XSIAM only and is intended to be used for debugging purposes as it may result in duplicate events.
+
+#### Base Command
+
+`exabeam-platform-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| start_time | The starting date for the case search range. For example: yyyy-MM-ddThh:mm:ssZ. Default is 1 hour ago. | Optional | 
+| end_time | The ending date for the case search range. For example: yyyy-MM-ddThh:mm:ssZ. Default is now. | Optional | 
+| limit | The maximum number of results to return. Default is 10. | Optional | 
+| should_push_events | If true, the command will push the events to the Cortex XSIAM dataset. Otherwise, it will only display them. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### exabeam-platform-table-record-list
 
 ***
@@ -94,6 +116,26 @@ Add one or more context records directly to an existing table.
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional |
 | tracker_id | Specify the tracker ID from an upload request whose progress you want to track. | Optional |
 | hide_polling_output | Suppresses the output of polling operations to reduce clutter in logs. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### exabeam-platform-context-table-delete
+
+***
+Delete a specific context table, including records and attributes.
+
+#### Base Command
+
+`exabeam-platform-context-table-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| table_id | Specify the ID of an existing context table. | Required |
+| delete_unused_custom_attributes | Delete any custom attributes in this table that are not used in another context table.. Possible values are: True, False. Default is False.| Required |
 
 #### Context Output
 
