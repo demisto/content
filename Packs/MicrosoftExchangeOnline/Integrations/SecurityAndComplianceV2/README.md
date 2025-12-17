@@ -136,7 +136,7 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
 **Scenario:** When running the `!o365-sc-auth-start` command, you may encounter the error message: "Response status code does not indicate success: 404 Not Found."
 
 **Solution:**
-**Verify Required Parameters:** Ensure that all required parameters in the integration instance configuration are correctly filled out. This includes:
+**Verify Required Parameters:** Ensure that all required parameters for App-only (using device code) Authentication in the integration instance configuration are correctly filled out. This includes:
 
 - **UPN/Email**: The email address (UPN) of the user account for the integration.
 - **App ID**: The application (client) ID from Azure.
