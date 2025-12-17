@@ -8,6 +8,7 @@ Citrix DaaS services simplify delivery and management of Citrix technologies.
 | Client Id |  | True |
 | Client Secret |  | True |
 | Customer ID |  | True |
+| Site Name |  | False |
 | Max events per fetch | The maximum amount of events to retrieve. This requires the configuration logging database to be configured and enabled. Results are returned in the order of most-recent to least-recent.| False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |

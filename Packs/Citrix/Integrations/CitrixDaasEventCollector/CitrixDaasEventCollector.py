@@ -59,11 +59,12 @@ RES_EXAMPLE = {
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, customer_id: str, client_id: str, client_secret: str, proxy: bool, verify: bool):
+    def __init__(self, base_url: str, customer_id: str, client_id: str, client_secret: str, site_name:str, proxy: bool, verify: bool):
         self.base_url = base_url
         self.customer_id = customer_id
         self.client_id = client_id
         self.client_secret = client_secret
+        self.site_name = site_name
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
     def request_access_token(self):
@@ -114,7 +115,17 @@ class Client(BaseClient):
         if not sites:
             raise DemistoException("Failed to obtain sites from Citrix DaaS response.")
 
-        site_id = sites[0].get("id")
+        #TODO: add test
+        if len(sites) == 1:
+            site_id = sites[0].get("id")
+        else:
+            site_id = next(
+                (site.get("id") for site in sites if site.get("displayName") == self.site_name),
+                None
+            )
+            if not site_id:
+                raise DemistoException(f"Failed to obtain site with the name {self.site_name} from Citrix DaaS response.")
+
         demisto.setIntegrationContext({SITE_ID_CONST: site_id})
         demisto.debug(f"Site id is {site_id}")
         return site_id
@@ -309,6 +320,7 @@ def main():
             customer_id=params.get("customer_id"),
             client_id=params.get("client_id"),
             client_secret=params.get("credentials", {}).get("password"),
+            site_name = params.get("site_name"),
             verify=not params.get("insecure"),
             proxy=params.get("proxy"),
         )

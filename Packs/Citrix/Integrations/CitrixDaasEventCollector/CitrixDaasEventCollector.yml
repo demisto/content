@@ -29,6 +29,10 @@ configuration:
   type: 0
   defaultvalue: 'masproductio'
   section: Connect
+- display: Site Name
+  name: site_name
+  type: 0
+  section: Connect
 - display: Max events per fetch
   additionalinfo: 'Maximum number of ConfigLog events per fetch. This requires the configuration logging database to be configured and enabled. Results are returned in the order of most-recent to least-recent.'
   defaultvalue: '10000'
