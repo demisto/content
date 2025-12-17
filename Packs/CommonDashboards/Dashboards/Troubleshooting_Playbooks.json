@@ -1,306 +1,295 @@
 {
-    "dashboards_data": [
+    "name": "Troubleshooting Playbooks",
+    "description": "Helps automation engineers and security analysts identify and resolve issues with playbooks and tasks, focusing on error analysis, execution failures, and runtime metrics",
+    "status": "ENABLED",
+    "layout": [
       {
-        "name": "Troubleshooting Playbooks",
-        "description": "Helps automation engineers and security analysts identify and resolve issues with playbooks and tasks, focusing on error analysis, execution failures, and runtime metrics",
-        "status": "ENABLED",
-        "layout": [
+        "id": "row-5466",
+        "data": [
           {
-            "id": "row-5466",
-            "data": [
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Playbook run errors",
-                  "width": 25,
-                  "height": 547,
-                  "phrase": "dataset = playbook_runs\n| filter playbook_status = \"failed\"\n| comp count() as error_count by playbook_name\n| sort desc error_count\n| view graph type = pie xaxis = playbook_name yaxis = error_count ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "pie",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "playbook_name"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "error_count"
-                        }
-                      }
-                    ]
-                  }
-                }
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Playbook run errors",
+              "width": 25,
+              "height": 547,
+              "phrase": "dataset = playbook_runs\n| filter playbook_status = \"failed\"\n| comp count() as error_count by playbook_name\n| sort desc error_count\n| view graph type = pie xaxis = playbook_name yaxis = error_count ",
+              "time_frame": {
+                "relativeTime": 604800000
               },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Task execution errors",
-                  "width": 25,
-                  "height": 547,
-                  "phrase": "dataset = playbook_tasks\n| filter task_status = \"Error\"\n| comp count() as error_count by task_name\n| sort desc error_count\n| view graph type = pie xaxis = task_name yaxis = error_count ",
-                  "time_frame": {
-                    "relativeTime": 604800000
+              "viewOptions": {
+                "type": "pie",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "playbook_name"
+                    }
                   },
-                  "viewOptions": {
-                    "type": "pie",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "task_name"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "error_count"
-                        }
-                      }
-                    ]
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "error_count"
+                    }
                   }
-                }
-              },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Failed Automated Tasks",
-                  "width": 25,
-                  "height": 547,
-                  "phrase": "dataset = playbook_tasks\n| filter task_status = \"Error\" and automated = true\n| comp count() as error_count\n| view graph type = single subtype = standard yaxis = error_count ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "single",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "standard"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "error_count"
-                        }
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Failed Manual Tasks",
-                  "width": 25,
-                  "height": 547,
-                  "phrase": "dataset = playbook_tasks\n| filter task_status = \"Error\" and automated = false\n| comp count() as error_count\n| view graph type = single subtype = standard yaxis = error_count",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "single",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "standard"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "error_count"
-                        }
-                      }
-                    ]
-                  }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "id": "row-2582",
-            "data": [
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Top 5 Playbook Average Runtime",
-                  "width": 33.333333333333336,
-                  "height": 547,
-                  "phrase": "dataset = playbook_runs\n| filter playbook_status in (\"completed\", \"failed\")\n| comp avg(run_time) as avg_run_time_secs by playbook_name\n| sort desc avg_run_time_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = playbook_name yaxis = avg_run_time_secs ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "column",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "grouped"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "playbook_name"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "avg_run_time_secs"
-                        }
-                      }
-                    ]
-                  }
-                }
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Task execution errors",
+              "width": 25,
+              "height": 547,
+              "phrase": "dataset = playbook_tasks\n| filter task_status = \"Error\"\n| comp count() as error_count by task_name\n| sort desc error_count\n| view graph type = pie xaxis = task_name yaxis = error_count ",
+              "time_frame": {
+                "relativeTime": 604800000
               },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Executions by status per Manual Tasks",
-                  "width": 33.333333333333336,
-                  "height": 547,
-                  "phrase": "dataset = playbook_tasks\n| filter automated = false\n| comp count() as exec_count by task_name, task_status\n| sort desc exec_count\n| view graph type = column subtype = grouped xaxis = task_name yaxis = exec_count series = task_status ",
-                  "time_frame": {
-                    "relativeTime": 604800000
+              "viewOptions": {
+                "type": "pie",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "task_name"
+                    }
                   },
-                  "viewOptions": {
-                    "type": "column",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "grouped"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "task_name"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "exec_count"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "series",
-                          "value": "task_status"
-                        }
-                      }
-                    ]
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "error_count"
+                    }
                   }
-                }
-              },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Executions by status per Automated Tasks",
-                  "width": 33.333333333333336,
-                  "height": 547,
-                  "phrase": "dataset = playbook_tasks\n| filter automated = true\n| comp count() as exec_count by task_name, task_status\n| sort desc exec_count\n| view graph type = column subtype = grouped xaxis = task_name yaxis = exec_count series = task_status ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "column",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "grouped"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "task_name"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "exec_count"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "series",
-                          "value": "task_status"
-                        }
-                      }
-                    ]
-                  }
-                }
+                ]
               }
-            ]
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Failed Automated Tasks",
+              "width": 25,
+              "height": 547,
+              "phrase": "dataset = playbook_tasks\n| filter task_status = \"Error\" and automated = true\n| comp count() as error_count\n| view graph type = single subtype = standard yaxis = error_count ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "single",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "standard"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "error_count"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Failed Manual Tasks",
+              "width": 25,
+              "height": 547,
+              "phrase": "dataset = playbook_tasks\n| filter task_status = \"Error\" and automated = false\n| comp count() as error_count\n| view graph type = single subtype = standard yaxis = error_count",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "single",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "standard"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "error_count"
+                    }
+                  }
+                ]
+              }
+            }
           }
-        ],
-        "default_dashboard_id": 1,
-        "global_id": "b335f061d2f44edebfbdaa2ba538e0c5",
-        "metadata": {
-          "params": []
-        }
+        ]
+      },
+      {
+        "id": "row-2582",
+        "data": [
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Top 5 Playbook Average Runtime",
+              "width": 33.333333333333336,
+              "height": 547,
+              "phrase": "dataset = playbook_runs\n| filter playbook_status in (\"completed\", \"failed\")\n| comp avg(run_time) as avg_run_time_secs by playbook_name\n| sort desc avg_run_time_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = playbook_name yaxis = avg_run_time_secs ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "column",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "grouped"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "playbook_name"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "avg_run_time_secs"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Executions by status per Manual Tasks",
+              "width": 33.333333333333336,
+              "height": 547,
+              "phrase": "dataset = playbook_tasks\n| filter automated = false\n| comp count() as exec_count by task_name, task_status\n| sort desc exec_count\n| view graph type = column subtype = grouped xaxis = task_name yaxis = exec_count series = task_status ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "column",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "grouped"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "task_name"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "exec_count"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "series",
+                      "value": "task_status"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Executions by status per Automated Tasks",
+              "width": 33.333333333333336,
+              "height": 547,
+              "phrase": "dataset = playbook_tasks\n| filter automated = true\n| comp count() as exec_count by task_name, task_status\n| sort desc exec_count\n| view graph type = column subtype = grouped xaxis = task_name yaxis = exec_count series = task_status ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "column",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "grouped"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "task_name"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "exec_count"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "series",
+                      "value": "task_status"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
       }
     ],
-    "widgets_data": [],
-    "name": "Troubleshooting Playbooks",
     "isPredefined": true,
     "marketplaces": [
-        "platform"
+      "platform"
     ],
     "fromVersion": "8.0.0",
-    "description": "",
-    "id": "Troubleshooting Instances",
+    "id": "Troubleshooting Playbooks",
     "version": -1,
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
     "period": {
-        "by": "",
-        "byTo": "",
-        "byFrom": "days",
-        "toValue": null,
-        "fromValue": 180,
-        "field": ""
+      "by": "",
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 180,
+      "field": ""
     },
     "fromDateLicense": "0001-01-01T00:00:00Z"
   }
+  

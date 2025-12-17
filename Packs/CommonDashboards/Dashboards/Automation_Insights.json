@@ -1,350 +1,337 @@
 {
-    "dashboards_data": [
-      {
-        "name": "Automation Insights",
-        "description": "Provides a high-level overview of the health and performance of automated processes, focusing on error rates, execution trends, and automation effectiveness",
-        "status": "ENABLED",
-        "layout": [
-          {
-            "id": "row-3968",
-            "data": [
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Automated Actions by Status",
-                  "width": 33.333333333333336,
-                  "height": 511,
-                  "phrase": "dataset = playbook_tasks\n| filter automated = true\n| filter task_status != null and task_status != \"\"\n| comp count() as task_count by task_status\n| sort desc task_count\n| view graph type = single subtype = standard yaxis = task_count ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "single",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "standard"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "task_count"
-                        }
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Actions by Verdict",
-                  "width": 33.333333333333336,
-                  "height": 511,
-                  "phrase": "dataset = indicators\n| filter verdict != null and verdict != \"\"\n| comp count() as action_count by verdict\n| sort desc action_count\n| view graph type = pie xaxis = verdict yaxis = action_count legend_percentage = `true` ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "pie",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "verdict"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "action_count"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "legend_percentage",
-                          "value": "`true`"
-                        }
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Automated vs Manual Actions",
-                  "width": 33.333333333333336,
-                  "height": 511,
-                  "phrase": "dataset = soar_execution_metrics\n| alter action_type = if(is_manual = true, \"Manual\", \"Automated\")\n| comp count() as action_count by action_type\n| sort desc action_count\n| view graph type = pie xaxis = action_type yaxis = action_count legend_percentage = `true` ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "pie",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "action_type"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "action_count"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "legend_percentage",
-                          "value": "`true`"
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "id": "row-3874",
-            "data": [
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Incidents Closed Over Time",
-                  "width": 33.333333333333336,
-                  "height": 511,
-                  "phrase": "dataset = incidents \n| filter resolved_ts != null and resolved_ts != \"\"\n| alter resolved_time = to_timestamp(resolved_ts)\n| bin resolved_time span = 1d\n| comp count() as closed_count by resolved_time, alert_categories\n| sort asc resolved_time\n| view graph type = line xaxis = resolved_ts yaxis = closed_count series = alert_categories ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "line",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "resolved_ts"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "closed_count"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "series",
-                          "value": "alert_categories"
-                        }
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Indicators Activity by Type",
-                  "width": 33.333333333333336,
-                  "height": 511,
-                  "phrase": "dataset = indicators\n| filter type != null and type != \"\"\n| bin _time span = 1d\n| comp count() as indicator_count by _time, type\n| view graph type = line xaxis = _time yaxis = indicator_count series = type ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "line",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "_time"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "indicator_count"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "series",
-                          "value": "type"
-                        }
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Command Executions per Integration Category",
-                  "height": 511,
-                  "phrase": "dataset = soar_execution_metrics\n| filter type = \"integration\"\n| filter category != null and category != \"\"\n| comp count() as exec_count by category\n| sort desc exec_count\n| view graph type = column subtype = grouped xaxis = category yaxis = exec_count ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "column",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "grouped"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "category"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "exec_count"
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "id": "row-4666",
-            "data": [
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Malicious Indicators Observed",
-                  "width": 50,
-                  "height": 444,
-                  "phrase": "dataset = indicators\n| filter verdict = \"Malicious\"\n| filter type != null and type != \"\"\n| comp count() as indicator_count by type\n| sort desc indicator_count\n| view graph type = pie xaxis = type yaxis = indicator_count ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "pie",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "type"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "indicator_count"
-                        }
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Average Runtime per Playbook (Top 5)",
-                  "width": 50,
-                  "height": 444,
-                  "phrase": "dataset = playbook_runs\n| filter playbook_status in (\"completed\", \"failed\")\n| filter run_time != null\n| comp avg(run_time) as avg_runtime_secs by playbook_name\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = playbook_name yaxis = avg_runtime_secs ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "column",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "grouped"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "playbook_name"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "avg_runtime_secs"
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          }
-        ],
-        "default_dashboard_id": 1,
-        "global_id": "03ffcf649a8a4cd6b9e0170b794baa89",
-        "metadata": {
-          "params": []
-        }
-      }
-    ],
-    "widgets_data": [],
-    "name": "Automation Insights",
-    "isPredefined": true,
-    "marketplaces": [
-        "platform",
-        "marketplacev2"
-    ],
-    "fromVersion": "8.0.0",
-    "description": "",
     "id": "Automation Insights",
     "version": -1,
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
     "period": {
-        "by": "",
-        "byTo": "",
-        "byFrom": "days",
-        "toValue": null,
-        "fromValue": 180,
-        "field": ""
+      "by": "",
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 180,
+      "field": ""
     },
-    "fromDateLicense": "0001-01-01T00:00:00Z"
-  }
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Automation Insights",
+    "description": "Provides a high-level overview of the health and performance of automated processes, focusing on error rates, execution trends, and automation effectiveness",
+    "fromVersion": "8.0.0",
+    "isPredefined": true,
+    "marketplaces": [
+      "platform",
+      "marketplacev2"
+    ],
+    "layout": [
+      {
+        "id": "row-3968",
+        "data": [
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Automated Actions by Status",
+              "width": 33.333333333333336,
+              "height": 511,
+              "phrase": "dataset = playbook_tasks\n| filter automated = true\n| filter task_status != null and task_status != \"\"\n| comp count() as task_count by task_status\n| sort desc task_count\n| view graph type = single subtype = standard yaxis = task_count ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "single",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "standard"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "task_count"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Actions by Verdict",
+              "width": 33.333333333333336,
+              "height": 511,
+              "phrase": "dataset = indicators\n| filter verdict != null and verdict != \"\"\n| comp count() as action_count by verdict\n| sort desc action_count\n| view graph type = pie xaxis = verdict yaxis = action_count legend_percentage = `true` ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "pie",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "verdict"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "action_count"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "legend_percentage",
+                      "value": "`true`"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Automated vs Manual Actions",
+              "width": 33.333333333333336,
+              "height": 511,
+              "phrase": "dataset = soar_execution_metrics\n| alter action_type = if(is_manual = true, \"Manual\", \"Automated\")\n| comp count() as action_count by action_type\n| sort desc action_count\n| view graph type = pie xaxis = action_type yaxis = action_count legend_percentage = `true` ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "pie",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "action_type"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "action_count"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "legend_percentage",
+                      "value": "`true`"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "row-3874",
+        "data": [
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Incidents Closed Over Time",
+              "width": 33.333333333333336,
+              "height": 511,
+              "phrase": "dataset = incidents \n| filter resolved_ts != null and resolved_ts != \"\"\n| alter resolved_time = to_timestamp(resolved_ts)\n| bin resolved_time span = 1d\n| comp count() as closed_count by resolved_time, alert_categories\n| sort asc resolved_time\n| view graph type = line xaxis = resolved_ts yaxis = closed_count series = alert_categories ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "line",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "resolved_ts"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "closed_count"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "series",
+                      "value": "alert_categories"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Indicators Activity by Type",
+              "width": 33.333333333333336,
+              "height": 511,
+              "phrase": "dataset = indicators\n| filter type != null and type != \"\"\n| bin _time span = 1d\n| comp count() as indicator_count by _time, type\n| view graph type = line xaxis = _time yaxis = indicator_count series = type ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "line",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "_time"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "indicator_count"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "series",
+                      "value": "type"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Command Executions per Integration Category",
+              "height": 511,
+              "phrase": "dataset = soar_execution_metrics\n| filter type = \"integration\"\n| filter category != null and category != \"\"\n| comp count() as exec_count by category\n| sort desc exec_count\n| view graph type = column subtype = grouped xaxis = category yaxis = exec_count ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "column",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "grouped"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "category"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "exec_count"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "row-4666",
+        "data": [
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Malicious Indicators Observed",
+              "width": 50,
+              "height": 444,
+              "phrase": "dataset = indicators\n| filter verdict = \"Malicious\"\n| filter type != null and type != \"\"\n| comp count() as indicator_count by type\n| sort desc indicator_count\n| view graph type = pie xaxis = type yaxis = indicator_count ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "pie",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "type"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "indicator_count"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Average Runtime per Playbook (Top 5)",
+              "width": 50,
+              "height": 444,
+              "phrase": "dataset = playbook_runs\n| filter playbook_status in (\"completed\", \"failed\")\n| filter run_time != null\n| comp avg(run_time) as avg_runtime_secs by playbook_name\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = playbook_name yaxis = avg_runtime_secs ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "column",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "grouped"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "playbook_name"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "avg_runtime_secs"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }  

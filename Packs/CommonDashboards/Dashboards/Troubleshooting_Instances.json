@@ -1,420 +1,409 @@
 {
-    "dashboards_data": [
+    "name": "Troubleshooting Instances",
+    "description": "Provides a detailed view of command and execution errors at the instance level",
+    "status": "ENABLED",
+    "layout": [
       {
-        "name": "Troubleshooting Instances",
-        "description": "Provides a detailed view of command and execution errors at the instance level",
-        "status": "ENABLED",
-        "layout": [
+        "id": "row-7110",
+        "data": [
           {
-            "id": "row-7110",
-            "data": [
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Command execution errors per Integration Category",
-                  "width": 33.333333333333336,
-                  "height": 511,
-                  "phrase": "dataset = soar_execution_metrics\n| filter is_error = true\n| filter type = \"integration\"\n| filter category != null and category != \"\"\n| comp count() as error_count by category\n| sort desc error_count\n| view graph type = pie xaxis = category yaxis = error_count ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "pie",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "category"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "error_count"
-                        }
-                      }
-                    ]
-                  }
-                }
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Command execution errors per Integration Category",
+              "width": 33.333333333333336,
+              "height": 511,
+              "phrase": "dataset = soar_execution_metrics\n| filter is_error = true\n| filter type = \"integration\"\n| filter category != null and category != \"\"\n| comp count() as error_count by category\n| sort desc error_count\n| view graph type = pie xaxis = category yaxis = error_count ",
+              "time_frame": {
+                "relativeTime": 604800000
               },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Command execution errors per Instance",
-                  "width": 33.29688354291963,
-                  "height": 511,
-                  "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| filter instance != null and instance != \"\"\n| comp count() as error_count by instance\n| sort desc error_count\n| view graph type = pie xaxis = instance yaxis = error_count ",
-                  "time_frame": {
-                    "relativeTime": 604800000
+              "viewOptions": {
+                "type": "pie",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "category"
+                    }
                   },
-                  "viewOptions": {
-                    "type": "pie",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "instance"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "error_count"
-                        }
-                      }
-                    ]
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "error_count"
+                    }
                   }
-                }
-              },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Command execution errors",
-                  "width": 33.406232914160746,
-                  "height": 511,
-                  "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count\n| view graph type = pie xaxis = name yaxis = error_count ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "pie",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "name"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "error_count"
-                        }
-                      }
-                    ]
-                  }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "id": "row-5364",
-            "data": [
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Command execution errors",
-                  "width": 25,
-                  "height": 511,
-                  "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| comp count() as error_count\n| view graph type = single subtype = standard yaxis = error_count ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "single",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "standard"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "error_count"
-                        }
-                      }
-                    ]
-                  }
-                }
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Command execution errors per Instance",
+              "width": 33.29688354291963,
+              "height": 511,
+              "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| filter instance != null and instance != \"\"\n| comp count() as error_count by instance\n| sort desc error_count\n| view graph type = pie xaxis = instance yaxis = error_count ",
+              "time_frame": {
+                "relativeTime": 604800000
               },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Manual Command execution errors",
-                  "width": 25,
-                  "height": 511,
-                  "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter is_manual = true\n| filter type = \"integration\"\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count\n| limit 5\n| view graph type = line xaxis = name yaxis = error_count ",
-                  "time_frame": {
-                    "relativeTime": 604800000
+              "viewOptions": {
+                "type": "pie",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "instance"
+                    }
                   },
-                  "viewOptions": {
-                    "type": "line",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "name"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "error_count"
-                        }
-                      }
-                    ]
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "error_count"
+                    }
                   }
-                }
-              },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Errors by Issue Type per Command (Top 5)",
-                  "height": 511,
-                  "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| filter api_response_type != null\n| alter command = name\n| comp count() as total_errors by command, category \n| sort desc total_errors \n| limit 5\n| view graph type = column subtype = grouped xaxis = category yaxis = total_errors series = command ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "column",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "grouped"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "category"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "total_errors"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "series",
-                          "value": "command"
-                        }
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Failed Automation executions (Top 5)",
-                  "width": 25,
-                  "height": 511,
-                  "phrase": "dataset = soar_execution_metrics\n| filter type = \"automation\"\n| filter is_error = true\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count \n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = error_count ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "column",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "grouped"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "name"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "error_count"
-                        }
-                      }
-                    ]
-                  }
-                }
+                ]
               }
-            ]
+            }
           },
           {
-            "id": "row-5656",
-            "data": [
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Average runtime per Command by Instance (Top 5)",
-                  "width": 33.333333333333336,
-                  "height": 435,
-                  "phrase": "dataset = soar_execution_metrics\n| filter type = \"integration\"\n| filter duration != null\n| filter name != null and instance != null\n| comp avg(duration) as avg_runtime_secs by name, instance\n| sort desc avg_runtime_secs\n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = avg_runtime_secs series = instance ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "column",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "grouped"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "name"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "avg_runtime_secs"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "series",
-                          "value": "instance"
-                        }
-                      }
-                    ]
-                  }
-                }
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Command execution errors",
+              "width": 33.406232914160746,
+              "height": 511,
+              "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count\n| view graph type = pie xaxis = name yaxis = error_count ",
+              "time_frame": {
+                "relativeTime": 604800000
               },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Command average runtime per Instance (Top 5)",
-                  "width": 33.333333333333336,
-                  "height": 435,
-                  "phrase": "dataset = soar_execution_metrics\n| filter type = \"integration\"\n| filter duration != null\n| filter instance != null and instance != \"\"\n| comp avg(duration) as avg_runtime_secs by instance\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = instance yaxis = avg_runtime_secs ",
-                  "time_frame": {
-                    "relativeTime": 604800000
+              "viewOptions": {
+                "type": "pie",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "name"
+                    }
                   },
-                  "viewOptions": {
-                    "type": "column",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "grouped"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "instance"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "avg_runtime_secs"
-                        }
-                      }
-                    ]
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "error_count"
+                    }
                   }
-                }
-              },
-              {
-                "key": "xql",
-                "data": {
-                  "type": "Custom XQL",
-                  "title": "Command average runtime per Instance (Top 5)",
-                  "width": 33.333333333333336,
-                  "height": 435,
-                  "phrase": "dataset = soar_execution_metrics\n| filter type = \"automation\"\n| filter duration != null\n| filter name != null and name != \"\"\n| comp avg(duration) as avg_runtime_secs by name\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = avg_runtime_secs ",
-                  "time_frame": {
-                    "relativeTime": 604800000
-                  },
-                  "viewOptions": {
-                    "type": "column",
-                    "commands": [
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "subtype",
-                          "value": "grouped"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "xaxis",
-                          "value": "name"
-                        }
-                      },
-                      {
-                        "command": {
-                          "op": "=",
-                          "name": "yaxis",
-                          "value": "avg_runtime_secs"
-                        }
-                      }
-                    ]
-                  }
-                }
+                ]
               }
-            ]
+            }
           }
-        ],
-        "default_dashboard_id": 1,
-        "global_id": "0523406bbbae4d0d840a5057e0336880",
-        "metadata": {
-          "params": []
-        }
+        ]
+      },
+      {
+        "id": "row-5364",
+        "data": [
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Command execution errors",
+              "width": 25,
+              "height": 511,
+              "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| comp count() as error_count\n| view graph type = single subtype = standard yaxis = error_count ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "single",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "standard"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "error_count"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Manual Command execution errors",
+              "width": 25,
+              "height": 511,
+              "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter is_manual = true\n| filter type = \"integration\"\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count\n| limit 5\n| view graph type = line xaxis = name yaxis = error_count ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "line",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "name"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "error_count"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Errors by Issue Type per Command (Top 5)",
+              "height": 511,
+              "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| filter api_response_type != null\n| alter command = name\n| comp count() as total_errors by command, category \n| sort desc total_errors \n| limit 5\n| view graph type = column subtype = grouped xaxis = category yaxis = total_errors series = command ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "column",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "grouped"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "category"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "total_errors"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "series",
+                      "value": "command"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Failed Automation executions (Top 5)",
+              "width": 25,
+              "height": 511,
+              "phrase": "dataset = soar_execution_metrics\n| filter type = \"automation\"\n| filter is_error = true\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count \n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = error_count ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "column",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "grouped"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "name"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "error_count"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "row-5656",
+        "data": [
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Average runtime per Command by Instance (Top 5)",
+              "width": 33.333333333333336,
+              "height": 435,
+              "phrase": "dataset = soar_execution_metrics\n| filter type = \"integration\"\n| filter duration != null\n| filter name != null and instance != null\n| comp avg(duration) as avg_runtime_secs by name, instance\n| sort desc avg_runtime_secs\n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = avg_runtime_secs series = instance ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "column",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "grouped"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "name"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "avg_runtime_secs"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "series",
+                      "value": "instance"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Command average runtime per Instance (Top 5)",
+              "width": 33.333333333333336,
+              "height": 435,
+              "phrase": "dataset = soar_execution_metrics\n| filter type = \"integration\"\n| filter duration != null\n| filter instance != null and instance != \"\"\n| comp avg(duration) as avg_runtime_secs by instance\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = instance yaxis = avg_runtime_secs ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "column",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "grouped"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "instance"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "avg_runtime_secs"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "xql",
+            "data": {
+              "type": "Custom XQL",
+              "title": "Command average runtime per Instance (Top 5)",
+              "width": 33.333333333333336,
+              "height": 435,
+              "phrase": "dataset = soar_execution_metrics\n| filter type = \"automation\"\n| filter duration != null\n| filter name != null and name != \"\"\n| comp avg(duration) as avg_runtime_secs by name\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = avg_runtime_secs ",
+              "time_frame": {
+                "relativeTime": 604800000
+              },
+              "viewOptions": {
+                "type": "column",
+                "commands": [
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "subtype",
+                      "value": "grouped"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "xaxis",
+                      "value": "name"
+                    }
+                  },
+                  {
+                    "command": {
+                      "op": "=",
+                      "name": "yaxis",
+                      "value": "avg_runtime_secs"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
       }
     ],
-    "widgets_data": [],
-    "name": "Troubleshooting Instances",
     "isPredefined": true,
     "marketplaces": [
-        "platform"
+      "platform"
     ],
     "fromVersion": "8.0.0",
-    "description": "",
     "id": "Troubleshooting Instances",
     "version": -1,
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
     "period": {
-        "by": "",
-        "byTo": "",
-        "byFrom": "days",
-        "toValue": null,
-        "fromValue": 180,
-        "field": ""
+      "by": "",
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 180,
+      "field": ""
     },
     "fromDateLicense": "0001-01-01T00:00:00Z"
   }
+  
