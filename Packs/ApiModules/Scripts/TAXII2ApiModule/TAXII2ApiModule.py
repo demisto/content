@@ -2066,7 +2066,9 @@ class STIX2XSOARParser(BaseClient):
             if score:
                 cve["score"] = score
 
-        fields["tags"] = list(set(vulnerability_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", [])), {name} if name else {}))
+        fields["tags"] = list(
+            set(vulnerability_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", [])), {name} if name else {})
+        )
 
         cve["fields"] = fields
 
