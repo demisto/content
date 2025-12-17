@@ -1656,7 +1656,7 @@ script:
         - name: cvrs_gte
           description: The minimum risk score assigned to the vulnerability (range 0-100).
         - name: compensating_controls_effective_coverage
-          descriptions: The assessed effectiveness and coverage of detected compensating controls.
+          description: The assessed effectiveness and coverage of detected compensating controls.
           isArray: true
           auto: PREDEFINED
           predefined:
