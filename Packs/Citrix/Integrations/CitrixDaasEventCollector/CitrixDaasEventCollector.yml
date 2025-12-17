@@ -48,7 +48,7 @@ configuration:
   required: false
 description: Citrix DaaS services simplify delivery and management of Citrix technologies.
 display: Citrix DaaS
-name: CitrixDaaS
+name: CitrixDaas
 script:
   commands:
   - name: citrix-daas-get-events
@@ -68,6 +68,8 @@ script:
     - name: limit
       description: The maximum number of logs to return.
       defaultValue: 10
+    - name: days
+      description: Number of days of history to retrieve.
     - name: search_date_option
       auto: PREDEFINED
       description: Specific time filters for searching operations.

@@ -121,7 +121,7 @@ class Client(BaseClient):
 
     def get_operations(self, search_date_option: str | None, continuation_token: str = None, limit: int = None, days: int = None):
         # TODO: remove
-        return RES_EXAMPLE
+        # return RES_EXAMPLE
 
         # get access token value
         integration_context = demisto.getIntegrationContext()
@@ -233,12 +233,13 @@ class Client(BaseClient):
 def get_events_command(client: Client, args: dict):  # type: ignore
     limit = int(args.get("limit", "10"))
     search_date_option = args.get("search_date_option")
+    days = args.get("days")
 
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
     demisto.debug(f"Running citrix-daas-get-events with {should_push_events=}")
 
-    operations, raw_res = client.get_operations_with_pagination(limit=limit, search_date_option=search_date_option)
+    operations, raw_res = client.get_operations_with_pagination(limit=limit, search_date_option=search_date_option, days=days)
 
     results = CommandResults(
         outputs_prefix="CitrixDaas.Event",
@@ -266,8 +267,8 @@ def days_since(timestamp_str) -> int:
     # Difference in days
     delta = now - dt
     days = delta.days
-    if days<0:
-        return 0
+    if days < 0:
+        return 1
     return delta.days
 
 
