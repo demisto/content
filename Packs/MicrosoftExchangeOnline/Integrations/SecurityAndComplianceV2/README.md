@@ -217,7 +217,7 @@ Missing or incorrect values in these fields can cause a 404 error, as the integr
 
 #### Failed Delegated User Authentication
 
-**Scenario:** You Filled out the 'UPN' and 'UPN Passwords' integration parameters and after running the `!o365-sc-auth-test` command, the authorization process fails, and you get the error 'you must use multi-factor authentication to access ...'.
+**Scenario:** You Filled out the 'UPN' and 'UPN Password' integration parameters and after running the `!o365-sc-auth-test` command, the authorization process fails, and you get the error 'you must use multi-factor authentication to access ...'.
 
 **Solution:**
 
