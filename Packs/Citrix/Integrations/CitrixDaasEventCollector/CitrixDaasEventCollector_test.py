@@ -87,19 +87,20 @@ def test_get_site_id_site_name_parameter(mocker):
     Then:
         - The site ID should be returned and stored in integration context according to the site_name parameter.
     """
-    client = Client("https://api.citrixcloud.com", "cust", "id", "secret","site 2", False, True)
+    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", "site 2", False, True)
     demisto.getIntegrationContext.return_value = {"access_token": "token123"}
 
     mock_resp = MagicMock()
     mock_resp.status_code = 200
-    mock_resp.json.return_value = {"sites": [{"id": "site_1","displayName":"site 1"},{"id": "site_2","displayName":"site 2"}]}
+    mock_resp.json.return_value = {
+        "sites": [{"id": "site_1", "displayName": "site 1"}, {"id": "site_2", "displayName": "site 2"}]
+    }
 
     mocker.patch.object(client, "_http_request", return_value=mock_resp)
 
     site_id = client.get_site_id()
     assert site_id == "site_2"
     demisto.setIntegrationContext.assert_called_once_with({"site_id": "site_2"})
-
 
 
 def test_get_operations(mocker):
