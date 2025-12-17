@@ -21,6 +21,7 @@ The Security and Compliance PowerShell module relies on legacy eDiscovery. We re
 ## Permissions and Authentication Setup
 
 ### Overview
+
 This section describes how to configure permissions for the integration, supporting both **App-only Authentication** and **Delegated User Authentication**.
 
 ---
@@ -32,7 +33,6 @@ To set up the integration and register the application in Azure, follow these st
 1. **App Registration**: Register a new application in Entra ID and configure necessary permissions.
 2. **Authentication Configuration**: Enable public client flows and create an app secret.
 3. **Role Setup**: Assign the required roles for the App Service Principal to function correctly.
-
 
 #### 1. App Registration and Permission Configuration
 
