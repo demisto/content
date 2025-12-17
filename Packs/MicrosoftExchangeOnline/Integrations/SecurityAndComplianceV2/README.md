@@ -113,6 +113,16 @@ Grant the service account the required permissions to run Security & Compliance 
 
 Note: Role assignment propagation may take up to one hour.
 
+### Known Endpoints
+
+| Environment                        | ConnectionUri                                                         | AzureADAuthorizationEndpointUri   |
+|------------------------------------|-----------------------------------------------------------------------|-----------------------------------|
+| Microsoft 365 or Microsoft 365 GCC | https://ps.compliance.protection.outlook.com/powershell-liveid/       | https://login.microsoftonline.com |
+| Microsoft 365 GCC High             | https://ps.compliance.protection.office365.us/powershell-liveid/      | https://login.microsoftonline.us  |
+| Microsoft 365 DoD                  | https://l5.ps.compliance.protection.office365.us/powershell-liveid/   | https://login.microsoftonline.us  |
+| Office 365 operated by 21Vianet    | https://ps.compliance.protection.partner.outlook.cn/powershell-liveid | https://login.chinacloudapi.cn    |
+
+[More information available here](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?view=exchange-ps#step-2-connect-and-authenticate).
 
 ## Configure SecurityAndComplianceV2 in Cortex
 
@@ -137,6 +147,7 @@ Note: Role assignment propagation may take up to one hour.
           - o365-sc-case-hold-policy-delete
           - o365-sc-case-hold-rule-create
           - o365-sc-case-hold-rule-delete
+          - o365-sc-email-security-search-and-delete-email-office-365-quick-action
 
    - **Note - If a UPN Password is provided:**
      - Even if the password is incorrect, the integration will attempt to authenticate using it.
