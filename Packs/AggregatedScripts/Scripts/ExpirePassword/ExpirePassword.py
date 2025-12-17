@@ -35,6 +35,7 @@ SUCCESS_MESSAGES = {
 }
 
 OKTA_PASSWORD_EXPIRED_MARKER = "PASSWORD_EXPIRED"
+OKTA_EXPECTED_FAILURE_PREFIX = "Failed to execute okta-expire-password command."
 GENERIC_FAILURE_MESSAGE = "{user_brand} password expiration failed."
 
 
@@ -232,9 +233,15 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     for res in res_cmd:
         res_msg = get_response_message(res, GENERIC_FAILURE_MESSAGE.format(user_brand=user["Brand"]))
         success = OKTA_PASSWORD_EXPIRED_MARKER in res_msg
-        failure_msg = res_msg if not res_msg.startswith("###") else GENERIC_FAILURE_MESSAGE.format(user_brand=user["Brand"])
+        failure_msg = (
+            res_msg
+            if not success and res_msg.startswith(OKTA_EXPECTED_FAILURE_PREFIX)
+            else GENERIC_FAILURE_MESSAGE.format(
+                user_brand=user["Brand"]
+            )
+        )
         func_res.append(
-            build_result(res, success_condition=success, success_msg="Password expired successfully", failure_msg=failure_msg)
+            build_result(res, success_condition=success, success_msg="Password expired successfully.", failure_msg=failure_msg)
         )
     return func_res, hr
 

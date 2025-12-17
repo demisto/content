@@ -276,7 +276,7 @@ def test_run_okta_v2_success(mock_run_command):
     result, _ = run_okta_v2(user, "inst1")
 
     expected: list[ExpiredPasswordResult] = [
-        {"Result": "Success", "Message": "Password expired successfully", "Instance": "inst1"}
+        {"Result": "Success", "Message": "Password expired successfully.", "Instance": "inst1"}
     ]
     assert result == expected
     mock_run_command.assert_called_with("okta-expire-password", {"username": "testuser", "using": "inst1"})
@@ -296,7 +296,7 @@ def test_run_okta_v2_failure(mock_run_command):
         "Brand": "Okta v2",
         "Instance": "inst1",
     }
-    failure_msg = "User not found in Okta"
+    failure_msg = "Failed to execute okta-expire-password command. User not found in Okta"
     mock_run_command.return_value = ([{"HumanReadable": failure_msg, "Type": 4, "Metadata": {"instance": "inst1"}}], "")
     result, _ = run_okta_v2(user, "inst1")
 
@@ -484,7 +484,7 @@ def test_expire_passwords_single_user_success(mock_run_command):
             "Brand": "Okta v2",
             "Instance": "inst1",
             "Result": "Success",
-            "Message": "Password expired successfully",
+            "Message": "Password expired successfully.",
         }
     ]
     assert results == expected_results
@@ -579,7 +579,7 @@ def test_expire_passwords_mixed_success_failure(mock_run_command):
             "UserProfile": {"ID": "1", "Username": "user1", "Email": "user1@example.com"},
             "Brand": "Okta v2",
             "Result": "Success",
-            "Message": "Password expired successfully",
+            "Message": "Password expired successfully.",
             "Instance": "okta-inst",
         },
         {
@@ -690,7 +690,7 @@ def test_main_failure_no_success(mock_demisto, mock_run_command, mock_return_res
             "",
         ),
         # Okta command fails
-        ([{"HumanReadable": "Error: User testuser failed to expire", "Type": 4, "Metadata": {"instance": "inst1"}}], ""),
+        ([{"HumanReadable": "Failed to execute okta-expire-password command. Error: User testuser failed to expire", "Type": 4, "Metadata": {"instance": "inst1"}}], ""),
     ]
 
     main()
