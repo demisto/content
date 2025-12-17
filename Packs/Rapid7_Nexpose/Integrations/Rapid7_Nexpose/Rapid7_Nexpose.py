@@ -126,9 +126,9 @@ asset_latest_scan AS (
 
     FROM
         fact_asset_scan fas
-    JOIN 
+    JOIN
         dim_scan ds ON fas.scan_id = ds.scan_id
-    ORDER BY 
+    ORDER BY
         fas.asset_id, ds.finished DESC -- Order by asset ID, then descending finish time to get the absolute latest
 ),
 latest_os_certainty AS (
@@ -138,7 +138,7 @@ latest_os_certainty AS (
     FROM
         fact_asset_scan_operating_system fasos
     JOIN
-        dim_scan ds ON fasos.scan_id = ds.scan_id 
+        dim_scan ds ON fasos.scan_id = ds.scan_id
     ORDER BY
         fasos.asset_id, ds.finished DESC, fasos.certainty DESC -- Use certainty as a tie-breaker if dates are equal
 )
@@ -150,12 +150,12 @@ SELECT
     da.host_name AS "dim_asset.host_name",
     da.host_type_id AS "dim_asset.host_type_id",
     dht.description AS "dim_host_type.description",
-    CASE 
+    CASE
         WHEN da.ip_address LIKE '%:%' THEN NULL
         ELSE da.ip_address
     END AS "ipv4",
 
-    CASE 
+    CASE
         WHEN da.ip_address LIKE '%:%' THEN da.ip_address
         ELSE NULL
     END AS "ipv6",
@@ -170,7 +170,7 @@ SELECT
     dos.asset_type AS "dim_operating_system.asset_type",
     dos.vendor AS "dim_operating_system.vendor",
     dos.version AS "dim_operating_system.version",
-    dos.cpe AS "dim_operating_system.cpe",    
+    dos.cpe AS "dim_operating_system.cpe",
     loc.latest_os_certainty_value AS "fact_asset_scan_operating_system.certainty",
     atags.aggregated_tags_json AS "dim_tag_asset.tags",
     am.aggregated_mac_addresses AS "dim_asset_mac_address.mac_address",
@@ -218,7 +218,7 @@ LEFT JOIN
     dim_software ds ON das.software_id = ds.software_id
 LEFT JOIN
     assets_host ah ON da.asset_id = ah.asset_id
-INNER JOIN 
+INNER JOIN
     asset_latest_scan als ON da.asset_id = als.asset_id
 LEFT JOIN
     dim_aggregated_credential_status dacs ON als.aggregated_credential_status_id = dacs.aggregated_credential_status_id
