@@ -1,0 +1,58 @@
+name: AI Reviewer Comment Trigger
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  trigger-ai-review:
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    if: >-
+      github.event.issue.pull_request &&
+      (contains(github.event.comment.body, '@content_bot start review') || contains(github.event.comment.body, '@content_bot re-review')) &&
+      (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
+      !contains(fromJson('["content-bot", "xsoar-bot", "dependabot"]'), github.event.comment.user.login)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Check for existing reactions
+        id: check_reactions
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          reactions=$(gh api "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}" --jq '.reactions')
+          rocket=$(echo "$reactions" | jq '.rocket')
+          plus_one=$(echo "$reactions" | jq '.["+1"]')
+          
+          echo "rocket=$rocket" >> $GITHUB_OUTPUT
+          echo "plus_one=$plus_one" >> $GITHUB_OUTPUT
+
+      - name: Reply - Review in Progress
+        if: steps.check_reactions.outputs.rocket > 0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment "${{ github.event.issue.number }}" --body "Review is already in progress."
+
+      - name: Reply - Review Completed
+        if: steps.check_reactions.outputs.plus_one > 0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment "${{ github.event.issue.number }}" --body "Review is already completed."
+
+      - name: Trigger AI Review (Push Empty Commit)
+        if: steps.check_reactions.outputs.rocket == 0 && steps.check_reactions.outputs.plus_one == 0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr checkout "${{ github.event.issue.number }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "Trigger AI Review"
+          git push
