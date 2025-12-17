@@ -1,3 +1,6 @@
+from typing import *
+from datetime import datetime, timedelta
+import time
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -7,11 +10,6 @@ import requests
 import urllib3
 
 urllib3.disable_warnings()
-
-import time
-
-from datetime import datetime, timedelta
-from typing import *
 
 
 """ CONSTANTS """
