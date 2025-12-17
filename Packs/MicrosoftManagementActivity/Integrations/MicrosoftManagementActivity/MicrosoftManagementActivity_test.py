@@ -217,7 +217,6 @@ GET_BLOB_DATA_RESPONSE_FOR_AUDIT_ACTIVEDIRECTORY = [
     }
 ]
 
-
 CONTENT_RECORD_CREATED_ONE_HOUR_AGO = [
     {
         "CreationTime": TIME_ONE_HOUR_AGO_STRING,
@@ -415,9 +414,10 @@ def test_get_content_types_to_fetch(mocker, requests_mock, demisto_params, expec
 def test_content_records_to_incidents_records_creation():
     from MicrosoftManagementActivity import content_records_to_incidents
 
+    start_time_past = "2019-01-01T00:00:00"
     time_now_string = datetime.strftime(datetime.now(), DATE_FORMAT)
-    incidents, latest_creation_time = content_records_to_incidents(
-        GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL, TIME_6_HOURS_AGO_STRING, time_now_string
+    incidents, latest_creation_time, _ = content_records_to_incidents(
+        GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL, start_time_past, time_now_string, {}
     )
     single_incident = incidents[0]
     assert "name" in single_incident
@@ -437,7 +437,7 @@ def test_content_records_to_incidents_last_run(content_records, expected_last_ru
     time_24_hours_ago_string = datetime.strftime(time_24_hours_ago, DATE_FORMAT)
     start_time = time_24_hours_ago_string
 
-    _, last_run = content_records_to_incidents(content_records, start_time, end_time)
+    _, last_run, _ = content_records_to_incidents(content_records, start_time, end_time, {})
     assert are_dates_approximately_equal(last_run, expected_last_run)
 
 
@@ -448,16 +448,21 @@ def test_fetch_incidents_flow(mocker, requests_mock):
     set_requests_mock(client, requests_mock)
     demisto_params = {"content_types_to_fetch": "audit.general"}
     mocker.patch.object(demisto, "params", return_value=demisto_params)
-    last_run = {}
-    first_fetch_delta = TIME_24_HOURS_AGO
 
-    next_run, incidents = fetch_incidents(client, last_run, first_fetch_delta)
+    # We mock the time calculation to force a window that covers the 2020 mock data.
+    # This bypasses the "max 7 days lookback" logic in the real function.
+    mocker.patch(
+        "MicrosoftManagementActivity.get_fetch_start_and_end_time", return_value=("2020-02-27T00:00:00", "2020-02-27T01:00:00")
+    )
+
+    last_run = {}
+    first_fetch_dummy = "2020-01-01T00:00:00"
+
+    next_run, incidents = fetch_incidents(client, last_run, first_fetch_dummy)
+
     incident_names = [incident["name"] for incident in incidents]
-    assert incident_names == [
-        "Microsoft Management Activity: 1234",
-        "Microsoft Management Activity: 1234",
-        "Microsoft Management Activity: 1234",
-    ]
+
+    assert incident_names == ["Microsoft Management Activity: 1234"]
 
 
 @pytest.mark.parametrize("command", [("start"), ("stop")])
@@ -689,3 +694,131 @@ def test_fetch_start_time(mocker):
 
     assert fetch_start_time_str == "2023-08-02T14:22:49"
     assert fetch_end_time_str == "2023-08-03T14:22:49"
+
+
+def test_test_module_with_auth_code(mocker):
+    """
+    Given:
+        - Various configurations of valid auth_code and redirect_uri.
+    When:
+        - Calling test_module function.
+    Then:
+        - Ensure the appropriate error is raised based on the configuration.
+    """
+    import MicrosoftManagementActivity
+    from MicrosoftManagementActivity import main
+
+    redirect_uri = "redirect_uri"
+    tenant_id = "tenant_id"
+    client_id = "client_id"
+    mocked_params = {
+        "redirect_uri": redirect_uri,
+        "credentials_auth_code": {"password": "test_auth_code"},
+        "self_deployed": True,
+        "refresh_token": tenant_id,
+        "auth_id": client_id,
+        "enc_key": "client_secret",
+    }
+    mocker.patch.object(demisto, "params", return_value=mocked_params)
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(MicrosoftManagementActivity, "return_results")
+    mock_return_error = mocker.patch.object(MicrosoftManagementActivity, "return_error")
+
+    main()
+
+    expected_error = "Please run the !ms-management-activity-list-subscriptions command"
+    assert mock_return_error.called
+    error_message = mock_return_error.call_args[0][0]
+    assert expected_error in error_message
+
+
+@pytest.fixture
+def mock_content_records():
+    """Reads the mocked JSON data for all tests."""
+    file_path = os.path.join("test_data", "incidents_mocked.json")
+    with open(file_path) as f:
+        return json.load(f)
+
+
+def test_fetch_standard_flow(mock_content_records):
+    """
+    Case 1: Standard Fetch
+    - Start Time: 04:05 (After OLD_EVENT, Before others)
+    - Last Run: Empty (First time seeing these)
+    - Expected:
+        - OLD_EVENT skipped (time filter).
+        - Internal duplicate NEW_EVENT_001 skipped.
+        - Returns 3 valid incidents.
+        - Last Fetch moves to 04:15:00 (Latest event).
+        - Dedup list contains ['NEW_EVENT_001'].
+    """
+    from MicrosoftManagementActivity import content_records_to_incidents
+
+    start_time = "2025-12-05T04:05:00"
+    end_time = "2025-12-05T04:20:00"
+    last_run = {}
+
+    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(mock_content_records, start_time, end_time, last_run)
+
+    incident_ids = [json.loads(i["rawJSON"])["Id"] for i in incidents]
+
+    assert len(incidents) == 3
+
+    assert "EVENT_001" not in incident_ids
+
+    assert incident_ids.count("EVENT_004") == 1
+
+    assert next_timestamp == "2025-12-05T04:15:00"
+    assert next_dedup_ids == ["EVENT_004"]
+
+
+def test_fetch_with_deduplication(mock_content_records):
+    """
+    Case 2: Deduplication Logic
+    - Start Time: 04:10
+    - Last Run: Mocked fetching 'EVENT_001' and 'EVENT_002' in the previous cycle.
+    - Expected:
+        - Total incidents: 2.
+    """
+    from MicrosoftManagementActivity import content_records_to_incidents
+
+    start_time = "2025-12-05T04:10:00"
+    end_time = "2025-12-05T04:20:00"
+
+    # We mock a previous run that ended at 04:10:00
+    last_run = {"last_fetch": "2025-12-05T04:10:00", "incidents_id_dedup": ["EVENT_002"]}
+
+    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(mock_content_records, start_time, end_time, last_run)
+
+    assert len(incidents) == 2
+
+    incident_ids = [json.loads(i["rawJSON"])["Id"] for i in incidents]
+    assert "EVENT_002" not in incident_ids, "Duplicate should have been skipped"
+    assert "EVENT_003" in incident_ids
+    assert incident_ids.count("EVENT_004") == 1
+
+    assert next_timestamp == "2025-12-05T04:15:00"
+
+
+def test_fetch_advance_window_empty_results(mock_content_records):
+    """
+    Case 3: No New Data
+    - Start Time: 04:16
+    - Expected:
+        - 0 Incidents.
+        - Timestamp advances to END_TIME (not stuck at start time).
+        - Dedup list cleared.
+    """
+    from MicrosoftManagementActivity import content_records_to_incidents
+
+    start_time = "2025-12-05T04:16:00"
+    end_time = "2025-12-05T04:30:00"
+    last_run = {}
+
+    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(mock_content_records, start_time, end_time, last_run)
+
+    assert len(incidents) == 0
+
+    assert next_timestamp == end_time
+
+    assert next_dedup_ids == []
