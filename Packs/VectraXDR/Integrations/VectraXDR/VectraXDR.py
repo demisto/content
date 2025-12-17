@@ -3089,7 +3089,7 @@ def vectra_detection_note_remove_command(client: VectraClient, args: dict[str, A
 
     # Call Vectra API to remove note
     response = client.remove_detection_note_request(
-        entity_id=detection_id,  # type: ignore
+        detection_id=detection_id,  # type: ignore
         note_id=note_id,  # type: ignore
     )
     if response.status_code == 204:
