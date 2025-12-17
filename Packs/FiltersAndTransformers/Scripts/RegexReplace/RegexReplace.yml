@@ -1,11 +1,11 @@
 args:
-- description: Text to match against
+- description: Text to match against.
   name: value
   required: true
-- description: Regex pattern to search
+- description: Regex pattern to search.
   name: regex
   required: true
-- description: Template string to format patterns matched with regex
+- description: Template string to format patterns matched with regex.
   name: output_format
 - auto: PREDEFINED
   defaultValue: 'false'
@@ -29,7 +29,7 @@ args:
   description: Whether to make the '.' character also match a new line. Default is "false".
   defaultValue: 'false'
 - name: action_dt
-  description: The last action for each matched value to transform
+  description: The last action for each matched value to transform.
 comment: |-
   Format patterns matched with regex. If the regex does not match any pattern, the original value is returned.
 
@@ -43,11 +43,11 @@ comment: |-
    value: xxx=yyy
    regex: user=(.*)
    output_format: name=\1
-   -> output value: xxx=yyy
+   -> output value: xxx=yyy.
 commonfields:
   id: RegexReplace
   version: -1
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 enabled: true
 name: RegexReplace
 runas: DBotWeakRole
