@@ -1,4 +1,7 @@
 import hashlib
+from collections.abc import Iterable
+from enum import Enum
+from typing import Any
 
 import incydr
 from incydr.enums.file_events import EventSearchTerm
@@ -6,10 +9,6 @@ from incydr.enums.file_events import EventSearchTerm
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
-
-from typing import Any
-from collections.abc import Iterable
-from enum import Enum
 
 DEFAULT_FILE_EVENTS_MAX_FETCH = 50000
 DEFAULT_AUDIT_EVENTS_MAX_FETCH = 100000
@@ -136,9 +135,12 @@ class Client:
 
         sorted_file_events = sorted(file_events, key=lambda x: x.event.inserted)[:limit]
 
+        events = []
         for event in sorted_file_events:
-            event.eventType = EventType.FILE
-            event._time = event.event.inserted
+            event_dict = event.dict()
+            event_dict["eventType"] = EventType.FILE
+            event_dict["_time"] = event.event.inserted
+            events.append(event_dict)
 
         demisto.debug(f"Finished {EventType.FILE.value} events query. Got {len(sorted_file_events)} events.")
         return [event.dict() for event in sorted_file_events]
