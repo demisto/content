@@ -1758,6 +1758,21 @@ script:
             The email of the user assigned to the vulnerability. Accepts a comma-separated list. 
             Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities.
           isArray: true
+        - name: cvrs_gte
+          description: The minimum risk score assigned to the vulnerability (range 0-100).
+        - name: compensating_controls_effective_coverage
+          descriptions: The assessed effectiveness and coverage of detected compensating controls.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+          - EFFECTIVE
+          - EFFECTIVE_REQUIRES_CONFIGURATION_UPDATE
+          - EFFECTIVE_REQUIRES_CONTENT_UPDATE
+          - EXPLOIT_CONFIRMED
+          - EXPLOIT_UNREACHABLE
+          - NOT_INSTALLED
+          - NO_CONTROLS_FOUND
+          - UNKNOWN_COVERAGE
       outputs:
         - contextPath: Core.VulnerabilityIssue.ISSUE_ID
           description: The unique identifier for the vulnerability issue.
@@ -1803,6 +1818,39 @@ script:
           type: Boolean
         - contextPath: Core.VulnerabilityIssue.ASSET_IDS
           description: The unique identifier for the asset.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_COVERAGE
+          description: The coverage status of detected compensating controls, mirroring the input parameter enum values.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.CORTEX_VULNERABILITY_RISK_SCORE
+          description: The risk score assigned to the vulnerability.
+          type: Number
+        - contextPath: Core.VulnerabilityIssue.FIX_VERSIONS
+          description: The package versions that contain a fix for the vulnerability.
+          type: Array
+        - contextPath: Core.VulnerabilityIssue.ASSET_TYPES
+          description: The types of assets affected by the vulnerability.
+          type: Array
+        - contextPath: Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_CONTROLS
+          description: The compensating controls that were detected for the vulnerability.
+          type: Array
+        - contextPath: Core.VulnerabilityIssue.EXPLOIT_LEVEL
+          description: The exploitability level or status of the vulnerability.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.ISSUE_NAME
+          description: The name of the vulnerability issue.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.PACKAGE_IN_USE
+          description: Indicates whether the vulnerable package is actively used in the environment.
+          type: Boolean
+        - contextPath: Core.VulnerabilityIssue.PROVIDERS
+          description: The providers or sources of the vulnerability information.
+          type: Array
+        - contextPath: Core.VulnerabilityIssue.OS_FAMILY
+          description: The operating system family of the affected asset.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.IMAGE
+          description: Information related to the affected container or system image.
           type: String
     - arguments:
         - description: The ID of the issue to get recommendations for.
