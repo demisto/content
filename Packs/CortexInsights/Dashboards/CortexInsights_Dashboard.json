@@ -1,0 +1,1424 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Cortex Insights Badges",
+            "description": "CSPM,CWPP, AppSec badges",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-9352",
+                    "data": [
+                        {
+                            "key": "xql_1764828767539",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 453,
+                                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"CONFIGURATION\" and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date\n\n| view graph type = single subtype = trend xaxis = date yaxis = num_of_issues dataunit = \"new  issues\" trend_desc = \"+ signifies increase in issues, - signifies decrease in issues\" trend_percentage = `true` seriestitle(\"num_of_issues\",\"Number of Misconfiguration issues over the last 30 days\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "trend"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "date"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "num_of_issues"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"new  issues\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "trend_desc",
+                                                "value": "\"+ signifies increase in issues, - signifies decrease in issues\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "trend_percentage",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "num_of_issues",
+                                                    "Number of Misconfiguration issues over the last 30 days"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1764826828770",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 453,
+                                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as distinct_count | filter distinct_count > 1 | alter status = if(distinct_count  > 1, \"Bronze - PASS - Posture - Visibility into the environment - Onboard cloud accounts\", \"Bronze - FAIL - Posture - Visibility into the environment - Onboard cloud accounts\")\n| view graph type = pie subtype = full show_callouts = `true` xaxis = status yaxis = distinct_count seriestitle(\"distinct_count\",\"cloud accounts\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "distinct_count"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "distinct_count",
+                                                    "cloud accounts"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1764613812022",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 453,
+                                "phrase": "config timeframe = 30d |dataset in (issues)\n| bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time )\n| filter xdm.issue.category = \"DATA\" and xdm.issue.status.progress = \"NEW\"\n| comp count(xdm.issue.id) as num_of_data_issues by date\n| sort desc date\n\n\n\n| view graph type = single subtype = trend xaxis = date yaxis = num_of_data_issues trend_desc = \"+ signifies increase in DSPM issues, - signifies decrease in DSPM issues\" trend_percentage = `true` seriestitle(\"num_of_data_issues\",\"Number of DSPM Issues\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "trend"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "date"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "num_of_data_issues"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "trend_desc",
+                                                "value": "\"+ signifies increase in DSPM issues, - signifies decrease in DSPM issues\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "trend_percentage",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "num_of_data_issues",
+                                                    "Number of DSPM Issues"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-6154",
+                    "data": [
+                        {
+                            "key": "xql_1764822757133",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 453,
+                                "phrase": "dataset = cloud_health_auditing  | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"DSPM\" and classification= \"Success\", account, null)) as dspm_enabled_accounts | alter dspm_enabled_ratio = divide(dspm_enabled_accounts , total_accounts ) | alter dspm_enabled_percentage = multiply(dspm_enabled_ratio , 100) | alter dspm_enabled_percentage = round(dspm_enabled_percentage) | alter status = if(dspm_enabled_percentage  > 0, \"Bronze - PASS - Data Security - There is atleast one cloud account that has DSPM enabled\", \"Bronze - FAIL - Data Security - There is no cloud account that has DSPM enabled\")\n| view graph type = pie subtype = semi_donut xaxis = status yaxis = dspm_enabled_accounts ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "semi_donut"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "dspm_enabled_accounts"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1764777033854",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 453,
+                                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin insert_time span = 16d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", insert_time  ) | filter asset_type contains \"registry\" | comp count(vulnerability_id ) as vuln_id by date | sort desc date\n\n\n\n| view graph type = single subtype = trend header = \"%Reduction in vulnerabilities over last 30 days\" xaxis = date yaxis = vuln_id trend_percentage = `true` headerfontsize = 40 ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "trend"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"%Reduction in vulnerabilities over last 30 days\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "date"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "vuln_id"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "trend_percentage",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "40"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1764828041163",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 453,
+                                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"ADS\" and classification= \"Scanned\", account, null)) as ads_enabled_accounts | alter ads_enabled_ratio = divide(ads_enabled_accounts , total_accounts ) | alter ads_enabled_percentage = multiply(ads_enabled_ratio , 100) | alter ads_enabled_percentage = round(ads_enabled_percentage )\n\n\n| view graph type = gauge subtype = radial yaxis = ads_enabled_percentage maxscalerange = 100 scale_threshold(\"#f44c4c\") dataunit = \"% Cloud Accounts\" ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "ads_enabled_percentage"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#f44c4c"
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"% Cloud Accounts\""
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-3807",
+                    "data": [
+                        {
+                            "key": "xql_1764838683019",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d | dataset = cloud_health_auditing | filter (capability contains \"\"\"Registry\"\"\") | dedup account | comp count_distinct(account ) as num_of_registry_scanning_enabled_accounts   | alter status = if(num_of_registry_scanning_enabled_accounts  > 1, \"Bronze - PASS - Runtime - Protect Managed Images - Registry Scanned\", \"Bronze - FAIL - PRuntime - Protect Managed Images - Registry Scanned\")\n\n| view graph type = pie xaxis = status yaxis = num_of_registry_scanning_enabled_accounts seriestitle(\"num_of_registry_scanning_enabled_accounts\",\"Distinct accounts supporting registry scanning\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "num_of_registry_scanning_enabled_accounts"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "num_of_registry_scanning_enabled_accounts",
+                                                    "Distinct accounts supporting registry scanning"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1764613812022",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d |dataset in (issues)\n| bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time )\n| filter xdm.issue.category = \"DATA\" and xdm.issue.status.progress = \"NEW\"\n| comp count(xdm.issue.id) as num_of_data_issues by date\n| sort desc date\n\n\n\n| view graph type = single subtype = trend xaxis = date yaxis = num_of_data_issues trend_desc = \"+ signifies increase in DSPM issues, - signifies decrease in DSPM issues\" trend_percentage = `true` seriestitle(\"num_of_data_issues\",\"Number of DSPM Issues\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "trend"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "date"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "num_of_data_issues"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "trend_desc",
+                                                "value": "\"+ signifies increase in DSPM issues, - signifies decrease in DSPM issues\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "trend_percentage",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "num_of_data_issues",
+                                                    "Number of DSPM Issues"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1764824071177",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "dataset = cloud_health_auditing\n|  comp\n     count_distinct(account) as total_accounts,\n     count_distinct(if(capability = \"Identity Security\" and classification= \"Success\", account, null)) as ciem_enabled_accounts\n| alter ciem_enabled_ratio = divide(ciem_enabled_accounts , total_accounts )\n| alter ciem_enabled_percentage = round(multiply(ciem_enabled_ratio , 100))\n\n| view graph type = gauge subtype = radial yaxis = ciem_enabled_percentage maxscalerange = 100 scale_threshold(\"#d83232\") headerfontsize = 20 seriestitle(\"ciem_enabled_percentage\",\"Percentage of accounts with successful CIEM enabled\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "ciem_enabled_percentage"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#d83232"
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "ciem_enabled_percentage",
+                                                    "Percentage of accounts with successful CIEM enabled"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-9973",
+                    "data": [
+                        {
+                            "key": "xql_1764944132915",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") < 31\n| bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time )\n| filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\")\n|  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time\n\n\n| view graph type = single subtype = trend xaxis = creation_time yaxis = MTTR_in_days trend_percentage = `true` ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "trend"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "creation_time"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "MTTR_in_days"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "trend_percentage",
+                                                "value": "true"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1764835522275",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin insert_time span = 16d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", insert_time  ) | filter asset_type_class = \"External Surface\" and exploitable  and cvss_severity = \"Critical\" and vendor_package_details != null | comp count(vulnerability_id ) as vuln_count by date | sort desc date\n\n| view graph type = single subtype = trend xaxis = date yaxis = vuln_count trend_desc = \"+ signifies increase and - signifies decrease in vulnerabilities\" trend_percentage = `true` seriestitle(\"vuln_count\",\"vulnerabilities\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "trend"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "date"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "vuln_count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "trend_desc",
+                                                "value": "\"+ signifies increase and - signifies decrease in vulnerabilities\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "trend_percentage",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "vuln_count",
+                                                    "vulnerabilities"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1764836644887",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d | dataset = issues | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.severity in(ENUM.CRITICAL , ENUM.HIGH ) and xdm.issue.detection.method = \"CLOUD_NETWORK_ANALYZER\" and xdm.issue.status.progress = ENUM.NEW | comp count(xdm.issue.id) as num_of_issues by date | sort desc date\n\n| view graph type = single subtype = trend xaxis = date yaxis = num_of_issues trend_desc = \"+ signifies increase in issues and - signifies decrease in issues\" trend_percentage = `true` seriestitle(\"num_of_issues\",\"Number of issues\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "trend"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "date"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "num_of_issues"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "trend_desc",
+                                                "value": "\"+ signifies increase in issues and - signifies decrease in issues\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "trend_percentage",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "num_of_issues",
+                                                    "Number of issues"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "2f4657820d624e06b0f51ebb21da16ea",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1764836644887",
+            "title": "bpachauli-CWP-Gold-Issues on exposed assets down",
+            "creation_time": 1764836644887,
+            "description": "Issues on exposed assets down",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = issues | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.severity in(ENUM.CRITICAL , ENUM.HIGH ) and xdm.issue.detection.method = \"CLOUD_NETWORK_ANALYZER\" and xdm.issue.status.progress = ENUM.NEW | comp count(xdm.issue.id) as num_of_issues by date | sort desc date\n\n| view graph type = single subtype = trend xaxis = date yaxis = num_of_issues trend_desc = \"+ signifies increase in issues and - signifies decrease in issues\" trend_percentage = `true` seriestitle(\"num_of_issues\",\"Number of issues\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "trend"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "date"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "num_of_issues"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "trend_desc",
+                                "value": "\"+ signifies increase in issues and - signifies decrease in issues\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "trend_percentage",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "num_of_issues",
+                                    "Number of issues"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com"
+        },
+        {
+            "widget_key": "xql_1764835522275",
+            "title": "Gold - Runtime - API Security - 50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet",
+            "creation_time": 1764835522275,
+            "description": "Reduction of critical, exploitable, external-facing, with fixed CVE Vulnerabilities",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin insert_time span = 16d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", insert_time  ) | filter asset_type_class = \"External Surface\" and exploitable  and cvss_severity = \"Critical\" and vendor_package_details != null | comp count(vulnerability_id ) as vuln_count by date | sort desc date | windowcomp lag(vuln_count ) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(vuln_count,previous_issues  ), previous_issues),100)) | alter issues_resolved = subtract(vuln_count, previous_issues  ) | alter status = if(percent_burndown <0 and percent_burndown <-10, \"Gold - PASS - Protect Workloads in Runtime XDR - 10 percent of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\", \"Gold - FAIL - Protect Workloads in Runtime XDR - 10 percent of non-reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\")  | filter previous_issues != null\n\n| view graph type = wordcloud xaxis = status yaxis = percent_burndown word_color = \"#c14e1d\" ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "percent_burndown"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "word_color",
+                                "value": "\"#c14e1d\""
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "uvm_findings"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com"
+        },
+        {
+            "widget_key": "xql_1764828041163",
+            "title": "Bronze - Posture - Exposure and Risk Management - Enable ADS (Agentless Disc Scanning)",
+            "creation_time": 1764828041163,
+            "description": "Checks to see if Agentless Scanning enabled on atleast one account",
+            "data": {
+                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"ADS\" and classification= \"Scanned\", account, null)) as ads_enabled_accounts | alter ads_enabled_ratio = divide(ads_enabled_accounts , total_accounts ) | alter agentless_enabled_percentage = multiply(ads_enabled_ratio , 100) | alter agentless_enabled_percentage = round(agentless_enabled_percentage ) | alter status = if(agentless_enabled_percentage >0, \"PASS - Agentless Scanning enabled on atleast one account\", \"FAIL - Agentless Scanning is not enabled on even one account\")\n\n\n| view graph type = pie subtype = semi_donut xaxis = status yaxis = agentless_enabled_percentage valuecolor(\"PASS - Agentless Scanning enabled on atleast one account\",\"#ec6c01\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "semi_donut"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "agentless_enabled_percentage"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "PASS - Agentless Scanning enabled on atleast one account",
+                                    "#ec6c01"
+                                ],
+                                "name": "valuecolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_health_auditing"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com"
+        },
+        {
+            "widget_key": "xql_1764826828770",
+            "title": "Bronze - Visibility into the environment - Onboard cloud accounts",
+            "creation_time": 1764826828770,
+            "description": "Badge is \"PASS\" if any cloud account is onboarded with CSPM capabilities",
+            "data": {
+                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as cspm_enabled_accounts | filter cspm_enabled_accounts > 1 | alter status = if(cspm_enabled_accounts  > 1, \"PASS - There is atleast one cloud account onboarded with CSPM capabilities\", \"FAIL - There is atleast one cloud account onboarded with CSPM capabilities\")\n| view graph type = pie subtype = semi_donut xaxis = status yaxis = cspm_enabled_accounts valuecolor(\"PASS - There is atleast one cloud account onboarded with CSPM capabilities\",\"#ec6201\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "semi_donut"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "cspm_enabled_accounts"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "PASS - There is atleast one cloud account onboarded with CSPM capabilities",
+                                    "#ec6201"
+                                ],
+                                "name": "valuecolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_health_auditing"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com"
+        },
+        {
+            "widget_key": "xql_1764822757133",
+            "title": "Bronze - Posture - Data Security - Cloud Connector enabled with DSPM",
+            "creation_time": 1764822757133,
+            "description": "Atleast one cloud account onboarded DSPM",
+            "data": {
+                "phrase": "dataset = cloud_health_auditing  | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"DSPM\" and classification= \"Success\", account, null)) as dspm_enabled_accounts | alter dspm_enabled_ratio = divide(dspm_enabled_accounts , total_accounts ) | alter dspm_enabled_percentage = multiply(dspm_enabled_ratio , 100) | alter dspm_enabled_percentage = round(dspm_enabled_percentage) | alter status = if(dspm_enabled_percentage  > 0, \"Bronze - PASS - Data Security - There is atleast one cloud account that has DSPM enabled\", \"Bronze - FAIL - Data Security - There is no cloud account that has DSPM enabled\")\n\n| view graph type = pie subtype = semi_donut xaxis = status yaxis = dspm_enabled_accounts valuecolor(\"Bronze - PASS - Data Security - There is atleast one cloud account that has DSPM enabled\",\"#ec6c01\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "semi_donut"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "dspm_enabled_accounts"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Bronze - PASS - Data Security - There is atleast one cloud account that has DSPM enabled",
+                                    "#ec6c01"
+                                ],
+                                "name": "valuecolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_health_auditing"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com"
+        },
+        {
+            "widget_key": "xql_1764777033854",
+            "title": "bpachauli- %Reduction in vulnerabilities over last 30 days",
+            "creation_time": 1764777033854,
+            "description": "bpachauli- %Reduction in vulnerabilities over last 30 days",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin insert_time span = 16d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", insert_time  ) | filter asset_type contains \"registry\" | comp count(vulnerability_id ) as vuln_id by date | sort desc date\n\n\n\n| view graph type = single subtype = trend header = \"%Reduction in vulnerabilities over last 30 days\" xaxis = date yaxis = vuln_id trend_percentage = `true` headerfontsize = 40 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "trend"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"%Reduction in vulnerabilities over last 30 days\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "date"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "vuln_id"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "trend_percentage",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "40"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "uvm_findings"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com"
+        },
+        {
+            "widget_key": "xql_1764838683019",
+            "title": "bpachaul-CWP-Bronze-Registry scanning enabled",
+            "creation_time": 1764838683019,
+            "description": "Registry scanning enabled",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = cloud_health_auditing | filter (capability contains \"\"\"Registry\"\"\") | dedup account | comp count_distinct(account ) as num_of_registry_scanning_enabled_accounts   | alter status = if(num_of_registry_scanning_enabled_accounts  > 1, \"Bronze - PASS - Runtime - Protect Managed Images - Registry Scanned\", \"Bronze - FAIL - PRuntime - Protect Managed Images - Registry Scanned\")\n\n| view graph type = pie xaxis = status yaxis = num_of_registry_scanning_enabled_accounts seriestitle(\"num_of_registry_scanning_enabled_accounts\",\"Distinct accounts supporting registry scanning\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "num_of_registry_scanning_enabled_accounts"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "num_of_registry_scanning_enabled_accounts",
+                                    "Distinct accounts supporting registry scanning"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_health_auditing"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com"
+        },
+        {
+            "widget_key": "xql_1764613812022",
+            "title": "Gold - Posture - Data Security - Number of Data Issues has gone down by 20%",
+            "creation_time": 1764613812022,
+            "description": "Gold Pass if Number of Data Issues has gone down by 20%",
+            "data": {
+                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"DATA\" and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues ), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues ) | alter status = if(percent_burndown  <0 and percent_burndown  < -20, \"PASS - Data Security - Number of Data Issues/Action Plans has gone down by 20%\", \"FAIL - Data Security - Number of Data Issues/Action Plans has not gone down by 20%\")  | filter previous_issues != null\n\n| view graph type = pie subtype = semi_donut header = \"+ signifies increase in DSPM issues, - signifies decrease in DSPM issues, If % less than - (negative) 20% implies Gold badge has been achieved\" xaxis = status yaxis = percent_burndown valuecolor(\"FAIL - Data Security - Number of Data Issues/Action Plans has not gone down by 20%\",\"#01ec34\") headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "semi_donut"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"+ signifies increase in DSPM issues, - signifies decrease in DSPM issues, If % less than - (negative) 20% implies Gold badge has been achieved\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "percent_burndown"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "FAIL - Data Security - Number of Data Issues/Action Plans has not gone down by 20%",
+                                    "#01ec34"
+                                ],
+                                "name": "valuecolor"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com"
+        },
+        {
+            "widget_key": "xql_1764824071177",
+            "title": "Bronze - Posture - Identity Management\t- Onboarded CIEM",
+            "creation_time": 1764824071177,
+            "description": "CIEM-% accounts successfully ingested data",
+            "data": {
+                "phrase": "dataset = cloud_health_auditing |  comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"Identity Security\" and classification= \"Success\", account, null)) as ciem_enabled_accounts | alter ciem_enabled_ratio = divide(ciem_enabled_accounts , total_accounts ) | alter ciem_enabled_percentage = multiply(ciem_enabled_ratio , 100) | alter ciem_enabled_percentage = round(ciem_enabled_percentage) | alter status = if(ciem_enabled_percentage >0, \"PASS - CIEM is successfully working on atleast one account\", \"FAIL - CIEM is not working on even one account\")\n\n\n| view graph type = pie subtype = semi_donut xaxis = status yaxis = ciem_enabled_percentage valuecolor(\"PASS - CIEM is successfully working on atleast one account\",\"#ec6c01\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "semi_donut"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "ciem_enabled_percentage"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "PASS - CIEM is successfully working on atleast one account",
+                                    "#ec6c01"
+                                ],
+                                "name": "valuecolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_health_auditing"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com"
+        },
+        {
+            "widget_key": "xql_1764828767539",
+            "title": "Gold - Posture - Visibility into the environment - Reduction of Critical Misconfigurations by 20%",
+            "creation_time": 1764828767539,
+            "description": "Misconfig issues down",
+            "data": {
+                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"CONFIGURATION\" and xdm.issue.severity = ENUM.CRITICAL and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues, previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues, previous_issues ) | alter status = if(percent_burndown  < 0 and percent_burndown < 20, \"PASS - Posture -  Reduction of Critical Misconfigurations by 20%\", \"FAIL - Posture -  Non Reduction of Critical Misconfigurations by 20%\")  | filter previous_issues != null\n\n| view graph type = wordcloud xaxis = status yaxis = percent_burndown word_color = \"#ab6323\" ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "percent_burndown"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "word_color",
+                                "value": "\"#ab6323\""
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com"
+        },
+        {
+            "widget_key": "xql_1764944132915",
+            "title": "Bronze, Silver & Gold - Posture - Remediation - % change in Issue MTTR",
+            "creation_time": 1764944132915,
+            "description": "30% to 60%  reduction in MTTR - Bronze; 60% - 90% is Silver; Greater than 90% is Gold",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") < 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time\n\n| view graph type = single subtype = trend header = \"-30% to -60% = Bronze; -60% to -90% = silver ; less than-90% = Gold\" xaxis = creation_time yaxis = MTTR_in_days dataunit = \"days\" trend_desc = \"Shows %age trend for MTTR over the last 30 days\" trend_percentage = `true` headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "trend"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"-30% to -60% = Bronze; -60% to -90% = silver ; less than-90% = Gold\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "creation_time"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "MTTR_in_days"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"days\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "trend_desc",
+                                "value": "\"Shows %age trend for MTTR over the last 30 days\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "trend_percentage",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "incidents"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com"
+        }
+    ],
+    "id": "2f4657820d624e06b0f51ebb21da16ea",
+    "name": "bpachauli-badges"
+}

@@ -1,0 +1,34 @@
+{
+    "name": "Cortex Insights",
+    "description": "Provides dashboards with an oveview of current health and risk issues in addition to customer badges",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Palo Alto Networks Technical Servicesmv",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "insights",
+        "health",
+        "status",
+        "risk",
+        "metrics"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "firstCreated": "2025-12-17T16:28:25Z",
+    "devEmail": [
+        "dl-pcs-swat@paloaltonetworks.com"
+    ],
+    "githubUser": [
+        "bgpanw",
+        "jmpaloalto",
+        "adam-hamsuth"
+    ]
+}
