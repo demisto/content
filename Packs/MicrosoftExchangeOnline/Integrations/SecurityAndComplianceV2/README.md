@@ -34,6 +34,7 @@ To set up the integration and register the application in Azure, you will need t
 2. **Authentication Configuration**: Enable public client flows and create an app secret.
 3. **Role Setup**: Assign the required roles for the App Service Principal to function correctly.
 Detailed instructions for each step are provided below.
+
 #### 1. App Registration and Permission Configuration
 
 1. **Navigate to Azure Portal**: Go to the [Azure Portal](https://portal.azure.com/) and sign in with your administrator account.
@@ -58,7 +59,6 @@ Detailed instructions for each step are provided below.
 2. **Enable Public Client Flows**:
    - Set Allow public client flows to Enabled.
    - Click Save to apply the changes.
-
 
 #### 3. Role Setup
 
