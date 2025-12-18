@@ -281,18 +281,54 @@ def days_since(timestamp_str) -> int:
     return delta.days
 
 
+
+def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]) -> list[dict[str, Any]]:
+    """Remove already-processed events based on previously fetched IDs."""
+
+    if not last_fetched_ids:
+        demisto.debug("[Dedup] No deduplication needed (first run - no previous IDs)")
+        return events
+
+    demisto.debug(f"[Dedup] Checking {len(events)} events against {len(last_fetched_ids)} previously fetched IDs")
+
+    # Convert to set for O(1) lookup
+    fetched_ids_set = set(last_fetched_ids)
+
+    # Filter out events that were already fetched
+    new_events = [event for event in events if event.get("id") not in fetched_ids_set]
+
+    skipped_count = len(events) - len(new_events)
+    if skipped_count > 0:
+        demisto.debug(f"[Dedup] Skipped {skipped_count} duplicates. {len(new_events)} new events remain.")
+    else:
+        demisto.debug("[Dedup] No duplicates found.")
+
+    return new_events
+
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
     last_run_date = last_run.get("LastRun")
+    last_fetched_ids = last_run.get("LastFechedIds",[])
+    last_operation_id =last_fetched_ids[-1] if last_fetched_ids else None
+    
     days = 0
     if last_run_date:
         days = days_since(last_run_date)
 
     operations, _ = client.get_operations_with_pagination(
-        limit=max_fetch, last_operation_id=last_run.get("Id"), days=days, last_run_date=last_run_date
+        limit=max_fetch, last_operation_id=last_operation_id, days=days, last_run_date=last_run_date
     )
 
     if operations:
-        last_run = {"LastRun": operations[-1]["_time"], "Id": operations[-1]["Id"]}
+        # Deduplicate
+        operations = deduplicate_events(operations, last_fetched_ids)
+        new_last_run = operations[-1]["_time"]
+              
+        ids_at_last_timestamp = [
+                operation.get("Id") for operation in operations if operation.get("_time") == new_last_run and operation.get("Id")
+            ]
+
+        
+        last_run = {"LastRun": new_last_run, "LastFechedIds": ids_at_last_timestamp}
 
     return operations, last_run
 
