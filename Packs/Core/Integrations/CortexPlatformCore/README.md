@@ -511,8 +511,8 @@ Retrieves vulnerabilities based on specified filters.
 | on_demand_fields | A comma-separated list of additional fields to retrieve. | Optional |
 | start_time | The start time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
 | end_time | The end time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
-| severity | The severity of the vulnerability issue. Possible values are: info, low, medium, high, critical. | Optional | 
-| assignee | The email of the user assigned to the vulnerability. Accepts a comma-separated list. <br/>Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities.<br/>. | Optional |
+| severity | The severity of the vulnerability issue. Possible values are: info, low, medium, high, critical. | Optional |
+| assignee | The email of the user assigned to the vulnerability. Accepts a comma-separated list. Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities. | Optional |
 | finding_sources | The finding sources of the vulnerability. Accepts a comma-separated list. Possible values are: CORTEX_AGENT, CORTEX_AGENTLESS_SCANNER, CORTEX_ATTACK_SURFACE_MANAGEMENT, CORTEX_ATTACK_SURFACE_TESTING, CORTEX_CLI_SCANNER, CORTEX_CONTAINER_REGISTRY_SCANNER, CORTEX_NETWORK_SCANNER, CORTEX_SERVERLESS_FUNCTION_SCANNER, QUALYS, TENABLE. | Optional |
 | cvrs_gte | The minimum risk score assigned to the vulnerability (range 0-100). | Optional |
 | compensating_controls_effective_coverage | No description provided. Possible values are: EFFECTIVE, EFFECTIVE_REQUIRES_CONFIGURATION_UPDATE, EFFECTIVE_REQUIRES_CONTENT_UPDATE, EXPLOIT_CONFIRMED, EXPLOIT_UNREACHABLE, NOT_INSTALLED, NO_CONTROLS_FOUND, UNKNOWN_COVERAGE. | Optional |
