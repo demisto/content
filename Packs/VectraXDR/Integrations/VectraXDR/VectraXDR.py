@@ -3732,6 +3732,19 @@ def vectra_group_list_command(client: VectraClient, args: dict[str, Any]):
     )
 
 
+def vectra_entity_reset_fetch_command(client: VectraClient, args: dict[str, Any]):
+    """Reset the Already_fetched state for the given entity
+
+    Args:
+        client (VectraClient): An instance of the VectraClient class.
+        args (Dict[str, Any]): The command arguments.
+    """
+    entity_id = args.get("entity_id", "")
+    entity_type = args.get("entity_type", "")
+    add_refetch_id_to_integration_context(entity_id=entity_id, entity_type=entity_type)
+    return CommandResults(readable_output=f"Reset fetch status for {entity_id}-{entity_type}")
+
+
 def vectra_group_unassign_command(client: VectraClient, args: dict[str, Any]):
     """
     Unassign members in Group.
@@ -4507,6 +4520,7 @@ def main():
         "vectra-detection-tag-list": vectra_detection_tag_list_command,
         "vectra-detection-tag-add": vectra_detection_tag_add_command,
         "vectra-detection-tag-remove": vectra_detection_tag_remove_command,
+        "vectra-entity-reset-fetch": vectra_entity_reset_fetch_command,
     }
     try:
         result = None

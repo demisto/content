@@ -2449,6 +2449,27 @@ script:
     - contextPath: Vectra.Detection.Tags.tags
       description: A list of tags linked to a detection.
       type: Unknown
+  - arguments:
+    - default: false
+      description: Specify the id of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: true
+      secret: false    
+    deprecated: false
+    description: Reset the given entity to refetch incidents.
+    execution: false
+    name: vectra-entity-reset-fetch    
   dockerimage: demisto/python3:3.12.12.5490952
   feed: false
   isfetch: true
