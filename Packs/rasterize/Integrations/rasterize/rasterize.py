@@ -330,7 +330,13 @@ class PychromeEventHandler:
 
             safe_sleep(DEFAULT_PAGE_LOAD_TIME / DEFAULT_RETRIES_COUNT + 1)
 
-            frame_url = self.get_frame_tree_url()
+            try:
+                frame_url = self.get_frame_tree_url()
+            except Exception as e:
+                demisto.debug(
+                    f"Error getting frame URL in retry_loading for {self.tab.id=}, {self.path=} attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {str(e)}"
+                )
+                frame_url = ""
 
             # If frame_url is empty string, we can't continue retrying - the tab may be in a bad state
             if not frame_url:
@@ -348,7 +354,7 @@ class PychromeEventHandler:
                 return
 
             demisto.debug(
-                "Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error. "
+                f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error. "
                 f"{self.tab.id=}, {self.path=}"
             )
 
