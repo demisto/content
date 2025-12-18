@@ -257,8 +257,8 @@ FORMAT_REFANG = [
 
 FORMAT_HTML_ENTITIES = [
     (
-        "https://example.com?marketing.comunicacion@example.com=NBh0Q9Alr9d=634&amp;r=737NBh0Q9Alr9/",  # disable-secrets-detection
-        "https://example.com?marketing.comunicacion@example.com=NBh0Q9Alr9d=634&r=737NBh0Q9Alr9/",
+        "https://example.com?4&amp;r=737NBh0Q9Alr9/",  # disable-secrets-detection
+        "https://example.com?4&r=737NBh0Q9Alr9/",
     ),  # disable-secrets-detection
     # Multiple &amp; entities
     (
