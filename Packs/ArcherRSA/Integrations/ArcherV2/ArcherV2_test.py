@@ -591,7 +591,7 @@ class TestArcherV2:
             pytest.param(r'{"Device Name":"Two:\\\\."}', r"Two:\\.", id="XSUP-59455 - Backslash before period"),
             pytest.param(
                 r'{"Device Name":"Test of two double back-slashes followed by double-quote: \\". End of test."}',
-                r'Test of two double back-slashes followed by double-quote: \". End of test.',
+                r"Test of two double back-slashes followed by double-quote: \". End of test.",
                 id="XSUP-59455 Regression - Two backslashes before quote",
             ),
         ],
