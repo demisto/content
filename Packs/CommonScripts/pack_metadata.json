@@ -2,13 +2,17 @@
     "name": "Common Scripts",
     "description": "Frequently used scripts pack.",
     "support": "xsoar",
-    "currentVersion": "1.20.59",
+    "currentVersion": "1.20.60",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-05-14T08:33:25Z",
-    "categories": ["Utilities"],
-    "tags": ["Core"],
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [
+        "Core"
+    ],
     "useCases": [],
     "keywords": [],
     "dependencies": {
@@ -45,8 +49,16 @@
             "display_name": "RemoteAccess v2"
         }
     },
-    "excludedDependencies": ["GoogleMaps", "Slack"],
-    "marketplaces": ["xsoar", "marketplacev2", "xpanse", "platform"],
+    "excludedDependencies": [
+        "GoogleMaps",
+        "Slack"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "xpanse",
+        "platform"
+    ],
     "supportedModules": [
         "C1",
         "C3",
