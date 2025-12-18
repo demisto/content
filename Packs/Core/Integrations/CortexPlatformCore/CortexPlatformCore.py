@@ -1345,8 +1345,10 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         },
     )
     filter_builder.add_field("CORTEX_VULNERABILITY_RISK_SCORE", FilterType.GTE, arg_to_number(args.get("cvrs_gte")))
-    filter_builder.add_field("COMPENSATING_CONTROLS_DETECTED_COVERAGE", FilterType.EQ, argToList(args.get("compensating_controls_effective_coverage")))
-    
+    filter_builder.add_field(
+        "COMPENSATING_CONTROLS_DETECTED_COVERAGE", FilterType.EQ, argToList(args.get("compensating_controls_effective_coverage"))
+    )
+
     request_data = build_webapp_request_data(
         table_name=VULNERABLE_ISSUES_TABLE,
         filter_dict=filter_builder.to_dict(),
@@ -1386,7 +1388,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         "PACKAGE_IN_USE",
         "PROVIDERS",
         "OS_FAMILY",
-        "IMAGE"
+        "IMAGE",
     ]
     filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
 
