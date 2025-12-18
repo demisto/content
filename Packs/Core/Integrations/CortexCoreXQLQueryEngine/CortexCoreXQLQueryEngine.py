@@ -68,138 +68,138 @@ BUILT_IN_QUERY_COMMANDS = {
     },
 }
 
-# def get_xql_query_internal_results(client: CoreClient, args: dict) -> tuple[dict, Optional[bytes]]:
-#     """Retrieve results of an executed XQL query API. returns the general response and
-#     a file data if the query has more than 1000 results.
+def get_xql_query_internal_results(client: CoreClient, args: dict) -> tuple[dict, Optional[bytes]]:
+    """Retrieve results of an executed XQL query API. returns the general response and
+    a file data if the query has more than 1000 results.
 
-#     Args:
-#         client (Client): The XDR Client.
-#         args (dict): The arguments to pass to the API call.
+    Args:
+        client (Client): The XDR Client.
+        args (dict): The arguments to pass to the API call.
 
-#     Returns:
-#         dict: The query results.
-#     """
-#     query_id = args.get("query_id")
-#     if not query_id:
-#         raise ValueError("query ID is not specified")
-#     data = {
-#         "request_data": {
-#             "query_id": query_id,
-#         }
-#     }
+    Returns:
+        dict: The query results.
+    """
+    query_id = args.get("query_id")
+    if not query_id:
+        raise ValueError("query ID is not specified")
+    data = {
+        "request_data": {
+            "query_id": query_id,
+        }
+    }
 
-#     # Call the Client function and get the raw response
-#     demisto.debug(f"Calling get_query_results with {data=}")
-#     res = client._http_request(method="POST", json_data=data, full_url="/platform/xql/get_query_results/")
-#     demisto.debug(f"get_query_results returned {res=}")
-#     response = res # res.get("reply", "")
-#     response["execution_id"] = query_id
-#     # results = response.get("results", {})
-#     stream_id = response.get("stream_id") # results.get("stream_id")
-#     if response.get("status") != "PENDING" and stream_id:
-#         data = {
-#             "request_data": {
-#                 "stream_id": stream_id,
-#                 "is_gzip_compressed": True,
-#             }
-#         }
-#         # Call the Client function and get the raw response
-#         res = client._http_request(
-#             method="POST",
-#             url_suffix="/platform/xql/get_query_results_stream/",
-#             json_data=data,
-#             resp_type="response",
-#             response_data_type="bin",
-#         )
-#         file_data = base64.b64decode(res) if client.is_core else res.content
+    # Call the Client function and get the raw response
+    demisto.debug(f"Calling get_query_results with {data=}")
+    res = client._http_request(method="POST", json_data=data, full_url="/platform/xql/get_query_results/")
+    demisto.debug(f"get_query_results returned {res=}")
+    response = res # res.get("reply", "")
+    response["execution_id"] = query_id
+    # results = response.get("results", {})
+    stream_id = response.get("stream_id") # results.get("stream_id")
+    if response.get("status") != "PENDING" and stream_id:
+        data = {
+            "request_data": {
+                "stream_id": stream_id,
+                "is_gzip_compressed": True,
+            }
+        }
+        # Call the Client function and get the raw response
+        res = client._http_request(
+            method="POST",
+            url_suffix="/platform/xql/get_query_results_stream/",
+            json_data=data,
+            resp_type="response",
+            response_data_type="bin",
+        )
+        file_data = base64.b64decode(res) if client.is_core else res.content
 
-#         response["results"] = file_data
-#         return response, file_data
+        response["results"] = file_data
+        return response, file_data
 
-#     return response, None
+    return response, None
 
-# def get_xql_query_internal_results_polling_command(client: CoreClient, args: dict) -> Union[CommandResults, list]:
-#     """Retrieve results of an executed XQL query API executes as a scheduled command.
+def get_xql_query_internal_results_polling_command(client: CoreClient, args: dict) -> Union[CommandResults, list]:
+    """Retrieve results of an executed XQL query API executes as a scheduled command.
 
-#     Args:
-#         client (Client): The XDR Client.
-#         args (dict): The arguments to pass to the API call.
+    Args:
+        client (Client): The XDR Client.
+        args (dict): The arguments to pass to the API call.
 
-#     Returns:
-#         Union[CommandResults, dict]: The command results.
-#     """
-#     # get the query data either from the integration context (if its not the first run) or from the given args.
-#     parse_result_file_to_context = argToBoolean(args.get("parse_result_file_to_context", "false"))
-#     command_name = args.get("command_name", demisto.command())
-#     interval_in_secs = int(args.get("interval_in_seconds", 30))
-#     timeout_in_secs = int(args.get("timeout_in_seconds", 600))
-#     max_fields = arg_to_number(args.get("max_fields", 20))
-#     if max_fields is None:
-#         raise DemistoException("Please provide a valid number for max_fields argument.")
-#     outputs, file_data = get_xql_query_internal_results(client, args)  # get query results with query_id
-#     outputs.update({"query_name": args.get("query_name", "")})
-#     outputs_prefix = get_outputs_prefix(command_name) # TODO: fix
-#     command_results = CommandResults(
-#         outputs_prefix=outputs_prefix, outputs_key_field="execution_id", outputs=outputs, raw_response=copy.deepcopy(outputs)
-#     )
-#     # if there are more than 1000 results
-#     if file_data:
-#         if not parse_result_file_to_context:
-#             #  Extracts the results into a file only
-#             file = fileResult(filename="results.gz", data=file_data)
-#             command_results.readable_output = "More than 1000 results were retrieved, see the compressed gzipped file below."
-#             return [file, command_results]
-#         else:
-#             # Parse the results to context:
-#             data = gzip.decompress(file_data).decode()
-#             outputs["results"] = [json.loads(line) for line in data.split("\n") if len(line) > 0]
+    Returns:
+        Union[CommandResults, dict]: The command results.
+    """
+    # get the query data either from the integration context (if its not the first run) or from the given args.
+    parse_result_file_to_context = argToBoolean(args.get("parse_result_file_to_context", "false"))
+    command_name = args.get("command_name", demisto.command())
+    interval_in_secs = int(args.get("interval_in_seconds", 30))
+    timeout_in_secs = int(args.get("timeout_in_seconds", 600))
+    max_fields = arg_to_number(args.get("max_fields", 20))
+    if max_fields is None:
+        raise DemistoException("Please provide a valid number for max_fields argument.")
+    outputs, file_data = get_xql_query_internal_results(client, args)  # get query results with query_id
+    outputs.update({"query_name": args.get("query_name", "")})
+    outputs_prefix = get_outputs_prefix(command_name) # TODO: fix
+    command_results = CommandResults(
+        outputs_prefix=outputs_prefix, outputs_key_field="execution_id", outputs=outputs, raw_response=copy.deepcopy(outputs)
+    )
+    # if there are more than 1000 results
+    if file_data:
+        if not parse_result_file_to_context:
+            #  Extracts the results into a file only
+            file = fileResult(filename="results.gz", data=file_data)
+            command_results.readable_output = "More than 1000 results were retrieved, see the compressed gzipped file below."
+            return [file, command_results]
+        else:
+            # Parse the results to context:
+            data = gzip.decompress(file_data).decode()
+            outputs["results"] = [json.loads(line) for line in data.split("\n") if len(line) > 0]
 
-#     # if status is pending, the command will be called again in the next run until success.
-#     if outputs.get("status") == "PENDING":
-#         demisto.debug(f"Returned status 'PENDING' for {args.get('query_id', '')}.")
-#         scheduled_command = ScheduledCommand(
-#             command="xdr-xql-get-query-results",
-#             next_run_in_seconds=interval_in_secs,
-#             args=args,
-#             timeout_in_seconds=timeout_in_secs,
-#         )
-#         command_results.scheduled_command = scheduled_command
-#         command_results.readable_output = "Query is still running, it may take a little while..."
-#         return command_results
+    # if status is pending, the command will be called again in the next run until success.
+    if outputs.get("status") == "PENDING":
+        demisto.debug(f"Returned status 'PENDING' for {args.get('query_id', '')}.")
+        scheduled_command = ScheduledCommand(
+            command="xdr-xql-get-query-results",
+            next_run_in_seconds=interval_in_secs,
+            args=args,
+            timeout_in_seconds=timeout_in_secs,
+        )
+        command_results.scheduled_command = scheduled_command
+        command_results.readable_output = "Query is still running, it may take a little while..."
+        return command_results
 
-#     demisto.debug(f"Returned status '{outputs.get('status')}' for {args.get('query_id', '')}.")
-#     results_to_format = outputs.pop("results")
-#     # create Human Readable output
-#     query = args.get("query", "")
-#     time_frame = args.get("time_frame")
-#     extra_for_human_readable = {"query": query, "time_frame": time_frame}
-#     outputs.update(extra_for_human_readable)
-#     command_results.readable_output = tableToMarkdown(
-#         "General Information", outputs, headerTransform=string_to_table_header, removeNull=True
-#     )
-#     [outputs.pop(key) for key in list(extra_for_human_readable.keys())]
+    demisto.debug(f"Returned status '{outputs.get('status')}' for {args.get('query_id', '')}.")
+    results_to_format = outputs.pop("results")
+    # create Human Readable output
+    query = args.get("query", "")
+    time_frame = args.get("time_frame")
+    extra_for_human_readable = {"query": query, "time_frame": time_frame}
+    outputs.update(extra_for_human_readable)
+    command_results.readable_output = tableToMarkdown(
+        "General Information", outputs, headerTransform=string_to_table_header, removeNull=True
+    )
+    [outputs.pop(key) for key in list(extra_for_human_readable.keys())]
 
-#     # if no fields were given in the query then the default fields are returned (without empty fields).
-#     if results_to_format:
-#         formatted_list = (
-#             format_results(results_to_format, remove_empty_fields=False)
-#             if "fields" in query
-#             else format_results(results_to_format)
-#         )
-#         if formatted_list and command_name == "xdr-xql-generic-query" and len(formatted_list[0].keys()) > max_fields:
-#             raise DemistoException(
-#                 "The number of fields per result has exceeded the maximum number of allowed fields, "
-#                 "please select specific fields in the query or increase the maximum number of "
-#                 "allowed fields."
-#             )
-#         outputs.update({"results": formatted_list})
-#         command_results.outputs = outputs
+    # if no fields were given in the query then the default fields are returned (without empty fields).
+    if results_to_format:
+        formatted_list = (
+            format_results(results_to_format, remove_empty_fields=False)
+            if "fields" in query
+            else format_results(results_to_format)
+        )
+        if formatted_list and command_name == "xdr-xql-generic-query" and len(formatted_list[0].keys()) > max_fields:
+            raise DemistoException(
+                "The number of fields per result has exceeded the maximum number of allowed fields, "
+                "please select specific fields in the query or increase the maximum number of "
+                "allowed fields."
+            )
+        outputs.update({"results": formatted_list})
+        command_results.outputs = outputs
 
-#     command_results.readable_output += tableToMarkdown(
-#         "Data Results", outputs.get("results"), headerTransform=string_to_table_header
-#     )
+    command_results.readable_output += tableToMarkdown(
+        "Data Results", outputs.get("results"), headerTransform=string_to_table_header
+    )
 
-#     return command_results
+    return command_results
 
 # def get_xql_internal_quota_command(client: CoreClient, args: Dict[str, Any]) -> CommandResults:
 #     return CommandResults()
@@ -219,7 +219,7 @@ def start_xql_query_internal(client: CoreClient, args: Dict[str, Any]) -> str:
         raise ValueError("query is not specified")
 
     if "limit" not in query:  # if user did not provide a limit in the query, we will use the default one.
-        query = f"{query} \n| limit {DEFAULT_LIMIT!s}"
+        query = f"{query} | limit {DEFAULT_LIMIT!s}"
 
     data: Dict[str, Any] = {
         "query": query,
@@ -230,13 +230,16 @@ def start_xql_query_internal(client: CoreClient, args: Dict[str, Any]) -> str:
     # except Exception as e:
     #     demisto.error(f"Error adding playbook metadata: {str(e)}")
 
-    time_frame = args.get("time_frame")
-    if time_frame:
-        data["timeframe"] = convert_timeframe_string_to_json(time_frame)
+    # time_frame = args.get("time_frame")
+    # if time_frame:
+    data["timeframe"] = {
+        "from": int((datetime.now() - timedelta(days = 1)).timestamp()),
+        "to": int(datetime.now().timestamp()),
+    }
     # The arg is called 'tenant_id', but to avoid BC we will also support 'tenant_ids'.
-    # tenant_ids = argToList(args.get("tenant_id") or args.get("tenant_ids"))
-    # if tenant_ids:
-    #     data["request_data"]["tenants"] = tenant_ids
+    tenant_ids = argToList(args.get("tenant_id") or args.get("tenant_ids"))
+    if tenant_ids:
+        data["tenants"] = tenant_ids
     # call the client function and get the raw response
     try:
         demisto.debug(f"Calling start_xql_query with {data=}")
@@ -297,6 +300,18 @@ def start_xql_query_internal_polling_command(client: CoreClient, args: dict) -> 
 
     # return get_xql_query_internal_results_polling_command(client, args)
 
+def get_query_info(client: CoreClient, args: dict):
+    query_id = args.get("query_id")
+
+    data: Dict[str, Any] = {
+        "limit": 0,
+        "query_id": query_id,
+    }
+
+    demisto.debug(f"Calling get_query_id with {data=}")
+    res = demisto._platformAPICall(path="/xql_queries/results/info/", method="POST", data=data)
+    demisto.debug(f"get_query_id output: {res=}")
+    return res
 
 GENERIC_QUERY_COMMANDS = {
     "test-module": test_module,
@@ -304,6 +319,8 @@ GENERIC_QUERY_COMMANDS = {
     "xdr-xql-get-query-results": get_xql_query_results_polling_command,
     "xdr-xql-get-quota": get_xql_quota_command,
     "xdr-xql-generic-query-internal": start_xql_query_internal_polling_command,
+    "xdr-xql-get-query-results-internal": get_xql_query_internal_results_polling_command,
+    "xdr-xql-get-query-info": get_query_info,
 }
 
 
