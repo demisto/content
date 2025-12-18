@@ -718,9 +718,9 @@ class URLFormatter:
         self.original_url = original_url
         self.output = ""
 
-        url = self.decode_html_entities(self.original_url)
-        url = self.correct_and_refang_url(url)
+        url = self.correct_and_refang_url(self.original_url)
         url = self.strip_wrappers(url)
+        url = self.decode_html_entities(url)
         url = self.correct_and_refang_url(url)
 
         try:

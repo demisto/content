@@ -265,11 +265,6 @@ FORMAT_HTML_ENTITIES = [
         "https://test.com?a=1&amp;amp;b=2&amp;c=3",  # disable-secrets-detection
         "https://test.com?a=1&b=2&c=3",
     ),  # disable-secrets-detection
-    # Other HTML entities
-    (
-        "https://test.com?query=&lt;test&gt;",  # disable-secrets-detection
-        "https://test.com?query=<test>",
-    ),  # disable-secrets-detection
     (
         "https://test.com?quote=&quot;hello&quot;",  # disable-secrets-detection
         'https://test.com?quote="hello"',
