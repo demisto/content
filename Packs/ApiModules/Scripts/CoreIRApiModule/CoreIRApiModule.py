@@ -4,7 +4,7 @@ import json
 import re
 from collections.abc import Callable
 from operator import itemgetter
-
+from enum import Enum
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -147,6 +147,192 @@ ALERT_EVENT_AZURE_FIELDS = {
     "resourceType",
     "tenantId",
 }
+
+class FilterBuilder:
+    """
+    Filter class for creating filter dictionary objects.
+    """
+
+    class FilterType(str, Enum):
+        operator: str
+
+        """
+        Available type options for filter filtering.
+        Each member holds its string value and its logical operator for multi-value scenarios.
+        """
+
+        def __new__(cls, value, operator):
+            obj = str.__new__(cls, value)
+            obj._value_ = value
+            obj.operator = operator
+            return obj
+
+        EQ = ("EQ", "OR")
+        RANGE = ("RANGE", "OR")
+        CONTAINS = ("CONTAINS", "OR")
+        CASE_HOST_EQ = ("CASE_HOSTS_EQ", "OR")
+        CONTAINS_IN_LIST = ("CONTAINS_IN_LIST", "OR")
+        GTE = ("GTE", "OR")
+        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
+        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        IS_EMPTY = ("IS_EMPTY", "OR")
+        NIS_EMPTY = ("NIS_EMPTY", "AND")
+        ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
+        IPLIST_MATCH = ("IPLIST_MATCH", "OR")
+        IP_MATCH = ("IP_MATCH", "OR")
+        NEQ = ("NEQ", "AND")
+        
+    AND = "AND"
+    OR = "OR"
+    FIELD = "SEARCH_FIELD"
+    TYPE = "SEARCH_TYPE"
+    VALUE = "SEARCH_VALUE"
+
+    class Field:
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
+            self.field_name = field_name
+            self.filter_type = filter_type
+            self.values = values
+
+    class MappedValuesField(Field):
+        def __init__(
+            self,
+            field_name: str,
+            filter_type: "FilterType",
+            values: Any,
+            mappings: dict[str, "FilterType"],
+        ):
+            super().__init__(field_name, filter_type, values)
+            self.mappings = mappings
+
+    def __init__(self, filter_fields: list[Field] | None = None):
+        self.filter_fields = filter_fields or []
+
+    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
+        """
+        Adds a new field to the filter.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The type to use for the field.
+            values (Any): The values to filter for.
+            mapper (dict | None): An optional dictionary to map values before filtering.
+        """
+        processed_values = values
+        if mapper:
+            if not isinstance(values, list):
+                values = [values]
+            processed_values = [mapper[v] for v in values if v in mapper]
+
+        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
+
+    def add_field_with_mappings(
+        self,
+        name: str,
+        type: "FilterType",
+        values: Any,
+        mappings: dict[str, "FilterType"],
+    ):
+        """
+        Adds a new field to the filter with special value mappings.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The default filter type for non-mapped values.
+            values (Any): The values to filter for.
+            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
+                Example:
+                    mappings = {
+                        "unassigned": FilterType.IS_EMPTY,
+                        "assigned": FilterType.NIS_EMPTY,
+                    }
+        """
+        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
+
+    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
+        """
+        Adds a time range field to the filter.
+        Args:
+            name (str): The name of the field.
+            start_time (str | None): The start time of the range.
+            end_time (str | None): The end time of the range.
+        """
+        start, end = self._prepare_time_range(start_time, end_time)
+        if start and end:
+            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
+
+    def to_dict(self) -> dict[str, list]:
+        """
+        Creates a filter dict from a list of Field objects.
+        The filter will require each field to be one of the values provided.
+        Returns:
+            dict[str, list]: Filter object.
+        """
+        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
+
+        for field in self.filter_fields:
+            if not isinstance(field.values, list):
+                field.values = [field.values]
+
+            search_values = []
+            for value in field.values:
+                if value is None:
+                    continue
+
+                current_filter_type = field.filter_type
+                current_value = value
+
+                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
+                    current_filter_type = field.mappings[value]
+                    if current_filter_type in [
+                        FilterType.IS_EMPTY,
+                        FilterType.NIS_EMPTY,
+                    ]:
+                        current_value = "<No Value>"
+
+                search_values.append(
+                    {
+                        FilterBuilder.FIELD: field.field_name,
+                        FilterBuilder.TYPE: current_filter_type.value,
+                        FilterBuilder.VALUE: current_value,
+                    }
+                )
+
+            if search_values:
+                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
+                filter_structure[FilterBuilder.AND].append(search_obj)
+
+        if not filter_structure[FilterBuilder.AND]:
+            filter_structure = {}
+
+        return filter_structure
+
+    @staticmethod
+    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
+        """Prepare start and end time from args, parsing relative time strings."""
+        if end_time_str and not start_time_str:
+            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
+
+        start_time, end_time = None, None
+
+        if start_time_str:
+            if start_dt := dateparser.parse(str(start_time_str)):
+                start_time = int(start_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse start_time: {start_time_str}")
+
+        if end_time_str:
+            if end_dt := dateparser.parse(str(end_time_str)):
+                end_time = int(end_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse end_time: {end_time_str}")
+
+        if start_time and not end_time:
+            # Set end_time to the current time if only start_time is provided
+            end_time = int(datetime.now().timestamp() * 1000)
+
+        return start_time, end_time
+
+
+FilterType = FilterBuilder.FilterType
 
 # Filter object query operators
 EQ = "EQ"
@@ -1713,6 +1899,7 @@ def create_filter_from_args(args: dict) -> dict:
                     delta_in_milliseconds = int((datetime.now() - relative_date).total_seconds() * 1000)
                     search_value = str(delta_in_milliseconds)
 
+            demisto.debug(f"Processing search field: {arg_properties.search_field}")
             and_operator_list.append(
                 {"SEARCH_FIELD": arg_properties.search_field, "SEARCH_TYPE": search_type, "SEARCH_VALUE": search_value}
             )
@@ -3755,8 +3942,136 @@ ALERT_STATUS_TYPES = {
     "BLOCKED_TRIGGER_4": "prevented (on write)",
 }
 
+ISSUE_FIELDS = {
+    "action_local_port": "action_local_port",
+    "action_local_ip": "action_local_ip",
+    "action_remote_port": "action_remote_port",
+    "action_remote_ip": "action_remote_ip",
+    "actor_process_image_sha256": "actor_process_image_sha256",
+    "action_file_macro_sha256": "action_file_macro_sha256",
+    "issue_source" : "alert_source",
+    "user_name": "actor_effective_username",
+    "asset_ids": "asset_ids",
+    "issue_action_status": "alert_action_status",
+    "issue_description": "alert_description",
+    "severity": "severity",
+    "issue_name": "alert_name",
+    "issue_category": "alert_category",
+    "issue_domain": "alert_domain",
+    "start_time": "source_insert_ts",
+    "starred": "starred",
+    "assignee": "assigned_to_pretty",
+    "assignee_mail": "assigned_to",
+    "issue_id": "internal_id",
+    "mitre_technique_id_and_name": "mitre_technique_id_and_name",
+    "status": "status.progres",
+    "actor_process_image_name": "actor_process_image_name",
+    "dst_action_external_hostname": "dst_action_external_hostname",
+    "os_actor_process_image_sha256": "os_actor_process_image_sha256",
+    "agent_id": "agent_id",
+    "identity_type": "identity_type",
+    "action_external_hostname": "action_external_hostname",
+    "host_ip": "agent_ip_addresses",
+    "actor_process_command_line": "actor_process_command_line",
+    "action_process_image_command_line": "action_process_image_command_line",
+    "action_file_image_sha256": "action_file_sha256",
+    "action_registry_name": "action_registry_key_name",
+    "action_registry_key_data": "action_registry_data",
+    "rule_name": "fw_rule",
+    "rule_id": "matching_service_rule_id",
+}
+
 ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
 
+def determine_email_or_name(assignee_list: list) -> str:
+    if not assignee_list:
+        return ""
+
+    assignee = assignee_list[0]
+
+    if "@" in assignee:
+        return "email"
+    else:
+        return "name"
+
+def determine_issue_assignee_filter_field(assignee_list: list) -> str:
+    """
+    Determine whether the assignee should be filtered by email or pretty name.
+
+    Args:
+        assignee (list): The assignee values to filter on.
+
+    Returns:
+        str: The appropriate field to filter on based on the input.
+    """
+    if determine_email_or_name(assignee_list) == "email":
+        return ISSUE_FIELDS["assignee_email"]
+    else:
+        return ISSUE_FIELDS["assignee"]
+    
+def get_issues_by_filter_command(client: CoreClient, args: Dict):
+    """Build filter dictionary for alerts based on provided arguments."""
+    filter_builder = FilterBuilder()
+    filter_builder.add_time_range_field(
+        ISSUE_FIELDS["start_time"],
+        start_time=args.get("start_time"),
+        end_time=args.get("end_time")
+    )
+    filter_builder.add_field(ISSUE_FIELDS["starred"], FilterType.EQ, args.get("starred"))
+    filter_builder.add_field(ISSUE_FIELDS["issue_id"], FilterType.EQ, argToList(args.get("issue_id")))
+    filter_builder.add_field(ISSUE_FIELDS["action_external_hostname"], FilterType.CONTAINS, argToList(args.get("action_external_hostname")))
+    filter_builder.add_field(ISSUE_FIELDS["rule_id"], FilterType.EQ, argToList(args.get("rule_id")))
+    filter_builder.add_field(ISSUE_FIELDS["rule_name"], FilterType.EQ, argToList(args.get("rule_name")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_name"], FilterType.CONTAINS, argToList(args.get("issue_name")))
+    filter_builder.add_field(ISSUE_FIELDS["user_name"], FilterType.CONTAINS, argToList(args.get("user_name")))
+    filter_builder.add_field(ISSUE_FIELDS["actor_process_image_name"], FilterType.CONTAINS, argToList(args.get("actor_process_image_name")))
+    filter_builder.add_field(ISSUE_FIELDS["actor_process_command_line"], FilterType.EQ, argToList(args.get("causality_actor_process_image_command_line")))
+    filter_builder.add_field(ISSUE_FIELDS["agent_id"], FilterType.EQ, argToList(args.get("agent_id")))
+    filter_builder.add_field(ISSUE_FIELDS["identity_type"], FilterType.EQ, argToList(args.get("identity_type")))
+    filter_builder.add_field(ISSUE_FIELDS["actor_process_command_line"], FilterType.EQ, argToList(args.get("actor_process_image_command_line")))
+    filter_builder.add_field(ISSUE_FIELDS["action_process_image_command_line"], FilterType.EQ, argToList(args.get("action_process_image_command_line")))
+    filter_builder.add_field(ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("actor_process_image_sha256")))
+    filter_builder.add_field(ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("causality_actor_process_image_sha256")))
+    filter_builder.add_field(ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("action_process_image_sha256")))
+    filter_builder.add_field(ISSUE_FIELDS["action_file_image_sha256"], FilterType.EQ, argToList(args.get("action_file_image_sha256")))
+    filter_builder.add_field(ISSUE_FIELDS["action_registry_name"], FilterType.EQ, argToList(args.get("action_registry_name")))
+    filter_builder.add_field(ISSUE_FIELDS["action_registry_key_data"], FilterType.CONTAINS, argToList(args.get("action_registry_key_data")))
+    filter_builder.add_field(ISSUE_FIELDS["host_ip"], FilterType.IPLIST_MATCH, argToList(args.get("host_ip")))
+    filter_builder.add_field(ISSUE_FIELDS["action_local_ip"], FilterType.IP_MATCH, argToList(args.get("action_local_ip")))
+    filter_builder.add_field(ISSUE_FIELDS["action_remote_ip"], FilterType.IP_MATCH, argToList(args.get("action_remote_ip")))
+    filter_builder.add_field(ISSUE_FIELDS["action_local_port"], FilterType.EQ, argToList(args.get("action_local_port")))
+    filter_builder.add_field(ISSUE_FIELDS["action_remote_port"], FilterType.EQ, argToList(args.get("action_remote_port")))
+    filter_builder.add_field(ISSUE_FIELDS["dst_action_external_hostname"], FilterType.CONTAINS, argToList(args.get("dst_action_external_hostname")))
+    filter_builder.add_field(ISSUE_FIELDS["mitre_technique_id_and_name"], FilterType.CONTAINS, argToList(args.get("mitre_technique_id_and_name")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_category"], FilterType.EQ, argToList(args.get("issue_category")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_domain"], FilterType.EQ, argToList(args.get("issue_domain")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_description"], FilterType.CONTAINS, argToList(args.get("issue_description")))
+    filter_builder.add_field(ISSUE_FIELDS["os_actor_process_image_sha256"], FilterType.EQ, argToList(args.get("os_actor_process_image_sha256")))
+    filter_builder.add_field(ISSUE_FIELDS["action_file_macro_sha256"], FilterType.EQ, argToList(args.get("action_file_macro_sha256")))
+    filter_builder.add_field(ISSUE_FIELDS["asset_ids"], FilterType.EQ, argToList(args.get("asset_ids")))
+    source_values = [DETECTION_METHOD_HR_TO_MACHINE_NAME.get(val, val) for val in argToList(args.get("alert_source"))]
+    filter_builder.add_field(ISSUE_FIELDS["issue_source"], FilterType.CONTAINS, source_values)
+    status_values = [STATUS_PROGRESS.get(val, val) for val in argToList(args.get("status"))]
+    filter_builder.add_field(ISSUE_FIELDS["status"], FilterType.EQ, status_values)
+    not_status_values = [STATUS_PROGRESS.get(val, val) for val in argToList(args.get("not_status"))]
+    filter_builder.add_field(ISSUE_FIELDS["status"], FilterType.NEQ, not_status_values)
+    severity_values = [SEVERITY_STATUSES.get(val, val) for val in argToList(args.get("severity"))]
+    filter_builder.add_field(ISSUE_FIELDS["severity"], FilterType.EQ, severity_values)
+    action_status_values = [ALERT_STATUS_TYPES_REVERSE_DICT.get(val, val) for val in argToList(args.get("issue_action_status"))]
+    filter_builder.add_field(ISSUE_FIELDS["issue_action_status"], FilterType.EQ, action_status_values)
+    filter_builder.add_field_with_mappings(
+        determine_issue_assignee_filter_field(argToList(args.get("assignee"))),
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },
+    )
+    
+    filter_dict = filter_builder.to_dict()
+    
+    return filter_dict
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
     """
@@ -3841,6 +4156,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
 
         context.append(alert)
 
+    demisto.info(f"issue data retrieved (get-issues): {context}")
     ALERT_OR_ISSUE = "Alert"
     if is_platform():
         ALERT_OR_ISSUE = "Issue"

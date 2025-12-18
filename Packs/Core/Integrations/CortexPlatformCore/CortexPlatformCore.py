@@ -15,6 +15,7 @@ MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
+MAX_GET_ISSUES_LIMIT = 50
 AGENTS_TABLE = "AGENTS_TABLE"
 
 ASSET_FIELDS = {
@@ -53,6 +54,7 @@ WEBAPP_COMMANDS = [
     "core-get-appsec-issues",
     "core-update-case",
     "core-list-endpoints",
+    "core-get-issues2"
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -319,191 +321,6 @@ POLICY_CATEGORY_MAPPING = {
     "VCS Collaborator": "VCS_COLLABORATOR",
     "VCS Organization": "VCS_ORGANIZATION",
 }
-
-
-class FilterBuilder:
-    """
-    Filter class for creating filter dictionary objects.
-    """
-
-    class FilterType(str, Enum):
-        operator: str
-
-        """
-        Available type options for filter filtering.
-        Each member holds its string value and its logical operator for multi-value scenarios.
-        """
-
-        def __new__(cls, value, operator):
-            obj = str.__new__(cls, value)
-            obj._value_ = value
-            obj.operator = operator
-            return obj
-
-        EQ = ("EQ", "OR")
-        RANGE = ("RANGE", "OR")
-        CONTAINS = ("CONTAINS", "OR")
-        CASE_HOST_EQ = ("CASE_HOSTS_EQ", "OR")
-        CONTAINS_IN_LIST = ("CONTAINS_IN_LIST", "OR")
-        GTE = ("GTE", "OR")
-        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
-        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
-        IS_EMPTY = ("IS_EMPTY", "OR")
-        NIS_EMPTY = ("NIS_EMPTY", "AND")
-        ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
-
-    AND = "AND"
-    OR = "OR"
-    FIELD = "SEARCH_FIELD"
-    TYPE = "SEARCH_TYPE"
-    VALUE = "SEARCH_VALUE"
-
-    class Field:
-        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
-            self.field_name = field_name
-            self.filter_type = filter_type
-            self.values = values
-
-    class MappedValuesField(Field):
-        def __init__(
-            self,
-            field_name: str,
-            filter_type: "FilterType",
-            values: Any,
-            mappings: dict[str, "FilterType"],
-        ):
-            super().__init__(field_name, filter_type, values)
-            self.mappings = mappings
-
-    def __init__(self, filter_fields: list[Field] | None = None):
-        self.filter_fields = filter_fields or []
-
-    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
-        """
-        Adds a new field to the filter.
-        Args:
-            name (str): The name of the field.
-            type (FilterType): The type to use for the field.
-            values (Any): The values to filter for.
-            mapper (dict | None): An optional dictionary to map values before filtering.
-        """
-        processed_values = values
-        if mapper:
-            if not isinstance(values, list):
-                values = [values]
-            processed_values = [mapper[v] for v in values if v in mapper]
-
-        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
-
-    def add_field_with_mappings(
-        self,
-        name: str,
-        type: "FilterType",
-        values: Any,
-        mappings: dict[str, "FilterType"],
-    ):
-        """
-        Adds a new field to the filter with special value mappings.
-        Args:
-            name (str): The name of the field.
-            type (FilterType): The default filter type for non-mapped values.
-            values (Any): The values to filter for.
-            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
-                Example:
-                    mappings = {
-                        "unassigned": FilterType.IS_EMPTY,
-                        "assigned": FilterType.NIS_EMPTY,
-                    }
-        """
-        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
-
-    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
-        """
-        Adds a time range field to the filter.
-        Args:
-            name (str): The name of the field.
-            start_time (str | None): The start time of the range.
-            end_time (str | None): The end time of the range.
-        """
-        start, end = self._prepare_time_range(start_time, end_time)
-        if start and end:
-            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
-
-    def to_dict(self) -> dict[str, list]:
-        """
-        Creates a filter dict from a list of Field objects.
-        The filter will require each field to be one of the values provided.
-        Returns:
-            dict[str, list]: Filter object.
-        """
-        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
-
-        for field in self.filter_fields:
-            if not isinstance(field.values, list):
-                field.values = [field.values]
-
-            search_values = []
-            for value in field.values:
-                if value is None:
-                    continue
-
-                current_filter_type = field.filter_type
-                current_value = value
-
-                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
-                    current_filter_type = field.mappings[value]
-                    if current_filter_type in [
-                        FilterType.IS_EMPTY,
-                        FilterType.NIS_EMPTY,
-                    ]:
-                        current_value = "<No Value>"
-
-                search_values.append(
-                    {
-                        FilterBuilder.FIELD: field.field_name,
-                        FilterBuilder.TYPE: current_filter_type.value,
-                        FilterBuilder.VALUE: current_value,
-                    }
-                )
-
-            if search_values:
-                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
-                filter_structure[FilterBuilder.AND].append(search_obj)
-
-        if not filter_structure[FilterBuilder.AND]:
-            filter_structure = {}
-
-        return filter_structure
-
-    @staticmethod
-    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
-        """Prepare start and end time from args, parsing relative time strings."""
-        if end_time_str and not start_time_str:
-            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
-
-        start_time, end_time = None, None
-
-        if start_time_str:
-            if start_dt := dateparser.parse(str(start_time_str)):
-                start_time = int(start_dt.timestamp() * 1000)
-            else:
-                raise ValueError(f"Could not parse start_time: {start_time_str}")
-
-        if end_time_str:
-            if end_dt := dateparser.parse(str(end_time_str)):
-                end_time = int(end_dt.timestamp() * 1000)
-            else:
-                raise ValueError(f"Could not parse end_time: {end_time_str}")
-
-        if start_time and not end_time:
-            # Set end_time to the current time if only start_time is provided
-            end_time = int(datetime.now().timestamp() * 1000)
-
-        return start_time, end_time
-
-
-FilterType = FilterBuilder.FilterType
-
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
@@ -3085,6 +2902,69 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
         raw_response=data,
     )
 
+def get_issues_command2(client: Client, args: dict) -> CommandResults:
+    on_demand_fields = ["action_file_sha256", "actor_process_command_line", "cloud_provider_account_id", "action_file_path", "fw_xff", "_vendor", "_product", "_device_id", "actor_effective_username", "_collector_type", "_collector_name", "action_process_signature_vendor", "_reporting_device_ip", "_reporting_device_name", "_final_reporting_device_ip", "action_file_md5", "action_file_macro_sha256", "_final_reporting_device_name", "fw_url_domain", "agent_ip_addresses", "_collector_hostname", "action_process_image_sha256", "_collector_ip_address", "_collector_id", "action_process_image_name", "_broker_hostname", "_broker_device_id", "duration", "action_process_image_command_line", "_broker_ip_address", "agent_hostname", "fw_serial_number", "actor_process_image_name", "action_registry_data", "fw_interface_from", "fw_rule_id", "mac", "fw_rule", "action_remote_ip", "agent_os_type", "is_rule_triggering", "action_process_signature_status", "fw_device_name", "action_external_hostname", "action_file_name", "runStatus", "agent_fqdn", "action_registry_full_key", "causality_actor_process_image_md5", "actor_process_image_path", "causality_actor_process_command_line", "os_actor_process_image_sha256", "causality_actor_process_image_name", "os_actor_process_signature_status", "causality_actor_process_signature_vendor", "os_actor_process_signature_vendor", "resource_sub_type", "action_local_port", "action_local_ip", "resolution_status", "os_actor_thread_thread_id", "fw_app_id", "os_actor_effective_username", "agent_os_sub_type", "playbookId", "fw_misc", "identity_sub_type", "identity_type", "actor_thread_thread_id", "actor_process_signature_vendor", "causality_actor_process_image_path", "fw_app_category", "actor_process_signature_status", "operation_name", "alert_action_status", "tactic", "project", "cloud_provider", "technique", "os_actor_process_os_pid", "os_actor_process_image_name", "fw_is_phishing", "actor_process_os_pid", "actor_process_image_sha256", "os_actor_process_command_line", "fw_vsys", "module_id", "causality_actor_process_signature_status", "fw_app_subcategory", "fw_app_technology", "cloudservice", "causality_actor_process_image_sha256", "referenced_resource", "actor_process_image_md5", "tim_main_indicator", "agent_ip_addresses_v6", "fw_email_recipient", "xpanse_policy_id", "fw_email_subject", "event_type", "dns_query_name", "resource_type", "fw_email_sender", "fw_interface_to", "xdm.cloud.function.version", "xdm.target.port", "xdm.target.host.ipv6_addresses", "xdm.cloud.function.request_id", "xdm.target.url", "xdm.target.host.ipv4_addresses", "xdm.cloud.region", "xdm.cloud.function.runtime", "xdm.cloud.function.name", "xdm.file.owner_name", "xdm.cloud.function.id", "xdm.source.process.name", "xdm.vulnerability.cve_id", "xdm.source.ipv4", "xdm.source.process.executable.filename", "xdm.software_package.package_manager", "xdm.source.process.executable.signer", "xdm.vulnerability.fix_versions", "xdm.source.identity.username", "xdm.vulnerability.cvss_score", "xdm.http.version", "xdm.file.permissions.group", "xdm.code.iac.framework", "xdm.file.permissions.owner", "xdm.code.git.commit.time", "xdm.code.scan_source", "xdm.backlog_status", "xdm.data.data_pattern", "xdm.code.git.commit.author.name", "xdm.file.permissions.others", "xdm.file.group_name", "xdm.data.data_profile", "xdm.source.host.os_family", "xdm.code.git.branch", "xdm.code.git.commit.hash", "xdm.file.position.start.line", "xdm.application_protocol", "xdm.source.host.hostname", "xdm.http.path", "xdm.file.filename", "xdm.file.sha256", "xdm.http.response.status_code", "xdm.kubernetes.namespace.name", "xdm.http.response.content_types", "xdm.kubernetes.cluster.name", "xdm.file.path", "xdm.http.request.user_agents", "xdm.http.request.content_types", "xdm.file.last_modified", "xdm.http.method", "xdm.file.size"]
+    filter_dict = {}
+    if not args.get("custom_filter"):
+        filter_dict = get_issues_by_filter_command(client, args)
+    else:
+        filter_dict = safe_load_json(args.get("custom_filter"))
+
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or MAX_GET_ISSUES_LIMIT
+    limit = page * MAX_GET_ISSUES_LIMIT + limit
+    page = page * MAX_GET_ISSUES_LIMIT
+    sort_field = args.get("sort_field", "source_insert_ts")
+    sort_order = args.get("sort_order", "DESC")
+    output_keys = argToList(args.get("output_keys"))
+    request_data = build_webapp_request_data(
+        table_name="ALERTS_VIEW_TABLE",
+        filter_dict=filter_dict,
+        limit=limit,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        on_demand_fields=on_demand_fields,
+        start_page=page
+    )
+    demisto.info(f"{request_data=}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+    
+    if data:
+        data = [alert_to_issue(output) for output in data]  # type: ignore[attr-defined,arg-type]
+
+    demisto.info(f"issue data retrieved (get-issues2): {data}")
+    demisto.info(f"val before mapping: {data[0].get("issue_action_status")}")
+    demisto.info(f"val after mapping: {ALERT_STATUS_TYPES_REVERSE_DICT.get(data[0].get("issue_action_status"))}")
+
+    # Apply output_keys filtering if specified
+    if output_keys and data:
+        data = filter_context_fields(output_keys, data) 
+                
+    human_readable = [
+            {
+                "Issue ID": issue.get("internal_id"),
+                "Detection Timestamp": timestamp_to_datestring(issue.get("source_insert_ts")),
+                "Name": issue.get("issue_name"),
+                "Severity": SEVERITY_STATUSES_REVERSE.get(issue.get("severity")),
+                "Status": STATUS_PROGRESS_REVERSE.get(issue.get("status.progress")),
+                "Category": issue.get("issue_category"),
+                "Action": ALERT_STATUS_TYPES.get(issue.get("issue_action_status")),
+                "Description": issue.get("issue_description"),
+                "Host IP": issue.get("agent_ip_addresses"),
+                "Host Name": issue.get("agent_hostname"),
+            }
+            for issue in data
+        ]
+    
+    return CommandResults(
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Issue",
+        outputs_key_field="internal_id",
+        outputs=data,
+        readable_output=tableToMarkdown(f"Issue", human_readable),
+        raw_response=data,
+    )
 
 def main():  # pragma: no cover
     """
@@ -3167,7 +3047,8 @@ def main():  # pragma: no cover
                 issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
 
             return_results(issues_command_results)
-
+        elif command == "core-get-issues2":
+            return_results(get_issues_command2(client, args))
         elif command == "core-get-cases":
             return_results(get_cases_command(client, args))
 
