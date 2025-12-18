@@ -27,7 +27,7 @@ from typing import (
 import anyio
 import demistomock as demisto
 import httpx
-from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
+from pydantic import BaseModel, Field, validator, root_validator
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 
@@ -228,7 +228,8 @@ def _now() -> float:
 
 class RetryPolicy(BaseModel):
     """Retry policy for handling transient API failures."""
-    model_config = ConfigDict(extra='forbid')
+    class Config:
+        extra = 'forbid'
 
     max_attempts: int = Field(5, ge=1)
     initial_delay: float = Field(1.0, ge=0)
@@ -245,11 +246,14 @@ class RetryPolicy(BaseModel):
     )
     respect_retry_after: bool = True
 
-    @model_validator(mode='after')
-    def validate_delay(self) -> "RetryPolicy":
-        if self.max_delay <= self.initial_delay:
-            raise ValueError(f"max_delay ({self.max_delay}) must be > initial_delay ({self.initial_delay})")
-        return self
+    @root_validator
+    def validate_delay(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=no-self-argument
+        """Validate that max_delay is greater than initial_delay."""
+        max_delay = values.get("max_delay")
+        initial_delay = values.get("initial_delay")
+        if max_delay is not None and initial_delay is not None and max_delay <= initial_delay:
+            raise ValueError(f"max_delay ({max_delay}) must be > initial_delay ({initial_delay})")
+        return values
 
     def next_delay(self, attempt: int, retry_after: Optional[float] = None) -> float:
         if retry_after is not None and self.respect_retry_after:
@@ -261,7 +265,8 @@ class RetryPolicy(BaseModel):
 
 class CircuitBreakerPolicy(BaseModel):
     """Circuit breaker policy for preventing cascading failures."""
-    model_config = ConfigDict(extra='forbid')
+    class Config:
+        extra = 'forbid'
 
     failure_threshold: int = Field(5, ge=1)
     recovery_timeout: float = Field(60.0, gt=0)
@@ -295,7 +300,8 @@ class CircuitBreaker:
 
 class RateLimitPolicy(BaseModel):
     """Rate limiting policy using token bucket algorithm."""
-    model_config = ConfigDict(extra='forbid')
+    class Config:
+        extra = 'forbid'
 
     rate_per_second: float = Field(0.0, ge=0)
     burst: int = Field(1, ge=1)
@@ -337,7 +343,8 @@ class TokenBucketRateLimiter:
 
 class TimeoutSettings(BaseModel):
     """Timeout configuration for HTTP requests and execution deadline."""
-    model_config = ConfigDict(extra='forbid')
+    class Config:
+        extra = 'forbid'
 
     connect: float = Field(10.0, gt=0)
     read: float = Field(60.0, gt=0)
@@ -346,11 +353,14 @@ class TimeoutSettings(BaseModel):
     execution: Optional[float] = Field(None, gt=0)
     safety_buffer: float = Field(30.0, gt=0)
 
-    @model_validator(mode='after')
-    def validate_execution_safety(self) -> "TimeoutSettings":
-        if self.execution is not None and self.execution <= self.safety_buffer:
-            raise ValueError(f"execution ({self.execution}) must be > safety_buffer ({self.safety_buffer})")
-        return self
+    @root_validator
+    def validate_execution_safety(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=no-self-argument
+        """Validate that execution timeout is greater than safety buffer."""
+        execution = values.get("execution")
+        safety_buffer = values.get("safety_buffer")
+        if execution is not None and safety_buffer is not None and execution <= safety_buffer:
+            raise ValueError(f"execution ({execution}) must be > safety_buffer ({safety_buffer})")
+        return values
 
     def as_httpx(self) -> httpx.Timeout:
         return httpx.Timeout(connect=self.connect, read=self.read, write=self.write, pool=self.pool)
@@ -378,7 +388,8 @@ class DeduplicationConfig(BaseModel):
         timestamp_path: Path to the timestamp field in the event (required).
         key_path: Path to the unique key field (optional). If None, hashes the event.
     """
-    model_config = ConfigDict(extra='forbid')
+    class Config:
+        extra = 'forbid'
 
     timestamp_path: str
     key_path: Optional[str] = None
@@ -396,7 +407,8 @@ class PaginationConfig(BaseModel):
     - `link`: Uses a full URL provided in the response for the next page.
     - `none`: No pagination (single request).
     """
-    model_config = ConfigDict(extra='forbid')
+    class Config:
+        extra = 'forbid'
 
     mode: PaginationMode = "none"
     data_path: Optional[str] = None
@@ -423,22 +435,30 @@ class PaginationConfig(BaseModel):
     stop_when_empty: bool = True
     max_pages: Optional[int] = Field(None, gt=0)
 
-    @model_validator(mode='after')
-    def validate_pagination_mode(self) -> "PaginationConfig":
-        if self.mode == "cursor" and not self.next_cursor_path:
+    @root_validator
+    def validate_pagination_mode(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=no-self-argument
+        """Validate pagination configuration based on the selected mode."""
+        mode = values.get("mode")
+        next_cursor_path = values.get("next_cursor_path")
+        page_size = values.get("page_size")
+        link_path = values.get("link_path")
+        page_size_param = values.get("page_size_param")
+
+        if mode == "cursor" and not next_cursor_path:
             raise ValueError("mode='cursor' requires next_cursor_path")
-        if self.mode == "offset" and not self.page_size:
+        if mode == "offset" and not page_size:
             raise ValueError("mode='offset' requires page_size")
-        if self.mode == "link" and not self.link_path:
+        if mode == "link" and not link_path:
             raise ValueError("mode='link' requires link_path")
-        if self.mode == "page" and self.page_size and not self.page_size_param:
+        if mode == "page" and page_size and not page_size_param:
             raise ValueError("page_size requires page_size_param to be set")
-        return self
+        return values
 
 
 class CollectorRequest(BaseModel):
     """HTTP request configuration for event collection."""
-    model_config = ConfigDict(extra='forbid')
+    class Config:
+        extra = 'forbid'
 
     endpoint: str
     method: HTTPMethod = "GET"
@@ -453,9 +473,9 @@ class CollectorRequest(BaseModel):
     state_key: Optional[StateKey] = None
     shards: Optional[List[ShardConfig]] = None
 
-    @field_validator('endpoint')
-    @classmethod
-    def validate_endpoint(cls, v: str) -> str:
+    @validator('endpoint')
+    def validate_endpoint(cls, v: str) -> str:  # pylint: disable=no-self-argument
+        """Validate that endpoint starts with '/'."""
         if not v.startswith("/"):
             raise ValueError(f"endpoint must start with '/', got: {v}")
         return v
@@ -597,11 +617,11 @@ class CollectorStateStore:
     def __init__(self, collector_name: str):
         self._store = IntegrationContextStore(collector_name)
 
-    def load(self, key: StateKey = "default") -> CollectorState:
+    def load(self, key: StateKey = StateKey("default")) -> CollectorState:
         raw = self._store.read()
         return CollectorState.from_dict(raw.get(key))
 
-    def save(self, state: CollectorState, key: StateKey = "default") -> None:
+    def save(self, state: CollectorState, key: StateKey = StateKey("default")) -> None:
         raw = self._store.read()
         raw[key] = state.to_dict()
         self._store.write(raw)
@@ -653,16 +673,37 @@ class CollectorRunResult:
 
 class CollectorBlueprint(BaseModel):
     """Blueprint defining a collector's complete configuration."""
-    model_config = ConfigDict(arbitrary_types_allowed=True, extra='forbid')
+    class Config:
+        arbitrary_types_allowed = True
+        extra = 'forbid'
 
     name: str
     base_url: str
     request: CollectorRequest
     auth_handler: Optional["AuthHandler"] = None
-    retry_policy: RetryPolicy = Field(default_factory=RetryPolicy)
-    rate_limit: RateLimitPolicy = Field(default_factory=RateLimitPolicy)
-    circuit_breaker: CircuitBreakerPolicy = Field(default_factory=CircuitBreakerPolicy)
-    timeout: TimeoutSettings = Field(default_factory=TimeoutSettings)
+    retry_policy: RetryPolicy = Field(default_factory=lambda: RetryPolicy(
+        max_attempts=5,
+        initial_delay=1.0,
+        multiplier=2.0,
+        max_delay=60.0,
+        jitter=0.2
+    ))
+    rate_limit: RateLimitPolicy = Field(default_factory=lambda: RateLimitPolicy(
+        rate_per_second=0.0,
+        burst=1
+    ))
+    circuit_breaker: CircuitBreakerPolicy = Field(default_factory=lambda: CircuitBreakerPolicy(
+        failure_threshold=5,
+        recovery_timeout=60.0
+    ))
+    timeout: TimeoutSettings = Field(default_factory=lambda: TimeoutSettings(
+        connect=10.0,
+        read=60.0,
+        write=60.0,
+        pool=60.0,
+        execution=None,
+        safety_buffer=30.0
+    ))
     default_strategy: StrategyName = "sequential"
     default_limit: Optional[int] = Field(None, gt=0)
     concurrency: int = Field(4, ge=1)
@@ -670,9 +711,9 @@ class CollectorBlueprint(BaseModel):
     verify: bool = True
     proxy: bool = False
 
-    @field_validator('base_url')
-    @classmethod
-    def validate_base_url(cls, v: str) -> str:
+    @validator('base_url')
+    def validate_base_url(cls, v: str) -> str:  # pylint: disable=no-self-argument
+        """Validate that base_url starts with http:// or https://."""
         if not v.startswith("http://") and not v.startswith("https://"):
             raise ValueError(f"base_url must start with http:// or https://, got: {v}")
         return v
@@ -1289,9 +1330,11 @@ class DeduplicationEngine:
         # Sort events by timestamp to ensure correct processing order
         # This is crucial if the API returns events out of order
         try:
+            # We know self.config is not None here because of the check above
+            timestamp_path = self.config.timestamp_path
             sorted_events = sorted(
                 events,
-                key=lambda e: _get_value_by_path(e, self.config.timestamp_path) or ""
+                key=lambda e: _get_value_by_path(e, timestamp_path) or ""
             )
         except Exception:
             # If sorting fails (e.g. mixed types), process as-is
@@ -1342,7 +1385,12 @@ class DeduplicationEngine:
 
 class PaginationEngine:
     def __init__(self, config: Optional[PaginationConfig], state: CollectorState):
-        self.config = config or PaginationConfig()
+        self.config = config or PaginationConfig(
+            mode="none",
+            start_page=1,
+            page_size=None,
+            max_pages=None
+        )
         self.state = state
         if self.state.page is None:
             self.state.page = self.config.start_page
@@ -2032,7 +2080,7 @@ class CollectorClient:
         resume_map = self._resume_state_map(resume_state)
         executors: List[CollectorExecutor] = []
         for req in expanded_requests:
-            state_key: StateKey = req.state_key or req.endpoint
+            state_key: StateKey = req.state_key or StateKey(req.endpoint)
             state = resume_map.get(state_key) or resume_map.get("default") or self.state_store.load(state_key)
             pagination = PaginationEngine(req.pagination or self.blueprint.request.pagination, state)
             executor = CollectorExecutor(
@@ -2186,6 +2234,8 @@ class CollectorClient:
                 "max_attempts": self.retry_policy.max_attempts,
                 "initial_delay": self.retry_policy.initial_delay,
                 "max_delay": self.retry_policy.max_delay,
+                "multiplier": self.retry_policy.multiplier,
+                "jitter": self.retry_policy.jitter,
             },
             "rate_limit": {
                 "rate_per_second": self.blueprint.rate_limit.rate_per_second,
@@ -2383,7 +2433,7 @@ class CollectorClient:
             List of error messages (empty if configuration is valid)
         """
         try:
-            CollectorBlueprint.model_validate(self.blueprint.model_dump())
+            CollectorBlueprint.validate(self.blueprint.dict())
             return []
         except Exception as e:
             return [str(e)]
@@ -2442,6 +2492,35 @@ class CollectorClient:
         
         return health
 
+    def test_configuration(self) -> str:
+        """Test the collector configuration by fetching a single event.
+
+        This method is designed to be used by the 'test-module' command.
+        It verifies connectivity, authentication, and configuration validity.
+
+        Returns:
+            "ok" if successful.
+
+        Raises:
+            CollectorError: If the test fails.
+        """
+        # 1. Validate configuration
+        errors = self.validate_configuration()
+        if errors:
+            raise CollectorConfigurationError(f"Configuration errors: {'; '.join(errors)}")
+
+        # 2. Attempt to fetch one event
+        try:
+            # We use a limit of 1 to minimize impact
+            self.collect_events_sync(limit=1)
+        except Exception as e:
+            # Re-raise as CollectorError if it isn't already
+            if isinstance(e, CollectorError):
+                raise
+            raise CollectorError(f"Test failed: {str(e)}") from e
+
+        return "ok"
+
     def _build_strategy(self, strategy: Union[StrategyName, CollectionStrategy, None]) -> CollectionStrategy:
         if isinstance(strategy, CollectionStrategy):
             return strategy
@@ -2494,7 +2573,7 @@ class CollectorClient:
                 pagination=shard.get("pagination", request.pagination),
                 stream=request.stream,
                 timeout=shard.get("timeout", request.timeout),
-                state_key=shard.get("state_key") or f"{request.state_key or request.endpoint}:{idx}",
+                state_key=StateKey(shard.get("state_key") or f"{request.state_key or request.endpoint}:{idx}"),
                 shards=None,
             )
             clones.append(shard_request)
@@ -2678,6 +2757,9 @@ class CollectorBlueprintBuilder:
             next_cursor_path=next_cursor_path,
             cursor_param=cursor_param,
             data_path=data_path or self._request.data_path,
+            start_page=1,
+            page_size=None,
+            max_pages=None
         )
         return self
     
@@ -2707,6 +2789,7 @@ class CollectorBlueprintBuilder:
             page_size=page_size,
             page_size_param=page_size_param,
             has_more_path=has_more_path,
+            max_pages=None
         )
         return self
     
@@ -2774,6 +2857,8 @@ class CollectorBlueprintBuilder:
             execution=execution,
             connect=connect,
             read=read,
+            write=60.0,
+            pool=60.0,
             safety_buffer=safety_buffer,
         )
         return self
@@ -2783,6 +2868,8 @@ class CollectorBlueprintBuilder:
         max_attempts: int = 5,
         initial_delay: float = 1.0,
         max_delay: float = 60.0,
+        multiplier: float = 2.0,
+        jitter: float = 0.2,
     ) -> "CollectorBlueprintBuilder":
         """Configure retry policy.
         
@@ -2790,11 +2877,15 @@ class CollectorBlueprintBuilder:
             max_attempts: Maximum retry attempts (default: 5)
             initial_delay: Initial delay in seconds (default: 1.0)
             max_delay: Maximum delay in seconds (default: 60.0)
+            multiplier: Exponential backoff multiplier (default: 2.0)
+            jitter: Random jitter factor (default: 0.2)
         """
         self._retry_policy = RetryPolicy(
             max_attempts=max_attempts,
             initial_delay=initial_delay,
             max_delay=max_delay,
+            multiplier=multiplier,
+            jitter=jitter,
         )
         return self
     
@@ -2844,9 +2935,25 @@ class CollectorBlueprintBuilder:
             base_url=self.base_url,
             request=self._request,
             auth_handler=self._auth_handler,
-            retry_policy=self._retry_policy or RetryPolicy(),
-            rate_limit=self._rate_limit or RateLimitPolicy(),
-            timeout=self._timeout or TimeoutSettings(),
+            retry_policy=self._retry_policy or RetryPolicy(
+                max_attempts=5,
+                initial_delay=1.0,
+                multiplier=2.0,
+                max_delay=60.0,
+                jitter=0.2
+            ),
+            rate_limit=self._rate_limit or RateLimitPolicy(
+                rate_per_second=0.0,
+                burst=1
+            ),
+            timeout=self._timeout or TimeoutSettings(
+                connect=10.0,
+                read=60.0,
+                write=60.0,
+                pool=60.0,
+                execution=None,
+                safety_buffer=30.0
+            ),
             default_strategy=self._default_strategy,
             default_limit=self._default_limit,
             concurrency=self._concurrency,

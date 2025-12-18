@@ -41,6 +41,7 @@ from CollectorClientApiModule import (
     RateLimitPolicy,
     RetryPolicy,
     TimeoutSettings,
+    CollectorError,
     CollectorConfigurationError,
     CollectorAuthenticationError,
     CollectorRateLimitError,
@@ -809,11 +810,19 @@ def test_builder_with_retry_policy():
     blueprint = (
         CollectorBlueprintBuilder("Test", "https://api.example.com")
         .with_endpoint("/v1/events")
-        .with_retry_policy(max_attempts=10, initial_delay=2.0, max_delay=120.0)
+        .with_retry_policy(
+            max_attempts=10,
+            initial_delay=2.0,
+            max_delay=120.0,
+            multiplier=3.0,
+            jitter=0.5,
+        )
         .build()
     )
     assert blueprint.retry_policy.max_attempts == 10
     assert blueprint.retry_policy.initial_delay == 2.0
+    assert blueprint.retry_policy.multiplier == 3.0
+    assert blueprint.retry_policy.jitter == 0.5
 
 
 def test_builder_with_strategy():
@@ -1948,3 +1957,45 @@ def test_builder_missing_pagination_config():
             .with_cursor_pagination(next_cursor_path="")  # Empty path
             .build()
         )
+
+
+@respx.mock
+def test_test_configuration_success():
+    """Test test_configuration success path."""
+    respx.get("https://api.example.com/v1/events").mock(
+        return_value=Response(200, json={"data": {"events": [{"id": 1}]}, "meta": {"next_cursor": None}})
+    )
+
+    request = CollectorRequest(endpoint="/v1/events", data_path="data.events")
+    blueprint = build_blueprint(request=request)
+    client = CollectorClient(blueprint)
+
+    assert client.test_configuration() == "ok"
+
+
+@respx.mock
+def test_test_configuration_failure_api():
+    """Test test_configuration failure due to API error."""
+    respx.get("https://api.example.com/v1/events").mock(
+        return_value=Response(500, json={"error": "Server Error"})
+    )
+
+    request = CollectorRequest(endpoint="/v1/events")
+    blueprint = build_blueprint(request=request, retry_policy=RetryPolicy(max_attempts=1))
+    client = CollectorClient(blueprint)
+
+    with pytest.raises(CollectorError, match="Test failed"):
+        client.test_configuration()
+
+
+def test_test_configuration_failure_config(mocker):
+    """Test test_configuration failure due to configuration error."""
+    request = CollectorRequest(endpoint="/v1/events")
+    blueprint = build_blueprint(request=request)
+    client = CollectorClient(blueprint)
+
+    # Mock validate_configuration to return errors
+    mocker.patch.object(client, "validate_configuration", return_value=["Invalid config"])
+
+    with pytest.raises(CollectorConfigurationError, match="Configuration errors: Invalid config"):
+        client.test_configuration()
