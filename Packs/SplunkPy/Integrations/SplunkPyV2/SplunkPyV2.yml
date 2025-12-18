@@ -233,6 +233,13 @@ configuration:
   advanced: true
   additionalinfo: The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment.
   required: false
+- display: 'Advanced: Unique ID Fields'
+  name: unique_id_fields
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: 'A comma-separated list of additional fields to use when generating unique incident IDs for events that are not findings (i.e., queries without the `notable` macro). By default, the integration uses: _cd, index, _time, _indextime, _raw. If these fields do not provide unique values in your environment, specify additional fields here to ensure incident uniqueness. Example: source,host,unique_field'
 - defaultvalue: 'false'
   display: Enable user mapping
   name: userMapping

@@ -573,6 +573,8 @@ def create_incident_custom_id(incident: dict[str, Any]):
     """
     incident_raw_data = json.loads(incident["rawJSON"])
     fields_to_add = ["_cd", "index", "_time", "_indextime", "_raw"]
+    fields_supplied_by_user = demisto.params().get("unique_id_fields") or ""
+    fields_to_add.extend(fields_supplied_by_user.split(","))
 
     incident_custom_id = "___"
     for field_name in fields_to_add:
@@ -3860,9 +3862,11 @@ def test_module(service: client.Service, params: dict[str, Any]) -> None:
                             "incidents.\n\n"
                             "CAUSE: The integration generates incident IDs from fields: _cd, index, _time, _indextime, _raw.\n"
                             "These fields may not provide unique values in your fetch query.\n\n"
-                            "SOLUTION: Add fields with unique values to your query output.\n"
-                            "Choose fields that will create unique combinations for each incident.\n"
-                            "Example: your_search | table _time, _raw, source, host, [unique_field]."
+                            "SOLUTION: Configure the 'Unique ID Fields' parameter in the integration settings.\n"
+                            "Add a comma-separated list of additional fields that will create unique combinations for each incident.\n"
+                            "Example: source,host,unique_field\n\n"
+                            "The parameter can be found in the integration configuration under:\n"
+                            "Advanced Settings -> Unique ID Fields"
                         )
                     demisto.debug(
                         f"Duplicate ID validation passed: {len(set(custom_ids))} unique IDs from {len(custom_ids)} incidents"

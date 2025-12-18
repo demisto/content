@@ -4967,3 +4967,345 @@ def test_splunk_get_indexes_command_failure(mocker):
 
     # Verify errors were logged
     assert error_mock.call_count >= 2  # One for REST failure, one for Direct failure
+
+
+# ========== unique_id_fields Tests ==========
+
+
+@pytest.mark.parametrize(
+    "unique_id_fields, incident_data, expected_fields_in_id",
+    [
+        # Test 1: No unique_id_fields parameter (default behavior)
+        (
+            "",
+            {
+                "rawJSON": json.dumps(
+                    {
+                        "_cd": "668:17198",
+                        "index": "finding",
+                        "_time": "2020-08-04T05:45:16.000-07:00",
+                        "_indextime": "1596545116",
+                        "_raw": "test raw data",
+                    }
+                )
+            },
+            ["_cd", "index", "_time", "_indextime", "_raw"],
+        ),
+        # Test 2: With single unique_id_field
+        (
+            "source",
+            {
+                "rawJSON": json.dumps(
+                    {
+                        "_cd": "668:17198",
+                        "index": "finding",
+                        "_time": "2020-08-04T05:45:16.000-07:00",
+                        "_indextime": "1596545116",
+                        "_raw": "test raw data",
+                        "source": "test_source",
+                    }
+                )
+            },
+            ["_cd", "index", "_time", "_indextime", "_raw", "source"],
+        ),
+        # Test 3: With multiple unique_id_fields
+        (
+            "source,host,event_type",
+            {
+                "rawJSON": json.dumps(
+                    {
+                        "_cd": "668:17198",
+                        "index": "finding",
+                        "_time": "2020-08-04T05:45:16.000-07:00",
+                        "_indextime": "1596545116",
+                        "_raw": "test raw data",
+                        "source": "test_source",
+                        "host": "test_host",
+                        "event_type": "test_type",
+                    }
+                )
+            },
+            ["_cd", "index", "_time", "_indextime", "_raw", "source", "host", "event_type"],
+        ),
+        # Test 4: With unique_id_fields that don't exist in data (should not break)
+        (
+            "nonexistent_field",
+            {
+                "rawJSON": json.dumps(
+                    {
+                        "_cd": "668:17198",
+                        "index": "finding",
+                        "_time": "2020-08-04T05:45:16.000-07:00",
+                        "_indextime": "1596545116",
+                        "_raw": "test raw data",
+                    }
+                )
+            },
+            ["_cd", "index", "_time", "_indextime", "_raw"],
+        ),
+        # Test 5: With unique_id_fields containing spaces (should be trimmed)
+        (
+            " source , host ",
+            {
+                "rawJSON": json.dumps(
+                    {
+                        "_cd": "668:17198",
+                        "index": "finding",
+                        "_time": "2020-08-04T05:45:16.000-07:00",
+                        "_indextime": "1596545116",
+                        "_raw": "test raw data",
+                        "source": "test_source",
+                        "host": "test_host",
+                    }
+                )
+            },
+            ["_cd", "index", "_time", "_indextime", "_raw", " source ", " host "],
+        ),
+    ],
+    ids=[
+        "no_unique_id_fields",
+        "single_unique_id_field",
+        "multiple_unique_id_fields",
+        "nonexistent_unique_id_field",
+        "unique_id_fields_with_spaces",
+    ],
+)
+def test_create_incident_custom_id_with_unique_fields(mocker, unique_id_fields, incident_data, expected_fields_in_id):
+    """
+    Test the create_incident_custom_id function with various unique_id_fields configurations.
+
+    Given:
+        - Different configurations of the unique_id_fields parameter
+        - Incident data with various fields
+
+    When:
+        - create_incident_custom_id is called
+
+    Then:
+        - Verify that the custom ID is generated correctly
+        - Verify that all expected fields are included in the ID generation
+        - Verify that the function handles missing fields gracefully
+    """
+    mocker.patch.object(demisto, "params", return_value={"unique_id_fields": unique_id_fields})
+    mocker.patch.object(demisto, "debug")
+
+    # Call the function
+    custom_id = splunk.create_incident_custom_id(incident_data)
+
+    # Verify the ID is a valid MD5 hash
+    assert len(custom_id) == 32
+    assert all(c in "0123456789abcdef" for c in custom_id)
+
+    # Verify that the function was called with params
+    demisto.params.assert_called()
+
+
+def test_create_incident_custom_id_generates_unique_ids(mocker):
+    """
+    Test that create_incident_custom_id generates different IDs for different incidents.
+
+    Given:
+        - Two incidents with different data
+        - unique_id_fields parameter configured
+
+    When:
+        - create_incident_custom_id is called for both incidents
+
+    Then:
+        - Verify that different IDs are generated for different incidents
+        - Verify that the same incident generates the same ID consistently
+    """
+    mocker.patch.object(demisto, "params", return_value={"unique_id_fields": "source,host"})
+    mocker.patch.object(demisto, "debug")
+
+    incident1 = {
+        "rawJSON": json.dumps(
+            {
+                "_cd": "668:17198",
+                "index": "finding",
+                "_time": "2020-08-04T05:45:16.000-07:00",
+                "_indextime": "1596545116",
+                "_raw": "test raw data 1",
+                "source": "source1",
+                "host": "host1",
+            }
+        )
+    }
+
+    incident2 = {
+        "rawJSON": json.dumps(
+            {
+                "_cd": "668:17198",
+                "index": "finding",
+                "_time": "2020-08-04T05:45:16.000-07:00",
+                "_indextime": "1596545116",
+                "_raw": "test raw data 2",
+                "source": "source2",
+                "host": "host2",
+            }
+        )
+    }
+
+    # Generate IDs
+    id1_first = splunk.create_incident_custom_id(incident1)
+    id2 = splunk.create_incident_custom_id(incident2)
+    id1_second = splunk.create_incident_custom_id(incident1)
+
+    # Different incidents should have different IDs
+    assert id1_first != id2
+
+    # Same incident should generate the same ID
+    assert id1_first == id1_second
+
+
+def test_create_incident_custom_id_prevents_duplicates(mocker):
+    """
+    Test that unique_id_fields helps prevent duplicate IDs.
+
+    Given:
+        - Two incidents with same default fields but different unique_id_fields values
+        - unique_id_fields parameter configured
+
+    When:
+        - create_incident_custom_id is called for both incidents
+
+    Then:
+        - Verify that different IDs are generated when unique_id_fields differ
+    """
+    mocker.patch.object(demisto, "params", return_value={"unique_id_fields": "source"})
+    mocker.patch.object(demisto, "debug")
+
+    # Same default fields, different source
+    incident1 = {
+        "rawJSON": json.dumps(
+            {
+                "_cd": "668:17198",
+                "index": "finding",
+                "_time": "2020-08-04T05:45:16.000-07:00",
+                "_indextime": "1596545116",
+                "_raw": "same raw data",
+                "source": "source_A",
+            }
+        )
+    }
+
+    incident2 = {
+        "rawJSON": json.dumps(
+            {
+                "_cd": "668:17198",
+                "index": "finding",
+                "_time": "2020-08-04T05:45:16.000-07:00",
+                "_indextime": "1596545116",
+                "_raw": "same raw data",
+                "source": "source_B",
+            }
+        )
+    }
+
+    id1 = splunk.create_incident_custom_id(incident1)
+    id2 = splunk.create_incident_custom_id(incident2)
+
+    # Should generate different IDs due to different source values
+    assert id1 != id2
+
+
+@pytest.mark.parametrize(
+    "unique_id_fields",
+    [
+        None,
+        "",
+        "   ",
+    ],
+    ids=["None", "empty_string", "whitespace"],
+)
+def test_create_incident_custom_id_with_empty_unique_fields(mocker, unique_id_fields):
+    """
+    Test that create_incident_custom_id handles empty/None unique_id_fields gracefully.
+
+    Given:
+        - unique_id_fields parameter is None, empty string, or whitespace
+
+    When:
+        - create_incident_custom_id is called
+
+    Then:
+        - Verify that the function uses only default fields
+        - Verify that a valid ID is still generated
+    """
+    mocker.patch.object(demisto, "params", return_value={"unique_id_fields": unique_id_fields})
+    mocker.patch.object(demisto, "debug")
+
+    incident = {
+        "rawJSON": json.dumps(
+            {
+                "_cd": "668:17198",
+                "index": "finding",
+                "_time": "2020-08-04T05:45:16.000-07:00",
+                "_indextime": "1596545116",
+                "_raw": "test raw data",
+            }
+        )
+    }
+
+    custom_id = splunk.create_incident_custom_id(incident)
+
+    # Should still generate a valid MD5 hash
+    assert len(custom_id) == 32
+    assert all(c in "0123456789abcdef" for c in custom_id)
+
+
+def test_test_module_duplicate_detection_with_unique_fields(mocker):
+    """
+    Test that test_module properly detects duplicates and suggests using unique_id_fields.
+
+    Given:
+        - Fetch query that returns duplicate incident IDs
+        - No unique_id_fields configured
+
+    When:
+        - test_module is executed
+
+    Then:
+        - Verify that an error is raised
+        - Verify that the error message mentions the unique_id_fields parameter
+    """
+    mocker.patch.object(
+        demisto, "params", return_value={"isFetch": True, "fetchQuery": "search test | table index", "unique_id_fields": ""}
+    )
+
+    # Mock service and results with duplicate IDs
+    service = mocker.MagicMock()
+
+    # Create incidents that will generate duplicate IDs
+    duplicate_incidents = [
+        {
+            "_cd": "668:17198",
+            "index": "finding",
+            "_time": "2020-08-04T05:45:16.000-07:00",
+            "_indextime": "1596545116",
+            "_raw": "same data",
+            "unique_field": "event1",
+        },
+        {
+            "_cd": "668:17198",
+            "index": "finding",
+            "_time": "2020-08-04T05:45:16.000-07:00",
+            "_indextime": "1596545116",
+            "_raw": "same data",
+            "unique_field": "event2",
+        },
+    ]
+
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=duplicate_incidents)
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+
+    # Execute test_module
+    splunk.test_module(service, demisto.params())
+
+    # Verify error was raised
+    assert return_error_mock.called
+    error_message = return_error_mock.call_args[0][0]
+
+    # Verify error message mentions unique_id_fields
+    assert "Unique ID Fields" in error_message or "unique_id_fields" in error_message
+    assert "integration configuration" in error_message.lower() or "integration settings" in error_message.lower()
