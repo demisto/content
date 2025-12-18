@@ -3051,6 +3051,48 @@ Returns a list of notes for a specified detection.
 
 ```!vectra-detections-note-list detection_id=1```
 
+#### Context Example
+
+```json
+{
+  "Vectra": {
+    "Entity": {
+      "Notes": [
+        {
+          "created_by": "test_user@mail.com",
+          "date_created": "2023-08-25T07:09:08Z",
+          "entity_id": 107,
+          "entity_type": "account",
+          "id": 1070,
+          "modified_by": "test_user@mail.com",
+          "note": "From XSOAR",
+          "note_id": 1070
+        },
+        {
+          "created_by": "test_user@mail.com",
+          "date_created": "2023-08-25T07:08:58Z",
+          "entity_id": 107,
+          "entity_type": "account",
+          "id": 1069,
+          "modified_by": "test_user@mail.com",
+          "note": "Test note",
+          "note_id": 1069
+        },
+        {
+          "created_by": "api_client",
+          "date_created": "2023-08-16T05:23:33Z",
+          "entity_id": 107,
+          "entity_type": "account",
+          "id": 922,
+          "note": "[Mirrored From XSOAR] XSOAR Incident ID: 14228\n\nNote: **bold**\n\n_Italic_\n\n+Underline+\n\n~~strikethrough~~\n\nAdded By: admin",
+          "note_id": 922
+        }
+      ]
+    }
+  }
+}
+```
+
 ### vectra-detections-note-add
 
 ***
