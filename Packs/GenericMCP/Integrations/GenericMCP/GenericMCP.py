@@ -718,7 +718,7 @@ async def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command == "call-tool":
-            result = await client.call_tool(args["name"], args.get("arguments", ""))
+            result = await client.call_tool(args.get("name"), args.get("arguments", ""))
             return_results(result)
 
         elif command == "generic-mcp-auth-test":
