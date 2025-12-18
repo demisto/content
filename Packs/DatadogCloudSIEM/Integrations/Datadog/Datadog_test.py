@@ -24,7 +24,7 @@ from datadog_api_client.v1.model.metric_search_response_results import (
     MetricSearchResponseResults,
 )
 from datadog_api_client.v1.model.metrics_list_response import MetricsListResponse
-from DatadogCloudSIEM import (
+from Datadog import (
     DEFAULT_PAGE_SIZE,
     PAGE_NUMBER_ERROR_MSG,
     PAGE_SIZE_ERROR_MSG,
@@ -151,7 +151,7 @@ def configuration():
 @pytest.mark.parametrize("raw_resp, expected", [(EVENT_CREATE_RESPONSE, EVENT_CREATE_CONTEXT)])
 def test_create_event_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the create_event_command function in DatadogCloudSIEM.
+    Test function for the create_event_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -173,8 +173,8 @@ def test_create_event_command(mocker, raw_resp, expected, configuration):
     }
     raw_obj = Datadog(**EVENT_CREATE_RESPONSE)
     DATADOG_API_CLIENT_MOCK.create_event.return_value = raw_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
     with open(
         os.path.join("test_data", "readable_outputs/create_event_command_readable.md"),
     ) as f:
@@ -188,7 +188,7 @@ def test_create_event_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(EVENT_LIST_RESPONSE, EVENT_LIST_CONTEXT)])
 def test_list_events_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the list_events function in DatadogCloudSIEM.
+    Test function for the list_events function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -209,8 +209,8 @@ def test_list_events_command(mocker, raw_resp, expected, configuration):
     }
     new_raw = [Datadog(**obj) for obj in raw_resp.get("events")]
     DATADOG_API_CLIENT_MOCK.list_events.return_value = {"events": new_raw}
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_events_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/list_events_command_readable.md"),
@@ -224,7 +224,7 @@ def test_list_events_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(EVENT_GET_RESPONSE, EVENT_GET_CONTEXT)])
 def test_get_events_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the get_events_command function in DatadogCloudSIEM.
+    Test function for the get_events_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -238,8 +238,8 @@ def test_get_events_command(mocker, raw_resp, expected, configuration):
     args = {"event_id": "6995647921883593635"}
     new_raw = Datadog(**raw_resp.get("event"))
     DATADOG_API_CLIENT_MOCK.get_event.return_value = {"event": new_raw}
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_events_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/get_events_command_readable.md"),
@@ -253,7 +253,7 @@ def test_get_events_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(HOST_TAG_CREATE_RESPONSE, HOST_TAG_CREATE_CONTEXT)])
 def test_add_tags_to_host_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the add_tags_to_host_command function in DatadogCloudSIEM.
+    Test function for the add_tags_to_host_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -270,8 +270,8 @@ def test_add_tags_to_host_command(mocker, raw_resp, expected, configuration):
     }
 
     DATADOG_API_CLIENT_MOCK.create_host_tags.return_value = raw_resp
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = add_tags_to_host_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/add_tags_to_host_command_readable.md"),
@@ -285,7 +285,7 @@ def test_add_tags_to_host_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(HOST_TAG_GET_RESPONSE, HOST_TAG_GET_CONTEXT)])
 def test_get_host_tags_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the get_host_tags_command function in DatadogCloudSIEM.
+    Test function for the get_host_tags_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -299,8 +299,8 @@ def test_get_host_tags_command(mocker, raw_resp, expected, configuration):
     args = {"host_name": "DESKTOP-IIQVPJ7"}
 
     DATADOG_API_CLIENT_MOCK.get_host_tags.return_value = HOST_TAG_GET_RESPONSE
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_host_tags_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/get_host_tags_command_readable.md"),
@@ -314,7 +314,7 @@ def test_get_host_tags_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(HOST_TAG_UPDATE_RESPONSE, HOST_TAG_UPDATE_CONTEXT)])
 def test_update_host_tags_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the update_host_tags_command function in DatadogCloudSIEM.
+    Test function for the update_host_tags_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -331,8 +331,8 @@ def test_update_host_tags_command(mocker, raw_resp, expected, configuration):
     }
 
     DATADOG_API_CLIENT_MOCK.update_host_tags.return_value = HOST_TAG_UPDATE_RESPONSE
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = update_host_tags_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/update_host_tags_command_readable.md"),
@@ -346,7 +346,7 @@ def test_update_host_tags_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(ACTIVE_METRIC_LIST_RESPONSE, ACTIVE_METRIC_LIST_CONTEXT)])
 def test_active_metrics_list_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the active_metrics_list_command function in DatadogCloudSIEM.
+    Test function for the active_metrics_list_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -360,8 +360,8 @@ def test_active_metrics_list_command(mocker, raw_resp, expected, configuration):
     args = {"from": "2 days ago"}
     resp_obj = MetricsListResponse(_from=raw_resp.get("_from"), metrics=raw_resp.get("metrics"))
     DATADOG_API_CLIENT_MOCK.list_active_metrics.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = active_metrics_list_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/active_metrics_list_command_readable.md"),
@@ -376,7 +376,7 @@ def test_active_metrics_list_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(METRIC_SEARCH_RESPONSE, METRIC_SEARCH_CONTEXT)])
 def test_metrics_search_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the metrics_search_command function in DatadogCloudSIEM.
+    Test function for the metrics_search_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -390,8 +390,8 @@ def test_metrics_search_command(mocker, raw_resp, expected, configuration):
     args = {"query": "datadog.agent.python.version"}
     resp_obj = MetricSearchResponse(results=MetricSearchResponseResults(metrics=raw_resp["results"]["metrics"]))
     DATADOG_API_CLIENT_MOCK.list_metrics.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = metrics_search_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/metrics_search_command_readable.md"),
@@ -405,7 +405,7 @@ def test_metrics_search_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(METRIC_METADATA_GET_RESPONSE, METRIC_METADATA_GET_CONTEXT)])
 def test_get_metric_metadata_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the get_metric_metadata_command function in DatadogCloudSIEM.
+    Test function for the get_metric_metadata_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -420,8 +420,8 @@ def test_get_metric_metadata_command(mocker, raw_resp, expected, configuration):
 
     resp_obj = MetricMetadata(**raw_resp)
     DATADOG_API_CLIENT_MOCK.get_metric_metadata.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_metric_metadata_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/get_metric_metadata_command_readable.md"),
@@ -438,7 +438,7 @@ def test_get_metric_metadata_command(mocker, raw_resp, expected, configuration):
 )
 def test_update_metric_metadata_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the update_metric_metadata_command function in DatadogCloudSIEM.
+    Test function for the update_metric_metadata_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -460,8 +460,8 @@ def test_update_metric_metadata_command(mocker, raw_resp, expected, configuratio
 
     resp_obj = MetricMetadata(**raw_resp)
     DATADOG_API_CLIENT_MOCK.update_metric_metadata.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = update_metric_metadata_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/update_metric_metadata_command_readable.md"),
@@ -475,7 +475,7 @@ def test_update_metric_metadata_command(mocker, raw_resp, expected, configuratio
 @pytest.mark.parametrize("raw_resp, expected", [(TAGS_LIST_RESPONSE, TAGS_LIST_CONTEXT)])
 def test_get_tags_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the get_tags_command function in DatadogCloudSIEM.
+    Test function for the get_tags_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -493,8 +493,8 @@ def test_get_tags_command(mocker, raw_resp, expected, configuration):
         "source": "test",
     }
     DATADOG_API_CLIENT_MOCK.list_host_tags.return_value = raw_resp
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_tags_command(configuration, args)
     with open(os.path.join("test_data", "readable_outputs/get_tags_command_readable.md")) as f:
         readable_output = f.read()
@@ -509,7 +509,7 @@ def test_get_tags_command(mocker, raw_resp, expected, configuration):
 )
 def test_query_timeseries_points_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the query_timeseries_points_command function in DatadogCloudSIEM.
+    Test function for the query_timeseries_points_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -523,8 +523,8 @@ def test_query_timeseries_points_command(mocker, raw_resp, expected, configurati
     args = {"from": "2 days ago", "query": "datadog.agent.running", "to": "now"}
     resp_obj = Datadog(**raw_resp)
     DATADOG_API_CLIENT_MOCK.query_metrics.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = query_timeseries_points_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/query_timeseries_points_command_readable.md"),
@@ -538,7 +538,7 @@ def test_query_timeseries_points_command(mocker, raw_resp, expected, configurati
 @pytest.mark.parametrize("raw_resp, expected", [(None, "### Host tags deleted successfully!\n")])
 def test_delete_host_tags_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the delete_host_tags_command function in DatadogCloudSIEM.
+    Test function for the delete_host_tags_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -551,8 +551,8 @@ def test_delete_host_tags_command(mocker, raw_resp, expected, configuration):
     """
     args = {"host_name": "DESKTOP-IIQVPJ7"}
     DATADOG_API_CLIENT_MOCK.delete_host_tags.return_value = raw_resp
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = delete_host_tags_command(configuration, args)
     assert isinstance(result, CommandResults)
     assert result.readable_output == expected
@@ -561,7 +561,7 @@ def test_delete_host_tags_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(None, "### Incident deleted successfully!\n")])
 def test_delete_incident_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the delete_incident_command function in DatadogCloudSIEM.
+    Test function for the delete_incident_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -574,8 +574,8 @@ def test_delete_incident_command(mocker, raw_resp, expected, configuration):
     """
     args = {"incident_id": "8d00d025-6d73-50f3-b93d-c9c3e40afce3"}
     DATADOG_API_CLIENT_MOCK.delete_incident.return_value = raw_resp
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = delete_incident_command(configuration, args)
     assert isinstance(result, CommandResults)
     assert result.readable_output == expected
@@ -584,7 +584,7 @@ def test_delete_incident_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(CREATE_INCIDENT_RESPONSE, CREATE_INCIDENT_CONTEXT)])
 def test_create_incident_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the create_incident_command function in DatadogCloudSIEM.
+    Test function for the create_incident_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -610,8 +610,8 @@ def test_create_incident_command(mocker, raw_resp, expected, configuration):
     }
     resp_obj = Datadog(**raw_resp)
     DATADOG_API_CLIENT_MOCK.create_incident.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = create_incident_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/create_incident_command_readable.md"),
@@ -625,7 +625,7 @@ def test_create_incident_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(UPDATE_INCIDENT_RESPONSE, UPDATE_INCIDENT_CONTEXT)])
 def test_update_incident_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the update_incident_command function in DatadogCloudSIEM.
+    Test function for the update_incident_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -653,8 +653,8 @@ def test_update_incident_command(mocker, raw_resp, expected, configuration):
     }
     resp_obj = Datadog(**raw_resp)
     DATADOG_API_CLIENT_MOCK.update_incident.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = update_incident_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/update_incident_command_readable.md"),
@@ -668,7 +668,7 @@ def test_update_incident_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(GET_INCIDENT_RESPONSE, GET_INCIDENT_CONTEXT)])
 def test_get_incident_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the get_incident_command function in DatadogCloudSIEM.
+    Test function for the get_incident_command function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -682,8 +682,8 @@ def test_get_incident_command(mocker, raw_resp, expected, configuration):
     args = {"incident_id": "37ad8b5b-b251-5d46-9978-2edbdac3cdb1"}
     resp_obj = Datadog(**raw_resp)
     DATADOG_API_CLIENT_MOCK.get_incident.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_incident_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/get_incident_command_readable.md"),
@@ -697,7 +697,7 @@ def test_get_incident_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(LIST_INCIDENT_RESPONSE, LIST_INCIDENT_CONTEXT)])
 def test_list_incident_command(mocker, raw_resp, expected, configuration):
     """
-    Test function for the incident list function in DatadogCloudSIEM.
+    Test function for the incident list function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -711,8 +711,8 @@ def test_list_incident_command(mocker, raw_resp, expected, configuration):
     args = {"limit": 2}
     resp_obj = Datadog(**raw_resp)
     DATADOG_API_CLIENT_MOCK.search_incidents.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_incident_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/list_incident_command_readable.md"),
@@ -726,7 +726,7 @@ def test_list_incident_command(mocker, raw_resp, expected, configuration):
 @pytest.mark.parametrize("raw_resp, expected", [(LIST_INCIDENT_RESPONSE, LIST_INCIDENT_CONTEXT)])
 def test_fetch_incidents(mocker, raw_resp, expected, configuration):
     """
-    Test function for the fetch_incidents function in DatadogCloudSIEM.
+    Test function for the fetch_incidents function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -741,15 +741,15 @@ def test_fetch_incidents(mocker, raw_resp, expected, configuration):
     resp_obj = Datadog(**raw_resp)
     mocker.patch.object(demisto, "getLastRun", return_value={"lastRun": "2023-04-27 10:41:04.316926"})
     DATADOG_API_CLIENT_MOCK.search_incidents.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = fetch_incidents(configuration, args)
     assert result == "OK"
 
 
 def test_test_module(mocker, configuration):
     """
-    Test function for the test_module function in DatadogCloudSIEM.
+    Test function for the test_module function in Datadog.
 
     Args:
     mocker: The mocker object used for mocking API calls.
@@ -761,9 +761,9 @@ def test_test_module(mocker, configuration):
     None. The function asserts the output of the test_module function against the expected output.
     """
     DATADOG_API_CLIENT_MOCK.list_events.return_value = {}
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.AuthenticationApi", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.AuthenticationApi", return_value=DATADOG_API_CLIENT_MOCK)
+    mocker.patch("Datadog.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = module_test(configuration)
     assert result == "ok"
     assert isinstance(result, str)
@@ -780,7 +780,7 @@ def test_test_module(mocker, configuration):
 )
 def test_get_paginated_results(results, offset, limit, expected):
     """
-    Test function for the get_paginated_results function in DatadogCloudSIEM.
+    Test function for the get_paginated_results function in Datadog.
 
     Args:
     results: The list of object.
@@ -817,7 +817,7 @@ def test_get_paginated_results(results, offset, limit, expected):
 )
 def test_table_header(sub_context, page, page_size, expected):
     """
-    Test function for the table_header function in DatadogCloudSIEM.
+    Test function for the table_header function in Datadog.
 
     Args:
     sub_context: The sub-context of the results to display in the table header.
@@ -858,7 +858,7 @@ def test_table_header(sub_context, page, page_size, expected):
 )
 def test_is_within_time(timestamp, time, expected):
     """
-    Test function for the is_within_time function in DatadogCloudSIEM.
+    Test function for the is_within_time function in Datadog.
 
     Args:
     timestamp: The timestamp to check if it's within the given time window.
@@ -874,7 +874,7 @@ def test_is_within_time(timestamp, time, expected):
 @pytest.mark.parametrize("raw, expected", [(EVENT_MOCK, EXPECTED_EVENT_MOCK)])
 def test_event_for_lookup(raw, expected):
     """
-    Test function for the event_for_lookup function in DatadogCloudSIEM.
+    Test function for the event_for_lookup function in Datadog.
 
     Args:
     raw: The raw event data to be processed.
@@ -889,7 +889,7 @@ def test_event_for_lookup(raw, expected):
 @pytest.mark.parametrize("raw, expected", [(INCIDENT_LOOKUP_DATA, INCIDENT_LOOKUP_DATA_EXPECTED)])
 def test_incident_for_lookup(raw, expected):
     """
-    Test function for the incident_for_lookup function in DatadogCloudSIEM.
+    Test function for the incident_for_lookup function in Datadog.
 
     Args:
     raw: The raw event data to be processed.
@@ -914,7 +914,7 @@ def test_incident_for_lookup(raw, expected):
 )
 def test_pagination(limit: int | None, page: int | None, page_size: int | None, expected):
     """
-    Test function for the pagination function in DatadogCloudSIEM.
+    Test function for the pagination function in Datadog.
 
     Args:
     limit: The maximum number of results to retrieve.
