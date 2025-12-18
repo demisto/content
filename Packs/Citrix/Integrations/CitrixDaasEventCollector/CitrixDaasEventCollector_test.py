@@ -213,7 +213,8 @@ def test_fetch_events_command_first_run(mocker):
     assert "LastRun" in last_run
     assert last_run["LastRun"] == "2024-01-02T00:00:00Z"
     assert last_run["LastFechedIds"] == ["id2"]
-    assert get_operations_mocker.call_args.kwargs["days"] == 0
+    assert get_operations_mocker.call_args.kwargs["search_date_option"] == "LastMinute"
+    assert get_operations_mocker.call_args.kwargs["last_operation_id"] is None
 
 
 def test_fetch_events_command_sets_last_run(mocker):

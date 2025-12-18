@@ -16,6 +16,7 @@ ACCESS_TOKEN_CONST = "access_token"
 SITE_ID_CONST = "site_id"
 SOURCE_LOG_TYPE = "configlog"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
+API_RES_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 RES_EXAMPLE = {
@@ -204,8 +205,8 @@ class Client(BaseClient):
             items = raw_res.get("Items", [])
 
             if items and last_run_date:
-                res_first_item_time = datetime.strptime(items[0].get("FormattedStartTime"), "%Y-%m-%dT%H:%M:%S.%fZ")
-                last_fetched_item_time = datetime.strptime(last_run_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+                res_first_item_time = datetime.strptime(items[0].get("FormattedStartTime"), API_RES_DATE_FORMAT)
+                last_fetched_item_time = datetime.strptime(last_run_date, API_RES_DATE_FORMAT)
                 if last_fetched_item_time > res_first_item_time:
                     continuation_token = raw_res.get("ContinuationToken")
 
@@ -266,19 +267,27 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
 
 def days_since(timestamp_str) -> int:
+    """Returns 0 if the timestamp is less than one hour old; otherwise, returns the day difference (1 = today, 2 = yesterday, etc.)."""
     # Parse the ISO-8601 timestamp with Zulu time (UTC)
-    dt = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+    dt = datetime.strptime(timestamp_str, API_RES_DATE_FORMAT)
     dt = dt.replace(tzinfo=timezone.utc)
 
     # Current time in UTC
     now = datetime.now(timezone.utc)
 
-    # Difference in days
     delta = now - dt
+    # Difference in minutes
+    minutes = delta.total_seconds() / 60
+    # Difference in days
     days = delta.days
-    if days < 0:
+
+    if minutes < 60:
+        return 0
+
+    if days <= 0:
         return 1
-    return delta.days
+
+    return delta.days + 1
 
 
 def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]) -> list[dict[str, Any]]:
@@ -310,13 +319,21 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
     last_fetched_ids = last_run.get("LastFechedIds", [])
     last_operation_id = last_fetched_ids[-1] if last_fetched_ids else None
 
-    days = 0
-    if last_run_date:
+    if not last_run_date:
+        operations, _ = client.get_operations_with_pagination(
+            limit=max_fetch, last_operation_id=last_operation_id, search_date_option="LastMinute", last_run_date=last_run_date
+        )
+    else:
         days = days_since(last_run_date)
 
-    operations, _ = client.get_operations_with_pagination(
-        limit=max_fetch, last_operation_id=last_operation_id, days=days, last_run_date=last_run_date
-    )
+        if days == 0:
+            operations, _ = client.get_operations_with_pagination(
+                limit=max_fetch, last_operation_id=last_operation_id, search_date_option="LastHour", last_run_date=last_run_date
+            )
+        else:
+            operations, _ = client.get_operations_with_pagination(
+                limit=max_fetch, last_operation_id=last_operation_id, days=days, last_run_date=last_run_date
+            )
 
     if operations:
         # Deduplicate
