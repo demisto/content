@@ -47,4 +47,4 @@ Please note that APIVoid has rate limits based on your subscription plan. Refer 
 
 For issues or questions:
 - APIVoid Documentation: https://docs.apivoid.com/
-- APIVoid Support: https://www.apivoid.com/contact/
+- APIVoid Support: https://www.apivoid.com/contacts/
