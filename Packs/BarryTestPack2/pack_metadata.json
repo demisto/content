@@ -1,0 +1,21 @@
+{
+    "name": "BarryTestPack2",
+    "description": "test pack description",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Barry",
+    "url": "",
+    "email": "",
+    "created": "2025-12-18T10:30:55Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "barryyosi-panw"
+    ]
+}
