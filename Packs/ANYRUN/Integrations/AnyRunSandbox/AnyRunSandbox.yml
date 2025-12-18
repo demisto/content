@@ -720,7 +720,7 @@ script:
     description: 'Returns the analysis report summary.'
     outputs:
     - contextPath: ANYRUN.IOCs
-      description: 'ANYRUN Indicators.'
+      description: 'A comma-separated string of IOC values from the report.'
       type: String
     - contextPath: ANYRUN.SandboxAnalysis.mitre.name
       description: 'MITRE Technic text description.'
@@ -1152,7 +1152,7 @@ script:
       description: "Network connections count."
       type: String
     - contextPath: ANYRUN.SandboxAnalysis.counters.network.http
-      description: "Network networks count."
+      description: "Network HTTP count."
       type: String
     - contextPath: ANYRUN.SandboxAnalysis.counters.processes.malicious
       description: "Malicious processes count."

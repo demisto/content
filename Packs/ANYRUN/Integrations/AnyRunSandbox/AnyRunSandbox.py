@@ -271,7 +271,7 @@ def get_analysis_report(params: dict, args: dict) -> None:  # pragma: no cover
             return_results(
                 CommandResults(
                     outputs_prefix="ANYRUN.IOCs",
-                    outputs=",".join(indicator.get("ioc") for indicator in report),
+                    outputs=",".join(indicator.get("ioc") for indicator in report) if report else "",
                     ignore_auto_extract=True
                 )
             )

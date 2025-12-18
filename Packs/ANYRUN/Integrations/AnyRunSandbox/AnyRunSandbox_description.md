@@ -12,12 +12,10 @@ API-KEY from your ANY.RUN account is required.
 2. Search for ANY.RUN.
 3. Click **Add instance** to create and configure a new integration instance.
 4. Insert ANY.RUN API-KEY into the **Password** parameter.
-5. Click **Test** to validate the URLs, token, and connection.
+5. Please use "ANY.RUN" as username.
+6Click **Test** to validate the URLs, token, and connection.
 
 
 | **Parameter**    | **Description**                                                                                                                                                | **Required** |
 |------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | Password         | ANY.RUN API-KEY without prefix                                                                                                                               | True | | True |
-
-## Note:
-Please use "ANY.RUN" as username.

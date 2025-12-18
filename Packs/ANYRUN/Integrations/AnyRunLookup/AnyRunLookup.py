@@ -205,7 +205,7 @@ def parse_results(report: dict, reliability: str, indicator_value: str, indicato
         output_context["Industries"] = ",".join(
             [
                 industry.get('industryName') for industry in
-                sorted(industries, key=lambda x: x['confidence'], reverse=True)
+                sorted(industries, key=lambda x: x.get('confidence', 0), reverse=True)
             ]
         )
 
