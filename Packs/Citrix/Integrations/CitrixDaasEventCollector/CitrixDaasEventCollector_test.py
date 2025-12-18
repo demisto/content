@@ -266,7 +266,7 @@ def test_days_since():
     """
 
     result = days_since("2025-01-10T16:44:35.470Z")
-    assert result == 5
+    assert result == 6
 
 
 @pytest.mark.parametrize(

@@ -267,7 +267,8 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
 
 def days_since(timestamp_str) -> int:
-    """Returns 0 if the timestamp is less than one hour old; otherwise, returns the day difference (1 = today, 2 = yesterday, etc.)."""
+    """Returns 0 if the timestamp is less than one hour old; otherwise,
+    returns the day difference (1 = today, 2 = yesterday, etc.)."""
     # Parse the ISO-8601 timestamp with Zulu time (UTC)
     dt = datetime.strptime(timestamp_str, API_RES_DATE_FORMAT)
     dt = dt.replace(tzinfo=timezone.utc)
