@@ -2,7 +2,7 @@ import pytest
 from CommonServerPython import *
 from unittest.mock import MagicMock
 from freezegun import freeze_time
-from CitrixDaasEventCollector import Client, get_events_command, fetch_events_command, module_test_command, days_since
+from CitrixDaasEventCollector import Client, get_events_command, fetch_events_command, module_test_command, days_since, deduplicate_events
 
 
 @pytest.fixture
@@ -259,3 +259,58 @@ def test_days_since():
 
     result = days_since("2025-01-10T16:44:35.470Z")
     assert result == 5
+
+
+@pytest.mark.parametrize(
+    "events, last_fetched_ids, expected_count, expected_ids",
+    [
+        # Test case 1: First run (no previous IDs)
+        (
+            [{"id": "event1"}, {"id": "event2"}],
+            [],
+            2,
+            ["event1", "event2"]
+        ),
+        # Test case 2: No duplicates
+        (
+            [{"id": "event3"}, {"id": "event4"}],
+            ["event1", "event2"],
+            2,
+            ["event3", "event4"]
+        ),
+        # Test case 3: Some duplicates
+        (
+            [{"id": "event1"}, {"id": "event3"}],
+            ["event1", "event2"],
+            1,
+            ["event3"]
+        ),
+        # Test case 4: All duplicates
+        (
+            [{"id": "event1"}, {"id": "event2"}],
+            ["event1", "event2"],
+            0,
+            []
+        ),
+    ]
+)
+def test_deduplicate_events(mocker, events, last_fetched_ids, expected_count, expected_ids):
+    """
+    Given:
+        - A list of events and a list of previously fetched IDs.
+    When:
+        - Running the `deduplicate_events` function.
+    Then:
+        - The function should filter out events with IDs that were already fetched.
+        - The function should return all events when no previous IDs exist.
+    """
+    # Mock demisto.debug to avoid actual debug logs during test
+    mocker.patch.object(demisto, "debug")
+    
+    result = deduplicate_events(events, last_fetched_ids)
+    
+    assert len(result) == expected_count, f"Expected {expected_count} events, got {len(result)}"
+    
+    # Check that the IDs match what we expect
+    result_ids = [event.get("id") for event in result]
+    assert sorted(result_ids) == sorted(expected_ids), f"Expected IDs {expected_ids}, got {result_ids}"
