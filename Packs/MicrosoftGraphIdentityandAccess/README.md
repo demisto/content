@@ -2,7 +2,7 @@ Use the **Microsoft Graph Identity and Access** integration to fetch alerts from
 
 ## What does this pack do?
 
-The **Entra ID Identity And Access** integration commands enables you to:
+The **Entra ID Identity And Access** integration enables you to:
 
 - Create, update, or delete a Conditional Access policy.
 - List the roles in the Entra ID tenant.

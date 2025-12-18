@@ -67,7 +67,16 @@ def test_date_str_to_azure_format(date, expected):
     [
         # Test empty riskDetection object returned by Microsoft.
         # Is it relevant to trigger an incident in such a scenario ?
-        ({}, {"name": "Azure AD:   ", "severity": 2, "occurred": "2022-06-06Z", "rawJSON": "{}"}),
+        (
+            {},
+            {
+                "name": "Azure AD:   ",
+                "severity": 2,
+                "occurred": "2022-06-06Z",
+                "rawJSON": "{}",
+                "details": "",
+            },
+        ),
         # Test if riskLevel is not defined
         (
             {"riskEventType": "3", "riskDetail": "2", "id": "1", "userPrincipalName": "test@domain.com"},
@@ -76,6 +85,7 @@ def test_date_str_to_azure_format(date, expected):
                 "occurred": "2022-06-06Z",
                 "severity": 2,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "id": "1", "userPrincipalName": "test@domain.com"}',
+                "details": "",
             },
         ),
         # Test the 6 riskLevel values according to https://learn.microsoft.com/en-us/graph/api/resources/riskdetection?view=graph-rest-1.0
@@ -86,6 +96,7 @@ def test_date_str_to_azure_format(date, expected):
                 "occurred": "2022-06-06Z",
                 "severity": 1,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "low", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+                "details": "",
             },
         ),
         (
@@ -95,6 +106,7 @@ def test_date_str_to_azure_format(date, expected):
                 "occurred": "2022-06-06Z",
                 "severity": 2,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "medium", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+                "details": "",
             },
         ),
         (
@@ -104,6 +116,7 @@ def test_date_str_to_azure_format(date, expected):
                 "occurred": "2022-06-06Z",
                 "severity": 3,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "high", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+                "details": "",
             },
         ),
         (
@@ -113,6 +126,7 @@ def test_date_str_to_azure_format(date, expected):
                 "occurred": "2022-06-06Z",
                 "severity": 2,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "hidden", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+                "details": "",
             },
         ),
         (
@@ -122,6 +136,7 @@ def test_date_str_to_azure_format(date, expected):
                 "occurred": "2022-06-06Z",
                 "severity": 2,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "none", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+                "details": "",
             },
         ),
         (
@@ -137,6 +152,7 @@ def test_date_str_to_azure_format(date, expected):
                 "occurred": "2022-06-06Z",
                 "severity": 2,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "unknownFutureValue", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+                "details": "",
             },
         ),
         # Test anomalousToken incident
@@ -175,6 +191,7 @@ def test_detection_to_incident_with_original_alert_severity(incident, expected):
 
     Then:
     - Ensure that the dict is what we expected.
+    - Ensure that the severity of the created incident equals to the severity of the original Microsoft Entra ID protection alert.
     """
 
     assert MicrosoftGraphIdentityandAccess.detection_to_incident(incident, "2022-06-06", False, "") == expected
@@ -191,6 +208,7 @@ def test_detection_to_incident_with_original_alert_severity(incident, expected):
                 "occurred": "2022-06-06Z",
                 "severity": 2,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "id": "1", "userPrincipalName": "test@domain.com"}',
+                "details": "",
             },
         ),
         # Test the if riskLevel is different from "medium". Issue severity should be equal to medium.
@@ -201,6 +219,7 @@ def test_detection_to_incident_with_original_alert_severity(incident, expected):
                 "occurred": "2022-06-06Z",
                 "severity": 2,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "low", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+                "details": "",
             },
         ),
     ],
@@ -292,7 +311,7 @@ def test_risky_user_to_incident(incident, expected):
         ),
     ],
 )
-def test_risky_user_to_incident_wityh_severity_override(incident, expected):
+def test_risky_user_to_incident_with_severity_override(incident, expected):
     """
     Given:
     -  A dict with the incident details.
