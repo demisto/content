@@ -18,6 +18,8 @@ from dateutil.parser import parse
 urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message=".*using SSL with verify_certs=False is insecure.")
 
+VENDOR = "Elasticsearch"
+PRODUCT = "Elasticsearch"
 ELASTICSEARCH_V8 = "Elasticsearch_v8"
 ELASTICSEARCH_V9 = "Elasticsearch_v9"
 OPEN_SEARCH = "OpenSearch"
@@ -685,7 +687,7 @@ def incident_label_maker(source):
     return labels
 
 
-def results_to_incidents_timestamp(response, last_fetch):
+def results_to_incidents_timestamp(response, last_fetch, is_fetch_events=False):
     """Converts the current results into incidents.
 
     Args:
@@ -696,6 +698,7 @@ def results_to_incidents_timestamp(response, last_fetch):
     Returns:
         (list).The incidents.
         (num).The date of the last incident brought by this fetch.
+        (bool):Flag to determine whether it fetch incidents or fetch events running
     """
     current_fetch = last_fetch
     incidents = []
@@ -725,12 +728,14 @@ def results_to_incidents_timestamp(response, last_fetch):
                     if MAP_LABELS:
                         inc["labels"] = incident_label_maker(hit.get("_source"))
 
+                    if is_fetch_events:
+                        inc["_time"] = hit_date.isoformat() + "Z"
                     incidents.append(inc)
 
     return incidents, last_fetch
 
 
-def results_to_incidents_datetime(response, last_fetch):
+def results_to_incidents_datetime(response, last_fetch, is_fetch_events=False):
     """Converts the current results into incidents.
 
     Args:
@@ -741,6 +746,7 @@ def results_to_incidents_datetime(response, last_fetch):
     Returns:
         (list).The incidents.
         (datetime).The date of the last incident brought by this fetch.
+        (bool):Flag to determine whether it fetch incidents or fetch events running
     """
     last_fetch = dateparser.parse(last_fetch)
     last_fetch_timestamp = int(last_fetch.timestamp() * 1000)  # type:ignore[union-attr]
@@ -774,7 +780,8 @@ def results_to_incidents_datetime(response, last_fetch):
 
                     if MAP_LABELS:
                         inc["labels"] = incident_label_maker(hit.get("_source"))
-
+                    if is_fetch_events:
+                        inc["_time"] = format_to_iso(hit_date.isoformat())
                     incidents.append(inc)
                 else:
                     demisto.debug(
@@ -893,7 +900,16 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     return response
 
 
-def fetch_incidents(proxies):
+def fetch_items(proxies, is_fetch_events=False):
+    """
+    Fetch items from Elasticsearch based on configured parameters.
+    This function is common to fetch-incidents and fetch-events.
+    Args:
+        proxies (dict): Proxy configuration
+        is_fetch_events (bool): Flag to determine whether to fetch incidents or events
+    """
+ 
+    demisto.debug(f"{demisto.command()} starting")
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("time") or FETCH_TIME
 
@@ -921,16 +937,26 @@ def fetch_incidents(proxies):
     incidents = []  # type: List
 
     if total_results > 0:
+        # TODO: if it is fetch-events, we should save _time field on dataset
         if "Timestamp" in TIME_METHOD:
-            incidents, last_fetch = results_to_incidents_timestamp(response, last_fetch)
-            demisto.setLastRun({"time": last_fetch})
-
+            incidents, last_fetch = results_to_incidents_timestamp(response, last_fetch, is_fetch_events)
         else:
-            incidents, last_fetch = results_to_incidents_datetime(response, last_fetch or FETCH_TIME)
-            demisto.setLastRun({"time": str(last_fetch)})
-
+            incidents, last_fetch = results_to_incidents_datetime(response, last_fetch or FETCH_TIME, is_fetch_events)
+            last_fetch = str(last_fetch)
         demisto.info(f"Extracted {len(incidents)} incidents.")
-    demisto.incidents(incidents)
+        
+        updated_last_run = {"time": last_fetch}
+        if is_fetch_events:
+            demisto.debug(f"fetch-events: Sending {len(incidents)} events to XSIAM.")
+            send_events_to_xsiam(incidents, vendor=VENDOR, product=PRODUCT)
+            demisto.debug("fetch-incident: Sent events to XSIAM successfully")
+            
+            demisto.setLastRun({"time": last_fetch})
+            demisto.debug(f"fetch-events: Updated last_run object after fetch:\n{last_run}")
+        else:
+            demisto.debug(f"fetch-incidents: Updated last_run object after fetch:\n{updated_last_run}")   
+            demisto.setLastRun(updated_last_run)
+            demisto.incidents(incidents)             
 
 
 def parse_subtree(my_map):
@@ -1217,7 +1243,16 @@ def main():  # pragma: no cover
         if demisto.command() == "test-module":
             test_func(proxies)
         elif demisto.command() == "fetch-incidents":
-            fetch_incidents(proxies)
+            fetch_items(proxies)
+        elif demisto.command() == "fetch-events":
+            fetch_items(proxies)
+            # last_run, events = fetch_events()
+            # demisto.debug(f"{DEBUG_PREFIX}Monday Integration Sending {len(events)} events to XSIAM.\n{events}")
+            # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            # demisto.debug(f"{DEBUG_PREFIX}Sent events to XSIAM successfully")
+
+            # demisto.setLastRun(last_run)
+            # demisto.debug(f"{DEBUG_PREFIX}Updated last_run object after fetch: {last_run}")
         elif demisto.command() in ["search", "es-search"]:
             search_command(proxies)
         elif demisto.command() == "get-mapping-fields":
