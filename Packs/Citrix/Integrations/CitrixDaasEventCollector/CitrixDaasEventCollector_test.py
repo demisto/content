@@ -2,7 +2,14 @@ import pytest
 from CommonServerPython import *
 from unittest.mock import MagicMock
 from freezegun import freeze_time
-from CitrixDaasEventCollector import Client, get_events_command, fetch_events_command, module_test_command, days_since, deduplicate_events
+from CitrixDaasEventCollector import (
+    Client,
+    get_events_command,
+    fetch_events_command,
+    module_test_command,
+    days_since,
+    deduplicate_events,
+)
 
 
 @pytest.fixture
@@ -205,7 +212,7 @@ def test_fetch_events_command_first_run(mocker):
     assert len(events) == 2
     assert "LastRun" in last_run
     assert last_run["LastRun"] == "2024-01-02T00:00:00Z"
-    assert last_run["Id"] == "id2"
+    assert last_run["LastFechedIds"] == ["id2"]
     assert get_operations_mocker.call_args.kwargs["days"] == 0
 
 
@@ -265,34 +272,14 @@ def test_days_since():
     "events, last_fetched_ids, expected_count, expected_ids",
     [
         # Test case 1: First run (no previous IDs)
-        (
-            [{"id": "event1"}, {"id": "event2"}],
-            [],
-            2,
-            ["event1", "event2"]
-        ),
+        ([{"id": "event1"}, {"id": "event2"}], [], 2, ["event1", "event2"]),
         # Test case 2: No duplicates
-        (
-            [{"id": "event3"}, {"id": "event4"}],
-            ["event1", "event2"],
-            2,
-            ["event3", "event4"]
-        ),
+        ([{"id": "event3"}, {"id": "event4"}], ["event1", "event2"], 2, ["event3", "event4"]),
         # Test case 3: Some duplicates
-        (
-            [{"id": "event1"}, {"id": "event3"}],
-            ["event1", "event2"],
-            1,
-            ["event3"]
-        ),
+        ([{"id": "event1"}, {"id": "event3"}], ["event1", "event2"], 1, ["event3"]),
         # Test case 4: All duplicates
-        (
-            [{"id": "event1"}, {"id": "event2"}],
-            ["event1", "event2"],
-            0,
-            []
-        ),
-    ]
+        ([{"id": "event1"}, {"id": "event2"}], ["event1", "event2"], 0, []),
+    ],
 )
 def test_deduplicate_events(mocker, events, last_fetched_ids, expected_count, expected_ids):
     """
@@ -306,11 +293,11 @@ def test_deduplicate_events(mocker, events, last_fetched_ids, expected_count, ex
     """
     # Mock demisto.debug to avoid actual debug logs during test
     mocker.patch.object(demisto, "debug")
-    
+
     result = deduplicate_events(events, last_fetched_ids)
-    
+
     assert len(result) == expected_count, f"Expected {expected_count} events, got {len(result)}"
-    
+
     # Check that the IDs match what we expect
     result_ids = [event.get("id") for event in result]
     assert sorted(result_ids) == sorted(expected_ids), f"Expected IDs {expected_ids}, got {result_ids}"

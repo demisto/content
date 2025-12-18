@@ -281,7 +281,6 @@ def days_since(timestamp_str) -> int:
     return delta.days
 
 
-
 def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]) -> list[dict[str, Any]]:
     """Remove already-processed events based on previously fetched IDs."""
 
@@ -305,11 +304,12 @@ def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]
 
     return new_events
 
+
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
     last_run_date = last_run.get("LastRun")
-    last_fetched_ids = last_run.get("LastFechedIds",[])
-    last_operation_id =last_fetched_ids[-1] if last_fetched_ids else None
-    
+    last_fetched_ids = last_run.get("LastFechedIds", [])
+    last_operation_id = last_fetched_ids[-1] if last_fetched_ids else None
+
     days = 0
     if last_run_date:
         days = days_since(last_run_date)
@@ -322,12 +322,11 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
         # Deduplicate
         operations = deduplicate_events(operations, last_fetched_ids)
         new_last_run = operations[-1]["_time"]
-              
-        ids_at_last_timestamp = [
-                operation.get("Id") for operation in operations if operation.get("_time") == new_last_run and operation.get("Id")
-            ]
 
-        
+        ids_at_last_timestamp = [
+            operation.get("Id") for operation in operations if operation.get("_time") == new_last_run and operation.get("Id")
+        ]
+
         last_run = {"LastRun": new_last_run, "LastFechedIds": ids_at_last_timestamp}
 
     return operations, last_run
