@@ -334,7 +334,8 @@ class PychromeEventHandler:
                 frame_url = self.get_frame_tree_url()
             except Exception as e:
                 demisto.debug(
-                    f"Error getting frame URL in retry_loading for {self.tab.id=}, {self.path=} attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {str(e)}"
+                    f"Error getting frame URL in retry_loading for {self.tab.id=}, {self.path=} "
+                    f"attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {str(e)}"
                 )
                 frame_url = ""
 
