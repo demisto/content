@@ -20,6 +20,12 @@ args:
   required: true
   isArray: true
   description: Value to check if it is equal to an element or to a substring of an element from the left. Can be a single value or a comma-separated list.
+- name: match_direction
+  description: 'Direction of substring matching. "right in left" (default): checks if right elements is substring of left elements. "left in right": checks if left elements is substring of right elements.'
+  defaultValue: right in left
+  predefined:
+  - right in left
+  - left in right
 scripttarget: 0
 isllm: false
 fromversion: 6.9.0

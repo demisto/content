@@ -19,6 +19,11 @@ def main():
     args = demisto.args()
     leftArg = args.get("left")
     rightArg = args.get("right")
+    match_direction = args.get("match_direction", "right in left")
+
+    # Swap left and right if match_direction is "left in right"
+    if match_direction == "left in right":
+        leftArg, rightArg = rightArg, leftArg
 
     left_list = argToList(str(leftArg)) if leftArg else []
     right_list = argToList(str(rightArg))
