@@ -28,12 +28,12 @@ This section describes how to configure permissions for the integration, support
 
 ### App Authentication (App-Only)
 
-To set up the integration and register the application in Azure, follow these steps:
+To set up the integration and register the application in Azure, you will need to perform the following three primary steps:
 
-1. **App Registration**: Register a new application in Entra ID and configure necessary permissions.
+1. **App Registration and Permission Configuration**: Register a new application in Entra ID and configure necessary permissions.
 2. **Authentication Configuration**: Enable public client flows and create an app secret.
 3. **Role Setup**: Assign the required roles for the App Service Principal to function correctly.
-
+Detailed instructions for each step are provided below.
 #### 1. App Registration and Permission Configuration
 
 1. **Navigate to Azure Portal**: Go to the [Azure Portal](https://portal.azure.com/) and sign in with your administrator account.
@@ -52,15 +52,15 @@ To set up the integration and register the application in Azure, follow these st
      - Check the box and click **Add permissions**.
    - Ensure the permissions are gra
 
-#### 2. Enable "Allow Public Client Flows"
+#### 2.  Authentication Configuration
 
-1. **Navigate to Authentication Settings**: In your app registration, select **Authentication** under **Manage**.
+1. Navigate to Authentication Settings: In your app registration, click on Authentication -> Settings.
 2. **Enable Public Client Flows**:
-   - Scroll to **Advanced settings**.
-   - Set **Allow public client flows** to **Yes**.
-   - Click **Save** to apply the changes.
+   - Set Allow public client flows to Enabled.
+   - Click Save to apply the changes.
 
-#### 3. Service Principal Configuration
+
+#### 3. Role Setup
 
 1. In the Azure portal, go to **Microsoft Entra roles and administrators**.
 2. **Locate the Required Role**  
