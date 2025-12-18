@@ -2,7 +2,6 @@ commonfields:
   id: CustomScheduleGenericPolling
   version: -1
 name: CustomScheduleGenericPolling
-display: Custom Schedule Generic Polling
 fromversion: 5.0.0
 script: ''
 type: python
