@@ -4959,7 +4959,7 @@ class TestFilterBuilder:
         # Mock dateparser.parse to return known datetime objects
         start_dt = datetime(2023, 1, 1, 10, 0, 0)
         end_dt = datetime(2023, 1, 2, 15, 30, 0)
-        mock_parse = mocker.patch("CorIRApiModule.dateparser.parse")
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse")
         mock_parse.side_effect = [start_dt, end_dt]
 
         start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", "2023-01-02T15:30:00")
@@ -4979,11 +4979,11 @@ class TestFilterBuilder:
 
         # Mock dateparser.parse for start_time
         start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        mock_parse = mocker.patch("CorIRApiModule.dateparser.parse", return_value=start_dt)
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse", return_value=start_dt)
 
         # Mock datetime.now for end_time calculation
         current_dt = datetime(2023, 1, 3, 12, 0, 0)
-        mock_now = mocker.patch("CorIRApiModule.datetime")
+        mock_now = mocker.patch("CoreIRApiModule.datetime")
         mock_now.now.return_value = current_dt
 
         start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", None)
@@ -5026,7 +5026,7 @@ class TestFilterBuilder:
         from CoreIRApiModule import FilterBuilder
 
         # Mock dateparser.parse to return None for invalid input
-        mock_parse = mocker.patch("CorIRApiModule.dateparser.parse", return_value=None)
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse", return_value=None)
 
         with pytest.raises(ValueError, match="Could not parse start_time: invalid_start_time"):
             FilterBuilder._prepare_time_range("invalid_start_time", None)
@@ -5044,7 +5044,7 @@ class TestFilterBuilder:
 
         # Mock dateparser.parse to return valid datetime for start_time and None for end_time
         start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        mock_parse = mocker.patch("CorIRApiModule.dateparser.parse")
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse")
         mock_parse.side_effect = [start_dt, None]
 
         with pytest.raises(ValueError, match="Could not parse end_time: invalid_end_time"):
@@ -5063,7 +5063,7 @@ class TestFilterBuilder:
 
         # Mock dateparser.parse to return a valid datetime
         start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        mock_parse = mocker.patch("CorIRApiModule.dateparser.parse", return_value=start_dt)
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse", return_value=start_dt)
 
         # Pass an integer that should be converted to string
         start_time, end_time = FilterBuilder._prepare_time_range(20230101, None)
@@ -5084,7 +5084,7 @@ class TestFilterBuilder:
         # Mock dateparser.parse to return valid datetimes
         start_dt = datetime(2023, 1, 1, 10, 0, 0)
         end_dt = datetime(2023, 1, 2, 15, 30, 0)
-        mock_parse = mocker.patch("CorIRApiModule.dateparser.parse")
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse")
         mock_parse.side_effect = [start_dt, end_dt]
 
         # Pass integers that should be converted to strings
@@ -5108,7 +5108,7 @@ class TestFilterBuilder:
         # Create datetime with known timestamp
         start_dt = datetime(2023, 1, 1, 10, 0, 0)
         end_dt = datetime(2023, 1, 2, 15, 30, 0)
-        mock_parse = mocker.patch("CorIRApiModule.dateparser.parse")
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse")
         mock_parse.side_effect = [start_dt, end_dt]
 
         start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", "2023-01-02T15:30:00")
