@@ -1,8 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
-import dateparser
-from enum import Enum
 import copy
 
 # Disable insecure warnings
@@ -54,7 +52,7 @@ WEBAPP_COMMANDS = [
     "core-get-appsec-issues",
     "core-update-case",
     "core-list-endpoints",
-    "core-get-issues2"
+    "core-get-issues",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -296,10 +294,6 @@ ALLOWED_SCANNERS = [
     "SECRETS",
 ]
 
-COVERAGE_API_FIELDS_MAPPING = {
-    "vendor_name": "asset_provider",
-    "asset_provider": "unified_provider",
-}
 # Policy finding type mapping
 POLICY_FINDING_TYPE_MAPPING = {
     "CI/CD Risk": "CAS_CI_CD_RISK_SCANNER",
@@ -321,6 +315,7 @@ POLICY_CATEGORY_MAPPING = {
     "VCS Collaborator": "VCS_COLLABORATOR",
     "VCS Organization": "VCS_ORGANIZATION",
 }
+
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
@@ -1059,47 +1054,6 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
         outputs=data,
         raw_response=response,
     )
-
-
-def build_webapp_request_data(
-    table_name: str,
-    filter_dict: dict,
-    limit: int,
-    sort_field: str | None,
-    on_demand_fields: list | None = None,
-    sort_order: str | None = "DESC",
-    start_page: int = 0,
-) -> dict:
-    """
-    Builds the request data for the generic /api/webapp/get_data endpoint.
-    """
-    sort = (
-        [
-            {
-                "FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field),
-                "ORDER": sort_order,
-            }
-        ]
-        if sort_field
-        else []
-    )
-    filter_data = {
-        "sort": sort,
-        "paging": {"from": start_page, "to": limit},
-        "filter": filter_dict,
-    }
-    demisto.debug(f"{filter_data=}")
-
-    if on_demand_fields is None:
-        on_demand_fields = []
-
-    return {
-        "type": "grid",
-        "table_name": table_name,
-        "filter_data": filter_data,
-        "jsons": [],
-        "onDemandFields": on_demand_fields,
-    }
 
 
 def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
@@ -2902,69 +2856,19 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
         raw_response=data,
     )
 
-def get_issues_command2(client: Client, args: dict) -> CommandResults:
-    on_demand_fields = ["action_file_sha256", "actor_process_command_line", "cloud_provider_account_id", "action_file_path", "fw_xff", "_vendor", "_product", "_device_id", "actor_effective_username", "_collector_type", "_collector_name", "action_process_signature_vendor", "_reporting_device_ip", "_reporting_device_name", "_final_reporting_device_ip", "action_file_md5", "action_file_macro_sha256", "_final_reporting_device_name", "fw_url_domain", "agent_ip_addresses", "_collector_hostname", "action_process_image_sha256", "_collector_ip_address", "_collector_id", "action_process_image_name", "_broker_hostname", "_broker_device_id", "duration", "action_process_image_command_line", "_broker_ip_address", "agent_hostname", "fw_serial_number", "actor_process_image_name", "action_registry_data", "fw_interface_from", "fw_rule_id", "mac", "fw_rule", "action_remote_ip", "agent_os_type", "is_rule_triggering", "action_process_signature_status", "fw_device_name", "action_external_hostname", "action_file_name", "runStatus", "agent_fqdn", "action_registry_full_key", "causality_actor_process_image_md5", "actor_process_image_path", "causality_actor_process_command_line", "os_actor_process_image_sha256", "causality_actor_process_image_name", "os_actor_process_signature_status", "causality_actor_process_signature_vendor", "os_actor_process_signature_vendor", "resource_sub_type", "action_local_port", "action_local_ip", "resolution_status", "os_actor_thread_thread_id", "fw_app_id", "os_actor_effective_username", "agent_os_sub_type", "playbookId", "fw_misc", "identity_sub_type", "identity_type", "actor_thread_thread_id", "actor_process_signature_vendor", "causality_actor_process_image_path", "fw_app_category", "actor_process_signature_status", "operation_name", "alert_action_status", "tactic", "project", "cloud_provider", "technique", "os_actor_process_os_pid", "os_actor_process_image_name", "fw_is_phishing", "actor_process_os_pid", "actor_process_image_sha256", "os_actor_process_command_line", "fw_vsys", "module_id", "causality_actor_process_signature_status", "fw_app_subcategory", "fw_app_technology", "cloudservice", "causality_actor_process_image_sha256", "referenced_resource", "actor_process_image_md5", "tim_main_indicator", "agent_ip_addresses_v6", "fw_email_recipient", "xpanse_policy_id", "fw_email_subject", "event_type", "dns_query_name", "resource_type", "fw_email_sender", "fw_interface_to", "xdm.cloud.function.version", "xdm.target.port", "xdm.target.host.ipv6_addresses", "xdm.cloud.function.request_id", "xdm.target.url", "xdm.target.host.ipv4_addresses", "xdm.cloud.region", "xdm.cloud.function.runtime", "xdm.cloud.function.name", "xdm.file.owner_name", "xdm.cloud.function.id", "xdm.source.process.name", "xdm.vulnerability.cve_id", "xdm.source.ipv4", "xdm.source.process.executable.filename", "xdm.software_package.package_manager", "xdm.source.process.executable.signer", "xdm.vulnerability.fix_versions", "xdm.source.identity.username", "xdm.vulnerability.cvss_score", "xdm.http.version", "xdm.file.permissions.group", "xdm.code.iac.framework", "xdm.file.permissions.owner", "xdm.code.git.commit.time", "xdm.code.scan_source", "xdm.backlog_status", "xdm.data.data_pattern", "xdm.code.git.commit.author.name", "xdm.file.permissions.others", "xdm.file.group_name", "xdm.data.data_profile", "xdm.source.host.os_family", "xdm.code.git.branch", "xdm.code.git.commit.hash", "xdm.file.position.start.line", "xdm.application_protocol", "xdm.source.host.hostname", "xdm.http.path", "xdm.file.filename", "xdm.file.sha256", "xdm.http.response.status_code", "xdm.kubernetes.namespace.name", "xdm.http.response.content_types", "xdm.kubernetes.cluster.name", "xdm.file.path", "xdm.http.request.user_agents", "xdm.http.request.content_types", "xdm.file.last_modified", "xdm.http.method", "xdm.file.size"]
-    filter_dict = {}
-    if not args.get("custom_filter"):
-        filter_dict = get_issues_by_filter_command(client, args)
-    else:
-        filter_dict = safe_load_json(args.get("custom_filter"))
 
-    page = arg_to_number(args.get("page")) or 0
-    limit = arg_to_number(args.get("limit")) or MAX_GET_ISSUES_LIMIT
-    limit = page * MAX_GET_ISSUES_LIMIT + limit
-    page = page * MAX_GET_ISSUES_LIMIT
-    sort_field = args.get("sort_field", "source_insert_ts")
-    sort_order = args.get("sort_order", "DESC")
-    output_keys = argToList(args.get("output_keys"))
-    request_data = build_webapp_request_data(
-        table_name="ALERTS_VIEW_TABLE",
-        filter_dict=filter_dict,
-        limit=limit,
-        sort_field=sort_field,
-        sort_order=sort_order,
-        on_demand_fields=on_demand_fields,
-        start_page=page
-    )
-    demisto.info(f"{request_data=}")
-    response = client.get_webapp_data(request_data)
-    reply = response.get("reply", {})
-    data = reply.get("DATA", [])
-    
-    if data:
-        data = [alert_to_issue(output) for output in data]  # type: ignore[attr-defined,arg-type]
+def get_issues_command(client: Client, args: dict) -> CommandResults:
+    args = issue_to_alert(args)
+    response: CommandResults = get_alerts_by_filter_command(client, args)  # type: ignore[arg-type]
+    output_keys = argToList(args.pop("output_keys", []))  # type: ignore[union-attr]
+    if response.outputs:
+        response.outputs = [alert_to_issue(output) for output in response.outputs]
 
-    demisto.info(f"issue data retrieved (get-issues2): {data}")
-    demisto.info(f"val before mapping: {data[0].get("issue_action_status")}")
-    demisto.info(f"val after mapping: {ALERT_STATUS_TYPES_REVERSE_DICT.get(data[0].get("issue_action_status"))}")
+    if output_keys and response.outputs:
+        response.outputs = filter_context_fields(output_keys, response.outputs)
 
-    # Apply output_keys filtering if specified
-    if output_keys and data:
-        data = filter_context_fields(output_keys, data) 
-                
-    human_readable = [
-            {
-                "Issue ID": issue.get("internal_id"),
-                "Detection Timestamp": timestamp_to_datestring(issue.get("source_insert_ts")),
-                "Name": issue.get("issue_name"),
-                "Severity": SEVERITY_STATUSES_REVERSE.get(issue.get("severity")),
-                "Status": STATUS_PROGRESS_REVERSE.get(issue.get("status.progress")),
-                "Category": issue.get("issue_category"),
-                "Action": ALERT_STATUS_TYPES.get(issue.get("issue_action_status")),
-                "Description": issue.get("issue_description"),
-                "Host IP": issue.get("agent_ip_addresses"),
-                "Host Name": issue.get("agent_hostname"),
-            }
-            for issue in data
-        ]
-    
-    return CommandResults(
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Issue",
-        outputs_key_field="internal_id",
-        outputs=data,
-        readable_output=tableToMarkdown(f"Issue", human_readable),
-        raw_response=data,
-    )
+    return response
+
 
 def main():  # pragma: no cover
     """
@@ -3022,33 +2926,8 @@ def main():  # pragma: no cover
             return_results(search_asset_groups_command(client, args))
 
         elif command == "core-get-issues":
-            # replace all dict keys that contain issue with alert
-            args = issue_to_alert(args)
-            # Extract output_keys before calling get_alerts_by_filter_command
-            output_keys = argToList(args.pop("output_keys", []))
-            assignees = argToList(args.get("assignee", "").lower())
-            if "assigned" in assignees or "unassigned" in assignees:
-                if len(assignees) > 1:
-                    raise DemistoException(
-                        f"The assigned/unassigned options can not be used with additional assignees. Received: {assignees}"
-                    )
+            return_results(get_issues_command(client, args))
 
-                # Swap assignee arg with the requested special operation
-                assignee_filter_option = args.pop("assignee", "")
-                args[assignee_filter_option] = True
-
-            issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
-            # Convert alert keys to issue keys
-            if issues_command_results.outputs:
-                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
-
-            # Apply output_keys filtering if specified
-            if output_keys and issues_command_results.outputs:
-                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
-
-            return_results(issues_command_results)
-        elif command == "core-get-issues2":
-            return_results(get_issues_command2(client, args))
         elif command == "core-get-cases":
             return_results(get_cases_command(client, args))
 

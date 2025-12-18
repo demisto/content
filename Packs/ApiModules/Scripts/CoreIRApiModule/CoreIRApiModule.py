@@ -15,6 +15,11 @@ from re import Match
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
+COVERAGE_API_FIELDS_MAPPING = {
+    "vendor_name": "asset_provider",
+    "asset_provider": "unified_provider",
+}
+
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     "Other": "resolved_other",
     "Duplicate": "resolved_duplicate",
@@ -148,6 +153,8 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
+MAX_GET_ISSUES_LIMIT = 100
+ALERTS_TABLE = "ALERTS_VIEW_TABLE"
 class FilterBuilder:
     """
     Filter class for creating filter dictionary objects.
@@ -1602,6 +1609,13 @@ class CoreClient(BaseClient):
             json_data={"request_data": request_data},
         )
         return response.get("reply")
+    
+    def get_webapp_data(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_data",
+            json_data=request_data,
+        )
 
 
 class AlertFilterArg:
@@ -4008,8 +4022,48 @@ def determine_issue_assignee_filter_field(assignee_list: list) -> str:
         return ISSUE_FIELDS["assignee_email"]
     else:
         return ISSUE_FIELDS["assignee"]
+
+def build_webapp_request_data(
+    table_name: str,
+    filter_dict: dict,
+    limit: int,
+    sort_field: str | None,
+    on_demand_fields: list | None = None,
+    sort_order: str | None = "DESC",
+    start_page: int = 0,
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp/get_data endpoint.
+    """
+    sort = (
+        [
+            {
+                "FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field),
+                "ORDER": sort_order,
+            }
+        ]
+        if sort_field
+        else []
+    )
+    filter_data = {
+        "sort": sort,
+        "paging": {"from": start_page, "to": limit},
+        "filter": filter_dict,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    if on_demand_fields is None:
+        on_demand_fields = []
+
+    return {
+        "type": "grid",
+        "table_name": table_name,
+        "filter_data": filter_data,
+        "jsons": [],
+        "onDemandFields": on_demand_fields,
+    }
     
-def get_issues_by_filter_command(client: CoreClient, args: Dict):
+def create_issues_filter(args) -> dict:
     """Build filter dictionary for alerts based on provided arguments."""
     filter_builder = FilterBuilder()
     filter_builder.add_time_range_field(
@@ -4070,21 +4124,10 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
     )
     
     filter_dict = filter_builder.to_dict()
-    
     return filter_dict
 
-def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
-    """
-    Get alerts by filter.
-
-    Args:
-        client (CoreClient): The Core client to use for the request.
-        args (Dict): The arguments for the command.
-
-    Returns:
-        CommandResults: The results of the command.
-    """
-
+def get_alerts_by_filter_command(client: CoreClient, args: Dict):
+    
     def fix_array_value(match: Match[str]) -> str:
         """
         Fixes malformed array values in the 'agent_id' custom_filter argument.
@@ -4096,32 +4139,17 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
         # Return the full match with only SEARCH_VALUE fixed
         full_match = match.group(0)
         return full_match.replace(f'"[{array_content}]"', fixed_array)
-
-    # get arguments
-    request_data: dict = {"filter_data": {}}
-    filter_data = request_data["filter_data"]
-    sort_field = args.pop("sort_field", "source_insert_ts")
-    sort_order = args.pop("sort_order", "DESC")
+    
     prefix = args.pop("integration_context_brand", "CoreApiModule")
     args.pop("integration_name", None)
+    on_demand_fields = ["action_file_sha256", "action_file_macro_sha256","action_process_image_sha256", "actor_process_image_sha256", "os_actor_process_image_sha256", "causality_actor_process_image_sha256", "actor_process_command_line", "action_file_path", "alert_action_status", "agent_ip_addresses", "agent_hostname", "identity_type"]
+    filter_dict = create_issues_filter(args)
     custom_filter = {}
-    filter_data["sort"] = [{"FIELD": sort_field, "ORDER": sort_order}]
-    offset = int(args.pop("offset", 0))
-    limit = int(args.pop("limit", 50))
-    if offset > limit:
-        raise DemistoException("starting offset cannot be greater than limit")
-
-    filter_data["paging"] = {"from": int(offset), "to": int(limit)}
-    if not args:
-        raise DemistoException("Please provide at least one filter argument.")
-
-    # handle custom filter
-    custom_filter_str = args.pop("custom_filter", None)
+    custom_filter_str = args.get("custom_filter", None)
 
     if custom_filter_str:
         try:
             custom_filter = json.loads(custom_filter_str)
-
         except json.JSONDecodeError:
             demisto.debug(
                 "Failed to load custom filter, trying to fix malformed array values in the agent_id custom_filter argument"
@@ -4134,72 +4162,66 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
         except Exception as e:
             raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
 
-    filter_res = create_filter_from_args(args)
     if custom_filter:  # if exists, add custom filter to the built filter
         if "AND" in custom_filter:
             filter_obj = custom_filter["AND"]
-            filter_res["AND"].extend(filter_obj)
+            filter_dict["AND"].extend(filter_obj)
         else:
-            filter_res["AND"].append(custom_filter)
-
-    filter_data["filter"] = filter_res
-    demisto.debug(f"sending the following request data: {request_data}")
-    raw_response = client.get_alerts_by_filter_data(request_data)
-
-    context = []
-    for alert in raw_response.get("alerts", []):
-        alert = alert.get("alert_fields")
+            filter_dict["AND"].append(custom_filter)
+            
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or MAX_GET_ISSUES_LIMIT
+    limit = page * MAX_GET_ISSUES_LIMIT + limit
+    page = page * MAX_GET_ISSUES_LIMIT
+    sort_field = args.get("sort_field", "source_insert_ts")
+    sort_order = args.get("sort_order", "DESC")
+    output_keys = argToList(args.get("output_keys"))
+    request_data = build_webapp_request_data(
+        table_name=ALERTS_TABLE,
+        filter_dict=filter_dict,
+        limit=limit,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        on_demand_fields=on_demand_fields,
+        start_page=page
+    )
+    demisto.info(f"{request_data=}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+    
+    for alert in data:
         if "alert_action_status" in alert:
-            # convert the status, if failed take the original status
             action_status = alert.get("alert_action_status")
             alert["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
 
-        context.append(alert)
-
-    demisto.info(f"issue data retrieved (get-issues): {context}")
-    ALERT_OR_ISSUE = "Alert"
-    if is_platform():
-        ALERT_OR_ISSUE = "Issue"
-        human_readable = [
-            {
-                "Issue ID": alert.get("internal_id"),
-                "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
-                "Name": alert.get("alert_name"),
-                "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")),
-                "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress")),
-                "Category": alert.get("alert_category"),
-                "Action": alert.get("alert_action_status_readable"),
-                "Description": alert.get("alert_description"),
-                "Host IP": alert.get("agent_ip_addresses"),
-                "Host Name": alert.get("agent_hostname"),
-            }
-            for alert in context
-        ]
-    else:
-        human_readable = [
-            {
-                "Alert ID": alert.get("internal_id"),
-                "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
-                "Name": alert.get("alert_name"),
-                "Severity": alert.get("severity"),
-                "Status": alert.get("status.progress"),
-                "Category": alert.get("alert_category"),
-                "Action": alert.get("alert_action_status_readable"),
-                "Description": alert.get("alert_description"),
-                "Host IP": alert.get("agent_ip_addresses"),
-                "Host Name": alert.get("agent_hostname"),
-            }
-            for alert in context
-        ]
+    ALERT_OR_ISSUE = "Issue" if is_platform() else "Alert"
+    
+    id_field = "Issue ID" if is_platform() else "Alert ID"
+    
+    human_readable = [
+        {
+            id_field: alert.get("internal_id"),
+            "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
+            "Name": alert.get("alert_name"),
+            "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")) if is_platform() else alert.get("severity"),
+            "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress")) if is_platform() else alert.get("status.progress"),
+            "Category": alert.get("alert_category"),
+            "Action": alert.get("alert_action_status_readable"),
+            "Description": alert.get("alert_description"),
+            "Host IP": alert.get("agent_ip_addresses"),
+            "Host Name": alert.get("agent_hostname"),
+        }
+        for alert in data
+    ]
 
     return CommandResults(
         outputs_prefix=f"{prefix}.{ALERT_OR_ISSUE}",
         outputs_key_field="internal_id",
-        outputs=context,
+        outputs=data,
         readable_output=tableToMarkdown(f"{ALERT_OR_ISSUE}", human_readable),
-        raw_response=raw_response,
+        raw_response=data,
     )
-
 
 def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get("alert_ids", []))

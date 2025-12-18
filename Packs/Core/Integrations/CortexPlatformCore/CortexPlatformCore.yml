@@ -708,29 +708,50 @@ script:
       name: core-get-issues
       description: "Returns a list of issues and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       outputs:
-        - contextPath: Core.Issue.internal_id
-          description: The unique ID of the issue.
+        - contextPath: Core.Issue.Identity_type
+          description: The identity type of the account.
           type: String
-        - contextPath: Core.Issue.source_insert_ts
-          description: The detection timestamp.
-          type: Number
-        - contextPath: Core.Issue.issue_name
-          description: The name of the issue.
+        - contextPath: Core.Issue.agentsid #NOW ITS agent_id
+          description: The agent (endpoint) IDs associated with the issue.
+          type: List
+        - contextPath: Core.Issue.assetid # NOW ITS ASSET_IDS
+          description: The asset ID related to the issue.
           type: String
-        - contextPath: Core.Issue.severity
-          description: The severity of the issue.
+        - contextPath: Core.Issue.issue_domain
+          description: The domain of the issue.
           type: String
-        - contextPath: Core.Issue.issue_category
-          description: The category of the issue.
+        - contextPath: Core.Issue.case_id # NOW ITS CASE_IDS 
+          description: The case ID associated with the issue.
           type: String
-        - contextPath: Core.Issue.issue_action_status
-          description: The issue action status.
+        - contextPath: Core.Issue.issue_source
+          description: The source of the issue.
           type: String
-        - contextPath: Core.Issue.issue_action_status_readable
-          description: The issue action status in readable format.
+        - contextPath: Core.Issue.starred
+          description: Whether the issue is starred.
+          type: Boolean
+        - contextPath: Core.Issue.action_file_macro_sha256
+          description: File Macro SHA256 hash of the action file macro.
           type: String
-        - contextPath: Core.Issue.issue_description
-          description: The issue description.
+        - contextPath: Core.Issue.action_process_image_sha256
+          description: Action process image SHA256 hash.
+          type: String
+        - contextPath: Core.Issue.causality_actor_process_image_sha256
+          description: Causality actor process image SHA256 hash.
+          type: String
+        - contextPath: Core.Issue.os_actor_process_image_sha256
+          description: OS Parent SHA256 hash of the OS actor process image.
+          type: String
+        - contextPath: Core.Issue.actor_process_image_sha256
+          description: Actor process image SHA256 hash.
+          type: String
+        - contextPath: Core.Issue.status.progress
+          description: The progress status of the issue.
+          type: String
+        - contextPath: Core.Issue.assigned_to_pretty
+          description: The pretty name of the user assigned to the issue.
+          type: String
+        - contextPath: Core.Issue.assigned_to
+          description: The user assigned to the issue.
           type: String
         - contextPath: Core.Issue.agent_ip_addresses
           description: The host IP address.
@@ -744,322 +765,15 @@ script:
         - contextPath: Core.Issue.mitre_technique_id_and_name
           description: The MITRE attack technique.
           type: String
-        - contextPath: Core.Issue.starred
-          description: Whether the issue is starred.
-          type: Boolean
-
-
-    - arguments:
-        - description: The unique ID of the issue. Accepts a comma-separated list.
-          name: issue_id
-          isArray: true
-        - auto: PREDEFINED
-          description: The severity of the issue. Accepts a comma-separated list.
-          isArray: true
-          name: severity
-          predefined:
-            - low
-            - medium
-            - high
-            - critical
-        - description: "A custom filter. When using this argument, other filter arguments are not relevant. example: \n`{\n                \"OR\": [\n                    {\n                        \"SEARCH_FIELD\": \"actor_process_command_line\",\n                        \"SEARCH_TYPE\": \"EQ\",\n                        \"SEARCH_VALUE\": \"path_to_file\"\n                    }\n                ]\n            }`."
-          name: custom_filter
-        - auto: PREDEFINED
-          description: Account type. Accepts a comma-separated list.
-          isArray: true
-          name: Identity_type
-          predefined:
-            - ANONYMOUS
-            - APPLICATION
-            - COMPUTE
-            - FEDERATED_IDENTITY
-            - SERVICE
-            - SERVICE_ACCOUNT
-            - TEMPORARY_CREDENTIALS
-            - TOKEN
-            - UNKNOWN
-            - USER
-        - description: A unique identifier per agent. Accepts a comma-separated list.
-          isArray: true
-          name: agent_id
-        - description: The hostname to connect to. In case of a proxy connection, this value will differ from action_remote_ip. Accepts a comma-separated list.
-          isArray: true
-          name: action_external_hostname
-        - description: A string identifying the user rule. Accepts a comma-separated list.
-          isArray: true
-          name: rule_id
-        - description: The name of the user rule. Accepts a comma-separated list.
-          isArray: true
-          name: rule_name
-        - description: The issue name. Accepts a comma-separated list.
-          isArray: true
-          name: issue_name
-        - description: The issue source. Accepts a comma-separated list.
-          isArray: true
-          name: issue_source
-          auto: PREDEFINED
-          predefined:
-            - XDR Agent
-            - XDR Analytics
-            - XDR Analytics BIOC
-            - PAN NGFW
-            - XDR BIOC
-            - XDR IOC
-            - Threat Intelligence
-            - XDR Managed Threat Hunting
-            - Correlation
-            - Prisma Cloud
-            - Prisma Cloud Compute
-            - ASM
-            - IoT Security
-            - Custom Alert
-            - Health
-            - SaaS Attachments
-            - Attack Path
-            - Cloud Network Analyzer
-            - IaC Scanner
-            - CAS Secret Scanner
-            - CI/CD Risks
-            - CLI Scanner
-            - CIEM Scanner
-            - API Traffic Monitor
-            - API Posture Scanner
-            - Agentless Disk Scanner
-            - Kubernetes Scanner
-            - Compute Policy
-            - CSPM Scanner
-            - CAS CVE Scanner
-            - CAS License Scanner
-            - Secrets Scanner
-            - SAST Scanner
-            - Data Policy
-            - Attack Surface Test
-            - Package Operational Risk
-            - Vulnerability Policy
-            - AI Security Posture
-        - auto: PREDEFINED
-          description: Supports relative or custom time options. If you choose custom, use the start_time and end_time arguments.
-          name: time_frame
-          predefined:
-            - 60 minutes
-            - 3 hours
-            - 12 hours
-            - 24 hours
-            - 2 days
-            - 7 days
-            - 14 days
-            - 30 days
-            - custom
-        - description: The name assigned to the user_id during agent runtime. Accepts a comma-separated list.
-          isArray: true
-          name: user_name
-        - description: The file name of the binary file. Accepts a comma-separated list.
-          isArray: true
-          name: actor_process_image_name
-        - description: SHA256 Causality Graph Object command line. Accepts a comma-separated list.
-          isArray: true
-          name: causality_actor_process_image_command_line
-        - description: Command line used by the process image initiated by the causality actor.
-          isArray: true
-          name: actor_process_image_command_line
-        - description: SHA256 The command line of the process created. Accepts a comma-separated list.
-          isArray: true
-          name: action_process_image_command_line
-        - description: SHA256 hash of the binary file. Accepts a comma-separated list.
-          isArray: true
-          name: actor_process_image_sha256
-        - description: SHA256 hash of the binary file. Accepts a comma-separated list.
-          isArray: true
-          name: causality_actor_process_image_sha256
-        - description: SHA256 of the binary file. Accepts a comma-separated list.
-          isArray: true
-          name: action_process_image_sha256
-        - description: SHA256 of the file related to the event. Accepts a comma-separated list.
-          isArray: true
-          name: action_file_image_sha256
-        - description: The name of the registry. Accepts a comma-separated list.
-          isArray: true
-          name: action_registry_name
-        - description: The key data of the registry. Accepts a comma-separated list.
-          isArray: true
-          name: action_registry_key_data
-        - description: The host IP address. Accepts a comma-separated list.
-          isArray: true
-          name: host_ip
-        - description: The local IP address for the connection. Accepts a comma-separated list.
-          isArray: true
-          name: action_local_ip
-        - description: Remote IP address for the connection. Accepts a comma-separated list.
-          isArray: true
-          name: action_remote_ip
-        - auto: PREDEFINED
-          description: Issue action status.
-          name: issue_action_status
-          predefined:
-            - detected
-            - detected (allowed the session)
-            - detected (download)
-            - detected (forward)
-            - detected (post detected)
-            - detected (prompt allow)
-            - detected (raised an alert)
-            - detected (reported)
-            - detected (on write)
-            - detected (scanned)
-            - detected (sinkhole)
-            - detected (syncookie sent)
-            - detected (wildfire upload failure)
-            - detected (wildfire upload success)
-            - detected (wildfire upload skip)
-            - detected (xdr managed threat hunting)
-            - prevented (block)
-            - prevented (blocked)
-            - prevented (block-override)
-            - prevented (blocked the url)
-            - prevented (blocked the ip)
-            - prevented (continue)
-            - prevented (denied the session)
-            - prevented (dropped all packets)
-            - prevented (dropped the session)
-            - prevented (dropped the session and sent a tcp reset)
-            - prevented (dropped the packet)
-            - prevented (override)
-            - prevented (override-lockout)
-            - prevented (post detected)
-            - prevented (prompt block)
-            - prevented (random-drop)
-            - prevented (silently dropped the session with an icmp unreachable message to the host or application)
-            - prevented (terminated the session and sent a tcp reset to both sides of the connection)
-            - prevented (terminated the session and sent a tcp reset to the client)
-            - prevented (terminated the session and sent a tcp reset to the server)
-            - prevented (on write)
-        - description: The local port for the connection. Accepts a comma-separated list.
-          isArray: true
-          name: action_local_port
-        - description: The remote port for the connection. Accepts a comma-separated list.
-          isArray: true
-          name: action_remote_port
-        - description: The hostname to connect to. In case of a proxy connection, this value will differ from action_remote_ip. Accepts a comma-separated list.
-          isArray: true
-          name: dst_action_external_hostname
-        - defaultValue: source_insert_ts
-          description: The field by which to sort the results.
-          name: sort_field
-        - auto: PREDEFINED
-          description: The order in which to sort the results.
-          name: sort_order
-          predefined:
-            - DESC
-            - ASC
-        - defaultValue: "0"
-          description: The first page number to retrieve issues from.
-          name: offset
-        - defaultValue: "50"
-          description: The last page number to retrieve issues from.
-          name: limit
-        - description: Relevant when the time_frame argument is set to custom. Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
-          name: start_time
-        - description: Relevant when the time_frame argument is set to custom. Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
-          name: end_time
-        - auto: PREDEFINED
-          description: Whether the issue is starred.
-          name: starred
-          predefined:
-            - "true"
-            - "false"
-        - description: The MITRE attack technique. Accepts a comma-separated list.
-          isArray: true
-          name: mitre_technique_id_and_name
-        - description: The category of the issue. Accepts a comma-separated list.
-          isArray: true
-          name: issue_category
-        - description: The domain of the issue. Accepts a comma-separated list.
-          isArray: true
-          name: issue_domain
-          predefined:
-            - Health
-            - Hunting
-            - IT
-            - Posture
-            - Security
-        - description: The description of the issue. Accepts a comma-separated list.
-          isArray: true
-          name: issue_description
-        - description: The SHA256 hash of the OS actor process image. Accepts a comma-separated list.
-          isArray: true
-          name: os_actor_process_image_sha256
-        - description: The SHA256 hash of the action file macro. Accepts a comma-separated list.
-          isArray: true
-          name: action_file_macro_sha256
-        - description: The status progress. Accepts a comma-separated list.
-          isArray: true
-          name: status
-          predefined:
-            - New
-            - In Progress
-            - Resolved
-          auto: PREDEFINED
-        - description: Not status progress. Accepts a comma-separated list.
-          isArray: true
-          name: not_status
-          predefined:
-            - New
-            - In Progress
-            - Resolved
-          auto: PREDEFINED
-        - description: The assets IDs related to the issue. Accepts a comma-separated list.
-          isArray: true
-          name: asset_ids
-        - description: |
-            The assignee of the issue. Accepts a comma-separated list.
-            Use "unassigned" for unassigned issues or "assigned" for all assigned issues.
-          isArray: true
-          name: assignee
-        - description: A comma separated list of outputs to include in the context.
-          isArray: true
-          name: output_keys
-      name: core-get-issues2
-      description: "Returns a list of issues and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      outputs:
-        - contextPath: Core.Issue.internal_id
-          description: The unique ID of the issue.
-          type: String
-        - contextPath: Core.Issue.source_insert_ts
-          description: The detection timestamp.
-          type: Number
-        - contextPath: Core.Issue.issue_name
-          description: The name of the issue.
-          type: String
-        - contextPath: Core.Issue.severity
-          description: The severity of the issue.
-          type: String
-        - contextPath: Core.Issue.issue_category
-          description: The category of the issue.
-          type: String
         - contextPath: Core.Issue.issue_action_status
           description: The issue action status.
           type: String
-        - contextPath: Core.Issue.issue_action_status_readable
+        - contextPath: Core.Issue.issue_action_status 
+          description: The issue action status.
+          type: String
+        - contextPath: Core.Issue.issue_action_status_readable #add to context
           description: The issue action status in readable format.
           type: String
-        - contextPath: Core.Issue.issue_description
-          description: The issue description.
-          type: String
-        - contextPath: Core.Issue.agent_ip_addresses
-          description: The host IP address.
-          type: String
-        - contextPath: Core.Issue.agent_hostname
-          description: The hostname.
-          type: String
-        - contextPath: Core.Issue.mitre_tactic_id_and_name
-          description: The MITRE attack tactic.
-          type: String
-        - contextPath: Core.Issue.mitre_technique_id_and_name
-          description: The MITRE attack technique.
-          type: String
-        - contextPath: Core.Issue.starred
-          description: Whether the issue is starred.
-          type: Boolean
 
     - arguments:
         - description: Asset unique identifier.
