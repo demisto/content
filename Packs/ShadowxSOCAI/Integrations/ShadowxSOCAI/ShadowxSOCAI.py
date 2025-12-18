@@ -101,6 +101,31 @@ def _parse_task_fields(task_json: dict, task_id: Optional[str], base_url: str) -
         out["TaskURL"] = f"{base_url.rstrip('/')}/SecurityTasks/Details?taskID={out['TaskId']}"
     return out
 
+def _resolve_log_content(log_arg: str) -> str:
+    """
+    If log_arg looks like a XSOAR EntryID (e.g. '123@abc-uuid'),
+    read the file content and return it.
+    Otherwise return log_arg as-is.
+    """
+    if not isinstance(log_arg, str):
+        return ""
+
+    # Heuristic: EntryID always contains '@'
+    if "@" in log_arg:
+        try:
+            file_info = demisto.getFilePath(log_arg)
+            file_path = file_info.get("path")
+            if not file_path:
+                raise DemistoException(f"Could not resolve file path for EntryID: {log_arg}")
+
+            with open(file_path, "r", errors="replace") as f:
+                return f.read()
+
+        except Exception as e:
+            raise DemistoException(f"Failed to read file content from EntryID {log_arg}: {e}")
+
+    return log_arg
+
 
 def _maybe_set_incident_fields(parsed: dict):
     try:
@@ -195,22 +220,7 @@ def check_task_with_api_key(session: requests.Session, base_url: str, api_key: s
     return _ensure_json_like(txt)
 
 
-def poll_task_until_ready(
-    session: requests.Session,
-    base_url: str,
-    api_key: str,
-    task_id: str,
-    timeout_seconds: int,
-    interval_seconds: int = 30,
-) -> Optional[dict]:
-    deadline = time.time() + timeout_seconds
-    while time.time() < deadline:
-        data = check_task_with_api_key(session, base_url, api_key, task_id)
-        if data and isinstance(data, dict):
-            if any(k in data for k in ("Status", "PredictionScore", "Recommendation", "Response")):
-                return data
-        time.sleep(interval_seconds)
-    return None
+
 
 
 # ============================
@@ -242,23 +252,27 @@ def _build_task_payload_from_args(args: Dict[str, Any]) -> dict:
     default_policy_id = demisto.params().get("policy_id") or ""
     default_subject = demisto.params().get("subject") or ""
 
-    log = args.get("log")
+    log_arg = args.get("log")
     ip_addr = args.get("ip_addr")
-    # FIX 2: Check for 'subject', 'user_name', OR the instance default
+
     subject = args.get("subject") or args.get("user_name") or default_subject
     policy_id = args.get("policy_id") or default_policy_id
 
-    if not log:
+    if not log_arg:
         raise DemistoException("'log' is required.")
 
-    security_log = log if not ip_addr else f"{log} [ip:{ip_addr}]"
+    # ✅ RESOLVE EntryID → file content (or return raw text)
+    log_content = _resolve_log_content(log_arg)
+
+    security_log = log_content if not ip_addr else f"{log_content} [ip:{ip_addr}]"
 
     return {
-        "SearchText": log,
+        # ✅ ALWAYS send the resolved content
+        "SearchText": "",
         "IpAddr": ip_addr,
-        "UserName": subject,
+        "Subject": subject or "",
         "PolicyId": policy_id,
-        # UI/MVC-compatible fields (ignored by JSON API if not relevant)
+        # UI/MVC-compatible fields
         "TaskName": task_name,
         "AssignedUserID": assigned_user_id,
         "AIDriverID": ai_driver_id,
@@ -275,10 +289,7 @@ def shadowx_submit_task_command():
     api_key = _api_key()
 
     payload = _build_task_payload_from_args(demisto.args())
-    wait_seconds = arg_to_number(demisto.args().get("wait_seconds", 0)) or 0
-    interval_seconds = arg_to_number(demisto.args().get("interval_seconds", 30)) or 30
-    if interval_seconds < 1:
-        interval_seconds = 1
+
 
     s = _new_session()
 
@@ -288,16 +299,6 @@ def shadowx_submit_task_command():
     task_id = _extract_task_id(submit_json) or ""
     ui_url = f"{base_url.rstrip('/')}/SecurityTasks/Details?taskID={task_id}" if task_id else ""
 
-    final_task = None
-    if wait_seconds > 0 and task_id:
-        final_task = poll_task_until_ready(
-            session=s,
-            base_url=base_url,
-            api_key=api_key,
-            task_id=task_id,
-            timeout_seconds=wait_seconds,
-            interval_seconds=interval_seconds,
-        )
 
     out: Dict[str, Any] = {
         "TaskSubmit": {
@@ -307,10 +308,6 @@ def shadowx_submit_task_command():
         }
     }
 
-    if final_task:
-        parsed_task = _parse_task_fields(final_task, task_id, base_url)
-        _maybe_set_incident_fields(parsed_task)
-        out["TaskResult"] = parsed_task
 
     return_results(CommandResults(
         outputs_prefix="ShadowxSOCAI",
@@ -344,13 +341,6 @@ def shadowx_get_task_command():
     ))
 
 
-def shadowx_help_command():
-    return_results(
-        "ShadowX SOCAI (API Key mode only)\n\n"
-        "- `!shadowx-submit-task log=\"...\" [ip_addr=] [user_name=] [policy_id=] "
-        "[wait_seconds=] [interval_seconds=]`\n"
-        "- `!shadowx-get-task task_id=\"<GUID>\"`"
-    )
 
 
 def main():
@@ -363,8 +353,6 @@ def main():
             shadowx_submit_task_command()
         elif command == "shadowx-get-task":
             shadowx_get_task_command()
-        elif command == "shadowx-help":
-            shadowx_help_command()
         else:
             raise DemistoException(f"Command not implemented: {command}")
     except Exception as e:

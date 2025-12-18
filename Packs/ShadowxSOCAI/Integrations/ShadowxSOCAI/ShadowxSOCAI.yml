@@ -1,7 +1,7 @@
 commonfields:
-  id: ShadowxSOCAI
+  id: ShadowxSOCAI_Dev
   version: -1
-name: ShadowxSOCAI
+name: ShadowxSOCAI_Dev
 display: ShadowX SOCAI
 category: Analytics & SIEM
 description: Analyze security logs with ShadowX SOCAI and return AI-driven guidance and scores (API Key mode only).

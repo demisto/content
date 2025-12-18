@@ -1,8 +1,6 @@
-import json
-import io
 import ShadowxSOCAI as mod
 import demistomock as demisto
-from requests.exceptions import HTTPError
+
 
 # === HELPER FUNCTION TESTS (from your original file) ===
 
@@ -41,7 +39,7 @@ MOCK_GET_RESPONSE = {
 }
 
 MOCK_PARAMS = {
-    "url": "https://app.shadowx.ai",
+    "url": "https://example.com",
     "credentials_api": {"password": "test_api_key"},
     "task_name": "Test Task"
 }
@@ -78,7 +76,7 @@ def test_submit_command(mocker):
     mod.shadowx_submit_task_command()
 
     # Verify API call
-    expected_url = "https://app.shadowx.ai/Api/SecurityTasks/Create"
+    expected_url = "https://example.com/Api/SecurityTasks/Create"
     expected_payload = {
         'SearchText': 'failed login',
         'IpAddr': '1.1.1.1',
@@ -101,14 +99,15 @@ def test_submit_command(mocker):
     )
 
     # Verify output
-    # This checks that return_results was called, and we can inspect the call args
-    call_args = mock_results.call_args[0]
-    command_results = call_args[0]
-    
-    assert command_results.outputs_prefix == "ShadowxSOCAI"
-    assert command_results.outputs['TaskSubmit']['TaskId'] == "f3f46d7e-4932-4b4a-9220-9fd9a6a4ad02"
-    assert "SecurityTasks/Details?taskID=" in command_results.outputs['TaskSubmit']['TaskURL']
+    # The command function calls return_results, it does not return the result itself.
+    # We inspect what was passed to return_results.
+    assert mock_results.call_count == 1
+    results = mock_results.call_args[0][0]
 
+    # results is a CommandResults object
+    assert results.outputs_prefix == "ShadowxSOCAI"
+    assert results.outputs['TaskSubmit']['TaskId'] == "f3f46d7e-4932-4b4a-9220-9fd9a6a4ad02"
+    assert "SecurityTasks/Details?taskID=" in results.outputs['TaskSubmit']['TaskURL']
 
 def test_get_task_command(mocker):
     """
@@ -140,7 +139,7 @@ def test_get_task_command(mocker):
     mod.shadowx_get_task_command()
 
     # Verify API call
-    expected_url = "https://app.shadowx.ai/Api/SecurityTasks/Details?taskID=f3f46d7e-4932-4b4a-9220-9fd9a6a4ad02"
+    expected_url = "https://example.com/Api/SecurityTasks/Details?taskID=f3f46d7e-4932-4b4a-9220-9fd9a6a4ad02"
     mock_session.get.assert_called_with(
         expected_url,
         headers=mocker.ANY,
@@ -149,11 +148,14 @@ def test_get_task_command(mocker):
     )
 
     # Verify output
-    call_args = mock_results.call_args[0]
-    command_results = call_args[0]
-    
-    assert command_results.outputs_prefix == "ShadowxSOCAI.TaskResult"
-    assert command_results.outputs['TaskId'] == "f3f46d7e-4932-4b4a-9220-9fd9a6a4ad02"
-    assert command_results.outputs['RiskSeverity'] == "High"
-    assert command_results.outputs['PredictionScore'] == 95
-    assert command_results.outputs['Response'] == "AI analysis complete."
+    assert mock_results.call_count == 1
+    results = mock_results.call_args[0][0]
+
+    # results is a CommandResults object
+    assert results.outputs_prefix == "ShadowxSOCAI.TaskResult"
+    contents = results.outputs
+
+    assert contents["TaskId"] == "f3f46d7e-4932-4b4a-9220-9fd9a6a4ad02"
+    assert contents["RiskSeverity"] == "High"
+    assert contents["PredictionScore"] == 95
+    assert contents["Response"] == "AI analysis complete."
