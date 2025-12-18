@@ -283,24 +283,9 @@
       }
     ],
     "widgets_data": [],
+    "id": "b335f061d2f44edebfbdaa2ba538e0c5",
     "name": "Troubleshooting Playbooks",
-    "isPredefined": true,
     "marketplaces": [
         "platform"
-    ],
-    "fromVersion": "8.0.0",
-    "description": "",
-    "id": "Troubleshooting Playbooks",
-    "version": -1,
-    "fromDate": "0001-01-01T00:00:00Z",
-    "toDate": "0001-01-01T00:00:00Z",
-    "period": {
-        "by": "",
-        "byTo": "",
-        "byFrom": "days",
-        "toValue": null,
-        "fromValue": 180,
-        "field": ""
-    },
-    "fromDateLicense": "0001-01-01T00:00:00Z"
+    ]
   }

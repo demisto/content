@@ -397,24 +397,9 @@
       }
     ],
     "widgets_data": [],
+    "id": "0523406bbbae4d0d840a5057e0336880",
     "name": "Troubleshooting Instances",
-    "isPredefined": true,
     "marketplaces": [
         "platform"
-    ],
-    "fromVersion": "8.0.0",
-    "description": "",
-    "id": "Troubleshooting Instances",
-    "version": -1,
-    "fromDate": "0001-01-01T00:00:00Z",
-    "toDate": "0001-01-01T00:00:00Z",
-    "period": {
-        "by": "",
-        "byTo": "",
-        "byFrom": "days",
-        "toValue": null,
-        "fromValue": 180,
-        "field": ""
-    },
-    "fromDateLicense": "0001-01-01T00:00:00Z"
+    ]
   }
