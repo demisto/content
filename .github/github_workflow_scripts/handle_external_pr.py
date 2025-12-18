@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 import urllib3
 from blessings import Terminal
-from github import Github, logger
+from github import Github
 from git import Repo
 from github.PullRequest import PullRequest
 from github.Repository import Repository
