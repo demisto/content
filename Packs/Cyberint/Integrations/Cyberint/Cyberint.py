@@ -44,19 +44,17 @@ class Client(BaseClient):
     API Client to communicate with Cyberint API endpoints.
     """
 
-    def __init__(self, base_url: str, region: str, access_token: str, verify_ssl: bool, proxy: bool):
+    def __init__(self, base_url: str, access_token: str, verify_ssl: bool, proxy: bool):
         """
         Client for Cyberint RESTful API.
 
         Args:
             base_url (str): URL to access when getting alerts.
-            region (str): Region for the API.
             access_token (str): Access token for authentication.
             verify_ssl (bool): specifies whether to verify the SSL certificate or not.
             proxy (bool): specifies if to use XSOAR proxy settings.
         """
         params = demisto.params()
-        self._region = (region or "us").lower()
         self._cookies = {"access_token": access_token}
         self._headers = {
             "X-Integration-Type": "XSOAR",
@@ -65,7 +63,7 @@ class Client(BaseClient):
             "X-Integration-Customer-Name": params.get("client_name", ""),
             "X-Integration-Version": "1.1.13",
         }
-        super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
+        super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy, headers=self._headers)
 
     @logger
     def list_alerts(
@@ -913,17 +911,15 @@ def main():
     command = demisto.command()
     access_token = params.get("access_token")
     url = params.get("environment")
-    region = params.get("region", "us")
 
     verify_certificate = not params.get("insecure", False)
     first_fetch_time = params.get("first_fetch", "3 days").strip()
     proxy = params.get("proxy", False)
-    base_url = f"{url}/{region}/alert/"
+    base_url = f"{url}/alert/"
     demisto.info(f"Command being called is {command}")
     try:
         client = Client(
             base_url=base_url,
-            region=region,
             verify_ssl=verify_certificate,
             access_token=access_token,
             proxy=proxy,
