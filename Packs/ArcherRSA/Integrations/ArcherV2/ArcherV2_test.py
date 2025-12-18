@@ -589,6 +589,11 @@ class TestArcherV2:
                 r'{"Device Name":"C:\\users\\file.txt"}', r"C:\users\file.txt", id="Invalid unicode escape - Windows path"
             ),
             pytest.param(r'{"Device Name":"Two:\\\\."}', r"Two:\\.", id="XSUP-59455 - Backslash before period"),
+            pytest.param(
+                r'{"Device Name":"Test of two double back-slashes followed by double-quote: \\". End of test."}',
+                r'Test of two double back-slashes followed by double-quote: \". End of test.',
+                id="XSUP-59455 Regression - Two backslashes before quote",
+            ),
         ],
     )
     def test_generate_field_contents(self, json_fields_values: str, expected_value: str):
