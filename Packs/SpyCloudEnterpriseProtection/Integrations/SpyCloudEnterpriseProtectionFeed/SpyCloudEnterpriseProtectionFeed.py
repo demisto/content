@@ -114,6 +114,15 @@ class Client(BaseClient):
             err_msg = response.text
 
         safe_msg = safe_log(err_msg)
+        response_headers = response.headers or {}  # type: ignore
+
+        # Retry on throttling via Amazon error type
+        if TOO_MANY_REQUESTS in response_headers.get(X_AMAZON_ERROR_TYPE, ""):
+            self.query_spy_cloud_api(response.url, is_retry=True)
+            return
+        elif LIMIT_EXCEED in response_headers.get(X_AMAZON_ERROR_TYPE, ""):
+            raise DemistoException(MONTHLY_QUOTA_EXCEED_MSG, res=response)
+            return
 
         # Allow _http_request retry mechanism to handle 429
         if response.status_code == 429:

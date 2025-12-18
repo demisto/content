@@ -8,6 +8,9 @@ from SpyCloudEnterpriseProtectionFeed import (
     fetch_incident,
     remove_duplicate,
     fetch_domain_or_watchlist_data,
+    LIMIT_EXCEED,
+    MONTHLY_QUOTA_EXCEED_MSG,
+    TOO_MANY_REQUESTS,
 )
 
 
@@ -24,33 +27,51 @@ DOMAIN_DATA = util_load_json("test_data/domain_data.json")
 
 
 class MockResponse:
-    def __init__(self, status_code, headers=None, json_data=None):
+    def __init__(self, status_code, headers=None, json_data=None, url=None):
         self.status_code = status_code
         self.headers = headers or {}
         self.json_data = json_data or {}
+        self.url = "https://api.spycloud.com/test"
 
     def json(self):
         return self.json_data
 
 
-def test_spy_cloud_error_handler():
-    # --- 429 should NOT raise an exception now ---
+def test_spy_cloud_error_handler(mocker):
+    # --- TOO_MANY_REQUESTS should trigger retry via query_spy_cloud_api ---
     response = MockResponse(
-        status_code=429, headers={"x-amzn-ErrorType": "LimitExceededException"}, json_data={"message": "Rate limit exceeded"}
+        status_code=429, headers={"x-amzn-ErrorType": TOO_MANY_REQUESTS}, json_data={"message": "Too many requests"}
     )
 
-    # Should return None (as retry mechanism will handle it)
+    retry_mock = mocker.patch.object(client, "query_spy_cloud_api")
+
+    assert client.spy_cloud_error_handler(response) is None
+    retry_mock.assert_called_once_with(response.url, is_retry=True)
+
+    # --- LIMIT_EXCEED should raise monthly quota exception ---
+    response = MockResponse(
+        status_code=429, headers={"x-amzn-ErrorType": LIMIT_EXCEED}, json_data={"message": "Monthly quota exceeded"}
+    )
+
+    with pytest.raises(DemistoException, match=MONTHLY_QUOTA_EXCEED_MSG):
+        client.spy_cloud_error_handler(response)
+
+    # --- 429 without Amazon error type should return None ---
+    response = MockResponse(status_code=429, headers={}, json_data={"message": "Rate limit exceeded"})
+
     assert client.spy_cloud_error_handler(response) is None
 
-    # --- 403 should raise DemistoException with safe msg ---
+    # --- 403 should raise Authorization or IP error ---
     response = MockResponse(
         status_code=403, headers={"SpyCloud-Error": "Invalid IP"}, json_data={"message": "Invalid IP address"}
     )
+
     with pytest.raises(DemistoException, match="Authorization or IP error"):
         client.spy_cloud_error_handler(response)
 
-    # --- Non-403, non-429 (e.g., 500) should raise generic SpyCloud API error ---
+    # --- Non-403, non-429 should raise generic SpyCloud API error ---
     response = MockResponse(status_code=500, json_data={"message": "Internal server error"})
+
     with pytest.raises(DemistoException, match="SpyCloud API error: Internal server error"):
         client.spy_cloud_error_handler(response)
 
