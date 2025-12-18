@@ -7,15 +7,16 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2025-11-11T00:00:00Z",
-    "defaultDataSource": "CitrixCloud",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "citrix"
+    "tags": [
+        "IT",
+        "IAM",
+        "Security"
     ],
+    "useCases": [],
+    "keywords": [],
     "marketplaces": [
         "marketplacev2",
         "platform"
