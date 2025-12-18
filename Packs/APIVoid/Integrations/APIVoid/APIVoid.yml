@@ -15,6 +15,13 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+  additionalinfo: |
+    ## How to generate the API Key
+    
+    1. Go to https://dash.apivoid.com/api-keys/
+    2. Copy your API key
+    
+    **Note:** The API key is sent in the X-API-Key header for all V2 API requests.
 - display: API KEY
   name: apikey
   defaultvalue: ''
@@ -1140,6 +1147,7 @@ script:
       type: number
     description: Checks if an email address is disposable, if it has MX records, and more.
   - name: apivoid-threatlog
+    deprecated: true
     arguments:
     - name: host
       required: true
@@ -1292,6 +1300,7 @@ script:
       type: string
     description: Convert an URL info high-quality and printable PDF document
   - name: apivoid-url-to-html
+    deprecated: true
     arguments:
     - name: url
       required: true
