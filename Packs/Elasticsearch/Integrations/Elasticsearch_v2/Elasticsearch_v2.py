@@ -68,7 +68,7 @@ TIME_FIELD = param.get("fetch_time_field", "")
 FETCH_INDEX = param.get("fetch_index", "")
 FETCH_QUERY_PARM = param.get("fetch_query", "")
 RAW_QUERY = param.get("raw_query", "")
-FETCH_TIME = param.get("fetch_time", "3 days")
+FETCH_TIME = "now" if demisto.command() == "fetch-events" else param.get("fetch_time", "3 days")
 FETCH_SIZE = int(param.get("fetch_size", 50))
 INSECURE = not param.get("insecure", False)
 TIME_METHOD = param.get("time_method", "Simple-Date")
@@ -937,7 +937,6 @@ def fetch_items(proxies, is_fetch_events=False):
     incidents = []  # type: List
 
     if total_results > 0:
-        # TODO: if it is fetch-events, we should save _time field on dataset
         if "Timestamp" in TIME_METHOD:
             incidents, last_fetch = results_to_incidents_timestamp(response, last_fetch, is_fetch_events)
         else:
@@ -1245,7 +1244,7 @@ def main():  # pragma: no cover
         elif demisto.command() == "fetch-incidents":
             fetch_items(proxies)
         elif demisto.command() == "fetch-events":
-            fetch_items(proxies)
+            fetch_items(proxies, is_fetch_events=True)
             # last_run, events = fetch_events()
             # demisto.debug(f"{DEBUG_PREFIX}Monday Integration Sending {len(events)} events to XSIAM.\n{events}")
             # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
