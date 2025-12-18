@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 import urllib3
 from blessings import Terminal
-from github import Github
+from github import Github, logger
 from git import Repo
 from github.PullRequest import PullRequest
 from github.Repository import Repository
@@ -381,7 +381,8 @@ def get_user_from_pr_body(pr: PullRequest) -> str:
     Returns:
     - Found User
     """
-    body = pr.body
+    print(f"PR body is: {pr.body}")
+    body = pr.body or ""
     matcher = re.search(PR_AUTHOR_PATTERN, body)
     if matcher:
         return matcher.groups()[0]
