@@ -290,23 +290,24 @@ def process_string(input_str: str) -> str:
     Returns:
         str: The processed string where each part is transformed using the transform_string function.
     """
-    logical_operators = ["AND", "OR", "NOT", "TO"]
+    # Use word boundaries to match operators only as standalone words, not as substrings
+    pattern = r"\b(AND|OR|NOT|TO)\b"
+    logical_operators = {"AND", "OR", "NOT", "TO"}
+
+    # Split the input string by logical operators while keeping the operators
+    parts = re.split(pattern, input_str)
+
     transformed_parts = []
-    start_index = 0
-
-    for end_index in range(len(input_str)):
-        if any(op in input_str[start_index:end_index] for op in logical_operators):
-            part = input_str[start_index:end_index].strip()
-            operator = next(op for op in logical_operators if op in part)
-            part = part.replace(operator, "").strip()
+    for part in parts:
+        part = part.strip()
+        if not part:
+            continue
+        # Check if the part is a logical operator using set membership (O(1) lookup)
+        if part in logical_operators:
+            transformed_parts.append(part)
+        else:
+            # Transform non-operator parts
             transformed_parts.append(transform_string(part))
-            transformed_parts.append(operator)
-            start_index = end_index + 1
-
-    if start_index < len(input_str):
-        remaining_part = input_str[start_index:].strip()
-        if remaining_part:
-            transformed_parts.append(transform_string(remaining_part))
 
     return " ".join(transformed_parts)
 
@@ -545,7 +546,7 @@ def get_cases_in_batches(
     return all_cases, start_time, last_fetched_ids
 
 
-def filter_existing_cases(cases: list[dict], ids_exists: list[str], last_run: str) -> list:
+def filter_existing_cases(cases: list[dict], ids_exists: list[str]) -> list:
     """
     Filters out cases that already exist in the provided list of existing IDs.
 
@@ -556,6 +557,23 @@ def filter_existing_cases(cases: list[dict], ids_exists: list[str], last_run: st
     Returns:
         list[dict]: A list of case dictionaries that do not have IDs present in the `ids_exists` list.
     """
+    if ids_exists:
+        demisto.debug(f"Existing IDs in last_run: {ids_exists}")
+
+        filtered_cases = []
+        for case in cases:
+            case_id = case.get("caseId")
+            if case_id not in ids_exists:
+                filtered_cases.append(case)
+            else:
+                demisto.debug(f"Case with ID {case_id} already exists, skipping.")
+        demisto.debug(f"After filtered cases count: {len(filtered_cases)}")
+    else:
+        filtered_cases = cases
+    return filtered_cases
+
+
+def filter_existing_cases_lr(cases: list[dict], ids_exists: list[str], last_run: str) -> list:
     if ids_exists:
         demisto.debug(f"Existing IDs in last_run: {ids_exists}")
 
@@ -1002,12 +1020,11 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     demisto.debug(f"Response contain {len(cases)} cases")
 
     ids_exists = last_run.get("last_ids", [])
-    cases = filter_existing_cases(cases, ids_exists, start_time)
-
-    last_run = update_last_run(cases, end_time)
+    cases_for_last_run = filter_existing_cases_lr(cases, ids_exists, start_time)
+    cases_for_incidents = filter_existing_cases(cases, ids_exists)
+    last_run = update_last_run(cases_for_last_run, end_time)
     demisto.debug(f"Last run after the fetch run: {last_run}")
-
-    incidents = format_incidents(cases)
+    incidents = format_incidents(cases_for_incidents)
     demisto.debug(f"After the fetch incidents count: {len(incidents)}")
     return incidents, last_run
 

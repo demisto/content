@@ -5,7 +5,7 @@ description: |-
   The `Identity Analytics - Alert Handling` playbook is designed to handle Identity Analytics alerts and executes the following:
 
   Analysis:
-  - Enriches the IP and the account, providing additional context and information about these indicators.
+  - Enriches the Indicators and the account, providing additional context and information about these indicators.
 
   Verdict:
   - Determines the appropriate verdict based on the data collected from the enrichment phase.
@@ -33,14 +33,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "57"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 250,
-          "y": -510
+          "y": -880
         }
       }
     note: false
@@ -108,53 +108,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": -230
+          "x": -90,
+          "y": -290
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: d44bd7f6-7d7d-4b0e-8746-110754f73f1e
-    type: regular
-    task:
-      id: d44bd7f6-7d7d-4b0e-8746-110754f73f1e
-      version: -1
-      name: IP Enrichment
-      description: Checks the reputation of an IP address.
-      script: '|||ip'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      ip:
-        complex:
-          root: IP
-          accessor: Address
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": -230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -174,14 +135,13 @@ tasks:
       '#none#':
       - "56"
       - "1"
-      - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 250,
-          "y": -380
+          "y": -450
         }
       }
     note: false
@@ -247,7 +207,7 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": 410
+          "y": 190
         }
       }
     note: false
@@ -278,7 +238,7 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": 280
+          "y": 60
         }
       }
     note: false
@@ -334,8 +294,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 110
+          "x": 620,
+          "y": -110
         }
       }
     note: false
@@ -390,16 +350,16 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "39"
       - "45"
       - "38"
+      - "58"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 890,
-          "y": 590
+          "y": 370
         }
       }
     note: false
@@ -778,7 +738,7 @@ tasks:
       {
         "position": {
           "x": 1300,
-          "y": 730
+          "y": 510
         }
       }
     note: false
@@ -797,7 +757,7 @@ tasks:
       version: -1
       name: Get entity alerts by MITRE tactics
       description: |-
-        This playbook searches XDR alerts related to specific entities , on a given timeframe, based on MITRE tactics.
+        This playbook searches XDR alerts related to specific entities, on a given timeframe, based on MITRE tactics.
         Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
       playbookName: Get entity alerts by MITRE tactics
       type: playbook
@@ -812,6 +772,21 @@ tasks:
           root: alert
           accessor: username
           transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.raw_abioc.event.actor_primary_username
+                iscontext: true
+              raw: {}
+          - operator: RemoveMatches
+            args:
+              delimiter: {}
+              filters:
+                value:
+                  simple: NT AUTHORITY\\SYSTEM
+              ignore_case: {}
+              match_exact: {}
           - operator: uniq
       EntityType:
         simple: username
@@ -850,11 +825,12 @@ tasks:
       exitCondition: ""
       wait: 1
       max: 100
+      forEach: true
     view: |-
       {
         "position": {
           "x": 890,
-          "y": 730
+          "y": 720
         }
       }
     note: false
@@ -888,6 +864,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Azure - User Investigation
     nexttasks:
       '#none#':
       - "52"
@@ -917,7 +894,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 730
+          "y": 510
         }
       }
     note: false
@@ -929,10 +906,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: b8f759b1-e17c-4cf5-8af4-33d34b33410a
+    taskid: 05141279-39e6-407a-83bd-32b25b078c20
     type: playbook
     task:
-      id: b8f759b1-e17c-4cf5-8af4-33d34b33410a
+      id: 05141279-39e6-407a-83bd-32b25b078c20
       version: -1
       name: Cloud Credentials Rotation - Azure
       description: |-
@@ -953,6 +930,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cloud Credentials Rotation - Azure
     nexttasks:
       '#none#':
       - "30"
@@ -991,7 +969,7 @@ tasks:
     task:
       id: 27faebca-18f3-4660-8e72-910b4ff288f6
       version: -1
-      name: Fetch cloud alert extra data
+      name: Fetch alert extra data
       description: Returns information about each alert ID.
       script: '|||core-get-cloud-original-alerts'
       type: regular
@@ -999,7 +977,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "4"
     scriptarguments:
       alert_ids:
         complex:
@@ -1015,7 +993,7 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": -50
+          "y": -600
         }
       }
     note: false
@@ -1492,7 +1470,7 @@ tasks:
       '#default#':
       - "16"
       "yes":
-      - "47"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1510,8 +1488,105 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 620,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 2957a278-54d6-4502-b8ba-bf73ba3a1d73
+    type: regular
+    task:
+      id: 2957a278-54d6-4502-b8ba-bf73ba3a1d73
+      version: -1
+      name: Extract and enrich the alert indicators
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      text:
+        simple: ${alert}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
           "x": 250,
-          "y": -230
+          "y": -750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 6e46dd7e-a830-4395-ab38-ee31ff20dce2
+    type: condition
+    task:
+      id: 6e46dd7e-a830-4395-ab38-ee31ff20dce2
+      version: -1
+      name: Verify User is not Empty
+      description: Checks if the username input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: username
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: Core.OriginalAlert.raw_abioc.event.actor_primary_username
+                      iscontext: true
+                - operator: RemoveMatches
+                  args:
+                    delimiter: {}
+                    filters:
+                      value:
+                        simple: NT AUTHORITY\\SYSTEM
+                    ignore_case: {}
+                    match_exact: {}
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 510
         }
       }
     note: false
@@ -1532,15 +1607,14 @@ view: |-
       "53_30_#default#": 0.43,
       "53_46_yes": 0.41,
       "56_16_#default#": 0.2,
-      "56_47_yes": 0.47,
       "5_50_yes": 0.19
     },
     "paper": {
       "dimensions": {
-        "height": 3305,
+        "height": 3670,
         "width": 2240,
         "x": -540,
-        "y": -510
+        "y": -880
       }
     }
   }
@@ -1650,7 +1724,9 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.10.0
-
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
 supportedModules:
 - X1
 - X3

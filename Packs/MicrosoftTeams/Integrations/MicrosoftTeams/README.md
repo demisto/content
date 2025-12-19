@@ -74,7 +74,7 @@ In order to connect to Microsoft Teams use one of the following authentication m
 
 **Perform the following steps to add the needed permissions**:
 
-1. Go to your [Microsoft Azure portal](https://portal.azure.com/), and from the left navigation pane select **Azure Active Directory > App registrations**.
+1. Go to your [Microsoft Azure portal](https://portal.azure.com/), and from the left navigation pane select **Entra ID > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application/Delegated permissions**.
 4. For each of the next permissions listed below, search for the permission, select the checkbox, and click **Add permissions**.
@@ -428,11 +428,22 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
 
     *To resolve this:*
 
-    1.Navigate to your instance configuration settings.
-    2.Select the *Bot Type Converted to Single-Tenant parameter* in the advanced settings of the Connect section.
-    3.Run the command !microsoft-teams-auth-reset in the War Room.
+    - Navigate to your instance configuration settings.
+
+    - Select the *Bot Type Converted to Single-Tenant parameter* in the advanced settings of the Connect section.
+
+    - Run the command !microsoft-teams-auth-reset in the War Room.
 
     Your bot should now be properly authorized and functional.
+6. If you see the following error message: `Forbidden: Failed to get license information for the user. Ensure user has a valid Office365 license assigned to them.`, it indicates that the user who approved the authentication URL likely does not have a valid Office 365 license assigned.
+
+    To resolve this, please follow these steps:
+
+    - *Re-authorize*: Re-run the command `!microsoft-teams-generate-login-url` and open the URL that is returned. This time, approve the authorization using a different user who has a valid Office 365 license.
+
+    - *Update Instance*: Copy the new Authorization Code that is generated and paste it into the **Authorization code** parameter in the instance settings.
+
+    - *Reset Token*: Run the command `!microsoft-teams-auth-reset` in the Playground.
 
 ## Download Demisto Bot
 
@@ -1430,7 +1441,7 @@ Updates a message.
 | team | The team in which the specified message exists. | Optional |
 | channel | The channel in which the specified message exists. | Optional |
 | message | The new message content. | Optional |
-| team_member | The team member the message to be edited was sent to. | Optional |
+| team_member | The message recipient. Accepts the team member's email address or username. | Optional |
 | format_as_card | Whether or not an adaptive card is being updated. | Optional |
 
 ##### Context Output

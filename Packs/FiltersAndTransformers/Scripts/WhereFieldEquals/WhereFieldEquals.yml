@@ -34,6 +34,7 @@ tags:
 - general
 - entirelist
 timeout: '0'
+isllm: false
 type: javascript
 tests:
 - Email Address Enrichment - Generic v2.1 - Test

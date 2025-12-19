@@ -2,7 +2,7 @@
     "name": "Core",
     "description": "Automates incident response",
     "support": "xsoar",
-    "currentVersion": "3.4.27",
+    "currentVersion": "3.4.69",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -40,6 +40,7 @@
         "agentix",
         "cloud_posture",
         "xsiam",
-        "edr"
+        "edr",
+        "agentix_xsiam"
     ]
 }

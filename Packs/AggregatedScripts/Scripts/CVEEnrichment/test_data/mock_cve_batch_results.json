@@ -1,0 +1,23 @@
+{
+    "batch1_createNewIndicator": [
+      { "Type": 1, "EntryContext": {} },
+      { "Type": 1, "EntryContext": {} }
+    ],
+    "batch2_enrichIndicators": [
+      {
+        "Type": 1,
+        "Metadata": { "brand": "brand1" },
+        "EntryContext": {
+          "DBotScore(val.Indicator && val.Vendor)": [
+            { "Indicator": "CVE-2024-0001", "Vendor": "brand1", "Score": 2 }
+          ]
+        }
+      },
+      {
+        "Type": 1,
+        "Metadata": { "brand": "brand2" },
+        "EntryContext": {}
+      }
+    ]
+  }
+  

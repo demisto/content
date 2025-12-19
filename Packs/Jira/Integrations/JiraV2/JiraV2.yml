@@ -618,4 +618,8 @@ supportedModules:
 - X5
 - agentix
 - xsiam
+- edr
+- cloud
+- cloud_runtime_security
+- cloud_posture
 fromversion: 5.0.0

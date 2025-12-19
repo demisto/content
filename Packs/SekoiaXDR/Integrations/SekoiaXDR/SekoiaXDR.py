@@ -1393,32 +1393,42 @@ def get_kill_chain_command(client: Client, args: dict[str, Any]) -> CommandResul
 
 def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
-    method, url_suffix, params, data = (
-        args["method"],
-        args["url_sufix"],
-        args.get("parameters", {}),
-        args.get("data", ""),
-    )
+    method = args["method"]
+    url_suffix = args["url_suffix"]
+    params = args.get("parameters", {})
+    data_arg = args.get("data", "")
 
-    if data:
+    # Parse data if provided
+    data = None
+    if data_arg:
         try:
-            data = json.loads(data)
+            # Replace single quotes with double quotes to ensure valid JSON format
+            data = json.loads(data_arg.replace("'", '"'))
         except json.JSONDecodeError as e:
             raise DemistoException(f"Data argument is not a valid JSON: {e}")
-    else:
-        data = None
 
-    request = client.http_request(method=method, params=params, url_suffix=url_suffix, data=data)
-    readable_output = tableToMarkdown(
-        f"The HTTP {method} request with params {params} returned the following information:",
-        request["items"] if request["items"] else request,
-    )
+    # Make HTTP request with client
+    http_response = client.http_request(method=method, params=params, url_suffix=url_suffix, data=data)
+
+    # Extract response items if available
+    response = http_response.get("items", http_response)
+
+    # Build output text based on what parameters were provided
+    output_parts = [f"### HTTP {method} request to {url_suffix}"]
+    if params:
+        output_parts.append(f"with params {params}")
+    if data:
+        output_parts.append(f"with data {data}")
+    output_parts.append("returned:")
+    output_text = " ".join(output_parts)
+
+    readable_output = tableToMarkdown(output_text, response)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="SekoiaXDR.http_request",
         outputs_key_field="uuid",
-        outputs=request,
+        outputs=response,
     )
 
 
@@ -1434,7 +1444,7 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    # Check a JWT token’s validity
+    # Check a JWT token's validity
     # https://docs.sekoia.io/develop/rest_api/identity_and_authentication/#tag/User-Authentication/operation/get_validate_resource
 
     try:

@@ -2476,7 +2476,7 @@ script:
       description: A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not used by the targetProduct security tool.
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
-      description: Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of the submitting client.
+      description: Stamped by the system when the indicator is ingested. The Entra ID tenant ID of the submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Values are 0 – 100, with 100 being the highest.
@@ -2663,7 +2663,7 @@ script:
       description: A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not used by the targetProduct security tool.
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
-      description: Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of the submitting client.
+      description: Stamped by the system when the indicator is ingested. The Entra ID tenant ID of the submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest.
@@ -2928,7 +2928,7 @@ script:
       description: A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not used by the targetProduct security tool.
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
-      description: Stamped by the system when the indicator is ingested. The Azure Active Directory tenant id of submitting client.
+      description: Stamped by the system when the indicator is ingested. The Entra ID tenant id of submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest.
@@ -3191,7 +3191,7 @@ script:
       description: A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not used by the targetProduct security tool.
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
-      description: Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of the submitting client.
+      description: Stamped by the system when the indicator is ingested. The Entra ID tenant ID of the submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest.
@@ -3371,7 +3371,7 @@ script:
       description: A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not used by the targetProduct security tool.
       type: String
     - contextPath: MicrosoftATP.Indicators.azureTenantId
-      description: Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of the submitting client.
+      description: Stamped by the system when the indicator is ingested. The Entra ID tenant ID of the submitting client.
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest.

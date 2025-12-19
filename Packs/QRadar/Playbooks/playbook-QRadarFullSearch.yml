@@ -197,7 +197,7 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     evidencedata:
-      customfields: { }
+      customfields: {}
       description:
         simple: Qradar Full Search Results.
   "5":
@@ -278,8 +278,7 @@ tasks:
       id: 58fd7e65-aa1d-4619-86e2-01b38d4974c9
       version: -1
       name: Is QRadar enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       type: condition
       iscommand: false
       brand: ""
@@ -462,3 +461,4 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+- xsiam

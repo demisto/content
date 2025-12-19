@@ -4188,7 +4188,7 @@ script:
     - contextPath: SLS.Logging.GlobalProtect.VendorName
       description: The vendor that produced the data.
     description: Searches the GlobalProtect VPN log table.
-  dockerimage: demisto/python_pancloud_v2:1.0.0.4746545
+  dockerimage: demisto/python_pancloud_v2:1.0.0.5213618
   isfetch: true
   runonce: false
   script: ''

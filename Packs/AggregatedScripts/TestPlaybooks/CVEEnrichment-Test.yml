@@ -1,0 +1,1612 @@
+id: CVEEnrichment-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: CVEEnrichment-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 25c5d848-692f-47be-8327-a5a5cabb4ac0
+    type: start
+    task:
+      id: 25c5d848-692f-47be-8327-a5a5cabb4ac0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8e0d6aae-2253-4ef9-8eeb-a9d6d65d13b8
+    type: regular
+    task:
+      id: 8e0d6aae-2253-4ef9-8eeb-a9d6d65d13b8
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section. Limited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 90601ee3-d6ad-4691-8261-03eff8275847
+    type: regular
+    task:
+      id: 90601ee3-d6ad-4691-8261-03eff8275847
+      version: -1
+      name: Run cve enrichment script
+      description: This script collects CVE reputation data from multiple integrations
+        and returns a "CVEEnrichment" object with consolidated information in the
+        context output.
+      scriptName: cve-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      cve_list:
+        simple: CVE-2021-44228
+      external_enrichment:
+        simple: "false"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7339f309-4674-4aec-893a-2078a6332509
+    type: title
+    task:
+      id: 7339f309-4674-4aec-893a-2078a6332509
+      version: -1
+      name: Case 2 - External Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5d06aae4-487a-4a41-8042-29495ad7c0ae
+    type: title
+    task:
+      id: 5d06aae4-487a-4a41-8042-29495ad7c0ae
+      version: -1
+      name: Case 1 - Base
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0d54ba81-b99b-45c4-82e0-bb89986b2937
+    type: condition
+    task:
+      id: 0d54ba81-b99b-45c4-82e0-bb89986b2937
+      version: -1
+      name: Main Keys Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CVEEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: CVE-2021-44228
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: ab74c35b-9c32-4d4b-8d56-1f9ceba3e81f
+    type: condition
+    task:
+      id: ab74c35b-9c32-4d4b-8d56-1f9ceba3e81f
+      version: -1
+      name: No additional fields
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: CVEEnrichment.Results.AdditionalFields
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 1de63d4f-96c4-42d4-8e8f-bf494b6ea8f8
+    type: title
+    task:
+      id: 1de63d4f-96c4-42d4-8e8f-bf494b6ea8f8
+      version: -1
+      name: Case 3 - External Enrichment + Additional Fields
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 9ac7815a-e12e-4546-8b01-20cbf90a9640
+    type: title
+    task:
+      id: 9ac7815a-e12e-4546-8b01-20cbf90a9640
+      version: -1
+      name: Case 4 - Multiple Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "83"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: be3aad0f-f406-4809-8ade-4edb513b0a2d
+    type: regular
+    task:
+      id: be3aad0f-f406-4809-8ade-4edb513b0a2d
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section.\nLimited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 8f30421c-33e7-48c0-8e0c-fe20d7710b93
+    type: regular
+    task:
+      id: 8f30421c-33e7-48c0-8e0c-fe20d7710b93
+      version: -1
+      name: Run cve enrichment script
+      description: This script gathers CVE reputation data from multiple integrations
+        and returns a "CVEEnrichment" object with consolidated information in the
+        context output.
+      scriptName: cve-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "63"
+      - "65"
+      - "73"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      cve_list:
+        simple: CVE-2021-44228
+      external_enrichment:
+        simple: "true"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 65d83b73-5287-436d-82df-439b2fa85278
+    type: condition
+    task:
+      id: 65d83b73-5287-436d-82df-439b2fa85278
+      version: -1
+      name: Palo Alto Networks Threat Vault v2 Indicator Exists
+      description: Verify that the VirusTotal indicator from TIM exists
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CVEEnrichment.Results.Brand
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: CVEEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Palo Alto Networks Threat Vault v2
+            iscontext: true
+          right:
+            value:
+              simple: Palo Alto Networks Threat Vault v2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 7dc7acf0-a65f-416f-82c0-b2973755d454
+    type: condition
+    task:
+      id: 7dc7acf0-a65f-416f-82c0-b2973755d454
+      version: -1
+      name: No additional fields
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: CVEEnrichment.Results.AdditionalFields
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: cfc92a20-3d80-40e3-8e67-8c0a29ba7dac
+    type: regular
+    task:
+      id: cfc92a20-3d80-40e3-8e67-8c0a29ba7dac
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section. Limited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 4d0e87ba-96fe-41a6-80b4-192a352e171d
+    type: regular
+    task:
+      id: 4d0e87ba-96fe-41a6-80b4-192a352e171d
+      version: -1
+      name: Run cve enrichment script
+      description: This script gathers CVE reputation data from multiple integrations
+        and returns a "CVEEnrichment" object with consolidated information to the
+        context output.
+      scriptName: cve-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "68"
+      - "70"
+      - "74"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      cve_list:
+        simple: CVE-2021-44228
+      external_enrichment:
+        simple: "true"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: cf2c85ae-b2a4-41a0-8927-1da6c265ed64
+    type: condition
+    task:
+      id: cf2c85ae-b2a4-41a0-8927-1da6c265ed64
+      version: -1
+      name: Palo Alto Networks Threat Vault v2 Indicator Exists
+      description: Verify that the VirusTotal indicator from TIM exists.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CVEEnrichment.Results.Brand
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: CVEEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Palo Alto Networks Threat Vault v2
+            iscontext: true
+          right:
+            value:
+              simple: Palo Alto Networks Threat Vault v2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: e8435589-cefc-4764-8e9c-13e983be21c6
+    type: condition
+    task:
+      id: e8435589-cefc-4764-8e9c-13e983be21c6
+      version: -1
+      name: Additional Fields Exists
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CVEEnrichment.Results.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: e3563eeb-1a61-4c3e-8444-7d790cf2fa29
+    type: condition
+    task:
+      id: e3563eeb-1a61-4c3e-8444-7d790cf2fa29
+      version: -1
+      name: Main Keys Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CVEEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: CVE-2021-44228
+      - - operator: isExists
+          left:
+            value:
+              simple: CVEEnrichment.Status
+            iscontext: true
+      - - operator: stringHasLength
+          left:
+            value:
+              simple: CVEEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 11742d53-04f1-4b5e-8544-c24ece46b532
+    type: condition
+    task:
+      id: 11742d53-04f1-4b5e-8544-c24ece46b532
+      version: -1
+      name: Main Keys Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CVEEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: CVE-2021-44228
+      - - operator: isExists
+          left:
+            value:
+              simple: CVEEnrichment.Status
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 929b0d64-4cfb-40a2-867e-75f666294d65
+    type: title
+    task:
+      id: 929b0d64-4cfb-40a2-867e-75f666294d65
+      version: -1
+      name: Case 1 - Bad Input
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 8c637f00-7413-4cea-8e86-9bde97d9ed72
+    type: regular
+    task:
+      id: 8c637f00-7413-4cea-8e86-9bde97d9ed72
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section. Limited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 7a03effd-55fd-44f6-84d3-ac2801adbd2e
+    type: regular
+    task:
+      id: 7a03effd-55fd-44f6-84d3-ac2801adbd2e
+      version: -1
+      name: Run cve enrichment script
+      description: This script gathers CVE reputation data from multiple integrations
+        and returns a "CVEEnrichment" object with consolidated information in the
+        context output.
+      scriptName: cve-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#error#':
+      - "79"
+      '#none#':
+      - "78"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      cve_list:
+        simple: CVEs-2021-44228
+      external_enrichment:
+        simple: "true"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: a1d3fbc4-550c-4a2d-8e37-bb4cccb9da2d
+    type: condition
+    task:
+      id: a1d3fbc4-550c-4a2d-8e37-bb4cccb9da2d
+      version: -1
+      name: Failure
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "1"
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: e699652b-b00d-4bf2-8358-e2e59bd260b4
+    type: title
+    task:
+      id: e699652b-b00d-4bf2-8358-e2e59bd260b4
+      version: -1
+      name: Case 2 - Bad Brand
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 4555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 1cae5d5a-db0b-4311-8ebd-44c387d0a5b0
+    type: regular
+    task:
+      id: 1cae5d5a-db0b-4311-8ebd-44c387d0a5b0
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section. Limited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 4725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 469d243b-6606-4744-841e-dcc55892611b
+    type: regular
+    task:
+      id: 469d243b-6606-4744-841e-dcc55892611b
+      version: -1
+      name: Run cve enrichment script
+      description: This script gathers CVE reputation data from multiple integrations
+        and returns a "CVEEnrichment" object with consolidated information to the
+        context output.
+      scriptName: cve-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#error#':
+      - "82"
+      '#none#':
+      - "78"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      brands:
+        simple: asdasd
+      cve_list:
+        simple: CVE-2021-44228
+      external_enrichment:
+        simple: "true"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 4910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 08fcb6fb-51b9-49be-8088-3e833cb6ce5b
+    type: title
+    task:
+      id: 08fcb6fb-51b9-49be-8088-3e833cb6ce5b
+      version: -1
+      name: Pass
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5102.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 5fed7163-2af0-4430-8ff9-ade6913def96
+    type: regular
+    task:
+      id: 5fed7163-2af0-4430-8ff9-ade6913def96
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section. Limited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 095eb069-69ec-4a71-890d-b944817b6e65
+    type: regular
+    task:
+      id: 095eb069-69ec-4a71-890d-b944817b6e65
+      version: -1
+      name: Run cve enrichment script
+      description: This script gathers CVE reputation data from multiple integrations
+        and returns a "CVEEnrichment" object with consolidated information to the
+        context output.
+      scriptName: cve-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      cve_list:
+        simple: CVE-2021-44228,CVE-2025-59033
+      external_enrichment:
+        simple: "true"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 4d4fae4c-8166-413c-844c-a5eb0bc6f205
+    type: condition
+    task:
+      id: 4d4fae4c-8166-413c-844c-a5eb0bc6f205
+      version: -1
+      name: Both exists
+      description: Verify that the VirusTotal indicator from TIM exists.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: CVEEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: CVE-2025-59033
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: CVEEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: CVE-2021-44228
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 2fc29eef-b380-4e51-8dad-924965b8fa83
+    type: title
+    task:
+      id: 2fc29eef-b380-4e51-8dad-924965b8fa83
+      version: -1
+      name: Case 5 - One Invalid One Valid
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "87"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 9911d07f-39d5-4b73-84f6-0d1d46c52c93
+    type: regular
+    task:
+      id: 9911d07f-39d5-4b73-84f6-0d1d46c52c93
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section. Limited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 4d5479a5-af89-4bbf-b7d2-aa534c80a78c
+    type: regular
+    task:
+      id: 4d5479a5-af89-4bbf-b7d2-aa534c80a78c
+      version: -1
+      name: Run cve enrichment script
+      description: This script gathers CVE reputation data from multiple integrations
+        and returns a "CVEEnrichment" object with consolidated information to the
+        context output.
+      scriptName: cve-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "91"
+      - "92"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      cve_list:
+        simple: CVE-2021-44228,test
+      external_enrichment:
+        simple: "true"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 05fc61ce-e8cb-427d-920c-b4e7adf61e2b
+    type: condition
+    task:
+      id: 05fc61ce-e8cb-427d-920c-b4e7adf61e2b
+      version: -1
+      name: Valid Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "93"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CVEEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: CVEEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CVE-2021-44228
+                accessor: Value
+            iscontext: true
+          right:
+            value:
+              simple: CVE-2021-44228
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: CVEEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: CVEEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CVE-2021-44228
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: Error
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: e685e70c-41e3-497f-8232-682246126669
+    type: condition
+    task:
+      id: e685e70c-41e3-497f-8232-682246126669
+      version: -1
+      name: Invalid  Entry Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "93"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CVEEnrichment.Value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: CVEEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test
+            iscontext: true
+          right:
+            value:
+              simple: test
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CVEEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: CVEEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: Error
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CVEEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: CVEEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Invalid
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: c24c614c-31b6-40fb-95c2-6343bc5fe367
+    type: title
+    task:
+      id: c24c614c-31b6-40fb-95c2-6343bc5fe367
+      version: -1
+      name: Sad Flows
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5120,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: 110f76de-5574-4854-853e-8675a01d8eb0
+dirtyInputs: true
+adopted: true

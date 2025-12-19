@@ -23,12 +23,12 @@ inputSections:
 inputs:
 - description: Serial Number of the firewall to check upgrade readiness for.
   key: targetDevice
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: The target PAN-OS version to check upgrade readiness for.
   key: targetVersion
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: PAN-OS - Firewall Upgrade Readiness Checks
@@ -256,9 +256,9 @@ tasks:
       id: c78998e4-9cbc-47be-a228-06c68a32ae0f
       iscommand: false
       name: Set 'Success' - NTP Sync Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: c78998e4-9cbc-47be-a228-06c68a32ae0f
     timertriggers: []
     type: regular
@@ -298,9 +298,9 @@ tasks:
       id: 8078cb85-5210-42ba-9230-91ed4f4dacf0
       iscommand: false
       name: Set 'Failed' - NTP Sync Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: 8078cb85-5210-42ba-9230-91ed4f4dacf0
     timertriggers: []
     type: regular
@@ -653,9 +653,9 @@ tasks:
       id: e7f69949-bfe5-465e-afcb-b33d62cb3a3d
       iscommand: false
       name: Set 'Failed' - Active Support Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: e7f69949-bfe5-465e-afcb-b33d62cb3a3d
     timertriggers: []
     type: regular
@@ -695,9 +695,9 @@ tasks:
       id: dc4acc5d-2c37-4308-8477-b60970241971
       iscommand: false
       name: Set 'Success' - Active Support Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: dc4acc5d-2c37-4308-8477-b60970241971
     timertriggers: []
     type: regular
@@ -830,8 +830,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determine if App / AV / Threat content is compatible between HA
-        members for proper failover.
+      description: Determine if App / AV / Threat content is compatible between HA members for proper failover.
       id: 4ffbdf8d-2661-4433-a9f0-0df710942e4c
       iscommand: false
       name: App/AV/Threat Compatible?
@@ -876,9 +875,9 @@ tasks:
       id: 903127fa-916f-4e85-953c-a301939b8ba6
       iscommand: false
       name: Set 'Failed' - App/Av/Threat Compat Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: 903127fa-916f-4e85-953c-a301939b8ba6
     timertriggers: []
     type: regular
@@ -918,9 +917,9 @@ tasks:
       id: b75e5697-0ba6-4265-bf40-07ffd5b5b6be
       iscommand: false
       name: Set 'Success' - App/Av/Threat Compat Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: b75e5697-0ba6-4265-bf40-07ffd5b5b6be
     timertriggers: []
     type: regular
@@ -960,8 +959,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check that the active GlobalProtect client is compatible between
-        HA members for proper failover.
+      description: Check that the active GlobalProtect client is compatible between HA members for proper failover.
       id: c9a360e9-fd23-402c-9d9d-ad52f884b269
       iscommand: false
       name: GP Client Compatible?
@@ -1006,9 +1004,9 @@ tasks:
       id: 7e99fb1d-95e9-44a2-aeae-ac714b2c5da8
       iscommand: false
       name: Set 'Failed' - GP Client Compat Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: 7e99fb1d-95e9-44a2-aeae-ac714b2c5da8
     timertriggers: []
     type: regular
@@ -1048,9 +1046,9 @@ tasks:
       id: 0f391b06-2f70-4973-9202-f48f75a649a3
       iscommand: false
       name: Set 'Success' - GP Client Compat Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: 0f391b06-2f70-4973-9202-f48f75a649a3
     timertriggers: []
     type: regular
@@ -1135,9 +1133,9 @@ tasks:
       id: 47776e55-e696-4766-b94a-74f66feabbc0
       iscommand: false
       name: Set 'Failed' - Running Config Sync Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: 47776e55-e696-4766-b94a-74f66feabbc0
     timertriggers: []
     type: regular
@@ -1177,9 +1175,9 @@ tasks:
       id: be5643d4-9f82-4590-88b7-735a12992010
       iscommand: false
       name: Set 'Success' - Running Config Sync Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: be5643d4-9f82-4590-88b7-735a12992010
     timertriggers: []
     type: regular
@@ -1409,9 +1407,9 @@ tasks:
       id: d30fa55a-dff6-46f5-a0c0-48ae06d895b9
       iscommand: false
       name: Set 'Failed' - Pending Changes Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: d30fa55a-dff6-46f5-a0c0-48ae06d895b9
     timertriggers: []
     type: regular
@@ -1451,9 +1449,9 @@ tasks:
       id: 38294e5f-d36f-4972-978b-4223a24ab83e
       iscommand: false
       name: Set 'Success' - Pending Changes Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: 38294e5f-d36f-4972-978b-4223a24ab83e
     timertriggers: []
     type: regular
@@ -1484,15 +1482,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This script is a wrapper for the 'pano-os-platform-get-available-software'
-        command, adding options to return only images newer than is currently installed
-        to minimize amount of context data generated.
+      description: This script is a wrapper for the 'pano-os-platform-get-available-software' command, adding options to return only images newer than is currently installed to minimize amount of context data generated.
       id: 902ddd93-8b4e-4dbc-8613-7a8387bef40d
       iscommand: false
       name: Get Available Software
-      script: PAN-OS-GetAvailablePANOSSoftware
       type: regular
       version: -1
+      scriptName: PAN-OS-GetAvailablePANOSSoftware
     taskid: 902ddd93-8b4e-4dbc-8613-7a8387bef40d
     timertriggers: []
     type: regular
@@ -1511,7 +1507,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "125"
+      - '127'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1553,19 +1549,13 @@ tasks:
       id: bf70f2ce-b680-4f1b-8f6d-849e25fe1c60
       iscommand: false
       name: Set Base Software Version
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: bf70f2ce-b680-4f1b-8f6d-849e25fe1c60
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": -1122,
-          "y": 507
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 510\n  }\n}"
   "46":
     continueonerrortype: ""
     id: "46"
@@ -1634,19 +1624,13 @@ tasks:
       id: c924878f-2ab2-4726-91e9-d032c4066020
       iscommand: false
       name: Calculate Storage for Needed Downloads
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: c924878f-2ab2-4726-91e9-d032c4066020
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": -1122,
-          "y": 1087
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 1407\n  }\n}"
   "64":
     conditions:
     - condition:
@@ -1687,8 +1671,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check that the system disk has enough free space to download the
-        required image(s).
+      description: Check that the system disk has enough free space to download the required image(s).
       id: 84860c44-d332-4d03-aa9d-34206b8f93b0
       iscommand: false
       name: Is Sufficient Disk Space Free?
@@ -1697,13 +1680,7 @@ tasks:
     taskid: 84860c44-d332-4d03-aa9d-34206b8f93b0
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": -1122,
-          "y": 1467
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 1767\n  }\n}"
   "65":
     continueonerrortype: ""
     id: "65"
@@ -1733,19 +1710,13 @@ tasks:
       id: bb8bf5d8-a296-40eb-ae1d-c85868714a10
       iscommand: false
       name: Set 'Failed' - Image Disk Space Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: bb8bf5d8-a296-40eb-ae1d-c85868714a10
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": -682,
-          "y": 1660
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -682,\n    \"y\": 1960\n  }\n}"
   "66":
     continueonerrortype: ""
     id: "66"
@@ -1775,19 +1746,13 @@ tasks:
       id: b4441c5d-57d3-41c3-8118-88b28243d1ef
       iscommand: false
       name: Set 'Success' - Image Disk Space Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: b4441c5d-57d3-41c3-8118-88b28243d1ef
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": -1122,
-          "y": 1660
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 1960\n  }\n}"
   "69":
     conditions:
     - condition:
@@ -1840,8 +1805,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if software image(s) need to be downloaded or if they are
-        already present on the system, meaning no additional disk space is needed.
+      description: Check if software image(s) need to be downloaded or if they are already present on the system, meaning no additional disk space is needed.
       id: e2b86aaf-febe-44cf-8b7a-d08ada8c0afc
       iscommand: false
       name: Does Software Need To Be Downloaded?
@@ -1850,13 +1814,7 @@ tasks:
     taskid: e2b86aaf-febe-44cf-8b7a-d08ada8c0afc
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": -1122,
-          "y": 897
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 1227\n  }\n}"
   "73":
     conditions:
     - condition:
@@ -1929,9 +1887,9 @@ tasks:
       id: c59c7494-a890-4086-8dd3-e7a3ae6f7363
       iscommand: false
       name: Set 'Success' - Content Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: c59c7494-a890-4086-8dd3-e7a3ae6f7363
     timertriggers: []
     type: regular
@@ -1971,9 +1929,9 @@ tasks:
       id: 381ed720-70e5-41e5-b2a4-838513bc071f
       iscommand: false
       name: Set 'Failed' - Content Check Result
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: 381ed720-70e5-41e5-b2a4-838513bc071f
     timertriggers: []
     type: regular
@@ -2089,8 +2047,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if the target device is already running the desired PAN-OS
-        version.  If so, no upgrade is needed.
+      description: Check if the target device is already running the desired PAN-OS version.  If so, no upgrade is needed.
       id: 8ba7d2dc-7c75-4e12-8062-8f627b826e4f
       iscommand: false
       name: Is Target Device Already Running Requested Version?
@@ -2119,20 +2076,18 @@ tasks:
     quietmode: 0
     scriptarguments:
       value:
-        simple: The target version is already installed on your firewall. Skipping
-          readiness checks.
+        simple: The target version is already installed on your firewall. Skipping readiness checks.
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Print message to indicate that target version is already installed
-        on the connected firewall.
+      description: Print message to indicate that the target version is already installed on the connected firewall.
       id: 6dbd4745-ebfd-417e-b500-a9a589adb211
       iscommand: false
       name: Firewall is already on target version
-      script: Print
       type: regular
       version: -1
+      scriptName: Print
     taskid: 6dbd4745-ebfd-417e-b500-a9a589adb211
     timertriggers: []
     type: regular
@@ -2159,7 +2114,7 @@ tasks:
         simple: M
       target:
         complex:
-          root: inputs
+          root: inputs.targetDevice
           transformers:
           - args:
               condition:
@@ -2172,7 +2127,7 @@ tasks:
               lhs:
                 iscontext: true
                 value:
-                  simple: incident.netopspanosintegrationtype
+                  simple: IntegrationInstanceType
               lhsB: {}
               options: {}
               optionsB: {}
@@ -2189,24 +2144,17 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This script fetches disk space info from the target device and
-        returns all information or a subset as specified in command arguments.
-      id: 7b6c3775-28ad-41cc-817d-4bb372f99537
+      description: This script fetches disk space info from the target device and returns all information or a subset as specified in command arguments.
+      id: b2399944-2bf8-4375-bb6c-55dc9332de60
       iscommand: false
       name: Get Disk Space Info
-      script: PAN-OS-GetDeviceDiskSpace
       type: regular
       version: -1
-    taskid: 7b6c3775-28ad-41cc-817d-4bb372f99537
+      scriptName: PAN-OS-GetDeviceDiskSpace
+    taskid: b2399944-2bf8-4375-bb6c-55dc9332de60
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": -1122,
-          "y": 1277
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 1595\n  }\n}"
   "106":
     continueonerrortype: ""
     id: "106"
@@ -2254,8 +2202,7 @@ tasks:
       headers:
         simple: CheckName, CheckResult
       title:
-        simple: Upgrade Readiness Check Result for Device ${PANOS.ShowSystemInfo.Summary.hostid}
-          to Version ${inputs.targetVersion}.
+        simple: Upgrade Readiness Check Result for Device ${PANOS.ShowSystemInfo.Summary.hostid} to Version ${inputs.targetVersion}.
       value:
         simple: ${ReadinessChecks}
     separatecontext: false
@@ -2266,9 +2213,9 @@ tasks:
       id: ce3c8a38-7dc3-442a-94e3-f5ad2d93a4f8
       iscommand: false
       name: Generate Readiness Checks Result Table
-      script: JsonToTable
       type: regular
       version: -1
+      scriptName: JsonToTable
     taskid: ce3c8a38-7dc3-442a-94e3-f5ad2d93a4f8
     timertriggers: []
     type: regular
@@ -2323,8 +2270,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks for the latest available dynamic update versions and returns
-        a list of latest available / currently installed content.
+      description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
       id: bb507505-9734-444e-8acf-a267cde6ef29
       iscommand: true
       name: Get Dynamic Update Status
@@ -2383,9 +2329,9 @@ tasks:
       id: e6150739-eb12-4bcb-9c28-32798db80268
       iscommand: false
       name: Identify Connected Integration Instance Type (Panorama or Firewall)
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: e6150739-eb12-4bcb-9c28-32798db80268
     timertriggers: []
     type: regular
@@ -2491,8 +2437,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Conditional task to check if active Panorama integration instance
-        is available.
+      description: Conditional task to check if an active Panorama integration instance is available.
       id: fabe203f-5b0d-4e0f-ab5e-7c8bbc8102a0
       iscommand: false
       name: Is the Panorama integration enabled?
@@ -2530,9 +2475,9 @@ tasks:
       id: 473a35b6-ed51-4eed-8c68-b4a2144e536c
       iscommand: false
       name: No active Panorama integration instance found
-      script: PrintErrorEntry
       type: regular
       version: -1
+      scriptName: PrintErrorEntry
     taskid: 473a35b6-ed51-4eed-8c68-b4a2144e536c
     timertriggers: []
     type: regular
@@ -2607,8 +2552,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Conditional task to check if the Integration Instance type being
-        used is Panorama then was a target device id provided.
+      description: Checks if the Integration Instance type is Panorama and verifies that a target device ID is provided.
       id: 0e8a0870-388e-40fa-96d1-894313cf1303
       iscommand: false
       name: If IntegrationInstanceType is Panorama, is targetDevice provided?
@@ -2642,14 +2586,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prints an error entry for Target Device ID is required for Panorama
-        Instance.
+      description: Prints an error indicating that a Target Device ID is required for a Panorama instance.
       id: 2eaa27eb-9c2d-45ef-82b2-cab82fda9f45
       iscommand: false
       name: Target Device ID is required for Panorama Instance
-      script: PrintErrorEntry
       type: regular
       version: -1
+      scriptName: PrintErrorEntry
     taskid: 2eaa27eb-9c2d-45ef-82b2-cab82fda9f45
     timertriggers: []
     type: regular
@@ -2712,13 +2655,7 @@ tasks:
     taskid: 33fc4326-92ef-4412-aceb-00ef8d207752
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": -1122,
-          "y": 660
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 1030\n  }\n}"
   "126":
     continueonerrortype: ""
     id: "126"
@@ -2732,8 +2669,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       message:
-        simple: The Target Version provided has an invalid base version. Please verify
-          and try again. Skipping Disk Space check.
+        simple: The Target Version provided has an invalid base version. Please verify and try again. Skipping Disk Space check.
     separatecontext: false
     skipunavailable: false
     task:
@@ -2742,19 +2678,82 @@ tasks:
       id: aa28cc06-6018-42d2-8db3-cce1494d6e1e
       iscommand: false
       name: Invalid Target Version
-      script: PrintErrorEntry
       type: regular
       version: -1
+      scriptName: PrintErrorEntry
     taskid: aa28cc06-6018-42d2-8db3-cce1494d6e1e
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": -1530,
-          "y": 897
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -1530,\n    \"y\": 1227\n  }\n}"
+  '127':
+    id: '127'
+    taskid: d31b8cc2-1a3e-48c5-90ca-9a8126dc95f8
+    type: condition
+    task:
+      id: d31b8cc2-1a3e-48c5-90ca-9a8126dc95f8
+      description: Conditional task to check if the calculated base version matches 12.1.0.
+      version: -1
+      name: Is Calculated Base Version 12.1.0?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '125'
+      yes:
+      - '128'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BaseImage
+            iscontext: true
+          right:
+            value:
+              simple: 12.1.0
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 670\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '128':
+    id: '128'
+    taskid: 25727b3d-1a2f-4c3d-b568-ee4c24f956e3
+    type: regular
+    task:
+      id: 25727b3d-1a2f-4c3d-b568-ee4c24f956e3
+      version: -1
+      name: Set Correct 12.1.x BaseImage
+      description: The published base image for PAN-OS 12.1.x is 12.1.2.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '125'
+    scriptarguments:
+      key:
+        simple: BaseImage
+      value:
+        simple: 12.1.2
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -1410,\n    \"y\": 850\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2798,5 +2797,18 @@ view: |-
 fromversion: 6.10.0
 supportedModules:
 - agentix
+- xsiam
+- cloud_posture
 marketplaces:
 - platform
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
+tests:
+- palo_alto_firewall_test_pb
+- palo_alto_panorama_test_pb
+- PAN-OS-panorama-topology-test-pb
+- PAN-OS URL Filtering enrichment - Test
+- PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
+- PAN-OS-firewall-topology-test-pb
+- PAN-OS Create Or Edit Rule Test

@@ -69,7 +69,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
+  required: false
   type: 15
   section: Collect
 - defaultvalue: Benign
@@ -2694,12 +2694,13 @@ script:
       name: submission_value
       required: true
     - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Whether the premium sandbox should be used for detonation.
+      defaultValue: 'true'
+      description: Deprecated, must be set to 'true'.
       name: premium_sandbox
       predefined:
       - 'false'
       - 'true'
+      deprecated: true
     - description: A comma-separated list of additional details for the indicator. This information is displayed in the Tag column of the ThreatStream UI.
       name: detail
     - default: true
@@ -6457,7 +6458,7 @@ script:
       description: JSON data of edits to be made {"is_public":false,"circles":[12866]}.
     name: threatstream-edit-classification
     description: Edit the values for observable that have been cloned.
-  dockerimage: demisto/py3-tools:1.0.0.4592568
+  dockerimage: demisto/py3-tools:1.0.0.5984007
   runonce: false
   script: '-'
   subtype: python3

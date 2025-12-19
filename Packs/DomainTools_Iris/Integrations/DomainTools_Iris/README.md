@@ -11,6 +11,7 @@ This integration was integrated and tested with version 1.0 of DomainTools Iris.
 | Young Domain Timeframe (within Days) |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
+| Domain Result Type | Result type of the domain command: Iris returns full investigate results; Verdict returns only the domain risk score | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 |  |  | False |
 |  |  | False |

@@ -14,6 +14,10 @@ The Unit 42 Threat Intelligence content pack includes integrations that allow yo
 - **Optionally create relationships** in your tenant based on returned associations
 - **Access comprehensive metadata** including first seen, last seen, and source information
 
+## Prerequisites
+
+- Cortex Threat Intelligence Management (TIM) license
+
 ## Integrations
 
 ### Unit 42 Intelligence
@@ -38,10 +42,6 @@ An enrichment integration that provides threat intelligence lookups for indicato
 ### Unit 42 Feed
 
 A read-only feed integration that continuously fetches indicators and threat objects (plus their relationships) from Unit 42 data sources. When relationship creation is enabled, relationships between ingested indicators and threat objects are created in your tenant based on the feed data.
-
-### Prerequisites
-
-- Cortex Threat Intelligence Management (TIM) license
 
 ### Setup
 
