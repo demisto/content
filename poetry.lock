@@ -751,14 +751,14 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.38.14"
+version = "1.38.15"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
 groups = ["dev"]
 files = [
-    {file = "demisto_sdk-1.38.14-py3-none-any.whl", hash = "sha256:0a5fd12369910bce2b9e5bfe82bc159ca543455c297dcc537093cb643771dbbf"},
-    {file = "demisto_sdk-1.38.14.tar.gz", hash = "sha256:188e8518321de6d9e842279de84c3847ff4a42df3b690d8a93c8940be104a999"},
+    {file = "demisto_sdk-1.38.15-py3-none-any.whl", hash = "sha256:a8c4a290274c59b49978c1d596d43f9fdfaa623a5042ef224e2493589ab8ee69"},
+    {file = "demisto_sdk-1.38.15.tar.gz", hash = "sha256:760db10febe5f3bb756c51d26961bd5a26cafd64aa79a60b8b78c24aa9d220c9"},
 ]
 
 [package.dependencies]
@@ -3008,6 +3008,30 @@ url = "https://pypi.org/simple"
 reference = "pypi-public"
 
 [[package]]
+name = "pytest-asyncio"
+version = "0.23.8"
+description = "Pytest support for asyncio"
+optional = false
+python-versions = ">=3.8"
+groups = ["dev"]
+files = [
+    {file = "pytest_asyncio-0.23.8-py3-none-any.whl", hash = "sha256:50265d892689a5faefb84df80819d1ecef566eb3549cf915dfb33569359d1ce2"},
+    {file = "pytest_asyncio-0.23.8.tar.gz", hash = "sha256:759b10b33a6dc61cce40a8bd5205e302978bbbcc00e279a8b61d9a6a3c82e4d3"},
+]
+
+[package.dependencies]
+pytest = ">=7.0.0,<9"
+
+[package.extras]
+docs = ["sphinx (>=5.3)", "sphinx-rtd-theme (>=1.0)"]
+testing = ["coverage (>=6.2)", "hypothesis (>=5.7.1)"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "pypi-public"
+
+[[package]]
 name = "pytest-freezegun"
 version = "0.4.2"
 description = "Wrap tests with fixtures in freeze_time"
@@ -4871,4 +4895,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10,<3.12"
-content-hash = "1af4e51a5abd874f0999a5ca993e05ed254474667c393b00eb836ef8a828a0db"
+content-hash = "c0e024cc6ba7d874761d64e6a221d1cc73ef96f6e5f241f5996f593ac90d2934"
