@@ -20,7 +20,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   defaultvalue: A++ - Reputation script
-  required: true
+  required: false
   section: Collect
   advanced: true
 - display: Create relationships
@@ -235,7 +235,7 @@ script:
       description: Enriched threat object association.
       type: Unknown
   - arguments:
-    - description: File hash to enrich (MD5, SHA1, or SHA256).
+    - description: File hash to enrich (SHA256).
       name: file
       required: true
       isArray: true
@@ -299,7 +299,7 @@ script:
     - contextPath: Unit42.File.EnrichedThreatObjectAssociation
       description: Enriched threat object association.
       type: Unknown
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.6204436
   runonce: false
   script: '-'
   subtype: python3
