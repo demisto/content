@@ -138,11 +138,15 @@ configuration:
   type: 8
   section: Collect Events
   required: false
+  hidden:
+  - xsoar
 - display: Index from which to fetch incidents (CSV)
   name: fetch_index_fetch_event
   type: 0
   section: Collect Events
   required: false
+  hidden:
+  - xsoar
 - display: Query String
   name: fetch_query_fetch_event
   type: 0
@@ -152,6 +156,8 @@ configuration:
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect Events
   required: false
+  hidden:
+  - xsoar
 - display: Index time field (for sorting sort and limiting data)
   name: fetch_time_field_fetch_event
   type: 0
@@ -161,6 +167,8 @@ configuration:
     The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
+  hidden:
+  - xsoar
 - display: Raw Query
   name: raw_query_fetch_event
   type: 12
@@ -171,6 +179,8 @@ configuration:
   section: Collect Events
   advanced: true
   required: false
+  hidden:
+  - xsoar
 - display: Time field type
   defaultvalue: 'Simple-Date'
   name: time_method_fetch_event
@@ -182,6 +192,8 @@ configuration:
   section: Collect Events
   advanced: true
   required: false
+  hidden:
+  - xsoar
 - defaultvalue: 'true'
   display: Map JSON fields into labels
   name: map_labels_fetch_event
@@ -189,12 +201,16 @@ configuration:
   section: Collect Events
   advanced: true
   required: false
+  hidden:
+  - xsoar
 - defaultvalue: '50'
   display: The maximum number of results to return per fetch
   name: fetch_size_fetch_event
   type: 0
   section: Collect Events
   required: false
+  hidden:
+  - xsoar
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
 display: Elasticsearch v2
 name: Elasticsearch v2
