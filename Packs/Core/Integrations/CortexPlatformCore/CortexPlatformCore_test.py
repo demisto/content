@@ -6099,3 +6099,602 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
         assert "existing_code_block" in headers
         assert "suggested_code_block" in headers
         assert "playbook_suggestions" in headers
+
+
+class TestMapEndpointFormat:
+    """Test cases for map_endpoint_format function"""
+
+    def test_map_endpoint_format_full_data(self):
+        """
+        Given:
+            - A list of raw endpoint data with all fields
+        When:
+            - Calling map_endpoint_format
+        Then:
+            - Returns properly mapped endpoint data with friendly field names and values
+        """
+        from CortexPlatformCore import map_endpoint_format
+
+        raw_endpoint_list = [
+            {
+                "AGENT_ID": "endpoint-123",
+                "HOST_NAME": "test-host-1",
+                "AGENT_TYPE": "AGENT_TYPE_SERVER",
+                "AGENT_STATUS": "STATUS_010_CONNECTED",
+                "OS_TYPE": "AGENT_OS_WINDOWS",
+                "OPERATIONAL_STATUS": "PROTECTED",  # Changed from OPERATIONAL_STATUS_PROTECTED to PROTECTED
+                "ACTIVE_POLICY": "PREVENTION_POLICY_ENABLED",
+                "SUPPORTED_VERSION": False,
+                "AGENT_VERSION": "7.8.0",
+                "DOMAIN": "corp.local",
+            }
+        ]
+
+        result = map_endpoint_format(raw_endpoint_list)
+
+        expected = [
+            {
+                "endpoint_id": "endpoint-123",
+                "endpoint_name": "test-host-1",
+                "endpoint_type": "server",  # Maps from AGENT_TYPE_SERVER
+                "endpoint_status": "connected",  # Maps from STATUS_010_CONNECTED
+                "platform": "windows",  # Maps from AGENT_OS_WINDOWS
+                "operational_status": "protected",  # Maps from PROTECTED
+                "assigned_prevention_policy": "PREVENTION_POLICY_ENABLED",  # No mapping found, uses original
+                "agent_eol": False,
+                "agent_version": "7.8.0",
+                "domain": "corp.local",
+            }
+        ]
+
+        assert result == expected
+
+    def test_map_endpoint_format_missing_fields(self):
+        """
+        Given:
+            - A list of raw endpoint data with some missing fields
+        When:
+            - Calling map_endpoint_format
+        Then:
+            - Returns mapped data only for existing fields
+        """
+        from CortexPlatformCore import map_endpoint_format
+
+        raw_endpoint_list = [
+            {
+                "AGENT_ID": "endpoint-456",
+                "HOST_NAME": "test-host-2",  # Changed from AGENT_HOSTNAME
+                "UNKNOWN_FIELD": "ignored_value",
+            }
+        ]
+
+        result = map_endpoint_format(raw_endpoint_list)
+
+        expected = [{"endpoint_id": "endpoint-456", "endpoint_name": "test-host-2"}]
+
+        assert result == expected
+
+    def test_map_endpoint_format_unmapped_values(self):
+        """
+        Given:
+            - Raw endpoint data with values not in mapping dictionaries
+        When:
+            - Calling map_endpoint_format
+        Then:
+            - Returns original values for unmapped items
+        """
+        from CortexPlatformCore import map_endpoint_format
+
+        raw_endpoint_list = [{"AGENT_ID": "endpoint-789", "AGENT_TYPE": "UNKNOWN_TYPE", "AGENT_STATUS": "UNKNOWN_STATUS"}]
+
+        result = map_endpoint_format(raw_endpoint_list)
+
+        expected = [{"endpoint_id": "endpoint-789", "endpoint_type": "UNKNOWN_TYPE", "endpoint_status": "UNKNOWN_STATUS"}]
+
+        assert result == expected
+
+    def test_map_endpoint_format_empty_list(self):
+        """
+        Given:
+            - An empty endpoint list
+        When:
+            - Calling map_endpoint_format
+        Then:
+            - Returns empty list
+        """
+        from CortexPlatformCore import map_endpoint_format
+
+        result = map_endpoint_format([])
+        assert result == []
+
+    def test_map_endpoint_format_multiple_endpoints(self):
+        """
+        Given:
+            - Multiple raw endpoints
+        When:
+            - Calling map_endpoint_format
+        Then:
+            - Returns mapped data for all endpoints
+        """
+        from CortexPlatformCore import map_endpoint_format
+
+        raw_endpoint_list = [
+            {
+                "AGENT_ID": "endpoint-1",
+                "HOST_NAME": "host-1",  # Changed from AGENT_HOSTNAME
+                "SUPPORTED_VERSION": True,  # Changed from AGENT_EOL
+            },
+            {
+                "AGENT_ID": "endpoint-2",
+                "HOST_NAME": "host-2",  # Changed from AGENT_HOSTNAME
+                "SUPPORTED_VERSION": False,  # Changed from AGENT_EOL
+            },
+        ]
+
+        result = map_endpoint_format(raw_endpoint_list)
+
+        expected = [
+            {
+                "endpoint_id": "endpoint-1",
+                "endpoint_name": "host-1",
+                "agent_eol": True,
+            },
+            {
+                "endpoint_id": "endpoint-2",
+                "endpoint_name": "host-2",
+                "agent_eol": False,
+            },
+        ]
+
+        assert result == expected
+
+
+def test_build_endpoint_filters_all_args(mocker):
+    """
+    Given:
+        - Arguments with all possible filter parameters populated.
+    When:
+        - Calling build_endpoint_filters with complete args.
+    Then:
+        - FilterBuilder is configured with all filters correctly applied.
+    """
+    from CortexPlatformCore import build_endpoint_filters
+
+    # Mock dependencies
+    mock_filter_builder = mocker.patch("CortexPlatformCore.FilterBuilder")
+    mock_filter_instance = mocker.Mock()
+    mock_filter_builder.return_value = mock_filter_instance
+    mock_filter_instance.to_dict.return_value = {"mock": "filter_dict"}
+
+    mock_arg_to_list = mocker.patch("CortexPlatformCore.argToList")
+    mock_arg_to_bool = mocker.patch("CortexPlatformCore.arg_to_bool_or_none")
+
+    # Configure mocks
+    mock_arg_to_list.side_effect = lambda x: [x] if x else []
+    mock_arg_to_bool.return_value = True
+
+    args = {
+        "operational_status": "protected",  # Changed from "Protected" to match ENDPOINT_OPERATIONAL_STATUS key
+        "endpoint_type": "server",  # Changed from "Server" to match ENDPOINT_TYPE key
+        "endpoint_status": "connected",  # Changed from "Connected" to match ENDPOINT_STATUS key
+        "platform": "windows",  # Changed from "Windows" to match ENDPOINT_PLATFORM key
+        "assigned_prevention_policy": "Windows Default",  # Changed to match ASSIGNED_PREVENTION_POLICY key
+        "agent_eol": "false",
+        "endpoint_name": "test-endpoint",
+        "operating_system": "Windows 10",
+        "agent_version": "7.8.0",
+        "os_version": "10.0.19041",
+        "ip_address": "192.168.1.100",
+        "domain": "corp.local",
+        "tags": "production",
+        "endpoint_id": "endpoint-123",
+        "cloud_provider": "AWS",
+        "cloud_region": "us-east-1",
+    }
+
+    result = build_endpoint_filters(args)
+
+    # Verify FilterBuilder was instantiated and configured
+    mock_filter_builder.assert_called_once()
+    assert mock_filter_instance.add_field.call_count == 16
+    mock_filter_instance.to_dict.assert_called_once()
+    assert result == {"mock": "filter_dict"}
+
+
+def test_build_endpoint_filters_minimal_args(mocker):
+    """
+    Given:
+        - Empty arguments dictionary.
+    When:
+        - Calling build_endpoint_filters with no filter parameters.
+    Then:
+        - FilterBuilder is configured with empty/None values for all fields.
+    """
+    from CortexPlatformCore import build_endpoint_filters
+
+    # Mock dependencies
+    mock_filter_builder = mocker.patch("CortexPlatformCore.FilterBuilder")
+    mock_filter_instance = mocker.Mock()
+    mock_filter_builder.return_value = mock_filter_instance
+    mock_filter_instance.to_dict.return_value = {"empty": "filter"}
+
+    mock_arg_to_list = mocker.patch("CortexPlatformCore.argToList")
+    mock_arg_to_bool = mocker.patch("CortexPlatformCore.arg_to_bool_or_none")
+
+    mock_arg_to_list.return_value = []
+    mock_arg_to_bool.return_value = None
+
+    args = {}
+
+    result = build_endpoint_filters(args)
+
+    mock_filter_builder.assert_called_once()
+    assert mock_filter_instance.add_field.call_count == 16
+    mock_filter_instance.to_dict.assert_called_once()
+    assert result == {"empty": "filter"}
+
+
+def test_build_endpoint_filters_agent_eol(mocker):
+    """
+    Given:
+    - Arguments with agent_eol parameter set to True.
+    When:
+    - Calling build_endpoint_filters with agent_eol=True.
+    Then:
+    - supported_version filter is set to True.
+    """
+    from CortexPlatformCore import build_endpoint_filters, Endpoints
+
+    # Mock dependencies
+    mock_filter_builder = mocker.patch("CortexPlatformCore.FilterBuilder")
+    mock_filter_instance = mocker.Mock()
+    mock_filter_builder.return_value = mock_filter_instance
+    mock_filter_instance.to_dict.return_value = {}
+    mock_arg_to_list = mocker.patch("CortexPlatformCore.argToList")
+    mock_arg_to_bool = mocker.patch("CortexPlatformCore.arg_to_bool_or_none")
+
+    mock_arg_to_list.return_value = []
+    mock_arg_to_bool.return_value = True  # agent_eol = True
+
+    args = {"agent_eol": "true"}
+    build_endpoint_filters(args)
+
+    # Verify supported_version (not agent_eol) was passed correctly
+    calls = mock_filter_instance.add_field.call_args_list
+    agent_eol_call = None
+    for current_call in calls:
+        if current_call[0][0] == Endpoints.ENDPOINT_FIELDS["agent_eol"]:
+            agent_eol_call = current_call
+            break
+
+    assert agent_eol_call is not None
+    assert agent_eol_call[0][2] is True
+
+
+def test_core_list_endpoints_command_success(mocker):
+    """
+    Given:
+    - Valid arguments and successful client response with endpoint data.
+    When:
+    - Calling core_list_endpoints_command.
+    Then:
+    - Returns list of CommandResults with properly formatted endpoint data and readable output.
+    """
+    from CortexPlatformCore import core_list_endpoints_command, Client, INTEGRATION_CONTEXT_BRAND
+
+    # Mock dependencies
+    mock_arg_to_number = mocker.patch("CortexPlatformCore.arg_to_number")
+    mock_build_endpoint_filters = mocker.patch("CortexPlatformCore.build_endpoint_filters")
+    mock_build_webapp_request_data = mocker.patch("CortexPlatformCore.build_webapp_request_data")
+    mock_map_endpoint_format = mocker.patch("CortexPlatformCore.map_endpoint_format")
+    mock_table_to_markdown = mocker.patch("CortexPlatformCore.tableToMarkdown")
+    mocker.patch("CortexPlatformCore.demisto")
+
+    # Configure mocks
+    mock_arg_to_number.side_effect = lambda x: int(x) if x and x.isdigit() else None
+    mock_build_endpoint_filters.return_value = {"test": "filters"}
+    mock_build_webapp_request_data.return_value = {"test": "request_data"}
+    mock_table_to_markdown.return_value = "Mock table output"
+
+    raw_data = [{"AGENT_ID": "endpoint-1", "HOST_NAME": "host-1"}]
+    mapped_data = [{"endpoint_id": "endpoint-1", "endpoint_name": "host-1"}]
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": raw_data, "FILTER_COUNT": "1"}}
+    mock_map_endpoint_format.return_value = mapped_data
+
+    args = {"page": "0", "page_size": "50", "endpoint_name": "test"}
+    result = core_list_endpoints_command(mock_client, args)
+
+    assert result.readable_output == "Mock table output"
+    assert result.outputs == mapped_data
+    assert result.outputs_prefix == f"{INTEGRATION_CONTEXT_BRAND}.Endpoint"
+    assert result.outputs_key_field == "endpoint_id"
+    assert result.raw_response == mapped_data
+
+    # Verify function calls
+    mock_build_endpoint_filters.assert_called_once_with(args)
+    mock_build_webapp_request_data.assert_called_once()
+    mock_client.get_webapp_data.assert_called_once()
+    mock_map_endpoint_format.assert_called_once_with(raw_data)
+
+
+def test_core_list_endpoints_command_default_pagination(mocker):
+    """
+    Given:
+    - Arguments without page and page_size specified.
+    When:
+    - Calling core_list_endpoints_command with default pagination.
+    Then:
+    - Uses default pagination values (page=0, limit=100).
+    """
+    from CortexPlatformCore import core_list_endpoints_command, Client, MAX_GET_ENDPOINTS_LIMIT
+
+    # Mock dependencies
+    mock_arg_to_number = mocker.patch("CortexPlatformCore.arg_to_number")
+    mock_build_endpoint_filters = mocker.patch("CortexPlatformCore.build_endpoint_filters")
+    mock_build_webapp_request_data = mocker.patch("CortexPlatformCore.build_webapp_request_data")
+    mock_map_endpoint_format = mocker.patch("CortexPlatformCore.map_endpoint_format")
+    mock_table_to_markdown = mocker.patch("CortexPlatformCore.tableToMarkdown")
+    mocker.patch("CortexPlatformCore.demisto")
+
+    # Configure mocks
+    mock_arg_to_number.return_value = None
+    mock_build_endpoint_filters.return_value = {}
+    mock_build_webapp_request_data.return_value = {}
+    mock_table_to_markdown.return_value = "Empty table"
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [], "FILTER_COUNT": "0"}}
+    mock_map_endpoint_format.return_value = []
+
+    args = {}
+    result = core_list_endpoints_command(mock_client, args)
+
+    # Verify default pagination was used
+    call_kwargs = mock_build_webapp_request_data.call_args[1]
+    assert call_kwargs["limit"] == MAX_GET_ENDPOINTS_LIMIT
+    assert call_kwargs["start_page"] == 0
+    assert result.outputs == []
+
+
+def test_core_list_endpoints_command_empty_response(mocker):
+    """
+    Given:
+    - Client returns empty DATA response.
+    When:
+    - Calling core_list_endpoints_command with empty server response.
+    Then:
+    - Returns CommandResults with empty outputs and handles gracefully.
+    """
+    from CortexPlatformCore import core_list_endpoints_command, Client
+
+    mock_arg_to_number = mocker.patch("CortexPlatformCore.arg_to_number")
+    mock_build_endpoint_filters = mocker.patch("CortexPlatformCore.build_endpoint_filters")
+    mock_build_webapp_request_data = mocker.patch("CortexPlatformCore.build_webapp_request_data")
+    mock_map_endpoint_format = mocker.patch("CortexPlatformCore.map_endpoint_format")
+    mock_table_to_markdown = mocker.patch("CortexPlatformCore.tableToMarkdown")
+    mocker.patch("CortexPlatformCore.demisto")
+
+    # Configure mocks
+    mock_arg_to_number.return_value = None
+    mock_build_endpoint_filters.return_value = {}
+    mock_build_webapp_request_data.return_value = {}
+    mock_table_to_markdown.return_value = "No endpoints found"
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [], "FILTER_COUNT": "0"}}
+    mock_map_endpoint_format.return_value = []
+
+    args = {}
+    result = core_list_endpoints_command(mock_client, args)
+
+    assert result.readable_output == "No endpoints found"
+    assert result.outputs == []
+    assert result.raw_response == []
+
+    # Verify map_endpoint_format was called with empty list
+    mock_map_endpoint_format.assert_called_once_with([])
+
+
+def test_core_list_endpoints_command_custom_pagination(mocker):
+    """
+    Given:
+    - Arguments with custom page and page_size values.
+    When:
+    - Calling core_list_endpoints_command with page=2, page_size=10.
+    Then:
+    - Uses correct pagination calculations (page_from=20, page_to=30).
+    """
+    from CortexPlatformCore import core_list_endpoints_command, Client, CommandResults
+
+    # Mock dependencies
+    mock_arg_to_number = mocker.patch("CortexPlatformCore.arg_to_number")
+    mock_build_endpoint_filters = mocker.patch("CortexPlatformCore.build_endpoint_filters")
+    mock_build_webapp_request_data = mocker.patch("CortexPlatformCore.build_webapp_request_data")
+    mock_map_endpoint_format = mocker.patch("CortexPlatformCore.map_endpoint_format")
+    mock_table_to_markdown = mocker.patch("CortexPlatformCore.tableToMarkdown")
+    mocker.patch("CortexPlatformCore.demisto")
+
+    # Configure mocks for custom pagination
+    def mock_arg_to_number_side_effect(x):
+        if x == "2":
+            return 2
+        elif x == "10":
+            return 10
+        return None
+
+    mock_arg_to_number.side_effect = mock_arg_to_number_side_effect
+    mock_build_endpoint_filters.return_value = {}
+    mock_build_webapp_request_data.return_value = {}
+    mock_table_to_markdown.return_value = "Page 2 table"
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [], "FILTER_COUNT": "0"}}
+    mock_map_endpoint_format.return_value = []
+
+    args = {"page": "2", "page_size": "10"}
+    result = core_list_endpoints_command(mock_client, args)
+
+    # Verify pagination calculations: page_from=2*10=20, page_to=2*10+10=30
+    call_kwargs = mock_build_webapp_request_data.call_args[1]
+    assert call_kwargs["limit"] == 30  # page_to
+    assert call_kwargs["start_page"] == 20  # page_from
+    assert isinstance(result, CommandResults)
+
+
+def test_core_list_endpoints_command_missing_reply_field(mocker):
+    """
+    Given:
+    - Client returns response without 'reply' field.
+    When:
+    - Calling core_list_endpoints_command with malformed server response.
+    Then:
+    - Handles missing reply gracefully and returns empty results.
+    """
+    from CortexPlatformCore import core_list_endpoints_command, Client
+
+    # Mock dependencies
+    mock_arg_to_number = mocker.patch("CortexPlatformCore.arg_to_number")
+    mock_build_endpoint_filters = mocker.patch("CortexPlatformCore.build_endpoint_filters")
+    mock_build_webapp_request_data = mocker.patch("CortexPlatformCore.build_webapp_request_data")
+    mock_map_endpoint_format = mocker.patch("CortexPlatformCore.map_endpoint_format")
+    mock_table_to_markdown = mocker.patch("CortexPlatformCore.tableToMarkdown")
+    mocker.patch("CortexPlatformCore.demisto")
+
+    # Configure mocks
+    mock_arg_to_number.return_value = None
+    mock_build_endpoint_filters.return_value = {}
+    mock_build_webapp_request_data.return_value = {}
+    mock_table_to_markdown.return_value = "No data available"
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_webapp_data.return_value = {}  # Missing 'reply' field
+    mock_map_endpoint_format.return_value = []
+
+    args = {}
+    result = core_list_endpoints_command(mock_client, args)
+
+    assert result.outputs == []
+
+    # Verify map_endpoint_format was called with empty list (from missing DATA)
+    mock_map_endpoint_format.assert_called_once_with([])
+
+
+def test_core_list_endpoints_command_with_filters(mocker):
+    """
+    Given:
+    - Arguments with multiple filter parameters.
+    When:
+    - Calling core_list_endpoints_command with endpoint filters.
+    Then:
+    - Filters are properly applied and data is correctly processed.
+    """
+    from CortexPlatformCore import core_list_endpoints_command, Client
+
+    # Mock dependencies
+    mock_arg_to_number = mocker.patch("CortexPlatformCore.arg_to_number")
+    mock_build_endpoint_filters = mocker.patch("CortexPlatformCore.build_endpoint_filters")
+    mock_build_webapp_request_data = mocker.patch("CortexPlatformCore.build_webapp_request_data")
+    mock_map_endpoint_format = mocker.patch("CortexPlatformCore.map_endpoint_format")
+    mock_table_to_markdown = mocker.patch("CortexPlatformCore.tableToMarkdown")
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+
+    # Configure mocks
+    mock_arg_to_number.return_value = None
+    mock_build_endpoint_filters.return_value = {"AGENT_STATUS": ["STATUS_010_CONNECTED"], "AGENT_TYPE": ["AGENT_TYPE_SERVER"]}
+    mock_build_webapp_request_data.return_value = {"table": "agents", "filters": {}}
+    mock_table_to_markdown.return_value = "Filtered endpoints table"
+
+    raw_data = [{"AGENT_ID": "filtered-endpoint", "HOST_NAME": "server-01"}]
+    mapped_data = [{"endpoint_id": "filtered-endpoint", "endpoint_name": "server-01"}]
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": raw_data, "FILTER_COUNT": "1"}}
+    mock_map_endpoint_format.return_value = mapped_data
+
+    args = {"endpoint_status": "connected", "endpoint_type": "server", "endpoint_name": "server-01"}
+    result = core_list_endpoints_command(mock_client, args)
+
+    # Verify filters were applied
+    mock_build_endpoint_filters.assert_called_once_with(args)
+
+    # Verify result
+    assert result.outputs == mapped_data
+    assert result.readable_output == "Filtered endpoints table"
+
+    # Verify logging was called
+    assert mock_demisto.info.called
+    assert mock_demisto.debug.called
+
+
+def test_core_list_endpoints_command_error_handling(mocker):
+    """
+    Given:
+        - Client raises an exception during data retrieval.
+    When:
+        - Calling core_list_endpoints_command with failing client.
+    Then:
+        - Exception is properly propagated without being caught.
+    """
+    from CortexPlatformCore import core_list_endpoints_command, Client
+
+    # Mock dependencies
+    mock_arg_to_number = mocker.patch("CortexPlatformCore.arg_to_number")
+    mock_build_endpoint_filters = mocker.patch("CortexPlatformCore.build_endpoint_filters")
+    mock_build_webapp_request_data = mocker.patch("CortexPlatformCore.build_webapp_request_data")
+    mocker.patch("CortexPlatformCore.demisto")
+
+    # Configure mocks
+    mock_arg_to_number.return_value = None
+    mock_build_endpoint_filters.return_value = {}
+    mock_build_webapp_request_data.return_value = {}
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_webapp_data.side_effect = Exception("Server error")
+
+    args = {}
+
+    # Verify exception is propagated
+    with pytest.raises(Exception, match="Server error"):
+        core_list_endpoints_command(mock_client, args)
+
+
+def test_normalize_key_with_xdm_asset_prefix():
+    """Test normalization of keys with 'xdm.asset.' prefix."""
+    from CortexPlatformCore import normalize_key
+
+    assert normalize_key("xdm.asset.name") == "name"
+    assert normalize_key("xdm.asset.id") == "id"
+    assert normalize_key("xdm.asset.type") == "type"
+
+    assert normalize_key("xdm.asset.type.name") == "type.name"
+    assert normalize_key("xdm.asset.group.id") == "group.id"
+    assert normalize_key("xdm.asset.provider.region") == "provider.region"
+
+
+def test_normalize_key_with_xdm_prefix():
+    """Test normalization of keys with 'xdm.' prefix (but not 'xdm.asset.')."""
+    from CortexPlatformCore import normalize_key
+
+    assert normalize_key("xdm.source.ip") == "source.ip"
+    assert normalize_key("xdm.target.host") == "target.host"
+    assert normalize_key("xdm.event.type") == "event.type"
+
+
+def test_normalize_key_without_prefix():
+    """Test that keys without XDM prefixes are returned unchanged."""
+    from CortexPlatformCore import normalize_key
+
+    # Regular field names
+    assert normalize_key("name") == "name"
+    assert normalize_key("id") == "id"
+    assert normalize_key("status") == "status"
+
+    # Nested field names
+    assert normalize_key("user.name") == "user.name"
+    assert normalize_key("network.interface.type") == "network.interface.type"
+
+    # Field names that contain 'xdm' but don't start with it
+    assert normalize_key("field.xdm.name") == "field.xdm.name"
+    assert normalize_key("some_xdm_field") == "some_xdm_field"
