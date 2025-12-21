@@ -75,7 +75,13 @@ This automation outputs the indicator relationships to context according to the 
             "Relationship": "related-to",
             "Reverse": "related-to"
         }
+    ],
+    "RelationshipsPagination": [
+    [
+      "1766338283557",
+      "8f8a88336e02a52ef31b3827b3b25d85"
     ]
+  ]
 }
 ```
 

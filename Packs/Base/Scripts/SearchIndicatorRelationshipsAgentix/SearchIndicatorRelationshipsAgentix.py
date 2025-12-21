@@ -2,8 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import re
-                                                                
-def filter_relationships_by_entity_types(entities, entities_types, relationships, limit):
+
+
+def filter_relationships_by_entity_types(entities: list, entities_types: list, relationships: list, limit: int) -> list:
     """
     Filters indicator relationships by entity types using pagination.
 
@@ -31,14 +32,14 @@ def filter_relationships_by_entity_types(entities, entities_types, relationships
         res = demisto.executeCommand("SearchIndicatorRelationships", search_params)
 
         if not res or len(res) == 0:
-            demisto.debug("No response received from SearchIndicatorRelationships")
+            demisto.info("No response received from SearchIndicatorRelationships")
             break
 
         data = demisto.get(res[0], "Contents") or {}
-        demisto.debug(f"{iteration=}, Received data: {data}")
+        demisto.info(f"{iteration=}, Received data: {data}")
         iteration += 1
         if not data or data.get("Relationships") is None:
-            demisto.debug(f"Invalid or empty data received: {data}")
+            demisto.info(f"Invalid or empty data received: {data}")
             break
 
         for relationship in data.get("Relationships", []):
@@ -50,12 +51,12 @@ def filter_relationships_by_entity_types(entities, entities_types, relationships
 
         searchAfter_list = data.get("RelationshipsPagination", [])
         searchAfter = searchAfter_list[0] if searchAfter_list else None
-        demisto.debug(f"SearchAfter updated: {searchAfter}")
+        demisto.info(f"SearchAfter updated: {searchAfter}")
 
         if not searchAfter or len(filtered_relationships) >= limit:
             break
 
-    demisto.debug(f"{filtered_relationships=}")
+    demisto.info(f"{filtered_relationships=}")
     return filtered_relationships
 
 
