@@ -69,6 +69,7 @@ configuration:
 description: |-
   Deprecated. Datadog is an observability service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform.
   
+  The SaaS platform integrates and automates infrastructure monitoring, application performance monitoring and log management to provide unified, real-time observability of our customers' entire technology stack.
 display: Datadog
 name: DatadogCloudSIEM
 script:
