@@ -5094,3 +5094,41 @@ class TestDetermineEmailOrName:
         assignee_list = ["john_doe"]
         result = determine_email_or_name(assignee_list)
         assert result == "name"
+
+
+class TestCreateIssuesFilter:
+    def test_create_issues_filter_empty_args(self):
+        """
+        Given: An empty dictionary is passed to create_issues_filter.
+        When: The function is called with no filter arguments.
+        Then: Should return an empty dictionary.
+        """
+        from CoreIRApiModule import create_issues_filter
+
+        result = create_issues_filter({})
+        assert result == {}
+
+    def test_create_issues_filter_single_filter(self):
+        """
+        Given: A dictionary containing a single filter argument.
+        When: create_issues_filter is called with one filter parameter.
+        Then: Should return a dictionary containing the single filter.
+        """
+        from CoreIRApiModule import create_issues_filter
+
+        args = {"severity": "high"}
+        result = create_issues_filter(args)
+        assert result == {"severity": "high"}
+
+    def test_create_issues_filter_multiple_filters(self):
+        """
+        Given: A dictionary containing multiple filter arguments.
+        When: create_issues_filter is called with multiple filter parameters.
+        Then: Should return a dictionary containing all the filters.
+        """
+
+        from CoreIRApiModule import create_issues_filter
+
+        args = {"severity": "high", "status": "open", "assignee": "john"}
+        result = create_issues_filter(args)
+        assert result == {"severity": "high", "status": "open", "assignee": "john"}
