@@ -5947,3 +5947,69 @@ def test_normalize_key_without_prefix():
     # Field names that contain 'xdm' but don't start with it
     assert normalize_key("field.xdm.name") == "field.xdm.name"
     assert normalize_key("some_xdm_field") == "some_xdm_field"
+
+
+def test_get_issues_command_with_empty_response_outputs(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_alerts_by_filter_command returns a response with None outputs
+    Then: get_issues_command should return a result with None outputs
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "123"}
+    mock_response = CommandResults(outputs=None)
+    mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+
+    result = get_issues_command(client, args)
+
+    assert result.outputs is None
+
+
+def test_get_issues_command_with_single_alert_output(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_alerts_by_filter_command returns a response with a single alert output
+    Then: get_issues_command should return a result with the corresponding issue output
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "456"}
+    alert_output = {"alert_id": "alert_123", "status": "open"}
+    issue_output = {"issue_id": "issue_456", "status": "open"}
+    mock_response = CommandResults(outputs=[alert_output], outputs_prefix="Core.Issue")
+
+    mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+    mocker.patch("CortexPlatformCore.alert_to_issue", return_value=issue_output)
+
+    result = get_issues_command(client, args)
+
+    assert result.outputs == [issue_output]
+
+
+def test_get_issues_command_with_output_keys_filtering_empty_list(mocker):
+    """
+    Given: A client and args with issue_id and empty output_keys list
+    When: get_alerts_by_filter_command returns a response with alert output
+    Then: get_issues_command should return filtered issue output through filter_context_fields
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "789", "output_keys": []}
+    alert_output = {"alert_id": "alert_789", "status": "closed"}
+    issue_output = {"issue_id": "issue_789", "status": "closed"}
+    mock_response = CommandResults(outputs=[alert_output], outputs_prefix="Core.Issue")
+
+    mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+    mocker.patch("CortexPlatformCore.alert_to_issue", return_value=issue_output)
+    mocker.patch("CortexPlatformCore.filter_context_fields", return_value=[issue_output])
+
+    result = get_issues_command(client, args)
+
+    assert result.outputs == [issue_output]
