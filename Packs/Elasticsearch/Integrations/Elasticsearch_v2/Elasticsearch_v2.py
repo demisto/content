@@ -62,6 +62,8 @@ HTTP_ERRORS = {
     503: "503 Service Unavailable",
 }
 
+LAST_RUN_EVENTS_KEY = "events"
+LAST_RUN_INCIDENTS_KEY = "incidents"
 
 param = demisto.params()
 """COMMON VARIABLES FOR FETCH INCIDENTS AND FETCH EVENTS"""
@@ -936,10 +938,14 @@ def fetch_items(proxies, is_fetch_events=False):
         proxies (dict): Proxy configuration
         is_fetch_events (bool): Flag to determine whether to fetch incidents or events
     """
- 
+
     demisto.debug(f"{demisto.command()} starting")
-    last_run = demisto.getLastRun()
-    last_fetch = last_run.get("time") or FETCH_TIME
+    last_run: dict = demisto.getLastRun()
+    
+    events_last_run: dict = last_run.get(LAST_RUN_EVENTS_KEY, {})
+    incidents_last_run: dict = last_run.get(LAST_RUN_INCIDENTS_KEY, {})
+    
+    last_fetch = (events_last_run.get("time") if is_fetch_events else incidents_last_run.get("time")) or FETCH_TIME
 
     time_field = TIME_FIELD_FETCH_EVENTS if is_fetch_events else TIME_FIELD
     raw_query = RAW_QUERY_FETCH_EVENTS if is_fetch_events else RAW_QUERY
@@ -967,12 +973,13 @@ def fetch_items(proxies, is_fetch_events=False):
             # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
-    demisto.debug(f"Fetch incidents response: {response}")
+    demisto.debug(f"Fetch response: {response}")
     _, total_results = get_total_results(response)
 
     incidents = []  # type: List
 
     if total_results > 0:
+        # Process search results and convert them to incidents or events
         if "Timestamp" in time_method:
             incidents, last_fetch = results_to_incidents_timestamp(response, last_fetch, is_fetch_events)
         else:
@@ -980,14 +987,23 @@ def fetch_items(proxies, is_fetch_events=False):
             last_fetch = str(last_fetch)
         demisto.info(f"Extracted {len(incidents)} incidents.")
         
-        updated_last_run = {"time": last_fetch}
+        # Build updated last_run object with the current fetch status
+        if is_fetch_events:
+            events_last_run["time"] = last_fetch
+        else:
+            incidents_last_run["time"] = last_fetch
+        updated_last_run = {
+            LAST_RUN_INCIDENTS_KEY: incidents_last_run,
+            LAST_RUN_EVENTS_KEY: events_last_run
+            }
+
         if is_fetch_events:
             send_events_to_xsiam(incidents, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(updated_last_run)
         else: 
             demisto.setLastRun(updated_last_run)
             demisto.incidents(incidents)
-        demisto.debug(f"Updated last_run object after fetch:\n{updated_last_run}")  
+        demisto.debug(f"Updated last_run object after successful fetch:\n{updated_last_run}")  
 
 def parse_subtree(my_map):
     """
