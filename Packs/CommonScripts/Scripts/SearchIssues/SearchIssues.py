@@ -6,11 +6,11 @@ EQ = "EQ"
 OUTPUT_KEYS = [
     "internal_id",
     "severity",
-    "Identity_type",
+    "identity_type",
     "issue_name",
     "issue_source",
-    "case_id",
-    "agentsid",
+    "case_ids",
+    "agent_ids",
     "actor_process_image_sha256",
     "causality_actor_process_image_sha256",
     "action_process_image_sha256",
@@ -20,7 +20,6 @@ OUTPUT_KEYS = [
     "os_actor_process_image_sha256",
     "action_file_macro_sha256",
     "status.progress",
-    "assetid",
     "asset_ids",
     "assigned_to_pretty",
     "assigned_to",
@@ -130,6 +129,7 @@ def main():  # pragma: no cover
         args = remove_empty_string_values(args)
         demisto.debug(f"Calling core-get-issues with arguments: {args}")
         results: dict = demisto.executeCommand("core-get-issues", args)[0]  # type: ignore
+        demisto.debug(f"Results returned from core-get-issues: {results}")
 
         if is_error(results):
             error = get_error(results)

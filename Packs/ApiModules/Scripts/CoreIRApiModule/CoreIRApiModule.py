@@ -3985,7 +3985,7 @@ ISSUE_FIELDS = {
     "dst_action_external_hostname": "dst_action_external_hostname",
     "os_actor_process_image_sha256": "os_actor_process_image_sha256",
     "agent_id": "agent_id",
-    "identity_type": "identity_type",
+    "Identity_type": "identity_type",
     "action_external_hostname": "action_external_hostname",
     "host_ip": "agent_ip_addresses",
     "actor_process_command_line": "actor_process_command_line",
@@ -4093,7 +4093,7 @@ def create_issues_filter(args) -> dict:
         argToList(args.get("causality_actor_process_image_command_line")),
     )
     filter_builder.add_field(ISSUE_FIELDS["agent_id"], FilterType.EQ, argToList(args.get("agent_id")))
-    filter_builder.add_field(ISSUE_FIELDS["identity_type"], FilterType.EQ, argToList(args.get("identity_type")))
+    filter_builder.add_field(ISSUE_FIELDS["Identity_type"], FilterType.EQ, argToList(args.get("Identity_type")))
     filter_builder.add_field(
         ISSUE_FIELDS["actor_process_command_line"], FilterType.EQ, argToList(args.get("actor_process_image_command_line"))
     )
