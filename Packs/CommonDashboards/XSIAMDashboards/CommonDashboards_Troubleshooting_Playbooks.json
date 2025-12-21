@@ -76,7 +76,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Failed Automated Tasks",
+                                "title": "Failed automation tasks",
                                 "width": 25,
                                 "height": 547,
                                 "phrase": "dataset = playbook_tasks\n| filter task_status = \"Error\" and automated = true\n| comp count() as error_count\n| view graph type = single subtype = standard yaxis = error_count ",
@@ -108,7 +108,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Failed Manual Tasks",
+                                "title": "Failed manual tasks",
                                 "width": 25,
                                 "height": 547,
                                 "phrase": "dataset = playbook_tasks\n| filter task_status = \"Error\" and automated = false\n| comp count() as error_count\n| view graph type = single subtype = standard yaxis = error_count",
@@ -145,7 +145,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Top 5 Playbook Average Runtime",
+                                "title": "Top 5 playbooks average runtime",
                                 "width": 33.333333333333336,
                                 "height": 547,
                                 "phrase": "dataset = playbook_runs\n| filter playbook_status in (\"completed\", \"failed\")\n| comp avg(run_time) as avg_run_time_secs by playbook_name\n| sort desc avg_run_time_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = playbook_name yaxis = avg_run_time_secs ",
@@ -184,7 +184,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Executions by status per Manual Tasks",
+                                "title": "Executions by status per manual tasks",
                                 "width": 33.333333333333336,
                                 "height": 547,
                                 "phrase": "dataset = playbook_tasks\n| filter automated = false\n| comp count() as exec_count by task_name, task_status\n| sort desc exec_count\n| view graph type = column subtype = grouped xaxis = task_name yaxis = exec_count series = task_status ",
@@ -230,7 +230,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Executions by status per Automated Tasks",
+                                "title": "Executions by status per automated tasks",
                                 "width": 33.333333333333336,
                                 "height": 547,
                                 "phrase": "dataset = playbook_tasks\n| filter automated = true\n| comp count() as exec_count by task_name, task_status\n| sort desc exec_count\n| view graph type = column subtype = grouped xaxis = task_name yaxis = exec_count series = task_status ",

@@ -12,7 +12,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Command execution errors per Integration Category",
+                                "title": "Command execution errors per integration category",
                                 "width": 33.333333333333336,
                                 "height": 511,
                                 "phrase": "dataset = soar_execution_metrics\n| filter is_error = true\n| filter type = \"integration\"\n| filter category != null and category != \"\"\n| comp count() as error_count by category\n| sort desc error_count\n| view graph type = pie xaxis = category yaxis = error_count ",
@@ -44,7 +44,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Command execution errors per Instance",
+                                "title": "Command execution errors per instance",
                                 "width": 33.29688354291963,
                                 "height": 511,
                                 "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| filter instance != null and instance != \"\"\n| comp count() as error_count by instance\n| sort desc error_count\n| view graph type = pie xaxis = instance yaxis = error_count ",
@@ -145,7 +145,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Manual Command execution errors",
+                                "title": "Manual command execution errors",
                                 "width": 25,
                                 "height": 511,
                                 "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter is_manual = true\n| filter type = \"integration\"\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count\n| limit 5\n| view graph type = line xaxis = name yaxis = error_count ",
@@ -177,7 +177,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Errors by Issue Type per Command (Top 5)",
+                                "title": "Errors by issue type per command (Top 5)",
                                 "height": 511,
                                 "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| filter api_response_type != null\n| alter command = name\n| comp count() as total_errors by command, category \n| sort desc total_errors \n| limit 5\n| view graph type = column subtype = grouped xaxis = category yaxis = total_errors series = command ",
                                 "time_frame": {
@@ -222,7 +222,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Failed Automation executions (Top 5)",
+                                "title": "Failed automation executions (Top 5)",
                                 "width": 25,
                                 "height": 511,
                                 "phrase": "dataset = soar_execution_metrics\n| filter type = \"automation\"\n| filter is_error = true\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count \n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = error_count ",
@@ -266,7 +266,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Average runtime per Command by Instance (Top 5)",
+                                "title": "Average runtime per command by instance (Top 5)",
                                 "width": 33.333333333333336,
                                 "height": 435,
                                 "phrase": "dataset = soar_execution_metrics\n| filter type = \"integration\"\n| filter duration != null\n| filter name != null and instance != null\n| comp avg(duration) as avg_runtime_secs by name, instance\n| sort desc avg_runtime_secs\n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = avg_runtime_secs series = instance ",
@@ -312,7 +312,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Command average runtime per Instance (Top 5)",
+                                "title": "Command average runtime per instance (Top 5)",
                                 "width": 33.333333333333336,
                                 "height": 435,
                                 "phrase": "dataset = soar_execution_metrics\n| filter type = \"integration\"\n| filter duration != null\n| filter instance != null and instance != \"\"\n| comp avg(duration) as avg_runtime_secs by instance\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = instance yaxis = avg_runtime_secs ",
@@ -351,7 +351,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Command average runtime per Instance (Top 5)",
+                                "title": "Command average runtime per automation (Top 5)",
                                 "width": 33.333333333333336,
                                 "height": 435,
                                 "phrase": "dataset = soar_execution_metrics\n| filter type = \"automation\"\n| filter duration != null\n| filter name != null and name != \"\"\n| comp avg(duration) as avg_runtime_secs by name\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = avg_runtime_secs ",

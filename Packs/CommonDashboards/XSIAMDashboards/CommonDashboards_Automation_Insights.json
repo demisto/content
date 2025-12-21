@@ -12,7 +12,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Automated Actions by Status",
+                                "title": "Automated actions by status",
                                 "width": 33.333333333333336,
                                 "height": 511,
                                 "phrase": "dataset = playbook_tasks\n| filter automated = true\n| filter task_status != null and task_status != \"\"\n| comp count() as task_count by task_status\n| sort desc task_count\n| view graph type = single subtype = standard yaxis = task_count ",
@@ -44,7 +44,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Actions by Verdict",
+                                "title": "Actions by verdict",
                                 "width": 33.333333333333336,
                                 "height": 511,
                                 "phrase": "dataset = indicators\n| filter verdict != null and verdict != \"\"\n| comp count() as action_count by verdict\n| sort desc action_count\n| view graph type = pie xaxis = verdict yaxis = action_count legend_percentage = `true` ",
@@ -83,7 +83,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Automated vs Manual Actions",
+                                "title": "Automated vs manual actions",
                                 "width": 33.333333333333336,
                                 "height": 511,
                                 "phrase": "dataset = soar_execution_metrics\n| alter action_type = if(is_manual = true, \"Manual\", \"Automated\")\n| comp count() as action_count by action_type\n| sort desc action_count\n| view graph type = pie xaxis = action_type yaxis = action_count legend_percentage = `true` ",
@@ -127,7 +127,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Incidents Closed Over Time",
+                                "title": "Incidents closed over time",
                                 "width": 33.333333333333336,
                                 "height": 511,
                                 "phrase": "dataset = incidents \n| filter resolved_ts != null and resolved_ts != \"\"\n| alter resolved_time = to_timestamp(resolved_ts)\n| bin resolved_time span = 1d\n| comp count() as closed_count by resolved_time, alert_categories\n| sort asc resolved_time\n| view graph type = line xaxis = resolved_ts yaxis = closed_count series = alert_categories ",
@@ -166,7 +166,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Indicators Activity by Type",
+                                "title": "Indicator activity by type",
                                 "width": 33.333333333333336,
                                 "height": 511,
                                 "phrase": "dataset = indicators\n| filter type != null and type != \"\"\n| bin _time span = 1d\n| comp count() as indicator_count by _time, type\n| view graph type = line xaxis = _time yaxis = indicator_count series = type ",
@@ -205,7 +205,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Command Executions per Integration Category",
+                                "title": "Command executions per integration category",
                                 "height": 511,
                                 "phrase": "dataset = soar_execution_metrics\n| filter type = \"integration\"\n| filter category != null and category != \"\"\n| comp count() as exec_count by category\n| sort desc exec_count\n| view graph type = column subtype = grouped xaxis = category yaxis = exec_count ",
                                 "time_frame": {
@@ -248,7 +248,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Malicious Indicators Observed",
+                                "title": "Malicious indicators observed",
                                 "width": 50,
                                 "height": 444,
                                 "phrase": "dataset = indicators\n| filter verdict = \"Malicious\"\n| filter type != null and type != \"\"\n| comp count() as indicator_count by type\n| sort desc indicator_count\n| view graph type = pie xaxis = type yaxis = indicator_count ",
@@ -280,7 +280,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Average Runtime per Playbook (Top 5)",
+                                "title": "Average runtime per playbook (Top 5)",
                                 "width": 50,
                                 "height": 444,
                                 "phrase": "dataset = playbook_runs\n| filter playbook_status in (\"completed\", \"failed\")\n| filter run_time != null\n| comp avg(run_time) as avg_runtime_secs by playbook_name\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = playbook_name yaxis = avg_runtime_secs ",
