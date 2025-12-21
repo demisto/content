@@ -14,7 +14,7 @@ def test_get_relationships_no_parameters_returns_empty_list():
     """
     from SearchIndicatorRelationshipsAgentix import get_relationships
 
-    result = get_relationships()
+    result = get_relationships({})
 
     assert result == []
 
@@ -33,7 +33,7 @@ def test_get_relationships_with_entities_only(mocker):
     mock_execute_command.return_value = [{"Contents": {"Relationships": [{"id": "rel1", "type": "related-to"}]}}]
     mock_get.return_value = {"Relationships": [{"id": "rel1", "type": "related-to"}]}
 
-    result = get_relationships(entities=["example.com"])
+    result = get_relationships({"entities": ["example.com"]})
 
     mock_execute_command.assert_called_once_with("SearchIndicatorRelationships", {"entities": ["example.com"], "limit": 20})
     assert result == [{"id": "rel1", "type": "related-to"}]
@@ -50,9 +50,9 @@ def test_get_relationships_with_entities_types_calls_filter_function(mocker):
     mock_filter = mocker.patch("SearchIndicatorRelationshipsAgentix.filter_relationships_by_entity_types")
     mock_filter.return_value = [{"id": "filtered_rel", "type": "indicates"}]
 
-    result = get_relationships(entities=["malware.exe"], entities_types=["File"], limit=10)
+    result = get_relationships({"entities": ["malware.exe"], "entities_types": ["File"], "limit": 10})
 
-    mock_filter.assert_called_once_with(["malware.exe"], ["File"], None, 10)
+    mock_filter.assert_called_once_with(["malware.exe"], ["File"], [], 10)
     assert result == [{"id": "filtered_rel", "type": "indicates"}]
 
 
@@ -88,7 +88,7 @@ def test_filter_relationships_by_entity_types_single_page_results(mocker):
         }
     ]
 
-    result = filter_relationships_by_entity_types(["test.exe"], ["File"], None, 10)
+    result = filter_relationships_by_entity_types(["test.exe"], ["File"], [], 10)
 
     assert len(result) == 1
     assert result[0]["EntityAType"] == "File"
@@ -136,7 +136,7 @@ def test_filter_relationships_by_entity_types_multiple_pages(mocker):
         },
     ]
 
-    result = filter_relationships_by_entity_types(["test.exe"], ["File"], None, 10)
+    result = filter_relationships_by_entity_types(["test.exe"], ["File"], [], 10)
 
     assert len(result) == 2
     assert mock_execute_command.call_count == 2
@@ -174,7 +174,7 @@ def test_filter_relationships_by_entity_types_limit_reached_early(mocker):
         "RelationshipsPagination": ["token1"],
     }
 
-    result = filter_relationships_by_entity_types(["test.exe"], ["File"], None, 2)
+    result = filter_relationships_by_entity_types(["test.exe"], ["File"], [], 2)
 
     assert len(result) == 2
 
@@ -209,7 +209,7 @@ def test_filter_relationships_by_entity_types_no_matching_types(mocker):
         "RelationshipsPagination": [],
     }
 
-    result = filter_relationships_by_entity_types(["test.exe"], ["File"], None, 10)
+    result = filter_relationships_by_entity_types(["test.exe"], ["File"], [], 10)
 
     assert len(result) == 0
 
@@ -226,6 +226,6 @@ def test_filter_relationships_by_entity_types_empty_response(mocker):
 
     mock_execute_command.return_value = []
 
-    result = filter_relationships_by_entity_types(["test.exe"], ["File"], None, 10)
+    result = filter_relationships_by_entity_types(["test.exe"], ["File"], [], 10)
 
     assert result == []

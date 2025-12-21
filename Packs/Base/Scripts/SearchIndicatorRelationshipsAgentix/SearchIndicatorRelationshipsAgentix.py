@@ -61,10 +61,7 @@ def filter_relationships_by_entity_types(entities: list, entities_types: list, r
 
 
 def get_relationships(
-    entities: Optional[list[str]] =  None,
-    entities_types: Optional[list[str]] = None,
-    relationships: Optional[list[str]] = None,
-    limit: int = 20,
+    args: dict
 ) -> list:
     """
     Retrieves indicator relationships based on specified entities, entity types, and relationships.
@@ -80,6 +77,11 @@ def get_relationships(
                 returns filtered relationships where EntityA or EntityB type matches entities_types.
                 Returns empty list if no parameters are provided or no relationships found.
     """
+    entities_types = argToList(args.pop("entities_types", []))
+    entities = argToList(args.get("entities", []))
+    relationships = argToList(args.get("relationships", []))
+    limit = int(args.get("limit", "20"))
+    
     if not entities and not entities_types and not relationships:
         return []
 
@@ -105,12 +107,8 @@ def get_relationships(
 def main():
     try:
         args = demisto.args()
-        entities_types = argToList(args.pop("entities_types", []))
-        entities = argToList(args.get("entities", []))
-        relationships = argToList(args.get("relationships", []))
-        limit = int(args.get("limit", "20"))
 
-        relationships = get_relationships(entities, entities_types, relationships, limit)
+        relationships = get_relationships(args)
         hr = tableToMarkdown(
             "Relationships",
             relationships,
