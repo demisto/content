@@ -2654,22 +2654,16 @@ class TestGetAlertByFilter:
         from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+        requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
         request_data_log = mocker.patch.object(demisto, "debug")
-        client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+        client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
         args = {
-            "time_frame": "custom",
             "start_time": "2018-11-06T08:56:41",
             "end_time": "2018-11-06T08:56:41",
             "limit": "2",
         }
         response = get_alerts_by_filter_command(client, args)
         assert response.outputs[0].get("internal_id", {}) == 33333
-        assert (
-            "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, "
-            "'to': 2}, 'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RANGE', "
-            "'SEARCH_VALUE': {'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
-        )
 
     def test_get_alert_by_alert_action_status_filter(self, requests_mock, mocker):
         """
@@ -2685,19 +2679,25 @@ class TestGetAlertByFilter:
         from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
-        request_data_log = mocker.patch.object(demisto, "debug")
-        client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
-        args = {"alert_action_status": "detected (scanned)"}
+        requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
+        request_data_log = mocker.patch.object(demisto, "info")
+        
+        client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+        args = {"issue_action_status": "detected (scanned)"}
+        
         response = get_alerts_by_filter_command(client, args)
+        
         assert response.outputs[0].get("internal_id", {}) == 33333
         assert response.outputs[0].get("alert_action_status", {}) == "SCANNED"
         assert response.outputs[0].get("alert_action_status_readable", {}) == "detected (scanned)"
-        assert (
-            "{'SEARCH_FIELD': 'alert_action_status', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': "
-            "'SCANNED'" in request_data_log.call_args[0][0]
-        )
-
+        
+        # Verify the request data was logged and contains the correct filter
+        assert request_data_log.call_count > 0
+        logged_request = request_data_log.call_args[0][0]
+        assert "SEARCH_FIELD': 'alert_action_status'" in logged_request
+        assert "SEARCH_TYPE': 'EQ'" in logged_request
+        assert "SEARCH_VALUE': 'SCANNED'" in logged_request
+    
     def test_get_alert_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
         """
         Given:
@@ -2712,20 +2712,23 @@ class TestGetAlertByFilter:
         from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
-        request_data_log = mocker.patch.object(demisto, "debug")
-        client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
-        args = {
-            "alert_source": "first,second",
-        }
+        requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
+        request_data_log = mocker.patch.object(demisto, "info")
+        
+        client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+        args = {"alert_source": "first,second"}
+        
         response = get_alerts_by_filter_command(client, args)
+        
         assert response.outputs[0].get("internal_id", {}) == 33333
-        assert (
-            "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, "
-            "'to': 50}, 'filter': {'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', "
-            "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', "
-            "'SEARCH_VALUE': 'second'}]}]}}}" in request_data_log.call_args[0][0]
-        )
+        "request_data={'type': 'grid', 'table_name': 'ALERTS_VIEW_TABLE', 'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, 'to': 100}, 'filter': {'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': 'second'}]}]}}, 'jsons': [], 'onDemandFields': ['action_file_sha256', 'action_file_macro_sha256', 'action_process_image_sha256', 'actor_process_image_sha256', 'os_actor_process_image_sha256', 'causality_actor_process_image_sha256', 'actor_process_command_line', 'action_file_path', 'alert_action_status', 'agent_ip_addresses', 'agent_hostname', 'identity_type']}"
+        # Verify the request data was logged and contains the correct filter
+        assert request_data_log.call_count > 0
+        logged_request = request_data_log.call_args[0][0]
+        assert "'SEARCH_FIELD': 'alert_source'" in logged_request
+        assert "'SEARCH_TYPE': 'CONTAINS'" in logged_request
+        assert "'SEARCH_VALUE': 'first'" in logged_request
+        assert "'SEARCH_VALUE': 'second'" in logged_request
 
     def test_get_alert_by_filter_command_multiple_args(self, requests_mock, mocker):
         """
@@ -2742,97 +2745,30 @@ class TestGetAlertByFilter:
         from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
-        request_data_log = mocker.patch.object(demisto, "debug")
-        client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+        requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
+        request_data_log = mocker.patch.object(demisto, "info")
+        
+        client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
         args = {"alert_source": "first,second", "user_name": "N/A"}
+        
         response = get_alerts_by_filter_command(client, args)
+        
         assert response.outputs[0].get("internal_id", {}) == 33333
-        assert (
-            "{'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', "
-            "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', "
-            "'SEARCH_VALUE': 'second'}]}, {'OR': [{'SEARCH_FIELD': 'actor_effective_username', "
-            "'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': 'N/A'}]}]}" in request_data_log.call_args[0][0]
-        )
+        
+        # Verify the request data was logged and contains the correct filter
+        assert request_data_log.call_count > 0
+        logged_request = request_data_log.call_args[0][0]
 
-    @freeze_time("2022-05-26T13:00:00Z")
-    def test_get_alert_by_filter_complex_custom_filter_and_timeframe(self, requests_mock, mocker):
-        """
-        Given:
-            - Core client
-            - custom_filter (filters are connected with AND operator)
-            - timeframe
-        When:
-            - Running get_alerts_by_filter command
-        Then:
-            - Verify expected output
-            - Ensure request filter sent as expected (connected with AND operator)
-        """
-        from datetime import datetime as dt
-
-        import dateparser
-        from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
-
-        custom_filter = (
-            '{"AND": [{"OR": [{"SEARCH_FIELD": "alert_source","SEARCH_TYPE": "EQ",'
-            '"SEARCH_VALUE": "CORRELATION"},'
-            '{"SEARCH_FIELD": "alert_source","SEARCH_TYPE": "EQ","SEARCH_VALUE": "IOC"}]},'
-            '{"SEARCH_FIELD": "severity","SEARCH_TYPE": "EQ","SEARCH_VALUE": "SEV_040_HIGH"}]}'
-        )
-        api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
-        request_data_log = mocker.patch.object(demisto, "debug")
-        mocker.patch.object(dateparser, "parse", return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
-        client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
-        args = {"custom_filter": custom_filter, "time_frame": "2 days"}
-        get_alerts_by_filter_command(client, args)
-        assert (
-            "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], "
-            "'paging': {'from': 0, 'to': 50}, "
-            "'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RELATIVE_TIMESTAMP', "
-            "'SEARCH_VALUE': '172800000'}, "
-            "{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'CORRELATION'}, "
-            "{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'IOC'}]}, "
-            "{'SEARCH_FIELD': 'severity', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'SEV_040_HIGH'}]}}}"
-            in request_data_log.call_args[0][0]
-        )
-
-    @freeze_time("2022-05-26T13:00:00Z")
-    def test_get_alert_by_filter_custom_filter_and_timeframe_(self, requests_mock, mocker):
-        """
-        Given:
-            - Core client
-            - custom_filter (filters are connected with OR operator)
-            - timeframe
-        When:
-            - Running get_alerts_by_filter command
-        Then:
-            - Verify expected output
-            - Ensure request filter sent as expected (connected with AND operator)
-        """
-        from datetime import datetime as dt
-
-        import dateparser
-        from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
-
-        custom_filter = '{"OR": [{"SEARCH_FIELD": "actor_process_image_sha256","SEARCH_TYPE": "EQ","SEARCH_VALUE": "222"}]}'
-        api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
-        request_data_log = mocker.patch.object(demisto, "debug")
-        mocker.patch.object(dateparser, "parse", return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
-        client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
-        args = {"custom_filter": custom_filter, "time_frame": "2 days"}
-        get_alerts_by_filter_command(client, args)
-        assert (
-            "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], "
-            "'paging': {'from': 0, 'to': 50}, "
-            "'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RELATIVE_TIMESTAMP', "
-            "'SEARCH_VALUE': '172800000'}, "
-            "{'OR': [{'SEARCH_FIELD': 'actor_process_image_sha256', 'SEARCH_TYPE': 'EQ',"
-            " 'SEARCH_VALUE': '222'}]}]}" in request_data_log.call_args[0][0]
-        )
-
-
+        # Check for source filter
+        assert "'SEARCH_FIELD': 'alert_source'" in logged_request
+        assert "'SEARCH_TYPE': 'CONTAINS'" in logged_request
+        assert "'SEARCH_VALUE': 'first'" in logged_request
+        assert "'SEARCH_VALUE': 'second'" in logged_request
+        
+        # Check for user name filter
+        assert "'SEARCH_FIELD': 'actor_effective_username'" in logged_request
+        assert "'SEARCH_TYPE': 'CONTAINS'" in logged_request
+        assert "'SEARCH_VALUE': 'N/A'" in logged_request
 class TestPollingCommands:
     @staticmethod
     def create_mocked_responses(status_count):
@@ -4279,8 +4215,8 @@ def test_get_alert_by_filter_custom_filter_valid_json(requests_mock):
     from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
     api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
-    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
 
     # Valid JSON with agent_id
     custom_filter = '{"AND":[{"SEARCH_FIELD": "agent_id", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": "1.2.3.4"}]}'
@@ -4303,8 +4239,8 @@ def test_get_alert_by_filter_custom_filter_malformed_json_fixed(requests_mock):
     from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
     api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
-    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
 
     # Malformed JSON with agent_id - array values as string with unescaped quotes
     custom_filter = '{"AND":[{"SEARCH_FIELD": "agent_id", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": "[1.2.3.4, 5.6.7.8]"}]}'

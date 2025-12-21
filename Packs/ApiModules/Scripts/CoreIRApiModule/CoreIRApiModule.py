@@ -4163,6 +4163,8 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
             raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
 
     if custom_filter:  # if exists, add custom filter to the built filter
+        if not filter_dict:
+            filter_dict = {"AND": []}
         if "AND" in custom_filter:
             filter_obj = custom_filter["AND"]
             filter_dict["AND"].extend(filter_obj)
