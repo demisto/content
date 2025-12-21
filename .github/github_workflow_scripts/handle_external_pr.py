@@ -381,7 +381,8 @@ def get_user_from_pr_body(pr: PullRequest) -> str:
     Returns:
     - Found User
     """
-    body = pr.body
+    print(f"PR body: {type(pr.body)=} | {pr.body} ")
+    body = pr.body or ""
     matcher = re.search(PR_AUTHOR_PATTERN, body)
     if matcher:
         return matcher.groups()[0]
