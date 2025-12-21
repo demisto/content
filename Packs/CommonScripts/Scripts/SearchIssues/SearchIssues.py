@@ -43,51 +43,6 @@ def remove_empty_string_values(args):
     return {key: value for key, value in args.items() if value != ""}
 
 
-def prepare_start_end_time(args: dict):
-    """
-    Prepare and validate start and end time parameters from args dictionary.
-
-    Parses start_time and end_time from string format to ISO format and validates
-    that when end_time is provided, start_time must also be provided. If only start_time
-    is provided, sets end_time to current time. Sets time_frame to 'custom' when both
-    times are specified.
-
-    Args:
-        args (dict): Dictionary containing start_time and end_time parameters
-
-    Raises:
-        DemistoException: If end_time is provided without start_time
-
-    Side Effects:
-        Modifies the args dictionary in place by:
-        - Converting start_time and end_time to ISO format
-        - Setting time_frame to 'custom' when both times are present
-        - Setting end_time to current time if only start_time is provided
-
-    """
-    start_time = args.get("start_time", "")
-    end_time = args.get("end_time", "")
-
-    if end_time and not start_time:
-        raise DemistoException("When end time is provided start_time must be provided as well.")
-
-    if start_time := dateparser.parse(start_time):
-        start_time = start_time.strftime("%Y-%m-%dT%H:%M:%S")
-
-    if end_time := dateparser.parse(end_time):
-        end_time = end_time.strftime("%Y-%m-%dT%H:%M:%S")
-
-    if start_time and not end_time:
-        # Set end_time to default now.
-        end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
-    if start_time and end_time:
-        # When working with start time and end time need to specify time_frame custom.
-        args["time_frame"] = "custom"
-        args["start_time"] = start_time
-        args["end_time"] = end_time
-
-
 def create_sha_search_field_query(sha_search_field: str, search_type: str, sha_list: list[str]) -> Optional[dict]:
     """
     Given a list of sha256 values, builds a query of this form: { "AND": [ { {"OR": [{"SEARCH_FIELD": sha_search_field,
@@ -161,8 +116,7 @@ def prepare_sha256_custom_field(args: dict) -> Optional[str]:
 def main():  # pragma: no cover
     try:
         args: dict = demisto.args()
-        prepare_start_end_time(args)
-
+        
         if additional_output_fields := args.pop("additional_output_fields", []):
             OUTPUT_KEYS.extend(additional_output_fields)
 

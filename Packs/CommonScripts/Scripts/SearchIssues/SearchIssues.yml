@@ -171,13 +171,13 @@ outputs:
   - contextPath: Core.Issue.internal_id
     description: The internal ID of the issue.
     type: String
-  - contextPath: Core.Issue.case_id
-    description: The case ID associated with the issue.
+  - contextPath: Core.Issue.case_ids
+    description: The case IDs associated with the issue.
     type: String
   - contextPath: Core.Issue.issue_source
     description: The source of the issue.
     type: String
-  - contextPath: Core.Issue.agentsid
+  - contextPath: Core.Issue.agent_ids
     description: The agent (endpoint) IDs associated with the issue.
     type: List
   - contextPath: Core.Issue.status.progress
@@ -189,8 +189,8 @@ outputs:
   - contextPath: Core.Issue.assigned_to
     description: The user assigned to the issue.
     type: String
-  - contextPath: Core.Issue.assetid
-    description: The asset ID related to the issue.
+  - contextPath: Core.Issue.asset_ids
+    description: The asset IDs related to the issue.
     type: String
   - contextPath: Core.Issue.action_file_macro_sha256
     description: File Macro SHA256 hash of the action file macro.
@@ -228,7 +228,7 @@ outputs:
   - contextPath: Core.Issue.issue_description
     description: The issue description.
     type: String
-  - contextPath: Core.Issue.Identity_type
+  - contextPath: Core.Issue.identity_type
     description: The identity type of the account.
     type: String
 isInternal: true
