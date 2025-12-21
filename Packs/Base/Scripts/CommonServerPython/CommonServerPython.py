@@ -10251,6 +10251,120 @@ if 'requests' in sys.modules:
             except AttributeError:
                 pass
 
+class AsyncClient:
+    """
+    Base asynchronous client for interacting with APIs.
+    Handles session and authentication management.
+    """
+
+    def __init__(
+        self,
+        base_url: str,
+        auth_headers: dict = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        },
+        verify: bool = True,
+        connection_error_retries: int = 5,
+        connection_error_interval: int = 1,
+    ):
+        """
+        Initialize the AsyncClient.
+
+        Args:
+            base_url (str): Base URL for the API.
+            auth_headers (dict, optional): Authentication headers to use for requests.
+            verify (bool, optional): Whether to verify SSL certificates. Defaults to True.
+            connection_error_retries (int, optional): Number of retries for connection errors. Defaults to 5.
+            connection_error_interval (int, optional): Interval between retries in seconds. Defaults to 1.
+        """
+        self._base_url = base_url.rstrip("/")
+        self._auth_headers = auth_headers or {}
+        self._verify = verify
+        self.connection_error_retries = connection_error_retries
+        self.connection_error_interval = connection_error_interval
+        self._session = None
+
+    async def __aenter__(self):
+        """Asynchronous context manager entry: creates the aiohttp session."""
+        import aiohttp
+        # Create a single session that persists for the client's lifespan
+        self._session = aiohttp.ClientSession()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Asynchronous context manager exit: closes the aiohttp session."""
+        if self._session:
+            await self._session.close()
+
+    async def http_request(self, method: str, endpoint: str, payload: dict = None, headers: dict = None, retryable_statuses: set = {500, 502, 503, 504, 429}):
+        """
+        Executes an asynchronous HTTP request and returns the raw response object.
+        Includes retry logic for server errors.
+
+        Args:
+            method (str): HTTP method (GET, POST, etc.)
+            endpoint (str): API endpoint to call
+            payload (dict, optional): Request payload
+            headers (dict, optional): Additional headers to include
+
+        Returns:
+            Any: Response from the API
+
+        Raises:
+            DemistoException: If the request fails after all retries
+        """
+        import aiohttp
+        import asyncio
+
+        url = self._base_url + endpoint
+        request_headers = self._auth_headers.copy()
+        if headers:
+            request_headers.update(headers)
+
+        # Select the method function (get, post, etc.)
+        request_func = getattr(self._session, method.lower())
+
+        MAX_RETRIES = self.connection_error_retries
+
+        for attempt in range(MAX_RETRIES + 1):
+            if attempt > 0:
+                delay = self.connection_error_interval * attempt
+                demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{MAX_RETRIES}. Waiting {delay}s...")
+                await asyncio.sleep(delay)
+
+            try:
+                response = await request_func(url, headers=request_headers, json=payload, ssl=not self._verify)
+
+                # 1. Handle Retryable Errors
+                if response.status in retryable_statuses:
+                    try:
+                        message = response.message
+                    except AttributeError:
+                        message = "No message from server"
+                    demisto.debug(f"API returned retryable status {response.status}: {message}")
+                    response.close()  # Close connection before retrying
+                    continue
+
+                # 2. Handle Fatal Client Errors (4xx)
+                if 400 <= response.status < 500:
+                    try:
+                        error_body = await response.text()
+                    except Exception:
+                        error_body = "Could not read error body."
+                    response.close()
+                    raise DemistoException(f"Client API Error ({response.status}): {error_body}")
+
+                # 3. Success (2xx)
+                # Return the RAW response object so the caller can read headers/json as needed.
+                return response
+
+            except aiohttp.ClientConnectorError as e:
+                demisto.debug(f"Connection error: {e}")
+                if attempt == MAX_RETRIES:
+                    raise DemistoException(f"Connection error after {MAX_RETRIES} attempts: {str(e)}")
+
+        raise DemistoException(f"API request failed after {MAX_RETRIES} attempts.")
 
 def generic_http_request(method,
                          server_url,
