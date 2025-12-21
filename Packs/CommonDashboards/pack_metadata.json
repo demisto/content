@@ -16,7 +16,8 @@
     "dependencies": {},
     "marketplaces": [
         "xsoar",
-        "platform"
+        "platform",
+        "marketplacev2"
     ],
     "supportedModules": [
         "X1",
