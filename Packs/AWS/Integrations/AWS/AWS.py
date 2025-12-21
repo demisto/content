@@ -1131,7 +1131,7 @@ class S3:
             "GrantWrite": args.get("grant_write"),
             "GrantWriteACP": args.get("grant_write_acp"),
         }
-        # Since "us-east-1" id the default value for LocationConstraint, when added to the request the S3 API views that
+        # The "us-east-1" is the default value for LocationConstraint, when added to the request the S3 API views that
         # specific string as an invalid/unsupported value for the constraint.
         if location != "us-east-1":
             kwargs["CreateBucketConfiguration"] = {"LocationConstraint": location}

@@ -6923,6 +6923,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: network_interface_id
         description: The ID of the network interface.
         required: true
@@ -7041,6 +7043,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: region_names
         description: The names of the Regions. You can specify any Regions, whether they are enabled and disabled for your account.
         required: false
@@ -7106,6 +7110,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: bucket_name
         description: The name of the bucket to create. For more information about bucket naming rules see https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html.
         required: true
@@ -7223,6 +7229,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: limit
         description: Maximum number of buckets to be returned in response.
         defaultValue: 50
@@ -7337,6 +7345,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: instance_id
         description: The managed node ID for which you want inventory information.
         required: true
@@ -7416,6 +7426,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: instance_ids
         description: The IDs of the managed nodes where the command should run. Maximum of 50 IDs.
       - name: targets
