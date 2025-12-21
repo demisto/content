@@ -33,6 +33,7 @@ OFP_DETECTION = "OFP detection"
 NGSIEM_DETECTION = "ngsiem_detection"
 NGSIEM_INCIDENT = "ngsiem_incident"
 NGSIEM_AUTOMATED_LEAD = "ngsiem_automated_lead"
+NGSIEM_CASE = "ngsiem_case"
 THIRD_PARTY_DETECTION = "thirdparty_detection"
 
 # Fetch type names as they appear in the .yml instance configurations
@@ -968,7 +969,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         THIRD_PARTY_DETECTION_FETCH_TYPE,
         NGSIEM_INCIDENT_FETCH_TYPE,
         NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
-        NGSIEM_INCIDENT_FETCH_TYPE,
+        NGSIEM_INCIDENT_FETCH_TYPE
     ):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
@@ -1749,6 +1750,25 @@ def get_detections_entities(detections_ids: list):
     return {"resources": combined_resources}
 
 
+def get_cases_data(url_filter: str, limit: int, offset: int) -> tuple[int, list[str]]:
+    """
+    Fetches NGSIEM Case ids with provided filter
+    :param url_filter: URL filter
+    :param limit: number of cases to fetch
+    :param offset: the fetch offset
+
+    Returns:
+        tuple[int, list[str]]: The number of total cases in the filter and the list of cases ids.
+    """
+    params = {"sort": "created_timestamp.asc", "offset": offset, "limit": limit}
+    endpoint_url = f"/cases/queries/cases/v1?filter={url_filter}"
+    response = http_request("GET", endpoint_url, params)
+    total_cases: int = demisto.get(response, "meta.pagination.total")
+    ids: list[str] = demisto.get(response, "resources", [])
+
+    return total_cases, ids
+
+
 def get_incidents_ids(
     last_created_timestamp=None,
     filter_arg=None,
@@ -1810,6 +1830,26 @@ def get_incidents_entities(incidents_ids: list):
     ids_json = {"ids": incidents_ids}
     response = http_request("POST", "/incidents/entities/incidents/GET/v1", data=json.dumps(ids_json))
     return response
+
+
+def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
+    full_cases = []
+
+    for i in range(0, len(ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
+        batch_ids = ids[i: i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+
+        ids_json = {"composite_ids": batch_ids}
+        demisto.debug(f"Getting cases details with batch_ids len {len(batch_ids)}.")
+
+        # Make the API call with the current batch.
+        raw_res = http_request("POST", "/cases/entities/cases/v2", data=json.dumps(ids_json))
+
+        if "resources" in raw_res:
+            # Combine the resources from each response.
+            full_cases.extend(raw_res["resources"])
+
+    # Return the combined result.
+    return combined_resources
 
 
 def get_detection_entities(incidents_ids: list):
@@ -3417,6 +3457,7 @@ def fetch_items(command="fetch-incidents"):
         ngsiem_detection_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_DETECTIONS)
         ngsiem_incident_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_INCIDENTS)
         ngsiem_automated_lead_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_AUTOMATED_LEADS)
+        ngsiem_case_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_CASES)
 
     demisto.debug(f"CrowdstrikeFalconMsg: Selected fetch types: {fetch_incidents_or_detections}")
 
@@ -3536,6 +3577,17 @@ def fetch_items(command="fetch-incidents"):
             is_fetch_events=False,
         )
         items.extend(fetched_ngsiem_automated_leads)
+
+    if NGSIEM_CASES_FETCH_TYPE in fetch_incidents_or_detections:
+        demisto.debug("CrowdstrikeFalconMsg: Start fetch NGSIEM Cases")
+        demisto.debug(f"CrowdStrikeFalconMsg: Current NGSIEM Cases last_run_object: {ngsiem_case_last_run}")
+
+        fetched_ngsiem_cases, ngsiem_case_last_run = fetch_ngsiem_cases(
+            ngsiem_case_last_run,
+            look_back,
+            params.get("ngsiem_cases_fetch_query", "")
+        )
+        items.extend(fetched_ngsiem_cases)
 
     # Fetch Indicators of Misconfiguration (IOM) - supported for fetch-incidents command only.
     if not is_fetch_events and IOM_FETCH_TYPE in fetch_incidents_or_detections:
@@ -3815,6 +3867,60 @@ def fetch_detections_by_product_type(
     demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch {detections_type}. Fetched {len(detections)}")
     return detections, current_fetch_info
 
+
+def fetch_ngsiem_cases(last_run: dict, look_back: int, fetch_query: str):
+    cases = []
+    offset = last_run.get("offset", 0)
+    fetch_limit = last_run.get("limit", INCIDENTS_PER_FETCH)
+    start_fetch_time, end_fetch_time = get_fetch_run_time_range(
+        last_run=last_run, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
+    )
+
+    # build query and fetch cases data
+    filter = f"created_timestamp:>'{start_fetch_time}'"
+    if fetch_query:
+        filter += f"+{fetch_query}"
+    demisto.debug(f"CrowdStrikeFalconMsg: fetching NGSIEM case ids with: {filter=}, {fetch_limit=}, {offset=}")
+    total_cases, ids = get_cases_data(filter, fetch_limit, offset)
+    demisto.debug(f"CrowdStrikeFalconMsg: fetched a total of {len(ids)} NGSIEM case ids")
+
+    # calculate new offset
+    offset = calculate_new_offset(offset, len(ids), total_cases)
+    if offset and offset + fetch_limit > MAX_FETCH_SIZE:
+        demisto.debug(
+            f"CrowdStrikeFalconMsg: The new offset: {offset} + limit: {fetch_limit} reached "
+            f"{MAX_FETCH_SIZE}, resetting the offset to 0"
+        )
+        offset = 0
+    demisto.debug(f"CrowdStrikeFalconMsg: The new ngsiem cases offset is {offset}")
+
+    # fetch cases details if ids exist
+    if ids:
+        cases_details = get_cases_details(ids)
+        # add incident type and append to list
+        for case in cases_details:
+            fix_time_field(case, "created_timestamp")
+            case["incident_type"] = NGSIEM_CASE
+            cases.append(case)
+        cases = filter_incidents_by_duplicates_and_limit(
+            incidents_res=cases, last_run=last_run, fetch_limit=fetch_limit, id_field="name"
+        )
+    demisto.debug(f"CrowdstrikeFalconMsg: cases last_run before update: {last_run}")
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=cases,
+        fetch_limit=fetch_limit,
+        start_fetch_time=start_fetch_time,
+        end_fetch_time=end_fetch_time,
+        look_back=look_back,
+        created_time_field="occurred",
+        id_field="name",
+        date_format=DETECTION_DATE_FORMAT,
+        new_offset=offset
+    )
+    demisto.debug(f"CrowdstrikeFalconMsg: cases last_run after update: {last_run}")
+    demisto.debug(f"CrowdstrikeFalconMsg: Ending NGSIEM Cases fetch. Fetched {len(cases)}")
+    return cases, last_run
 
 def parse_ioa_iom_incidents(
     fetched_data: list[dict[str, Any]],
