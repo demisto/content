@@ -91,6 +91,7 @@ TIME_METHOD_FETCH_EVENTS = param.get("time_method_fetch_event", "Simple-Date")
 MAP_LABELS_FETCH_EVENTS = param.get("map_labels_fetch_event", True)
 FETCH_QUERY_FETCH_EVENTS = RAW_QUERY_FETCH_EVENTS or FETCH_QUERY_PARM_FETCH_EVENTS
 
+
 def get_value_by_dot_notation(dictionary, key):
     """
     Get dictionary value by key using dot notation.
@@ -407,8 +408,10 @@ def fetch_params_check():
             str_error.append("Query by which to fetch events is not configured.")
 
         if RAW_QUERY_FETCH_EVENTS and FETCH_QUERY_PARM_FETCH_EVENTS:
-            str_error.append("Both Query and Raw Query are configured for fetch events. Please choose between Query or Raw Query.")
-            
+            str_error.append(
+                "Both Query and Raw Query are configured for fetch events. Please choose between Query or Raw Query."
+            )
+
     if is_fetch:
         if (TIME_FIELD == "" or TIME_FIELD is None) and not RAW_QUERY:
             str_error.append("Index time field is not configured for fetch incidents.")
@@ -417,8 +420,9 @@ def fetch_params_check():
             str_error.append("Query by which to fetch incidents is not configured.")
 
         if RAW_QUERY and FETCH_QUERY_PARM:
-            str_error.append("Both Query and Raw Query are configured for fetch incidents. Please choose between Query or Raw Query.")       
-        
+            str_error.append(
+                "Both Query and Raw Query are configured for fetch incidents. Please choose between Query or Raw Query."
+            )
 
     if len(str_error) > 0:
         return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + "\n".join(str_error))
@@ -637,11 +641,10 @@ def test_func(proxies):
 
 
 def integration_health_check(proxies):
-
     test_connectivity_auth(proxies)
     # build general Elasticsearch class
     es = elasticsearch_builder(proxies)
-    
+
     fetch_params_check()
 
     if demisto.params().get("isFetch"):
@@ -843,7 +846,11 @@ def format_to_iso(date_string):
 
 
 def get_time_range(
-    last_fetch: Union[str, None] = None, time_range_start=FETCH_TIME, time_range_end=None, time_field=TIME_FIELD, time_method=TIME_METHOD
+    last_fetch: Union[str, None] = None,
+    time_range_start=FETCH_TIME,
+    time_range_end=None,
+    time_field=TIME_FIELD,
+    time_method=TIME_METHOD,
 ) -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
@@ -941,10 +948,10 @@ def fetch_items(proxies, is_fetch_events=False):
 
     demisto.debug(f"{demisto.command()} starting")
     last_run: dict = demisto.getLastRun()
-    
+
     events_last_run: dict = last_run.get(LAST_RUN_EVENTS_KEY, {})
     incidents_last_run: dict = last_run.get(LAST_RUN_INCIDENTS_KEY, {})
-    
+
     last_fetch = (events_last_run.get("time") if is_fetch_events else incidents_last_run.get("time")) or FETCH_TIME
 
     time_field = TIME_FIELD_FETCH_EVENTS if is_fetch_events else TIME_FIELD
@@ -953,7 +960,6 @@ def fetch_items(proxies, is_fetch_events=False):
     fetch_index = FETCH_INDEX_FETCH_EVENTS if is_fetch_events else FETCH_INDEX
     fetch_size = FETCH_SIZE_FETCH_EVENTS if is_fetch_events else FETCH_SIZE
     time_method = TIME_METHOD_FETCH_EVENTS if is_fetch_events else TIME_METHOD
-    
 
     es = elasticsearch_builder(proxies)
     time_range_dict = get_time_range(time_range_start=last_fetch, time_field=time_field, time_method=time_method)
@@ -986,24 +992,22 @@ def fetch_items(proxies, is_fetch_events=False):
             incidents, last_fetch = results_to_incidents_datetime(response, last_fetch or FETCH_TIME, is_fetch_events)
             last_fetch = str(last_fetch)
         demisto.info(f"Extracted {len(incidents)} incidents.")
-        
+
         # Build updated last_run object with the current fetch status
         if is_fetch_events:
             events_last_run["time"] = last_fetch
         else:
             incidents_last_run["time"] = last_fetch
-        updated_last_run = {
-            LAST_RUN_INCIDENTS_KEY: incidents_last_run,
-            LAST_RUN_EVENTS_KEY: events_last_run
-            }
+        updated_last_run = {LAST_RUN_INCIDENTS_KEY: incidents_last_run, LAST_RUN_EVENTS_KEY: events_last_run}
 
         if is_fetch_events:
             send_events_to_xsiam(incidents, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(updated_last_run)
-        else: 
+        else:
             demisto.setLastRun(updated_last_run)
             demisto.incidents(incidents)
-        demisto.debug(f"Updated last_run object after successful fetch:\n{updated_last_run}")  
+        demisto.debug(f"Updated last_run object after successful fetch:\n{updated_last_run}")
+
 
 def parse_subtree(my_map):
     """
@@ -1292,9 +1296,9 @@ def main():  # pragma: no cover
             fetch_items(proxies)
         elif demisto.command() == "fetch-events":
             fetch_items(proxies, is_fetch_events=True)
-        elif demisto.command() in ["search", "es-search"]: # ??? args default values: FETCH_TIME, TIME_FIELD
+        elif demisto.command() in ["search", "es-search"]:  # ??? args default values: FETCH_TIME, TIME_FIELD
             search_command(proxies)
-        elif demisto.command() == "get-mapping-fields": # ??? use FETCH_INDEX
+        elif demisto.command() == "get-mapping-fields":  # ??? use FETCH_INDEX
             return_results(get_mapping_fields_command())
         elif demisto.command() == "es-eql-search":
             return_results(search_eql_command(args, proxies))
@@ -1302,7 +1306,7 @@ def main():  # pragma: no cover
             return_results(search_esql_command(args, proxies))
         elif demisto.command() == "es-index":
             return_results(index_document_command(args, proxies))
-        elif demisto.command() == "es-integration-health-check": # ??? use fetch-incidents args
+        elif demisto.command() == "es-integration-health-check":  # ??? use fetch-incidents args
             return_results(integration_health_check(proxies))
         elif demisto.command() == "es-get-indices-statistics":
             return_results(get_indices_statistics_command(args, proxies))
