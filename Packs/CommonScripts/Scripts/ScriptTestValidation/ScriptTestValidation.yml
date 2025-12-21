@@ -9,6 +9,7 @@ args:
 - name: ip
 compliantpolicies:
 - IP Blockage
+- User Hard Remediation
 comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
 commonfields:
   id: ScriptTestValidation

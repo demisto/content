@@ -46,13 +46,16 @@ script:
     name: baseintegration-dummy
     compliantpolicies:
     - User Soft Remediation
+    - IP Blockage
     outputs:
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
       type: String
   - arguments:
-    - name: ip
+    - name: user
     name: test2
+    compliantpolicies:
+    - User Soft Remediation
   isfetch: false
   runonce: false
   script: '-'
