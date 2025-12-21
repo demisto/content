@@ -1,8 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
-
+import re
+                                                                
 def filter_relationships_by_entity_types(entities, entities_types, relationships, limit):
     """
     Filters indicator relationships by entity types using pagination.
@@ -18,7 +18,7 @@ def filter_relationships_by_entity_types(entities, entities_types, relationships
     """
     filtered_relationships: list = []
     searchAfter = None
-
+    iteration = 0
     while len(filtered_relationships) < limit:
         search_params = {
             "entities": entities,
@@ -35,8 +35,8 @@ def filter_relationships_by_entity_types(entities, entities_types, relationships
             break
 
         data = demisto.get(res[0], "Contents") or {}
-        demisto.debug(f"Received data: {data}")
-
+        demisto.debug(f"{iteration=}, Received data: {data}")
+        iteration += 1
         if not data or data.get("Relationships") is None:
             demisto.debug(f"Invalid or empty data received: {data}")
             break
