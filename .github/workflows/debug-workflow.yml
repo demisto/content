@@ -1,12 +1,8 @@
-name: AI Reviewer Trigger
+name: AI Reviewer Trigger (Debug)
 
 on:
   issue_comment:
     types: [created]
-
-env:
-  IGNORED_BOTS: '["content-bot", "xsoar-bot", "dependabot"]'
-  ALLOWED_COMMANDS: '["@content_bot start review", "@content_bot re-review"]'
 
 jobs:
   trigger-ai-review:
@@ -14,45 +10,47 @@ jobs:
     permissions:
       contents: write
       pull-requests: read
-    if: >-
-      github.event.issue.pull_request &&
-      (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
-      !contains(fromJson(env.IGNORED_BOTS), github.event.comment.user.login)
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           
-      - name: AI Reviewer Commands Detection
+      - name: Debug - Command Detection
         env:
           GITHUB_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          IS_PR: ${{ !!github.event.issue.pull_request }}
           COMMENT_BODY: ${{ github.event.comment.body }}
+          AUTHOR_ASSOCIATION: ${{ github.event.comment.author_association }}
+          USER_LOGIN: ${{ github.event.comment.user.login }}
         run: |
           echo "🔎 Analyzing Comment:"
           echo "    \"\"\"$COMMENT_BODY\"\"\""
 
-          # 1. Check if no reviews in progress
+          # 1. Check if it's a PR
+          if [[ "$IS_PR" != "true" ]]; then
+            echo "ℹ️ Ignoring comment: Not a Pull Request"
+            exit 0
+          fi
+
+          # 2. Check Author Association
+          if [[ "$AUTHOR_ASSOCIATION" != "MEMBER" && "$AUTHOR_ASSOCIATION" != "OWNER" ]]; then
+            echo "ℹ️ Ignoring comment: User is not a MEMBER or OWNER (Association: $AUTHOR_ASSOCIATION)"
+            exit 0
+          fi
+
+          # 3. Check for Bots
+          if [[ "$USER_LOGIN" == "content-bot" || "$USER_LOGIN" == "xsoar-bot" || "$USER_LOGIN" == "dependabot" ]]; then
+            echo "ℹ️ Ignoring comment: User is a bot ($USER_LOGIN)"
+            exit 0
+          fi
+
+          # 4. Check if no reviews in progress
           # Fetch the last 5 comments, reverse sort by date, and find the first one that is NOT the current comment
           # AND contains a command. Then check if it has a rocket reaction.
           
-          # Construct jq filter dynamically from env var
-          JQ_FILTER="sort_by(.created_at) | reverse | .[] | select(.id != ${{ github.event.comment.id }} and ("
-          
-          # Add command checks to filter
-          COMMANDS_JSON='${{ env.ALLOWED_COMMANDS }}'
-          FIRST=true
-          for cmd in $(echo $COMMANDS_JSON | jq -r '.[]'); do
-            if [ "$FIRST" = true ]; then
-              JQ_FILTER+=".body | contains(\"$cmd\")"
-              FIRST=false
-            else
-              JQ_FILTER+=" or contains(\"$cmd\")"
-            fi
-          done
-          JQ_FILTER+=")) | .id"
-
-          PREV_COMMAND_ID=$(gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments --jq "$JQ_FILTER" | head -n 1)
+          PREV_COMMAND_ID=$(gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+            --jq 'sort_by(.created_at) | reverse | .[] | select(.id != ${{ github.event.comment.id }} and (.body | contains("@content_bot start review") or contains("@content_bot re-review"))) | .id' | head -n 1)
 
           if [[ -n "$PREV_COMMAND_ID" ]]; then
             echo "🔎 Found previous command (ID: $PREV_COMMAND_ID)"
@@ -65,17 +63,9 @@ jobs:
             fi
           fi
 
-          # 3. Check for Commands
-          IS_VALID_COMMAND=false
-          for cmd in $(echo '${{ env.ALLOWED_COMMANDS }}' | jq -r '.[]'); do
-            if [[ "$COMMENT_BODY" == *"$cmd"* ]]; then
-              IS_VALID_COMMAND=true
-              break
-            fi
-          done
-
-          if [[ "$IS_VALID_COMMAND" == "true" ]]; then
-            echo "✅ Detected 'content-bot' command"
+          # 5. Check for Commands
+          if [[ "$COMMENT_BODY" == *"@content_bot start review"* || "$COMMENT_BODY" == *"@content_bot re-review"* ]]; then
+            echo "✅ Detected 'content-bot' execution command"
 
             # # push new empty commit so the ai reviewer is triggered in the build
             git config --global user.email "bot@demisto.com"
