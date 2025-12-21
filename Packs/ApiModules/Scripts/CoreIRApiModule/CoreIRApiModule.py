@@ -153,7 +153,7 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
-MAX_GET_ISSUES_LIMIT = 100
+MAX_GET_ISSUES_LIMIT = 50
 ALERTS_TABLE = "ALERTS_VIEW_TABLE"
 
 
@@ -4224,7 +4224,6 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
     page = page * MAX_GET_ISSUES_LIMIT
     sort_field = args.get("sort_field", "source_insert_ts")
     sort_order = args.get("sort_order", "DESC")
-    output_keys = argToList(args.get("output_keys"))
     request_data = build_webapp_request_data(
         table_name=ALERTS_TABLE,
         filter_dict=filter_dict,
@@ -4273,7 +4272,6 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
         readable_output=tableToMarkdown(f"{ALERT_OR_ISSUE}", human_readable),
         raw_response=data,
     )
-
 
 def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get("alert_ids", []))

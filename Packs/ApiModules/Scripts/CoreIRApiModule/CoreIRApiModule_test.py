@@ -2655,7 +2655,6 @@ class TestGetAlertByFilter:
 
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
         requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
-        request_data_log = mocker.patch.object(demisto, "debug")
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
         args = {
             "start_time": "2018-11-06T08:56:41",

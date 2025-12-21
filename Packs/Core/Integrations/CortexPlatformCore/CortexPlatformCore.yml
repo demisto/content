@@ -525,7 +525,7 @@ script:
             - Vulnerability Policy
             - AI Security Posture
         - auto: PREDEFINED
-          description: Supports relative or custom time options. If you choose custom, use the start_time and end_time arguments.
+          description: This argument is deprecated. Use *start_time* instead. Supports relative or custom time options. If you choose custom, use the start_time and end_time arguments.
           name: time_frame
           predefined:
             - 60 minutes
@@ -537,6 +537,7 @@ script:
             - 14 days
             - 30 days
             - custom
+          deprecated: true
         - description: The name assigned to the user_id during agent runtime. Accepts a comma-separated list.
           isArray: true
           name: user_name
@@ -639,14 +640,22 @@ script:
             - DESC
             - ASC
         - defaultValue: "0"
-          description: The first page number to retrieve issues from.
+          description: This argument is deprecated. Use *page* instead. The first page number to retrieve issues from.
           name: offset
+          deprecated: true
         - defaultValue: "50"
-          description: The last page number to retrieve issues from.
+          description: This argument is deprecated. Use *page_size* instead. The last page number to retrieve issues from.
           name: limit
-        - description: Relevant when the time_frame argument is set to custom. Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+          deprecated: true
+        - defaultValue: "0"
+          description: The page number for the issues to return for pagination. 
+          name: page
+        - defaultValue: "50"
+          description: The number of issues to return per page.
+          name: page_size
+        - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
           name: start_time
-        - description: Relevant when the time_frame argument is set to custom. Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+        - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
           name: end_time
         - auto: PREDEFINED
           description: Whether the issue is starred.
@@ -719,6 +728,12 @@ script:
           type: Number
         - contextPath: Core.Issue.issue_name
           description: The name of the issue.
+          type: String
+        - contextPath: Core.Issue.issue_category
+          description: The category of the issue.
+          type: String
+        - contextPath: Core.Issue.issue_description
+          description: The issue description.
           type: String
         - contextPath: Core.Issue.agent_ids
           description: The agent (endpoint) IDs associated with the issue.
