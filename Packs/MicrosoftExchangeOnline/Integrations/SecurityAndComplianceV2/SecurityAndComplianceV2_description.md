@@ -4,11 +4,11 @@ This integration enables you to manage the features that are available in the Se
 
 This integration supports two authentication methods:
 
-- **App-only authentication**
-- **Delegated user authentication**
-
 Depending on the selected authentication method, you may need to create a dedicated application or use a dedicated user account for the integration. Each method requires specific permissions and configuration steps to ensure Security & Compliance commands can be executed successfully.\
 For **detailed instructions** on how to configure each authentication method and properly set up the required parameters, refer to the **[integration documentation](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2#permissions-and-authentication-setup)**.
+
+- **[App-only authentication](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2#app-authentication-(app-only))**
+- **[Delegated user authentication](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2#delegated-user-authentication)**
 
 Authentication methods configuration:
 - App-only (OAuth2.0) using device code Authentication -
@@ -25,8 +25,7 @@ Authentication methods configuration:
        - o365-sc-case-hold-policy-set
        - o365-sc-case-hold-policy-delete
        - o365-sc-case-hold-rule-create
-       - o365-sc-case-hold-rule-delete 
-       - o365-sc-email-security-search-and-delete-email-office-365-quick-action
+       - o365-sc-case-hold-rule-delete
 
 **Note - If a UPN Password is provided:**  
 - Even if the password is incorrect, the integration will attempt to authenticate using it.

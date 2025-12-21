@@ -147,7 +147,6 @@ Note: Role assignment propagation may take up to one hour.
           - o365-sc-case-hold-policy-delete
           - o365-sc-case-hold-rule-create
           - o365-sc-case-hold-rule-delete
-          - o365-sc-email-security-search-and-delete-email-office-365-quick-action
 
    - **Note - If a UPN Password is provided:**
      - Even if the password is incorrect, the integration will attempt to authenticate using it.
