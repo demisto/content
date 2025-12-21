@@ -708,73 +708,56 @@ script:
       name: core-get-issues
       description: "Returns a list of issues and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       outputs:
-        - contextPath: Core.Issue.Identity_type
+        - contextPath: Core.Issue.internal_id
+          description: The unique ID of the issue.
+        - contextPath: Core.Issue.identity_type
           description: The identity type of the account.
-          type: String
-        - contextPath: Core.Issue.agentsid #NOW ITS agent_id
+        - contextPath: Core.Issue.source_insert_ts
+          description: The detection timestamp.
+        - contextPath: Core.Issue.issue_name
+          description: The name of the issue.
+        - contextPath: Core.Issue.agent_ids
           description: The agent (endpoint) IDs associated with the issue.
-          type: List
-        - contextPath: Core.Issue.assetid # NOW ITS ASSET_IDS
-          description: The asset ID related to the issue.
-          type: String
+        - contextPath: Core.Issue.asset_ids
+          description: The asset IDs related to the issue.
+        - contextPath: Core.Issue.severity
+          description: The severity of the issue.
         - contextPath: Core.Issue.issue_domain
           description: The domain of the issue.
-          type: String
-        - contextPath: Core.Issue.case_id # NOW ITS CASE_IDS 
-          description: The case ID associated with the issue.
-          type: String
+        - contextPath: Core.Issue.case_ids
+          description: The case IDs associated with the issue.
         - contextPath: Core.Issue.issue_source
           description: The source of the issue.
-          type: String
         - contextPath: Core.Issue.starred
           description: Whether the issue is starred.
-          type: Boolean
-        - contextPath: Core.Issue.action_file_macro_sha256
-          description: File Macro SHA256 hash of the action file macro.
-          type: String
-        - contextPath: Core.Issue.action_process_image_sha256
-          description: Action process image SHA256 hash.
-          type: String
-        - contextPath: Core.Issue.causality_actor_process_image_sha256
-          description: Causality actor process image SHA256 hash.
-          type: String
-        - contextPath: Core.Issue.os_actor_process_image_sha256
-          description: OS Parent SHA256 hash of the OS actor process image.
-          type: String
-        - contextPath: Core.Issue.actor_process_image_sha256
-          description: Actor process image SHA256 hash.
-          type: String
         - contextPath: Core.Issue.status.progress
           description: The progress status of the issue.
-          type: String
         - contextPath: Core.Issue.assigned_to_pretty
           description: The pretty name of the user assigned to the issue.
-          type: String
         - contextPath: Core.Issue.assigned_to
           description: The user assigned to the issue.
-          type: String
         - contextPath: Core.Issue.agent_ip_addresses
           description: The host IP address.
-          type: String
         - contextPath: Core.Issue.agent_hostname
           description: The hostname.
-          type: String
         - contextPath: Core.Issue.mitre_tactic_id_and_name
           description: The MITRE attack tactic.
-          type: String
         - contextPath: Core.Issue.mitre_technique_id_and_name
           description: The MITRE attack technique.
-          type: String
-        - contextPath: Core.Issue.issue_action_status
-          description: The issue action status.
-          type: String
         - contextPath: Core.Issue.issue_action_status 
           description: The issue action status.
-          type: String
-        - contextPath: Core.Issue.issue_action_status_readable #add to context
+        - contextPath: Core.Issue.issue_action_status_readable
           description: The issue action status in readable format.
-          type: String
-
+        - contextPath: Core.Issue.action_file_macro_sha256
+          description: File Macro SHA256 hash of the action file macro.
+        - contextPath: Core.Issue.action_process_image_sha256
+          description: Action process image SHA256 hash.
+        - contextPath: Core.Issue.causality_actor_process_image_sha256
+          description: Causality actor process image SHA256 hash.
+        - contextPath: Core.Issue.os_actor_process_image_sha256
+          description: OS Parent SHA256 hash of the OS actor process image.
+        - contextPath: Core.Issue.actor_process_image_sha256
+          description: Actor process image SHA256 hash.
     - arguments:
         - description: Asset unique identifier.
           name: asset_id
