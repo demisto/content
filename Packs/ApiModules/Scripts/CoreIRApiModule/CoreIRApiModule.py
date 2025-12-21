@@ -3980,7 +3980,7 @@ ISSUE_FIELDS = {
     "assignee_mail": "assigned_to",
     "issue_id": "internal_id",
     "mitre_technique_id_and_name": "mitre_technique_id_and_name",
-    "status": "status.progres",
+    "status": "status.progress",
     "actor_process_image_name": "actor_process_image_name",
     "dst_action_external_hostname": "dst_action_external_hostname",
     "os_actor_process_image_sha256": "os_actor_process_image_sha256",
