@@ -8,6 +8,7 @@ name: Vectra_Detect
 display: Vectra Detect
 description: This integration allows to create incidents based on Vectra Accounts/Hosts/Detections objects.
 category: Network Security
+provider: VectraAi
 defaultclassifier: Vectra Detect
 defaultmapperin: Vectra Detect - Incoming Mapper
 fromversion: 6.5.0

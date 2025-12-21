@@ -4,6 +4,7 @@ commonfields:
 name: SCADAfence CNM
 display: SCADAfence CNM
 category: Network Security
+provider: ScadafenceCnm
 description: fetching data from CNM.
 configuration:
 - display: API auth secret

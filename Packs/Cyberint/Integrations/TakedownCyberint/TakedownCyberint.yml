@@ -7,6 +7,7 @@ fromversion: 6.9.0
 name: Cyberint Takedowns
 display: Cyberint Takedowns
 category: Data Enrichment & Threat Intelligence
+provider: Cyberint
 description: Use the Cyberint Takedowns integration to manage takedowns requests.
 configuration:
 - display: Cyberint API URL

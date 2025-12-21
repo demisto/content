@@ -4,6 +4,7 @@ commonfields:
 name: Demisto REST API
 display: Demisto REST API (Deprecated)
 category: Utilities
+provider: CortexRestApi
 description: Deprecated. Use Core REST API instead.
 configuration:
 - display: Demisto Server URL

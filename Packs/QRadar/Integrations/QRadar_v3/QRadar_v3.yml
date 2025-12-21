@@ -7,6 +7,7 @@ sectionorder:
 name: QRadar v3
 display: IBM QRadar v3
 category: Analytics & SIEM
+provider: IBM
 description: IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
 configuration:
 - display: Server URL

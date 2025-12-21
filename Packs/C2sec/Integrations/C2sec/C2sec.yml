@@ -5,6 +5,7 @@ name: C2sec irisk
 display: C2sec irisk
 fromversion: 5.0.0
 category: Data Enrichment & Threat Intelligence
+provider: C2secIrisk
 description: Understand Your Cyber Exposure as Easy as a Google Search
 configuration:
 - display: API URL (e.g. https://api.c2sec.com/api)

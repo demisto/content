@@ -4,6 +4,7 @@ commonfields:
 name: FireEye iSIGHT
 display: FireEye iSIGHT
 category: Data Enrichment & Threat Intelligence
+provider: FireEye
 description: FireEye cyber threat intelligence.
 configuration:
 - display: Public Key

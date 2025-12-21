@@ -4,6 +4,7 @@ commonfields:
 name: Minerva Labs Anti-Evasion Platform
 display: Minerva Labs Anti-Evasion Platform
 category: Endpoint
+provider: MinervaLabsAnti
 description: Minerva eliminates the endpoint security gap while empowering companies to embrace technology fearlessly.
 configuration:
 - display: Minerva Management Console URL

@@ -1,4 +1,5 @@
 category: Endpoint
+provider: PaloAltoNetworks
 commonfields:
   id: Traps
   version: -1

@@ -2,6 +2,7 @@ category: Vulnerability Management
 sectionorder:
 - Connect
 - Collect
+provider: Rapid7
 commonfields:
   id: Rapid7 Nexpose
   version: -1

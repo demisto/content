@@ -1,4 +1,5 @@
 category: Endpoint
+provider: Code42
 commonfields:
   id: Code42
   version: -1

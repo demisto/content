@@ -4,6 +4,7 @@ commonfields:
 name: PhishTank
 display: PhishTank (Deprecated)
 category: Data Enrichment & Threat Intelligence
+provider: PhishTank
 description: Deprecated. Use the PhishTank v2 integration instead.
 configuration:
 - display: Use system proxy settings

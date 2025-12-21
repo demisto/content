@@ -4,6 +4,7 @@ commonfields:
 name: carbonblackliveresponse
 display: VMware Carbon Black EDR (Live Response API)
 category: Endpoint
+provider: CarbonBlackEnterprise
 description: Collect information and take action on remote endpoints in real time with VMware Carbon Black EDR (Live Response API) (formerly known as Carbon Black Enterprise Live Response).
 configuration:
 - display: Server URL

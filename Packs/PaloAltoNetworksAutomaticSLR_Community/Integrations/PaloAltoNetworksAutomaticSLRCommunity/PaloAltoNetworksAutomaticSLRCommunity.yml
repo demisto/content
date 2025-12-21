@@ -4,6 +4,7 @@ commonfields:
 name: Palo Alto Networks Automatic SLR (Community)
 display: Palo Alto Networks Automatic SLR
 category: Utilities
+provider: AutomaticSlrBy
 description: Allow XSOAR to automatically generate Security Lifecycle Review's (SLR's).
 configuration:
 - display: Firewall Management FQDN or IP Address

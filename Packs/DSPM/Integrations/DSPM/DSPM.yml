@@ -7,6 +7,7 @@ sectionorder:
 name: DSPM
 display: Prisma Cloud DSPM
 category: Network Security
+provider: DSPM
 description: |
   Remediate your data security risks. Integrate with Prisma Cloud DSPM to fetch your data security risks and remediate them with OOTB playbooks.
 configuration:

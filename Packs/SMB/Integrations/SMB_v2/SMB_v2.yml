@@ -7,6 +7,7 @@ sectionorder:
 name: Server Message Block (SMB) v2
 display: Server Message Block (SMB) v2
 category: Utilities
+provider: ServerMessageBlock
 description: Files and Directories management with an SMB server. Supports SMB2 and SMB3 protocols.
 configuration:
 - display: Server IP / Hostname (e.g. 1.2.3.4)

@@ -4,6 +4,7 @@ commonfields:
 name: Imperva Skyfence
 display: Imperva Skyfence
 category: Network Security
+provider: ImpervaSkyfence
 system: true
 description: The Imperva Skyfence Cloud Gateway is a Cloud Access Security Broker (CASB) that provides visibility and control over sanctioned and unsanctioned cloud apps to enable their safe and productive use.
 configuration:

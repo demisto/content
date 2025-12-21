@@ -5,6 +5,7 @@ name: McAfee Web Gateway
 deprecated: true
 display: McAfee Web Gateway (Deprecated)
 category: IT Services
+provider: McAfee
 description: Deprecated. Use Skyhigh Secure Web Gateway (On Prem) instead.
 configuration:
 - display: Server URL (e.g. https://192.168.100.55)

@@ -4,6 +4,7 @@ commonfields:
 name: Endgame
 display: Endgame
 category: Endpoint
+provider: Endgame
 description: Endpoint protection built to stop advanced attacks before damage and loss occurs
 configuration:
 - display: 'Server URL (Example: https://me.endgame.com:2443)'

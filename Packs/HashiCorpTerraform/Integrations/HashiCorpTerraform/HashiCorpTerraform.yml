@@ -59,6 +59,7 @@ configuration:
 name: HashicorpTerraform
 display: HashiCorp Terraform
 category: IT Services
+provider: HashicorpTerraform
 description: Hashicorp Terraform provide infrastructure automation to provision and manage resources in any cloud or data center with Terraform.
 script:
   commands:

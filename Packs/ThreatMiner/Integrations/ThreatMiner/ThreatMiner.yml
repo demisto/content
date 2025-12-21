@@ -4,6 +4,7 @@ commonfields:
 name: ThreatMiner
 display: ThreatMiner
 category: Data Enrichment & Threat Intelligence
+provider: ThreatMiner
 description: Data Mining for Threat Intelligence
 configuration:
 - display: Maximum results per query, enter 'all' to get unlimited results

@@ -4,6 +4,7 @@ commonfields:
 name: Trend Micro Deep Discovery Analyzer
 display: Trend Micro Deep Discovery Analyzer (Beta)
 category: Forensics & Malware Analysis
+provider: TrendMicroDeep
 description: Deep Discovery Analyzer is a turnkey appliance that uses virtual images of endpoint configurations to analyze and detect targeted attacks.
 configuration:
 - display: DDA Server and Port  (e.g https://192.168.0.1:<port>)

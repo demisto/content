@@ -4,6 +4,7 @@ commonfields:
 name: OPNSense
 display: OPNSense
 category: Network Security
+provider: OPNSense
 description: >-
   Manage OPNsense Firewall. 
 

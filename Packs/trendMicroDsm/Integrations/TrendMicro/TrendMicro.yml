@@ -5,6 +5,7 @@ name: Trend Micro
 system: true
 display: Trend Micro (Deprecated)
 category: Endpoint
+provider: TrendMicro
 deprecated: true
 description: Deprecated. Use Trend Micro Deep Security instead.
 configuration:

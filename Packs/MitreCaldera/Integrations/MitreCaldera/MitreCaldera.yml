@@ -4,6 +4,7 @@ commonfields:
 name: MitreCaldera
 display: MitreCaldera
 category: IT Services
+provider: MitreCaldera
 description: Mitre Caldera can be used to test endpoint security solutions and assess a network's security posture against the common post-compromise adversarial techniques contained in the ATT&CK model. CALDERA leverages the ATT&CK model to identify and replicate adversary behaviors as if a real intrusion is occurring.
 configuration:
 - name: url

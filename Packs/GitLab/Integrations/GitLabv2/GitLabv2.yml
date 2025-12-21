@@ -1,4 +1,5 @@
 category: Utilities
+provider: GitLab
 commonfields:
   id: GitLabv2
   version: -1

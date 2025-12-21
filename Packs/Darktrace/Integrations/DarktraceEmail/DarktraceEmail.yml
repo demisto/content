@@ -7,6 +7,7 @@ commonfields:
 name: DarktraceEmail
 display: DarktraceEmail
 category: Network Security
+provider: Darktrace
 description: "This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to investigate critical incidents along with accompanying summaries and timelines."
 detaileddescription: "### Partner Contributed Integration\n#### Integration Author: Darktrace\nSupport and maintenance for this integration are provided by the author. Please create a ticket on the Darktrace Customer Portal:\n- **URL**: [https://customerportal.darktrace.com](https://customerportal.darktrace.com)\n***\n## Darktrace\nTo configure the connection to your Darktrace instance, you will provide:\n- Server URL of Darktrace Server (ex: darktrace.yourcompany.com) and any necessary proxy information\n- Public and Private API Tokens from Darktrace (instructions to generate these tokens can be found at: https://customerportal.darktrace.com/product-guides/main/api-tokens)\n\nBest Practices: \n- Ingest both actioned and un-actioned emails. Ingesting the un-actioned emails will give you the ability to manually hold them.\n- If you want to reduce the volume of emails ingested then we recommend starting with only inbound emails. Consider adding internal and outbound later on.\n- Ingest emails with all Darktrace Tag Severity levels.\n\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/darktrace-m-bs)"
 configuration:

@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: AgariPhishingDefense
 commonfields:
   id: Agari Phishing Defense
   version: -1

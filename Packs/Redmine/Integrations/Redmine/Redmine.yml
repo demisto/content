@@ -4,6 +4,7 @@ commonfields:
 name: Redmine
 display: Redmine
 category: Utilities
+provider: Redmine
 description: 'A project management and issue tracking system that provides a web-based platform for managing projects, tracking tasks, and handling various types of project-related activities. '
 configuration:
 - section: Connect

@@ -1,4 +1,5 @@
 category: Forensics & Malware Analysis
+provider: ReversinglabsA1000
 commonfields:
   id: ReversingLabs A1000
   version: -1

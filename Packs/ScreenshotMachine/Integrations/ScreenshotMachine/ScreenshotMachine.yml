@@ -1,4 +1,5 @@
 category: Utilities
+provider: ScreenshotMachine
 commonfields:
   id: Screenshot Machine
   version: -1

@@ -1,4 +1,5 @@
 category: Forensics & Malware Analysis
+provider: ReversinglabsTitaniumscale
 commonfields:
   id: ReversingLabs TitaniumScale
   version: -1

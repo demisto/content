@@ -4,6 +4,7 @@ commonfields:
 name: RecordedFutureLists
 display: 'Recorded Future - Lists'
 category: Data Enrichment & Threat Intelligence
+provider: RecordedFutureIntelligence
 image:
 description: 'Search and manage watchlists in Recorded Future.'
 configuration:

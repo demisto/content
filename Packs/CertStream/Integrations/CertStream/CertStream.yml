@@ -4,6 +4,7 @@ commonfields:
 name: Kali Dog Security CertStream
 display: Kali Dog Security CertStream
 category: Data Enrichment & Threat Intelligence
+provider: CertStream
 description: Hunts for homograph-attacks by monitoring newly created X.509 certificates using CertStream by Kali Dog Security.
 configuration:
 - display: Server URL

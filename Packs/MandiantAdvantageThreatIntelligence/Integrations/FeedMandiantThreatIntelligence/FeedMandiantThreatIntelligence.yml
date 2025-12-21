@@ -2,6 +2,7 @@ name: FeedMandiantThreatIntelligence
 display: Mandiant Feed
 description: Fetch indicators from Mandiant Advantage.
 category: Data Enrichment & Threat Intelligence
+provider: MandiantAdvantageThreat
 commonfields:
   id: FeedMandiantThreatIntelligence
   version: -1

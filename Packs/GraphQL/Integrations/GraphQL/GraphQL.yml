@@ -1,4 +1,5 @@
 category: Utilities
+provider: GraphQL
 commonfields:
   id: GraphQL
   version: -1

@@ -4,6 +4,7 @@ commonfields:
 name: Threat Crowd
 display: Threat Crowd (Deprecated)
 category: Data Enrichment & Threat Intelligence
+provider: ThreatCrowd
 description: Deprecated. Use Threat Crowd v2 instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

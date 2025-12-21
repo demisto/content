@@ -4,6 +4,7 @@ commonfields:
 name: HostIo
 display: HostIo
 category: Data Enrichment & Threat Intelligence
+provider: HostIo
 description: Use the HostIo integration to enrich domains using the Host.io API.
 configuration:
 - defaultvalue: https://host.io

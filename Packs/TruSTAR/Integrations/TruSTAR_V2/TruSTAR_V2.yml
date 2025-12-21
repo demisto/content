@@ -4,6 +4,7 @@ commonfields:
 name: TruSTAR v2
 display: TruSTAR v2 (Deprecated)
 category: Data Enrichment & Threat Intelligence
+provider: TruSTAR
 description: Deprecated. Not supported since TrueSTAR was acquired by Splunk, No available replacement.
 configuration:
 - display: Server URL (e.g. https://api.trustar.co)

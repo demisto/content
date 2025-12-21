@@ -16,6 +16,7 @@ detaileddescription: >-
 
   ---
 category: Utilities
+provider: MacVendors
 configuration:
 - name: apiKey
   display: API Key

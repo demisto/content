@@ -4,6 +4,7 @@ commonfields:
 name: FortiSIEM
 display: FortiSIEM
 category: Analytics & SIEM
+provider: FortiSIEM
 description: Search and update events of FortiSIEM and manage resource lists.
 configuration:
 - display: Fetch incidents

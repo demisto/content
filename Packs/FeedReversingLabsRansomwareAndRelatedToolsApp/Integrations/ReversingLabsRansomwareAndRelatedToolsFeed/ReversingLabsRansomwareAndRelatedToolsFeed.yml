@@ -4,6 +4,7 @@ commonfields:
 name: ReversingLabs Ransomware and Related Tools Feed
 display: ReversingLabs Ransomware and Related Tools Feed
 category: Data Enrichment & Threat Intelligence
+provider: ReversinglabsRansomwareAnd
 description: A timely and curated threat intel list containing recent indicators extracted from ransomware and the tools used to deploy ransomware which are suitable for threat hunting or deployment to security controls.
 configuration:
 - defaultvalue: 'true'

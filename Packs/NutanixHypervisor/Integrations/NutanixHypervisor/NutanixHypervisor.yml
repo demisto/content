@@ -1,4 +1,5 @@
 category: IT Services
+provider: NutanixHypervisor
 commonfields:
   id: Nutanix Hypervisor
   version: -1

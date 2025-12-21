@@ -1,4 +1,5 @@
 category: Vulnerability Management
+provider: ShiftleftCore
 commonfields:
   id: ShiftLeft CORE
   version: -1

@@ -5,6 +5,7 @@ name: Remedy On-Demand
 display: Remedy On-Demand (Deprecated)
 deprecated: true
 category: Case Management
+provider: BmcRemedyOn
 description: Deprecated. Use BMC Helix ITSM instead.
 configuration:
 - display: Server URL (e.g. 'https://myurl.com', 'http://41.79.151.82')

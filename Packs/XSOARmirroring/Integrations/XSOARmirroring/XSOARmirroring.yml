@@ -5,6 +5,7 @@ fromversion: 6.0.0
 name: XSOAR Mirroring
 display: XSOAR Mirroring
 category: Utilities
+provider: XsoarMirroring
 description: Facilitates mirroring of Cortex XSOAR incidents between different Cortex XSOAR tenants.
 configuration:
 - display: Incident type

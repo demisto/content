@@ -4,6 +4,7 @@ commonfields:
 name: RedCanary
 display: Red Canary
 category: Deception & Breach Simulation
+provider: RedCanary
 sectionorder:
 - Connect
 - Collect

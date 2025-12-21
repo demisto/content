@@ -4,6 +4,7 @@ commonfields:
 name: icebrg
 display: Icebrg
 category: Network Security
+provider: Icebrg
 description: Reduces risk by accelerating threat detection, triage, and response to rapidly-evolving breaches across global networks.
 configuration:
 - display: Server URL for the search API (e.g. https://192.168.0.1)

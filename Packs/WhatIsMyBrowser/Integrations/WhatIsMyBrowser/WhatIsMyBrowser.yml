@@ -4,6 +4,7 @@ commonfields:
 name: WhatsMyBrowser
 display: WhatIsMyBrowser
 category: Data Enrichment & Threat Intelligence
+provider: WhatIsMyBrowser
 description: Parse user agents and determine if they are malicious as well as enrich information about the agent.
 configuration:
 - display: URL for WhatIsMyBrowser

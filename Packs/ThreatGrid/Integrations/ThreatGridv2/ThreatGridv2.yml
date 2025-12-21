@@ -7,6 +7,7 @@ sectionorder:
 - Collect
 display: Cisco Secure Malware Analytics (Threat Grid) v2
 category: Forensics & Malware Analysis
+provider: Cisco
 description: Query and upload samples to Cisco threat grid.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

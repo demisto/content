@@ -4,6 +4,7 @@ commonfields:
 name: Accessdata
 display: Accessdata (Deprecated)
 category: Forensics & Malware Analysis
+provider: Accessdata
 description: Deprecated. Use Exterro FTK instead.
 deprecated: true
 configuration:

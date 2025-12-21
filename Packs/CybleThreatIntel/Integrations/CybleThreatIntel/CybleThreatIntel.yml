@@ -4,6 +4,7 @@ commonfields:
 name: CybleThreatIntel
 display: Cyble Threat Intel
 category: Data Enrichment & Threat Intelligence
+provider: CybleThreatIntel
 description: Cyble Threat Intelligence for Vision Users. Must have access to Cyble TAXII Feed to access the threat intelligence.
 configuration:
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed

@@ -2,6 +2,7 @@ sectionorder:
 - Connect
 - Collect
 category: Messaging and Conferencing
+provider: Slack
 commonfields:
   id: SlackV3
   version: -1

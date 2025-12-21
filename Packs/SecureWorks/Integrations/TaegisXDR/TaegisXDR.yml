@@ -5,6 +5,7 @@ name: TaegisXDR
 display: TaegisXDR (Deprecated)
 deprecated: true
 category: Data Enrichment & Threat Intelligence
+provider: Secureworks
 description: Deprecated. Use TaegisXDR v2 instead.
 configuration:
 - display: Taegis Environment

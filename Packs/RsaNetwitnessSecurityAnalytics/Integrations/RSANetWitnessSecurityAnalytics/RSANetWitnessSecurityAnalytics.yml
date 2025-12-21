@@ -6,6 +6,7 @@ system: true
 fromversion: 5.0.0
 display: RSA NetWitness Security Analytics
 category: Analytics & SIEM
+provider: RsaNetwitnessSecurity
 description: RSA Security Analytics, compatible with prior to v11. A distributed and modular system that enables highly flexible deployment architectures that scale with the needs of the organization. Security Analytics allows administrators to collect two types of data from the network infrastructure, packet data and log data.
 configuration:
 - display: Server Url (192.168.56.101)

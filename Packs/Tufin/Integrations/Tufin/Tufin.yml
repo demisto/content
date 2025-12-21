@@ -4,6 +4,7 @@ commonfields:
 name: Tufin
 display: Tufin
 category: Network Security
+provider: Tufin
 description: Retrieve and analyze network access controls across Tufin-managed firewalls, SDN, and public cloud to identify vulnerable access paths of an attack.
 configuration:
 - display: SecureTrack IP or FQDN

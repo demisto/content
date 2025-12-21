@@ -8,6 +8,7 @@ fromversion: 6.9.0
 name: Cyberint Feed
 display: Cyberint Feed
 category: Data Enrichment & Threat Intelligence
+provider: Cyberint
 description: Use the Cyberint Feed integration to get indicators from the feed.
 configuration:
 - display: Cyberint API URL

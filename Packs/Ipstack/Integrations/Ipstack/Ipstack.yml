@@ -4,6 +4,7 @@ commonfields:
 name: Ipstack
 display: ipstack
 category: Data Enrichment & Threat Intelligence
+provider: Ipstack
 description: "One of the leading IP to geolocation \nAPIs and global IP database services."
 configuration:
 - display: API Key

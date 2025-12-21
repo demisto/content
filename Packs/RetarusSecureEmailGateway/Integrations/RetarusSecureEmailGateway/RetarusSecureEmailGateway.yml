@@ -7,6 +7,7 @@ sectionorder:
 name: Retarus Secure Email Gateway
 display: Retarus Secure Email Gateway
 category: Email
+provider: RetarusSecureEmail
 description: Integrate Retarus Secure Email Gateway to seamlessly fetch events from Secure Email Gateway by Retarus and enhance email security.
 configuration:
 - defaultvalue: events.retarus.com

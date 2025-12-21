@@ -5,6 +5,7 @@ name: Proofpoint Server Protection
 display: Proofpoint Protection Server (Deprecated)
 deprecated: true
 category: Email
+provider: Proofpoint
 description: Deprecated. Use Proofpoint Protection Server V2 instead.
 configuration:
 - display: Server URL (e.g., https://192.168.0.1:10000)

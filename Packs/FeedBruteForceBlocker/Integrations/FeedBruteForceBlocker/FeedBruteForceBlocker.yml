@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: BruteforceFeed
 commonfields:
   id: BruteForceBlocker Feed
   version: -1

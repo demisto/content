@@ -7,6 +7,7 @@ sectionorder:
 name: Github Event Collector
 display: Github Event Collector
 category: Analytics & SIEM
+provider: GitHub
 description: Github logs event collector integration for Cortex XSIAM.
 configuration:
 - display: Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log')

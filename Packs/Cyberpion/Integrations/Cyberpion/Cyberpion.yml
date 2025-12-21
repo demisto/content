@@ -1,4 +1,5 @@
 category: Vulnerability Management
+provider: Cyberpion
 commonfields:
   id: Cyberpion
   version: -1

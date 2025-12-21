@@ -7,6 +7,7 @@ sectionorder:
 name: SEKOIAIntelligenceCenter
 display: SEKOIAIntelligenceCenter
 category: Data Enrichment & Threat Intelligence
+provider: SEKOIAIntelligenceCenter
 description: 'Fetch Indicator and Observables from SEKOIA.IO Intelligence Center.
 
   To use this integration, please create an API Key with the right permissions.

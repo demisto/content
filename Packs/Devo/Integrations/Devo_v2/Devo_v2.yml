@@ -4,6 +4,7 @@ commonfields:
 name: Devo_v2
 display: Devo v2
 category: Analytics & SIEM
+provider: Devo
 configuration:
 - display: Query Server Endpoint (e.g. https://apiv2-us.devo.com/search/query)
   name: reader_endpoint

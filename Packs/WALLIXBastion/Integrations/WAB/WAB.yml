@@ -4,6 +4,7 @@ commonfields:
 name: WALLIX Bastion
 display: WALLIX Bastion
 category: Authentication & Identity Management
+provider: WallixBastion
 description: Centralized Control and Monitoring of Privileged Access to Sensitive Assets.
 fromversion: 6.5.0
 tests:

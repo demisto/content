@@ -7,6 +7,7 @@ sectionorder:
 name: Okta Event Collector
 display: Okta Event Collector
 category: Analytics & SIEM
+provider: Okta
 description: Collects the events log for authentication and Audit provided by Okta admin API.
 configuration:
 - display: Server URL

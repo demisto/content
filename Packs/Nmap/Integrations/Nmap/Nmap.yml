@@ -7,6 +7,7 @@ commonfields:
 name: nmap
 display: nmap
 category: Network Security
+provider: Nmap
 description: Run nmap scans with the given parameters.
 configuration: []
 fromversion: 5.0.0

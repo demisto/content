@@ -4,6 +4,7 @@ commonfields:
 name: Zerohack XDR
 display: Zerohack XDR
 category: Network Security
+provider: ZerohackXdr
 description: The companion integration for Zerohack XDR. Current versions allow the user to collect data from the XDR and later versions will support data exfiltration to XDR.
 configuration:
 - display: Fetch incidents

@@ -4,6 +4,7 @@ commonfields:
 name: GLPI
 display: GLPI
 category: Case Management
+provider: GLPI
 description: GLPI open source ITSM solution.
 defaultclassifier: GLPI - Classifier
 defaultmapperin: GLPI - Incoming Mapper

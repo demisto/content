@@ -4,6 +4,7 @@ commonfields:
 name: Cortex XDR - IR CTF
 display: Cortex XDR - IR CTF
 category: Endpoint
+provider: CaptureTheFlag
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 sectionorder:
 - Collect

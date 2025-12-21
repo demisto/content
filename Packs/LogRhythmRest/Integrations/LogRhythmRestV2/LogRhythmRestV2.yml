@@ -5,6 +5,7 @@ name: LogRhythmRest V2
 display: LogRhythmRest v2
 fromversion: 5.5.0
 category: Analytics & SIEM
+provider: LogRhythm
 description: LogRhythm security intelligence.
 configuration:
 - name: url

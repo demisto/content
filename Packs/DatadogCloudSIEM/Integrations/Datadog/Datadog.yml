@@ -2,6 +2,7 @@ category: Analytics & SIEM
 sectionorder:
 - Connect
 - Collect
+provider: Datadog
 commonfields:
   id: DatadogCloudSIEM
   version: -1

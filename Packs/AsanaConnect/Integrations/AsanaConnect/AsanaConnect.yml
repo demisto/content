@@ -4,6 +4,7 @@ commonfields:
 name: AsanaConnect
 display: AsanaConnect
 category: Case Management
+provider: AsanaConnect
 description: This Integration uses Asana PATs to connect to projects tied to the Asana account.
 configuration:
 - display: Access Token

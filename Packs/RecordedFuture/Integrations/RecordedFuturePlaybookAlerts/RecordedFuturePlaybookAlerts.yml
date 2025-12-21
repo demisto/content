@@ -8,6 +8,7 @@ name: RecordedFuturePlaybookAlerts
 deprecated: true
 display: 'Recorded Future - Playbook Alerts'
 category: Data Enrichment & Threat Intelligence
+provider: RecordedFutureIntelligence
 defaultclassifier: Recorded Future Playbook Alert Classifier
 defaultmapperin: Recorded Future Playbook Alert Mapper
 image:

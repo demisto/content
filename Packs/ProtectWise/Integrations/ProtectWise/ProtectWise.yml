@@ -4,6 +4,7 @@ commonfields:
 name: ProtectWise
 display: ProtectWise
 category: Network Security
+provider: ProtectWise
 description: Cloud based Security Network DVR
 configuration:
 - display: Url

@@ -5,6 +5,7 @@ name: Moloch
 display: Moloch (Deprecated)
 deprecated: true
 category: Network Security
+provider: Moloch
 description: Deprecated. Use Arkime instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

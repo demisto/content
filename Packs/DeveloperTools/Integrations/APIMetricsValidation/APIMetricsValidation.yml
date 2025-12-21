@@ -7,6 +7,7 @@ sectionorder:
 name: APIMetricsValidation
 display: APIMetricsValidation
 category: Utilities
+provider: DeveloperTools
 description: This integration runs through all scenarios as defined in the API Metrics expected results guide.
 configuration:
 - display: This is not needed

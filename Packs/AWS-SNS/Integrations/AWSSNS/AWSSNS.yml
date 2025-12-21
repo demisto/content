@@ -1,4 +1,5 @@
 category: IT Services
+provider: AWS
 commonfields:
   id: AWS - SNS
   version: -1

@@ -7,6 +7,7 @@ sectionorder:
 name: Awake Security
 display: Awake Security
 category: Network Security
+provider: AwakeSecurity
 description: Network Traffic Analysis.
 detaileddescription: ""
 configuration:

@@ -4,6 +4,7 @@ commonfields:
 name: FireEye Detection on Demand
 display: FireEye Detection on Demand
 category: Forensics & Malware Analysis
+provider: FireEye
 description: FireEye Detection On Demand is a threat detection service delivered as an API for integration into the SOC workflow, SIEM analytics, data repositories, or web applications, etc. It delivers flexible file and content analysis to identify malicious behavior wherever the enterprise needs it.
 configuration:
 - display: "DoD hostname"

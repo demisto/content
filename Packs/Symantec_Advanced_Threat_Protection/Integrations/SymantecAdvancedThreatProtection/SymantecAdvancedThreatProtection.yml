@@ -4,6 +4,7 @@ commonfields:
 name: Symantec Advanced Threat Protection
 display: Symantec Advanced Threat Protection (Deprecated)
 category: Endpoint
+provider: Symantec
 description: Deprecated. No available replacement.
 configuration:
 - display: Server URL (i.e. https://host:port)

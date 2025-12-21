@@ -6,6 +6,7 @@ display: ThreatExchange (Deprecated)
 deprecated: true
 fromversion: 5.0.0
 category: Data Enrichment & Threat Intelligence
+provider: ThreatExchange
 description: Deprecated. Use the ThreatExchange v2 integration instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

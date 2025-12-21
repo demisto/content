@@ -4,6 +4,7 @@ commonfields:
 name: Cuckoo Sandbox
 display: Cuckoo Sandbox
 category: Forensics & Malware Analysis
+provider: CuckooSandbox
 description: Malware dynamic analysis sandboxing
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

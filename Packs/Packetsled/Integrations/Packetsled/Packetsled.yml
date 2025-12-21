@@ -4,6 +4,7 @@ commonfields:
 name: Packetsled
 display: Packetsled
 category: Network Security
+provider: Packetsled
 description: Packetsled Network Security API commands
 configuration:
 - display: The protocol and domain of the packetsled instance.

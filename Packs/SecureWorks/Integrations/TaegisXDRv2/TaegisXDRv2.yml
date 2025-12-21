@@ -4,6 +4,7 @@ commonfields:
 name: TaegisXDRv2
 display: TaegisXDR v2
 category: Data Enrichment & Threat Intelligence
+provider: Secureworks
 description: For integration with the Secureworks Taegis XDR platform.
 configuration:
 - display: Taegis Environment

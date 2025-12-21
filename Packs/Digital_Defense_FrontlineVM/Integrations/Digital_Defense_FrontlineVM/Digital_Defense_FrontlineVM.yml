@@ -4,6 +4,7 @@ commonfields:
 name: Digital Defense FrontlineVM
 display: Digital Defense FrontlineVM
 category: Vulnerability Management
+provider: DigitalDefenseFrontline
 description: Use the Digital Defense FrontlineVM to identify and evaluate the security and business risks of network devices and applications deployed as premise, cloud, or hybrid network-based implementations.
 configuration:
 - display: Frontline VM URL

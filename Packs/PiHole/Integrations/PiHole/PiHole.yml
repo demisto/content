@@ -4,6 +4,7 @@ commonfields:
 name: PiHole
 display: PiHole
 category: IT Services
+provider: PiHole
 description: Pi-hole is a network-level advertisement and Internet tracker blocking application which acts as a DNS sinkhole and optionally a DHCP server, intended for use on a private network.
 configuration:
 - display: Server URL

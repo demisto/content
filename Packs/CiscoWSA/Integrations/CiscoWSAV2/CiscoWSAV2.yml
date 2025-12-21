@@ -4,6 +4,7 @@ commonfields:
 name: CiscoWSAv2
 display: Cisco WSA v2
 category: Network Security
+provider: Cisco
 description: Cisco Secure Web Appliance protects your organization by automatically blocking risky sites and testing unknown sites before allowing users to click on them.
 fromversion: 6.2.0
 configuration:

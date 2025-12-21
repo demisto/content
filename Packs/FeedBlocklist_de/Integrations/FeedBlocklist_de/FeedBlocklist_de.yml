@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: BlocklistDeFeed
 commonfields:
   id: Blocklist_de Feed
   version: -1

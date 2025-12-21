@@ -4,6 +4,7 @@ commonfields:
 name: PerceptionPoint
 display: PerceptionPoint
 category: Email
+provider: PerceptionPoint
 description: Loads incidents from Perception Point and releases falsely quarantined emails.
 configuration:
 - display: Token to use Perception Point's API

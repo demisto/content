@@ -4,6 +4,7 @@ commonfields:
 name: Humio
 display: Humio
 category: Analytics & SIEM
+provider: Humio
 description: Integration with Humio
 configuration:
 - display: Humio URL

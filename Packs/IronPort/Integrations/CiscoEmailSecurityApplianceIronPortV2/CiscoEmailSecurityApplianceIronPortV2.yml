@@ -4,6 +4,7 @@ commonfields:
 name: CiscoESA
 display: Cisco ESA
 category: Network Security
+provider: Cisco
 sectionorder:
   - Connect
   - Collect

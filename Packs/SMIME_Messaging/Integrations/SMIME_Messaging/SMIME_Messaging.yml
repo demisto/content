@@ -1,4 +1,5 @@
 category: Utilities
+provider: SmimeMessaging
 commonfields:
   id: SMIME Messaging
   version: -1

@@ -4,6 +4,7 @@ commonfields:
 name: ArgusManagedDefence
 display: mnemonic MDR - Argus Managed Defence
 category: Data Enrichment & Threat Intelligence
+provider: MnemonicMdr
 description: Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service.
 configuration:
 - display: Fetch incidents

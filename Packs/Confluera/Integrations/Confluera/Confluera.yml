@@ -4,6 +4,7 @@ commonfields:
 name: Confluera
 display: Confluera
 category: Network Security
+provider: Confluera
 description: This is the confluera Iq-Hub integration with cortex.
 configuration:
 - display: Trust any certificate (not secure)

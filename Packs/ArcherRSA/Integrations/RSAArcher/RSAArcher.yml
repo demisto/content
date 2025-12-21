@@ -5,6 +5,7 @@ name: RSA Archer
 display: RSA Archer (Deprecated)
 deprecated: true
 category: Case Management
+provider: RsaArcher
 description: Deprecated. Use the RSA Archer v2 integration instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1/rsaarcher/)

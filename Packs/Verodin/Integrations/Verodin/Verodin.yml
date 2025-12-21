@@ -5,6 +5,7 @@ commonfields:
 name: Verodin
 display: Verodin
 category: Network Security
+provider: Verodin
 description: Verodin simulations and topology
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

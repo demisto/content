@@ -6,6 +6,7 @@ description: Deprecated. Use the Cofense Triage v2 integration instead.
 display: Cofense Triage (Deprecated)
 deprecated: true
 category: Data Enrichment & Threat Intelligence
+provider: CofenseTriage
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
   name: host

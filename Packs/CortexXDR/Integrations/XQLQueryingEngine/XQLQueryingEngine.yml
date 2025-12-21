@@ -2,6 +2,7 @@ sectionorder:
 - Connect
 - Collect
 category: Endpoint
+provider: CortexXdrBy
 commonfields:
   id: Cortex XDR - XQL Query Engine
   version: -1

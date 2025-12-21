@@ -1,5 +1,6 @@
 fromversion: 6.10.0
 category: Vulnerability Management
+provider: XMCO
 sectionorder:
 - Connect
 - Collect

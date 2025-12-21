@@ -4,6 +4,7 @@ commonfields:
 name: AWS - Athena - Beta
 display: AWS - Athena
 category: IT Services
+provider: AWS
 description: Amazon Web Services Athena.
 configuration:
 - display: Role Arn

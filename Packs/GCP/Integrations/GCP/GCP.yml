@@ -26,6 +26,7 @@ configuration:
 name: GCP
 display: Google Cloud Platform
 category: Cloud Services
+provider: GCP
 description: Cloud integrations are installed from the Data Sources page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select GCP, then in Advanced Settings > Security Capabilities, enable "Automation".
 script:
   commands:

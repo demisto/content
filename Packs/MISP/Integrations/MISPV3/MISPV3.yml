@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: MISP
 commonfields:
   id: MISP V3
   version: -1

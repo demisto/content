@@ -4,6 +4,7 @@ commonfields:
 name: ArcSight Logger
 display: ArcSight Logger
 category: Analytics & SIEM
+provider: ArcsightLogger
 description: ArcSight events logger
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)*

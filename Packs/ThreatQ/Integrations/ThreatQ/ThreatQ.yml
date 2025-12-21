@@ -4,6 +4,7 @@ commonfields:
 name: ThreatQ_Beta
 display: ThreatQ (Deprecated)
 category: Data Enrichment & Threat Intelligence
+provider: ThreatQ
 description: Deprecated. Use ThreatQ v2 instead. ThreatQ Integration
 configuration:
 - display: TQ API URL E.g. https://192.168.1.136/api

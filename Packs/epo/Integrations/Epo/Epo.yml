@@ -4,6 +4,7 @@ commonfields:
 name: epo
 display: McAfee ePO (Deprecated)
 category: Endpoint
+provider: McAfee
 description: Deprecated. Use McAfee ePO v2 instead.
 configuration:
 - display: https://<address>:port

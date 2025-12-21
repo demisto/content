@@ -4,6 +4,7 @@ commonfields:
 name: PingOne
 display: PingOne
 category: Authentication & Identity Management
+provider: PingIdentity
 description: 'Integrates with the PingOne Management API to unlock, create, delete and update users. '
 configuration:
 - display: Your PingOne Environment ID

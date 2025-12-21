@@ -6,6 +6,7 @@ display: VMware Carbon Black EDR (Deprecated)
 deprecated: true
 fromversion: 5.0.0
 category: Endpoint
+provider: CarbonBlackEnterprise
 description: Deprecated. Use VMware Carbon Black EDR v2 instead.
 configuration:
 - display: Server URL

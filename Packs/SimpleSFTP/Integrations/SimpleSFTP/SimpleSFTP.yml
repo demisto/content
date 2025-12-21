@@ -4,6 +4,7 @@ commonfields:
 name: Simple SFTP
 display: Simple SFTP
 category: Utilities
+provider: SimpleSftp
 description: Simple SFTP Integration to copy files from SFTP Server using paramiko.
 configuration:
 - display: Host

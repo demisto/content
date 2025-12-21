@@ -1,4 +1,5 @@
 category: Utilities
+provider: Rundeck
 commonfields:
   id: Rundeck
   version: -1

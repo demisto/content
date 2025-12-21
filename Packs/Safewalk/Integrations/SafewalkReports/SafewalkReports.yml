@@ -4,6 +4,7 @@ commonfields:
 name: SafewalkReports
 display: Safewalk Reports
 category: Analytics & SIEM
+provider: Altipeak
 description: Safewalk server integration.
 configuration:
 - display: Server URL (e.g. https://soar.monstersofhack.com)

@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Elastic
 commonfields:
   id: ElasticsearchFeed
   version: -1
