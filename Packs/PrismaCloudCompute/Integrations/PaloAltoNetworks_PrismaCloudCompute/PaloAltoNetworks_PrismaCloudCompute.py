@@ -331,6 +331,21 @@ class PrismaCloudComputeClient(BaseClient):
         if all_results:
             return self._get_all_results(url_suffix="/images", params=params)
         return self._http_request(method="GET", url_suffix="/images", params=params)
+    
+    def get_tas_droplets_info(self, all_results: bool = False, params: Optional[dict] = None) -> List[dict]:
+        """
+        Sends a request to get information about tas droplets.
+
+        Args:
+            all_results (bool): whether to return all results or just the first page.
+            params (dict): query parameters.
+
+        Returns:
+            list[dict]: images scan information.
+        """
+        if all_results:
+            return self._get_all_results(url_suffix="/tas-droplets", params=params)
+        return self._http_request(method="GET", url_suffix="/tas-droplets", params=params)
 
     def get_hosts_scan_info(self, all_results: bool = False, params: Optional[dict] = None) -> List[dict]:
         """
