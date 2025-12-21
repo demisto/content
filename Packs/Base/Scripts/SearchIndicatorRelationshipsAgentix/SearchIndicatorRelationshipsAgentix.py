@@ -61,9 +61,9 @@ def filter_relationships_by_entity_types(entities: list, entities_types: list, r
 
 
 def get_relationships(
-    entities: Optional[list[str]] =  None,
-    entities_types: Optional[list[str]] = None,
-    relationships: Optional[list[str]] = None,
+    entities: list[str],
+    entities_types: list[str],
+    relationships: list[str],
     limit: int = 20,
 ) -> list:
     """
