@@ -108,7 +108,7 @@ Multiple filter arguments will be concatenated using the AND operator, while arg
 | rule_name | The name of the user rule. Accepts a comma-separated list. | Optional | 
 | issue_name | The issue name. Accepts a comma-separated list. | Optional | 
 | issue_source | The issue source. Accepts a comma-separated list. Possible values are: XDR Agent, XDR Analytics, XDR Analytics BIOC, PAN NGFW, XDR BIOC, XDR IOC, Threat Intelligence, XDR Managed Threat Hunting, Correlation, Prisma Cloud, Prisma Cloud Compute, ASM, IoT Security, Custom Alert, Health, SaaS Attachments, Attack Path, Cloud Network Analyzer, IaC Scanner, CAS Secret Scanner, CI/CD Risks, CLI Scanner, CIEM Scanner, API Traffic Monitor, API Posture Scanner, Agentless Disk Scanner, Kubernetes Scanner, Compute Policy, CSPM Scanner, CAS CVE Scanner, CAS License Scanner, Secrets Scanner, SAST Scanner, Data Policy, Attack Surface Test, Package Operational Risk, Vulnerability Policy, AI Security Posture. | Optional | 
-| time_frame | This parameter is deprecated. Use *start_time* instead. Supports relative or custom time options. If you choose custom, use the start_time and end_time arguments. Possible values are: 60 minutes, 3 hours, 12 hours, 24 hours, 2 days, 7 days, 14 days, 30 days, custom. | Optional | 
+| time_frame | This argument is deprecated. Use *start_time* instead. Supports relative or custom time options. If you choose custom, use the start_time and end_time arguments. Possible values are: 60 minutes, 3 hours, 12 hours, 24 hours, 2 days, 7 days, 14 days, 30 days, custom. | Optional | 
 | user_name | The name assigned to the user_id during agent runtime. Accepts a comma-separated list. | Optional | 
 | actor_process_image_name | The file name of the binary file. Accepts a comma-separated list. | Optional | 
 | causality_actor_process_image_command_line | SHA256 Causality Graph Object command line. Accepts a comma-separated list. | Optional | 
@@ -129,8 +129,8 @@ Multiple filter arguments will be concatenated using the AND operator, while arg
 | dst_action_external_hostname | The hostname to connect to. In case of a proxy connection, this value will differ from action_remote_ip. Accepts a comma-separated list. | Optional | 
 | sort_field | The field by which to sort the results. Default is source_insert_ts. | Optional | 
 | sort_order | The order in which to sort the results. Possible values are: DESC, ASC. | Optional | 
-| offset | This parameter is deprecated. Use *page* instead. The first page number to retrieve issues from. Default is 0. | Optional | 
-| limit | This parameter is deprecated. Use *page_size* instead. The last page number to retrieve issues from. Default is 50. | Optional | 
+| offset | This argument is deprecated. Use *page* instead. The first page number to retrieve issues from. Default is 0. | Optional | 
+| limit | This argument is deprecated. Use *page_size* instead. The last page number to retrieve issues from. Default is 50. | Optional | 
 | page | The page number for the issues to return for pagination. Default is 0. | Optional | 
 | page_size | The number of issues to return per page. Default is 50. | Optional | 
 | start_time | Relevant when the time_frame argument is set to custom. Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). | Optional | 

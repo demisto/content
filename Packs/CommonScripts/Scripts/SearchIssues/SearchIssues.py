@@ -116,7 +116,7 @@ def prepare_sha256_custom_field(args: dict) -> Optional[str]:
 def main():  # pragma: no cover
     try:
         args: dict = demisto.args()
-        
+
         if additional_output_fields := args.pop("additional_output_fields", []):
             OUTPUT_KEYS.extend(additional_output_fields)
 
