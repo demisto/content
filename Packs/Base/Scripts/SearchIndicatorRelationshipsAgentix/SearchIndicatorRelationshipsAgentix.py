@@ -61,9 +61,9 @@ def filter_relationships_by_entity_types(entities: list, entities_types: list, r
 
 
 def get_relationships(
-    entities: Optional[list[str]] = None,
-    entities_types: Optional[list[str]] = None,
-    relationships: Optional[list[str]] = None,
+    entities: Optional[list[str]],
+    entities_types: Optional[list[str]],
+    relationships: Optional[list[str]],
     limit: int = 20,
 ) -> list:
     """
@@ -105,9 +105,9 @@ def get_relationships(
 def main():
     try:
         args = demisto.args()
-        entities_types = args.pop("entities_types", "")
-        entities = args.get("entities", "")
-        relationships = args.get("relationships", "")
+        entities_types = argToList(args.pop("entities_types", []))
+        entities = argToList(args.get("entities", []))
+        relationships = argToList(args.get("relationships", []))
         limit = int(args.get("limit", "20"))
 
         relationships = get_relationships(entities, entities_types, relationships, limit)
