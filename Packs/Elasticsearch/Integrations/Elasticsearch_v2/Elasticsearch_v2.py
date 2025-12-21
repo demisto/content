@@ -67,7 +67,7 @@ param = demisto.params()
 """COMMON VARIABLES FOR FETCH INCIDENTS AND FETCH EVENTS"""
 FETCH_TIME = "now" if demisto.command() == "fetch-events" else param.get("fetch_time", "3 days")
 INSECURE = not param.get("insecure", False)
-TIMEOUT_FETCH_EVENTS = int(param.get("timeout") or 60)
+TIMEOUT = int(param.get("timeout") or 60)
 
 """VARIABLES FOR FETCH INCIDENTS"""
 TIME_FIELD = param.get("fetch_time_field", "")
@@ -76,7 +76,6 @@ FETCH_QUERY_PARM = param.get("fetch_query", "")
 RAW_QUERY = param.get("raw_query", "")
 FETCH_SIZE = int(param.get("fetch_size", 50))
 TIME_METHOD = param.get("time_method", "Simple-Date")
-TIMEOUT = int(param.get("timeout") or 60)
 MAP_LABELS = param.get("map_labels", True)
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
@@ -172,7 +171,7 @@ def get_api_key_header_val(api_key):
     return "ApiKey " + api_key
 
 
-def elasticsearch_builder(proxies): # CHECKED
+def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
 
     connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection]] = {
@@ -216,7 +215,7 @@ def elasticsearch_builder(proxies): # CHECKED
     return es
 
 
-def get_hit_table(hit): # CHECKED
+def get_hit_table(hit):
     """Create context for a single hit in the search.
 
     Args:
@@ -241,7 +240,7 @@ def get_hit_table(hit): # CHECKED
     return table_context, headers
 
 
-def results_to_context(index, query, base_page, size, total_dict, response, event=False): # CHECKED
+def results_to_context(index, query, base_page, size, total_dict, response, event=False):
     """Creates context for the full results of a search.
 
     Args:
@@ -292,7 +291,7 @@ def results_to_context(index, query, base_page, size, total_dict, response, even
     return search_context, meta_headers, hit_tables, hit_headers
 
 
-def get_total_results(response_dict): # CHECKED
+def get_total_results(response_dict):
     """Creates a dictionary with all for the number of total results found
 
     Args:
@@ -337,7 +336,7 @@ def search_command(proxies):
     es = elasticsearch_builder(proxies)
     time_range_dict = None
     if timestamp_range_end or timestamp_range_start:
-        time_range_dict = get_time_range( # ???? TIME_FIELD, FETCH_TIME
+        time_range_dict = get_time_range(
             time_range_start=timestamp_range_start,
             time_range_end=timestamp_range_end,
             time_field=timestamp_field,
@@ -391,8 +390,8 @@ def search_command(proxies):
     return_outputs(total_human_readable, full_context, response)
 
 
-def fetch_params_check(): # CHECKED
-    """If is_fetch is ticked, this function checks that all the necessary parameters for the fetch are entered."""
+def fetch_params_check():
+    """If isFetch or isFetchEvents is ticked, this function checks that all the necessary parameters for the fetch are entered."""
     params = demisto.params()
     is_fetch_events = params.get("isFetchEvents")
     is_fetch = params.get("isFetch")
@@ -451,7 +450,7 @@ def test_query_to_fetch_incident_index(es):
         return_error("Fetch incidents test failed.\nError message: {}.".format(str(e).split(",")[2][2:-1]))
 
 
-def test_general_query(es): # CHECKED
+def test_general_query(es):
     """Test executing query to all available indexes.
 
     Args:
@@ -561,7 +560,7 @@ def test_timestamp_format(timestamp):
             return_error(f"Fetched timestamp is not in milliseconds since epoch.\nFetched: {timestamp}")
 
 
-def test_connectivity_auth(proxies): # CHECKED
+def test_connectivity_auth(proxies):
     headers = {"Content-Type": "application/json"}
     if API_KEY_ID:
         headers["authorization"] = get_api_key_header_val(API_KEY)
@@ -621,7 +620,7 @@ def verify_es_server_version(res):
                 )
 
 
-def test_func(proxies): # CHECKED
+def test_func(proxies):
     """
     Tests API connectivity to the Elasticsearch server.
     Tests the existence of all necessary fields for fetch.
@@ -635,7 +634,7 @@ def test_func(proxies): # CHECKED
     demisto.results("ok")
 
 
-def integration_health_check(proxies): # ??? use fetch-incidents args
+def integration_health_check(proxies):
 
     test_connectivity_auth(proxies)
     # build general Elasticsearch class
@@ -713,7 +712,7 @@ def incident_label_maker(source):
     return labels
 
 
-def results_to_incidents_timestamp(response, last_fetch, is_fetch_events=False): # CHECKED
+def results_to_incidents_timestamp(response, last_fetch, is_fetch_events=False):
     """Converts the current results into incidents.
 
     Args:
@@ -728,10 +727,12 @@ def results_to_incidents_timestamp(response, last_fetch, is_fetch_events=False):
     """
     current_fetch = last_fetch
     incidents = []
+    time_field = TIME_FIELD_FETCH_EVENTS if is_fetch_events else TIME_FIELD
+
     for hit in response.get("hits", {}).get("hits"):
         source = hit.get("_source")
         if source is not None:
-            time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD))
+            time_field_value = get_value_by_dot_notation(source, str(time_field))
 
             if time_field_value is not None:
                 # if timestamp convert to iso format date and save the timestamp
@@ -761,7 +762,7 @@ def results_to_incidents_timestamp(response, last_fetch, is_fetch_events=False):
     return incidents, last_fetch
 
 
-def results_to_incidents_datetime(response, last_fetch, is_fetch_events=False): # CHECKED
+def results_to_incidents_datetime(response, last_fetch, is_fetch_events=False):
     """Converts the current results into incidents.
 
     Args:
@@ -778,11 +779,12 @@ def results_to_incidents_datetime(response, last_fetch, is_fetch_events=False): 
     last_fetch_timestamp = int(last_fetch.timestamp() * 1000)  # type:ignore[union-attr]
     current_fetch = last_fetch_timestamp
     incidents = []
+    time_field = TIME_FIELD_FETCH_EVENTS if is_fetch_events else TIME_FIELD
 
     for hit in response.get("hits", {}).get("hits"):
         source = hit.get("_source")
         if source is not None:
-            time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD))
+            time_field_value = get_value_by_dot_notation(source, str(time_field))
             if time_field_value is not None:
                 hit_date = parse(str(time_field_value))
                 hit_timestamp = int(hit_date.timestamp() * 1000)
@@ -839,7 +841,7 @@ def format_to_iso(date_string):
 
 
 def get_time_range(
-    last_fetch: Union[str, None] = None, time_range_start=FETCH_TIME, time_range_end=None, time_field=TIME_FIELD
+    last_fetch: Union[str, None] = None, time_range_start=FETCH_TIME, time_range_end=None, time_field=TIME_FIELD, time_method=TIME_METHOD
 ) -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
@@ -877,7 +879,7 @@ def get_time_range(
         end_time = convert_date_to_timestamp(end_date)
         range_dict["lt"] = end_time
 
-    if TIME_METHOD == "Simple-Date":
+    if time_method == "Simple-Date":
         range_dict["format"] = ES_DEFAULT_DATETIME_FORMAT
 
     if utc_offset := re.search(r"([+-]\d{2}:\d{2})$", time_range_start):
@@ -926,7 +928,7 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     return response
 
 
-def fetch_items(proxies, is_fetch_events=False): # CHECKED
+def fetch_items(proxies, is_fetch_events=False):
     """
     Fetch items from Elasticsearch based on configured parameters.
     This function is common to fetch-incidents and fetch-events.
@@ -948,7 +950,7 @@ def fetch_items(proxies, is_fetch_events=False): # CHECKED
     
 
     es = elasticsearch_builder(proxies)
-    time_range_dict = get_time_range(time_range_start=last_fetch, time_field=time_field)
+    time_range_dict = get_time_range(time_range_start=last_fetch, time_field=time_field, time_method=time_method)
 
     if raw_query:
         response = execute_raw_query(es, raw_query)
@@ -987,7 +989,7 @@ def fetch_items(proxies, is_fetch_events=False): # CHECKED
             demisto.incidents(incidents)
         demisto.debug(f"Updated last_run object after fetch:\n{updated_last_run}")  
 
-def parse_subtree(my_map): # CHECKED
+def parse_subtree(my_map):
     """
     param: my_map - tree element for the schema
     return: tree elements under each branch
@@ -1002,7 +1004,7 @@ def parse_subtree(my_map): # CHECKED
     return res
 
 
-def update_elastic_mapping(res_json, elastic_mapping, key): # CHECKED
+def update_elastic_mapping(res_json, elastic_mapping, key):
     """
     A helper function for get_mapping_fields_command, updates the elastic mapping.
     """
@@ -1011,7 +1013,7 @@ def update_elastic_mapping(res_json, elastic_mapping, key): # CHECKED
     elastic_mapping[key]["_source"] = parse_subtree(my_map)
 
 
-def get_mapping_fields_command(): # ??? use FETCH_INDEX.
+def get_mapping_fields_command():
     """
     Maps a schema from a given index
     return: Elasticsearch schema structure
@@ -1044,7 +1046,7 @@ def get_mapping_fields_command(): # ??? use FETCH_INDEX.
     return elastic_mapping
 
 
-def build_eql_body(query, fields, size, tiebreaker_field, timestamp_field, event_category_field, filter): # CHECKED
+def build_eql_body(query, fields, size, tiebreaker_field, timestamp_field, event_category_field, filter):
     body = {}
     if query is not None:
         body["query"] = query
@@ -1063,7 +1065,7 @@ def build_eql_body(query, fields, size, tiebreaker_field, timestamp_field, event
     return body
 
 
-def search_eql_command(args, proxies): # CHECKED
+def search_eql_command(args, proxies):
     index = args.get("index")
     query = args.get("query")
     fields = args.get("fields")  # fields to display
@@ -1098,7 +1100,7 @@ def search_eql_command(args, proxies): # CHECKED
     return CommandResults(readable_output=total_human_readable, outputs_prefix="Elasticsearch.Search", outputs=search_context)
 
 
-def search_esql_command(args, proxies): # CHECKED
+def search_esql_command(args, proxies):
     query = args.get("query")
     limit = args.get("limit")
 
@@ -1146,7 +1148,7 @@ def search_esql_command(args, proxies): # CHECKED
     )
 
 
-def index_document(args, proxies): # CHECKED
+def index_document(args, proxies):
     """
     Indexes a given document into an Elasticsearch index.
     return: Result returned from elasticsearch lib
@@ -1174,7 +1176,7 @@ def index_document(args, proxies): # CHECKED
     return response
 
 
-def index_document_command(args, proxies): # CHECKED
+def index_document_command(args, proxies):
     resp = index_document(args, proxies)
     index_context = {
         "id": resp.get("_id", ""),
@@ -1204,7 +1206,7 @@ def index_document_command(args, proxies): # CHECKED
     return result
 
 
-def get_indices_statistics(client): # CHECKED
+def get_indices_statistics(client):
     """
     Returns raw statistics and information of all the Elasticsearch indices.
     Args:
@@ -1219,7 +1221,7 @@ def get_indices_statistics(client): # CHECKED
     return raw_indices_data
 
 
-def get_indices_statistics_command(args, proxies): # CHECKED
+def get_indices_statistics_command(args, proxies):
     """
     Returns statistics and information of the Elasticsearch indices.
 
@@ -1268,25 +1270,25 @@ def main():  # pragma: no cover
     args = demisto.args()
     try:
         LOG(f"command is {demisto.command()}")
-        if demisto.command() == "test-module": # CHECKED
+        if demisto.command() == "test-module":
             test_func(proxies)
-        elif demisto.command() == "fetch-incidents": # CHECKED
+        elif demisto.command() == "fetch-incidents":
             fetch_items(proxies)
-        elif demisto.command() == "fetch-events": # CHECKED
+        elif demisto.command() == "fetch-events":
             fetch_items(proxies, is_fetch_events=True)
         elif demisto.command() in ["search", "es-search"]: # ??? args default values: FETCH_TIME, TIME_FIELD
             search_command(proxies)
         elif demisto.command() == "get-mapping-fields": # ??? use FETCH_INDEX
             return_results(get_mapping_fields_command())
-        elif demisto.command() == "es-eql-search": # CHECKED
+        elif demisto.command() == "es-eql-search":
             return_results(search_eql_command(args, proxies))
-        elif demisto.command() == "es-esql-search": # CHECKED
+        elif demisto.command() == "es-esql-search":
             return_results(search_esql_command(args, proxies))
-        elif demisto.command() == "es-index": # CHECKED
+        elif demisto.command() == "es-index":
             return_results(index_document_command(args, proxies))
         elif demisto.command() == "es-integration-health-check": # ??? use fetch-incidents args
             return_results(integration_health_check(proxies))
-        elif demisto.command() == "es-get-indices-statistics": # CHECKED
+        elif demisto.command() == "es-get-indices-statistics":
             return_results(get_indices_statistics_command(args, proxies))
 
     except Exception as e:
