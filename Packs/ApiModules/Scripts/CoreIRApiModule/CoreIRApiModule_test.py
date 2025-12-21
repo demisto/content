@@ -5094,3 +5094,37 @@ class TestDetermineEmailOrName:
         assignee_list = ["john_doe"]
         result = determine_email_or_name(assignee_list)
         assert result == "name"
+
+
+class TestDetermineIssueAssigneeFilterField(unittest.TestCase):
+    @patch("CoreIRApiModule.determine_email_or_name")
+    def test_determine_issue_assignee_filter_field_returns_email_field_when_email_detected(self, mock_determine_email_or_name):
+        """
+        Given: determine_email_or_name returns "email" when called with email addresses.
+        When: determine_issue_assignee_filter_field is called with a list of email addresses.
+        Then: Should return the email field from ISSUE_FIELDS and call determine_email_or_name once.
+        """
+        from CoreIRApiModule import determine_issue_assignee_filter_field, ISSUE_FIELDS
+
+        mock_determine_email_or_name.return_value = "email"
+        assignee_list = ["user@example.com", "admin@test.org"]
+        result = determine_issue_assignee_filter_field(assignee_list)
+        expected = ISSUE_FIELDS["assignee_email"]
+        self.assertEqual(result, expected)
+        mock_determine_email_or_name.assert_called_once_with(assignee_list)
+
+    @patch("CoreIRApiModule.determine_email_or_name")
+    def test_determine_issue_assignee_filter_field_returns_name_field_when_name_detected(self, mock_determine_email_or_name):
+        """
+        Given: determine_email_or_name returns "name" when called with names.
+        When: determine_issue_assignee_filter_field is called with a list of names.
+        Then: Should return the assignee field from ISSUE_FIELDS and call determine_email_or_name once.
+        """
+        from CoreIRApiModule import determine_issue_assignee_filter_field, ISSUE_FIELDS
+
+        mock_determine_email_or_name.return_value = "name"
+        assignee_list = ["John Doe", "Jane Smith"]
+        result = determine_issue_assignee_filter_field(assignee_list)
+        expected = ISSUE_FIELDS["assignee"]
+        self.assertEqual(result, expected)
+        mock_determine_email_or_name.assert_called_once_with(assignee_list)
