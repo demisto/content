@@ -4236,6 +4236,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
     demisto.info(f"{request_data=}")
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
+    demisto.debug(f"{reply=}")
     data = reply.get("DATA", [])
 
     for alert in data:

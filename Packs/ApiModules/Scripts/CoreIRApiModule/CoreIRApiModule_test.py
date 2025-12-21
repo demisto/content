@@ -5057,8 +5057,9 @@ class TestFilterBuilder:
         assert end_time == expected_end
         assert isinstance(start_time, int)
         assert isinstance(end_time, int)
+
+
 class TestDetermineEmailOrName:
-    
     def test_determine_email_or_name_empty_list(self):
         """
         Given: An empty list is passed to determine_email_or_name.
@@ -5066,7 +5067,7 @@ class TestDetermineEmailOrName:
         Then: Should return an empty string.
         """
         from CoreIRApiModule import determine_email_or_name
-        
+
         result = determine_email_or_name([])
         assert result == ""
 
@@ -5077,7 +5078,7 @@ class TestDetermineEmailOrName:
         Then: Should return "email" indicating the input format is email.
         """
         from CoreIRApiModule import determine_email_or_name
-        
+
         assignee_list = ["user@example.com"]
         result = determine_email_or_name(assignee_list)
         assert result == "email"
