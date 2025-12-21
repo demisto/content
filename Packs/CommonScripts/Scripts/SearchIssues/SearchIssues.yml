@@ -103,10 +103,19 @@ args:
     description: The first page from which we bring the issues.
     isArray: true
     name: offset
+    deprecated: true
   - defaultValue: "50"
     description: The last page from which we bring the issues.
     isArray: true
     name: limit
+    deprecated: true
+  - defaultValue: "0"
+    description: The page number for the issues to return for pagination. 
+    name: page
+  - defaultValue: "50"
+    description: The number of issues to return per page.
+    name: page_size
+  - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
   - description: Additional output fields.
     isArray: true
     name: additional_output_fields

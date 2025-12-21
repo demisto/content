@@ -4148,7 +4148,7 @@ def create_issues_filter(args) -> dict:
     action_status_values = [ALERT_STATUS_TYPES_REVERSE_DICT.get(val, val) for val in argToList(args.get("issue_action_status"))]
     filter_builder.add_field(ISSUE_FIELDS["issue_action_status"], FilterType.EQ, action_status_values)
     filter_builder.add_field_with_mappings(
-        determine_issue_assignee_filter_field(argToList(args.get("assignee"))),
+        determine_issue_assignee_filter_field(argToList(args.get("assignee", "").lower())),
         FilterType.CONTAINS,
         argToList(args.get("assignee")),
         {
@@ -4272,6 +4272,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
         readable_output=tableToMarkdown(f"{ALERT_OR_ISSUE}", human_readable),
         raw_response=data,
     )
+
 
 def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get("alert_ids", []))
