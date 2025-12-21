@@ -80,6 +80,7 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when clicking the integration Test button.
+            # TEST
             return_results(test_module(client))
 
         elif command == 'yoda-speak-translate':
