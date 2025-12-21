@@ -11,7 +11,7 @@ Linting: https://xsoar.pan.dev/docs/integrations/linting
 
 """
 
-from typing import Any
+from typing import Any, Dict
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -21,7 +21,7 @@ from CommonServerUserPython import *
 
 
 # TODO: REMOVE the following dummy function:
-def basescript_dummy(dummy: str) -> dict[str, str]:
+def basescript_dummy(dummy: str) -> Dict[str, str]:
     """Returns a simple python dict with the information provided
     in the input (dummy).
 
@@ -42,7 +42,8 @@ def basescript_dummy(dummy: str) -> dict[str, str]:
 
 
 # TODO: REMOVE the following dummy command function
-def basescript_dummy_command(args: dict[str, Any]) -> CommandResults:
+def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
+
     dummy = args.get("dummy", None)
     if not dummy:
         raise ValueError("dummy not specified")
@@ -51,7 +52,7 @@ def basescript_dummy_command(args: dict[str, Any]) -> CommandResults:
     result = basescript_dummy(dummy)
 
     return CommandResults(
-        outputs_prefix="testValidation",
+        outputs_prefix="ScriptTestValidation",
         outputs_key_field="",
         outputs=result,
     )
@@ -68,7 +69,7 @@ def main():
         # TODO: replace the invoked command function with yours
         return_results(basescript_dummy_command(demisto.args()))
     except Exception as ex:
-        return_error(f"Failed to execute testValidation. Error: {str(ex)}")
+        return_error(f"Failed to execute ScriptTestValidation. Error: {str(ex)}")
 
 
 """ ENTRY POINT """

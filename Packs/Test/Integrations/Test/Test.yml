@@ -39,15 +39,20 @@ script:
       name: dummy2
       required: false
       secret: false
-    - name: username
+    - name: target-mailbox
     deprecated: false
     description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
     execution: false
     name: baseintegration-dummy
+    compliantpolicies:
+    - User Soft Remediation
     outputs:
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
       type: String
+  - arguments:
+    - name: ip
+    name: test2
   isfetch: false
   runonce: false
   script: '-'

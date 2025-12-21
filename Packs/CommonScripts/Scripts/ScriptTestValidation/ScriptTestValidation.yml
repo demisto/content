@@ -6,13 +6,15 @@ args:
   required: true
   secret: false
 - name: username
-  description: test
+- name: ip
+compliantpolicies:
+- IP Blockage
 comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
 commonfields:
-  id: testValidation
+  id: ScriptTestValidation
   version: -1
 enabled: false
-name: testValidation
+name: ScriptTestValidation
 outputs:
 - contextPath: BaseScript.Output
   description: '[Enter a description of the data returned in this output.]'
