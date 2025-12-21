@@ -60,9 +60,7 @@ def filter_relationships_by_entity_types(entities: list, entities_types: list, r
     return filtered_relationships
 
 
-def get_relationships(
-    args: dict
-) -> list:
+def get_relationships(args: dict) -> list:
     """
     Retrieves indicator relationships based on specified entities, entity types, and relationships.
 
@@ -81,7 +79,7 @@ def get_relationships(
     entities = argToList(args.get("entities", []))
     relationships = argToList(args.get("relationships", []))
     limit = int(args.get("limit", "20"))
-    
+
     if not entities and not entities_types and not relationships:
         return []
 
