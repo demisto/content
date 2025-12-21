@@ -155,6 +155,8 @@ ALERT_EVENT_AZURE_FIELDS = {
 
 MAX_GET_ISSUES_LIMIT = 100
 ALERTS_TABLE = "ALERTS_VIEW_TABLE"
+
+
 class FilterBuilder:
     """
     Filter class for creating filter dictionary objects.
@@ -188,7 +190,7 @@ class FilterBuilder:
         IPLIST_MATCH = ("IPLIST_MATCH", "OR")
         IP_MATCH = ("IP_MATCH", "OR")
         NEQ = ("NEQ", "AND")
-        
+
     AND = "AND"
     OR = "OR"
     FIELD = "SEARCH_FIELD"
@@ -1609,7 +1611,7 @@ class CoreClient(BaseClient):
             json_data={"request_data": request_data},
         )
         return response.get("reply")
-    
+
     def get_webapp_data(self, request_data: dict) -> dict:
         return self._http_request(
             method="POST",
@@ -3963,7 +3965,7 @@ ISSUE_FIELDS = {
     "action_remote_ip": "action_remote_ip",
     "actor_process_image_sha256": "actor_process_image_sha256",
     "action_file_macro_sha256": "action_file_macro_sha256",
-    "issue_source" : "alert_source",
+    "issue_source": "alert_source",
     "user_name": "actor_effective_username",
     "asset_ids": "asset_ids",
     "issue_action_status": "alert_action_status",
@@ -3997,6 +3999,7 @@ ISSUE_FIELDS = {
 
 ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
 
+
 def determine_email_or_name(assignee_list: list) -> str:
     if not assignee_list:
         return ""
@@ -4007,6 +4010,7 @@ def determine_email_or_name(assignee_list: list) -> str:
         return "email"
     else:
         return "name"
+
 
 def determine_issue_assignee_filter_field(assignee_list: list) -> str:
     """
@@ -4022,6 +4026,7 @@ def determine_issue_assignee_filter_field(assignee_list: list) -> str:
         return ISSUE_FIELDS["assignee_email"]
     else:
         return ISSUE_FIELDS["assignee"]
+
 
 def build_webapp_request_data(
     table_name: str,
@@ -4062,46 +4067,75 @@ def build_webapp_request_data(
         "jsons": [],
         "onDemandFields": on_demand_fields,
     }
-    
+
+
 def create_issues_filter(args) -> dict:
     """Build filter dictionary for alerts based on provided arguments."""
     filter_builder = FilterBuilder()
     filter_builder.add_time_range_field(
-        ISSUE_FIELDS["start_time"],
-        start_time=args.get("start_time"),
-        end_time=args.get("end_time")
+        ISSUE_FIELDS["start_time"], start_time=args.get("start_time"), end_time=args.get("end_time")
     )
     filter_builder.add_field(ISSUE_FIELDS["starred"], FilterType.EQ, args.get("starred"))
     filter_builder.add_field(ISSUE_FIELDS["issue_id"], FilterType.EQ, argToList(args.get("issue_id")))
-    filter_builder.add_field(ISSUE_FIELDS["action_external_hostname"], FilterType.CONTAINS, argToList(args.get("action_external_hostname")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_external_hostname"], FilterType.CONTAINS, argToList(args.get("action_external_hostname"))
+    )
     filter_builder.add_field(ISSUE_FIELDS["rule_id"], FilterType.EQ, argToList(args.get("rule_id")))
     filter_builder.add_field(ISSUE_FIELDS["rule_name"], FilterType.EQ, argToList(args.get("rule_name")))
     filter_builder.add_field(ISSUE_FIELDS["issue_name"], FilterType.CONTAINS, argToList(args.get("issue_name")))
     filter_builder.add_field(ISSUE_FIELDS["user_name"], FilterType.CONTAINS, argToList(args.get("user_name")))
-    filter_builder.add_field(ISSUE_FIELDS["actor_process_image_name"], FilterType.CONTAINS, argToList(args.get("actor_process_image_name")))
-    filter_builder.add_field(ISSUE_FIELDS["actor_process_command_line"], FilterType.EQ, argToList(args.get("causality_actor_process_image_command_line")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_image_name"], FilterType.CONTAINS, argToList(args.get("actor_process_image_name"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_command_line"],
+        FilterType.EQ,
+        argToList(args.get("causality_actor_process_image_command_line")),
+    )
     filter_builder.add_field(ISSUE_FIELDS["agent_id"], FilterType.EQ, argToList(args.get("agent_id")))
     filter_builder.add_field(ISSUE_FIELDS["identity_type"], FilterType.EQ, argToList(args.get("identity_type")))
-    filter_builder.add_field(ISSUE_FIELDS["actor_process_command_line"], FilterType.EQ, argToList(args.get("actor_process_image_command_line")))
-    filter_builder.add_field(ISSUE_FIELDS["action_process_image_command_line"], FilterType.EQ, argToList(args.get("action_process_image_command_line")))
-    filter_builder.add_field(ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("actor_process_image_sha256")))
-    filter_builder.add_field(ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("causality_actor_process_image_sha256")))
-    filter_builder.add_field(ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("action_process_image_sha256")))
-    filter_builder.add_field(ISSUE_FIELDS["action_file_image_sha256"], FilterType.EQ, argToList(args.get("action_file_image_sha256")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_command_line"], FilterType.EQ, argToList(args.get("actor_process_image_command_line"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_process_image_command_line"], FilterType.EQ, argToList(args.get("action_process_image_command_line"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("actor_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("causality_actor_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("action_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_file_image_sha256"], FilterType.EQ, argToList(args.get("action_file_image_sha256"))
+    )
     filter_builder.add_field(ISSUE_FIELDS["action_registry_name"], FilterType.EQ, argToList(args.get("action_registry_name")))
-    filter_builder.add_field(ISSUE_FIELDS["action_registry_key_data"], FilterType.CONTAINS, argToList(args.get("action_registry_key_data")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_registry_key_data"], FilterType.CONTAINS, argToList(args.get("action_registry_key_data"))
+    )
     filter_builder.add_field(ISSUE_FIELDS["host_ip"], FilterType.IPLIST_MATCH, argToList(args.get("host_ip")))
     filter_builder.add_field(ISSUE_FIELDS["action_local_ip"], FilterType.IP_MATCH, argToList(args.get("action_local_ip")))
     filter_builder.add_field(ISSUE_FIELDS["action_remote_ip"], FilterType.IP_MATCH, argToList(args.get("action_remote_ip")))
     filter_builder.add_field(ISSUE_FIELDS["action_local_port"], FilterType.EQ, argToList(args.get("action_local_port")))
     filter_builder.add_field(ISSUE_FIELDS["action_remote_port"], FilterType.EQ, argToList(args.get("action_remote_port")))
-    filter_builder.add_field(ISSUE_FIELDS["dst_action_external_hostname"], FilterType.CONTAINS, argToList(args.get("dst_action_external_hostname")))
-    filter_builder.add_field(ISSUE_FIELDS["mitre_technique_id_and_name"], FilterType.CONTAINS, argToList(args.get("mitre_technique_id_and_name")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["dst_action_external_hostname"], FilterType.CONTAINS, argToList(args.get("dst_action_external_hostname"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["mitre_technique_id_and_name"], FilterType.CONTAINS, argToList(args.get("mitre_technique_id_and_name"))
+    )
     filter_builder.add_field(ISSUE_FIELDS["issue_category"], FilterType.EQ, argToList(args.get("issue_category")))
     filter_builder.add_field(ISSUE_FIELDS["issue_domain"], FilterType.EQ, argToList(args.get("issue_domain")))
     filter_builder.add_field(ISSUE_FIELDS["issue_description"], FilterType.CONTAINS, argToList(args.get("issue_description")))
-    filter_builder.add_field(ISSUE_FIELDS["os_actor_process_image_sha256"], FilterType.EQ, argToList(args.get("os_actor_process_image_sha256")))
-    filter_builder.add_field(ISSUE_FIELDS["action_file_macro_sha256"], FilterType.EQ, argToList(args.get("action_file_macro_sha256")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["os_actor_process_image_sha256"], FilterType.EQ, argToList(args.get("os_actor_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_file_macro_sha256"], FilterType.EQ, argToList(args.get("action_file_macro_sha256"))
+    )
     filter_builder.add_field(ISSUE_FIELDS["asset_ids"], FilterType.EQ, argToList(args.get("asset_ids")))
     source_values = [DETECTION_METHOD_HR_TO_MACHINE_NAME.get(val, val) for val in argToList(args.get("alert_source"))]
     filter_builder.add_field(ISSUE_FIELDS["issue_source"], FilterType.CONTAINS, source_values)
@@ -4122,12 +4156,12 @@ def create_issues_filter(args) -> dict:
             "assigned": FilterType.NIS_EMPTY,
         },
     )
-    
+
     filter_dict = filter_builder.to_dict()
     return filter_dict
 
+
 def get_alerts_by_filter_command(client: CoreClient, args: Dict):
-    
     def fix_array_value(match: Match[str]) -> str:
         """
         Fixes malformed array values in the 'agent_id' custom_filter argument.
@@ -4139,10 +4173,23 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
         # Return the full match with only SEARCH_VALUE fixed
         full_match = match.group(0)
         return full_match.replace(f'"[{array_content}]"', fixed_array)
-    
+
     prefix = args.pop("integration_context_brand", "CoreApiModule")
     args.pop("integration_name", None)
-    on_demand_fields = ["action_file_sha256", "action_file_macro_sha256","action_process_image_sha256", "actor_process_image_sha256", "os_actor_process_image_sha256", "causality_actor_process_image_sha256", "actor_process_command_line", "action_file_path", "alert_action_status", "agent_ip_addresses", "agent_hostname", "identity_type"]
+    on_demand_fields = [
+        "action_file_sha256",
+        "action_file_macro_sha256",
+        "action_process_image_sha256",
+        "actor_process_image_sha256",
+        "os_actor_process_image_sha256",
+        "causality_actor_process_image_sha256",
+        "actor_process_command_line",
+        "action_file_path",
+        "alert_action_status",
+        "agent_ip_addresses",
+        "agent_hostname",
+        "identity_type",
+    ]
     filter_dict = create_issues_filter(args)
     custom_filter = {}
     custom_filter_str = args.get("custom_filter", None)
@@ -4170,7 +4217,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
             filter_dict["AND"].extend(filter_obj)
         else:
             filter_dict["AND"].append(custom_filter)
-            
+
     page = arg_to_number(args.get("page")) or 0
     limit = arg_to_number(args.get("limit")) or MAX_GET_ISSUES_LIMIT
     limit = page * MAX_GET_ISSUES_LIMIT + limit
@@ -4185,29 +4232,31 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
         sort_field=sort_field,
         sort_order=sort_order,
         on_demand_fields=on_demand_fields,
-        start_page=page
+        start_page=page,
     )
     demisto.info(f"{request_data=}")
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
-    
+
     for alert in data:
         if "alert_action_status" in alert:
             action_status = alert.get("alert_action_status")
             alert["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
 
     ALERT_OR_ISSUE = "Issue" if is_platform() else "Alert"
-    
+
     id_field = "Issue ID" if is_platform() else "Alert ID"
-    
+
     human_readable = [
         {
             id_field: alert.get("internal_id"),
             "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
             "Name": alert.get("alert_name"),
             "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")) if is_platform() else alert.get("severity"),
-            "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress")) if is_platform() else alert.get("status.progress"),
+            "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress"))
+            if is_platform()
+            else alert.get("status.progress"),
             "Category": alert.get("alert_category"),
             "Action": alert.get("alert_action_status_readable"),
             "Description": alert.get("alert_description"),
@@ -4224,6 +4273,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
         readable_output=tableToMarkdown(f"{ALERT_OR_ISSUE}", human_readable),
         raw_response=data,
     )
+
 
 def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get("alert_ids", []))

@@ -2681,23 +2681,23 @@ class TestGetAlertByFilter:
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
         requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
         request_data_log = mocker.patch.object(demisto, "info")
-        
+
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
         args = {"issue_action_status": "detected (scanned)"}
-        
+
         response = get_alerts_by_filter_command(client, args)
-        
+
         assert response.outputs[0].get("internal_id", {}) == 33333
         assert response.outputs[0].get("alert_action_status", {}) == "SCANNED"
         assert response.outputs[0].get("alert_action_status_readable", {}) == "detected (scanned)"
-        
+
         # Verify the request data was logged and contains the correct filter
         assert request_data_log.call_count > 0
         logged_request = request_data_log.call_args[0][0]
         assert "SEARCH_FIELD': 'alert_action_status'" in logged_request
         assert "SEARCH_TYPE': 'EQ'" in logged_request
         assert "SEARCH_VALUE': 'SCANNED'" in logged_request
-    
+
     def test_get_alert_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
         """
         Given:
@@ -2714,14 +2714,13 @@ class TestGetAlertByFilter:
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
         requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
         request_data_log = mocker.patch.object(demisto, "info")
-        
+
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
         args = {"alert_source": "first,second"}
-        
+
         response = get_alerts_by_filter_command(client, args)
-        
+
         assert response.outputs[0].get("internal_id", {}) == 33333
-        "request_data={'type': 'grid', 'table_name': 'ALERTS_VIEW_TABLE', 'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, 'to': 100}, 'filter': {'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': 'second'}]}]}}, 'jsons': [], 'onDemandFields': ['action_file_sha256', 'action_file_macro_sha256', 'action_process_image_sha256', 'actor_process_image_sha256', 'os_actor_process_image_sha256', 'causality_actor_process_image_sha256', 'actor_process_command_line', 'action_file_path', 'alert_action_status', 'agent_ip_addresses', 'agent_hostname', 'identity_type']}"
         # Verify the request data was logged and contains the correct filter
         assert request_data_log.call_count > 0
         logged_request = request_data_log.call_args[0][0]
@@ -2747,14 +2746,14 @@ class TestGetAlertByFilter:
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
         requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
         request_data_log = mocker.patch.object(demisto, "info")
-        
+
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
         args = {"alert_source": "first,second", "user_name": "N/A"}
-        
+
         response = get_alerts_by_filter_command(client, args)
-        
+
         assert response.outputs[0].get("internal_id", {}) == 33333
-        
+
         # Verify the request data was logged and contains the correct filter
         assert request_data_log.call_count > 0
         logged_request = request_data_log.call_args[0][0]
@@ -2764,11 +2763,13 @@ class TestGetAlertByFilter:
         assert "'SEARCH_TYPE': 'CONTAINS'" in logged_request
         assert "'SEARCH_VALUE': 'first'" in logged_request
         assert "'SEARCH_VALUE': 'second'" in logged_request
-        
+
         # Check for user name filter
         assert "'SEARCH_FIELD': 'actor_effective_username'" in logged_request
         assert "'SEARCH_TYPE': 'CONTAINS'" in logged_request
         assert "'SEARCH_VALUE': 'N/A'" in logged_request
+
+
 class TestPollingCommands:
     @staticmethod
     def create_mocked_responses(status_count):
@@ -4306,6 +4307,7 @@ def test_create_filter_from_args():
         ]
     }
     assert expected_result == query
+
 
 class TestFilterBuilder:
     def test_add_field_without_mapper(self):

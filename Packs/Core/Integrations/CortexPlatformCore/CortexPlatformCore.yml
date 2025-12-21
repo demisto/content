@@ -710,54 +710,79 @@ script:
       outputs:
         - contextPath: Core.Issue.internal_id
           description: The unique ID of the issue.
+          type: String
         - contextPath: Core.Issue.identity_type
           description: The identity type of the account.
+          type: String
         - contextPath: Core.Issue.source_insert_ts
           description: The detection timestamp.
+          type: Number
         - contextPath: Core.Issue.issue_name
           description: The name of the issue.
+          type: String
         - contextPath: Core.Issue.agent_ids
           description: The agent (endpoint) IDs associated with the issue.
+          type: List
         - contextPath: Core.Issue.asset_ids
           description: The asset IDs related to the issue.
+          type: List
         - contextPath: Core.Issue.severity
           description: The severity of the issue.
+          type: String
         - contextPath: Core.Issue.issue_domain
           description: The domain of the issue.
+          type: String
         - contextPath: Core.Issue.case_ids
           description: The case IDs associated with the issue.
+          type: List
         - contextPath: Core.Issue.issue_source
           description: The source of the issue.
+          type: String
         - contextPath: Core.Issue.starred
           description: Whether the issue is starred.
+          type: Boolean
         - contextPath: Core.Issue.status.progress
           description: The progress status of the issue.
+          type: String
         - contextPath: Core.Issue.assigned_to_pretty
           description: The pretty name of the user assigned to the issue.
+          type: String
         - contextPath: Core.Issue.assigned_to
           description: The user assigned to the issue.
+          type: String
         - contextPath: Core.Issue.agent_ip_addresses
           description: The host IP address.
+          type: String
         - contextPath: Core.Issue.agent_hostname
           description: The hostname.
+          type: String
         - contextPath: Core.Issue.mitre_tactic_id_and_name
           description: The MITRE attack tactic.
+          type: String
         - contextPath: Core.Issue.mitre_technique_id_and_name
           description: The MITRE attack technique.
+          type: String
         - contextPath: Core.Issue.issue_action_status 
           description: The issue action status.
+          type: String
         - contextPath: Core.Issue.issue_action_status_readable
           description: The issue action status in readable format.
+          type: String
         - contextPath: Core.Issue.action_file_macro_sha256
           description: File Macro SHA256 hash of the action file macro.
+          type: String
         - contextPath: Core.Issue.action_process_image_sha256
           description: Action process image SHA256 hash.
+          type: String
         - contextPath: Core.Issue.causality_actor_process_image_sha256
           description: Causality actor process image SHA256 hash.
+          type: String
         - contextPath: Core.Issue.os_actor_process_image_sha256
           description: OS Parent SHA256 hash of the OS actor process image.
+          type: String
         - contextPath: Core.Issue.actor_process_image_sha256
           description: Actor process image SHA256 hash.
+          type: String
     - arguments:
         - description: Asset unique identifier.
           name: asset_id
