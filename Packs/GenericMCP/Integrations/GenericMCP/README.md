@@ -77,6 +77,7 @@ Retrieves a list of available tools in the MCP server.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| ListTools.server_name | String | The name of the MCP server. |
 | ListTools.Tools.annotations | Unknown | The annotations of the tool. |
 | ListTools.Tools.description | String | The description of the tool. |
 | ListTools.Tools.icons | Unknown | The icons associated with the tool. |

@@ -103,6 +103,9 @@ script:
     name: list-tools
     hidden: true
     outputs:
+    - contextPath: ListTools.server_name
+      description: The name of the MCP server.
+      type: String
     - contextPath: ListTools.Tools.annotations
       description: The annotations of the tool.
       type: Unknown
