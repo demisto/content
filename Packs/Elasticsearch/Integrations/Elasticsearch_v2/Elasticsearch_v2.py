@@ -425,7 +425,7 @@ def fetch_params_check():
             )
 
     if len(str_error) > 0:
-        return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + "\n".join(str_error))
+        return_error("Got the following errors in test:" + "\n".join(str_error))
 
 
 def test_query_to_fetch_incident_index(es):

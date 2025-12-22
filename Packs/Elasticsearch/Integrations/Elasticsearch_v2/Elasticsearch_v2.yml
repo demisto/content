@@ -13,9 +13,16 @@ configuration:
   type: 19
   required: false
   advanced: true
-  section: Collect 
+  section: Collect Events
   hidden:
   - xsoar
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  section: Collect Issues
+  advanced: true
+  required: false
+  type: 19
 - display: Server URL
   name: url
   required: false
