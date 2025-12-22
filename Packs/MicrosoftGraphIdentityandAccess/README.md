@@ -1,4 +1,4 @@
-Use the **Microsoft Graph Identity and Access** integration to fetch alerts from Microsoft Entra ID Protection, manage administrator (directory roles), manage conditional access policies, manage IP named locations, discover information about users' group and role memberships, and retrieve information about user risks.
+Use the **Microsoft Graph Identity and Access** pack to fetch alerts from Microsoft Entra ID Protection, manage administrator (directory roles), manage conditional access policies, manage IP named locations, discover information about users' group and role memberships, and retrieve information about user risks.
 
 ## What does this pack do?
 

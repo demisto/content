@@ -7,7 +7,6 @@ An integration to MS Graph Identity and Access endpoint.
 https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph-rest-1.0
 """
 
-import json
 import urllib3
 
 
@@ -1330,13 +1329,13 @@ def detection_to_incident(detection: dict, detection_date: str, severity_overrid
     detection_type: str = detection.get("riskEventType", "")
     detection_detail: str = detection.get("riskDetail", "")
     detection_upn: str = detection.get("userPrincipalName", "")
-    detection_severity: str = detection.get("riskLevel", "")
 
     risk = sign_in_risk_mapping.get(detection_type, {})
 
     if severity_override:
         incident_severity = SEVERITY_MAP.get(overridden_issue_severity, 2)
     else:
+        detection_severity: str = detection.get("riskLevel", "")
         incident_severity = SEVERITY_MAP.get(detection_severity, 2)
 
     incident = {
