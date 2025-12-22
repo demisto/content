@@ -188,7 +188,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.6204436
   commands:
   - name: bmc-itsm-user-list
     description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one performs a `LIKE` operation, and multiple filters are combined using the `AND` operator. To view the full JSON response, add raw_response=true to the end of the command.
@@ -1165,23 +1165,14 @@ script:
     arguments:
     - name: template_id
       description: The instance ID of the template to use. The ID can be retrieved by executing the bmc-itsm-task-template-list command.
-      defaultValue: ""
     - name: summary
-      description: The task ticket summary.
-      required: true
-      defaultValue: ""
+      description: The task ticket summary. Required when the template_id argument is not provided.
     - name: customer_company
       description: The name of the customer company.
-      required: false
-      defaultValue: ""
     - name: details
-      description: The task ticket detailed description.
-      required: true
-      defaultValue: ""
+      description: The task ticket detailed description. Required when the template_id argument is not provided.
     - name: root_ticket_type
-      description: "The parent ticket type."
-      required: true
-      defaultValue: ""
+      description: The parent ticket type. Required when the template_id argument is not provided.
       auto: PREDEFINED
       predefined:
       - change request
@@ -1190,9 +1181,7 @@ script:
       - known error
       - work order
     - name: root_request_id
-      description: "The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. Use Display ID for work orders."
-      defaultValue: ""
-      required: true
+      description: "The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. Use Display ID for work orders. Required when the template_id argument is not provided."
     - name: root_request_name
       description: "The display name of the parent ticket in the task ticket. If not provided, the parent ticket displayID is displayed."
       defaultValue: ""
@@ -1204,8 +1193,7 @@ script:
       - Real
       - Simulation
     - name: status
-      description: The task status.
-      defaultValue: ""
+      description: The task status. Required when the template_id argument is not provided.
       auto: PREDEFINED
       predefined:
       - Staged
@@ -1229,9 +1217,7 @@ script:
       predefined:
       - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.'
     - name: priority
-      description: The task ticket priority.
-      required: true
-      defaultValue: ""
+      description: The task ticket priority. Required when the template_id argument is not provided.
       auto: PREDEFINED
       predefined:
       - Critical
@@ -1239,9 +1225,7 @@ script:
       - Medium
       - Low
     - name: location_company
-      description: The company associated with the task process.
-      defaultValue: ""
-      required: true
+      description: The company associated with the task process. Required when the template_id argument is not provided.
     - name: support_company
       description: The technical support team associated with the company.
       defaultValue: ""
