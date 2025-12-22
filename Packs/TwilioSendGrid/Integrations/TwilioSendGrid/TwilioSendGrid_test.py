@@ -55,7 +55,7 @@ def mock_events() -> list[dict[str, Any]]:
             "2024-01-15T11:00:00Z",
             "last_event_time BETWEEN TIMESTAMP '2024-01-15T10:00:00Z' AND TIMESTAMP '2024-01-15T11:00:00Z'",
         ),
-        ("2024-01-15T10:00:00Z", None, "last_event_time > TIMESTAMP '2024-01-15T10:00:00Z'"),
+        ("2024-01-15T10:00:00Z", None, "last_event_time >= TIMESTAMP '2024-01-15T10:00:00Z'"),
     ],
 )
 def test_build_query_filter(from_time: str, to_time: str | None, expected_query: str, capfd):
@@ -128,7 +128,7 @@ def test_client_get_email_activity_success(client: Client, mock_events: list[dic
     """Test the get_email_activity method for a successful API call."""
     with capfd.disabled(), patch.object(client, "_http_request") as mock_http:
         mock_http.return_value = {"messages": mock_events}
-        query = "last_event_time > TIMESTAMP '2024-01-15T10:00:00Z'"
+        query = "last_event_time >= TIMESTAMP '2024-01-15T10:00:00Z'"
         events = client.get_email_activity(query=query, limit=100)
 
         assert events == mock_events
@@ -288,10 +288,149 @@ def test_consumer_processes_batch(mock_send_events: MagicMock, mock_events: list
 
         # Stop the consumer after one loop
         stop_event.set()
+        last_run_lock = threading.Lock()
 
-        _event_consumer(event_queue, stop_event, metrics, last_run)
+        _event_consumer(event_queue, stop_event, metrics, last_run, last_run_lock)
 
         mock_send_events.assert_called_once()
         assert metrics.events_consumed == 3
         assert "last_event_time" in last_run
         assert last_run["last_event_time"] == "2024-01-15T10:40:00Z"
+
+
+def test_last_run_thread_safety(mock_events: list[dict[str, Any]], capfd):
+    """Test that last_run updates are thread-safe."""
+    with capfd.disabled():
+        last_run: dict[str, Any] = {"last_event_time": "2024-01-15T10:00:00Z", "previous_ids": []}
+        metrics = ProducerConsumerMetrics()
+        stop_event = threading.Event()
+        event_queue: queue.Queue = queue.Queue()
+
+        # Create multiple batches with different timestamps
+        batch1 = EventBatch(events=mock_events, batch_id=1)  # Max time: 10:40
+
+        # Create a second batch with later events
+        later_events = [e.copy() for e in mock_events]
+        for e in later_events:
+            e["last_event_time"] = "2024-01-15T11:00:00Z"
+            e["msg_id"] = e["msg_id"] + "_later"
+        batch2 = EventBatch(events=later_events, batch_id=2)
+
+        event_queue.put(batch1)
+        event_queue.put(batch2)
+
+        # Run multiple consumers concurrently
+        threads = []
+        last_run_lock = threading.Lock()
+        for _i in range(2):
+            t = threading.Thread(target=_event_consumer, args=(event_queue, stop_event, metrics, last_run, last_run_lock))
+            threads.append(t)
+            t.start()
+
+        # Wait for queue to empty
+        event_queue.join()
+        stop_event.set()
+
+        for t in threads:
+            t.join()
+
+        # Verify final state reflects the latest time
+        assert last_run["last_event_time"] == "2024-01-15T11:00:00Z"
+        assert len(last_run["previous_ids"]) == 3  # Should contain IDs from the latest batch
+
+
+def test_identical_timestamps_handling(capfd):
+    """Test handling of events with identical timestamps."""
+    with capfd.disabled():
+        # Create events with identical timestamps but different IDs
+        events = [
+            {"msg_id": "1", "last_event_time": "2024-01-15T10:00:00Z"},
+            {"msg_id": "2", "last_event_time": "2024-01-15T10:00:00Z"},
+            {"msg_id": "3", "last_event_time": "2024-01-15T10:00:00Z"},
+        ]
+
+        last_run: dict[str, Any] = {}
+
+        # First run - should process all and track all IDs
+        updated_last_run = update_last_run(last_run, events, {e["msg_id"] for e in events})
+        assert updated_last_run["last_event_time"] == "2024-01-15T10:00:00Z"
+        assert len(updated_last_run["previous_ids"]) == 3
+
+        # Second run with overlapping events + new one
+        new_events = events + [{"msg_id": "4", "last_event_time": "2024-01-15T10:00:00Z"}]
+        unique_events, new_ids = deduplicate_events(
+            new_events, set(updated_last_run["previous_ids"]), updated_last_run["last_event_time"]
+        )
+
+        assert len(unique_events) == 1
+        assert unique_events[0]["msg_id"] == "4"
+        assert len(new_ids) == 4  # Should track all 4 IDs now
+
+
+@patch("TwilioSendGrid.MAX_EVENTS_PER_FETCH", 2)  # Small batch size to force multiple loops
+def test_producer_infinite_loop_prevention(client: Client, capfd):
+    """Test that producer doesn't loop infinitely if API keeps returning same events."""
+    with capfd.disabled(), patch.object(client, "get_email_activity") as mock_get_activity:
+        # Setup mock to return same events repeatedly
+        events = [
+            {"msg_id": "1", "last_event_time": "2024-01-15T10:00:00Z"},
+            {"msg_id": "2", "last_event_time": "2024-01-15T10:00:00Z"},
+        ]
+        mock_get_activity.return_value = events
+
+        metrics = ProducerConsumerMetrics()
+        stop_event = threading.Event()
+        event_queue: queue.Queue = queue.Queue()
+        last_run: dict[str, Any] = {"last_event_time": "2024-01-15T09:00:00Z"}
+
+        # Run producer with a limit that requires multiple fetches
+        # If logic is wrong, it might keep fetching same time window forever
+        # We rely on the max_fetch limit to eventually stop it, but we want to ensure
+        # it progresses time or handles the loop gracefully
+
+        # In the current implementation, the producer updates from_time based on the latest event
+        # If all events have same time, from_time won't advance past that time
+        # The deduplication happens in consumer, so producer might keep fetching same events
+        # if the API returns them for the query >= timestamp
+
+        # Let's verify it stops after max_fetch is reached
+        _event_producer(client, event_queue, stop_event, metrics, last_run, max_fetch=4)
+
+        assert metrics.events_produced == 2
+        assert mock_get_activity.call_count == 2
+
+
+def test_rate_limiting_handling(client: Client, capfd):
+    """Test that rate limit errors are handled gracefully."""
+    from CommonServerPython import DemistoException
+
+    with capfd.disabled(), patch.object(client, "_http_request") as mock_http:
+        # Simulate 429 error
+        mock_http.side_effect = DemistoException("[429] Rate limit exceeded")
+
+        with pytest.raises(DemistoException) as excinfo:
+            client.get_email_activity(query="test", limit=100)
+
+        assert "Rate limit hit" in str(excinfo.value)
+
+
+@patch("TwilioSendGrid.MAX_EVENTS_PER_FETCH", 1000)
+def test_exact_batch_size_handling(client: Client, capfd):
+    """Test scenario where API returns exactly the limit (1000 events)."""
+    with capfd.disabled(), patch.object(client, "get_email_activity") as mock_get_activity:
+        # Create 1000 events
+        events = [{"msg_id": str(i), "last_event_time": "2024-01-15T10:00:00Z"} for i in range(1000)]
+        mock_get_activity.return_value = events
+
+        metrics = ProducerConsumerMetrics()
+        stop_event = threading.Event()
+        event_queue: queue.Queue = queue.Queue()
+        last_run: dict[str, Any] = {"last_event_time": "2024-01-15T09:00:00Z"}
+
+        # Fetch exactly 1000
+        _event_producer(client, event_queue, stop_event, metrics, last_run, max_fetch=1000)
+
+        assert metrics.events_produced == 1000
+        assert event_queue.qsize() == 1
+        batch = event_queue.get()
+        assert len(batch.events) == 1000

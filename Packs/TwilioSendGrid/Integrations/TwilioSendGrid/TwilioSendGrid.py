@@ -21,7 +21,6 @@ DEFAULT_MAX_FETCH = 10000
 
 # Producer-Consumer constants
 QUEUE_MAX_SIZE = 1000
-CONSUMER_BATCH_SIZE = 100
 PRODUCER_TIMEOUT = 30
 CONSUMER_TIMEOUT = 5
 MAX_CONSUMER_THREADS = 3
@@ -198,7 +197,7 @@ def build_query_filter(from_time: str, to_time: str | None = None) -> str:
     if to_time:
         query = f"last_event_time BETWEEN TIMESTAMP '{from_time}' AND TIMESTAMP '{to_time}'"
     else:
-        query = f"last_event_time > TIMESTAMP '{from_time}'"
+        query = f"last_event_time >= TIMESTAMP '{from_time}'"
 
     demisto.debug(f"Built query filter: {query}")
     return query
@@ -262,6 +261,7 @@ def deduplicate_events(
 
         # Skip if this event was part of the last run's boundary check
         if message_id in previous_ids:
+            demisto.debug(f"Duplicate event found: {message_id}")
             duplicate_count += 1
             continue
 
@@ -332,9 +332,13 @@ def update_last_run(last_run: dict[str, Any], events: list[dict[str, Any]], prev
     latest_time = latest_event.get("last_event_time")
 
     if latest_time:
-        last_run["last_event_time"] = latest_time
-        last_run["previous_ids"] = list(previous_ids)
-        demisto.debug(f"Updated last_run: last_event_time={latest_time}, " f"previous_ids count={len(previous_ids)}")
+        current_last_time = last_run.get("last_event_time", "")
+        if latest_time >= current_last_time:
+            last_run["last_event_time"] = latest_time
+            last_run["previous_ids"] = list(previous_ids)
+            demisto.debug(f"Updated last_run: last_event_time={latest_time}, " f"previous_ids count={len(previous_ids)}")
+        else:
+            demisto.debug(f"Skipping last_run update: latest_time {latest_time} is older than current {current_last_time}")
 
     return last_run
 
@@ -485,7 +489,13 @@ def _event_producer(
 
             # Update from_time for the next iteration
             latest_event = max(events, key=lambda e: e.get("last_event_time", ""))
-            from_time = latest_event.get("last_event_time", "")
+            new_from_time = latest_event.get("last_event_time", "")
+
+            if new_from_time == from_time:
+                demisto.debug("Producer: from_time did not advance. Stopping to prevent infinite loop.")
+                break
+
+            from_time = new_from_time
 
     except queue.Full:
         demisto.info("Producer: Event queue is full. Pausing.")
@@ -499,7 +509,11 @@ def _event_producer(
 
 
 def _event_consumer(
-    event_queue: queue.Queue, stop_event: threading.Event, metrics: ProducerConsumerMetrics, last_run: dict[str, Any]
+    event_queue: queue.Queue,
+    stop_event: threading.Event,
+    metrics: ProducerConsumerMetrics,
+    last_run: dict[str, Any],
+    last_run_lock: threading.Lock,
 ):
     """
     The consumer thread function. Gets events from the queue, processes, and sends them.
@@ -509,8 +523,10 @@ def _event_consumer(
             event_batch = event_queue.get(timeout=CONSUMER_TIMEOUT)
             event_batch.status = EventBatchStatus.PROCESSING
 
-            previous_ids = set(last_run.get("previous_ids", []))
-            from_time = get_last_event_time(last_run)
+            # Use lock when reading shared state
+            with last_run_lock:
+                previous_ids = set(last_run.get("previous_ids", []))
+                from_time = get_last_event_time(last_run)
 
             unique_events, new_previous_ids = deduplicate_events(event_batch.events, previous_ids, from_time)
 
@@ -521,7 +537,8 @@ def _event_consumer(
                 metrics.increment_duplicates(len(event_batch.events) - len(unique_events))
 
                 # Update last_run for the main thread
-                last_run.update(update_last_run(last_run, enriched_events, new_previous_ids))
+                with last_run_lock:
+                    last_run.update(update_last_run(last_run, enriched_events, new_previous_ids))
 
             event_batch.status = EventBatchStatus.COMPLETED
             event_queue.task_done()
@@ -551,6 +568,7 @@ def fetch_events_producer_consumer(
     metrics = ProducerConsumerMetrics()
     event_queue: queue.Queue[EventBatch] = queue.Queue(maxsize=QUEUE_MAX_SIZE)
     stop_event = threading.Event()
+    last_run_lock = threading.Lock()
 
     producer = threading.Thread(target=_event_producer, args=(client, event_queue, stop_event, metrics, last_run, max_fetch))
     producer.start()
@@ -558,7 +576,9 @@ def fetch_events_producer_consumer(
     consumers = []
     for i in range(MAX_CONSUMER_THREADS):
         consumer = threading.Thread(
-            target=_event_consumer, args=(event_queue, stop_event, metrics, last_run), name=f"Consumer-{i + 1}"
+            target=_event_consumer,
+            args=(event_queue, stop_event, metrics, last_run, last_run_lock),
+            name=f"Consumer-{i + 1}",
         )
         consumer.start()
         consumers.append(consumer)
