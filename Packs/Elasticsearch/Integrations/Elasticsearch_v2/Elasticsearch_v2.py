@@ -114,7 +114,7 @@ def get_value_by_dot_notation(dictionary, key):
     return value
 
 
-def convert_date_to_timestamp(date):
+def convert_date_to_timestamp(date, time_method=TIME_METHOD):
     """converts datetime to the relevant timestamp format.
 
     Args:
@@ -128,10 +128,10 @@ def convert_date_to_timestamp(date):
     if str(date).isdigit():
         return int(date)
 
-    if TIME_METHOD == "Timestamp-Seconds":
+    if time_method == "Timestamp-Seconds":
         return int(date.timestamp())
 
-    if TIME_METHOD == "Timestamp-Milliseconds":
+    if time_method == "Timestamp-Milliseconds":
         return int(date.timestamp() * 1000)
 
     # In case of 'Simple-Date'.
@@ -875,7 +875,7 @@ def get_time_range(
     if not last_fetch and time_range_start:  # this is the first fetch
         start_date = dateparser.parse(time_range_start)
 
-        start_time = convert_date_to_timestamp(start_date)
+        start_time = convert_date_to_timestamp(start_date, time_method)
     else:
         start_time = last_fetch
 
@@ -885,7 +885,7 @@ def get_time_range(
 
     if time_range_end:
         end_date = dateparser.parse(time_range_end)
-        end_time = convert_date_to_timestamp(end_date)
+        end_time = convert_date_to_timestamp(end_date, time_method)
         range_dict["lt"] = end_time
 
     if time_method == "Simple-Date":

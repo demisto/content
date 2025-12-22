@@ -755,10 +755,9 @@ class TestIncidentLabelMaker(unittest.TestCase):
     ],
 )
 def test_get_time_range(time_method, last_fetch, time_range_start, time_range_end, result):
-    Elasticsearch_v2.TIME_METHOD = time_method
     from Elasticsearch_v2 import get_time_range
 
-    assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field") == result
+    assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field", time_method=time_method) == result
 
 
 @pytest.mark.parametrize(
