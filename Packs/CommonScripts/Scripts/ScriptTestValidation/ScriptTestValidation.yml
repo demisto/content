@@ -7,15 +7,15 @@ args:
   secret: false
 - name: username
 - name: ip
-compliantpolicies:
-- IP Blockage
-- User Hard Remediation
 comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
 commonfields:
   id: ScriptTestValidation
   version: -1
 enabled: false
 name: ScriptTestValidation
+compliantpolicies:
+- IP Blockage
+- User Hard Remediation
 outputs:
 - contextPath: BaseScript.Output
   description: '[Enter a description of the data returned in this output.]'
