@@ -22,7 +22,6 @@ configuration:
     - code_security
     - dependabot
     - discussions
-    - experiments
     - gists
     - git
     - issues
