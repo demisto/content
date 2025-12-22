@@ -42,9 +42,3 @@ The integration supports the following capabilities:
 ### API Rate Limits
 
 Please note that APIVoid has rate limits based on your subscription plan. Refer to your [APIVoid plan details](https://www.apivoid.com/pricing/) for specific limits.
-
-### Support
-
-For issues or questions:
-- APIVoid Documentation: https://docs.apivoid.com/
-- APIVoid Support: https://www.apivoid.com/contacts/
