@@ -17,7 +17,9 @@ jobs:
     if: >-
       github.event.issue.pull_request &&
       (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
-      !contains(fromJson(env.IGNORED_BOTS), github.event.comment.user.login)
+      !contains(fromJson(env.IGNORED_BOTS), github.event.comment.user.login) && contains(
+        fromJson(env.ALLOWED_COMMANDS), github.event.comment.body
+      )
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,26 +34,16 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           REPO: ${{ github.repository }}
         run: |
-          # 1. Fail Fast: Validate command
-          if ! echo "$ALLOWED_COMMANDS" | jq -e --arg body "$COMMENT_BODY" 'any(.[] as $cmd | $body | contains($cmd))' > /dev/null; then
-            echo "ℹ️ Ignoring comment: No valid command detected."
-            exit 0
-          fi
-          echo "✅ Valid command detected."
+          
+          # Add rocket reaction to mark review as in-progress
+          echo "Adding 🚀 reaction..."
+          gh api "repos/$REPO/issues/comments/$COMMENT_ID/reactions" -f content="rocket" || true
 
-
-          # 2. Add :rocket: reaction to current comment to mark review as In-Progress
-          echo "Adding :rocket: reaction to mark review as in-progress..."
-          gh api "repos/$REPO/issues/comments/$COMMENT_ID/reactions" \
-            -f content="rocket" || {
-            echo "⚠️ Failed to add reaction. Proceeding anyway..."
-          }
-
-          # 3. Trigger Review
+          # Trigger review by pushing empty commit
           echo "Triggering AI Reviewer..."
           git config --global user.email "bot@demisto.com"
           git config --global user.name "Content Bot"
-          git commit --allow-empty -m "Trigger AI Reviewer [comment:$COMMENT_ID]"
+          git commit --allow-empty -m "Trigger AI Reviewer"
           git push
       
      
