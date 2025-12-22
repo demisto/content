@@ -7,7 +7,14 @@ from blessings import Terminal
 from github import Github
 from handle_external_pr import EXTERNAL_LABEL
 import re
-from utils import get_env_var, timestamped_print, get_doc_reviewer, get_content_roles
+from utils import (
+    get_env_var,
+    timestamped_print,
+    get_doc_reviewer,
+    get_content_roles,
+    post_ai_review_introduction,
+    is_organization_member,
+)
 from urllib3.exceptions import InsecureRequestWarning
 
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -122,6 +129,18 @@ def main():
 
     pr.add_to_assignees(*assignees)
     print(f"{t.cyan}Assigned users {assignees}{t.normal}")
+
+    # Post AI review introduction if any reviewer is an organization member
+    org_member_reviewers = [
+        reviewer for reviewer in new_pr_reviewers
+        if is_organization_member(gh, reviewer)
+    ]
+    
+    if org_member_reviewers:
+        print(f"{t.cyan}Found organization member reviewers: {org_member_reviewers}{t.normal}")
+        post_ai_review_introduction(pr, org_member_reviewers, t)
+    else:
+        print(f"{t.cyan}No organization member reviewers found, skipping AI review introduction{t.normal}")
 
     # remove branch protections
     print(f'{t.cyan}Removing protection from branch "{head_branch}"{t.normal}')

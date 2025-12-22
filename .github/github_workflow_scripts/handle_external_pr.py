@@ -23,6 +23,7 @@ from utils import (
     get_support_level,
     get_content_roles,
     get_metadata,
+    post_ai_review_introduction,
 )
 from demisto_sdk.commands.common.tools import get_pack_name
 from urllib3.exceptions import InsecureRequestWarning
@@ -45,14 +46,6 @@ WELCOME_MSG_WITH_GFORM = (
     "so our content wizard @{selected_reviewer} will know the proposed changes are ready to be "
     "reviewed.\nFor your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) "
     "to the contributions SLAs document."
-)
-
-AI_REVIEWER_INTRODUCTION_MSG = (
-    "## 🤖 AI-Powered Code Review Available\n\n"
-    "Hi @{reviewers}, you can leverage AI-powered code review to assist with this PR!\n\n"
-    "**Available Commands:**\n"
-    "- `@content_bot start review` - Initiate a full AI code review\n"
-    "- `@content_bot re-review` - Incremental review for new commits\n"
 )
 
 XSOAR_SUPPORT_LEVEL_LABEL = "Xsoar Support Level"
@@ -495,21 +488,6 @@ def replace_fixes_to_related_in_pr_body(pr: PullRequest) -> str:
         edited_body = body + "\n" + "relates: link to the issue"
     pr.edit(body=edited_body)
     return ""
-
-
-def post_ai_review_introduction(pr: PullRequest, reviewers: list[str], t: Terminal) -> None:
-    """
-    Posts the AI reviewer introduction comment.
-
-    Args:
-        pr (PullRequest): The PullRequest object.
-        reviewers (list[str]): List of assigned reviewers.
-        t (Terminal): The terminal object for printing.
-    """
-    reviewer_mentions = ", ".join([f"@{r}" for r in reviewers])
-    ai_introduction_body = AI_REVIEWER_INTRODUCTION_MSG.format(reviewers=reviewer_mentions)
-    pr.create_issue_comment(ai_introduction_body)
-    print(f"{t.cyan}Posted AI reviewer introduction comment{t.normal}")
 
 
 def main():

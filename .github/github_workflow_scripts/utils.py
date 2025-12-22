@@ -13,6 +13,9 @@ from collections.abc import Generator, Iterable
 from pathlib import Path
 from demisto_sdk.commands.common.tools import get_pack_metadata
 import git
+from github import Github
+from github.PullRequest import PullRequest
+from blessings import Terminal
 
 # Constants
 BRANCH_NAME = "BRANCH_NAME"
@@ -393,3 +396,45 @@ def get_logger(file_name: str) -> Logger:
     logger.addHandler(stream_handler)
 
     return logger
+
+
+def is_organization_member(gh: Github, username: str, org_name: str = ORGANIZATION_NAME) -> bool:
+    """
+    Check if a user is a member of the organization.
+
+    Args:
+        gh (Github): The GitHub client instance.
+        username (str): The GitHub username to check.
+        org_name (str): The organization name (default: 'demisto').
+
+    Returns:
+        bool: True if the user is an organization member, False otherwise.
+    """
+    try:
+        org = gh.get_organization(org_name)
+        return org.has_in_members(gh.get_user(username))
+    except Exception as e:
+        print(f"Error checking organization membership for {username}: {e}")  # noqa: T201
+        return False
+
+
+def post_ai_review_introduction(pr: PullRequest, reviewers: list[str], t: Terminal) -> None:
+    """
+    Posts the AI reviewer introduction comment.
+
+    Args:
+        pr (PullRequest): The PullRequest object.
+        reviewers (list[str]): List of assigned reviewers.
+        t (Terminal): The terminal object for printing.
+    """
+    ai_reviewer_introduction_msg = (
+        "## 🤖 AI-Powered Code Review Available\n\n"
+        "Hi @{reviewers}, you can leverage AI-powered code review to assist with this PR!\n\n"
+        "**Available Commands:**\n"
+        "- `@content_bot start review` - Initiate a full AI code review\n"
+        "- `@content_bot re-review` - Incremental review for new commits\n"
+    )
+    reviewer_mentions = ", ".join([f"@{r}" for r in reviewers])
+    ai_introduction_body = ai_reviewer_introduction_msg.format(reviewers=reviewer_mentions)
+    pr.create_issue_comment(ai_introduction_body)
+    print(f"{t.cyan}Posted AI reviewer introduction comment{t.normal}")  # noqa: T201
