@@ -145,10 +145,60 @@ def get_module_command_func(
         raise DemistoException(f"Unable to find module: {module!r}")
 
 
+# --- Active Directory Helper Function ---
+def check_ad_password_never_expires(username: str, using: str) -> tuple[bool, list[dict], str]:
+    """
+    Check if the 'Password Never Expires' flag is set for an Active Directory user.
+
+    This function queries the Active Directory to retrieve the user's account control fields
+    and extracts the DONT_EXPIRE_PASSWORD flag value.
+
+    Args:
+        username (str): The username (sAMAccountName) of the user to check.
+        using (str): The name of the Active Directory integration instance to use.
+
+    Returns:
+        tuple[bool , list[dict], str]: A tuple containing:
+            - bool: The value of the DONT_EXPIRE_PASSWORD flag (True, False).
+            - list[dict]: The raw command results from ad-get-user.
+            - str: The human-readable output from the ad-get-user command.
+    """
+    args_get_user = {"username": username, "using": using}
+    res_get_user, hr_get_user = run_command("ad-get-user", args_get_user)
+
+    dont_expire_flag = True
+    for res in res_get_user:
+        entry_context = res.get("EntryContext", {})
+
+        # Get the ActiveDirectory.Users key (may have filter syntax like "ActiveDirectory.Users(obj.dn == val.dn)")
+        output_key = None
+        for key in entry_context:
+            if key.startswith("ActiveDirectory.Users"):
+                output_key = key
+                break
+
+        if output_key:
+            outputs = entry_context.get(output_key, [])
+            # If outputs is a list, get the first element
+            if isinstance(outputs, list) and outputs:
+                user_data = outputs[0]
+            elif isinstance(outputs, dict):
+                user_data = outputs
+            else:
+                continue
+
+            # Extract userAccountControlFields
+            fields = user_data.get("userAccountControlFields", {})
+            dont_expire_flag = fields.get("DONT_EXPIRE_PASSWORD", True)
+            break
+
+    return dont_expire_flag, res_get_user, hr_get_user
+
+
 def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult], str]:
     """
-    Expires a user's password in Active Directory by clearing the 'Password Never Expires' flag
-    and then running the 'ad-expire-password' command.
+    Expires a user's password in Active Directory by first checking if the 'Password Never Expires' flag
+    is set, and only proceeding with password expiration if the flag is false.
 
     Args:
         user (UserData): The user data dictionary.
@@ -159,27 +209,30 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     """
     username = user["Username"]
 
-    # 1. Clear the "Password Never Expires" attribute
-    # This must run before ad-expire-password to ensure the policy can be enforced.
-    args_modify_never_expire_command = {"username": username, "using": using, "value": "false"}
-    res_modify_never_expire, hr_modify_never_expire = run_command(
-        "ad-modify-password-never-expire", args_modify_never_expire_command
-    )
+    # 1. Check if the "Password Never Expires" flag is set
+    dont_expire_flag, res_get_user, hr_get_user = check_ad_password_never_expires(username, using)
 
-    # Check if clearing the "never expire" flag failed first
-    expected_msg = SUCCESS_MESSAGES["ad_never_expire_cleared"].format(username=username)
-    if not any(res.get("Contents") == expected_msg for res in res_modify_never_expire):
+    # 2. If the flag is True, return failure with informative message
+    if dont_expire_flag is True:
         return [
             ExpiredPasswordResult(
-                Result="Failed", Message=f"Failed to clear 'Password Never Expires' for user {username}.", Instance=""
+                Result="Failed",
+                Message=(
+                    f"Cannot expire password for user {username} due to user policy. "
+                    f"The 'Password Never Expire' flag is set to true. "
+                    f"To expire the password, please change this setting to false using the command "
+                    f"'ad-modify-password-never-expire'."
+                ),
+                Instance=get_instance_from_result(res_get_user[0]) if res_get_user else ""
             )
-        ], hr_modify_never_expire
+        ], hr_get_user
 
-    # 2. Run the explicit password expiration command
+    # 3. Run the password expiration command (flag is False or None)
     args_expire = {"username": username, "using": using}
     res_expire, hr_expire = run_command("ad-expire-password", args_expire)
-    # Combine human-readable outputs
-    hr = f"{hr_modify_never_expire}\n\n{hr_expire}"
+    
+    # Combine human-readable outputs from both commands
+    hr = f"{hr_get_user}\n\n{hr_expire}"
 
     func_res = []
     for res in res_expire:
@@ -190,7 +243,7 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
                 res,
                 success_condition=success,
                 success_msg=SUCCESS_MESSAGES["ad_password_expired"],
-                failure_msg=res_msg or f"{user['Brand'] }",
+                failure_msg=res_msg or GENERIC_FAILURE_MESSAGE.format(user_brand=user["Brand"]),
             )
         )
     return func_res, hr
