@@ -31,17 +31,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
-      - name: Add Reaction
-        if: github.event_name == 'issue_comment'
-        env:
-          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
-          COMMENT_ID: ${{ github.event.comment.id }}
-          REPO: ${{ github.repository }}
-        run: |
-          echo "Adding 🚀 reaction..."
-          gh api "repos/$REPO/issues/comments/$COMMENT_ID/reactions" -f content="rocket" || true
-      
+          
       - name: Trigger AI Review
         env:
           GITHUB_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
