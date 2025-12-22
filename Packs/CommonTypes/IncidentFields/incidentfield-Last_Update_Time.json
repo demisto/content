@@ -45,7 +45,8 @@
         "CrowdStrike Falcon Third Party Detection",
         "CrowdStrike Falcon NGSIEM Detection",
         "CrowdStrike Falcon NGSIEM Incident",
-        "CrowdStrike Falcon NGSIEM Automated Lead"
+        "CrowdStrike Falcon NGSIEM Automated Lead",
+        "CrowdStrike Falcon NGSIEM Case"
     ],
     "breachScript": "",
     "caseInsensitive": true,

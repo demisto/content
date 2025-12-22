@@ -16,7 +16,8 @@
         "Stamus Networks DoC",
         "Exabeam Notable User",
         "CrowdStrike Falcon NGSIEM Detection",
-        "CrowdStrike Falcon NGSIEM Incident"
+        "CrowdStrike Falcon NGSIEM Incident",
+        "CrowdStrike Falcon NGSIEM Case"
     ],
     "breachScript": "",
     "caseInsensitive": true,

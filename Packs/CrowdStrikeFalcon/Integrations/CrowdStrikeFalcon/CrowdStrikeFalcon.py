@@ -391,7 +391,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 }
 
 TOTAL_FETCH_TYPE_XSOAR = 13  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
-TOTAL_FETCH_TYPE_XSIAM = 9  # Matches the total number of fetch types for XSIAM in the LastRunIndex class
+TOTAL_FETCH_TYPE_XSIAM = 6  # Matches the total number of fetch types for XSIAM in the LastRunIndex class
 
 class LastRunIndex(IntEnum):
     """
@@ -968,8 +968,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         NGSIEM_DETECTION_FETCH_TYPE,
         THIRD_PARTY_DETECTION_FETCH_TYPE,
         NGSIEM_INCIDENT_FETCH_TYPE,
-        NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
-        NGSIEM_INCIDENT_FETCH_TYPE
+        NGSIEM_AUTOMATED_LEADS_FETCH_TYPE
     ):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
@@ -1838,7 +1837,7 @@ def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
     for i in range(0, len(ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
         batch_ids = ids[i: i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
-        ids_json = {"composite_ids": batch_ids}
+        ids_json = {"ids": batch_ids}
         demisto.debug(f"Getting cases details with batch_ids len {len(batch_ids)}.")
 
         # Make the API call with the current batch.
@@ -1849,7 +1848,7 @@ def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
             full_cases.extend(raw_res["resources"])
 
     # Return the combined result.
-    return combined_resources
+    return full_cases
 
 
 def get_detection_entities(incidents_ids: list):
@@ -3658,6 +3657,9 @@ def fetch_items(command="fetch-incidents"):
     set_last_run_per_type(
         last_run, index=LastRunIndex.NGSIEM_AUTOMATED_LEADS, data=ngsiem_automated_lead_last_run, is_fetch_events=False
     )
+    set_last_run_per_type(
+        last_run, index=LastRunIndex.NGSIEM_CASES, data=ngsiem_case_last_run, is_fetch_events=False
+    )
 
     if not is_fetch_events:
         set_last_run_per_type(last_run, index=LastRunIndex.IOM, data=iom_last_run, is_fetch_events=is_fetch_events)
@@ -3898,10 +3900,18 @@ def fetch_ngsiem_cases(last_run: dict, look_back: int, fetch_query: str):
     if ids:
         cases_details = get_cases_details(ids)
         # add incident type and append to list
+        demisto.debug(f"CrowdStrikeFalconMsg: fetched cases details: {json.dumps(cases_details)=}")
         for case in cases_details:
-            fix_time_field(case, "created_timestamp")
             case["incident_type"] = NGSIEM_CASE
-            cases.append(case)
+            fix_time_field(case, "created_timestamp")
+            case_context =  {
+                "name": f"{NGSIEM_CASE} ID: {case.get('id')}",
+                "occurred": case.get("created_timestamp"),
+                "severity": case.get("severity"),
+                "rawJSON": json.dumps(case),
+            }
+            cases.append(case_context)
+        demisto.debug(f"cases before filter: {cases=}")
         cases = filter_incidents_by_duplicates_and_limit(
             incidents_res=cases, last_run=last_run, fetch_limit=fetch_limit, id_field="name"
         )
@@ -3920,6 +3930,7 @@ def fetch_ngsiem_cases(last_run: dict, look_back: int, fetch_query: str):
     )
     demisto.debug(f"CrowdstrikeFalconMsg: cases last_run after update: {last_run}")
     demisto.debug(f"CrowdstrikeFalconMsg: Ending NGSIEM Cases fetch. Fetched {len(cases)}")
+    demisto.debug(f"CrowdstrikeFalconMsg: Ending NGSIEM Cases fetch. {cases=}")
     return cases, last_run
 
 def parse_ioa_iom_incidents(
