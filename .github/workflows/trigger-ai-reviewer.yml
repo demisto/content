@@ -1,0 +1,57 @@
+name: Trigger AI Reviewer
+
+on:
+  issue_comment:
+    types: [created]
+
+env:
+  IGNORED_BOTS: '["content-bot", "xsoar-bot", "dependabot"]'
+  ALLOWED_COMMANDS: '["@content_bot start review", "@content_bot re-review"]'
+
+jobs:
+  trigger-ai-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    if: >-
+      github.event.issue.pull_request &&
+      (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
+      !contains(fromJson(env.IGNORED_BOTS), github.event.comment.user.login)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: AI Reviewer Commands Detection
+        env:
+          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          # 1. Fail Fast: Validate command
+          if ! echo "$ALLOWED_COMMANDS" | jq -e --arg body "$COMMENT_BODY" 'any(.[] as $cmd | $body | contains($cmd))' > /dev/null; then
+            echo "ℹ️ Ignoring comment: No valid command detected."
+            exit 0
+          fi
+          echo "✅ Valid command detected."
+
+
+          # 2. Add :rocket: reaction to current comment to mark review as In-Progress
+          echo "Adding :rocket: reaction to mark review as in-progress..."
+          gh api "repos/$REPO/issues/comments/$COMMENT_ID/reactions" \
+            -f content="rocket" || {
+            echo "⚠️ Failed to add reaction. Proceeding anyway..."
+          }
+
+          # 3. Trigger Review
+          echo "Triggering AI Reviewer..."
+          git config --global user.email "bot@demisto.com"
+          git config --global user.name "Content Bot"
+          git commit --allow-empty -m "Trigger AI Reviewer [comment:$COMMENT_ID]"
+          git push
+      
+     
