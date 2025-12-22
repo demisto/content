@@ -3,8 +3,8 @@ from CommonServerPython import *  # noqa: F401
 import json
 import urllib.parse
 from collections import defaultdict
-
-
+import asyncio
+from dataclasses import dataclass
 """ IMPORTS """
 import ipaddress
 import tempfile
@@ -45,6 +45,8 @@ HEADERS_BY_NAME = {
 }
 MAX_API_LIMIT = 50
 INTEGRATION_NAME = "PaloAltoNetworks_PrismaCloudCompute"
+# 12 hours converted to seconds
+TWELVE_HOURS_AS_SECONDS = 12 * 60 * 60
 
 """ COMMANDS + REQUESTS FUNCTIONS """
 
@@ -331,21 +333,6 @@ class PrismaCloudComputeClient(BaseClient):
         if all_results:
             return self._get_all_results(url_suffix="/images", params=params)
         return self._http_request(method="GET", url_suffix="/images", params=params)
-    
-    def get_tas_droplets_info(self, all_results: bool = False, params: Optional[dict] = None) -> List[dict]:
-        """
-        Sends a request to get information about tas droplets.
-
-        Args:
-            all_results (bool): whether to return all results or just the first page.
-            params (dict): query parameters.
-
-        Returns:
-            list[dict]: images scan information.
-        """
-        if all_results:
-            return self._get_all_results(url_suffix="/tas-droplets", params=params)
-        return self._http_request(method="GET", url_suffix="/tas-droplets", params=params)
 
     def get_hosts_scan_info(self, all_results: bool = False, params: Optional[dict] = None) -> List[dict]:
         """
@@ -594,6 +581,132 @@ class PrismaCloudComputeClient(BaseClient):
     def get_runtime_container_policy(self) -> dict:
         return self._http_request(method="GET", url_suffix="policies/runtime/container")
 
+class PrismaCloudComputeAsyncClient(AsyncClient):
+    def __init__(self, base_url, verify, project, proxy=False, ok_codes=(), headers=None, auth=None):
+        """
+        Extends the init method of BaseClient by adding the arguments below,
+
+        verify: A 'True' or 'False' string, in which case it controls whether we verify
+            the server's TLS certificate, or a string that represents a path to a CA bundle to use.
+        project: A projectID string, set in the integration parameters.
+            the projectID is saved under self._project
+        """
+
+        self._project = project
+
+        if verify in ["True", "False"]:
+            super().__init__(base_url, str_to_bool(verify), proxy, ok_codes, headers, auth)
+        else:
+            # verify points a path to certificate
+            super().__init__(base_url, True, proxy, ok_codes, headers, auth)
+            self._verify = verify
+
+    def _http_request(  # type: ignore[override]
+        self,
+        method,
+        url_suffix,
+        headers=None,
+        json_data=None,
+        params=None,
+        timeout=30,
+    ):
+        """
+        Extends the _http_request method of BaseClient.
+        If self._project is available, a 'project=projectID' query param is automatically added to all requests.
+        """
+        # if project is given add it to params and call super method
+        if self._project:
+            params = params or {}
+            params.update({"project": self._project})
+
+        return super()._http_request(
+            method=method,
+            endpoint=url_suffix,
+            headers=headers,
+            payload=json_data,
+            params=params,
+            timeout=timeout,
+        )
+
+    def test(self):
+        """
+        Calls the fetch alerts endpoint with to=epoch_time to check connectivity, authentication and authorization
+        """
+        return self.list_incidents(to_=time.strftime("%Y-%m-%d", time.gmtime(0)))
+    
+    def list_incidents(self, to_=None, from_=None):
+        """
+        Sends a request to fetch available alerts from last call
+        No need to pass here TO/FROM query params, the API returns new alerts from the last request
+        Can be used with TO/FROM query params to get alerts in a specific time period
+        REMARK: alerts are deleted from the endpoint once were successfully fetched
+        """
+        params = {}
+        if to_:
+            params["to"] = to_
+        if from_:
+            params["from"] = from_
+
+        # If the endpoint not found, fallback to the previous demisto-alerts endpoint (backward compatibility)
+        try:
+            return self._http_request(method="GET", url_suffix="xsoar-alerts", params=params)
+        except Exception as e:
+            if "[404]" in str(e):
+                return self._http_request(method="GET", url_suffix="demisto-alerts", params=params)
+            raise e
+        
+    def get_images_scan_info(self,params: Optional[dict] = None) -> List[dict]:
+        """
+        Sends a request to get information about images scans.
+
+        Args:
+            all_results (bool): whether to return all results or just the first page.
+            params (dict): query parameters.
+
+        Returns:
+            list[dict]: images scan information.
+        """
+        return self._http_request(method="GET", url_suffix="/images", params=params)
+    
+    def get_tas_droplets_info(self,params: Optional[dict] = None) -> List[dict]:
+        """
+        Sends a request to get information about tas droplets.
+
+        Args:
+            all_results (bool): whether to return all results or just the first page.
+            params (dict): query parameters.
+
+        Returns:
+            list[dict]: images scan information.
+        """
+        return self._http_request(method="GET", url_suffix="/tas-droplets", params=params)
+
+    def get_hosts_scan_info(self,params: Optional[dict] = None) -> List[dict]:
+        """
+        Sends a request to get information about hosts scans.
+
+        Args:
+            all_results (bool): whether to return all results or just the first page.
+            params (dict): query parameters.
+
+        Returns:
+            list[dict]: hosts scan information.
+        """
+        return self._http_request(method="GET", url_suffix="/hosts", params=params)
+
+@dataclass
+class AssetTypeRelatedData:
+    endpoint: str
+    offset: int = 0
+    limit: int = MAX_API_LIMIT
+    total_fetched: int = 0
+    vendor: str = "Prisma_Cloud_Compute"
+    product: str
+    type: str
+
+    def next_page(self):
+        self.offset += self.limit
+        self.total_fetched = self.offset
 
 def format_context(context):
     """
@@ -2813,6 +2926,59 @@ def get_container_policy_list_command(client: PrismaCloudComputeClient, args: di
     )
 
 
+async def fetch_assets_long_running_command(client: PrismaCloudComputeAsyncClient):
+    """
+    Performs the long running execution loop.
+    Args:
+        client (Client): The client.
+        fetch_interval (int): Fetch time for this fetching events cycle.
+    """
+    while True:
+        demisto.debug("Started long running execution")
+        start_time = time.time()
+        try:
+            await preform_fetch_assets_main_loop_logic(client)
+            demisto.debug("Finished running all collectors")
+
+        except Exception as e:
+            demisto.debug(f"Got the following error while trying to stream events: {str(e)}")
+
+        finally:
+            end_time = time.time()
+            duration_seconds = end_time - start_time
+            demisto.debug(f"The whole run took {duration_seconds} seconds")
+            remaining_time_seconds = TWELVE_HOURS_AS_SECONDS - duration_seconds
+            demisto.debug(f"Will sleep for {remaining_time_seconds} seconds")
+            await asyncio.sleep(remaining_time_seconds)
+
+
+async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncClient):
+    # init dict/data class
+    tas_droplets_related_data = AssetTypeRelatedData(endpoint="/tas-droplets", product="Tas_Droplets", type="Tas Droplet")
+    host_scan_related_data = AssetTypeRelatedData(endpoint="/hosts", product="Hosts", type="Host")
+    image_scan_related_data = AssetTypeRelatedData(endpoint="/images", product="Runtime_images", type="Runtime Image")
+    tasks = [collect_assets_and_sent_to_xsiam(client, tas_droplets_related_data),
+             collect_assets_and_sent_to_xsiam(client, host_scan_related_data),
+             collect_assets_and_sent_to_xsiam(client, image_scan_related_data)]
+    await asyncio.gather(*tasks)
+
+
+async def collect_assets_and_sent_to_xsiam(client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData):
+    while True:
+        params = {}
+        res = await client._http_request(
+            "GET",
+            url_suffix=asset_type_related_data.endpoint,
+            headers=None,
+            params=params,
+            timeout=300
+            )
+        if not res:
+            demisto.info(f"Reached end of list for cloud asset type = {asset_type_related_data.type}, breaking.")
+            break
+        asset_type_related_data.next_page()
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2843,9 +3009,14 @@ def main():
         demisto.info(f"Command being called is {requested_command}")
 
         # Init the client
-        client = PrismaCloudComputeClient(
+        if requested_command == "long-running-execution":
+            client = PrismaCloudComputeAsyncClient(
             base_url=urljoin(base_url, "api/v1/"), verify=verify, auth=(username, password), proxy=proxy, project=project
         )
+        else:
+            client = PrismaCloudComputeClient(
+                base_url=urljoin(base_url, "api/v1/"), verify=verify, auth=(username, password), proxy=proxy, project=project
+            )
 
         if requested_command == "test-module":
             # This is the call made when pressing the integration test button
@@ -2856,6 +3027,9 @@ def main():
             # this method is called periodically when 'fetch incidents' is checked
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
+        elif requested_command == "long-running-execution":
+            demisto.info("Starting long-running execution.")
+            asyncio.run(fetch_assets_long_running_command(client))
         elif requested_command == "prisma-cloud-compute-profile-host-list":
             return_results(results=get_profile_host_list(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-profile-container-list":

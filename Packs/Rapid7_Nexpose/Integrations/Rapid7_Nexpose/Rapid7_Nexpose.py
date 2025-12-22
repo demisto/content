@@ -44,21 +44,112 @@ BASE_QUERY_FOR_ASSETS = """WITH asset_tags AS (
     GROUP BY
         dta.asset_id
 ),
-max_certainty AS (
+asset_macs AS (
     SELECT
-        daos.asset_id,
-        MAX(daos.certainty) AS max_os_certainty
+        dama.asset_id,
+        json_agg(dama.mac_address) AS aggregated_mac_addresses
     FROM
-        dim_asset_operating_system daos
+        dim_asset_mac_address dama
     GROUP BY
-        daos.asset_id
+        dama.asset_id
+),
+asset_ips AS (
+    SELECT
+        daia.asset_id,
+        json_agg(daia.ip_address) AS aggregated_ip_addresses
+    FROM
+        dim_asset_ip_address daia
+    GROUP BY
+        daia.asset_id
+),
+asset_files AS (
+    SELECT
+        daf.asset_id,
+        json_agg(
+            json_build_object(
+                'file_id', daf.file_id,
+                'type', daf.type,
+                'name', daf.name,
+                'size', daf.size
+            )
+        ) AS aggregated_files_json
+    FROM
+        dim_asset_file daf
+    GROUP BY
+        daf.asset_id
+),
+asset_service AS (
+    SELECT
+        dase.asset_id,
+        json_agg(
+            json_build_object(
+                'service_id', dase.service_id,
+                'protocol', dase.protocol_id,
+                'port', dase.port,
+                'service_fingerprint_id', dase.service_fingerprint_id,
+                'certainty', dase.certainty
+            )
+        ) AS asset_services
+    FROM
+        dim_asset_service dase
+    GROUP BY
+        dase.asset_id
+),
+    assets_host AS (
+        SELECT
+            dahn.asset_id,
+            json_agg(
+                json_build_object(
+                    'source_type_id', dahn.source_type_id,
+                    'description', dhnst.description
+                )
+                ) AS asset_hosts
+        FROM
+            dim_asset_host_name dahn
+        JOIN
+            dim_host_name_source_type dhnst ON dahn.source_type_id = dhnst.type_id
+        GROUP BY
+            dahn.asset_id
+    ),
+-- Finds the single, absolute latest scan for each asset (regardless of status)
+asset_latest_scan AS (
+    SELECT DISTINCT ON (fas.asset_id)
+        fas.asset_id,
+        ds.finished AS last_scan_date,
+        ds.status_id AS last_scan_status_id,
+        ds.scan_id AS scan_id,
+        ds.started As started,
+        ds.type_id AS type_id,
+        ds.scan_name AS scan_name,
+        fas.vulnerabilities AS vulnerabilities,
+        fas.aggregated_credential_status_id AS aggregated_credential_status_id
+
+    FROM
+        fact_asset_scan fas
+    JOIN
+        dim_scan ds ON fas.scan_id = ds.scan_id
+    ORDER BY
+        fas.asset_id, ds.finished DESC -- Order by asset ID, then descending finish time to get the absolute latest
+),
+latest_os_certainty AS (
+    SELECT DISTINCT ON (fasos.asset_id)
+        fasos.asset_id,
+        fasos.certainty AS latest_os_certainty_value
+    FROM
+        fact_asset_scan_operating_system fasos
+    JOIN
+        dim_scan ds ON fasos.scan_id = ds.scan_id
+    ORDER BY
+        fasos.asset_id, ds.finished DESC, fasos.certainty DESC -- Use certainty as a tie-breaker if dates are equal
 )
 
 SELECT
-    da.last_assessed_for_vulnerabilities AS "Last Scan Date",
-    fad.last_discovered AS "Last found date",
-    da.asset_id AS "id",
-    da.host_name AS "FQDNS",
+    da.last_assessed_for_vulnerabilities AS "dim_asset.last_assessed_for_vulnerabilities",
+    fad.last_discovered AS "fact_asset_discovery.last_discovered",
+    da.asset_id AS "dim_asset.asset_id",
+    da.host_name AS "dim_asset.host_name",
+    da.host_type_id AS "dim_asset.host_type_id",
+    dht.description AS "dim_host_type.description",
     CASE
         WHEN da.ip_address LIKE '%:%' THEN NULL
         ELSE da.ip_address
@@ -68,17 +159,43 @@ SELECT
         WHEN da.ip_address LIKE '%:%' THEN da.ip_address
         ELSE NULL
     END AS "ipv6",
-    da.mac_address AS "mac_address",
-    dos.architecture AS "os_architecture",
-    dos.description AS "os_description",
-    dos.family AS "os_family",
-    dos.name AS "os_name",
-    dos.system AS "os_system_name",
-    dos.asset_type AS "os_type",
-    dos.vendor AS "os_vendor",
-    dos.version AS "os_version",
-    mc.max_os_certainty AS "os_certainty",
-    atags.aggregated_tags_json AS "Tags"
+    da.mac_address AS "dim_asset.mac_address",
+    da.sites AS "dim_asset.sites",
+    da.operating_system_id AS "dim_asset.operating_system_id",
+    dos.architecture AS "dim_operating_system.architecture",
+    dos.description AS "dim_operating_system.description",
+    dos.family AS "dim_operating_system.family",
+    dos.name AS "dim_operating_system.name",
+    dos.system AS "dim_operating_system.system",
+    dos.asset_type AS "dim_operating_system.asset_type",
+    dos.vendor AS "dim_operating_system.vendor",
+    dos.version AS "dim_operating_system.version",
+    dos.cpe AS "dim_operating_system.cpe",
+    loc.latest_os_certainty_value AS "fact_asset_scan_operating_system.certainty",
+    atags.aggregated_tags_json AS "dim_tag_asset.tags",
+    am.aggregated_mac_addresses AS "dim_asset_mac_address.mac_address",
+    ai.aggregated_ip_addresses AS "dim_asset_ip_address.ip_address",
+    af.aggregated_files_json AS "asset_files",
+    das.software_id AS "dim_asset_software.software_id",
+    das.fingerprint_source_id AS "dim_asset_software.fingerprint_source_id",
+    ds.vendor AS "dim_software.vendor",
+    ds.family AS "dim_software.family",
+    ds.name AS "dim_software.name",
+    ds.version AS "dim_software.version",
+    ds.software_class AS "dim_software.software_class",
+    ds.cpe AS "dim_software.cpe",
+    als.last_scan_date AS "dim_scan.finished",
+    als.last_scan_status_id AS "dim_scan.status_id",
+    als.scan_id AS "dim_scan.scan_id",
+    als.started As "dim_scan.started",
+    als.type_id AS "dim_scan.type_id",
+    als.scan_name AS "dim_scan.scan_name",
+    als.vulnerabilities AS "fact_asset_scan.vulnerabilities",
+    als.aggregated_credential_status_id AS "fact_asset_scan.aggregated_credential_status_id",
+    dacs.aggregated_credential_status_description AS "dim_aggregated_credential_status.aggregated_credential_status_description",
+    ah.asset_hosts AS "asset hosts",
+    ase.asset_services AS "asset_services"
+
 FROM
     dim_asset da
 LEFT JOIN
@@ -88,7 +205,31 @@ LEFT JOIN
 LEFT JOIN
     asset_tags atags ON da.asset_id = atags.asset_id
 LEFT JOIN
-    max_certainty mc ON da.asset_id = mc.asset_id
+    asset_macs am ON da.asset_id = am.asset_id
+LEFT JOIN
+    asset_ips ai ON da.asset_id = ai.asset_id
+LEFT JOIN
+    asset_files af ON da.asset_id = af.asset_id
+LEFT JOIN
+    dim_host_type dht ON da.host_type_id = dht.host_type_id
+LEFT JOIN
+    dim_asset_software das ON da.asset_id = das.asset_id
+LEFT JOIN
+    dim_software ds ON das.software_id = ds.software_id
+LEFT JOIN
+    assets_host ah ON da.asset_id = ah.asset_id
+INNER JOIN
+    asset_latest_scan als ON da.asset_id = als.asset_id
+LEFT JOIN
+    dim_aggregated_credential_status dacs ON als.aggregated_credential_status_id = dacs.aggregated_credential_status_id
+LEFT JOIN
+    latest_os_certainty loc ON da.asset_id = loc.asset_id -- Join the new CTE
+LEFT JOIN
+    asset_service ase ON da.asset_id = ase.asset_id
+
+WHERE
+    als.last_scan_date >= CURRENT_DATE - INTERVAL '100 days'
+    AND als.last_scan_status_id = 'C'
 
 ORDER BY
     da.asset_id ASC"""
@@ -2427,7 +2568,7 @@ class Client(BaseClient):
         )
 
 
-class InsightVMClient:
+class InsightVMClient(AsyncClient):
     """
     Asynchronous client for interacting with the Rapid7 InsightVM API.
     Handles session and authentication management.
@@ -2441,87 +2582,33 @@ class InsightVMClient:
         token: str = "",
         verify: bool = True,
     ):
-        self._base_url = base_url.rstrip("/")
-        self._auth_username = username
-        self._auth_password = password
-        self._auth_token = token
-        self._verify = verify
-        self._headers = {
+        # Create authentication headers
+        headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
-        self.connection_error_retries = CONNECTION_ERRORS_RETRIES
-
+        
         # Add 2FA token to headers if provided
         if token:
-            self._headers.update({"Token": token})
-
+            headers.update({"Token": token})
+            
+        # Add Basic Auth header
         auth_string = base64.b64encode(f"{username}:{password}".encode()).decode("utf-8")
-        self._headers.update({"Authorization": f"Basic {auth_string}"})
-
-    async def __aenter__(self):
-        """Asynchronous context manager entry: creates the aiohttp session."""
-        # Create a single session that persists for the client's lifespan
-        self._session = aiohttp.ClientSession()
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Asynchronous context manager exit: closes the aiohttp session."""
-        await self._session.close()
-
-    async def http_request(self, method: str, endpoint: str, payload: Optional[Dict[str, Any]] = None) -> aiohttp.ClientResponse:
-        """
-        Executes an asynchronous HTTP request and returns the raw response object.
-        Includes retry logic for server errors.
-        """
-        url = self._base_url + endpoint
-
-        # Select the method function (get, post, etc.)
-        request_func = getattr(self._session, method.lower())
-
-        MAX_RETRIES = 3
-        # Retry on: 500/502/503/504 (Server Errors), 429 (Rate Limit)
-        RETRYABLE_STATUSES = {500, 502, 503, 504, 429}
-
-        for attempt in range(MAX_RETRIES + 1):
-            if attempt > 0:
-                delay = 5**attempt
-                demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{MAX_RETRIES}. Waiting {delay}s...")
-                await asyncio.sleep(delay)
-
-            try:
-                response = await request_func(url, headers=self._headers, json=payload, ssl=False)
-
-                # 1. Handle Retryable Errors
-                if response.status in RETRYABLE_STATUSES:
-                    try:
-                        message = response.message
-                    except AttributeError:
-                        message = "No message from Rapid7"
-                    demisto.debug(f"API returned retryable status {response.status}: {message}")
-                    response.close()  # Close connection before retrying
-                    continue
-
-                # 2. Handle Fatal Client Errors (4xx)
-                if 400 <= response.status < 500:
-                    try:
-                        error_body = await response.text()
-                    except Exception:
-                        error_body = "Could not read error body."
-                    response.close()
-                    raise DemistoException(f"Client API Error ({response.status}): {error_body}")
-
-                # 3. Success (2xx)
-                # Return the RAW response object so the caller can read headers/json as needed.
-                return response
-
-            except aiohttp.ClientConnectorError as e:
-                demisto.debug(f"Connection error: {e}")
-                if attempt == MAX_RETRIES:
-                    raise
-
-        raise DemistoException(f"API request failed after {MAX_RETRIES} attempts.")
-
+        headers.update({"Authorization": f"Basic {auth_string}"})
+        
+        # Initialize the parent AsyncClient
+        super().__init__(
+            base_url=base_url,
+            auth_headers=headers,
+            verify=verify,
+            connection_error_retries=CONNECTION_ERRORS_RETRIES,
+            connection_error_interval=CONNECTION_ERRORS_INTERVAL,
+        )
+        
+        # Store credentials for potential future use
+        self._auth_username = username
+        self._auth_password = password
+        self._auth_token = token
 
 class Site:
     """A class representing a site, which can be identified by ID or name."""
@@ -6758,7 +6845,7 @@ async def create_report_config_from_template(client: InsightVMClient, event_type
         "version": "2.3.0",
     }
     log(event_type, "Creating report config.")
-    response = await client.http_request(method="POST", endpoint=endpoint, payload=payload)
+    response = await client._http_request(method="POST", endpoint=endpoint, payload=payload)
 
     try:
         # The Location header contains the URL of the new report
@@ -6782,8 +6869,8 @@ async def generate_report(client: InsightVMClient, report_id: str, event_type: s
     """Triggers the generation of a report."""
     endpoint = f"/api/3/reports/{report_id}/generate"
 
-    # Use the client's http_request method for POST
-    response = await client.http_request("POST", endpoint, payload={})
+    # Use the client's _http_request method for POST
+    response = await client._http_request("POST", endpoint, payload={})
 
     # Handle response logic
     data = await response.json()
@@ -6798,8 +6885,8 @@ async def check_status_of_report(client: InsightVMClient, report_id: str, instan
     while True:
         endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
 
-        # Use the client's http_request method for GET
-        response = await client.http_request("GET", endpoint)
+        # Use the client's _http_request method for GET
+        response = await client._http_request("GET", endpoint)
 
         status_data = await response.json()
         await response.release()
@@ -6830,7 +6917,7 @@ async def stream_report(
     endpoint = f"/api/3/reports/{report_id}/history/{instance_id}/output"
     log(event_type, f"Starting report download stream from: {endpoint}")
 
-    response = await client.http_request("GET", endpoint)
+    response = await client._http_request("GET", endpoint)
 
     buffer = b""  # Buffer to hold partial lines across chunks
 
@@ -7168,7 +7255,7 @@ async def delete_report_instance(client: InsightVMClient, report_id: str, instan
     endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
     demisto.debug(f"Deleting report instance ID: {instance_id} for {event_type}.")
     try:
-        await client.http_request("DELETE", endpoint)
+        await client._http_request("DELETE", endpoint)
         demisto.debug(f"Report instance {instance_id} for {event_type} deleted successfully.")
     except Exception as e:
         # Expected if resource is already gone (e.g., Status 404)
@@ -7180,7 +7267,7 @@ async def delete_report_configuration(client: InsightVMClient, report_id: str, e
     endpoint = f"/api/3/reports/{report_id}"
     demisto.debug(f"Deleting report configuration ID: {report_id} for {event_type}.")
     try:
-        await client.http_request("DELETE", endpoint)
+        await client._http_request("DELETE", endpoint)
         demisto.debug(f"Report {report_id} for {event_type} configuration deleted successfully.")
     except Exception as e:
         # Expected if resource is already gone (e.g., Status 404)
