@@ -879,6 +879,24 @@ class MsGraphMailBaseClient(MicrosoftClient):
             overwrite_rate_limit_retry=overwrite_rate_limit_retry,
         ).get("value", [])
 
+    def get_single_email_from_api(
+        self,
+        folder_id: str,
+        message_id: str,
+        body_as_text: bool = True,
+        overwrite_rate_limit_retry: bool = False,
+    ):
+        headers = {"Prefer": "outlook.body-content-type='text'"} if body_as_text else None
+        # Adding the "$" sign to the select filter results in the 'internetMessageHeaders' field not being contained
+        # within the response, (looks like a bug in graph API).
+        return self.http_request(
+            method="GET",
+            url_suffix=f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages",
+            params={"select": "*", "$filter": f"internetMessageId eq '{message_id}'"},
+            headers=headers,
+            overwrite_rate_limit_retry=overwrite_rate_limit_retry,
+        ).get("value", [])
+
     def get_emails(
         self, exclude_ids, last_fetch, folder_id, overwrite_rate_limit_retry=False, mark_emails_as_read: bool = False
     ) -> list:
@@ -903,6 +921,22 @@ class MsGraphMailBaseClient(MicrosoftClient):
                     self.update_email_read_status(
                         user_id=self._mailbox_to_fetch, message_id=email["id"], read=True, folder_id=folder_id
                     )
+
+        return self.get_emails_as_text_and_html(emails_as_html=emails_as_html, emails_as_text=emails_as_text)
+
+    def get_single_email(self, message_id, folder_id, overwrite_rate_limit_retry=False):
+        emails_as_html = self.get_single_email_from_api(
+            folder_id,
+            message_id,
+            body_as_text=False,
+            overwrite_rate_limit_retry=overwrite_rate_limit_retry,
+        )
+
+        emails_as_text = self.get_single_email_from_api(
+            folder_id,
+            message_id,
+            overwrite_rate_limit_retry=overwrite_rate_limit_retry,
+        )
 
         return self.get_emails_as_text_and_html(emails_as_html=emails_as_html, emails_as_text=emails_as_text)
 
@@ -944,7 +978,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
         return email_content_as_html.get("content"), email_content_as_text.get("content")
 
-    def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
+    def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False, fetch_single_incident=False):
         """
         Parses fetched emails as incidents.
 
@@ -985,8 +1019,10 @@ class MsGraphMailBaseClient(MicrosoftClient):
             "occurred": parsed_email.get("ReceivedTime"),
             "attachment": parsed_email.get("Attachments", []),
             "rawJSON": json.dumps(parsed_email),
-            "ID": parsed_email.get("ID"),  # only used for look-back to identify the email in a unique way
         }
+
+        if not fetch_single_incident:
+            incident["ID"] = parsed_email.get("ID")  # only used for look-back to identify the email in a unique way
 
         return incident
 
