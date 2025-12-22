@@ -2,7 +2,7 @@
     "name": "SOCRadar",
     "description": "Streamline remediation of alerts and incidents. Make quick, automated queries on ThreatFusion to get a risk reputation score.",
     "support": "partner",
-    "currentVersion": "2.0.18",
+    "currentVersion": "2.1.0",
     "author": "SOCRadar Cyber Intelligence Inc.",
     "url": "www.socradar.io",
     "email": "xsoar@socradar.io",
@@ -15,6 +15,9 @@
         "Threat Intelligence",
         "CTI",
         "Digital Risk Protection"
+        "Incident Management",
+        "Brand Protection",
+        "Credential Monitoring"
     ],
     "devEmail": [
         "xsoar@socradar.io"
