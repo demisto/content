@@ -130,7 +130,7 @@ def main():
     pr.add_to_assignees(*assignees)
     print(f"{t.cyan}Assigned users {assignees}{t.normal}")
 
-    # Post AI review introduction if any reviewer is an organization member
+    # Post AI review introduction if any of the assigned reviewers is an organization member
     org_member_reviewers = [
         reviewer for reviewer in new_pr_reviewers
         if is_organization_member(gh, reviewer)

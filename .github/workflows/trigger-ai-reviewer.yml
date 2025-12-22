@@ -53,6 +53,7 @@ jobs:
           git config --global user.email "bot@demisto.com"
           git config --global user.name "Content Bot"
           
+          gh api "repos/$REPO/issues/$PR_NUMBER/labels" -f name="ready-for-ai-review"
           git commit --allow-empty -m "Trigger AI Reviewer"
 
           git push
