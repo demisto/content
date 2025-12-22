@@ -1166,7 +1166,7 @@ class S3:
             "Prefix": prefix,
             "BucketRegion": filter_by_region
         }
-        kwargs.update(build_pagination_kwargs(args, 1, 10000, "ContinuationToken", "MaxBuckets"))
+        kwargs.update(build_pagination_kwargs(args, max_limit=10000, next_token_name="ContinuationToken", limit_name="MaxBuckets"))
         remove_nulls_from_dictionary(kwargs)
         demisto.debug(f"{kwargs=}")
         response = client.list_buckets(**kwargs)
@@ -1175,18 +1175,18 @@ class S3:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         next_token = response.get("ContinuationToken")
-        metadata = (
-            "Run the following command to retrieve the next batch of buckets:\n"
-            f"!aws-s3-buckets-list {account_id=} {region=} page_token={next_token}"
-            if next_token
-            else None
-        )
-        if limit := kwargs.get("MaxBuckets") != 50:
-            metadata = f"{metadata} {limit=}"
-        if prefix:
-            metadata = f"{metadata} {prefix=}"
-        if filter_by_region:
-            metadata = f"{metadata} {filter_by_region=}"
+        if next_token:
+            metadata = (
+                "Run the following command to retrieve the next batch of buckets:\n"
+                f"!aws-s3-buckets-list account_id={account_id} region={region} next_token={next_token}"
+            )
+            limit = kwargs.get("MaxBuckets")
+            if limit and limit != 50:
+                metadata = f"{metadata} limit={limit}"
+            if prefix:
+                metadata = f"{metadata} prefix={prefix}"
+            if filter_by_region:
+                metadata = f"{metadata} filter_by_region{filter_by_region}"
 
         buckets = response.get("Buckets")
         for bucket in buckets:

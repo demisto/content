@@ -7235,7 +7235,7 @@ script:
         description: Maximum number of buckets to be returned in response.
         defaultValue: 50
         required: false
-      - name: next_page_token
+      - name: next_token
         description: The token for the next set of items to return. Use value from AWS.S3.BucketsNextPageToken.
         required: false
       - name: prefix
@@ -7360,7 +7360,7 @@ script:
       - description: "One or more filters separated by ';' (for example, name=<name>,values=<values>,type=<type>;name=<name>,values=<values>,type=<type>). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
         name: filters
         required: false
-      - name: next_page_token
+      - name: next_token
         description: The token for the next set of items to return. Use AWS.SSM.Inventory.EntriesNextPageToken.
         required: false
     outputs:
