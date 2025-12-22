@@ -37,9 +37,11 @@ jobs:
           
           # Add rocket reaction to mark review as in-progress
           echo "Adding 🚀 reaction..."
-          gh api "repos/$REPO/issues/comments/$COMMENT_ID/reactions" -f content="rocket" || true
+          gh api "repos/$REPO/issues/comments/$COMMENT_ID/reactions" -f content="rocket" || {
+            echo "⚠️ Failed to add reaction. Proceeding anyway..."
+          }
 
-          # Trigger review by pushing empty commit
+          # Trigger review by pushing an empty commit
           echo "Triggering AI Reviewer..."
           git config --global user.email "bot@demisto.com"
           git config --global user.name "Content Bot"
