@@ -1,3 +1,4 @@
+from typing import Callable
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
@@ -597,10 +598,19 @@ class PrismaCloudComputeAsyncClient(AsyncClient):
         self._project = project
 
         if verify in ["True", "False"]:
-            super().__init__(base_url, str_to_bool(verify), proxy, ok_codes, headers, auth)
+            super().__init__(
+                base_url=base_url,
+                verify=str_to_bool(verify),
+                proxy=proxy,
+                headers=headers
+            )
         else:
             # verify points a path to certificate
-            super().__init__(base_url, True, proxy, ok_codes, headers, auth)
+            super().__init__(
+                base_url=base_url,
+                verify=True, proxy=proxy,
+                headers=headers
+            )
             self._verify = verify
 
     def _http_request(  # type: ignore[override]
@@ -700,16 +710,21 @@ class PrismaCloudComputeAsyncClient(AsyncClient):
 @dataclass
 class AssetTypeRelatedData:
     endpoint: str
+    product: str
+    type: str
+    process_result_func: Callable[[dict], dict]
     offset: int = 0
     limit: int = MAX_API_LIMIT
     total_fetched: int = 0
     vendor: str = "Prisma_Cloud_Compute"
-    product: str
-    type: str
+    snapshot_id: str = str(round(time.time() * 1000))
 
     def next_page(self):
         self.offset += self.limit
         self.total_fetched = self.offset
+        
+    def write_debug_log(self, msg: str):
+        demisto.debug(f"[{self.type}] {msg}")
 
 
 def format_context(context):
@@ -2941,7 +2956,8 @@ async def fetch_assets_long_running_command(client: PrismaCloudComputeAsyncClien
         demisto.debug("Started long running execution")
         start_time = time.time()
         try:
-            await preform_fetch_assets_main_loop_logic(client)
+            async with client:
+                await preform_fetch_assets_main_loop_logic(client)
             demisto.debug("Finished running all collectors")
 
         except Exception as e:
@@ -2957,26 +2973,32 @@ async def fetch_assets_long_running_command(client: PrismaCloudComputeAsyncClien
 
 
 async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncClient):
-    # init dict/data class
-    tas_droplets_related_data = AssetTypeRelatedData(endpoint="/tas-droplets", product="Tas_Droplets", type="Tas Droplet")
-    host_scan_related_data = AssetTypeRelatedData(endpoint="/hosts", product="Hosts", type="Host")
-    image_scan_related_data = AssetTypeRelatedData(endpoint="/images", product="Runtime_images", type="Runtime Image")
+    # Define a simple identity function as the process_result_func
+    def identity_func(data):
+        return data
+        
+    tas_droplets_related_data = AssetTypeRelatedData(endpoint="/tas-droplets", product="Tas_Droplets", type="Tas Droplet", process_result_func=identity_func)
+    host_scan_related_data = AssetTypeRelatedData(endpoint="/hosts", product="Hosts", type="Host", process_result_func=identity_func)
+    image_scan_related_data = AssetTypeRelatedData(endpoint="/images", product="Runtime_images", type="Runtime Image", process_result_func=identity_func)
     tasks = [
         collect_assets_and_sent_to_xsiam(client, tas_droplets_related_data),
         collect_assets_and_sent_to_xsiam(client, host_scan_related_data),
-        collect_assets_and_sent_to_xsiam(client, image_scan_related_data),
+        collect_assets_and_sent_to_xsiam(client, image_scan_related_data)
     ]
     await asyncio.gather(*tasks)
 
 
 async def collect_assets_and_sent_to_xsiam(client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData):
+    asset_type_related_data.write_debug_log("starting execution.")
     while True:
         params = {}
+        asset_type_related_data.write_debug_log("sending request.")
         res = await client._http_request(
             "GET", url_suffix=asset_type_related_data.endpoint, headers=None, params=params, timeout=300
         )
+        asset_type_related_data.write_debug_log(f"got response with {res=}.")
         if not res:
-            demisto.info(f"Reached end of list for cloud asset type = {asset_type_related_data.type}, breaking.")
+            asset_type_related_data.write_debug_log("No more data to fetch, breaking.")
             break
         asset_type_related_data.next_page()
 

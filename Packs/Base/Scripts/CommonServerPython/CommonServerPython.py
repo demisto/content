@@ -10260,13 +10260,14 @@ class AsyncClient:
     def __init__(
         self,
         base_url: str,
-        auth_headers: dict = {
+        headers: dict = {
             "Accept": "application/json",
             "Content-Type": "application/json",
         },
         verify: bool = True,
         connection_error_retries: int = 5,
         connection_error_interval: int = 1,
+        proxy: bool = False
     ):
         """
         Initialize the AsyncClient.
@@ -10279,11 +10280,12 @@ class AsyncClient:
             connection_error_interval (int, optional): Interval between retries in seconds. Defaults to 1.
         """
         self._base_url = base_url.rstrip("/")
-        self._auth_headers = auth_headers or {}
+        self.headers = headers or {}
         self._verify = verify
         self.connection_error_retries = connection_error_retries
         self.connection_error_interval = connection_error_interval
         self._session = None
+        self._proxy = proxy
 
     async def __aenter__(self):
         """Asynchronous context manager entry: creates the aiohttp session."""
@@ -10325,7 +10327,7 @@ class AsyncClient:
         import asyncio
 
         url = self._base_url + endpoint
-        request_headers = self._auth_headers.copy()
+        request_headers = self.headers.copy()
         if headers:
             request_headers.update(headers)
 
