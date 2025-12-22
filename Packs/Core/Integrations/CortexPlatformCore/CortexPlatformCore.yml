@@ -2783,7 +2783,7 @@ script:
             - ASC
         - defaultValue: "100"
           description: Number of exception rules to return. Ignored if 'retrieve_all' is set to true.
-          name: limit
+          name: page_size
         - defaultValue: "0"
           description: Page number to return. Ignored if 'retrieve_all' is set to true.
           name: page
@@ -2795,6 +2795,7 @@ script:
             - "true"
             - "false"
       name: core-list-exception-rules
+      hidden: true
       description: "Returns a list of exception rules and their metadata, which you can filter by built-in arguments. Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       outputs:
         - contextPath: Core.ExceptionRules.ID
@@ -2866,12 +2867,18 @@ script:
         - contextPath: Core.ExceptionRules.ASSOCIATED_TARGETS
           description: A specific target (e.g., endpoint, group) the rule is applied to.
           type: String
+        - contextPath: Core.ExceptionRulesMetadata.returned_count
+          description: The actual number of exception rules that match all filter criteria and returned in this specific response.
+          type: String
+        - contextPath: Core.ExceptionRulesMetadata.filtered_count
+          description: The total number of exception rules in the system that match all filter criteria.
     - arguments:
         - description: The email of the user. Accepts a comma-separated list.
           isArray: true
           name: email
       name: core-list-system-users
       description: "Returns a list users and their core properties within the system. Results are limited to 50."
+      hidden: true
       outputs:
         - contextPath: Core.User.user_email
           description: The user's email address.

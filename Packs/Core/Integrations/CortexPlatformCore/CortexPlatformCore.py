@@ -7,6 +7,8 @@ import dateparser
 from enum import Enum
 import copy
 
+from Packs.Core.Integrations.CortexPlatformCore.CommonServerPython import CommandResults
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -66,7 +68,6 @@ ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
-USERS_TABLE = "USERS_TABLE"
 DISABLE_PREVENTION_RULES_TABLE = "AGENT_EXCEPTION_RULES_TABLE_ADVANCED"
 LEGACY_AGENT_EXCEPTIONS_TABLE = "AGENT_EXCEPTION_RULES_TABLE_LEGACY"
 
@@ -1283,7 +1284,6 @@ def build_webapp_request_data(
     on_demand_fields: list | None = None,
     sort_order: str | None = "DESC",
     start_page: int = 0,
-    extra_data: dict | None = None,
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
@@ -1314,7 +1314,6 @@ def build_webapp_request_data(
         "filter_data": filter_data,
         "jsons": [],
         "onDemandFields": on_demand_fields,
-        **({"extraData": extra_data} if extra_data is not None else {}),
     }
 
 
@@ -3188,7 +3187,7 @@ def get_webapp_data(
     base_limit: int,
     max_limit: int,
     offset: int = 0,
-) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], int]:
     """
     Helper function to iteratively fetch records for a single table with optional pagination.
     """
@@ -3198,6 +3197,7 @@ def get_webapp_data(
     limit = max_limit if retrieve_all else base_limit
     paging_from = offset
     paging_to = offset + limit
+    filter_count = 0
     while True:
         demisto.debug(f"get_webapp_data pagination: {paging_from}, {paging_to}")
         request_data = build_webapp_request_data(
@@ -3213,7 +3213,7 @@ def get_webapp_data(
 
         reply = response.get("reply", {})
         data = reply.get("DATA", [])
-
+        filter_count = int(reply.get("FILTER_COUNT", "0"))
         all_records.extend(data)
 
         if not retrieve_all or len(data) < limit:
@@ -3222,10 +3222,10 @@ def get_webapp_data(
         paging_from += limit
         paging_to += limit
 
-    return all_records, raw_responses
+    return all_records, raw_responses, filter_count
 
 
-def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults:
+def list_exception_rules_command(client, args: dict[str, Any]) -> list[CommandResults]:
     """
     Retrieves Disable Prevention Rules and Legacy Agent Exceptions using the
     generic /api/webapp/get_data endpoint, handling pagination.
@@ -3235,7 +3235,7 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults
     sort_field = args.get("sort_field", "MODIFICATION_TIME")
     sort_order = args.get("sort_order", "DESC")
 
-    default_limit = arg_to_number(args.get("limit")) or MAX_GET_EXCEPTION_RULES_LIMIT
+    default_limit = arg_to_number(args.get("page_size")) or MAX_GET_EXCEPTION_RULES_LIMIT
     page_number = arg_to_number(args.get("page", 0)) or 0
     offset = page_number * default_limit if args.get("page") else 0
     retrieve_all = argToBoolean(args.get("retrieve_all", False))
@@ -3252,10 +3252,11 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults
     all_outputs = []
     all_raw_responses = []
     readable_output_lines = []
+    total_filter_count = 0
 
     for table_name in table_names:
         demisto.debug(f"Retrieving {table_name}")
-        records, raw_responses = get_webapp_data(
+        records, raw_responses, filter_count = get_webapp_data(
             client=client,
             table_name=str(table_name),
             filter_dict=exception_rule_filter,
@@ -3268,6 +3269,7 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults
         )
 
         all_raw_responses.extend(raw_responses)
+        total_filter_count += filter_count
 
         demisto.debug(f"Retrieved {len(records)} records")
         if records:
@@ -3280,13 +3282,18 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> CommandResults
 
     final_readable_output = "\n".join(readable_output_lines)
 
-    return CommandResults(
+    return [CommandResults(
         readable_output=final_readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ExceptionRules",
         outputs_key_field="ID",
         outputs=all_outputs,
         raw_response=all_raw_responses,
-    )
+    )  ,
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ExceptionRulesMetadata",
+            outputs={"filter_count": total_filter_count, "returned_count": len(all_outputs)},
+        )
+    ]
 
 
 def list_system_users_command(client, args):
@@ -3299,10 +3306,12 @@ def list_system_users_command(client, args):
     emails = argToList(args.get("email", ""))
     if len(emails) > MAX_GET_SYSTEM_USERS_LIMIT:
         raise DemistoException("The maximum number of emails allowed is 50.")
+
     response = client.get_users()
     data = response.get("reply", {})
     if emails:
         data = [user for user in data if user.get("user_email") in emails]
+
     if len(data) > MAX_GET_SYSTEM_USERS_LIMIT:
         data = data[:MAX_GET_SYSTEM_USERS_LIMIT]
 
