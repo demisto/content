@@ -489,7 +489,7 @@ class Client(BaseClient):
             second_request_id: The ID of the incident to create relationship.
 
         Returns:
-            str: API respnse from BmcITSM.
+            str: A success message.
         """
 
         data = {
@@ -1615,18 +1615,18 @@ def list_command(
 
     response = client.list_request(form_name, query_with_filtering if query_with_filtering else None)
     # Attach worklogs
-    if form_name != "HPD:WorkLog":
-        for i, ticket in enumerate(response["entries"]):
-            incident_number = ticket.get("values").get("Incident Number")
-            query = f"'Incident Number' = \"{incident_number}\""
-            worklogs = client.list_request("HPD:WorkLog", query)
-            for w_i, worklog in enumerate(worklogs["entries"]):
-                # Change date format to ISO8601
-                for key, value in worklog.get("values").items():
-                    if key.endswith("Date"):
-                        worklog["values"][key] = FormatIso8601(arg_to_datetime(value))
-                worklogs["entries"][w_i] = worklogs["entries"][w_i]["values"]
-            response["entries"][i]["values"]["Work Logs"] = worklogs.get("entries")
+    #if form_name != "HPD:WorkLog":
+    #    for i, ticket in enumerate(response["entries"]):
+    #        incident_number = ticket.get("values").get("Incident Number")
+    #        query = f"'Incident Number' = \"{incident_number}\""
+    #        worklogs = client.list_request("HPD:WorkLog", query)
+    #        for w_i, worklog in enumerate(worklogs["entries"]):
+    #            # Change date format to ISO8601
+    #            for key, value in worklog.get("values").items():
+    #                if key.endswith("Date"):
+    #                    worklog["values"][key] = FormatIso8601(arg_to_datetime(value))
+    #            worklogs["entries"][w_i] = worklogs["entries"][w_i]["values"]
+    #        response["entries"][i]["values"]["Work Logs"] = worklogs.get("entries")
 
     relevant_records, header_suffix = get_paginated_records_with_hr(
         response.get("entries"),  # type: ignore[arg-type]
@@ -1794,7 +1794,7 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
         args (Dict[str, Any]): command arguments.
 
     Returns:
-        CommandResults: Command results with raw response, outputs and readable outputs.
+        CommandResults: Command result with a success message.
     """
 
     request_type = args.get("request_type")
@@ -1835,7 +1835,7 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
             second_request_id=first_request_id,  # type: ignore[arg-type]
         )
 
-    return "Relationship is created."
+    return CommandResults(readable_output=f"Created relationship between {first_request_id} and {second_request_id}.")
 
 
 def service_request_definition_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:

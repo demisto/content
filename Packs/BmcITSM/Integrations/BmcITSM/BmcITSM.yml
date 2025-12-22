@@ -1959,12 +1959,20 @@ script:
     - name: incident_number
       description: Incident Number.
       required: true
-    - name: worklog_type
-      description: Work Log Type.
-      required: True
-    - name: view_access
-      description: View Acces.
-      required: True
+    - auto: PREDEFINED
+      description: Worklog Type
+      name: worklog_type
+      predefined:
+      - Chat
+      - Status Update
+      required: true
+    - auto: PREDEFINED
+      description: View Access
+      name: view_access
+      predefined:
+      - Public
+      - Internal
+      required: true
     - name: detailed_description
       description: Detailed Description.
       required: True
@@ -1992,6 +2000,34 @@ script:
       description: The Work Log ID.
       type: String
   - arguments:
+   - description: First Request ID
+      name: first_request_id
+      required: true
+    - auto: PREDEFINED
+      description: First Form Name
+      name: first_form_name
+      predefined:
+      - incident
+      - task
+      - change request
+      - problem investigation
+      - known error
+      - work order
+      required: true
+    - description: Second Request ID
+      name: second_request_id
+      required: true
+    - auto: PREDEFINED
+      description: Second Form Name
+      name: second_form_name
+      predefined:
+      - incident
+      - task
+      - change request
+      - problem investigation
+      - known error
+      - work order
+      required: true
     - auto: PREDEFINED
       description: Request Type
       name: request_type
@@ -2014,35 +2050,7 @@ script:
       - Resolved
       - Resolved by
       required: true
-    - auto: PREDEFINED
-      description: First Form Name
-      name: first_form_name
-      predefined:
-      - incident
-      - task
-      - change request
-      - problem investigation
-      - known error
-      - work order
-      required: true
-    - description: First Request ID
-      name: first_request_id
-      required: true
-    - auto: PREDEFINED
-      description: Second Form Name
-      name: second_form_name
-      predefined:
-      - incident
-      - task
-      - change request
-      - problem investigation
-      - known error
-      - work order
-      required: true
-    - description: Second Request ID
-      name: second_request_id
-      required: true
-    - auto: PREDEFINED
+     - auto: PREDEFINED
       defaultValue: "true"
       description: Bidirectionality
       name: bidirectional
