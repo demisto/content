@@ -8,9 +8,7 @@ try:
     if not ticket_id:
         raise ValueError("Ticket ID (cyphoticketid) is missing from incident.")
 
-    args = {
-        "ticket_id": ticket_id
-    }
+    args = {"ticket_id": ticket_id}
 
     download_response = demisto.executeCommand("cypho-download-attachment", args)
 

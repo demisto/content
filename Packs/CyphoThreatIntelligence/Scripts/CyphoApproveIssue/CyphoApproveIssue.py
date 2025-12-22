@@ -4,9 +4,15 @@ from CommonServerPython import *  # noqa: F401
 try:
     incident = demisto.incident()
     custom_fields = incident.get("CustomFields", {})
-    ticket_id, owner, Category, users_response, Incident_Type, Cypho_Status = custom_fields.get("cyphoticketid"), incident.get(
-        "owner"), custom_fields.get("cyphocategoryname"), demisto.executeCommand("getUsers", {}), incident.get("type"), custom_fields.get("cyphostatus")
-    args_update_incident = {"cyphostatus": "Open", "type": f'Cypho {Category}'}
+    ticket_id, owner, Category, users_response, Incident_Type, Cypho_Status = (
+        custom_fields.get("cyphoticketid"),
+        incident.get("owner"),
+        custom_fields.get("cyphocategoryname"),
+        demisto.executeCommand("getUsers", {}),
+        incident.get("type"),
+        custom_fields.get("cyphostatus"),
+    )
+    args_update_incident = {"cyphostatus": "Open", "type": f"Cypho {Category}"}
 
     if not owner:
         raise DemistoException("Incident is not assigned. Please assign an owner before approve a issue.")
@@ -27,7 +33,8 @@ try:
         demisto.executeCommand("setIncident", args_update_incident)
     else:
         raise DemistoException(
-            "Either the incident type is not 'Cypho Under Review Issues' or the issue status is not set to 'Candidate'.")
+            "Either the incident type is not 'Cypho Under Review Issues' or the issue status is not set to 'Candidate'."
+        )
 
 except Exception as e:
     demisto.error(f"[CyphoApproveIssueButton] Error: {str(e)}")

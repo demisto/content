@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 incident = demisto.incident() or {}
 custom_fields = incident.get("CustomFields") or {}
 
@@ -27,11 +28,7 @@ email = matched_user.get("email")
 if not email:
     raise DemistoException(f"User '{owner}' has no email address configured.")
 
-args = {
-    "ticket_id": cypho_ticket_id,
-    "user_email": email,
-    "severity": cypho_severity
-}
+args = {"ticket_id": cypho_ticket_id, "user_email": email, "severity": cypho_severity}
 
 demisto.executeCommand("cypho-update-severity", args)
 demisto.results(f"Cypho ticket {cypho_ticket_id} severity updated to {cypho_severity} by {email}.")

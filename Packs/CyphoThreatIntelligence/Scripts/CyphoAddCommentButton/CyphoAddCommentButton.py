@@ -32,12 +32,8 @@ try:
     if isError(response[0]):
         raise DemistoException(f"Failed to add comment: {response[0].get('Contents')}")
 
-    return_results(CommandResults(
-        readable_output=f"Comment successfully added to Cypho ticket {ticket_id} by {owner}."
-    ))
+    return_results(CommandResults(readable_output=f"Comment successfully added to Cypho ticket {ticket_id} by {owner}."))
 
 except Exception as e:
     demisto.error(f"[CyphoAddCommentButton] Error: {str(e)}")
-    return_results(CommandResults(
-        readable_output=f"Failed to add comment: {str(e)}"
-    ))
+    return_results(CommandResults(readable_output=f"Failed to add comment: {str(e)}"))
