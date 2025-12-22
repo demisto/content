@@ -42,11 +42,11 @@ def extract_email(email_address: str) -> str:
         email_address = extract_email_from_url_query(email_address)
 
     email_format = re.compile(
-        "[<(\[{\"'.]*"
-        "(?:(?:\\\\|\^{3})u[a-f\d]{4})?"
-        "([\w.!#$%&'*+/=?^_`{|}~-]{1,64}"
-        "\[?@]?[\w.-]{1,255}(?:\[?\.]?"
-        "[A-Za-z]{2,}){1,2})",
+        r"[<(\[{\"'.]*"
+        r"(?:(?:\\\\|\^{3})u[a-f\d]{4})?"
+        r"([\w.!#$%&'*+/=?^_`{|}~-]{1,64}"
+        r"\[?@]?[\w.-]{1,255}(?:\[?\.]?"
+        r"[A-Za-z]{2,}){1,2})",
         re.IGNORECASE,
     )
 
@@ -95,14 +95,15 @@ def extract_email_from_url_query(email_address: str) -> str:
     Returns:
         str: an email address
     """
+    # Extract email from URL query string using regex
+    # Matches email pattern after query separators (? or &) and before = or end
+    email_pattern = r'[?&]([\w.!#$%&\'*+/=?^_`{|}~-]+@[\w.-]+\.[A-Za-z]{2,})(?:=|$|&)'
+    match = re.search(email_pattern, email_address)
 
-    extracted_email = re.match("(.*?)=", email_address[::-1])
-
-    if extracted_email:
-        return extracted_email.group(1)[::-1]
-
-    else:
-        return ""
+    if match:
+        return match.group(1)
+    
+    return ""
 
 
 def main():
