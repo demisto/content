@@ -223,7 +223,7 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
                     f"To expire the password, please change this setting to false using the command "
                     f"'ad-modify-password-never-expire'."
                 ),
-                Instance=get_instance_from_result(res_get_user[0]) if res_get_user else ""
+                Instance=get_instance_from_result(res_get_user[0]) if res_get_user else "",
             )
         ], hr_get_user
 
@@ -232,15 +232,15 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
         return [
             ExpiredPasswordResult(
                 Result="Failed",
-                Message=f"Failed to retrieve the 'Password Never Expire' flag - password expiration failed.",
-                Instance=get_instance_from_result(res_get_user[0]) if res_get_user else ""
+                Message="Failed to retrieve the 'Password Never Expire' flag - password expiration failed.",
+                Instance=get_instance_from_result(res_get_user[0]) if res_get_user else "",
             )
         ], hr_get_user
 
     # 4. Run the password expiration command (flag is False)
     args_expire = {"username": username, "using": using}
     res_expire, hr_expire = run_command("ad-expire-password", args_expire)
-    
+
     # Combine human-readable outputs from both commands
     hr = f"{hr_get_user}\n\n{hr_expire}"
 

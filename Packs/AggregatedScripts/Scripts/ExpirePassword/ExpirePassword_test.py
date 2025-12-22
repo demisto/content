@@ -261,13 +261,7 @@ def test_run_active_directory_query_v2_success_flag_false(mock_run_command):
             [
                 {
                     "Type": 1,
-                    "EntryContext": {
-                        "ActiveDirectory.Users": [
-                            {
-                                "userAccountControlFields": {"DONT_EXPIRE_PASSWORD": False}
-                            }
-                        ]
-                    },
+                    "EntryContext": {"ActiveDirectory.Users": [{"userAccountControlFields": {"DONT_EXPIRE_PASSWORD": False}}]},
                     "Metadata": {"instance": "inst1"},
                 }
             ],
@@ -308,13 +302,7 @@ def test_run_active_directory_query_v2_flag_true_returns_failure(mock_run_comman
         [
             {
                 "Type": 1,
-                "EntryContext": {
-                    "ActiveDirectory.Users": [
-                        {
-                            "userAccountControlFields": {"DONT_EXPIRE_PASSWORD": True}
-                        }
-                    ]
-                },
+                "EntryContext": {"ActiveDirectory.Users": [{"userAccountControlFields": {"DONT_EXPIRE_PASSWORD": True}}]},
                 "Metadata": {"instance": "inst1"},
             }
         ],
@@ -561,13 +549,7 @@ def test_run_active_directory_query_v2_expire_command_failure(mock_run_command):
             [
                 {
                     "Type": 1,
-                    "EntryContext": {
-                        "ActiveDirectory.Users": [
-                            {
-                                "userAccountControlFields": {"DONT_EXPIRE_PASSWORD": False}
-                            }
-                        ]
-                    },
+                    "EntryContext": {"ActiveDirectory.Users": [{"userAccountControlFields": {"DONT_EXPIRE_PASSWORD": False}}]},
                     "Metadata": {"instance": "inst1"},
                 }
             ],
@@ -810,13 +792,7 @@ def test_expire_passwords_multiple_results_per_integration(mock_run_command):
             [
                 {
                     "Type": 1,
-                    "EntryContext": {
-                        "ActiveDirectory.Users": [
-                            {
-                                "userAccountControlFields": {"DONT_EXPIRE_PASSWORD": False}
-                            }
-                        ]
-                    },
+                    "EntryContext": {"ActiveDirectory.Users": [{"userAccountControlFields": {"DONT_EXPIRE_PASSWORD": False}}]},
                     "Metadata": {"instance": "ad-inst"},
                 }
             ],
