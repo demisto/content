@@ -29,7 +29,7 @@
         "is_array": false
       },
       "user_id": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       }
     }
