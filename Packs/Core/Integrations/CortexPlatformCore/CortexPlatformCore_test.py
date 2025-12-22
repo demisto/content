@@ -6013,3 +6013,26 @@ def test_get_issues_command_with_output_keys_filtering_empty_list(mocker):
     result = get_issues_command(client, args)
 
     assert result.outputs == [issue_output]
+
+
+def test_get_issues_command_with_specific_output_keys(mocker):
+    """
+    Given: A client and args with specific output_keys
+    When: get_issues_command is called
+    Then: Returns issue outputs filtered by specified keys
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "123", "output_keys": ["issue_id", "status"]}
+    mock_response = CommandResults(
+        outputs=[{"alert_id": "alert_123", "status": "open", "severity": "high", "description": "Test alert"}],
+        outputs_prefix="Core.Issue",
+    )
+
+    mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+
+    result = get_issues_command(client, args)
+
+    assert result.outputs == [{"issue_id": "alert_123", "status": "open"}]
