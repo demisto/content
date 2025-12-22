@@ -3,6 +3,8 @@ name: Trigger AI Reviewer
 on:
   issue_comment:
     types: [created]
+  pull_request:
+    types: [review_requested]
 
 env:
   IGNORED_BOTS: '["content-bot", "xsoar-bot", "dependabot"]'
@@ -15,37 +17,44 @@ jobs:
       contents: write
       pull-requests: read
     if: >-
-      github.event.issue.pull_request &&
-      (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
-      !contains(fromJson(env.IGNORED_BOTS), github.event.comment.user.login) && contains(
-        fromJson(env.ALLOWED_COMMANDS), github.event.comment.body
-      )
+      # Review request via PR commented command.
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request &&
+       (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
+       !contains(fromJson(env.IGNORED_BOTS), github.event.comment.user.login) &&
+       contains(fromJson(env.ALLOWED_COMMANDS), github.event.comment.body)) ||
+       # Review request via GH UI button 
+      (github.event_name == 'pull_request' &&
+       github.event.requested_reviewer.login == 'content-bot')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
-      - name: AI Reviewer Commands Detection
+      
+      - name: Add Reaction
+        if: github.event_name == 'issue_comment'
         env:
           GITHUB_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
-          COMMENT_BODY: ${{ github.event.comment.body }}
           COMMENT_ID: ${{ github.event.comment.id }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
           REPO: ${{ github.repository }}
         run: |
-          
-          # Add rocket reaction to mark review as in-progress
           echo "Adding 🚀 reaction..."
-          gh api "repos/$REPO/issues/comments/$COMMENT_ID/reactions" -f content="rocket" || {
-            echo "⚠️ Failed to add reaction. Proceeding anyway..."
-          }
+          gh api "repos/$REPO/issues/comments/$COMMENT_ID/reactions" -f content="rocket" || true
+      
+      - name: Trigger AI Review
+        env:
+          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+          TRIGGER_TYPE: ${{ github.event_name }}
+        run: |
+          echo "🚀 Triggering AI Reviewer (via $TRIGGER_TYPE)..."
 
-          # Trigger review by pushing an empty commit
-          echo "Triggering AI Reviewer..."
           git config --global user.email "bot@demisto.com"
           git config --global user.name "Content Bot"
+          
           git commit --allow-empty -m "Trigger AI Reviewer"
+
           git push
       
      

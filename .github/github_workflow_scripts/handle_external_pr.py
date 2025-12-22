@@ -496,7 +496,8 @@ def replace_fixes_to_related_in_pr_body(pr: PullRequest) -> str:
     pr.edit(body=edited_body)
     return ""
 
-def post_ai_introduction(pr: PullRequest, reviewers: list[str], t: Terminal) -> None:
+
+def post_ai_review_introduction(pr: PullRequest, reviewers: list[str], t: Terminal) -> None:
     """
     Posts the AI reviewer introduction comment.
 
@@ -509,7 +510,6 @@ def post_ai_introduction(pr: PullRequest, reviewers: list[str], t: Terminal) -> 
     ai_introduction_body = AI_REVIEWER_INTRODUCTION_MSG.format(reviewers=reviewer_mentions)
     pr.create_issue_comment(ai_introduction_body)
     print(f"{t.cyan}Posted AI reviewer introduction comment{t.normal}")
-
 
 
 def main():
@@ -650,9 +650,8 @@ def main():
     if XSOAR_SUPPORT_LEVEL_LABEL or COMMUNITY_SUPPORT_LEVEL_LABEL in labels_to_add and ver != "1.0.0":
         pr.create_issue_comment(contributors_body)
 
-    post_ai_introduction(pr, reviewers, t)
+    post_ai_review_introduction(pr, reviewers, t)
 
-    
-    
+
 if __name__ == "__main__":
     main()
