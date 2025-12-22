@@ -462,15 +462,14 @@ def preprocess_get_case_extra_data_outputs(outputs: list | dict):
     return process(outputs)
 
 
-def filter_context_fields(output_keys: list, context: list):
+def filter_context_fields(output_keys: list, context: list) -> list:
     """
-    Filters only specific keys from the context dictionary based on provided output_keys.
+    Filters only specific keys from the context dictionary where values are not None.
     """
-    filtered_context = []
-    for alert in context:
-        filtered_context.append({key: alert.get(key) for key in output_keys})
-
-    return filtered_context
+    return [
+        {k: v for k in output_keys if (v := alert.get(k)) is not None}
+        for alert in context
+    ]
 
 
 class Client(CoreClient):
@@ -2858,14 +2857,14 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
 
 
 def get_issues_command(client: Client, args: dict) -> CommandResults:
-    args = issue_to_alert(args)
-    response: CommandResults = get_alerts_by_filter_command(client, args)  # type: ignore[arg-type]
-    output_keys = argToList(args.pop("output_keys", []))  # type: ignore[union-attr]
-    if response.outputs:
-        response.outputs = [alert_to_issue(output) for output in response.outputs]  # type: ignore[attr-defined,arg-type]
+    args = cast(dict, issue_to_alert(args))
+    response: CommandResults = get_alerts_by_filter_command(client, args)
+    output_keys = argToList(args.pop("output_keys", []))
+    if isinstance(response.outputs, list) and response.outputs:
+        response.outputs = [alert_to_issue(output) for output in response.outputs]
 
-    if output_keys and response.outputs:
-        response.outputs = filter_context_fields(output_keys, response.outputs)  # type: ignore[attr-defined,arg-type]
+        if output_keys:
+            response.outputs = filter_context_fields(output_keys, response.outputs)
 
     return response
 

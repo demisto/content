@@ -6094,3 +6094,45 @@ def test_get_issues_command_with_empty_list_outputs(mocker):
     assert result.outputs == []
     alert_to_issue_mock.assert_not_called()
     filter_mock.assert_not_called()
+
+
+def test_get_issues_command_with_invalid_output_keys(mocker):
+    """
+    Given: A client and args with non-existent output keys
+    When: get_issues_command is called
+    Then: Returns empty or filtered outputs based on available keys
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "123", "output_keys": ["non_existent_key"]}
+
+    mock_response = CommandResults(
+        outputs=[{"alert_id": "alert_123", "status": "open", "severity": "high"}], outputs_prefix="Core.Issue"
+    )
+    mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+
+    result = get_issues_command(client, args)
+    assert result.outputs == [{}]  # or handle as appropriate in your implementation
+
+
+def test_get_issues_command_with_partial_output_keys(mocker):
+    """
+    Given: A client and args with some missing output keys
+    When: get_issues_command is called
+    Then: Returns partial outputs for available keys
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "123", "output_keys": ["status", "non_existent_key"]}
+
+    mock_response = CommandResults(
+        outputs=[{"alert_id": "alert_123", "status": "open", "severity": "high"}], outputs_prefix="Core.Issue"
+    )
+    mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+
+    result = get_issues_command(client, args)
+    assert result.outputs == [{"status": "open"}]
