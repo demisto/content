@@ -2769,6 +2769,43 @@ script:
       - contextPath: Core.Endpoint.cloud_region
         description: The cloud region of the endpoint.
         type: String
+    - arguments:
+      - name: name
+        description: The name of the assessment profile to create.
+        required: true
+      - name: description
+        description: The description of the assessment profile to create.
+        required: true
+      - name: standard_id
+        description: The ID of the compliance standard to associate with the profile.
+        required: true
+      - name: asset_group_id
+        description: The ID of the asset group to apply the assessment profile to.
+        required: true
+      - auto: PREDEFINED
+        name: day
+        description: The day of the week to schedule the assessment.
+        defaultvalue: "sunday"
+        predefined:
+          - "sunday"
+          - "monday"
+          - "tuesday"
+          - "wednesday"
+          - "thursday"
+          - "friday"
+          - "saturday"
+      - name: time
+        description: The time of day to run the assessment in HH:MM format.
+        defaultvalue: "12:00"
+      name: core-add-assessment-profile
+      description: Create new assessment profile.
+      outputs:
+      - contextPath: Core.AssessmentProfile.assessment_profile_id
+        description: The unique identifier of the newly created assessment profile.
+        type: String
+        
+        
+        
   runonce: false
   script: "-"
   subtype: python3

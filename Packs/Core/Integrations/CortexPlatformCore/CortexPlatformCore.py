@@ -17,6 +17,16 @@ MAX_GET_CASES_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
 AGENTS_TABLE = "AGENTS_TABLE"
 
+DAY_MAP = {
+    "sunday": 0,
+    "monday": 1,
+    "tuesday": 2,
+    "wednesday": 3,
+    "thursday": 4,
+    "friday": 5,
+    "saturday": 6
+}
+
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
     "asset_types": "xdm.asset.type.name",
@@ -53,6 +63,7 @@ WEBAPP_COMMANDS = [
     "core-get-appsec-issues",
     "core-update-case",
     "core-list-endpoints",
+    "core-add-assessment-profile",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -888,6 +899,22 @@ class Client(CoreClient):
                 "Content-Type": "application/json",
             },
             json_data=request_data,
+        )
+    
+    def add_assessment_profile(self, profile_payload: dict) -> dict:
+        """
+        Add a new assessment profile to Cortex XDR.
+
+        Args:
+            profile_payload (dict): The assessment profile configuration payload.
+
+        Returns:
+            dict: The response from the API for adding the assessment profile.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/platform/compliance/add_assessment_profile/",
+            json_data=profile_payload,
         )
 
 
@@ -3085,7 +3112,107 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
         raw_response=data,
     )
 
+def parse_frequency(day: str, time: str) -> str:
+    """
+    Convert day and time to cron-style frequency string
+    
+    Cron format: Minute Hour Day-of-Month Month Day-of-Week
+    Example: "0 12 * * 2" means:
+    - Minute: 0 (The task starts at the 0th minute of the hour)
+    - Hour: 12 (The task starts at the 12th hour - 12:00 PM in 24-hour time)
+    - Day of Month: * (Every day of the month)
+    - Month: * (Every month)
+    - Day of Week: 2 (Tuesday)
+    
+    :param day: Day of month (optional)
+    :param time: Time in HH:MM format
+    :return: Cron-style frequency string
+    """
 
+    minutes, hours = time.split(':')
+    return f"{minutes} {hours} * * {DAY_MAP[day]}"
+
+def create_assessment_profile_payload(
+    name: str, 
+    description: str, 
+    standard_id: str, 
+    asset_group_id: str, 
+    day: str, 
+    time: str,
+    report_type: str = "ALL"
+) -> Dict[str, Any]:
+    """
+    Prepare assessment profile payload
+    
+    :param name: Name of the assessment profile
+    :param description: Description of the profile
+    :param standard_id: ID of the compliance standard
+    :param asset_group_id: ID of the asset group
+    :param day: Day of evaluation (optional)
+    :param time: Time of evaluation (optional)
+    :param report_type: Type of report (default: ALL)
+    :return: Assessment profile payload
+    """
+
+    # Parse frequency
+    report_frequency = parse_frequency(day, time)
+
+    # Construct payload matching the example structure
+    payload = {
+        "assessment_profile": {
+            "NAME": name,
+            "DESCRIPTION": description,
+            "REPORT_TYPE": report_type,
+            "REPORT_FREQUENCY": report_frequency,
+            "REPORT_TARGETS": [],
+            "ASSET_GROUP_ID": asset_group_id,
+            "STANDARD_ID": standard_id,
+            "ENABLED": True
+        }
+    }
+    
+    return payload
+
+def core_add_assessment_profile_command(client: Client, args: dict) -> CommandResults:
+    """
+    Adds a new assessment profile to the Cortex Platform.
+
+    Args:
+        client (Client): The integration client used to add the assessment profile.
+        args (dict): Command arguments containing profile details.
+
+    Returns:
+        CommandResults: Contains the result of adding the assessment profile.
+    """
+    name = args.get('name', "")
+    description = args.get('description', "")
+    standard_id = args.get('standard_id', "")
+    asset_group_id = args.get('asset_group_id', "")
+
+    # Optional arguments
+    day = args.get('day', 'sunday')
+    time = args.get('time', "12:00")
+
+    # Create the assessment profile payload
+    payload = create_assessment_profile_payload(
+        name=name,
+        description=description, 
+        standard_id=standard_id,
+        asset_group_id=asset_group_id,
+        day=day,
+        time=time,
+        report_type="ALL",
+    )
+
+    reply = client.add_assessment_profile(payload)
+    assessment_profile_id = reply.get("assessment_profile_id")
+    return CommandResults(
+        outputs_prefix='Core.AssessmentProfile',
+        outputs_key_field='assessment_profile_id',
+        outputs=assessment_profile_id,
+        raw_response=reply
+    )
+    
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -3208,6 +3335,8 @@ def main():  # pragma: no cover
 
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
+        elif command == "core-add-assessment-profile":
+            return_results(core_add_assessment_profile_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
