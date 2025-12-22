@@ -136,6 +136,20 @@ Retrive the analysis result from ThreatZone. This command returns the raw submis
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatZone.Submission | Unknown | Raw submission data returned by ThreatZone. |
+| ThreatZone.Analysis.STATUS | String | The status of the submission scanning process. |
+| ThreatZone.Analysis.LEVEL | String | Threat Level of the submission. |
+| ThreatZone.Analysis.INFO | String | Submission metadata such as file name/URL and privacy status. |
+| ThreatZone.Analysis.REPORT | String | The analysis report of the submission. |
+| ThreatZone.Analysis.URL | String | The result page url of the submission. |
+| ThreatZone.Analysis.MD5 | String | The md5 hash of the submission. |
+| ThreatZone.Analysis.SHA1 | String | The sha1 hash of the submission. |
+| ThreatZone.Analysis.SHA256 | String | The sha256 hash of the submission. |
+| ThreatZone.Analysis.UUID | String | The UUID of the submission. |
+| ThreatZone.Analysis.SANITIZED | String | The url of the sanitized file. |
+| ThreatZone.IOC.URL | List | The URL data extracted from IOC. |
+| ThreatZone.IOC.IP | List | The IP data extracted from IOC. |
+| ThreatZone.IOC.DOMAIN | List | The DOMAIN data extracted from IOC. |
+| ThreatZone.IOC.EMAIL | List | The EMAIL data extracted from IOC. |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
 | DBotScore.Score | Number | The actual score. |

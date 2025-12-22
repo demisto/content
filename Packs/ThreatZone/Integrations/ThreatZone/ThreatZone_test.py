@@ -84,7 +84,14 @@ class MockClient:
         return {"uuid": "c89d310b-7862-4534-998a-3eb39d9a9d42", "message": "You have successfully submitted a submission."}
 
     def threatzone_submit_url(self, payload):
-        return {"uuid": "c89d310b-7862-4534-998a-3eb39d9a9d42", "message": "You have successfully submitted a submission.", "payload": payload}
+        return {
+            "uuid": "c89d310b-7862-4534-998a-3eb39d9a9d42",
+            "message": "You have successfully submitted a submission.",
+            "payload": payload,
+        }
+
+    def threatzone_get_html_report(self, submission_uuid: str):
+        raise NotImplementedError
 
 
 class Test_ThreatZone_Helper_Functions(unittest.TestCase):
@@ -324,11 +331,14 @@ class TestClient(unittest.TestCase):
             "userInfo": {
                 "email": "name@company.com",
                 "fullName": "Test User",
+                "workspaceName": "ACME Lab",
                 "limitsCount": {"apiRequestCount": 5, "dailySubmissionCount": 5, "concurrentSubmissionCount": 0},
             },
             "plan": {
                 "submissionLimits": {"apiLimit": 9999, "dailyLimit": 999, "concurrentLimit": 2},
                 "fileLimits": {"fileSize": 512, "extensions": ["exe", "dll"]},
+                "name": "Enterprise",
+                "status": "active",
             },
             "modules": [{"name": "Sandbox"}, {"name": "CDR"}],
         }
@@ -348,6 +358,12 @@ class TestClient(unittest.TestCase):
                 "File_Size_Limit_MiB": 512,
                 "Allowed_Extensions": ["exe", "dll"],
                 "Modules": ["Sandbox", "CDR"],
+            },
+            "Metadata": {
+                "Full_Name": "Test User",
+                "Workspace": "ACME Lab",
+                "Plan_Name": "Enterprise",
+                "Plan_Status": "active",
             },
         }
 
@@ -504,15 +520,21 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
 
         results = threatzone_get_result(mock_client_instance, args)
 
-        assert len(results) == 1
-        result = results[0]
-        assert result.outputs_prefix == "ThreatZone.Submission"
-        assert result.outputs == expected_response
-        assert result.raw_response == expected_response
+        assert len(results) == 3
+        submission_result, analysis_result, ioc_result = results
+        assert submission_result.outputs_prefix == "ThreatZone.Submission"
+        assert submission_result.outputs == expected_response
+        assert submission_result.raw_response == expected_response
+        assert analysis_result.outputs_prefix == "ThreatZone.Analysis"
+        assert analysis_result.outputs["UUID"] == "mock-uuid"
+        assert analysis_result.outputs["SHA256"] == "mock-sha256"
+        assert analysis_result.outputs["STATUS"] == 5
+        assert ioc_result.outputs_prefix == "ThreatZone.IOC"
+        assert ioc_result.outputs["URL"] == ["https://indicator.example"]
 
         detail_args = {"uuid": "mock-uuid", "details": "true"}
         detail_results = threatzone_get_result(mock_client_instance, detail_args)
-        assert len(detail_results) == 1
+        assert len(detail_results) == 3
         detail_output = detail_results[0].readable_output
         assert "### Indicators" not in detail_output
         assert "| INDICATORS | Create mutex" in detail_output
@@ -538,7 +560,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
 
         results = threatzone_get_result(mock_client_instance, args)
 
-        assert len(results) == 1
+        assert len(results) == 3
         result = results[0]
         assert result.outputs_prefix == "ThreatZone.Submission"
         assert result.outputs == cdr_expected_response
@@ -563,7 +585,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
 
         url_results = threatzone_get_result(mock_client_instance, {"uuid": "url-uuid"})
 
-        assert len(url_results) == 1
+        assert len(url_results) == 3
         url_result = url_results[0]
         assert "https://example.com" in url_result.readable_output
         assert isinstance(url_result.indicator, Common.URL)
@@ -571,9 +593,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
     @patch("ThreatZone.Client")
     def test_threatzone_get_ioc_result(self, mock_client, _, __):
         mock_client_instance = mock_client.return_value
-        mock_client_instance.threatzone_get_section.return_value = {
-            "iocs": {"url": ["https://indicator.example"], "domain": []}
-        }
+        mock_client_instance.threatzone_get_section.return_value = {"iocs": {"url": ["https://indicator.example"], "domain": []}}
 
         args = {"uuid": "mock-uuid"}
         results = threatzone_get_ioc_result(mock_client_instance, args)
@@ -587,9 +607,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
     @patch("ThreatZone.Client")
     def test_threatzone_get_indicator_result(self, mock_client, _, __):
         mock_client_instance = mock_client.return_value
-        mock_client_instance.threatzone_get_section.return_value = {
-            "indicators": [{"name": "Create mutex"}]
-        }
+        mock_client_instance.threatzone_get_section.return_value = {"indicators": [{"name": "Create mutex"}]}
 
         args = {"uuid": "mock-uuid"}
         results = threatzone_get_indicator_result(mock_client_instance, args)
@@ -603,9 +621,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
     @patch("ThreatZone.Client")
     def test_threatzone_get_yara_result(self, mock_client, _, __):
         mock_client_instance = mock_client.return_value
-        mock_client_instance.threatzone_get_section.return_value = {
-            "yaraRules": [{"rule": "rule_name"}]
-        }
+        mock_client_instance.threatzone_get_section.return_value = {"yaraRules": [{"rule": "rule_name"}]}
 
         args = {"uuid": "mock-uuid"}
         results = threatzone_get_yara_result(mock_client_instance, args)
@@ -619,9 +635,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
     @patch("ThreatZone.Client")
     def test_threatzone_get_artifact_result(self, mock_client, _, __):
         mock_client_instance = mock_client.return_value
-        mock_client_instance.threatzone_get_section.return_value = {
-            "artifacts": [{"path": "sample.bin"}]
-        }
+        mock_client_instance.threatzone_get_section.return_value = {"artifacts": [{"path": "sample.bin"}]}
 
         args = {"uuid": "mock-uuid"}
         results = threatzone_get_artifact_result(mock_client_instance, args)
@@ -635,9 +649,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
     @patch("ThreatZone.Client")
     def test_threatzone_get_config_result(self, mock_client, _, __):
         mock_client_instance = mock_client.return_value
-        mock_client_instance.threatzone_get_section.return_value = {
-            "configExtractorResults": [{"key": "value"}]
-        }
+        mock_client_instance.threatzone_get_section.return_value = {"configExtractorResults": [{"key": "value"}]}
 
         args = {"uuid": "mock-uuid"}
         results = threatzone_get_config_result(mock_client_instance, args)

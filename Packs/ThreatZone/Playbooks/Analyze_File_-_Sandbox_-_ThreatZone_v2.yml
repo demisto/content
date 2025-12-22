@@ -1,12 +1,14 @@
-id: Sanitize File - CDR - ThreatZone
+id: Analyze File - Sandbox - ThreatZone v2
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Sanitize File - CDR - ThreatZone
+name: Analyze File - Sandbox - ThreatZone v2
 description: |-
-  Sanitize one file using the ThreatZone CDR integration.
+  Analyzes one file using the ThreatZone sandbox integration.
   Returns relevant reports to the War Room and file reputations to the context data.
-  CDR Scan Extensions: doc, docm, docx, dotm, ppt, pptm, pptx, xls, xlsm, pdf, odc, odt, ott, odp, otp, ods, ots, rtf, tiff, jpeg, png, gif, bmp, webp, jpx, svg, zip, xml, ics, html, lnk, xlsx.
+  Dynamic Scan Extensions: exe, docx, dochtml, docm, doc, rtf, ps1, bat, cmd, xlw, xltx, xltm, xls, xlsx, odc, csv, xlshtml.
+tags:
+- Malware
 starttaskid: "0"
 tasks:
   "0":
@@ -41,14 +43,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b802bcac-638f-4d66-80bd-28e966a4b086
+    taskid: 6b840c07-9034-41f8-8d14-787d2ee2672d
     type: regular
     task:
-      id: b802bcac-638f-4d66-80bd-28e966a4b086
+      id: 6b840c07-9034-41f8-8d14-787d2ee2672d
       version: -1
       name: ThreatZone Submit File for Analysis
-      description: Submits a sample to ThreatZone for CDR.
-      script: '|||tz-cdr-upload-sample'
+      description: Submits a sample to ThreatZone for sandbox analysis.
+      script: '|||tz-sandbox-upload-sample'
       type: regular
       iscommand: true
       brand: ""
@@ -78,10 +80,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c5b0991f-bd94-4481-8e98-89e2756334dd
+    taskid: 1bf7e441-e448-4ee1-895f-a8b4c58f4053
     type: playbook
     task:
-      id: c5b0991f-bd94-4481-8e98-89e2756334dd
+      id: 1bf7e441-e448-4ee1-895f-a8b4c58f4053
       version: -1
       name: GenericPolling
       description: |-
@@ -102,7 +104,7 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: ThreatZone.Submission.CDR
+          root: ThreatZone.Submission.Sandbox
           accessor: UUID
       Interval:
         complex:
@@ -115,7 +117,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: ThreatZone.Analysis(val.STATUS!==5).REPORT
+        simple: ThreatZone.Submission.Summary(val.REPORT.status!==5).REPORT
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -155,7 +157,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1240
+          "y": 1070
         }
       }
     note: false
@@ -274,10 +276,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 39f51bd4-885c-408c-8487-65bd88c0a0f7
+    taskid: 1d627af4-1926-40e4-803b-c0ff2901f595
     type: regular
     task:
-      id: 39f51bd4-885c-408c-8487-65bd88c0a0f7
+      id: 1d627af4-1926-40e4-803b-c0ff2901f595
       version: -1
       name: ThreatZone Get Report
       description: Retrive the analysis result from ThreatZone Sandbox.
@@ -287,57 +289,19 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
-    scriptarguments:
-      uuid:
-        complex:
-          root: ThreatZone.Submission.CDR
-          accessor: UUID
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 905
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 12689403-fec9-4436-80a9-bdeee3f57ab7
-    type: regular
-    task:
-      id: 12689403-fec9-4436-80a9-bdeee3f57ab7
-      version: -1
-      name: Threatzone Get Sanitized File
-      description: Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Data.
-      script: '|||tz-get-sanitized'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
       - "5"
     scriptarguments:
       uuid:
         complex:
-          root: ThreatZone.Submission.CDR
+          root: ThreatZone.Submission.Sandbox
           accessor: UUID
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 275,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
@@ -352,7 +316,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1255,
+        "height": 1085,
         "width": 605,
         "x": 50,
         "y": 50
@@ -380,34 +344,34 @@ inputs:
   description: Maximum polling duration (in minutes) before the playbook resumes.
   playbookInputQuery:
 outputs:
-- contextPath: ThreatZone.Analysis.STATUS
+- contextPath: ThreatZone.Submission.Summary.STATUS
   description: The status of the submission scanning process.
   type: String
-- contextPath: ThreatZone.Analysis.LEVEL
+- contextPath: ThreatZone.Submission.Summary.LEVEL
   description: Threat Level of the scanned file. (malicious, suspicious or informative).
   type: String
-- contextPath: ThreatZone.Analysis.URL
+- contextPath: ThreatZone.Submission.Summary.URL
   description: The result page url of the submission.
   type: String
-- contextPath: ThreatZone.Analysis.INFO
+- contextPath: ThreatZone.Submission.Summary.INFO
   description: Contains the file name, scan process status and public status.
   type: String
-- contextPath: ThreatZone.Analysis.REPORT
+- contextPath: ThreatZone.Submission.Summary.REPORT
   description: The analysis report of the submission.
   type: String
-- contextPath: ThreatZone.Analysis.MD5
+- contextPath: ThreatZone.Submission.Summary.MD5
   description: The md5 hash of the submission.
   type: String
-- contextPath: ThreatZone.Analysis.SHA1
+- contextPath: ThreatZone.Submission.Summary.SHA1
   description: The sha1 hash of the submission.
   type: String
-- contextPath: ThreatZone.Analysis.SHA256
+- contextPath: ThreatZone.Submission.Summary.SHA256
   description: The sha256 hash of the submission.
   type: String
-- contextPath: ThreatZone.Analysis.UUID
+- contextPath: ThreatZone.Submission.Summary.UUID
   description: The UUID of the submission.
   type: String
-- contextPath: ThreatZone.Analysis.SANITIZED
+- contextPath: ThreatZone.Submission.Summary.SANITIZED
   description: The url of the sanitized file.
   type: String
 tests:

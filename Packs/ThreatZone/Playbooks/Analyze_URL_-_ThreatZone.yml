@@ -1,8 +1,8 @@
-id: Analyze URL - ThreatZone
+id: silent-Analyze URL - ThreatZone
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Analyze URL - ThreatZone
+name: silent-Analyze URL - ThreatZone
 description: |
   Analyzes a URL using the ThreatZone integration.
   Submits the URL for analysis, waits for completion, and pulls the resulting verdict and telemetry into the War Room.
@@ -359,4 +359,5 @@ outputs:
   type: String
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0
+fromversion: 8.9.0
+issilent: true

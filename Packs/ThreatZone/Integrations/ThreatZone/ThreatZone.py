@@ -1,7 +1,7 @@
 import json
 import shutil
 from contextlib import closing
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -25,7 +25,7 @@ ARCHIVE_SUFFIXES = (
     ".tar.xz",
 )
 
-SECTION_METADATA: Dict[str, Dict[str, Any]] = {
+SECTION_METADATA: dict[str, dict[str, Any]] = {
     "include_indicators": {
         "endpoint": "indicators",
         "prefix": "ThreatZone.Submission.Indicators",
@@ -78,7 +78,7 @@ def as_api_bool(value: bool) -> str:
     return "true" if value else "false"
 
 
-def parse_modules_argument(modules_arg: Optional[str]) -> Optional[List[str]]:
+def parse_modules_argument(modules_arg: str | None) -> list[str] | None:
     """Parse modules argument supporting JSON array or comma-separated string."""
     if not modules_arg:
         return None
@@ -88,7 +88,7 @@ def parse_modules_argument(modules_arg: Optional[str]) -> Optional[List[str]]:
     except ValueError:
         parsed = None
 
-    modules: List[str] = []
+    modules: list[str] = []
     if isinstance(parsed, list):
         modules = [str(module).strip() for module in parsed if str(module).strip()]
     elif isinstance(parsed, str):
@@ -101,7 +101,7 @@ def parse_modules_argument(modules_arg: Optional[str]) -> Optional[List[str]]:
     return modules or None
 
 
-def parse_analyze_config_argument(analyze_arg: Optional[str]) -> List[Dict[str, Any]]:
+def parse_analyze_config_argument(analyze_arg: str | None) -> list[dict[str, Any]]:
     """Parse analyze_config argument and validate schema."""
     if not analyze_arg:
         return []
@@ -117,7 +117,7 @@ def parse_analyze_config_argument(analyze_arg: Optional[str]) -> List[Dict[str, 
     if not isinstance(parsed, list):
         raise DemistoException("analyze_config argument must be a JSON object or array of objects.")
 
-    validated: List[Dict[str, Any]] = []
+    validated: list[dict[str, Any]] = []
     for entry in parsed:
         if not isinstance(entry, dict):
             raise DemistoException("analyze_config entries must be JSON objects.")
@@ -131,9 +131,9 @@ def parse_analyze_config_argument(analyze_arg: Optional[str]) -> List[Dict[str, 
     return validated
 
 
-def parse_int_argument(arg_value: Optional[str], argument_name: str) -> Optional[int]:
+def parse_int_argument(arg_value: str | None, argument_name: str) -> int | None:
     """Convert CLI argument to int with validation."""
-    if arg_value in (None, ""):
+    if arg_value is None or arg_value == "":
         return None
     try:
         return int(arg_value)
@@ -141,14 +141,14 @@ def parse_int_argument(arg_value: Optional[str], argument_name: str) -> Optional
         raise DemistoException(f"{argument_name} argument must be an integer.") from exc
 
 
-def resolve_private_flag(private_arg: Optional[str]) -> bool:
+def resolve_private_flag(private_arg: str | None) -> bool:
     """Return the privacy flag, defaulting to True when it is not provided."""
     if private_arg is None:
         return True
     return argToBoolean(private_arg)
 
 
-def resolve_extension_check(scan_type: str, extension_check_arg: Optional[str]) -> bool:
+def resolve_extension_check(scan_type: str, extension_check_arg: str | None) -> bool:
     """Return the extensionCheck flag with deterministic defaults per scan type."""
     if extension_check_arg is not None:
         return argToBoolean(extension_check_arg)
@@ -172,12 +172,12 @@ class Client(BaseClient):
         self,
         *,
         scan_type: str,
-        data: Dict[str, Any],
-        files: List[tuple],
-        params: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        data: dict[str, Any],
+        files: list[tuple],
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Submit a scan request to ThreatZone via the /public-api/scan/ endpoints."""
-        request_kwargs: Dict[str, Any] = {
+        request_kwargs: dict[str, Any] = {
             "method": "POST",
             "url_suffix": f"/public-api/scan/{scan_type}",
             "data": data,
@@ -187,7 +187,7 @@ class Client(BaseClient):
             request_kwargs["params"] = params
         return self._http_request(**request_kwargs)
 
-    def threatzone_submit_url(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def threatzone_submit_url(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Submit a URL analysis request to ThreatZone."""
         return self._http_request(
             method="POST",
@@ -255,21 +255,25 @@ class Client(BaseClient):
         limits_count = user_info.get("limitsCount", {})
         submission_limits = plan_info.get("submissionLimits", {}) or {}
 
-        def _remaining(total: Optional[int], used: Optional[int]) -> Optional[int]:
+        def _remaining(total: int | None, used: int | None) -> int | None:
             if total is None or used is None:
                 return None
             return total - used
 
         available_api = _remaining(submission_limits.get("apiLimit"), limits_count.get("apiRequestCount"))
         available_submission = _remaining(submission_limits.get("dailyLimit"), limits_count.get("dailySubmissionCount"))
-        available_concurrent = _remaining(
-            submission_limits.get("concurrentLimit"), limits_count.get("concurrentSubmissionCount")
-        )
+        available_concurrent = _remaining(submission_limits.get("concurrentLimit"), limits_count.get("concurrentSubmissionCount"))
+        daily_used = limits_count.get("dailySubmissionCount", "?")
+        daily_total = submission_limits.get("dailyLimit", "?")
+        concurrent_used = limits_count.get("concurrentSubmissionCount", "?")
+        concurrent_total = submission_limits.get("concurrentLimit", "?")
+        api_used = limits_count.get("apiRequestCount", "?")
+        api_total = submission_limits.get("apiLimit", "?")
         limits = {
             "E_Mail": f"{acc_email}",
-            "Daily_Submission_Limit": f"{limits_count.get('dailySubmissionCount', '?')}/{submission_limits.get('dailyLimit', '?')}",
-            "Concurrent_Limit": f"{limits_count.get('concurrentSubmissionCount', '?')}/{submission_limits.get('concurrentLimit', '?')}",
-            "API_Limit": f"{limits_count.get('apiRequestCount', '?')}/{submission_limits.get('apiLimit', '?')}",
+            "Daily_Submission_Limit": f"{daily_used}/{daily_total}",
+            "Concurrent_Limit": f"{concurrent_used}/{concurrent_total}",
+            "API_Limit": f"{api_used}/{api_total}",
         }
         file_limits = plan_info.get("fileLimits", {})
         plan_details = {
@@ -301,11 +305,7 @@ class Client(BaseClient):
                 "Reason": f"Daily submission limit ({submission_limits.get('dailyLimit', '?')}) exceeded",
                 "Suggestion": "Upgrade your plan or contact us.",
             }
-        elif (
-            available_concurrent is not None
-            and available_concurrent < 1
-            and scan_category in ("sandbox", "static-scan", "cdr")
-        ):
+        elif available_concurrent is not None and available_concurrent < 1 and scan_category in ("sandbox", "static-scan", "cdr"):
             return {
                 "available": False,
                 "Limits": limits,
@@ -354,7 +354,7 @@ def encode_file_name(file_name: str) -> str:
 
 
 def translate_score(
-    score: Optional[int],
+    score: int | None,
 ) -> int:
     """Translate ThreatZone threat level to DBot score enum."""
     if score is None or isinstance(score, bool):
@@ -375,16 +375,16 @@ def translate_score(
     return Common.DBotScore.NONE
 
 
-def normalize_level_value(level_value: Any) -> tuple[Optional[int], str]:
+def normalize_level_value(level_value: Any) -> tuple[int | None, str]:
     """Return numeric threat level and human-readable label."""
     level_map = {0: "Not Measured", 1: "Informative", 2: "Suspicious", 3: "Malicious"}
-    level_int: Optional[int] = None
+    level_int: int | None = None
     if level_value is not None and not isinstance(level_value, bool):
         try:
             level_int = int(level_value)
         except (TypeError, ValueError):
             level_int = None
-    label = level_map.get(level_int)
+    label = level_map.get(level_int) if level_int is not None else None
     if not label:
         if level_value is None:
             label = "Unknown"
@@ -492,7 +492,7 @@ def render_section_markdown(title: str, data: Any) -> str:
         return f"{title}\n```json\n{serialized}\n```"
 
 
-def select_report_section(reports: Dict[str, Any]) -> tuple[str, Dict[str, Any]]:
+def select_report_section(reports: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     """Return the enabled report type and its section from the submission payload."""
     for name in ("dynamic", "static", "cdr", "urlAnalysis"):
         section = reports.get(name) or {}
@@ -503,13 +503,13 @@ def select_report_section(reports: Dict[str, Any]) -> tuple[str, Dict[str, Any]]
 
 def build_submission_info(
     report_type: str,
-    report_section: Dict[str, Any],
+    report_section: dict[str, Any],
     private_flag: Any,
-    file_name: Optional[str],
-    analyzed_url: Optional[str],
-) -> Dict[str, Any]:
+    file_name: str | None,
+    analyzed_url: str | None,
+) -> dict[str, Any]:
     """Assemble the INFO structure for the summary output."""
-    submission_info: Dict[str, Any] = {"private": private_flag}
+    submission_info: dict[str, Any] = {"private": private_flag}
     if file_name:
         submission_info["file_name"] = file_name
     if analyzed_url:
@@ -523,9 +523,9 @@ def build_submission_info(
     return submission_info
 
 
-def build_detail_markdown(result: Dict[str, Any], report_section: Dict[str, Any]) -> str:
+def build_detail_markdown(result: dict[str, Any], report_section: dict[str, Any]) -> str:
     """Create markdown blocks for inline detail previews."""
-    detail_blocks: List[str] = []
+    detail_blocks: list[str] = []
     for title, top_level_key, report_key in DETAIL_SECTIONS:
         section_data = result.get(top_level_key)
         if section_data is None and isinstance(report_section, dict):
@@ -537,8 +537,8 @@ def build_detail_markdown(result: Dict[str, Any], report_section: Dict[str, Any]
 def build_section_command_results(uuid: str, prefix: str, title: str, data: Any) -> CommandResults:
     """Build a CommandResults object for a submission section."""
     readable_output = render_section_markdown(title, data)
-    outputs: Optional[Dict[str, Any]] = None
-    outputs_key_field: Optional[str] = None
+    outputs: dict[str, Any] | None = None
+    outputs_key_field: str | None = None
     if data not in (None, [], {}):
         outputs = {"UUID": uuid, "Data": data}
         outputs_key_field = "UUID"
@@ -550,7 +550,7 @@ def build_section_command_results(uuid: str, prefix: str, title: str, data: Any)
     )
 
 
-def fetch_section_data(client: "Client", uuid: str, endpoint: str, response_key: Optional[str]) -> Any:
+def fetch_section_data(client: "Client", uuid: str, endpoint: str, response_key: str | None) -> Any:
     """Fetch a submission section, returning the nested payload when possible."""
     raw_section = client.threatzone_get_section(uuid, endpoint)
     if response_key and isinstance(raw_section, dict) and response_key in raw_section:
@@ -558,7 +558,7 @@ def fetch_section_data(client: "Client", uuid: str, endpoint: str, response_key:
     return raw_section
 
 
-def threatzone_get_result(client: Client, args: dict[str, Any]) -> List[Union[CommandResults, dict]]:
+def threatzone_get_result(client: Client, args: dict[str, Any]) -> list[CommandResults | dict]:
     """Get the sample scan result from ThreatZone with optional detailed sections."""
     uuid = args.get("uuid")
     if not uuid:
@@ -598,13 +598,22 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> List[Union[Co
 
     level_int, level_label = normalize_level_value(result.get("level"))
     private_flag = result.get("private")
+
+    status_key: int | None = None
+    if status_value is not None and not isinstance(status_value, bool):
+        try:
+            status_key = int(status_value)
+        except (TypeError, ValueError):
+            status_key = None
+
     status_readable = status_labels.get(
-        status_value, f"Status {status_value}" if status_value is not None else "Unknown"
+        status_key,
+        f"Status {status_key}" if status_key is not None else "Unknown",
     )
     analysis_type_label = "URL Analysis" if report_type == "urlAnalysis" else report_type
 
     summary_info = build_submission_info(report_type, report_section, private_flag, file_name, analyzed_url)
-    summary_output: Dict[str, Any] = {
+    summary_output: dict[str, Any] = {
         "TYPE": analysis_type_label,
         "STATUS": status_readable,
         "MD5": md5,
@@ -619,10 +628,10 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> List[Union[Co
     result["Summary"] = summary_output
 
     include_details = argToBoolean(args.get("details", "false"))
-    warnings: List[str] = []
-    if status_value and status_value != 5:
+    warnings: list[str] = []
+    if status_key is not None and status_key != 5:
         warnings.append(
-            f"Submission status is '{status_labels.get(status_value, status_value)}'; some sections may not yet be available."
+            f"Submission status is '{status_labels.get(status_key, status_key)}'; some sections may not yet be available."
         )
 
     indicator_value = sha256 or analyzed_url
@@ -640,7 +649,7 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> List[Union[Co
             warnings.append(f"indicator-generation: {exc}")
             demisto.debug(f"ThreatZone indicator generation failed: {exc}")
 
-    sanitized_file: Optional[dict] = None
+    sanitized_file: dict | None = None
     if report_type == "cdr" and status_value == 5 and download_sanitized:
         try:
             sanitized_file = threatzone_get_sanitized_file(client, {"uuid": submission_uuid})
@@ -648,7 +657,7 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> List[Union[Co
             warnings.append(f"sanitized-download: {exc}")
             demisto.debug(f"ThreatZone sanitized download failed: {exc}")
 
-    readable_summary: Dict[str, Any] = {
+    readable_summary: dict[str, Any] = {
         "ANALYSIS TYPE": analysis_type_label,
         "STATUS": status_readable,
         "THREAT_LEVEL": level_label,
@@ -675,7 +684,7 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> List[Union[Co
         warning_lines = "\n".join(f"- {warning}" for warning in warnings)
         readable_output = f"{readable_output}\n\n### Additional Data Notes\n{warning_lines}"
 
-    command_results: List[Union[CommandResults, dict]] = [
+    command_results: list[CommandResults | dict] = [
         CommandResults(
             outputs_prefix="ThreatZone.Submission",
             readable_output=readable_output,
@@ -686,13 +695,103 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> List[Union[Co
         )
     ]
 
+    # Backward compatible outputs (legacy context keys)
+    # These are preserved to avoid breaking existing customer playbooks/workflows that rely on ThreatZone.Analysis.*
+    # and ThreatZone.IOC.* paths.
+    legacy_status: int = -1
+    if status_value is not None and not isinstance(status_value, bool):
+        try:
+            legacy_status = int(status_value)
+        except (TypeError, ValueError):
+            legacy_status = -1
+
+    legacy_info: dict[str, Any] = {"private": private_flag}
+    if file_name:
+        legacy_info["file_name"] = file_name
+    if analyzed_url:
+        legacy_info["url"] = analyzed_url
+    if report_type == "urlAnalysis":
+        general_info = report_section.get("generalInfo") or {}
+        if general_info.get("domain"):
+            legacy_info["domain"] = general_info.get("domain")
+        if general_info.get("websiteTitle"):
+            legacy_info["website_title"] = general_info.get("websiteTitle")
+
+    legacy_analysis: dict[str, Any] = {
+        "TYPE": report_type,
+        "STATUS": legacy_status,
+        "MD5": md5,
+        "SHA1": sha1,
+        "SHA256": sha256,
+        "LEVEL": level_int,
+        "INFO": legacy_info,
+        "UUID": submission_uuid,
+        "REPORT": report_section,
+    }
+
+    legacy_url: str | None = None
+    if isinstance(report_section, dict):
+        legacy_url = (
+            report_section.get("vnc")
+            or report_section.get("url")
+            or (report_section.get("generalInfo") or {}).get("url")
+            or (report_section.get("generalInfo") or {}).get("URL")
+        )
+    if not legacy_url and analyzed_url:
+        legacy_url = analyzed_url
+    legacy_analysis["URL"] = legacy_url
+
+    legacy_sanitized: str | None = None
+    if isinstance(sanitized_file, dict):
+        legacy_sanitized = sanitized_file.get("EntryID")
+    legacy_analysis["SANITIZED"] = legacy_sanitized
+
+    def _ensure_list(value: Any) -> list[Any]:
+        if value in (None, "", {}):
+            return []
+        if isinstance(value, list):
+            return value
+        return [value]
+
+    def extract_legacy_iocs() -> dict[str, list[Any]]:
+        indicators: dict[str, list[Any]] = {"URL": [], "DOMAIN": [], "EMAIL": [], "IP": []}
+
+        ioc_source: Any = None
+        if isinstance(report_section, dict):
+            ioc_source = report_section.get("ioc") or report_section.get("iocs")
+        if not ioc_source and isinstance(result, dict):
+            ioc_source = result.get("iocs") or result.get("ioc")
+
+        if isinstance(ioc_source, dict):
+            indicators["URL"] = _ensure_list(ioc_source.get("url") or ioc_source.get("URL"))
+            indicators["DOMAIN"] = _ensure_list(ioc_source.get("domain") or ioc_source.get("DOMAIN"))
+            indicators["EMAIL"] = _ensure_list(ioc_source.get("email") or ioc_source.get("EMAIL"))
+            indicators["IP"] = _ensure_list(ioc_source.get("ip") or ioc_source.get("IP"))
+
+        return indicators
+
+    legacy_iocs = extract_legacy_iocs()
+    command_results.append(
+        CommandResults(
+            outputs_prefix="ThreatZone.Analysis",
+            outputs_key_field="UUID",
+            outputs=legacy_analysis,
+        )
+    )
+    command_results.append(
+        CommandResults(
+            outputs_prefix="ThreatZone.IOC",
+            outputs=legacy_iocs,
+        )
+    )
+
     if sanitized_file:
         command_results.append(sanitized_file)
 
     return command_results
 
 
-def threatzone_get_section_result(client: Client, args: dict[str, Any], flag_name: str) -> List[CommandResults]:
+def threatzone_get_section_result(client: Client, args: dict[str, Any], flag_name: str) -> list[CommandResults]:
     """Generic handler to retrieve a submission section using its dedicated endpoint."""
     metadata = SECTION_METADATA[flag_name]
     uuid = args.get("uuid")
@@ -714,36 +813,36 @@ def threatzone_get_section_result(client: Client, args: dict[str, Any], flag_nam
     ]
 
 
-def threatzone_get_indicator_result(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def threatzone_get_indicator_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Fetch dynamic behaviour indicators using the dedicated endpoint."""
     return threatzone_get_section_result(client, args, "include_indicators")
 
 
-def threatzone_get_ioc_result(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def threatzone_get_ioc_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Fetch Indicators of Compromise using the dedicated endpoint."""
     return threatzone_get_section_result(client, args, "include_iocs")
 
 
-def threatzone_get_yara_result(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def threatzone_get_yara_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Fetch matched YARA rules using the dedicated endpoint."""
     return threatzone_get_section_result(client, args, "include_yara")
 
 
-def threatzone_get_artifact_result(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def threatzone_get_artifact_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Fetch analysis artifacts using the dedicated endpoint."""
     return threatzone_get_section_result(client, args, "include_artifacts")
 
 
-def threatzone_get_config_result(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def threatzone_get_config_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Fetch configuration extractor results using the dedicated endpoint."""
     return threatzone_get_section_result(client, args, "include_config")
 
 
-def threatzone_check_limits(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def threatzone_check_limits(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Checks and prints remaining limits and current quota"""
     availability = client.threatzone_check_limits(None)
     readable_output = tableToMarkdown("LIMITS", availability["Limits"], removeNull=True)
-    results: List[CommandResults] = [
+    results: list[CommandResults] = [
         CommandResults(
             outputs_prefix="ThreatZone.Limits",
             outputs_key_field="E_Mail",
@@ -782,8 +881,8 @@ def threatzone_check_limits(client: Client, args: dict[str, Any]) -> List[Comman
 
 
 def threatzone_return_results(
-    scan_type: str, submission_data: Union[str, Dict[str, Any]], readable_output: str, availability: Dict[str, Any]
-) -> List[CommandResults]:
+    scan_type: str, submission_data: str | dict[str, Any], readable_output: str, availability: dict[str, Any]
+) -> list[CommandResults]:
     """Helper function for returning results with limits."""
     scan_prefix = ""
     if scan_type == "static-scan":
@@ -828,7 +927,7 @@ def threatzone_get_html_report_file(client: Client, args: dict[str, Any]) -> dic
     return client.threatzone_get_html_report(submission_uuid)
 
 
-def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Uploads the sample to the ThreatZone sandbox to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("sandbox")
     if not availability["available"]:
@@ -852,7 +951,7 @@ def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> Li
     work_path = args.get("work_path")
     private_value = resolve_private_flag(args.get("private"))
 
-    default_analyze_config: List[Dict[str, Any]] = []
+    default_analyze_config: list[dict[str, Any]] = []
     if environment:
         default_analyze_config.append({"metafieldId": "environment", "value": environment})
     default_analyze_config.append({"metafieldId": "private", "value": private_value})
@@ -873,12 +972,12 @@ def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> Li
         default_analyze_config.append({"metafieldId": metafield_id, "value": bool_value})
 
     user_analyze_config = parse_analyze_config_argument(args.get("analyze_config"))
-    merged_config: Dict[str, Dict[str, Any]] = {entry["metafieldId"]: entry for entry in default_analyze_config}
+    merged_config: dict[str, dict[str, Any]] = {entry["metafieldId"]: entry for entry in default_analyze_config}
     for entry in user_analyze_config:
         merged_config[entry["metafieldId"]] = entry
 
     analyze_config_payload = list(merged_config.values())
-    payload: Dict[str, Any] = {}
+    payload: dict[str, Any] = {}
     if analyze_config_payload:
         payload["analyzeConfig"] = json.dumps(analyze_config_payload)
 
@@ -919,9 +1018,13 @@ def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> Li
     return threatzone_return_results("sandbox", custom_result, readable_output, updated_availability)
 
 
-def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Uploads the sample to the ThreatZone to analyse with required or optional selections."""
     scan_type = args.get("scan_type")
+    if not isinstance(scan_type, str):
+        raise DemistoException("scan_type must be provided as a string.")
+    if scan_type not in ("static-scan", "cdr"):
+        raise DemistoException(f"Unsupported scan_type '{scan_type}'.")
     availability = client.threatzone_check_limits(scan_type)
     if not availability["available"]:
         raise DemistoException(f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}")
@@ -939,7 +1042,7 @@ def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) ->
 
     private_flag = resolve_private_flag(args.get("private"))
     is_public = not private_flag
-    payload: Dict[str, Any] = {"isPublic": as_api_bool(is_public)}
+    payload: dict[str, Any] = {"isPublic": as_api_bool(is_public)}
     extension_check = resolve_extension_check(scan_type, args.get("extension_check"))
     payload["extensionCheck"] = as_api_bool(extension_check)
 
@@ -958,7 +1061,7 @@ def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) ->
     return threatzone_return_results(scan_type, readable, readable_output, updated_availability)
 
 
-def threatzone_submit_url_analysis(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def threatzone_submit_url_analysis(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Submit a URL for analysis via the ThreatZone public API."""
     availability = client.threatzone_check_limits("url-analysis")
     if not availability["available"]:
@@ -970,7 +1073,7 @@ def threatzone_submit_url_analysis(client: Client, args: dict[str, Any]) -> List
     if not analyzed_url:
         raise DemistoException("url argument is required.")
 
-    payload: Dict[str, Any] = {"url": analyzed_url}
+    payload: dict[str, Any] = {"url": analyzed_url}
     payload["private"] = resolve_private_flag(args.get("private"))
 
     result = client.threatzone_submit_url(payload)

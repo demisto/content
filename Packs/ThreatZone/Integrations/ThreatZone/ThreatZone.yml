@@ -314,6 +314,48 @@ script:
     - contextPath: ThreatZone.Submission
       type: Unknown
       description: Raw submission data returned by ThreatZone.
+    - contextPath: ThreatZone.Analysis.STATUS
+      type: String
+      description: The status of the submission scanning process.
+    - contextPath: ThreatZone.Analysis.LEVEL
+      type: String
+      description: Threat Level of the scanned file. (malicious, suspicious or informative).
+    - contextPath: ThreatZone.Analysis.INFO
+      type: String
+      description: Contains submission metadata such as file name/URL and privacy status.
+    - contextPath: ThreatZone.Analysis.REPORT
+      type: String
+      description: The analysis report of the submission.
+    - contextPath: ThreatZone.Analysis.URL
+      type: String
+      description: The result page url of the submission.
+    - contextPath: ThreatZone.Analysis.MD5
+      type: String
+      description: The md5 hash of the submission.
+    - contextPath: ThreatZone.Analysis.SHA1
+      type: String
+      description: The sha1 hash of the submission.
+    - contextPath: ThreatZone.Analysis.SHA256
+      type: String
+      description: The sha256 hash of the submission.
+    - contextPath: ThreatZone.Analysis.UUID
+      type: String
+      description: The UUID of the submission.
+    - contextPath: ThreatZone.Analysis.SANITIZED
+      description: The url of the sanitized file.
+      type: String
+    - contextPath: ThreatZone.IOC.URL
+      description: The URL data extracted from IOC.
+      type: List
+    - contextPath: ThreatZone.IOC.IP
+      description: The IP data extracted from IOC.
+      type: List
+    - contextPath: ThreatZone.IOC.DOMAIN
+      description: The DOMAIN data extracted from IOC.
+      type: List
+    - contextPath: ThreatZone.IOC.EMAIL
+      description: The EMAIL data extracted from IOC.
+      type: List
     - contextPath: DBotScore.Indicator
       type: String
       description: The indicator that was tested.
