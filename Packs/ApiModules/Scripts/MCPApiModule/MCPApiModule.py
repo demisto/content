@@ -578,10 +578,7 @@ class Client:
         demisto.debug(f"Available tools: {tool_names}")
 
         tools_dump = tools.model_dump(mode="json")
-        outputs = {
-            "server_name": server_name,
-            "Tools": tools_dump.get("tools", [])
-        }
+        outputs = {"server_name": server_name, "Tools": tools_dump.get("tools", [])}
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix="ListTools",
@@ -599,7 +596,9 @@ class Client:
 
         result_dump = result.model_dump(mode="json")
         result_content = result_dump.get("content", [])
-        readable_output = tableToMarkdown(f"Tool Execution on {server_name}: '{tool_name}'{' failed' if result.isError else ''}", result_content)
+        readable_output = tableToMarkdown(
+            f"Tool Execution on {server_name}: '{tool_name}'{' failed' if result.isError else ''}", result_content
+        )
 
         return CommandResults(
             readable_output=readable_output,
