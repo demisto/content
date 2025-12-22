@@ -559,8 +559,8 @@ class Client:
             ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
         ):
             # Initialize the connection
-            await session.initialize()
-            yield session
+            init = await session.initialize()
+            yield session, init.serverInfo.name
 
     async def test_connection(self, auth_test: bool = False):
         async with self._get_session():
@@ -570,18 +570,22 @@ class Client:
                 return "ok"
 
     async def list_tools(self):
-        async with self._get_session() as session:
+        async with self._get_session() as (session, server_name):
             tools = await session.list_tools()
 
         tool_names = [tool.name for tool in tools.tools]
-        readable_output = f"Available {len(tool_names)} tools:\n{tool_names}"
+        readable_output = f"{server_name} has {len(tool_names)} available tools:\n{tool_names}"
         demisto.debug(f"Available tools: {tool_names}")
 
         tools_dump = tools.model_dump(mode="json")
+        outputs = {
+            "server_name": server_name,
+            "Tools": tools_dump.get("tools", [])
+        }
         return CommandResults(
             readable_output=readable_output,
-            outputs_prefix="ListTools.Tools",
-            outputs=tools_dump.get("tools", []),
+            outputs_prefix="ListTools",
+            outputs=outputs,
         )
 
     async def call_tool(self, tool_name: str, arguments: str):
@@ -590,12 +594,12 @@ class Client:
         except json.JSONDecodeError:
             raise DemistoException(f"Invalid JSON provided for arguments: {arguments}")
 
-        async with self._get_session() as session:
+        async with self._get_session() as (session, server_name):
             result = await session.call_tool(tool_name, parsed_arguments)
 
         result_dump = result.model_dump(mode="json")
         result_content = result_dump.get("content", [])
-        readable_output = tableToMarkdown(f"Tool Execution '{tool_name}'{' failed' if result.isError else ''}", result_content)
+        readable_output = tableToMarkdown(f"Tool Execution on {server_name}: '{tool_name}'{' failed' if result.isError else ''}", result_content)
 
         return CommandResults(
             readable_output=readable_output,
