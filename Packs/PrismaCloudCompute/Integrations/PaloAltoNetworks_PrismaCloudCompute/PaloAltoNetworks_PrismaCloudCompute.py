@@ -5,6 +5,7 @@ import urllib.parse
 from collections import defaultdict
 import asyncio
 from dataclasses import dataclass
+
 """ IMPORTS """
 import ipaddress
 import tempfile
@@ -581,6 +582,7 @@ class PrismaCloudComputeClient(BaseClient):
     def get_runtime_container_policy(self) -> dict:
         return self._http_request(method="GET", url_suffix="policies/runtime/container")
 
+
 class PrismaCloudComputeAsyncClient(AsyncClient):
     def __init__(self, base_url, verify, project, proxy=False, ok_codes=(), headers=None, auth=None):
         """
@@ -633,7 +635,7 @@ class PrismaCloudComputeAsyncClient(AsyncClient):
         Calls the fetch alerts endpoint with to=epoch_time to check connectivity, authentication and authorization
         """
         return self.list_incidents(to_=time.strftime("%Y-%m-%d", time.gmtime(0)))
-    
+
     def list_incidents(self, to_=None, from_=None):
         """
         Sends a request to fetch available alerts from last call
@@ -654,8 +656,8 @@ class PrismaCloudComputeAsyncClient(AsyncClient):
             if "[404]" in str(e):
                 return self._http_request(method="GET", url_suffix="demisto-alerts", params=params)
             raise e
-        
-    def get_images_scan_info(self,params: Optional[dict] = None) -> List[dict]:
+
+    def get_images_scan_info(self, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get information about images scans.
 
@@ -667,8 +669,8 @@ class PrismaCloudComputeAsyncClient(AsyncClient):
             list[dict]: images scan information.
         """
         return self._http_request(method="GET", url_suffix="/images", params=params)
-    
-    def get_tas_droplets_info(self,params: Optional[dict] = None) -> List[dict]:
+
+    def get_tas_droplets_info(self, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get information about tas droplets.
 
@@ -681,7 +683,7 @@ class PrismaCloudComputeAsyncClient(AsyncClient):
         """
         return self._http_request(method="GET", url_suffix="/tas-droplets", params=params)
 
-    def get_hosts_scan_info(self,params: Optional[dict] = None) -> List[dict]:
+    def get_hosts_scan_info(self, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get information about hosts scans.
 
@@ -693,6 +695,7 @@ class PrismaCloudComputeAsyncClient(AsyncClient):
             list[dict]: hosts scan information.
         """
         return self._http_request(method="GET", url_suffix="/hosts", params=params)
+
 
 @dataclass
 class AssetTypeRelatedData:
@@ -707,6 +710,7 @@ class AssetTypeRelatedData:
     def next_page(self):
         self.offset += self.limit
         self.total_fetched = self.offset
+
 
 def format_context(context):
     """
@@ -2957,9 +2961,11 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
     tas_droplets_related_data = AssetTypeRelatedData(endpoint="/tas-droplets", product="Tas_Droplets", type="Tas Droplet")
     host_scan_related_data = AssetTypeRelatedData(endpoint="/hosts", product="Hosts", type="Host")
     image_scan_related_data = AssetTypeRelatedData(endpoint="/images", product="Runtime_images", type="Runtime Image")
-    tasks = [collect_assets_and_sent_to_xsiam(client, tas_droplets_related_data),
-             collect_assets_and_sent_to_xsiam(client, host_scan_related_data),
-             collect_assets_and_sent_to_xsiam(client, image_scan_related_data)]
+    tasks = [
+        collect_assets_and_sent_to_xsiam(client, tas_droplets_related_data),
+        collect_assets_and_sent_to_xsiam(client, host_scan_related_data),
+        collect_assets_and_sent_to_xsiam(client, image_scan_related_data),
+    ]
     await asyncio.gather(*tasks)
 
 
@@ -2967,12 +2973,8 @@ async def collect_assets_and_sent_to_xsiam(client: PrismaCloudComputeAsyncClient
     while True:
         params = {}
         res = await client._http_request(
-            "GET",
-            url_suffix=asset_type_related_data.endpoint,
-            headers=None,
-            params=params,
-            timeout=300
-            )
+            "GET", url_suffix=asset_type_related_data.endpoint, headers=None, params=params, timeout=300
+        )
         if not res:
             demisto.info(f"Reached end of list for cloud asset type = {asset_type_related_data.type}, breaking.")
             break
@@ -3011,8 +3013,8 @@ def main():
         # Init the client
         if requested_command == "long-running-execution":
             client = PrismaCloudComputeAsyncClient(
-            base_url=urljoin(base_url, "api/v1/"), verify=verify, auth=(username, password), proxy=proxy, project=project
-        )
+                base_url=urljoin(base_url, "api/v1/"), verify=verify, auth=(username, password), proxy=proxy, project=project
+            )
         else:
             client = PrismaCloudComputeClient(
                 base_url=urljoin(base_url, "api/v1/"), verify=verify, auth=(username, password), proxy=proxy, project=project

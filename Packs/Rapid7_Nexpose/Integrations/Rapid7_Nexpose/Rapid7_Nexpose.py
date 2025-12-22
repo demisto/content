@@ -2587,15 +2587,15 @@ class InsightVMClient(AsyncClient):
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
-        
+
         # Add 2FA token to headers if provided
         if token:
             headers.update({"Token": token})
-            
+
         # Add Basic Auth header
         auth_string = base64.b64encode(f"{username}:{password}".encode()).decode("utf-8")
         headers.update({"Authorization": f"Basic {auth_string}"})
-        
+
         # Initialize the parent AsyncClient
         super().__init__(
             base_url=base_url,
@@ -2604,11 +2604,12 @@ class InsightVMClient(AsyncClient):
             connection_error_retries=CONNECTION_ERRORS_RETRIES,
             connection_error_interval=CONNECTION_ERRORS_INTERVAL,
         )
-        
+
         # Store credentials for potential future use
         self._auth_username = username
         self._auth_password = password
         self._auth_token = token
+
 
 class Site:
     """A class representing a site, which can be identified by ID or name."""
