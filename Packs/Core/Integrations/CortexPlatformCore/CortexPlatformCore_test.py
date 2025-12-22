@@ -5991,28 +5991,24 @@ def test_get_issues_command_with_single_alert_output(mocker):
     assert result.outputs == [issue_output]
 
 
-def test_get_issues_command_with_output_keys_filtering_empty_list(mocker):
-    """
-    Given: A client and args with issue_id and empty output_keys list
-    When: get_alerts_by_filter_command returns a response with alert output
-    Then: get_issues_command should return filtered issue output through filter_context_fields
-    """
+def test_get_issues_command_with_output_keys_empty_list_does_not_filter(mocker):
     from CortexPlatformCore import get_issues_command
 
     client = mocker.Mock()
     args = {"issue_id": "789", "output_keys": []}
-    alert_output = {"alert_id": "alert_789", "status": "closed"}
-    issue_output = {"issue_id": "issue_789", "status": "closed"}
-    mock_response = CommandResults(outputs=[alert_output], outputs_prefix="Core.Issue")
 
+    mock_response = CommandResults(outputs=[{"alert_id": "a1"}], outputs_prefix="Core.Issue")
     mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_response)
     mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
-    mocker.patch("CortexPlatformCore.alert_to_issue", return_value=issue_output)
-    mocker.patch("CortexPlatformCore.filter_context_fields", return_value=[issue_output])
+
+    alert_to_issue_mock = mocker.patch("CortexPlatformCore.alert_to_issue", return_value={"issue_id": "i1"})
+    filter_mock = mocker.patch("CortexPlatformCore.filter_context_fields")
 
     result = get_issues_command(client, args)
 
-    assert result.outputs == [issue_output]
+    assert result.outputs == [{"issue_id": "i1"}]
+    alert_to_issue_mock.assert_called_once()
+    filter_mock.assert_not_called()
 
 
 def test_get_issues_command_with_specific_output_keys(mocker):
@@ -6036,3 +6032,65 @@ def test_get_issues_command_with_specific_output_keys(mocker):
     result = get_issues_command(client, args)
 
     assert result.outputs == [{"issue_id": "alert_123", "status": "open"}]
+
+
+def test_get_issues_command_with_multiple_alert_outputs(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_alerts_by_filter_command returns a response with multiple alert outputs
+    Then: get_issues_command should return a result with corresponding issue outputs
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"status": "open"}
+
+    # Create multiple alert outputs
+    alert_outputs = [
+        {"alert_id": "alert_123", "status": "open", "severity": "high"},
+        {"alert_id": "alert_456", "status": "open", "severity": "low"},
+        {"alert_id": "alert_789", "status": "open", "severity": "medium"},
+    ]
+
+    # Corresponding issue outputs
+    issue_outputs = [
+        {"issue_id": "alert_123", "status": "open", "severity": "high"},
+        {"issue_id": "alert_456", "status": "open", "severity": "low"},
+        {"issue_id": "alert_789", "status": "open", "severity": "medium"},
+    ]
+
+    mock_response = CommandResults(outputs=alert_outputs, outputs_prefix="Core.Issue")
+
+    # Mock the get_alerts_by_filter_command to return multiple outputs
+    mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_response)
+
+    result = get_issues_command(client, args)
+
+    # Assert that the result contains all the expected issue outputs
+    assert len(result.outputs) == 3
+    assert result.outputs == issue_outputs
+
+
+def test_get_issues_command_with_empty_list_outputs(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_alerts_by_filter_command returns a response with empty outputs list
+    Then: get_issues_command should return a result with empty outputs and not call alert_to_issue or filter_context_fields
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "123"}
+
+    mock_response = CommandResults(outputs=[], outputs_prefix="Core.Issue")
+    mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+
+    alert_to_issue_mock = mocker.patch("CortexPlatformCore.alert_to_issue")
+    filter_mock = mocker.patch("CortexPlatformCore.filter_context_fields")
+
+    result = get_issues_command(client, args)
+
+    assert result.outputs == []
+    alert_to_issue_mock.assert_not_called()
+    filter_mock.assert_not_called()
