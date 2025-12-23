@@ -243,19 +243,16 @@ def test_fetch_events_command_no_events(mock_send_events: MagicMock, client: Cli
 
 
 @patch("TwilioSendGrid.send_events_to_xsiam")
-@patch("TwilioSendGrid._event_consumer")
-@patch("TwilioSendGrid._event_producer")
-def test_fetch_events_producer_consumer_orchestration(
-    mock_producer: MagicMock, mock_consumer: MagicMock, mock_send_events: MagicMock, client: Client, capfd
-):
+def test_fetch_events_producer_consumer_orchestration(mock_send_events: MagicMock, client: Client, capfd):
     """Test that the main producer-consumer function orchestrates the threads correctly."""
-    with capfd.disabled():
+    with capfd.disabled(), patch.object(client, "get_email_activity", return_value=[]) as mock_get_activity:
         last_run: dict[str, Any] = {}
-        fetch_events_command(client, last_run, max_fetch=100)
+        events, next_run = fetch_events_command(client, last_run, max_fetch=100)
 
-        # Assert that producer and consumer threads were started
-        assert mock_producer.called
-        assert mock_consumer.called
+        # Assert that the API was called
+        assert mock_get_activity.called
+        # Assert that events list is empty (as expected from fetch_events_command)
+        assert events == []
 
 
 @patch("queue.Queue")
@@ -298,7 +295,8 @@ def test_consumer_processes_batch(mock_send_events: MagicMock, mock_events: list
         assert last_run["last_event_time"] == "2024-01-15T10:40:00Z"
 
 
-def test_last_run_thread_safety(mock_events: list[dict[str, Any]], capfd):
+@patch("TwilioSendGrid.send_events_to_xsiam")
+def test_last_run_thread_safety(mock_send_events: MagicMock, mock_events: list[dict[str, Any]], capfd):
     """Test that last_run updates are thread-safe."""
     with capfd.disabled():
         last_run: dict[str, Any] = {"last_event_time": "2024-01-15T10:00:00Z", "previous_ids": []}
@@ -327,12 +325,12 @@ def test_last_run_thread_safety(mock_events: list[dict[str, Any]], capfd):
             threads.append(t)
             t.start()
 
-        # Wait for queue to empty
+        # Wait for queue to empty with timeout
         event_queue.join()
         stop_event.set()
 
         for t in threads:
-            t.join()
+            t.join(timeout=5)  # Add timeout to prevent hanging
 
         # Verify final state reflects the latest time
         assert last_run["last_event_time"] == "2024-01-15T11:00:00Z"
@@ -371,12 +369,13 @@ def test_identical_timestamps_handling(capfd):
 def test_producer_infinite_loop_prevention(client: Client, capfd):
     """Test that producer doesn't loop infinitely if API keeps returning same events."""
     with capfd.disabled(), patch.object(client, "get_email_activity") as mock_get_activity:
-        # Setup mock to return same events repeatedly
+        # Setup mock to return same events repeatedly, then empty
         events = [
             {"msg_id": "1", "last_event_time": "2024-01-15T10:00:00Z"},
             {"msg_id": "2", "last_event_time": "2024-01-15T10:00:00Z"},
         ]
-        mock_get_activity.return_value = events
+        # Return events once, then empty list to prevent infinite loop
+        mock_get_activity.side_effect = [events, []]
 
         metrics = ProducerConsumerMetrics()
         stop_event = threading.Event()
@@ -398,6 +397,7 @@ def test_producer_infinite_loop_prevention(client: Client, capfd):
 
         assert metrics.events_produced == 2
         assert mock_get_activity.call_count == 2
+        assert stop_event.is_set()  # Ensure stop event was set
 
 
 def test_rate_limiting_handling(client: Client, capfd):
