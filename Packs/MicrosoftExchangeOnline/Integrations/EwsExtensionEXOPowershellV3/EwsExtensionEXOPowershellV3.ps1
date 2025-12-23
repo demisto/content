@@ -1944,19 +1944,31 @@ function Remove-EmptyItems {
 
     foreach ($property in $inputObject.PSObject.Properties) {
         $value = $property.Value
-        $Demisto.Debug("Looking at $property.Name with value: $value")
+        $propertyName = $property.Name
+        $Demisto.Debug("Looking at property '$propertyName' with value: '$value'")
 
-        # Check if the value is not null, whitespace, or an empty collection
-        if (-not [string]::IsNullOrWhiteSpace($value)) {
-            # Check if it's an IEnumerable (like array or list) and if the collection is not empty
-            if ($value -is [System.Collections.IEnumerable] -and -not ($value -is [string]) -and $value.Count -eq 0) {
-                $Demisto.Debug("Got empty value for property $property.Name")
-                continue
-            }
-
-            # If it's not an empty collection, add it to the new dictionary
-            $newDict[$property.Name] = $value
+        # Skip if value is null
+        if ($null -eq $value) {
+            $Demisto.Debug("Skipping null value for property '$propertyName'")
+            continue
         }
+
+        # Skip if value is a string and is empty or whitespace
+        if ($value -is [string] -and [string]::IsNullOrWhiteSpace($value)) {
+            $Demisto.Debug("Skipping empty string for property '$propertyName'")
+            continue
+        }
+
+        # Skip if value is an empty collection (array, list, etc.)
+        if ($value -is [System.Collections.IEnumerable] -and -not ($value -is [string]) -and
+            (($value | Measure-Object).Count -eq 0 -or $value.Count -eq 0)) {
+            $Demisto.Debug("Skipping empty collection for property '$propertyName'")
+            continue
+        }
+
+        # If we got here, the value is not empty, so add it to the new dictionary
+        $newDict[$propertyName] = $value
+        $Demisto.Debug("Added property '$propertyName' with value: '$value'")
     }
 
     return $newDict
@@ -2222,16 +2234,7 @@ function EXOGetQuarantineMessageCommand {
         Type = $kwargs.type
     }
 
-    # $raw_response = $client.EXOGetQuarantineMessage($params)
-
-    $raw_response = [PSCustomObject]@{
-            Name = "John Doe"
-            MiddleName = " "          # White space (Removed)
-            Age = 30
-            PhoneNumbers = @()        # Empty array (Removed)
-            Notes = $null             # Null (Removed)
-        }
-
+    $raw_response = $client.EXOGetQuarantineMessage($params)
     $newResults = @()
 
     # Handle the case when raw_response is null or empty
