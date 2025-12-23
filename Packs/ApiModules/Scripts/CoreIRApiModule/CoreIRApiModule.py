@@ -4219,35 +4219,35 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
             filter_dict["AND"].append(custom_filter)
 
     page = arg_to_number(args.get("page")) or 0
-    limit = arg_to_number(args.get("limit")) or MAX_GET_ISSUES_LIMIT
-    limit = page * MAX_GET_ISSUES_LIMIT + limit
-    page = page * MAX_GET_ISSUES_LIMIT
+    page_size = arg_to_number(args.get("page_size")) or MAX_GET_ISSUES_LIMIT
+    start_index = page * page_size
+    end_index = start_index + page_size
+
     sort_field = args.get("sort_field", "source_insert_ts")
     sort_order = args.get("sort_order", "DESC")
     request_data = build_webapp_request_data(
         table_name=ALERTS_TABLE,
         filter_dict=filter_dict,
-        limit=limit,
+        limit=end_index,
         sort_field=sort_field,
         sort_order=sort_order,
         on_demand_fields=on_demand_fields,
-        start_page=page,
+        start_page=start_index,
     )
     demisto.info(f"{request_data=}")
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
     demisto.debug(f"{reply=}")
     data = reply.get("DATA", [])
-
+    
     for alert in data:
         if "alert_action_status" in alert:
             action_status = alert.get("alert_action_status")
             alert["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
 
     ALERT_OR_ISSUE = "Issue" if is_platform() else "Alert"
-
     id_field = "Issue ID" if is_platform() else "Alert ID"
-
+    
     human_readable = [
         {
             id_field: alert.get("internal_id"),
@@ -4265,7 +4265,6 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
         }
         for alert in data
     ]
-
     return CommandResults(
         outputs_prefix=f"{prefix}.{ALERT_OR_ISSUE}",
         outputs_key_field="internal_id",
@@ -4273,7 +4272,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
         readable_output=tableToMarkdown(f"{ALERT_OR_ISSUE}", human_readable),
         raw_response=data,
     )
-
+    
 
 def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get("alert_ids", []))
