@@ -117,7 +117,7 @@ script:
       description: The IP to query.
     outputs:
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: IP.DetectionEngines
       description: The total number of engines that checked the indicator.
@@ -366,7 +366,7 @@ script:
     - contextPath: URL
       description: ''
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: string
     - contextPath: URL.DetectionEngines
       description: The total number of engines that checked the indicator.
@@ -706,7 +706,7 @@ script:
     - contextPath: IP
       description: ''
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: IP.DetectionEngines
       description: The total number of engines that checked the indicator.
@@ -783,7 +783,7 @@ script:
       isArray: true
     outputs:
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: string
     - contextPath: URL.DetectionEngines
       description: The total number of engines that checked the indicator.
@@ -833,7 +833,7 @@ script:
       - SOA
       - SRV
       - CAA
-      description: The DNS record type to lookup
+      description: The DNS record type to lookup.
       defaultValue: A
     outputs:
     - contextPath: APIVoid.DNS
@@ -1071,7 +1071,7 @@ script:
     arguments:
     - name: email
       required: true
-      description: Email address to lookup
+      description: Email address to lookup.
     outputs:
     - contextPath: APIVoid.Email
       description: ''
@@ -1150,7 +1150,7 @@ script:
     arguments:
     - name: host
       required: true
-      description: The host the check
+      description: The host to check.
     outputs:
     - contextPath: APIVoid.ThreatLog.detected
       description: ''
@@ -1164,12 +1164,12 @@ script:
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
       type: string
-    description: 'Deprecated. This command is deprecated because it is not supported in API V2. Check if a website is present on ThreatLog database'
+    description: 'Deprecated. This command is deprecated because it is not supported in API V2. Check if a website is present on ThreatLog database.'
   - name: apivoid-parked-domain
     arguments:
     - name: domain
       required: true
-      description: Domain to check
+      description: Domain to check.
     outputs:
     - contextPath: APIVoid.ParkedDomain.host
       description: ''
@@ -1185,7 +1185,7 @@ script:
     arguments:
     - name: domain
       required: true
-      description: The domain to check
+      description: The domain to check.
     outputs:
     - contextPath: APIVoid.DomainAge.debug_message
       description: ''
@@ -1222,7 +1222,7 @@ script:
     arguments:
     - name: url
       required: true
-      description: URL to capture screenshot of
+      description: URL to capture screenshot of.
     outputs:
     - contextPath: File.Size
       description: 'The size of the file.'
@@ -1262,7 +1262,7 @@ script:
     arguments:
     - name: url
       required: true
-      description: URL to create PDF of
+      description: URL to create PDF of.
     outputs:
     - contextPath: File.Size
       description: 'The size of the file.'
@@ -1303,7 +1303,7 @@ script:
     arguments:
     - name: url
       required: true
-      description: URL to create PDF of
+      description: URL to create PDF of.
     outputs:
     - contextPath: File.Size
       description: 'The size of the file.'
@@ -1338,12 +1338,12 @@ script:
     - contextPath: File.Extension
       description: 'The extension of the file.'
       type: string
-    description: 'Deprecated. This command is deprecated because it is not supported in API V2. Get the body of an html page after javascript has been executed'
+    description: 'Deprecated. This command is deprecated because it is not supported in API V2. Get the body of an html page after javascript has been executed.'
   - name: apivoid-site-trustworthiness
     arguments:
     - name: host
       required: true
-      description: The host to check
+      description: The host to check.
     outputs:
     - contextPath: APIVoid.SiteTrust.domain_blacklist.detections
       description: ''
@@ -1647,9 +1647,9 @@ script:
       description: ''
       type: boolean
     description: A smart API that accurately checks a website's trustworthiness.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.6391686
   runonce: false
   subtype: python3
-fromversion: 6.0.0
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
