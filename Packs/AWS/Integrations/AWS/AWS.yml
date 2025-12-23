@@ -6291,8 +6291,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-      - us-gov-east-1
-      - us-gov-west-1
     - name: metrics
       description: Metrics to retrieve. Default - UsageQuantity. Valid values [AmortizedCost, BlendedCost, NetAmortizedCost, NetUnblendedCost, NormalizedUsageAmount, UnblendedCost, UsageQuantity].
       isArray: true
@@ -6443,8 +6441,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-      - us-gov-east-1
-      - us-gov-west-1
     - name: metric
       description: Metric to forecast. Valid values [AMORTIZED_COST, BLENDED_COST, NET_AMORTIZED_COST, NET_UNBLENDED_COST, UNBLENDED_COST].
       required: false
@@ -6569,8 +6565,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-      - us-gov-east-1
-      - us-gov-west-1
     - name: max_result
       description: Maximum results to return. Default - 50, Max - 1000.
       required: false
@@ -6694,8 +6688,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-      - us-gov-east-1
-      - us-gov-west-1
     - name: budget_name
       description: Name of the budget.
       required: true
