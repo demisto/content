@@ -166,6 +166,7 @@ configuration:
   name: default_severity
   type: 15
   section: Collect
+  defaultvalue: Unspecified
   advanced: true
   options:
   - Critical
