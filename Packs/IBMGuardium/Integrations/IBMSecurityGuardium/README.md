@@ -44,7 +44,6 @@ There is no context output for this command.
 
 #### Command Example
 
-
 ```!ibm-guardium-get-events limit=50 start_time="2024-01-01T00:00:00" end_time="2024-01-01T23:59:59" should_push_events=true```
 
 #### Human Readable Output
