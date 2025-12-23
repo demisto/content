@@ -1,4 +1,4 @@
-## APIVoid Integration
+## APIVoid
 
 This integration provides threat intelligence and security analysis using the APIVoid V2 API.
 

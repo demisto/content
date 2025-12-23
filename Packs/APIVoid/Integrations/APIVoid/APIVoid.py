@@ -341,7 +341,7 @@ def url_reputation_command(
     for key in ["ns", "mx"]:
         dns_records_inner_data = demisto.get(response, f"dns_records.{key}", {})
         if dns_records_inner_data:
-            response["dns_records"][key] = {"records": dns_records_inner_data}  # BC comaptiblity
+            response["dns_records"][key] = {"records": dns_records_inner_data}  # Backward Competability
 
     # Calculate DBot score
     score = calculate_dbot_score(engines_count, detections, thresholds)
