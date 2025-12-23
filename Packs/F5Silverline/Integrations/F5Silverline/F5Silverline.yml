@@ -117,6 +117,8 @@ script:
       name: tags
     description: Adds a new particular threatening IP address object by its IP address.
     name: f5-silverline-ip-object-add
+    compliantpolicies:
+      - IP Blockage
   - arguments:
     - auto: PREDEFINED
       description: 'The dynamic lists type of threatening IP addresses. The type can be one of "allowlist" or "denylist". Note: Allowlists are named DDOS IP Allowlists in the F5 Silverline portal.'
