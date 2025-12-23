@@ -99,20 +99,20 @@ args:
     predefined:
       - DESC
       - ASC
-  - defaultvalue: "0"
+  - defaultValue: "0"
     description: The first page from which we bring the issues.
     isArray: true
     name: offset
     deprecated: true
-  - defaultvalue: "50"
+  - defaultValue: "50"
     description: The last page from which we bring the issues.
     isArray: true
     name: limit
     deprecated: true
-  - defaultvalue: "0"
+  - defaultValue: "0"
     description: The page number for the issues to return for pagination. 
     name: page
-  - defaultvalue: "50"
+  - defaultValue: "50"
     description: The number of issues to return per page.
     name: page_size
   - description: Additional output fields.
