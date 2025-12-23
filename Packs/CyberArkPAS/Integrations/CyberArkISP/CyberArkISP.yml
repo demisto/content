@@ -4,7 +4,7 @@ commonfields:
 name: CyberArkISP
 display: CyberArk Identity Security Platform
 category: Identity and Access Management
-description: The CyberArk Identity Security Platform is a unified solution securing all human and machine identities (workforce, customers, non-human) across hybrid/multi-cloud environments, centered on intelligent privilege controls, AI-driven threat detection (CORA AI), and lifecycle automation to enforce least privilege and Zero Trust, providing a single portal for access management, PAM, and endpoint security.
+description: CyberArk Identity Security Platform secures human and machine identities across hybrid/multi-cloud environments with intelligent privilege controls, AI-driven threat detection, and Zero Trust enforcement.
 sectionorder:
 - Connect
 - Collect
@@ -44,7 +44,7 @@ configuration:
 - name: api_key
   display: API Key
   required: true
-  type: 4
+  type: 14
   section: Connect
   additionalinfo: The API key from the SIEM integration created in the Administration space.
 - name: insecure
