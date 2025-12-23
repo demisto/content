@@ -3636,6 +3636,24 @@ script:
       - uninstalled
     description: Remove a tag from one or more endpoints.
     name: core-remove-endpoint-tag
+  - arguments:
+    - description: A comma-separated list of endpoint IDs to update their tags.
+      name: endpoint_ids
+      required: true
+    - description: A comma-separated list of tags to add to the endpoints. Either this arguemnt or tags_to_remove is requierd.
+      name: tags_to_add
+    - description: A comma-separated list of tags to remove from the endpoints. Either this arguemnt or tags_to_add is requierd.
+      name: tags_to_remove
+    hidden: true
+    description: Update tags of one or more endpoints.
+    name: core-update-endpoint-tags
+    outputs:
+    - contextPath: Core.EndpointTags.SuccessMessage
+      description: The success message returned after updating endpoint tags.
+      type: string
+    - contextPath: Core.EndpointTags.FailureMessage
+      description: The error message returned when endpoint tags failed to update.
+      type: string
   - name: core-list-users
     description: Retrieve a list of the current users in your environment.
     arguments: []
@@ -3664,6 +3682,7 @@ script:
     - contextPath: Core.User.scope
       description: Name of scope associated with the user, if applicable.
       type: array
+      
   - arguments:
     - description: |
         Unique ID of a specific user.
@@ -4508,7 +4527,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.4885491
+  dockerimage: demisto/google-cloud-storage:1.0.0.5633894
 tests:
 - No tests
 supportsquickactions: true

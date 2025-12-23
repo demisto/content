@@ -811,6 +811,10 @@
             "instance_names": "ms_graph_mail_dev"
         },
         {
+            "integrations": "Microsoft Graph Mail Single User",
+            "playbookID": "MicrosoftGraphMailSingleUser-Test_dev"
+        },
+        {
             "integrations": "MicrosoftGraphMail",
             "timeout": 900,
             "playbookID": "MicrosoftGraphMail-Test_dev_no_oproxy",
@@ -5853,6 +5857,15 @@
             "memory_threshold": 100
         },
         {
+            "playbookID": "ExpirePassword - Test",
+            "integrations": ["Okta v2", "Microsoft Graph User", "Active Directory Query v2"],
+            "instance_names": [
+                "ms_graph_user_dev",
+                "active_directory_ninja"
+            ],
+            "memory_threshold": 100
+        },
+        {
             "playbookID": "QuarantineFile-Test",
             "integrations": "Cortex XDR - IR",
             "timeout": 300,
@@ -5925,7 +5938,6 @@
         }
     ],
     "skipped_tests": {
-        "TAXII 2 Feed Test": "No instance - CIAC-15292",
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
         "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
         "ThreatCrowd - Test": "The pack is deprecated",
@@ -6354,12 +6366,17 @@
         "MicrosoftGraphMail-Test_dev_no_oproxy",
         "MicrosoftGraphMail-Test_dev",
         "MicrosoftGraphMail-Test_prod",
+        "MicrosoftGraphMailSingleUser-Test_dev",
         "Microsoft Defender Advanced Threat Protection - Test dev",
         "Microsoft Defender Advanced Threat Protection - Test prod",
         "Microsoft Defender Advanced Threat Protection - Test",
         "Microsoft Defender - ATP - Indicators SC Test",
         "Microsoft_365_Defender-Test",
+        "Microsoft Graph API - Test",
         "MicrosoftManagementActivity - Test",
+        "Microsoft Graph Calendar - Test dev",
+        "Microsoft Graph Security Test self deployed v2",
+        "test_MsGraphFiles dev",
         "Whois A new layout implemented with python-whois service",
         "Detonate URL - WildFire-v2 - Test",
         "CrowdStrike Falcon Basic Test",
