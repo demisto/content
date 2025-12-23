@@ -48,7 +48,7 @@ WEBAPP_COMMANDS = [
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
-AGENTS_COMMANDS = ["core-get-endpoint-support-file"]
+ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
 XSOAR_COMMANDS = ["core-run-playbook"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
