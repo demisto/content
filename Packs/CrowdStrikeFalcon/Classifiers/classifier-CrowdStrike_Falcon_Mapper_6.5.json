@@ -1576,7 +1576,7 @@
                 }
             }
         },
-        "CrowdStrike Falcon NGSIEM Incident": {
+        "CrowdStrike Falcon NGSIEM Case": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"Additional Email Addresses": {
@@ -1595,7 +1595,7 @@
                     "simple": "created_by.email"
                 },
 				"End Time": {
-					"simple": "end_time"
+					"simple": "end_timestamp"
 				},
                 "Full Name": {
                     "simple": "last_updated_by.full_name"
@@ -1604,7 +1604,7 @@
 					"simple": "updated_timestamp"
 				},
 				"Start Time": {
-					"simple": "start_time"
+					"simple": "start_timestamp"
 				},
 				"State": {
 					"simple": "status"
@@ -1620,6 +1620,9 @@
 				},
                 "UUID": {
                     "simple": "created_by.uuid"
+                },
+                "name": {
+                    "simple": "id"
                 }
 			}
 		},
@@ -1676,59 +1679,62 @@
 				}
             }
         },
-        "CrowdStrike Falcon NGSIEM Case":{
+        "CrowdStrike Falcon NGSIEM Incident": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Agent ID": {
-					"simple": "agent_id"
+				"Agents ID": {
+					"simple": "entities.agent_ids"
 				},
 				"CrowdStrike Falcon Crawled Timestamp": {
 					"simple": "crawled_timestamp"
 				},
-				"Device Id": {
-					"simple": "device.device_id"
+				"CrowdStrike Falcon Data Domains": {
+					"simple": "data_domains"
 				},
-				"Display Name": {
-					"simple": "display_name"
+				"CrowdStrike Falcon Pattern ID": {
+					"simple": "pattern_id"
+				},
+				"CrowdStrike Falcon Platform Name": {
+					"simple": "platform"
+				},
+				"CrowdStrike Falcon System Product Name": {
+					"simple": "product"
+				},
+				"Detected External Hosts": {
+					"simple": "entities.host"
+				},
+				"Detection ID": {
+					"simple": "xdr_detection_id"
+				},
+				"End Time": {
+					"simple": "end_time"
 				},
 				"Last Update Time": {
 					"simple": "updated_timestamp"
 				},
-				"Lead Id": {
-					"simple": "lead_id"
+				"Mitre Attack": {
+					"simple": "mitre_attack"
 				},
-				"Lead Type": {
-					"simple": "lead_type"
+				"Source IPs": {
+					"simple": "entities.ip_source"
 				},
-				"Risk Score": {
-					"simple": "score"
+				"Start Time": {
+					"simple": "start_time"
 				},
 				"State": {
 					"simple": "status"
 				},
-				"Vendor Product": {
-					"simple": "product"
+				"name": {
+					"simple": "composite_id"
 				},
 				"occurred": {
 					"simple": "created_timestamp"
 				},
-                "Pattern ID": {
-                    "simple": "mitre_attack.pattern_id"
-                },
-                "MITRE Tactic ID": {
-					"simple": "mitre_attack.tactic_id"
-				},
-				"MITRE Tactic Name": {
-					"simple": "mitre_attack.tactic"
-				},
-				"MITRE Technique ID": {
-					"simple": "mitre_attack.technique_id"
-				},
-				"MITRE Technique Name": {
-					"simple": "mitre_attack.technique"
+				"severity": {
+					"simple": "severity"
 				}
-            }
-        }
+			}
+		}
     },
     "name": "CrowdStrike Falcon Mapper",
     "type": "mapping-incoming",

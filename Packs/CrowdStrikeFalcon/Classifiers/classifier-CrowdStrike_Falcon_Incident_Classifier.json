@@ -20,7 +20,6 @@
         "ngsiem_incident": "CrowdStrike Falcon NGSIEM Incident",
         "ngsiem_automated_lead": "CrowdStrike Falcon NGSIEM Automated Lead",
         "ngsiem_case": "CrowdStrike Falcon NGSIEM Case"
-
 	},
 	"transformer": {
         "complex": {
