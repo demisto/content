@@ -71,8 +71,14 @@ def test_filter_relationships_by_entity_types_single_page_results(mocker):
         {
             "Contents": {
                 "Relationships": [
-                    {"EntityAType": "File", "EntityBType": "Domain", "id": "rel1"},
-                    {"EntityAType": "IP", "EntityBType": "Domain", "id": "rel2"},
+                    {
+                        "EntityAType": "File",
+                        "EntityBType": "Domain",
+                        "EntityA": "test.exe",
+                        "EntityB": "example.com",
+                        "id": "rel1",
+                    },
+                    {"EntityAType": "File", "EntityBType": "IP", "EntityA": "test.exe", "EntityB": "1.2.3.4", "id": "rel2"},
                 ]
             }
         }
@@ -81,14 +87,14 @@ def test_filter_relationships_by_entity_types_single_page_results(mocker):
     mock_get.side_effect = [
         {
             "Relationships": [
-                {"EntityAType": "File", "EntityBType": "Domain", "id": "rel1"},
-                {"EntityAType": "IP", "EntityBType": "Domain", "id": "rel2"},
+                {"EntityAType": "File", "EntityBType": "Domain", "EntityA": "test.exe", "EntityB": "example.com", "id": "rel1"},
+                {"EntityAType": "File", "EntityBType": "IP", "EntityA": "test.exe", "EntityB": "1.2.3.4", "id": "rel2"},
             ],
             "RelationshipsPagination": [],
         }
     ]
 
-    result = filter_relationships_by_entity_types(["test.exe"], ["File"], [], 10)
+    result = filter_relationships_by_entity_types(["test.exe"], ["Domain"], [], 10)
 
     assert len(result) == 1
     assert result[0]["EntityAType"] == "File"
@@ -110,7 +116,15 @@ def test_filter_relationships_by_entity_types_multiple_pages(mocker):
         [
             {
                 "Contents": {
-                    "Relationships": [{"EntityAType": "File", "EntityBType": "Domain", "id": "rel1"}],
+                    "Relationships": [
+                        {
+                            "EntityAType": "File",
+                            "EntityBType": "File",
+                            "EntityA": "test.exe",
+                            "EntityB": "test2.exe",
+                            "id": "rel1",
+                        }
+                    ],
                     "RelationshipsPagination": ["token1"],
                 }
             }
@@ -118,7 +132,15 @@ def test_filter_relationships_by_entity_types_multiple_pages(mocker):
         [
             {
                 "Contents": {
-                    "Relationships": [{"EntityAType": "File", "EntityBType": "IP", "id": "rel2"}],
+                    "Relationships": [
+                        {
+                            "EntityAType": "File",
+                            "EntityBType": "File",
+                            "EntityA": "test.exe",
+                            "EntityB": "test2.exe",
+                            "id": "rel2",
+                        }
+                    ],
                     "RelationshipsPagination": [],
                 }
             }
@@ -127,11 +149,15 @@ def test_filter_relationships_by_entity_types_multiple_pages(mocker):
 
     mock_get.side_effect = [
         {
-            "Relationships": [{"EntityAType": "File", "EntityBType": "Domain", "id": "rel1"}],
+            "Relationships": [
+                {"EntityAType": "File", "EntityBType": "File", "EntityA": "test.exe", "EntityB": "test2.exe", "id": "rel1"}
+            ],
             "RelationshipsPagination": ["token1"],
         },
         {
-            "Relationships": [{"EntityAType": "File", "EntityBType": "IP", "id": "rel2"}],
+            "Relationships": [
+                {"EntityAType": "File", "EntityBType": "File", "EntityA": "test.exe", "EntityB": "test2.exe", "id": "rel2"}
+            ],
             "RelationshipsPagination": [],
         },
     ]
@@ -157,9 +183,27 @@ def test_filter_relationships_by_entity_types_limit_reached_early(mocker):
         {
             "Contents": {
                 "Relationships": [
-                    {"EntityAType": "File", "EntityBType": "Domain", "id": "rel1"},
-                    {"EntityAType": "File", "EntityBType": "IP", "id": "rel2"},
-                    {"EntityAType": "File", "EntityBType": "URL", "id": "rel3"},
+                    {
+                        "EntityAType": "File",
+                        "EntityBType": "Domain",
+                        "EntityA": "test.exe",
+                        "EntityB": "example.com",
+                        "id": "rel1",
+                    },
+                    {
+                        "EntityAType": "File",
+                        "EntityBType": "Domain",
+                        "EntityA": "test.exe",
+                        "EntityB": "example1.com",
+                        "id": "rel2",
+                    },
+                    {
+                        "EntityAType": "File",
+                        "EntityBType": "Domain",
+                        "EntityA": "test.exe",
+                        "EntityB": "example2.com",
+                        "id": "rel3",
+                    },
                 ]
             }
         }
@@ -167,14 +211,14 @@ def test_filter_relationships_by_entity_types_limit_reached_early(mocker):
 
     mock_get.return_value = {
         "Relationships": [
-            {"EntityAType": "File", "EntityBType": "Domain", "id": "rel1"},
-            {"EntityAType": "File", "EntityBType": "IP", "id": "rel2"},
-            {"EntityAType": "File", "EntityBType": "URL", "id": "rel3"},
+            {"EntityAType": "File", "EntityBType": "Domain", "EntityA": "test.exe", "EntityB": "example.com", "id": "rel1"},
+            {"EntityAType": "File", "EntityBType": "Domain", "EntityA": "test.exe", "EntityB": "example1.com", "id": "rel2"},
+            {"EntityAType": "File", "EntityBType": "Domain", "EntityA": "test.exe", "EntityB": "example2.com", "id": "rel3"},
         ],
         "RelationshipsPagination": ["token1"],
     }
 
-    result = filter_relationships_by_entity_types(["test.exe"], ["File"], [], 2)
+    result = filter_relationships_by_entity_types(["test.exe"], ["Domain"], [], 2)
 
     assert len(result) == 2
 
@@ -194,8 +238,14 @@ def test_filter_relationships_by_entity_types_no_matching_types(mocker):
         {
             "Contents": {
                 "Relationships": [
-                    {"EntityAType": "IP", "EntityBType": "Domain", "id": "rel1"},
-                    {"EntityAType": "URL", "EntityBType": "Domain", "id": "rel2"},
+                    {"EntityAType": "IP", "EntityBType": "Domain", "EntityA": "1.2.3.4", "EntityB": "example.com", "id": "rel1"},
+                    {
+                        "EntityAType": "URL",
+                        "EntityBType": "Domain",
+                        "EntityA": "http://example.com",
+                        "EntityB": "example.com",
+                        "id": "rel2",
+                    },
                 ]
             }
         }
@@ -203,8 +253,14 @@ def test_filter_relationships_by_entity_types_no_matching_types(mocker):
 
     mock_get.return_value = {
         "Relationships": [
-            {"EntityAType": "IP", "EntityBType": "Domain", "id": "rel1"},
-            {"EntityAType": "URL", "EntityBType": "Domain", "id": "rel2"},
+            {"EntityAType": "IP", "EntityBType": "Domain", "EntityA": "1.2.3.4", "EntityB": "example.com", "id": "rel1"},
+            {
+                "EntityAType": "URL",
+                "EntityBType": "Domain",
+                "EntityA": "http://example.com",
+                "EntityB": "example.com",
+                "id": "rel2",
+            },
         ],
         "RelationshipsPagination": [],
     }
@@ -229,3 +285,55 @@ def test_filter_relationships_by_entity_types_empty_response(mocker):
     result = filter_relationships_by_entity_types(["test.exe"], ["File"], [], 10)
 
     assert result == []
+
+
+def test_filter_relationships_by_entity_types_domain_relates_to(mocker):
+    """
+    Given: A relationship exists where google.com relates to example.com
+    When: Calling filter_relationships_by_entity_types function with domain entities
+    Then: The relationship should be returned
+    """
+    from SearchIndicatorRelationshipsAgentix import filter_relationships_by_entity_types
+
+    mock_execute_command = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.executeCommand")
+    mock_get = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.get")
+
+    mock_execute_command.return_value = [
+        {
+            "Contents": {
+                "Relationships": [
+                    {
+                        "EntityAType": "Domain",
+                        "EntityBType": "Domain",
+                        "EntityA": "google.com",
+                        "EntityB": "example.com",
+                        "Relationship": "relates-to",
+                        "id": "rel1",
+                    }
+                ]
+            }
+        }
+    ]
+
+    mock_get.return_value = {
+        "Relationships": [
+            {
+                "EntityAType": "Domain",
+                "EntityBType": "Domain",
+                "EntityA": "google.com",
+                "EntityB": "example.com",
+                "Relationship": "relates-to",
+                "id": "rel1",
+            }
+        ],
+        "RelationshipsPagination": [],
+    }
+
+    result = filter_relationships_by_entity_types(["google.com", "example.com"], ["Domain"], ["relates-to"], 10)
+
+    assert len(result) == 1
+    assert result[0]["EntityA"] == "google.com"
+    assert result[0]["EntityB"] == "example.com"
+    assert result[0]["Relationship"] == "relates-to"
+    assert result[0]["EntityAType"] == "Domain"
+    assert result[0]["EntityBType"] == "Domain"

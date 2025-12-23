@@ -43,7 +43,19 @@ def filter_relationships_by_entity_types(entities: list, entities_types: list, r
             break
 
         for relationship in data.get("Relationships", []):
-            if relationship["EntityAType"] in entities_types or relationship["EntityBType"] in entities_types:
+            # For this case:
+            # !SearchIndicatorRelationships Entities = google.com, example.com relationships=relats_to entity_type=DOMAIN
+            # Relationships = google.com relate_to example.com
+            if (
+                relationship["EntityAType"] in entities_types
+                and relationship["EntityBType"] in entities_types
+                and relationship["EntityA"] in entities
+                and relationship["EntityB"] in entities
+            ):
+                filtered_relationships.append(relationship)
+            elif (relationship["EntityAType"] in entities_types and relationship["EntityA"] not in entities) or (
+                relationship["EntityBType"] in entities_types and relationship["EntityB"] not in entities
+            ):
                 filtered_relationships.append(relationship)
 
                 if len(filtered_relationships) >= limit:
