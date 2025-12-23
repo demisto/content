@@ -1,4 +1,4 @@
-Use this integration to connect securely with any MCP server and access its tools in real time.
+Use this integration to connect securely with an MCP server and access its tools in real time.
 
 ## Configure Generic MCP in Cortex
 
