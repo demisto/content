@@ -146,7 +146,7 @@ def get_module_command_func(
 
 
 # --- Active Directory Helper Function ---
-def check_ad_password_never_expires(username: str, using: str) -> tuple[bool | None, list[dict], str]:
+def check_ad_password_never_expires(username: str, using: str) -> tuple[bool, list[dict], str]:
     """
     Check if the 'Password Never Expires' flag is set for an Active Directory user.
 
@@ -158,8 +158,8 @@ def check_ad_password_never_expires(username: str, using: str) -> tuple[bool | N
         using (str): The name of the Active Directory integration instance to use.
 
     Returns:
-        tuple[bool | None, list[dict], str]: A tuple containing:
-            - bool | None: The value of the DONT_EXPIRE_PASSWORD flag (True, False).
+        tuple[bool, list[dict], str]: A tuple containing:
+            - bool: The value of the DONT_EXPIRE_PASSWORD flag (True, False).
             - list[dict]: The raw command results from ad-get-user.
             - str: The human-readable output from the ad-get-user command.
     """
@@ -189,7 +189,7 @@ def check_ad_password_never_expires(username: str, using: str) -> tuple[bool | N
 
             # Extract userAccountControlFields
             fields = user_data.get("userAccountControlFields", {})
-            dont_expire_flag = fields.get("DONT_EXPIRE_PASSWORD", None)
+            dont_expire_flag = fields.get("DONT_EXPIRE_PASSWORD", True)
             break
 
     return dont_expire_flag, res_get_user, hr_get_user
@@ -213,7 +213,7 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     dont_expire_flag, res_get_user, hr_get_user = check_ad_password_never_expires(username, using)
 
     # 2. If the flag is True, return failure with informative message
-    if dont_expire_flag is True:
+    if dont_expire_flag:
         return [
             ExpiredPasswordResult(
                 Result="Failed",
@@ -227,17 +227,7 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
             )
         ], hr_get_user
 
-    # 3. If the flag is None, return failure (unable to retrieve the flag)
-    if dont_expire_flag is None:
-        return [
-            ExpiredPasswordResult(
-                Result="Failed",
-                Message="Failed to retrieve the 'Password Never Expire' flag - password expiration failed.",
-                Instance=get_instance_from_result(res_get_user[0]) if res_get_user else "",
-            )
-        ], hr_get_user
-
-    # 4. Run the password expiration command (flag is False)
+    # 3. Run the password expiration command (flag is False)
     args_expire = {"username": username, "using": using}
     res_expire, hr_expire = run_command("ad-expire-password", args_expire)
 

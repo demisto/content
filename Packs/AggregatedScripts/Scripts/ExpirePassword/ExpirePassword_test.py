@@ -210,36 +210,6 @@ def test_check_ad_password_never_expires_flag_false(mock_run_command):
     assert hr == "HR_GET_USER"
 
 
-def test_check_ad_password_never_expires_flag_none(mock_run_command):
-    """
-    Given: An AD user query that doesn't return userAccountControlFields.
-    When: check_ad_password_never_expires is called.
-    Then: It should return None for the flag value.
-    """
-    mock_run_command.return_value = (
-        [
-            {
-                "Type": 1,
-                "EntryContext": {
-                    "ActiveDirectory.Users": [
-                        {
-                            "dn": "CN=testuser,DC=example,DC=com",
-                            "sAMAccountName": ["testuser"],
-                        }
-                    ]
-                },
-                "Metadata": {"instance": "inst1"},
-            }
-        ],
-        "HR_GET_USER",
-    )
-
-    flag, res, hr = check_ad_password_never_expires("testuser", "inst1")
-
-    assert flag is None
-    assert len(res) == 1
-
-
 def test_run_active_directory_query_v2_success_flag_false(mock_run_command):
     """
     Given: An AD user with DONT_EXPIRE_PASSWORD flag set to False.
@@ -326,54 +296,6 @@ def test_run_active_directory_query_v2_flag_true_returns_failure(mock_run_comman
     assert result == expected
     assert hr == "HR_GET_USER"
     # Verify ad-expire-password was NOT called (only one call to ad-get-user)
-    mock_run_command.assert_called_once_with("ad-get-user", {"username": "testuser", "using": "inst1"})
-
-
-def test_run_active_directory_query_v2_flag_none_returns_failure(mock_run_command):
-    """
-    Given: An AD user where DONT_EXPIRE_PASSWORD flag is None (cannot be retrieved).
-    When: run_active_directory_query_v2 is called.
-    Then: It should return Result='Failed' about failed flag retrieval and NOT call ad-expire-password.
-    """
-    user: UserData = {
-        "ID": "1",
-        "Username": "testuser",
-        "Email": "test@example.com",
-        "Status": "found",
-        "Brand": "Active Directory Query v2",
-        "Instance": "inst1",
-    }
-    # ad-get-user returns without userAccountControlFields (flag will be None)
-    mock_run_command.return_value = (
-        [
-            {
-                "Type": 1,
-                "EntryContext": {
-                    "ActiveDirectory.Users": [
-                        {
-                            "dn": "CN=testuser,DC=example,DC=com",
-                            "sAMAccountName": ["testuser"],
-                        }
-                    ]
-                },
-                "Metadata": {"instance": "inst1"},
-            }
-        ],
-        "HR_GET_USER",
-    )
-
-    result, hr = run_active_directory_query_v2(user, "inst1")
-
-    expected: list[ExpiredPasswordResult] = [
-        {
-            "Result": "Failed",
-            "Message": "Failed to retrieve the 'Password Never Expire' flag - password expiration failed.",
-            "Instance": "inst1",
-        }
-    ]
-    assert result == expected
-    assert hr == "HR_GET_USER"
-    # Verify ad-expire-password was NOT called
     mock_run_command.assert_called_once_with("ad-get-user", {"username": "testuser", "using": "inst1"})
 
 
