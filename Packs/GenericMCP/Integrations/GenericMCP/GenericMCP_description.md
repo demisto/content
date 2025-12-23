@@ -2,7 +2,7 @@
 
 This integration allows you to connect securely with any MCP server and access its tools in real time.
 
-### Configuration para
+### Configuration parameters
 
 1. **Server URL**: The base URL of the MCP server. This is a required parameter for all authentication types.
 
