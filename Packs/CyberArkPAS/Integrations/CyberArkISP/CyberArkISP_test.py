@@ -982,14 +982,17 @@ def test_test_module_command(mocker, client, should_succeed, mock_return, mock_e
         mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=mock_return)
         result = test_module(client)
         assert result == expected_result
+        return
     elif expected_result:
         mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", side_effect=mock_exception)
         result = test_module(client)
         assert re.match(expected_result, result, re.IGNORECASE)
+        return
     else:
         mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", side_effect=mock_exception)
         with pytest.raises(DemistoException, match=r"(?i)internal server error"):
             test_module(client)
+        return
 
 
 # ========================================
