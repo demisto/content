@@ -8,9 +8,9 @@ from IBMSecurityGuardium import (
     map_event,
     deduplicate_events,
     build_ignore_list,
-    fetch_events,
+    fetch_events_command,
     get_events_command,
-    test_module,
+    test_module_command,
 )
 from CommonServerPython import DemistoException
 
@@ -363,7 +363,7 @@ class TestTestModule:
         Given:
             - Valid client and report ID
         When:
-            - Calling test_module
+            - Calling test_module_command
         Then:
             - Ensure 'ok' is returned when API call succeeds
         """
@@ -372,7 +372,7 @@ class TestTestModule:
 
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
-        result = test_module(client, REPORT_ID)
+        result = test_module_command(client, REPORT_ID)
         assert result == "ok"
 
     def test_test_module_auth_error(self, client, requests_mock):
@@ -380,12 +380,12 @@ class TestTestModule:
         Given:
             - Invalid credentials
         When:
-            - Calling test_module
+            - Calling test_module_command
         Then:
             - Ensure authorization error message is returned
         """
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", status_code=403, text="Forbidden")
-        result = test_module(client, REPORT_ID)
+        result = test_module_command(client, REPORT_ID)
         assert "Authorization Error" in result
 
 
@@ -397,7 +397,7 @@ class TestFetchEvents:
         Given:
             - Empty last_run (first fetch)
         When:
-            - Calling fetch_events
+            - Calling fetch_events_command
         Then:
             - Ensure events are fetched and next_run is set correctly
         """
@@ -407,7 +407,7 @@ class TestFetchEvents:
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
 
-        events, next_run, timestamp_field = fetch_events(client, REPORT_ID, max_fetch=10, last_run={})
+        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=10, last_run={})
 
         assert len(events) == 1
         assert "Session Start Time" in events[0]
@@ -420,7 +420,7 @@ class TestFetchEvents:
         Given:
             - API response with no events
         When:
-            - Calling fetch_events
+            - Calling fetch_events_command
         Then:
             - Ensure empty events list and unchanged last_run
         """
@@ -431,7 +431,7 @@ class TestFetchEvents:
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
 
         last_run = {"last_fetch_time": "2025-06-07T15:00:00.000Z"}
-        events, next_run, timestamp_field = fetch_events(client, REPORT_ID, max_fetch=10, last_run=last_run)
+        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=10, last_run=last_run)
 
         assert len(events) == 0
         assert next_run == last_run

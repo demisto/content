@@ -271,7 +271,7 @@ def build_ignore_list(events: list[dict[str, Any]], timestamp_field: str) -> set
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: Client, report_id: str) -> str:
+def test_module_command(client: Client, report_id: str) -> str:
     """
     Test API connectivity and authentication.
 
@@ -296,7 +296,7 @@ def test_module(client: Client, report_id: str) -> str:
         raise
 
 
-def fetch_events(
+def fetch_events_command(
     client: Client, report_id: str, max_fetch: int, last_run: dict[str, Any]
 ) -> tuple[list[dict[str, Any]], dict[str, Any], str]:
     """
@@ -469,12 +469,12 @@ def main() -> None:
         demisto.debug(f"Executing command: {command}")
 
         if command == "test-module":
-            return_results(test_module(client, report_id))
+            return_results(test_module_command(client, report_id))
 
         elif command == "fetch-events":
             max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
             last_run = demisto.getLastRun()
-            events, next_run, timestamp_field = fetch_events(client, report_id, max_fetch, last_run)
+            events, next_run, timestamp_field = fetch_events_command(client, report_id, max_fetch, last_run)
 
             send_events_to_xsiam_with_time(events, timestamp_field)
             demisto.setLastRun(next_run)
