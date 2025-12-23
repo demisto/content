@@ -131,11 +131,8 @@ def main():
     print(f"{t.cyan}Assigned users {assignees}{t.normal}")
 
     # Post AI review introduction if any of the assigned reviewers is an organization member
-    org_member_reviewers = [
-        reviewer for reviewer in new_pr_reviewers
-        if is_organization_member(gh, reviewer)
-    ]
-    
+    org_member_reviewers = [reviewer for reviewer in new_pr_reviewers if is_organization_member(gh, reviewer)]
+
     if org_member_reviewers:
         print(f"{t.cyan}Found organization member reviewers: {org_member_reviewers}{t.normal}")
         post_ai_review_introduction(pr, org_member_reviewers, t)
