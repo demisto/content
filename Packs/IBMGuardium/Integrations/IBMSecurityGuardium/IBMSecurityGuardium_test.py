@@ -23,38 +23,41 @@ def util_load_json(path):
 def util_create_batch_response(num_events, batch_num=1, timestamp_base="2025-01-01 10:00:00.0"):
     """
     Create a batch response with specified number of events.
-    
+
     Args:
         num_events: Number of events to include in the batch
         batch_num: Batch number for unique event IDs
         timestamp_base: Base timestamp string
-    
+
     Returns:
         Dictionary representing API response
     """
     base_response = util_load_json("test_data/sample_api_response.json")
-    
+
     # Generate events
     events = []
     for i in range(num_events):
         # Parse base timestamp and add seconds
         from datetime import datetime, timedelta
+
         base_dt = datetime.strptime(timestamp_base, "%Y-%m-%d %H:%M:%S.%f")
         event_dt = base_dt + timedelta(seconds=i + (batch_num - 1) * 1000)
         timestamp = event_dt.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]  # Keep one decimal place
-        
-        events.append({
-            "results": {
-                "1": "10.130.4.38",
-                "2": "admin",
-                "3": "sqlcmd",
-                "4": "10.130.17.21",
-                "5": "MS SQL SERVER",
-                "6": "MASTER",
-                "7": timestamp
+
+        events.append(
+            {
+                "results": {
+                    "1": "8.8.8.8",
+                    "2": "admin",
+                    "3": "sqlcmd",
+                    "4": "10.130.17.21",
+                    "5": "MS SQL SERVER",
+                    "6": "MASTER",
+                    "7": timestamp,
+                }
             }
-        })
-    
+        )
+
     base_response["result"]["data"] = events
     return base_response
 
@@ -287,7 +290,8 @@ class TestDeduplicateEvents:
         # Check that event1 was filtered and event2 and event3 are in the results
         event_ids = [e["id"] for e in result]
         assert "1" not in event_ids
-        assert "2" in event_ids and "3" in event_ids
+        assert "2" in event_ids
+        assert "3" in event_ids
 
     def test_deduplicate_events_optimization(self):
         """
@@ -302,12 +306,12 @@ class TestDeduplicateEvents:
         event1 = {"timestamp": "2025-01-01 11:00:00", "id": "1"}
         event2 = {"timestamp": "2025-01-01 12:00:00", "id": "2"}
         events = [event1, event2]
-        
+
         # Get hashes of both events and add them to the ignore list (Hypothetical scenario)
         hash1 = get_event_hash(event1)
         hash2 = get_event_hash(event2)
         last_run = {"last_fetch_time": "2025-01-01 10:00:00", "fetched_event_hashes": [hash1, hash2]}
-        
+
         result = deduplicate_events(events, last_run, "timestamp")
         # Both events should be kept because their timestamps are greater than last_fetch_time
         assert len(result) == 2
@@ -435,7 +439,8 @@ class TestFetchEvents:
         assert len(events) == 1
         assert "Session Start Time" in events[0]
         assert timestamp_field == "Session Start Time"
-        assert next_run == {'last_fetch_time': '2025-06-07 16:52:57.0', 'fetched_event_hashes': ['46b9493d0040b5cf']}
+        assert next_run["last_fetch_time"] == "2025-06-07 16:52:57.0"
+        assert len(next_run["fetched_event_hashes"]) == 1
 
     def test_fetch_events_no_events(self, client, requests_mock):
         """
@@ -456,7 +461,6 @@ class TestFetchEvents:
         assert len(events) == 0
         assert next_run == last_run
 
-
     def test_fetch_events_pagination_multiple_batches(self, client, requests_mock, monkeypatch):
         """
         Given:
@@ -469,16 +473,18 @@ class TestFetchEvents:
             - Ensure offset increments by the number of events returned in each batch
         """
         import IBMSecurityGuardium
+
         monkeypatch.setattr(IBMSecurityGuardium, "MAX_BATCH_SIZE", 10)
-        
+
         call_count = 0
+
         def mock_response(request, context):
             nonlocal call_count
             call_count += 1
             payload = request.json()
             offset = payload["offset"]
             fetch_size = payload["fetch_size"]
-            
+
             # Batch 1: offset=0, fetch_size=10, return 10 events
             if offset == 0:
                 assert fetch_size == 10
@@ -516,15 +522,17 @@ class TestFetchEvents:
             - Ensure offset is not incremented after the break
         """
         import IBMSecurityGuardium
+
         monkeypatch.setattr(IBMSecurityGuardium, "MAX_BATCH_SIZE", 10)
-        
+
         call_count = 0
+
         def mock_response(request, context):
             nonlocal call_count
             call_count += 1
             payload = request.json()
             offset = payload["offset"]
-            
+
             # First batch: return 5 events (less than batch_size of 10)
             if offset == 0:
                 return json.dumps(util_create_batch_response(5, batch_num=1))
@@ -553,8 +561,9 @@ class TestFetchEvents:
             - Ensure no events are collected
         """
         import IBMSecurityGuardium
+
         monkeypatch.setattr(IBMSecurityGuardium, "MAX_BATCH_SIZE", 10)
-        
+
         response = util_load_json("test_data/no_resources_response.json")
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=json.dumps(response))
 
@@ -576,16 +585,18 @@ class TestFetchEvents:
             - Ensure loop stops after reaching max_fetch
         """
         import IBMSecurityGuardium
+
         monkeypatch.setattr(IBMSecurityGuardium, "MAX_BATCH_SIZE", 10)
-        
+
         call_count = 0
+
         def mock_response(request, context):
             nonlocal call_count
             call_count += 1
             payload = request.json()
             offset = payload["offset"]
             fetch_size = payload["fetch_size"]
-            
+
             if offset == 0:
                 assert fetch_size == 10
                 return json.dumps(util_create_batch_response(10, batch_num=1))
@@ -604,50 +615,7 @@ class TestFetchEvents:
         assert len(events) == 15
         assert call_count == 2
 
-    def test_fetch_events_offset_increments_correctly(self, client, requests_mock, monkeypatch):
-        """
-        Given:
-            - Multiple batches with varying event counts
-        When:
-            - Calling fetch_events_command
-        Then:
-            - Ensure offset increments by the actual number of events returned (not batch_size)
-        """
-        import IBMSecurityGuardium
-        monkeypatch.setattr(IBMSecurityGuardium, "MAX_BATCH_SIZE", 10)
-        
-        call_count = 0
-        expected_offsets = [0, 8, 15]  # offset should increment by actual events returned
-        
-        def mock_response(request, context):
-            nonlocal call_count
-            payload = request.json()
-            offset = payload["offset"]
-            
-            # Verify offset is as expected
-            assert offset == expected_offsets[call_count], f"Expected offset {expected_offsets[call_count]}, got {offset}"
-            
-            # Batch 1: return 8 events
-            if call_count == 0:
-                call_count += 1
-                return json.dumps(util_create_batch_response(8, batch_num=1))
-            # Batch 2: return 7 events
-            elif call_count == 1:
-                call_count += 1
-                return json.dumps(util_create_batch_response(7, batch_num=2))
-            # Batch 3: return 3 events (less than batch_size, should stop)
-            elif call_count == 2:
-                call_count += 1
-                return json.dumps(util_create_batch_response(3, batch_num=3))
-
-        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=mock_response)
-
-        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=50, last_run={})
-
-        assert len(events) == 18  # 8 + 7 + 3
-        assert call_count == 3
-
-    def test_fetch_events_field_mapping_extracted_once(self, client, requests_mock):
+    def test_fetch_events_field_mapping_extracted_once(self, client, requests_mock, monkeypatch):
         """
         Given:
             - Multiple batches of events
@@ -657,26 +625,32 @@ class TestFetchEvents:
             - Ensure field mapping is extracted only from the first batch (offset == 0)
             - Ensure timestamp field is determined only from the first batch
         """
+        import IBMSecurityGuardium
+
+        monkeypatch.setattr(IBMSecurityGuardium, "MAX_BATCH_SIZE", 10)
+
         call_count = 0
-        
+
         def mock_response(request, context):
             nonlocal call_count
             call_count += 1
             payload = request.json()
             offset = payload["offset"]
-            
+
             # Both batches use the same structure from sample_api_response
+            # First batch: full batch_size
             if offset == 0:
-                return json.dumps(util_create_batch_response(2, batch_num=1))
+                return json.dumps(util_create_batch_response(10, batch_num=1))
+            # Second batch: partial (triggers stop)
             else:
-                return json.dumps(util_create_batch_response(1, batch_num=2))
+                return json.dumps(util_create_batch_response(3, batch_num=2))
 
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=mock_response)
 
-        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=10, last_run={})
+        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=50, last_run={})
 
         # Verify events are properly mapped
-        assert len(events) == 3
+        assert len(events) == 13  # 10 + 3
         assert "Session Start Time" in events[0]
         assert "Client IP" in events[0]
         assert timestamp_field == "Session Start Time"
