@@ -472,6 +472,7 @@ class CollectorRequest(BaseModel):
     timeout: Optional[TimeoutSettings] = None
     state_key: Optional[StateKey] = None
     shards: Optional[List[ShardConfig]] = None
+    time_field: Optional[str] = None
 
     @validator('endpoint')
     def validate_endpoint(cls, v: str) -> str:  # pylint: disable=no-self-argument
@@ -710,6 +711,7 @@ class CollectorBlueprint(BaseModel):
     diagnostic_mode: bool = False
     verify: bool = True
     proxy: bool = False
+    time_field: Optional[str] = None
 
     @validator('base_url')
     def validate_base_url(cls, v: str) -> str:  # pylint: disable=no-self-argument
@@ -1932,6 +1934,60 @@ class CollectorClient:
     def request_sync(self, request: CollectorRequest) -> httpx.Response:
         return anyio.run(self._request, request)
 
+    def map_time_field(self, events: List[Any]) -> List[Any]:
+        """Map a source time field to _time for XSIAM ingestion.
+        
+        This method automatically maps a configured time field to the _time field
+        required by XSIAM. The time field can be configured at either the blueprint
+        level or the request level.
+        
+        **Usage:**
+        
+        ```python
+        # Configure at blueprint level
+        blueprint = CollectorBlueprint(
+            name="MyCollector",
+            base_url="https://api.example.com",
+            request=CollectorRequest(endpoint="/events"),
+            time_field="entryTime",  # Maps entryTime -> _time
+        )
+        
+        # Or configure at request level
+        request = CollectorRequest(
+            endpoint="/events",
+            time_field="timestamp",  # Maps timestamp -> _time
+        )
+        
+        # Automatic mapping during collection
+        result = client.collect_events_sync()
+        # Events already have _time field mapped
+        ```
+        
+        **Priority:**
+        - Request-level time_field takes precedence over blueprint-level
+        - If neither is set, events are returned unchanged
+        - If the source field doesn't exist, _time is not set
+        
+        Args:
+            events: List of events to process.
+            
+        Returns:
+            List of events with _time field mapped.
+        """
+        # Determine which time field to use (request-level takes precedence)
+        time_field = self.blueprint.request.time_field or self.blueprint.time_field
+        
+        if not time_field:
+            return events
+        
+        for event in events:
+            if isinstance(event, dict):
+                time_value = event.get(time_field)
+                if time_value is not None:
+                    event["_time"] = time_value
+        
+        return events
+
     def deduplicate_events(self, events: List[Any], state: Optional[CollectorState] = None) -> List[Any]:
         """Deduplicate events based on the blueprint configuration.
         
@@ -2102,6 +2158,9 @@ class CollectorClient:
             events = []
             for executor in executors:
                 events.extend(executor.fetched_events)
+
+        # Apply automatic time field mapping
+        events = self.map_time_field(events)
 
         for executor in executors:
             self.state_store.save(executor.pagination.state, executor.state_key)
@@ -2697,6 +2756,7 @@ class CollectorBlueprintBuilder:
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, str]] = None,
         state_key: Optional[StateKey] = None,
+        time_field: Optional[str] = None,
     ) -> "CollectorBlueprintBuilder":
         """Configure the main request endpoint.
         
@@ -2707,6 +2767,7 @@ class CollectorBlueprintBuilder:
             params: Query parameters
             headers: Custom headers
             state_key: State storage key (default: uses endpoint)
+            time_field: Source field to map to _time (e.g., "entryTime", "timestamp")
         """
         self._request = CollectorRequest(
             endpoint=endpoint,
@@ -2715,6 +2776,7 @@ class CollectorBlueprintBuilder:
             params=params,
             headers=headers,
             state_key=state_key,
+            time_field=time_field,
         )
         return self
 
@@ -2918,6 +2980,28 @@ class CollectorBlueprintBuilder:
         self._proxy = use_proxy
         return self
     
+    def with_time_field(self, time_field: str) -> "CollectorBlueprintBuilder":
+        """Configure automatic time field mapping.
+        
+        Maps the specified source field to _time for XSIAM ingestion.
+        This is applied automatically to all collected events.
+        
+        Args:
+            time_field: Source field name to map to _time (e.g., "entryTime", "timestamp")
+        
+        Example:
+            ```python
+            blueprint = (
+                CollectorBlueprintBuilder("MyCollector", "https://api.example.com")
+                .with_endpoint("/events")
+                .with_time_field("entryTime")  # Maps entryTime -> _time
+                .build()
+            )
+            ```
+        """
+        self._time_field = time_field
+        return self
+    
     def build(self) -> CollectorBlueprint:
         """Build the CollectorBlueprint from the configured options.
         
@@ -2960,6 +3044,7 @@ class CollectorBlueprintBuilder:
             diagnostic_mode=self._diagnostic_mode,
             verify=self._verify,
             proxy=self._proxy,
+            time_field=getattr(self, '_time_field', None),
         )
 
 
