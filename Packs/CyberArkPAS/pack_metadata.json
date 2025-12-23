@@ -10,7 +10,7 @@
     "categories": [
         "Identity and Access Management"
     ],
-    "defaultDataSource": "CyberArk PAM",
+    "defaultDataSource": "CyberArkPAS",
     "tags": [],
     "useCases": [],
     "keywords": [],
