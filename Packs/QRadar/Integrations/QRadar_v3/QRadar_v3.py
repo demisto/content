@@ -1243,6 +1243,9 @@ def deep_merge_context_changes(
     always_merger.merge(current_ctx, changes)  # updates `current_ctx` in place with `changes`
 
 
+def qradar_get_integration_context():
+    return get_integration_context()
+
 def safely_update_context_data_partial(
     changes: dict,
     attempts: int = 5,
@@ -1257,12 +1260,12 @@ def safely_update_context_data_partial(
     changes_size_bytes = {key: calculate_object_size(value) for key, value in changes.items()}
     print_debug_msg(f"Updating context with {changes=}, {override_keys=}, {changes_size_bytes=}.")
     for _ in range(attempts):
-        ctx, version = get_integration_context_with_version()
+        ctx = qradar_get_integration_context()
         merged = copy.deepcopy(ctx)
         deep_merge_context_changes(merged, changes, override_keys=override_keys)
         merged_size_bytes = {key: calculate_object_size(value) for key, value in merged.items()}
         try:
-            print_debug_msg(f"Saving merged context using {version=}, {merged_size_bytes=}.")
+            print_debug_msg(f"Saving merged context, {merged_size_bytes=}.")
             set_integration_context(merged, version=version)
             return  # success
         except Exception as e:
@@ -2107,7 +2110,7 @@ def print_debug_msg(msg: str):
     demisto.debug(f"QRadarMsg - {msg}")
 
 
-def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
+def is_reset_triggered(ctx: dict | None = None) -> bool:
     """
     Checks if reset of the integration context has been made by the user.
     Because fetch is long-running, the user triggers a reset by calling
@@ -2116,8 +2119,8 @@ def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
     If found, we clear the key sub-dicts and 'samples', plus remove the 'reset' key.
     Returns True if a reset was triggered and handled, False otherwise.
     """
-    if not ctx or not version:
-        ctx, version = get_integration_context_with_version()
+    if not ctx:
+        ctx = qradar_get_integration_context
 
     # RESET_KEY must be True if 'qradar-reset-last-run' command was called
     if isinstance(ctx, dict) and ctx.get(RESET_KEY) is True:
@@ -2250,7 +2253,7 @@ def test_module_command(client: Client, params: dict) -> str:
         - raises DemistoException if something had failed the test.
     """
     try:
-        ctx = get_integration_context()
+        ctx = qradar_get_integration_context()
         print_context_data_stats(ctx, "Test Module")
         is_long_running = params.get("longRunning")
         if is_long_running:
@@ -2327,7 +2330,7 @@ def fetch_incidents_command() -> List[dict]:
     Returns:
         (List[Dict]): List of incidents samples, limited to SAMPLE_SIZE.
     """
-    ctx = get_integration_context()
+    ctx = qradar_get_integration_context()
     samples = ctx.get(SAMPLE_INCIDENTS_KEY, [])
     # Enforce the sample size limit to prevent returning too many incidents
     return samples[:SAMPLE_SIZE]
@@ -2534,7 +2537,7 @@ def delete_offense_from_context(offense_id: str):
     Removes offense_id from MIRRORED_OFFENSES_QUERIED_CTX_KEY and MIRRORED_OFFENSES_FINISHED_CTX_KEY
     in a concurrency-safe manner, without overwriting unrelated data.
     """
-    ctx, _ = get_integration_context_with_version()
+    ctx = qradar_get_integration_context()
 
     offenses_queried = ctx.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
     offenses_finished = ctx.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
@@ -2676,7 +2679,7 @@ def prepare_context_for_events(offenses_with_metadata):
     For any offense that wasn't successfully enriched, mark it in MIRRORED_OFFENSES_QUERIED_CTX_KEY as WAIT.
     Uses partial merge so as not to overwrite other keys.
     """
-    ctx, _ = get_integration_context_with_version()
+    ctx = qradar_get_integration_context()
 
     mirrored_offenses_queried = ctx.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
 
@@ -2773,10 +2776,9 @@ def perform_long_running_loop(
     assets_limit: int,
     long_running_container_id: str,
 ):
-    context_data, version = get_integration_context_with_version()
-    print_debug_msg(f"Got context data with {version=}.")
+    context_data = qradar_get_integration_context()
 
-    if is_reset_triggered(context_data, version):
+    if is_reset_triggered(context_data):
         last_highest_id = 0
         print_debug_msg("Reset was triggered. Set last highest ID to 0.")
     else:
@@ -2804,7 +2806,7 @@ def perform_long_running_loop(
     print_debug_msg(f"Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}")
 
     # Refresh context to see if something changed in parallel
-    context_data, ctx_version = get_integration_context_with_version()
+    context_data = qradar_get_integration_context()
 
     if incidents and new_highest_id:
         # Filter incidents that are small enough to store as samples
@@ -2833,14 +2835,14 @@ def perform_long_running_loop(
         )
 
 
-def recover_from_last_run(ctx: dict | None = None, version: Any = None):
+def recover_from_last_run(ctx: dict | None = None):
     """
     This recovers the integration context from the last run, if there is an inconsistency
     between demisto.getLastRun() and the context. This can happen when the container crashes
     after demisto.createIncidents but before the context is updated.
     """
-    if not ctx or not version:
-        ctx, version = get_integration_context_with_version()
+    if not ctx:
+        ctx = qradar_get_integration_context()
 
     assert isinstance(ctx, dict)
 
@@ -2895,9 +2897,9 @@ def long_running_execution_command(client: Client, params: dict):
     assets_limit = int(params.get("limit_assets", DEFAULT_ASSETS_LIMIT))
     if not argToBoolean(params.get("retry_events_fetch", True)):
         EVENTS_SEARCH_TRIES = 1
-    context_data, version = get_integration_context_with_version()
-    is_reset_triggered(context_data, version)
-    recover_from_last_run(context_data, version)
+    context_data, version = qradar_get_integration_context()
+    is_reset_triggered(context_data)
+    recover_from_last_run(context_data)
     long_running_container_id = str(uuid.uuid4())
     print_debug_msg(f"Starting container with UUID: {long_running_container_id}")
     while True:
@@ -4234,7 +4236,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
     offense = client.offenses_list(offense_id=int(offense_id))
     offense_last_update = get_time_parameter(offense.get("last_persisted_time"))
     mirror_options = params.get("mirror_options")
-    context_data, context_version = get_integration_context_with_version()
+    context_data = qradar_get_integration_context()
     events_columns = params.get("events_columns") or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get("events_limit") or DEFAULT_EVENTS_LIMIT)
     fetch_mode = params.get("fetch_mode", "")
@@ -4337,7 +4339,6 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
 def add_modified_remote_offenses(
     client: Client,
     context_data: dict,
-    version: str,
     mirror_options: str,
     new_modified_records_ids: set[str],
     new_last_update_modified: int,
@@ -4483,7 +4484,7 @@ def get_modified_remote_data_command(
     Returns:
         (GetModifiedRemoteDataResponse): IDs of the offenses that have been modified in QRadar.
     """
-    ctx, ctx_version = get_integration_context_with_version()
+    ctx = qradar_get_integration_context()
     remote_args = GetModifiedRemoteDataArgs(args)
 
     highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
@@ -4522,7 +4523,6 @@ def get_modified_remote_data_command(
     new_modified_records_ids = add_modified_remote_offenses(
         client=client,
         context_data=ctx,
-        version=ctx_version,
         mirror_options=params.get("mirror_options", ""),
         new_modified_records_ids=new_modified_records_ids,
         new_last_update_modified=last_update_modified,
@@ -5381,7 +5381,7 @@ def qradar_print_context_command() -> CommandResults:
     Returns:
         CommandResults: Command results with human-readable output and context output.
     """
-    ctx, _ = get_integration_context_with_version()
+    ctx = qradar_get_integration_context()
     queried = ctx.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {}) or {}
     finished = ctx.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {}) or {}
     fetched = ctx.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}) or {}
@@ -5407,7 +5407,7 @@ def validate_integration_context() -> None:
     The new context structure consists of two dictionaries of queried offenses
     and finished offenses. Some older instances might not have them, so we fix that.
     """
-    context_data, _ = get_integration_context_with_version()
+    context_data = qradar_get_integration_context()
     new_ctx = context_data.copy()
     try:
         print_context_data_stats(context_data, "Checking ctx")
@@ -5678,7 +5678,7 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError(f"""Command '{command}' is not implemented.""")
 
     except Exception as e:
-        print_debug_msg(f"The integration context_data is {get_integration_context()}")
+        print_debug_msg(f"The integration context_data is {qradar_get_integration_context()}")
         return_error(f"Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}\nException is: {e!s}")
     finally:
         #  CIAC-10628
