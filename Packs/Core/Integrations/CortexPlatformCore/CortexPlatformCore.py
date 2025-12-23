@@ -1956,7 +1956,7 @@ def get_endpoint_support_file_command(client: Client, args: dict) -> CommandResu
     group_action_id = reply.get("group_action_id")
 
     if not group_action_id:
-        raise DemistoException("No group_action_id found in the response")
+        raise DemistoException("No group_action_id found. Please ensure that valid endpoint IDs are provided.")
 
     readable_output = f"Endpoint support file request submitted successfully. Group Action ID: {group_action_id}"
 
