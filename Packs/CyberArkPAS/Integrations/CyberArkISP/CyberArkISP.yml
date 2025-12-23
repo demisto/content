@@ -1,0 +1,165 @@
+commonfields:
+  id: CyberArkISP
+  version: -1
+name: CyberArkISP
+display: CyberArk Identity Security Platform
+category: Identity and Access Management
+description: The CyberArk Identity Security Platform is a unified solution securing all human and machine identities (workforce, customers, non-human) across hybrid/multi-cloud environments, centered on intelligent privilege controls, AI-driven threat detection (CORA AI), and lifecycle automation to enforce least privilege and Zero Trust, providing a single portal for access management, PAM, and endpoint security.
+sectionorder:
+- Connect
+- Collect
+configuration:
+- name: url
+  display: Audit Server URL (Audit API Base URL)
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: The Audit API base URL from the SIEM integration (e.g., https://example-domain.audit.cyberark.cloud).
+- name: identity_url
+  display: Identity URL (CyberArk Identity FQDN)
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: The CyberArk Identity FQDN for OAuth2 authentication (e.g., https://abc1234.id.cyberark.cloud).
+- name: web_app_id
+  display: OAuth2 Web App ID
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: The Application ID of the OAuth2 Server web app configured in Identity Administration.
+- name: client_id
+  display: Client ID (Service User)
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: Service username without domain (configured as OAuth confidential client).
+- name: client_secret
+  display: Client Secret (Service User Password)
+  displaypassword: Client Secret
+  required: true
+  type: 9
+  section: Connect
+  hiddenusername: true
+  additionalinfo: Service user password for OAuth2 authentication.
+- name: api_key
+  display: API Key
+  required: true
+  type: 4
+  section: Connect
+  additionalinfo: The API key from the SIEM integration created in the Administration space.
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Connect
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  defaultvalue: "false"
+  type: 8
+  section: Connect
+  advanced: true
+- name: max_fetch
+  display: Maximum number of audit events per fetch
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+  defaultvalue: "10000"
+  additionalinfo: Maximum number of events to fetch per cycle (default 10000, based on API paging definition).
+script:
+  commands:
+  - name: cyberark-isp-get-events
+    description: |-
+      Gets audit events from CyberArk Identity Security Platform. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+    deprecated: false
+    arguments:
+    - name: date_from
+      description: >-
+        The start date/time to fetch events from (format: YYYY-MM-DD HH:MM:SS).
+        Supports relative time (e.g., "3 days ago", "2 hours ago")
+        or specific absolute dates (e.g., "2025-09-15 17:10:00").
+      defaultValue: "1 minute ago"
+    - name: date_to
+      description: >-
+        The end date/time to fetch events until (format: YYYY-MM-DD HH:MM:SS).
+        Supports relative time (e.g., "1 hour ago", "now")
+        or specific absolute dates (e.g., "2025-09-15 17:11:00").
+    - name: limit
+      description: Maximum number of events to retrieve.
+      defaultValue: "50"
+    - name: should_push_events
+      description: Set to true to push events to XSIAM (use with caution to avoid duplicates).
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: CyberArkISP.Event.uuid
+      description: Unique identifier of the audit event.
+      type: String
+    - contextPath: CyberArkISP.Event.tenantId
+      description: Tenant identifier.
+      type: String
+    - contextPath: CyberArkISP.Event.timestamp
+      description: Event timestamp (Unix milliseconds).
+      type: Number
+    - contextPath: CyberArkISP.Event.username
+      description: Username associated with the event.
+      type: String
+    - contextPath: CyberArkISP.Event.applicationCode
+      description: Application code (e.g., IDP).
+      type: String
+    - contextPath: CyberArkISP.Event.auditCode
+      description: Audit code identifier.
+      type: String
+    - contextPath: CyberArkISP.Event.auditType
+      description: Type of audit event (e.g., Info, Warning, Error).
+      type: String
+    - contextPath: CyberArkISP.Event.action
+      description: Action performed.
+      type: String
+    - contextPath: CyberArkISP.Event.userId
+      description: User ID associated with the event.
+      type: String
+    - contextPath: CyberArkISP.Event.source
+      description: Source IP address.
+      type: String
+    - contextPath: CyberArkISP.Event.actionType
+      description: Type of action (e.g., Start, End).
+      type: String
+    - contextPath: CyberArkISP.Event.component
+      description: Component name.
+      type: String
+    - contextPath: CyberArkISP.Event.serviceName
+      description: Service name.
+      type: String
+    - contextPath: CyberArkISP.Event.message
+      description: Event message.
+      type: String
+    - contextPath: CyberArkISP.Event.customData
+      description: Custom event data.
+      type: Unknown
+    - contextPath: CyberArkISP.Event.cloudProvider
+      description: Cloud provider (e.g., aws).
+      type: String
+    - contextPath: CyberArkISP.Event.identityType
+      description: Identity type (e.g., NON_HUMAN, HUMAN).
+      type: String
+    - contextPath: CyberArkISP.Event.originRegion
+      description: Origin region.
+      type: String
+  isfetchevents: true
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 8.11.0
+marketplaces:
+- marketplacev2
+tests:
+- No tests (auto formatted)
