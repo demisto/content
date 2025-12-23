@@ -3333,14 +3333,16 @@ def assessment_profile_results_payload(standards):
         
     return payload
         
-def core_list_compliance_standards_command(client: Client, args: dict) -> CommandResults:
+def core_list_compliance_standards_command(client: Client, args: dict) -> list[CommandResults]:
     
     name = args.get("name", "")
     created_by = args.get("created_by", "")
     labels = argToList(args.get("labels", ""))
+    labels = ["alibaba_cloud" if label == "Alibaba Cloud" else "on_prem" if label == "On Prem" else label for label in labels]
     page = args.get("page", "0")
     page_size = args.get("page_size", )
 
+    
     payload = list_compliance_standards_payload(
         name=name,
         created_by=created_by, 
@@ -3352,22 +3354,54 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> Comman
     response = client.list_compliance_standards_command(payload)
     reply = response.get("reply", {})
     standards = reply.get("standards")
-    standard_names = {s.get("name") for s in standards if s.get("name")}
+    filtered_count = reply.get("result_count")
+    returned_count = len(standards)
+    
+    # payload = assessment_profile_results_payload(
+    #     standards=standards,
+    # )
+    
+    # response = client.get_assessment_profile_results(payload)
+    # reply = response.get("reply", {})
+    # data = reply.get("data")
+    
+    # standard_to_count = {
+    #     item.get("STANDARD_NAME"): item.get("PROFILES_COUNT", 0)
+    #     for item in data 
+    #     if item.get("STANDARD_NAME")
+    # }
 
-    payload = assessment_profile_results_payload(
-        standards=standards,
-    )
-    response = client.get_assessment_profile_results(payload)
-    reply = response.get("reply", {})
-    data = reply.get("data")
-    print(data)
-    return CommandResults(
-        #readable_output= f"Assessment Profile {assessment_profile_id} successfully added",
+    # for s in standards:
+    #     s_name = s.get("name")
+    #     s["assessments_profiles_count"] = standard_to_count.get(s_name, 0)
+
+
+    filtered_standards = [
+        {
+            "id": s.get("id"),
+            "name": s.get("name"),
+            "controls_count": len(s.get("controls_ids", [])),
+            "assessments_profiles_count": s.get("assessments_profiles_count", 0)
+        }
+        for s in standards
+    ]
+    
+    command_results = []
+    command_results.append(CommandResults(
+        readable_output= tableToMarkdown("Compliance Standards", filtered_standards),
         outputs_prefix='Core.ComplianceStandards',
         outputs_key_field='id',
-        outputs=reply,
+        outputs=filtered_standards,
         raw_response=reply
+    ))
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ComplianceStandardsMetadata",
+            outputs={"filter_count": filtered_count, "returned_count": returned_count},
+        )
     )
+   
+    return command_results
      
 def main():  # pragma: no cover
     """

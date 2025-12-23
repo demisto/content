@@ -2803,7 +2803,6 @@ script:
       - contextPath: Core.AssessmentProfile.assessment_profile_id
         description: The unique identifier of the newly created assessment profile.
         type: String
-
     - arguments:
       - name: name
         description: The name of the standard.
@@ -2815,7 +2814,7 @@ script:
         description: The page number for the standards to return for pagination. Default is 0.
       - auto: PREDEFINED
         name: labels
-        description: A comma seperated list of labels to filter compliance standards.
+        description: A comma-separated list of labels to filter compliance standards.
         predefined:
           - "Aws"
           - "Azure"
@@ -2827,15 +2826,33 @@ script:
           - "EKS"
           - "AKS"
           - "OCI"
-          - "Alibaba Cloud" #NEED TO CHECK
-          - "On prem" #NEED TO CHECK
+          - "Alibaba Cloud"
+          - "On Prem"
           - "LLM"
           - "Docker"
           - "Openshift"
       name: core-list-compliance-standards
       description: Create new assessment profile.
       outputs:
-      - contextPath: Core.ComplianceStandards.standard_id # NEED TO ADD
+      - contextPath: Core.ComplianceStandards.id
+        description: The unique identifier of the standard.
+        type: String
+      - contextPath: Core.ComplianceStandards.name
+        description: The name of the standard.
+        type: String
+      - contextPath: Core.ComplianceStandards.controls_count
+        description: The number of controls in the standard.
+        type: Number
+      - contextPath: Core.ComplianceStandards.assessments_profiles_count
+        description: The number of assessment profiles associated with the standard.
+        type: Number
+      - contextPath: Core.ComplianceStandardsMetadata.returned_count
+        description: The actual number of compliance standards that match all filter criteria and returned in this specific response.
+        type: Number
+      - contextPath: Core.ComplianceStandardsMetadata.filtered_count
+        description: The total number of compliance standards in the system that match all filter criteria.
+        type: Number
+
         
         
         
