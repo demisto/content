@@ -1,0 +1,28 @@
+args:
+- description: Note to be added to the Splunk finding.
+  name: note
+  required: true
+- auto: PREDEFINED
+  defaultValue: FROM XSOAR
+  description: The note tag. Use the note entry tag (defined in your instance configuration) to mirror the note to Splunk.
+  name: tags
+  predefined:
+  - FROM XSOAR
+  required: false
+  isArray: true
+comment: Use this script to add a note with a tag (the "Note tag to Splunk" defined in the instance configuration) as an entry in Cortex XSOAR, which will then be mirrored as a note to a Splunk finding. This script should be run within an incident.
+commonfields:
+  id: SplunkAddNote
+  version: -1
+name: SplunkAddNote
+script: ""
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
