@@ -246,7 +246,7 @@ class RetryPolicy(BaseModel):
     )
     respect_retry_after: bool = True
 
-    @root_validator
+    @root_validator(pre=False)
     def validate_delay(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=no-self-argument
         """Validate that max_delay is greater than initial_delay."""
         max_delay = values.get("max_delay")
@@ -353,7 +353,7 @@ class TimeoutSettings(BaseModel):
     execution: Optional[float] = Field(None, gt=0)
     safety_buffer: float = Field(30.0, gt=0)
 
-    @root_validator
+    @root_validator(pre=False)
     def validate_execution_safety(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=no-self-argument
         """Validate that execution timeout is greater than safety buffer."""
         execution = values.get("execution")
@@ -435,7 +435,7 @@ class PaginationConfig(BaseModel):
     stop_when_empty: bool = True
     max_pages: Optional[int] = Field(None, gt=0)
 
-    @root_validator
+    @root_validator(pre=False)
     def validate_pagination_mode(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=no-self-argument
         """Validate pagination configuration based on the selected mode."""
         mode = values.get("mode")
@@ -1934,7 +1934,7 @@ class CollectorClient:
     def request_sync(self, request: CollectorRequest) -> httpx.Response:
         return anyio.run(self._request, request)
 
-    def map_time_field(self, events: List[Any]) -> List[Any]:
+    def map_time_field(self, events: List[Any], use_current_time_on_missing: bool = False) -> List[Any]:
         """Map a source time field to _time for XSIAM ingestion.
         
         This method automatically maps a configured time field to the _time field
@@ -1952,24 +1952,45 @@ class CollectorClient:
             time_field="entryTime",  # Maps entryTime -> _time
         )
         
-        # Or configure at request level
+        # Or configure at request level with nested field
         request = CollectorRequest(
             endpoint="/events",
-            time_field="timestamp",  # Maps timestamp -> _time
+            time_field="data.timestamp",  # Maps nested data.timestamp -> _time
         )
         
         # Automatic mapping during collection
         result = client.collect_events_sync()
         # Events already have _time field mapped
+        
+        # Use current time when field is missing
+        result = client.collect_events_sync()
+        events = client.map_time_field(result.events, use_current_time_on_missing=True)
+        ```
+        
+        **Nested Field Support:**
+        
+        The time_field parameter supports dot notation for nested fields:
+        
+        ```python
+        # Simple field
+        time_field="timestamp"  # event['timestamp']
+        
+        # Nested field
+        time_field="metadata.created_at"  # event['metadata']['created_at']
+        
+        # Deeply nested
+        time_field="data.event.timestamp"  # event['data']['event']['timestamp']
         ```
         
         **Priority:**
         - Request-level time_field takes precedence over blueprint-level
         - If neither is set, events are returned unchanged
-        - If the source field doesn't exist, _time is not set
+        - If the source field doesn't exist and use_current_time_on_missing is False, _time is not set
+        - If the source field doesn't exist and use_current_time_on_missing is True, _time is set to current time
         
         Args:
             events: List of events to process.
+            use_current_time_on_missing: If True, use current time when time field is not found. Default: False.
             
         Returns:
             List of events with _time field mapped.
@@ -1980,13 +2001,153 @@ class CollectorClient:
         if not time_field:
             return events
         
+        missing_time_count = 0
         for event in events:
             if isinstance(event, dict):
-                time_value = event.get(time_field)
+                # Use _get_value_by_path to support nested fields
+                time_value = _get_value_by_path(event, time_field)
                 if time_value is not None:
                     event["_time"] = time_value
+                else:
+                    # Log when time field is not found
+                    missing_time_count += 1
+                    if use_current_time_on_missing:
+                        # Use current time in ISO 8601 format
+                        current_time = datetime.utcnow().isoformat() + 'Z'
+                        event["_time"] = current_time
+                        self.logger.debug(
+                            f"Time field '{time_field}' not found in event, using current time",
+                            {"event_id": event.get("id", "unknown"), "current_time": current_time}
+                        )
+        
+        # Log summary if any events had missing time fields
+        if missing_time_count > 0:
+            if use_current_time_on_missing:
+                self.logger.info(
+                    f"Time field '{time_field}' not found in {missing_time_count} event(s), used current time instead"
+                )
+            else:
+                self.logger.info(
+                    f"Time field '{time_field}' not found in {missing_time_count} event(s), _time field not set"
+                )
         
         return events
+
+    def map_to_incidents(
+        self,
+        events: List[Any],
+        name_field: str,
+        occurred_field: str,
+        severity_field: Optional[str] = None,
+        severity_mapping: Optional[Dict[Any, int]] = None,
+        default_severity: int = 0,
+    ) -> List[Dict[str, Any]]:
+        """Transform raw events into XSOAR incident format.
+        
+        This helper method automatically maps event fields to the required XSOAR incident structure,
+        making it plug-and-play for fetch-incidents implementations.
+        
+        **Basic Usage:**
+        
+        ```python
+        result = client.collect_incidents_sync(limit=50)
+        
+        # Automatic mapping
+        incidents = client.map_to_incidents(
+            events=result.events,
+            name_field='title',
+            occurred_field='created_time',
+            severity_field='priority',
+            severity_mapping={'low': 1, 'medium': 2, 'high': 3, 'critical': 4}
+        )
+        
+        # Return to XSOAR
+        demisto.incidents(incidents)
+        ```
+        
+        **Without Severity:**
+        
+        ```python
+        incidents = client.map_to_incidents(
+            events=result.events,
+            name_field='alert_name',
+            occurred_field='timestamp'
+        )
+        ```
+        
+        **Custom Severity Mapping:**
+        
+        ```python
+        # Map numeric severity values
+        incidents = client.map_to_incidents(
+            events=result.events,
+            name_field='name',
+            occurred_field='time',
+            severity_field='severity_level',
+            severity_mapping={1: 1, 2: 2, 3: 3, 4: 4, 5: 4},  # Map 5 to Critical (4)
+            default_severity=1  # Default to Low if not found
+        )
+        ```
+        
+        **Field Mapping:**
+        - `name`: Incident title/name (from name_field)
+        - `occurred`: Incident timestamp (from occurred_field)
+        - `rawJSON`: Complete event data as JSON string
+        - `severity`: XSOAR severity (0=Unknown, 1=Low, 2=Medium, 3=High, 4=Critical)
+        
+        Args:
+            events: List of raw events to transform
+            name_field: Path to the field containing incident name/title (e.g., 'title', 'alert.name')
+            occurred_field: Path to the field containing incident timestamp (e.g., 'created_time', 'timestamp')
+            severity_field: Optional path to severity field (e.g., 'severity', 'priority')
+            severity_mapping: Optional dict mapping source severity values to XSOAR severity (0-4)
+            default_severity: Default XSOAR severity if field not found or not in mapping (default: 0)
+            
+        Returns:
+            List of XSOAR incident dictionaries ready for demisto.incidents()
+        """
+        incidents: List[Dict[str, Any]] = []
+        
+        for event in events:
+            if not isinstance(event, dict):
+                # Skip non-dict events
+                continue
+            
+            # Extract name
+            name = _get_value_by_path(event, name_field)
+            if name is None:
+                name = "Incident"  # Fallback name
+            
+            # Extract occurred timestamp
+            occurred = _get_value_by_path(event, occurred_field)
+            
+            # Extract and map severity
+            severity = default_severity
+            if severity_field:
+                severity_value = _get_value_by_path(event, severity_field)
+                if severity_value is not None and severity_mapping:
+                    # Try to map the severity value
+                    severity = severity_mapping.get(severity_value, default_severity)
+                elif severity_value is not None:
+                    # Try to convert directly to int if no mapping provided
+                    try:
+                        severity = int(severity_value)
+                        # Clamp to valid XSOAR range (0-4)
+                        severity = max(0, min(4, severity))
+                    except (ValueError, TypeError):
+                        severity = default_severity
+            
+            # Create XSOAR incident
+            incident = {
+                'name': str(name),
+                'occurred': occurred,
+                'rawJSON': json.dumps(event),
+                'severity': severity,
+            }
+            
+            incidents.append(incident)
+        
+        return incidents
 
     def deduplicate_events(self, events: List[Any], state: Optional[CollectorState] = None) -> List[Any]:
         """Deduplicate events based on the blueprint configuration.
@@ -2160,7 +2321,7 @@ class CollectorClient:
                 events.extend(executor.fetched_events)
 
         # Apply automatic time field mapping
-        events = self.map_time_field(events)
+        events = self.map_time_field(events, use_current_time_on_missing=False)
 
         for executor in executors:
             self.state_store.save(executor.pagination.state, executor.state_key)
@@ -2237,6 +2398,232 @@ class CollectorClient:
             Same exceptions as collect_events().
         """
         return anyio.run(self.collect_events, request, strategy, limit, resume_state)
+
+    async def collect_incidents(
+        self,
+        request: Optional[Union[CollectorRequest, Sequence[CollectorRequest]]] = None,
+        strategy: Union[StrategyName, CollectionStrategy, None] = None,
+        limit: Optional[int] = None,
+        resume_state: Optional[CollectorState] = None,
+    ) -> CollectorRunResult:
+        """Asynchronously collect incidents from the API.
+        
+        This method operates identically to collect_events() but is semantically designed
+        for fetching incidents in XSOAR integrations. The underlying implementation is the
+        same, but this provides a clearer API for incident collection use cases.
+        
+        **Basic Usage:**
+        
+        ```python
+        result = await client.collect_incidents(limit=100)
+        incidents = result.events  # Note: 'events' contains incident data
+        ```
+        
+        **With Custom Request:**
+        
+        ```python
+        custom_request = CollectorRequest(
+            endpoint="/v1/incidents",
+            data_path="data.incidents",
+            pagination=PaginationConfig(mode="cursor", next_cursor_path="meta.next_cursor"),
+        )
+        result = await client.collect_incidents(request=custom_request)
+        ```
+        
+        **Resume After Timeout:**
+        
+        ```python
+        # Load previous state
+        last_state = CollectorState.from_dict(demisto.getLastRun().get("state"))
+        
+        # Resume collection
+        result = await client.collect_incidents(resume_state=last_state, limit=100)
+        
+        # Check if timed out
+        if result.timed_out:
+            # Save state for next run
+            demisto.setLastRun({"state": result.state.to_dict()})
+        ```
+        
+        **Creating XSOAR Incidents:**
+        
+        ```python
+        result = await client.collect_incidents(limit=50)
+        
+        # Transform to XSOAR incident format
+        incidents = []
+        for incident_data in result.events:
+            incident = {
+                'name': incident_data.get('name', 'Incident'),
+                'occurred': incident_data.get('created_time'),
+                'rawJSON': json.dumps(incident_data),
+                'severity': convert_severity(incident_data.get('severity')),
+            }
+            incidents.append(incident)
+        
+        # Return incidents to XSOAR
+        demisto.incidents(incidents)
+        
+        # Save state if timed out
+        if result.timed_out:
+            demisto.setLastRun({"state": result.state.to_dict()})
+        ```
+        
+        **State Management:**
+        
+        - If `resume_state` is provided, it's used to restore pagination position
+        - State is automatically saved after collection completes
+        - Each request/shard maintains separate state under its `state_key`
+        - State includes: cursor, page, offset, last_event_id, partial_results, metadata
+        
+        **Timeout Handling:**
+        
+        - If execution timeout is approaching, raises `CollectorTimeoutError`
+        - Partial results are preserved in `result.events`
+        - State is saved automatically, allowing seamless resume
+        - Set `blueprint.timeout.execution` to enable timeout awareness
+        
+        **Return Value:**
+        
+        Returns `CollectorRunResult` containing:
+        - `events`: List of collected incidents (note: field name is 'events' for consistency)
+        - `state`: Aggregated state for all requests/shards
+        - `timed_out`: True if collection was interrupted by timeout
+        - `exhausted`: True if all pagination is complete (no more data)
+        - `metrics`: ExecutionMetrics with API call statistics
+        
+        Args:
+            request: Optional request override. Can be:
+                - None: Uses blueprint.request
+                - CollectorRequest: Single request override
+                - List[CollectorRequest]: Multiple requests (use with "concurrent" strategy)
+            strategy: Collection strategy override. Can be:
+                - None: Uses blueprint.default_strategy
+                - StrategyName: "sequential", "concurrent", "batch", or "stream"
+                - CollectionStrategy: Custom strategy instance
+            limit: Maximum number of incidents to collect. Overrides blueprint.default_limit.
+                None = unlimited. Applies across all requests/shards.
+            resume_state: State to resume from (typically from previous timeout).
+                If provided, restores pagination position. Can be:
+                - None: Starts fresh or loads from integration context
+                - CollectorState: Single state for all requests
+                - Dict with state_key -> CollectorState mapping (for multiple shards)
+        
+        Returns:
+            CollectorRunResult with incidents (in 'events' field), state, and metrics.
+        
+        Raises:
+            CollectorTimeoutError: Execution deadline approaching (if timeout.execution is set)
+            CollectorAuthenticationError: Authentication failed
+            CollectorRateLimitError: Rate limit exceeded
+            CollectorCircuitOpenError: Circuit breaker is open
+            CollectorRetryError: All retry attempts exhausted
+            CollectorConfigurationError: Invalid request/strategy configuration
+        """
+        # Delegate to collect_events - the implementation is identical
+        # This method exists to provide semantic clarity for incident collection
+        return await self.collect_events(request, strategy, limit, resume_state)
+
+    def collect_incidents_sync(
+        self,
+        request: Optional[Union[CollectorRequest, Sequence[CollectorRequest]]] = None,
+        strategy: Union[StrategyName, CollectionStrategy, None] = None,
+        limit: Optional[int] = None,
+        resume_state: Optional[CollectorState] = None,
+    ) -> CollectorRunResult:
+        """Synchronous wrapper for collect_incidents().
+        
+        This is the recommended method for XSOAR integrations implementing fetch-incidents
+        as it provides a simple synchronous interface while using async internals for performance.
+        
+        **Usage in fetch-incidents:**
+        
+        ```python
+        def fetch_incidents(client: CollectorClient, last_run: dict, first_fetch_time: str, max_fetch: int):
+            # Load previous state if exists
+            resume_state = None
+            if last_run.get("state"):
+                resume_state = CollectorState.from_dict(last_run["state"])
+            
+            # Collect incidents
+            result = client.collect_incidents_sync(
+                limit=max_fetch,
+                resume_state=resume_state
+            )
+            
+            # Transform to XSOAR incident format
+            incidents = []
+            for incident_data in result.events:
+                incident = {
+                    'name': incident_data.get('name', 'Incident'),
+                    'occurred': incident_data.get('created_time'),
+                    'rawJSON': json.dumps(incident_data),
+                    'severity': convert_severity(incident_data.get('severity')),
+                }
+                incidents.append(incident)
+            
+            # Prepare next run
+            next_run = {}
+            if result.timed_out:
+                # Save state for resume
+                next_run['state'] = result.state.to_dict()
+            elif not result.exhausted:
+                # More data available, save state
+                next_run['state'] = result.state.to_dict()
+            
+            return next_run, incidents
+        ```
+        
+        **Simple Example:**
+        
+        ```python
+        # In main() function
+        if command == 'fetch-incidents':
+            next_run, incidents = fetch_incidents(
+                client=client,
+                last_run=demisto.getLastRun(),
+                first_fetch_time=params.get('first_fetch', '3 days'),
+                max_fetch=int(params.get('max_fetch', 50))
+            )
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
+        ```
+        
+        **With Deduplication:**
+        
+        ```python
+        result = client.collect_incidents_sync(limit=100)
+        
+        # Deduplicate if configured
+        unique_incidents = client.deduplicate_events(result.events, result.state)
+        
+        # Transform to XSOAR format
+        incidents = [
+            {
+                'name': inc.get('title'),
+                'occurred': inc.get('timestamp'),
+                'rawJSON': json.dumps(inc)
+            }
+            for inc in unique_incidents
+        ]
+        ```
+        
+        This method is equivalent to `anyio.run(client.collect_incidents, ...)` and provides
+        the same functionality as the async version, but can be called from synchronous code.
+        
+        Args:
+            request: Optional request override (see collect_incidents() for details)
+            strategy: Optional strategy override (see collect_incidents() for details)
+            limit: Maximum incidents to collect (see collect_incidents() for details)
+            resume_state: State to resume from (see collect_incidents() for details)
+        
+        Returns:
+            CollectorRunResult with incidents (in 'events' field), state, and metrics.
+        
+        Raises:
+            Same exceptions as collect_incidents().
+        """
+        return anyio.run(self.collect_incidents, request, strategy, limit, resume_state)
 
     def get_diagnostic_report(self, state_snapshots: Optional[List[Dict[str, Any]]] = None) -> DiagnosticReport:
         """Generate a comprehensive diagnostic report for troubleshooting.
@@ -2492,7 +2879,7 @@ class CollectorClient:
             List of error messages (empty if configuration is valid)
         """
         try:
-            CollectorBlueprint.validate(self.blueprint.dict())
+            CollectorBlueprint.parse_obj(self.blueprint.dict())
             return []
         except Exception as e:
             return [str(e)]
