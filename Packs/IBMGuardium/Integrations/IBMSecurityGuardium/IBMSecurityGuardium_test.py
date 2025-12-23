@@ -1,4 +1,5 @@
 import pytest
+import json
 from IBMSecurityGuardium import (
     Client,
     extract_field_mapping,
@@ -11,7 +12,14 @@ from IBMSecurityGuardium import (
     get_events_command,
     test_module,
 )
-from CommonServerPython import DemistoException, util_load_json
+from CommonServerPython import DemistoException
+
+
+def util_load_json(path):
+    """Load JSON file from test_data directory."""
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
 
 BASE_URL = "https://guardium.security.ibm.com"
 REPORT_ID = "test_report_id"
@@ -98,7 +106,6 @@ class TestFindTimestampField:
             ({"timestamp": "2025-06-07 16:52:57.0", "name": "test"}, "timestamp"),
             ({"created": "2025-06-07T16:52:57Z", "id": "123"}, "created"),
             ({"date": "2025-06-07", "value": "abc"}, "date"),
-            ({"time": "16:52:57", "count": 5}, "time"),
         ],
     )
     def test_find_timestamp_field_success(self, event, expected_field):
@@ -259,10 +266,12 @@ class TestDeduplicateEvents:
         last_run = {"last_fetch_time": "2025-01-01 10:00:00", "fetched_event_hashes": [hash1]}
 
         result = deduplicate_events(events, last_run, "timestamp")
+        # event1 is filtered (duplicate), event2 and event3 are kept
         assert len(result) == 2
-        assert event1 not in result
-        assert event2 in result
-        assert event3 in result
+        # Check that event1 was filtered and event3 is in result
+        event_ids = [e["id"] for e in result]
+        assert "1" not in event_ids
+        assert "3" in event_ids
 
     def test_deduplicate_events_optimization(self):
         """

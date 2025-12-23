@@ -116,16 +116,14 @@ def find_timestamp_field(event: dict[str, Any]) -> str:
         DemistoException: If no timestamp field is found in the event
     """
     for key, value in event.items():
-        if isinstance(value, str):
-            # Check if value matches common date patterns (YYYY-MM-DD or contains time)
-            if any(char in value for char in ["-", ":"]) and len(value) >= 10:
-                try:
-                    # Try to parse as date to verify it's a valid timestamp
-                    dateparser.parse(value)
-                    demisto.debug(f"Found timestamp field by value pattern: {key} = {value}")
-                    return key
-                except Exception:
-                    continue
+        if isinstance(value, str) and any(char in value for char in ["-", ":"]) and len(value) >= 10:
+            try:
+                # Try to parse as date to verify it's a valid timestamp
+                dateparser.parse(value)
+                demisto.debug(f"Found timestamp field by value pattern: {key} = {value}")
+                return key
+            except Exception:
+                continue
 
     raise DemistoException("No timestamp field found in event. Unable to process events without a timestamp field.")
 
@@ -208,12 +206,12 @@ def deduplicate_events(events: list[dict[str, Any]], last_run: dict[str, Any], t
         f"Last fetch time: {last_fetch_time}, Ignore list size: {len(fetched_event_hashes)}"
     )
 
-    deduplicated = []
+    deduplicated: list[dict[str, Any]] = []
     for event in events:
         event_time = event.get(timestamp_field)
 
         # If event timestamp is greater than last_fetch_time, all remaining events are new
-        if event_time and event_time > last_fetch_time:
+        if event_time and last_fetch_time and event_time > last_fetch_time:
             # Add this event and all remaining events without checking
             deduplicated.extend(events[len(deduplicated) :])
             demisto.debug(
@@ -250,7 +248,7 @@ def build_ignore_list(events: list[dict[str, Any]], timestamp_field: str) -> set
     Returns:
         Set of event hashes for events with the same timestamp as the last event
     """
-    ignore_set = set()
+    ignore_set: set[str] = set()
     if not events:
         return ignore_set
 
@@ -483,10 +481,10 @@ def main() -> None:
             demisto.debug(f"Successfully sent {len(events)} events to XSIAM and set last run to: {next_run}")
 
         elif command == "ibm-guardium-get-events":
-            events, results, timestamp_field = get_events_command(client, report_id, args)
+            events, results, timestamp_field_result = get_events_command(client, report_id, args)
 
-            if argToBoolean(args.get("should_push_events", False)) and timestamp_field:
-                send_events_to_xsiam_with_time(events, timestamp_field)
+            if argToBoolean(args.get("should_push_events", False)) and timestamp_field_result:
+                send_events_to_xsiam_with_time(events, timestamp_field_result)
                 demisto.debug(f"Successfully sent {len(events)} events to XSIAM")
                 return_results(f"Sent {len(events)} events to XSIAM")
 
