@@ -442,7 +442,7 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "SentinelOne Incident Mirrored Fields",
+						"name": "SentinelOne Threat Mirrored Fields",
 						"static": false,
 						"w": 1,
 						"wrapLabels": true,
@@ -1163,7 +1163,7 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Quick Actions",
+						"name": "SentinelOne Threat Quick Actions",
 						"static": false,
 						"w": 1,
 						"x": 0,
@@ -1217,7 +1217,7 @@
 				],
 				"hidden": false,
 				"id": "tab_threat_cloud_provider_details",
-				"name": "Threat Cloud Provider Details",
+				"name": "Incident Cloud Provider Details",
 				"sections": [
 					{
 						"displayType": "ROW",
@@ -1451,7 +1451,7 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "SentinelOne Threat Cloud Provider Details",
+						"name": "SentinelOne Incident Cloud Provider Details",
 						"static": false,
 						"w": 1,
 						"wrapLabels": true,
@@ -1480,7 +1480,7 @@
 				],
 				"hidden": false,
 				"id": "tab_threat_kubenetes_details",
-				"name": "Threat Kubernetes Details",
+				"name": "Incident Kubernetes Details",
 				"sections": [
 					{
 						"displayType": "ROW",
@@ -1559,7 +1559,7 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "SentinelOne Threat Kubernetes Cluster Details",
+						"name": "SentinelOne Incident Kubernetes Cluster Details",
 						"static": false,
 						"w": 1,
 						"wrapLabels": true,
@@ -1594,7 +1594,7 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "SentinelOne Threat Kubernetes  Node details",
+						"name": "SentinelOne Incident Kubernetes  Node details",
 						"static": false,
 						"w": 1,
 						"wrapLabels": true,
@@ -1629,11 +1629,97 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "SentinelOne Threat Kubernetes Pod Details",
+						"name": "SentinelOne Incident Kubernetes Pod Details",
 						"static": false,
 						"w": 1,
 						"wrapLabels": true,
 						"x": 2,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"filters": [
+					[
+						{
+							"ignoreCase": false,
+							"left": {
+								"isContext": true,
+								"value": {
+									"simple": "sentineloneuamalertid"
+								}
+							},
+							"operator": "isNotEmpty",
+							"right": null,
+							"type": "shortText"
+						}
+					]
+				],
+				"hidden": false,
+				"id": "tab_uam_alert_details",
+				"name": "Incident UAM Alert Details",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-a340f780-dff9-11f0-b711-ef6183340a2c",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "sentineloneuamalertid",
+								"height": 22,
+								"id": "d84e5b70-dff9-11f0-b711-ef6183340a2c",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentineloneuamalertname",
+								"height": 22,
+								"id": "d9f49160-dff9-11f0-b711-ef6183340a2c",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentineloneuamalertdetectionproduct",
+								"height": 22,
+								"id": "db8c9680-dff9-11f0-b711-ef6183340a2c",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentineloneuamalertattacksurfaces",
+								"height": 22,
+								"id": "dfe9fd30-dff9-11f0-b711-ef6183340a2c",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentineloneuamalertanalystverdict",
+								"height": 22,
+								"id": "e0fe7a70-dff9-11f0-b711-ef6183340a2c",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SentinelOne UAM Alert Details",
+						"static": false,
+						"w": 1,
+						"wrapLabels": false,
+						"x": 0,
 						"y": 0
 					}
 				],
@@ -3517,6 +3603,7 @@
 			}
 		]
 	},
+	"quickViewV2": null,
 	"system": false,
 	"version": -1,
 	"fromVersion": "6.0.0"

@@ -47,6 +47,19 @@ configuration:
   - Threats
   - Both
   required: false
+- name: fetch_uam_alert_type
+  display: Fetch incidents from UAM Alert type
+  type: 15
+  section: Collect
+  options:
+  - ALL
+  - CLOUD
+  - CUSTOM_ALERTS
+  - ENDPOINT
+  - IDENTITY
+  - STAR
+  - THIRD_PARTY
+  required: false
 - name: fetch_time
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   defaultvalue: "3 days"

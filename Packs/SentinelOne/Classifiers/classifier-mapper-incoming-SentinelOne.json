@@ -500,6 +500,21 @@
 				"Verdict": {
 					"simple": "threatInfo.analystVerdictDescription"
 				},
+				"SentinelOne UAM Alert ID": {
+					"simple": "node.id"
+				},
+				"SentinelOne UAM Alert Name": {
+					"simple": "node.name"
+				},
+				"SentinelOne UAM Alert Detection Product": {
+					"simple": "node.detectionSource.product"
+				},
+				"SentinelOne UAM Alert Analyst Verdict": {
+					"simple": "node.analystVerdict"
+				},
+				"SentinelOne UAM Alert Attack Surfaces": {
+					"simple": "node.attackSurfaces"
+				},
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"
 				},

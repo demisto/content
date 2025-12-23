@@ -39,6 +39,8 @@ ANALYST_VERDICT = {
 }
 THREAT_STATUS = {"Unresolved": "unresolved", "Resolved": "resolved", "In progress": "in_progress"}
 
+UAM_SEVERITY_MAPPING = {"CRITICAL": 4, "HIGH": 3, "MEDIUM": 2, "LOW": 1, "INFO": 0.5}
+
 """ HELPER FUNCTIONS """
 
 
@@ -888,6 +890,224 @@ class Client(BaseClient):
         alerts = response.get("data", {})
         pagination = response.get("pagination")
         return alerts, pagination
+
+    def get_uam_alerts_graphql_req(self, created_at, view_type, limit, cursor=None):
+        graphql_endpoint = "unifiedalerts/graphql"
+
+        after_clause = f'after: "{cursor}"' if cursor else "after: null"
+        demisto.debug(after_clause)
+
+        query = f"""
+            query Alerts {{
+            alerts(
+                first: {limit}
+                viewType: {view_type}
+                {after_clause}
+                sort: {{ by: "createdAt", order: ASC }}
+                filters: [
+                {{
+                    fieldId: "createdAt"
+                    dateTimeRange: {{
+                    start: {created_at}
+                    }}
+                }}
+                ]
+            ) {{
+                totalCount
+                edges {{
+                node {{
+                    id
+                    name
+                    description
+                    severity
+                    status
+                    result
+                    analystVerdict
+                    attackSurfaces
+                    classification
+                    confidenceLevel
+                    externalId
+                    createdAt
+                    updatedAt
+                    firstSeenAt
+                    lastSeenAt
+                    detectedAt
+                    noteExists
+                    dataSources
+                    storylineId
+                    ticketId
+                    fileName
+                    fileHash
+                    analytics {{
+                    uid
+                    name
+                    type
+                    typeValue
+                    category
+                    }}
+                    assignee {{
+                    userId
+                    fullName
+                    email
+                    }}
+                    detectionSource {{
+                    product
+                    vendor
+                    engine
+                    }}
+                    asset {{
+                    id
+                    name
+                    agentUuid
+                    agentVersion
+                    assetTypeClassifier
+                    category
+                    subcategory
+                    type
+                    connectivityToConsole
+                    osType
+                    osVersion
+                    pendingReboot
+                    lastLoggedInUser
+                    policy
+                    }}
+                    detectionTime {{
+                    asset {{
+                        agentVersion
+                        consoleIpAddress
+                        domain
+                        ipV4
+                        ipV6
+                        lastLoggedInUser
+                        osName
+                        osRevision
+                        osType
+                        policy
+                        subscriptionTime
+                    }}
+                    attacker {{
+                        host
+                        ip
+                    }}
+                    cloud {{
+                        accountId
+                        cloudProvider
+                        image
+                        instanceId
+                        instanceSize
+                        location
+                        network
+                        providerDetails {{
+                        ... on DetectionAws {{
+                            accountId
+                            imageId
+                            instanceId
+                            instanceType
+                            region
+                            role
+                            securityGroups
+                            subnetIds
+                            tags
+                            vpcId
+                        }}
+                        ... on DetectionAzure {{
+                            imageId
+                            instanceId
+                            instanceType
+                            region
+                            resourceGroup
+                            subscriptionId
+                            tags
+                        }}
+                        ... on DetectionGcp {{
+                            imageId
+                            instanceId
+                            instanceType
+                            projectId
+                            serviceAccount
+                            tags
+                            vpcId
+                            zone
+                        }}
+                        }}
+                        tags
+                    }}
+                    kubernetes {{
+                        clusterName
+                        namespaceName
+                        nodeName
+                        podName
+                        containerId
+                        containerImageName
+                        containerLabels
+                        containerName
+                        containerNetworkStatus
+                        controllerName
+                        controllerType
+                        controllerLabels
+                        namespaceLabels
+                        nodeLabels
+                        podLabels
+                    }}
+                    scope {{
+                        accountId
+                        accountName
+                        groupName
+                        siteName
+                    }}
+                    targetUser {{
+                        name
+                        emailAddress
+                        domain
+                    }}
+                    }}
+                    process {{
+                    cmdLine
+                    parentName
+                    file {{
+                        certSubject
+                        md5
+                        name
+                        path
+                        sha1
+                        sha256
+                    }}
+                    }}
+                    realTime {{
+                    scope {{
+                        account {{
+                        id
+                        name
+                        }}
+                        group {{
+                        id
+                        name
+                        }}
+                        site {{
+                        id
+                        name
+                        }}
+                    }}
+                    }}
+                }}
+                }}
+                pageInfo {{
+                hasNextPage
+                hasPreviousPage
+                startCursor
+                endCursor
+                }}
+            }}
+        }}
+        """
+        demisto.debug(f"S1 UAM GraphQL Request Query: {query}")
+        response = self._http_request(method="POST", url_suffix=graphql_endpoint, json_data={"query": query})
+
+        alerts_data = response.get("data", {}).get("alerts", {})
+        uam_alerts = alerts_data.get("edges", [])
+        page_info = alerts_data.get("pageInfo", {})
+
+        return uam_alerts, page_info
 
     def download_threat_file_request(self, endpoint_url):
         return self._http_request(method="GET", url_suffix=endpoint_url, resp_type="content")
@@ -4498,6 +4718,31 @@ def fetch_alerts(client: Client, args):
     return incidents_alerts, current_fetch
 
 
+def fetch_uam_alerts(client: Client, args):
+    incidents = []
+    current_fetch = args.get("current_fetch")
+
+    fetch_limit = args.get("fetch_limit")
+    view_type = args.get("fetch_uam_alert_type")
+
+    if not view_type:
+        return [], current_fetch
+
+    uam_alerts, page_info = client.get_uam_alerts_graphql_req(args.get("last_fetch"), view_type, fetch_limit)
+
+    for alert in uam_alerts:
+        incident = to_incident("UAM Alert", alert)
+        date_occurred_dt = parse(incident["occurred"])
+        incident_date = int(date_occurred_dt.timestamp() * 1000)
+        if incident_date > args.get("last_fetch"):
+            incidents.append(incident)
+
+        if incident_date > current_fetch:
+            current_fetch = incident_date
+
+    return incidents, current_fetch
+
+
 def fetch_handler(client: Client, args):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("time")
@@ -4515,6 +4760,9 @@ def fetch_handler(client: Client, args):
     args["last_fetch_date_string"] = last_fetch_date_string
     args["current_fetch"] = current_fetch
 
+    incidents = []
+    current_fetch = 0
+
     if args.get("fetch_type") == "Both":
         alert_incidents, alert_current_fetch = fetch_alerts(client, args)
         threat_incidents, threat_current_fetch = fetch_threats(client, args)
@@ -4527,10 +4775,15 @@ def fetch_handler(client: Client, args):
         incidents, current_fetch = fetch_alerts(client, args)
     elif args.get("fetch_type") == "Threats":
         incidents, current_fetch = fetch_threats(client, args)
-    else:
-        incidents = []
-        current_fetch = 0
-        demisto.debug(f"{args.get('fetch_type')=} -> {incidents=} {current_fetch=}")
+
+    # Fetch UAM alerts independently
+    if args.get("fetch_uam_alert_type"):
+        uam_incidents, uam_current_fetch = fetch_uam_alerts(client, args)
+        incidents += uam_incidents
+        current_fetch = max(current_fetch, uam_current_fetch)
+    # Debug log if no incidents
+    if not incidents:
+        demisto.debug(f"{args.get('fetch_type')=}, {args.get('fetch_uam_alert_type')=} -> {incidents=} {current_fetch=}")
 
     demisto.setLastRun({"time": current_fetch})
     demisto.incidents(incidents)
@@ -4549,6 +4802,51 @@ def to_incident(type, data):
     elif type == "Alert":
         incident["name"] = f'Sentinel One {type}: {data.get("ruleInfo").get("name")}'
         incident["occurred"] = data.get("alertInfo").get("createdAt")
+
+    elif type == "UAM Alert":
+        node = data.get("node", {})
+        account_info = node.get("realTime", {}).get("scope", {}).get("account", {})
+        group_info = node.get("realTime", {}).get("scope", {}).get("group", {})
+        site_info = node.get("realTime", {}).get("scope", {}).get("site", {})
+        raw_severity = node.get("severity", "")
+        cloud_info = node.get("detectionTime", {}).get("cloud") or {}
+        kubernetes_info = node.get("detectionTime", {}).get("kubernetes") or {}
+        asset_info = node.get("asset", {}) or {}
+
+        incident["name"] = f'Sentinel One {type}: {node.get("name")}'
+        incident["occurred"] = node.get("createdAt")
+        incident["severity"] = UAM_SEVERITY_MAPPING.get(raw_severity, 0)  # type: ignore[assignment]
+        incident["CustomFields"] = {  # type: ignore[assignment]
+            "sentineloneaccountid": account_info.get("id", ""),
+            "sentineloneaccountname": account_info.get("name", ""),
+            "sentinelonegroupid": group_info.get("id", ""),
+            "sentinelonegroupname": group_info.get("name", ""),
+            "sentinelonesiteid": site_info.get("id", ""),
+            "sentinelonesitename": site_info.get("name", ""),
+            "sentineloneclassificationsource": node.get("classification", ""),
+            "sentinelonecloudprovider": cloud_info.get("cloudProvider", ""),
+            "sentinelonecloudprovideraccount": cloud_info.get("accountId", ""),
+            "sentinelonecloudproviderimage": cloud_info.get("image", ""),
+            "sentinelonecloudproviderinstanceid": cloud_info.get("instanceId", ""),
+            "sentinelonecloudproviderinstancesize": cloud_info.get("instanceSize", ""),
+            "sentinelonecloudproviderlocation": cloud_info.get("location", ""),
+            "sentinelonecloudprovidernetwork": cloud_info.get("network", ""),
+            "sentinelonecloudprovidertags": cloud_info.get("tags", []),
+            "sentinelonekubernetescluster": kubernetes_info.get("clusterName", ""),
+            "sentinelonekubernetescontrollerkind": kubernetes_info.get("controllerType", ""),
+            "sentinelonekubernetescontrollerlabels": kubernetes_info.get("controllerLabels", []),
+            "sentinelonekubernetescontrollername": kubernetes_info.get("controllerName", ""),
+            "sentinelonekubernetesnamespacelabels": kubernetes_info.get("namespaceLabels", []),
+            "sentinelonekubernetesnamespace": kubernetes_info.get("namespaceName", ""),
+            "sentinelonekubernetesnodelabels": kubernetes_info.get("nodeLabels", []),
+            "sentinelonekubernetesnode": kubernetes_info.get("nodeName", ""),
+            "sentinelonekubernetespodlabels": kubernetes_info.get("podLabels", []),
+            "sentinelonekubernetespod": kubernetes_info.get("podName", ""),
+            "deviceosversion": asset_info.get("osVersion", ""),
+            "deviceosname": asset_info.get("osType", ""),
+            "agentversion": asset_info.get("agentVersion", ""),
+            "deviceid": asset_info.get("agentUuid", ""),
+        }
 
     return incident
 
@@ -4573,6 +4871,7 @@ def main():
     fetch_type = params.get("fetch_type", "Threats")
     first_fetch_time = params.get("fetch_time", "3 days")
     fetch_severity = params.get("fetch_severity", [])
+    fetch_uam_alert_type = params.get("fetch_uam_alert_type", "")
     fetch_incidentStatus = params.get("fetch_incidentStatus", ["UNRESOLVED"])
     fetch_threat_incident_statuses = params.get("fetch_threat_incident_statuses", ["UNRESOLVED"])
     fetch_threat_rank = int(params.get("fetch_threat_rank", 0))
@@ -4690,7 +4989,7 @@ def main():
         if command == "test-module":
             return_results(test_module(client, params.get("isFetch"), first_fetch_time))
         elif command == "fetch-incidents":
-            if fetch_type:
+            if fetch_type or fetch_uam_alert_type:
                 fetch_dict = {
                     "fetch_type": fetch_type,
                     "fetch_limit": fetch_limit,
@@ -4700,12 +4999,13 @@ def main():
                     "fetch_incidentStatus": fetch_incidentStatus,
                     "fetch_threat_incident_statuses": fetch_threat_incident_statuses,
                     "fetch_severity": fetch_severity,
+                    "fetch_uam_alert_type": fetch_uam_alert_type,
                     "mirror_direction": mirror_direction,
                 }
 
                 return_results(fetch_handler(client, fetch_dict))
             else:
-                return_results("Please define what type to fetch. Alerts or Threats.")
+                return_results("Please define what type to fetch. Alerts, Threats or UAM Alerts.")
 
         else:
             if command in commands["common"]:
