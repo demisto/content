@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Cisco Umbrella Enforcement
   version: -1
@@ -8,23 +11,28 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API Key
   name: api_key
   type: 4
+  section: Connect
   hidden: true
   required: false
 - name: cred_api_key
   type: 9
+  section: Connect
   displaypassword: API Key
   hiddenusername: true
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
   required: false
 description: Add and remove domains in Cisco OpenDNS.
 display: Cisco Umbrella Enforcement
@@ -92,7 +100,7 @@ script:
     name: umbrella-domain-delete
     compliantpolicies:
       - Domain Blockage
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.6391686
   runonce: true
   script: '-'
   subtype: python3

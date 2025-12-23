@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: F5Silverline
   version: -1
@@ -8,18 +11,22 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - displaypassword: The API key to use for the connection.
   name: token
   type: 9
+  section: Connect
   hiddenusername: true
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
   required: false
 description: F5 Silverline Threat Intelligence is a cloud-based service incorporating external IP reputation and reducing threat-based communications. By identifying IP addresses and security categories associated with malicious activity, this managed service integrates dynamic lists of threatening IP addresses with the Silverline cloud-based platform, adding context-based security to policy decisions.
 display: F5 Silverline
@@ -140,7 +147,7 @@ script:
       - proxy-routed
     description: Delete an existing particular threatening IP address object by its object ID or by its IP address. If both id and ip are given, delete operation will be done by the given object_id.
     name: f5-silverline-ip-object-delete
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.6391686
   runonce: false
   script: '-'
   subtype: python3
