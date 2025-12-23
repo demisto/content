@@ -10,7 +10,6 @@ from IBMSecurityGuardium import (
     fetch_events,
     get_events_command,
     test_module,
-    DATE_FORMAT,
 )
 from CommonServerPython import DemistoException, util_load_json
 
@@ -255,10 +254,10 @@ class TestDeduplicateEvents:
         event2 = {"timestamp": "2025-01-01 10:00:00", "id": "2"}
         event3 = {"timestamp": "2025-01-01 11:00:00", "id": "3"}
         events = [event1, event2, event3]
-        
+
         hash1 = get_event_hash(event1)
         last_run = {"last_fetch_time": "2025-01-01 10:00:00", "fetched_event_hashes": [hash1]}
-        
+
         result = deduplicate_events(events, last_run, "timestamp")
         assert len(result) == 2
         assert event1 not in result
@@ -361,6 +360,7 @@ class TestTestModule:
         """
         response = util_load_json("test_data/no_resources_response.json")
         import json
+
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
         result = test_module(client, REPORT_ID)
@@ -393,12 +393,13 @@ class TestFetchEvents:
             - Ensure events are fetched and next_run is set correctly
         """
         import json
+
         response = util_load_json("test_data/sample_api_response.json")
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
-        
+
         events, next_run, timestamp_field = fetch_events(client, REPORT_ID, max_fetch=10, last_run={})
-        
+
         assert len(events) == 1
         assert "Session Start Time" in events[0]
         assert timestamp_field == "Session Start Time"
@@ -415,13 +416,14 @@ class TestFetchEvents:
             - Ensure empty events list and unchanged last_run
         """
         import json
+
         response = util_load_json("test_data/no_resources_response.json")
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
-        
+
         last_run = {"last_fetch_time": "2025-06-07T15:00:00.000Z"}
         events, next_run, timestamp_field = fetch_events(client, REPORT_ID, max_fetch=10, last_run=last_run)
-        
+
         assert len(events) == 0
         assert next_run == last_run
 
@@ -439,12 +441,13 @@ class TestGetEventsCommand:
             - Ensure events are fetched with default 1-hour range
         """
         import json
+
         response = util_load_json("test_data/sample_api_response.json")
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
-        
+
         events, results, timestamp_field = get_events_command(client, REPORT_ID, {})
-        
+
         assert len(events) == 1
         assert timestamp_field == "Session Start Time"
         assert results.readable_output is not None
@@ -459,12 +462,13 @@ class TestGetEventsCommand:
             - Ensure empty events list and timestamp_field is None
         """
         import json
+
         response = util_load_json("test_data/no_resources_response.json")
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
-        
+
         events, results, timestamp_field = get_events_command(client, REPORT_ID, {})
-        
+
         assert len(events) == 0
         assert timestamp_field is None
 
