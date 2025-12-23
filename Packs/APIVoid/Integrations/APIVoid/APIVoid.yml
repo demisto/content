@@ -7,7 +7,7 @@ sectionorder:
 name: APIVoid
 display: APIVoid
 category: Data Enrichment & Threat Intelligence
-description: APIVoid wraps up a number of services such as ipvoid & urlvoid
+description: APIVoid wraps up a number of services such as ipvoid & urlvoid.
 configuration:
 - display: Server URL
   name: url
