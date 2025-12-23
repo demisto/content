@@ -27,11 +27,11 @@ This integration uses OAuth2 Client Credentials flow combined with API key authe
 CyberArk Identity Security Platform uses **two separate services** for different purposes:
 
 1. **Identity Service** (OAuth2 Authentication): Used for generating access tokens
-   - Example: `https://aca4372.id.cyberark.cloud`
-   - Used to construct Token URL: `https://aca4372.id.cyberark.cloud/OAuth2/Token/{WEB_APP_ID}`
+   - Example: `https://abc1234.id.cyberark.cloud`
+   - Used to construct Token URL: `https://abc1234.id.cyberark.cloud/OAuth2/Token/{WEB_APP_ID}`
 
 2. **Audit Service** (Audit API): Used for fetching audit events
-   - Example: `https://panw-demo-eu-central-1.audit.cyberark.cloud`
+   - Example: `https://example-domain.audit.cyberark.cloud`
    - API Endpoints:
      - `/api/audits/stream/createQuery` - Create a stream query
      - `/api/audits/stream/results` - Retrieve paginated results
@@ -49,7 +49,7 @@ Before configuring the integration, you must complete the following prerequisite
 3. Click **Yes** to add the web app.
 4. In the Web Apps page, select the **OAuth2 Server** app that you just added.
 5. In the OAuth2 Server page, configure the following:
-   - **Settings tab**: In the **Application ID** field, enter a name for this web app (e.g., `xsiamauditapp`). This will be your **Web App ID**.
+   - **Settings tab**: In the **Application ID** field, enter a name for this web app (e.g., `xsiamapp`). This will be your **Web App ID**.
    - **Tokens tab**: In the **Token Type** field, select **jwtRS256**. Under **Auth methods**, ensure that the **Client Creds** authentication method is selected.
    - **Scope tab**: Click **Add**, copy and paste the following text in the **Name** field, and then click **Save**:
 
@@ -105,9 +105,9 @@ Before configuring the integration, you must complete the following prerequisite
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Audit Server URL (Audit API Base URL) | The Audit API base URL from the SIEM integration.<br/>Example: `https://panw-demo-eu-central-1.audit.cyberark.cloud`<br/>**Note**: This is different from the Identity URL. | True |
-| Identity URL (CyberArk Identity FQDN) | The CyberArk Identity FQDN for OAuth2 authentication.<br/>Example: `https://aca4372.id.cyberark.cloud`<br/>**Important**: This is on a different domain than the Audit Server URL and is required. | True |
-| OAuth2 Web App ID | The Application ID of the OAuth2 Server web app configured in Identity Administration.<br/>Example: `xsiamauditapp` | True |
+| Audit Server URL (Audit API Base URL) | The Audit API base URL from the SIEM integration.<br/>Example: `https://example-domain.audit.cyberark.cloud`<br/>**Note**: This is different from the Identity URL. | True |
+| Identity URL (CyberArk Identity FQDN) | The CyberArk Identity FQDN for OAuth2 authentication.<br/>Example: `https://abc1234.id.cyberark.cloud`<br/>**Important**: This is on a different domain than the Audit Server URL and is required. | True |
+| OAuth2 Web App ID | The Application ID of the OAuth2 Server web app configured in Identity Administration.<br/>Example: `xsiamapp` | True |
 | Client ID (Service User) | Service username without domain (configured as OAuth confidential client).<br/>Example: `serviceuser` | True |
 | Client Secret (Service User Password) | Service user password for OAuth2 authentication. | True |
 | API Key | The API key from the SIEM integration created in the Administration space. | True |
@@ -197,15 +197,6 @@ Gets audit events from CyberArk Identity Security Platform. This command is used
 !cyberark-isp-get-events date_from="1 hour ago" limit=10 should_push_events=false
 ```
 
-#### Human Readable Output
-
->### CyberArk Identity Security Platform Events
->
->|uuid|tenantId|timestamp|username|applicationCode|auditCode|action|
->|---|---|---|---|---|---|---|
->| a83ca203-e98c-43b1-9f77-593c4cc40980 | 70851320-117b-4c4d-810f-7bd41e3f1829 | 1758953765835 | SYSTEM$ | IDP | IDP1301 | Outbound provisioning sync initiated |
->| b9bde171-79cd-48d4-8c13-88eecda90abd | 70851320-117b-4c4d-810f-7bd41e3f1829 | 1758953765835 | SYSTEM$ | IDP | IDP1302 | Outbound provisioning sync completed |
-
 ## API Documentation
 
 The integration uses the following CyberArk Identity Security Platform APIs:
@@ -219,8 +210,8 @@ The integration uses the following CyberArk Identity Security Platform APIs:
 **Request Example**:
 
 ```http
-POST /oauth2/token/xsiamauditapp
-Host: aca4372.id.cyberark.cloud
+POST /oauth2/token/xsiamapp
+Host: abc1234.id.cyberark.cloud
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=client_credentials&client_id=<client_id>&client_secret=<client_secret>&scope=isp.audit.events%3Aread
@@ -294,14 +285,14 @@ grant_type=client_credentials&client_id=<client_id>&client_secret=<client_secret
 {
   "data": [
     {
-      "uuid": "a83ca203-e98c-43b1-9f77-593c4cc40980",
-      "tenantId": "70851320-117b-4c4d-810f-7bd41e3f1829",
-      "timestamp": 1758953765835,
-      "username": "SYSTEM$",
+      "uuid": "12345678-1234-1234-1234-123456789abc",
+      "tenantId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "timestamp": 1609459200000,
+      "username": "user@example.com",
       "applicationCode": "IDP",
       "auditCode": "IDP1301",
       "auditType": "Info",
-      "action": "Outbound provisioning sync initiated",
+      "action": "User login successful",
       "customData": {...}
     }
   ],
