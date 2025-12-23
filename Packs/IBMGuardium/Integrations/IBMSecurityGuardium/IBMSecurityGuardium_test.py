@@ -10,7 +10,6 @@ from IBMSecurityGuardium import (
     build_ignore_list,
     fetch_events_command,
     get_events_command,
-    test_module_command,
 )
 from CommonServerPython import DemistoException
 
@@ -367,6 +366,8 @@ class TestTestModule:
         Then:
             - Ensure 'ok' is returned when API call succeeds
         """
+        from IBMSecurityGuardium import test_module_command
+
         response = util_load_json("test_data/no_resources_response.json")
         import json
 
@@ -384,6 +385,8 @@ class TestTestModule:
         Then:
             - Ensure authorization error message is returned
         """
+        from IBMSecurityGuardium import test_module_command
+
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", status_code=403, text="Forbidden")
         result = test_module_command(client, REPORT_ID)
         assert "Authorization Error" in result
