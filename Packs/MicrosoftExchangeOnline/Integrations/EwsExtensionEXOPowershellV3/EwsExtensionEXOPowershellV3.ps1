@@ -1944,11 +1944,13 @@ function Remove-EmptyItems {
 
     foreach ($property in $inputObject.PSObject.Properties) {
         $value = $property.Value
+        $Demisto.Debug("Looking at $property.Name with value: $value")
 
         # Check if the value is not null, whitespace, or an empty collection
         if (-not [string]::IsNullOrWhiteSpace($value)) {
             # Check if it's an IEnumerable (like array or list) and if the collection is not empty
             if ($value -is [System.Collections.IEnumerable] -and -not ($value -is [string]) -and $value.Count -eq 0) {
+                $Demisto.Debug("Got empty value for property $property.Name")
                 continue
             }
 
@@ -2220,21 +2222,53 @@ function EXOGetQuarantineMessageCommand {
         Type = $kwargs.type
     }
 
-    $raw_response = $client.EXOGetQuarantineMessage($params)
+    # $raw_response = $client.EXOGetQuarantineMessage($params)
+
+    $raw_response = [PSCustomObject]@{
+            Name = "John Doe"
+            MiddleName = " "          # White space (Removed)
+            Age = 30
+            PhoneNumbers = @()        # Empty array (Removed)
+            Notes = $null             # Null (Removed)
+        }
 
     $newResults = @()
 
-    if ($raw_response -is [System.Collections.IEnumerable]) {
-        # If raw_response is a list, process each dictionary
+    # Handle the case when raw_response is null or empty
+    if ($null -eq $raw_response -or ($raw_response -is [string] -and [string]::IsNullOrWhiteSpace($raw_response))) {
+        $Demisto.Debug("The raw response is null or empty")
+        $newResults = @()
+    }
+    # Handle the case when raw_response is a true collection (array, list, etc.)
+    elseif ($raw_response -is [System.Collections.IEnumerable] -and -not ($raw_response -is [Hashtable]) -and -not ($raw_response -is [string]) -and -not ($raw_response -is [PSObject]) -and -not ($raw_response -is [PSCustomObject])) {
+        $Demisto.Debug("The raw response is a collection")
+        # If raw_response is a list, process each item
         foreach ($item in $raw_response) {
+            $Demisto.Debug("Processing collection item")
             $newResults += Remove-EmptyItems $item
         }
-    } elseif ($raw_response -Is [Hashtable]) {
-        # If input is a single dictionary, process it directly
-        $newResults = Remove-EmptyItems $raw_response
+    }
+    # Handle the case when raw_response is a Hashtable
+    elseif ($raw_response -is [Hashtable]) {
+        $Demisto.Debug("The raw response is a Hashtable")
+        $newResults = @(Remove-EmptyItems $raw_response)
+    }
+    # Handle the case when raw_response is a PSObject or PSCustomObject
+    elseif ($raw_response -is [PSObject] -or $raw_response -is [PSCustomObject]) {
+        $Demisto.Debug("The raw response is a PSObject/PSCustomObject")
+        $newResults = @(Remove-EmptyItems $raw_response)
+    }
+    # Handle any other type
+    else {
+        $Demisto.Debug("The raw response is of an unknown type: " + $raw_response.GetType().FullName)
+        # Try to process it anyway
+        $newResults = @(Remove-EmptyItems $raw_response)
     }
 
-    $human_readable = TableToMarkdown $newResults "Results of $command"
+    # Always pass the array to TableToMarkdown, even if it's empty
+    $Demisto.Debug("Sending results to TableToMarkdown, count: " + ($newResults | Measure-Object).Count)
+    # Force array wrapping to ensure consistent behavior
+    $human_readable = TableToMarkdown @($newResults) "Results of $command"
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.GetQuarantineMessage(obj.Identity === val.Identity)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
