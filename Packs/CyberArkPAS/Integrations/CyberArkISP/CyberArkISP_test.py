@@ -83,9 +83,14 @@ def util_load_json(file_name):
 
 
 @pytest.fixture()
-def client():
-    """Returns a Client instance for testing."""
-    return Client(
+def client(mocker):
+    """Returns a mocked Client instance for testing.
+
+    This fixture provides a default client that can be used by any test,
+    including the test_module function from CyberArkISP.py that pytest discovers.
+    The client is mocked to prevent actual HTTP requests.
+    """
+    client_instance = Client(
         base_url=SERVER_URL,
         token_url=TOKEN_URL,
         client_id=MOCK_CLIENT_ID,
@@ -94,6 +99,13 @@ def client():
         verify=True,
         proxy=False,
     )
+
+    # Mock the methods that make HTTP requests to prevent actual network calls
+    mocker.patch.object(client_instance, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    mocker.patch.object(client_instance, "create_stream_query", return_value="test_cursor")
+    mocker.patch.object(client_instance, "get_stream_results", return_value=([], None))
+
+    return client_instance
 
 
 @pytest.fixture
@@ -298,7 +310,21 @@ def test_get_access_token_uses_cached_token(mocker, mock_context, client):
 
     mocker.patch.object(CyberArkISP.time, "time", return_value=int(time.time()) + 10)
 
-    token = client._get_access_token()
+    # Stop all mocks from fixture and test cache-only logic
+    mocker.stopall()
+
+    # Recreate client without mocks
+    client_instance = Client(
+        base_url=SERVER_URL,
+        token_url=TOKEN_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        api_key=MOCK_API_KEY,
+        verify=True,
+        proxy=False,
+    )
+
+    token = client_instance._get_access_token()
     assert token == "CACHED_TOKEN"
 
 
@@ -307,13 +333,27 @@ def test_get_access_token_expired_renewal(mocker, mock_context, client):
     mock_time = int(time.time()) - 3600
     set_integration_context({ContextKeys.ACCESS_TOKEN.value: "EXPIRED_TOKEN", ContextKeys.VALID_UNTIL.value: str(mock_time)})
 
+    # Stop fixture mocks
+    mocker.stopall()
+
+    # Recreate client and mock _http_request
+    client_instance = Client(
+        base_url=SERVER_URL,
+        token_url=TOKEN_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        api_key=MOCK_API_KEY,
+        verify=True,
+        proxy=False,
+    )
+
     mocker.patch.object(
-        client,
+        client_instance,
         "_http_request",
         return_value={ContextKeys.ACCESS_TOKEN.value: MOCK_ACCESS_TOKEN, ContextKeys.EXPIRES_IN.value: 3600},
     )
 
-    token = client._get_access_token()
+    token = client_instance._get_access_token()
 
     assert token == MOCK_ACCESS_TOKEN
     assert get_integration_context().get(ContextKeys.ACCESS_TOKEN.value) == MOCK_ACCESS_TOKEN
@@ -323,13 +363,27 @@ def test_get_access_token_invalid_cache_renewal(mocker, mock_context, client):
     """Tests token renewal when cache has invalid expiration value."""
     set_integration_context({ContextKeys.ACCESS_TOKEN.value: "BAD_TOKEN", ContextKeys.VALID_UNTIL.value: "NOT_A_NUMBER"})
 
+    # Stop fixture mocks
+    mocker.stopall()
+
+    # Recreate client and mock _http_request
+    client_instance = Client(
+        base_url=SERVER_URL,
+        token_url=TOKEN_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        api_key=MOCK_API_KEY,
+        verify=True,
+        proxy=False,
+    )
+
     mocker.patch.object(
-        client,
+        client_instance,
         "_http_request",
         return_value={ContextKeys.ACCESS_TOKEN.value: MOCK_ACCESS_TOKEN, ContextKeys.EXPIRES_IN.value: 3600},
     )
 
-    token = client._get_access_token()
+    token = client_instance._get_access_token()
     assert token == MOCK_ACCESS_TOKEN
 
 
@@ -342,18 +396,46 @@ def test_get_access_token_invalid_cache_renewal(mocker, mock_context, client):
 )
 def test_get_access_token_failure_cases(mocker, mock_context, client, mock_response, expected_error):
     """Tests token request failures for various error conditions."""
-    mocker.patch.object(client, "_http_request", return_value=mock_response)
+    # Stop fixture mocks
+    mocker.stopall()
+
+    # Recreate client and mock _http_request
+    client_instance = Client(
+        base_url=SERVER_URL,
+        token_url=TOKEN_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        api_key=MOCK_API_KEY,
+        verify=True,
+        proxy=False,
+    )
+
+    mocker.patch.object(client_instance, "_http_request", return_value=mock_response)
 
     with pytest.raises(DemistoException, match=expected_error):
-        client._get_access_token()
+        client_instance._get_access_token()
 
 
-def test_get_access_token_http_error(mocker, mock_context, client):
+def test_get_access_token_http_error(mocker, mock_context, client, capfd):
     """Tests token request handles HTTP errors."""
-    mocker.patch.object(client, "_http_request", side_effect=DemistoException("HTTP Error 500"))
+    # Stop fixture mocks
+    mocker.stopall()
 
-    with pytest.raises(DemistoException, match=r"(?i)failed to obtain access token"):
-        client._get_access_token()
+    # Recreate client and mock _http_request
+    client_instance = Client(
+        base_url=SERVER_URL,
+        token_url=TOKEN_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        api_key=MOCK_API_KEY,
+        verify=True,
+        proxy=False,
+    )
+
+    mocker.patch.object(client_instance, "_http_request", side_effect=DemistoException("HTTP Error 500"))
+
+    with capfd.disabled(), pytest.raises(DemistoException, match=r"(?i)failed to obtain access token"):
+        client_instance._get_access_token()
 
 
 # ========================================
@@ -469,13 +551,26 @@ def test_http_request_retries_on_server_errors(mocker, client):
 def test_create_stream_query_success(mocker, client, date_from, date_to, expected_filter_keys):
     """Tests create_stream_query creates query with correct parameters."""
     mock_response = {APIKeys.CURSOR_REF.value: "test_cursor_ref_12345"}
-    mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    cursor_ref = client.create_stream_query(date_from, date_to)
+    # Stop fixture mocks and recreate client
+    mocker.stopall()
+    client_instance = Client(
+        base_url=SERVER_URL,
+        token_url=TOKEN_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        api_key=MOCK_API_KEY,
+        verify=True,
+        proxy=False,
+    )
+
+    mock_http_request = mocker.patch.object(client_instance, "http_request", return_value=mock_response)
+
+    cursor_ref = client_instance.create_stream_query(date_from, date_to)
 
     assert cursor_ref == "test_cursor_ref_12345"
 
-    call_args = client.http_request.call_args
+    call_args = mock_http_request.call_args
     assert call_args[1]["method"] == "POST"
     assert call_args[1]["url_suffix"] == APIValues.CREATE_QUERY_ENDPOINT.value
 
@@ -490,10 +585,22 @@ def test_create_stream_query_success(mocker, client, date_from, date_to, expecte
 
 def test_create_stream_query_missing_cursor_ref(mocker, client):
     """Tests create_stream_query fails when response missing cursorRef."""
-    mocker.patch.object(client, "http_request", return_value={})
+    # Stop fixture mocks and recreate client
+    mocker.stopall()
+    client_instance = Client(
+        base_url=SERVER_URL,
+        token_url=TOKEN_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        api_key=MOCK_API_KEY,
+        verify=True,
+        proxy=False,
+    )
+
+    mocker.patch.object(client_instance, "http_request", return_value={})
 
     with pytest.raises(DemistoException, match=r"(?i)response missing cursorref"):
-        client.create_stream_query("2024-01-01 00:00:00")
+        client_instance.create_stream_query("2024-01-01 00:00:00")
 
 
 # ========================================
@@ -526,9 +633,21 @@ def test_create_stream_query_missing_cursor_ref(mocker, client):
 )
 def test_get_stream_results_scenarios(mocker, client, response_data, expected_event_count, expected_next_cursor):
     """Tests get_stream_results handles various response scenarios."""
-    mocker.patch.object(client, "http_request", return_value=response_data)
+    # Stop fixture mocks and recreate client
+    mocker.stopall()
+    client_instance = Client(
+        base_url=SERVER_URL,
+        token_url=TOKEN_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        api_key=MOCK_API_KEY,
+        verify=True,
+        proxy=False,
+    )
 
-    events, next_cursor = client.get_stream_results("test_cursor")
+    mocker.patch.object(client_instance, "http_request", return_value=response_data)
+
+    events, next_cursor = client_instance.get_stream_results("test_cursor")
 
     assert len(events) == expected_event_count
     assert next_cursor == expected_next_cursor
@@ -648,8 +767,8 @@ def test_fetch_events_with_pagination_date_parameters(mocker, client, date_from,
     fetch_events_with_pagination(client, date_from, date_to, 10)
 
     call_args = client.create_stream_query.call_args
-    assert call_args[0][0] == date_from
-    assert call_args[0][1] == date_to
+    assert call_args.kwargs["date_from"] == date_from
+    assert call_args.kwargs["date_to"] == date_to
 
 
 # ========================================
@@ -852,8 +971,13 @@ def test_deduplicate_events_preserves_order():
         (False, None, DemistoException("Error [500] - Internal Server Error"), None),
     ],
 )
-def test_test_module(mocker, client, should_succeed, mock_return, mock_exception, expected_result):
+def test_test_module_command(mocker, client, should_succeed, mock_return, mock_exception, expected_result):
     """Tests test_module returns 'ok' on success, auth error message for 401/403, or raises other errors."""
+    # Mock the specific methods called by test_module to prevent actual API calls
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    mocker.patch.object(client, "create_stream_query", return_value="test_cursor")
+    mocker.patch.object(client, "get_stream_results", return_value=([], None))
+
     if should_succeed:
         mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=mock_return)
         result = test_module(client)

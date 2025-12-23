@@ -661,10 +661,10 @@ def main() -> None:
         command_func = COMMAND_MAP[command]
 
         if command == "test-module":
-            result = command_func(client)
+            result = command_func(client)  # pylint: disable=E1120
             return_results(result)
         elif command == "fetch-events":
-            command_func(client)
+            command_func(client)  # pylint: disable=E1120
         else:
             result = command_func(client, demisto.args())
             return_results(result)
