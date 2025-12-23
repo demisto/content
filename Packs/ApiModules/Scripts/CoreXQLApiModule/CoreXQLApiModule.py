@@ -22,11 +22,19 @@ IS_CORE_AVAILABLE = (
 
 class CoreClient(BaseClient):
     def __init__(
-        self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False, is_core: bool = False
+        self,
+        base_url: str,
+        headers: dict,
+        timeout: int = 120,
+        proxy: bool = False,
+        verify: bool = False,
+        is_core: bool = False,
+        use_platform_api: bool = False,
     ):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
         self.is_core = is_core
+        self.use_platform_api = use_platform_api
 
     def _http_request(  # type: ignore[override]
         self,
@@ -123,10 +131,17 @@ class CoreClient(BaseClient):
             )
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
-        address = full_url if full_url else urljoin(self._base_url, url_suffix)
-        response = demisto._apiCall(
-            method=method, path=address, data=data, headers=headers, timeout=timeout, response_data_type=response_data_type
-        )
+
+        if self.use_platform_api:
+            address = full_url or url_suffix  # platform API expects only the path suffix
+            response = demisto._platformAPICall(path=address, method=method, params=params, data=data, timeout=timeout)
+
+        else:
+            address = full_url if full_url else urljoin(self._base_url, url_suffix)
+            response = demisto._apiCall(
+                method=method, path=address, data=data, headers=headers, timeout=timeout, response_data_type=response_data_type
+            )
+
         if ok_codes and response.get("status") not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
         try:
