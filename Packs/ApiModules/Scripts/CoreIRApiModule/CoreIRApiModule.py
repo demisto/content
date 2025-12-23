@@ -4239,7 +4239,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
     reply = response.get("reply", {})
     demisto.debug(f"{reply=}")
     data = reply.get("DATA", [])
-    
+
     for alert in data:
         if "alert_action_status" in alert:
             action_status = alert.get("alert_action_status")
@@ -4247,7 +4247,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
 
     ALERT_OR_ISSUE = "Issue" if is_platform() else "Alert"
     id_field = "Issue ID" if is_platform() else "Alert ID"
-    
+
     human_readable = [
         {
             id_field: alert.get("internal_id"),
@@ -4272,7 +4272,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
         readable_output=tableToMarkdown(f"{ALERT_OR_ISSUE}", human_readable),
         raw_response=data,
     )
-    
+
 
 def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get("alert_ids", []))
