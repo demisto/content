@@ -173,7 +173,7 @@ outputs:
 system: false
 timeout: '0'
 subtype: python3
-dockerimage: demisto/python3:3.12.12.6204436
+dockerimage: demisto/python3:3.12.12.6391686
 fromversion: 6.6.0
 tests:
 - No tests (auto formatted)
