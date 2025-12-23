@@ -1,6 +1,6 @@
 IBM Security Guardium is a comprehensive data security platform that provides visibility and protection for sensitive data across databases, data warehouses, big data platforms, and cloud environments. This integration enables the collection of security events from IBM Guardium Data Security Center.
 
-This integration is used to gather security events and audit data from IBM Guardium.
+This integration is used to gather security events from IBM Guardium.
 
 ## Configure IBM Security Guardium in Cortex
 
@@ -23,7 +23,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### ibm-guardium-get-events
 
 ***
-Manual command to fetch and display events from IBM Guardium.
+Manual command to fetch and display events.
 
 #### Base Command
 
@@ -37,6 +37,10 @@ Manual command to fetch and display events from IBM Guardium.
 | limit | Maximum number of results to return. Max is 1000. Default is 50. | Optional |
 | start_time | Start time for fetching events. Supports ISO format ("2023-01-01T00:00:00") or natural language ("7 days ago", "yesterday", "1 week ago"). Defaults to 1 hour ago if not provided. | Optional |
 | end_time | End time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now"). If not provided, defaults to now. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
 
 #### Command Example
 
