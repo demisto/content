@@ -207,16 +207,16 @@ def deduplicate_events(events: list[dict[str, Any]], last_run: dict[str, Any], t
     )
 
     deduplicated: list[dict[str, Any]] = []
-    for event in events:
+    for idx, event in enumerate(events):
         event_time = event.get(timestamp_field)
 
         # If event timestamp is greater than last_fetch_time, all remaining events are new
         if event_time and last_fetch_time and event_time > last_fetch_time:
             # Add this event and all remaining events without checking
-            deduplicated.extend(events[len(deduplicated) :])
+            deduplicated.extend(events[idx:])
             demisto.debug(
                 f"Found event with timestamp {event_time} > last_fetch_time {last_fetch_time}, "
-                f"adding remaining {len(events) - len(deduplicated)} events without duplicate check"
+                f"adding remaining {len(events) - idx} events without duplicate check"
             )
             break
 
