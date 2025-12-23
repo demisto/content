@@ -2928,8 +2928,8 @@ def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
     """
     page_number = arg_to_number(args.get("page_number")) or 0
     page_size = arg_to_number(args.get("page_size")) or MAX_SCRIPTS_LIMIT
-    start_index = page_number * MAX_SCRIPTS_LIMIT
-    end_index = start_index + min(page_size, MAX_SCRIPTS_LIMIT)
+    start_index = page_number * page_size
+    end_index = start_index + page_size
 
     filter_builder = FilterBuilder()
     filter_builder.add_field(
