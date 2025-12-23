@@ -44,7 +44,10 @@ In the Playground, run the ***!monday-auth-test*** command. A 'Success' message 
 [Audit log API docs](https://support.monday.com/hc/en-us/articles/4406042650002-Audit-Log-API)
 
 Generating the API token
-To generate the audit log API token, access the admin section of your account, click the "Security" section, and then the "Audit" tab. From there, select the "Monitor by API" button and copy it.
+1. Access the Admin section of your account.
+2. Click Security, and then select the Audit tab.
+3. Select Monitor by API.
+4. Copy the generated API token.
 
 Audit log is an advanced security feature and available on the Enterprise plan and can only be accessed by the account admin.
 
