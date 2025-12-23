@@ -2803,6 +2803,39 @@ script:
       - contextPath: Core.AssessmentProfile.assessment_profile_id
         description: The unique identifier of the newly created assessment profile.
         type: String
+
+    - arguments:
+      - name: name
+        description: The name of the standard.
+      - name: created_by
+        description: The user or entity who created the compliance.
+      - name: page_size
+        description: The number of standards to return per page. Default is 100.
+      - name: page_number
+        description: The page number for the standards to return for pagination. Default is 0.
+      - auto: PREDEFINED
+        name: labels
+        description: A comma seperated list of labels to filter compliance standards.
+        predefined:
+          - "Aws"
+          - "Azure"
+          - "GCP"
+          - "GKE"
+          - "K8S"
+          - "Windows"
+          - "Linux"
+          - "EKS"
+          - "AKS"
+          - "OCI"
+          - "Alibaba Cloud" #NEED TO CHECK
+          - "On prem" #NEED TO CHECK
+          - "LLM"
+          - "Docker"
+          - "Openshift"
+      name: core-list-compliance-standards
+      description: Create new assessment profile.
+      outputs:
+      - contextPath: Core.ComplianceStandards.standard_id # NEED TO ADD
         
         
         

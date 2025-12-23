@@ -15,6 +15,7 @@ MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
+MAX_COMPLIANCE_STANDARDS = 100
 AGENTS_TABLE = "AGENTS_TABLE"
 
 DAY_MAP = {
@@ -63,7 +64,6 @@ WEBAPP_COMMANDS = [
     "core-get-appsec-issues",
     "core-update-case",
     "core-list-endpoints",
-    "core-add-assessment-profile",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -913,9 +913,27 @@ class Client(CoreClient):
         """
         return self._http_request(
             method="POST",
-            url_suffix="/platform/compliance/add_assessment_profile/",
+            url_suffix="/compliance/add_assessment_profile",
             json_data=profile_payload,
         )
+        
+    def list_compliance_standards_command(self, payload: dict) -> dict:
+            """
+            Add a new assessment profile to Cortex XDR.
+
+            Args:
+                profile_payload (dict): The assessment profile configuration payload.
+
+            Returns:
+                dict: The response from the API for adding the assessment profile.
+            """
+            return self._http_request(
+                method="POST",
+                url_suffix="/compliance/get_standards",
+                json_data=payload,
+            )
+        
+        
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -3159,18 +3177,80 @@ def create_assessment_profile_payload(
 
     # Construct payload matching the example structure
     payload = {
-        "assessment_profile": {
-            "NAME": name,
-            "DESCRIPTION": description,
-            "REPORT_TYPE": report_type,
-            "REPORT_FREQUENCY": report_frequency,
-            "REPORT_TARGETS": [],
-            "ASSET_GROUP_ID": asset_group_id,
-            "STANDARD_ID": standard_id,
-            "ENABLED": True
+        "request_data": {
+            "profile_name": name,
+            "asset_group_id": asset_group_id,
+            "standard_id": standard_id,
+            "description": description,
+            "report_targets": [],
+            "report_type": report_type,
+            "evaluation_frequency": report_frequency
         }
     }
     
+    return payload
+
+def list_compliance_standards_payload(
+    name: str, 
+    created_by: str, 
+    labels: list,
+    page,
+    page_size,
+) -> Dict[str, Any]:
+    """
+    Prepare assessment profile payload
+    
+    :param name: Name of the assessment profile
+    :param description: Description of the profile
+    :param standard_id: ID of the compliance standard
+    :param asset_group_id: ID of the asset group
+    :param day: Day of evaluation (optional)
+    :param time: Time of evaluation (optional)
+    :param report_type: Type of report (default: ALL)
+    :return: Assessment profile payload
+    """
+
+    # Construct payload matching the example structure
+    payload : dict = {"request_data": {
+        "filters": []
+        }}
+        
+    # Add name filter if provided
+    if name:
+        payload["request_data"]["filters"].append({
+            "field": "name",
+            "operator": "contains",
+            "value": name
+        })
+        
+    # Add created_by filter if provided
+    if created_by:
+        payload["request_data"]["filters"].append({
+            "field": "created_by",
+            "operator": "in",
+            "value": [created_by]
+        })
+        
+    # Add labels filter if provided
+    if labels:
+        payload["request_data"]["filters"].append({
+            "field": "labels",
+            "operator": "contains",
+            "value": labels[0] if labels else ""
+        })
+        
+    # Add hardcoded sort
+    payload["request_data"]["sort"] = {
+        "field": "insertion_time",
+        "keyword": "desc"
+    }
+        
+    # Add pagination
+    payload["request_data"]["pagination"] = {
+        "search_from": (page - 1) * page_size if page and page_size else 0,
+        "search_to": (page * page_size) - 1 if page and page_size else 24
+    }
+        
     return payload
 
 def core_add_assessment_profile_command(client: Client, args: dict) -> CommandResults:
@@ -3207,12 +3287,63 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
     reply = client.add_assessment_profile(payload)
     assessment_profile_id = reply.get("assessment_profile_id")
     return CommandResults(
+        readable_output= f"Assessment Profile {assessment_profile_id} successfully added",
         outputs_prefix='Core.AssessmentProfile',
         outputs_key_field='assessment_profile_id',
         outputs=assessment_profile_id,
         raw_response=reply
     )
     
+def core_list_compliance_standards_command(client: Client, args: dict) -> CommandResults:
+    
+    name = args.get("name", "")
+    created_by = args.get("created_by", "")
+    labels = argToList(args.get("labels", ""))
+    page = args.get("page", "")
+    page_size = args.get("page_size", MAX_COMPLIANCE_STANDARDS)
+
+    payload = list_compliance_standards_payload(
+        name=name,
+        created_by=created_by, 
+        labels=labels,
+        page = page,
+        page_size=page_size,
+    )
+
+    reply = client.list_compliance_standards_command(payload)
+    return CommandResults(
+        #readable_output= f"Assessment Profile {assessment_profile_id} successfully added",
+        outputs_prefix='Core.ComplianceStandards',
+        outputs_key_field='id',
+        outputs=reply,
+        raw_response=reply
+    )
+    
+def core_get_assessment_profile_results(client: Client, args: dict) -> CommandResults:
+    
+    name = args.get("name", "")
+    created_by = args.get("created_by", "")
+    labels = argToList(args.get("labels", ""))
+    page = args.get("page", "0")
+    page_size = args.get("page_size", )
+
+    payload = list_compliance_standards_payload(
+        name=name,
+        created_by=created_by, 
+        labels=labels,
+        page = page,
+        page_size=page_size,
+    )
+
+    reply = client.list_compliance_standards_command(payload)
+    return CommandResults(
+        #readable_output= f"Assessment Profile {assessment_profile_id} successfully added",
+        outputs_prefix='Core.ComplianceStandards',
+        outputs_key_field='id',
+        outputs=reply,
+        raw_response=reply
+    )
+     
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -3337,6 +3468,8 @@ def main():  # pragma: no cover
             return_results(core_list_endpoints_command(client, args))
         elif command == "core-add-assessment-profile":
             return_results(core_add_assessment_profile_command(client, args))
+        elif command == "core-list-compliance-standards":
+            return_results(core_list_compliance_standards_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
