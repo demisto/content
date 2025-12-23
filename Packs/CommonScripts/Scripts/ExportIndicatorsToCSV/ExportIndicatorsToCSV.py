@@ -4,10 +4,10 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     indicator_query = demisto.args().get("query")
-    indicator_seen_days = int(demisto.args().get("seenDays"))
-
-    if demisto.args().get("columns"):
-        indicator_columns = [x.strip() for x in demisto.args().get("columns").split(",")]
+    seen_days = arg_to_number(demisto.args().get("seenDays", "7"))
+    columns_arg = demisto.args().get("columns")
+    if columns_arg:
+        indicator_columns = [x.strip() for x in columns_arg.split(",")]
     else:
         indicator_columns = [
             "id",
@@ -28,7 +28,7 @@ def main():
         "filter": {
             "query": indicator_query,
             "sort": [{"field": "calculatedTime", "asc": False}],
-            "period": {"by": "day", "fromValue": indicator_seen_days},
+            "period": {"by": "day", "fromValue": seen_days},
         },
         "columns": indicator_columns,
     }
