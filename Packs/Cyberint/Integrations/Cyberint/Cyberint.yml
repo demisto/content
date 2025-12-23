@@ -143,6 +143,8 @@ configuration:
   - user_defined_saved_query
   - other
   - ssl_tls
+  - web_app_security_missing_hsts_header_detected
+  - web_app_security_misconfigured_hsts_header_detected
   section: Collect
 - display: Fetch Limit
   name: max_fetch
@@ -266,6 +268,8 @@ script:
       - user_defined_saved_query
       - other
       - ssl_tls
+      - web_app_security_missing_hsts_header_detected
+      - web_app_security_misconfigured_hsts_header_detected
     description: List alerts according to parameters.
     name: cyberint-alerts-fetch
     outputs:
