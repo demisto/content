@@ -33,7 +33,7 @@
         "is_array": false
       },
       "event_type": {
-        "type": "int",
+        "type": "string",
         "is_array": false
       }
     }
