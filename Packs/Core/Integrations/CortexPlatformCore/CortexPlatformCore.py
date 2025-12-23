@@ -918,20 +918,37 @@ class Client(CoreClient):
         )
         
     def list_compliance_standards_command(self, payload: dict) -> dict:
-            """
-            Add a new assessment profile to Cortex XDR.
+        """
+        List compliance standards from Cortex XDR.
 
-            Args:
-                profile_payload (dict): The assessment profile configuration payload.
+        Args:
+            payload (dict): The request payload for listing compliance standards.
 
-            Returns:
-                dict: The response from the API for adding the assessment profile.
-            """
-            return self._http_request(
-                method="POST",
-                url_suffix="/compliance/get_standards",
-                json_data=payload,
-            )
+        Returns:
+            dict: The response from the API containing compliance standards data.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/compliance/get_standards",
+            json_data=payload,
+        )
+                
+    def get_assessment_profile_results(self, payload: dict) -> dict:
+        """
+        Get assessment profile results from Cortex XDR.
+
+        Args:
+            payload (dict): The request payload for retrieving assessment results.
+
+        Returns:
+            dict: The response from the API containing assessment profile results.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/compliance/get_assessment_results",
+            json_data=payload,
+        )
+
         
         
 
@@ -3293,33 +3310,30 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
         outputs=assessment_profile_id,
         raw_response=reply
     )
-    
+
+def assessment_profile_results_payload(standards):    
+    labels = set()
+    for s in standards:
+        standard_labels = s.get("labels", [])
+        if isinstance(standard_labels, list):
+            labels.update(standard_labels)
+
+    payload = {
+        "request_data": {
+            "filters": []
+        }
+    }
+        
+    for label in labels:
+        payload["request_data"]["filters"].append({
+            "field": "labels",
+            "operator": "contains",
+            "value": label
+        })
+        
+    return payload
+        
 def core_list_compliance_standards_command(client: Client, args: dict) -> CommandResults:
-    
-    name = args.get("name", "")
-    created_by = args.get("created_by", "")
-    labels = argToList(args.get("labels", ""))
-    page = args.get("page", "")
-    page_size = args.get("page_size", MAX_COMPLIANCE_STANDARDS)
-
-    payload = list_compliance_standards_payload(
-        name=name,
-        created_by=created_by, 
-        labels=labels,
-        page = page,
-        page_size=page_size,
-    )
-
-    reply = client.list_compliance_standards_command(payload)
-    return CommandResults(
-        #readable_output= f"Assessment Profile {assessment_profile_id} successfully added",
-        outputs_prefix='Core.ComplianceStandards',
-        outputs_key_field='id',
-        outputs=reply,
-        raw_response=reply
-    )
-    
-def core_get_assessment_profile_results(client: Client, args: dict) -> CommandResults:
     
     name = args.get("name", "")
     created_by = args.get("created_by", "")
@@ -3335,7 +3349,18 @@ def core_get_assessment_profile_results(client: Client, args: dict) -> CommandRe
         page_size=page_size,
     )
 
-    reply = client.list_compliance_standards_command(payload)
+    response = client.list_compliance_standards_command(payload)
+    reply = response.get("reply", {})
+    standards = reply.get("standards")
+    standard_names = {s.get("name") for s in standards if s.get("name")}
+
+    payload = assessment_profile_results_payload(
+        standards=standards,
+    )
+    response = client.get_assessment_profile_results(payload)
+    reply = response.get("reply", {})
+    data = reply.get("data")
+    print(data)
     return CommandResults(
         #readable_output= f"Assessment Profile {assessment_profile_id} successfully added",
         outputs_prefix='Core.ComplianceStandards',
