@@ -119,6 +119,12 @@ There are no input arguments for this command.
 | PaloAltoNetworksXQL.Quota.license_quota | Number | Amount of daily quota allocated to your tenant based on your license type and size. |
 | PaloAltoNetworksXQL.Quota.additional_purchased_quota | Number | Amount of query quota purchased. |
 | PaloAltoNetworksXQL.Quota.used_quota | Number | Amount of query quota used over the past 24 hours. |
+| PaloAltoNetworksXQL.Quota.eval_quota | Number | Amount of evaluation query quota. |
+| PaloAltoNetworksXQL.Quota.total_daily_running_queries | Number | Total number of daily running queries. |
+| PaloAltoNetworksXQL.Quota.total_daily_concurrent_rejected_queries | Number | Total number of daily concurrent rejected queries. |
+| PaloAltoNetworksXQL.Quota.current_concurrent_active_queries | Unknown | Currently active concurrent queries with their XQL statements and durations. |
+| PaloAltoNetworksXQL.Quota.current_concurrent_active_queries_count | Number | Amount of currently active concurrent queries. |
+| PaloAltoNetworksXQL.Quota.max_daily_concurrent_active_query_count | Number | Maximum number of daily concurrent active queries. |
 
 #### Command Example
 
@@ -133,7 +139,17 @@ There are no input arguments for this command.
             "additional_purchased_quota": 0,
             "eval_quota": 0,
             "license_quota": 1000,
-            "used_quota": 0.00299
+            "used_quota": 0.00299,
+            "total_daily_running_queries": 4,
+            "total_daily_concurrent_rejected_queries": 8,
+            "current_concurrent_active_queries": {
+            "debee6b0c41f47_911_inv": {
+                "xql": "config timeframe = 1mo | dataset=xdr_data | limit 1000000",
+                "duration": 61
+            }
+            },
+            "current_concurrent_active_queries_count": 1,
+            "max_daily_concurrent_active_query_count": 4
         }
     }
 }
