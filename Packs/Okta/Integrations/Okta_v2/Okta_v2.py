@@ -66,7 +66,6 @@ class Client(OktaClient):
         uri = "/api/v1/groups"
         query_params = {"q": encode_string_results(group_name)}
         res = self.http_request(method="GET", url_suffix=uri, params=query_params)
-        demisto.debug(f"{res=}")
         return next((r.get("id") for r in (res or []) if r.get("profile", {}).get("name") == group_name), None)
 
     def get_app_id(self, app_name):
