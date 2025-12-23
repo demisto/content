@@ -9,9 +9,15 @@ display: APIVoid
 category: Data Enrichment & Threat Intelligence
 description: APIVoid wraps up a number of services such as ipvoid & urlvoid
 configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://api.apivoid.com
+  type: 0
+  section: Connect
+  required: true
 - name: credentials
   type: 9
-  displaypassword: API KEY
+  displaypassword: API Key
   hiddenusername: true
   section: Connect
   required: false
@@ -1644,6 +1650,6 @@ script:
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   subtype: python3
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
-- APIVoid Test
+- No tests (auto formatted)

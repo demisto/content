@@ -10,290 +10,6 @@ from typing import Any
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-# ============================================================================
-# MOCK DATA - FOR TESTING ONLY - DELETE THIS SECTION BEFORE PRODUCTION
-# ============================================================================
-MOCK_RESPONSES = {
-    "/v2/ip-reputation": {
-        "ip": "93.174.95.106",
-        "version": "IPv4",
-        "blacklists": {
-            "engines": {
-                "0": {"name": "0spam", "detected": False, "reference": "https://0spam.org/", "elapsed_ms": 1},
-                "1": {
-                    "name": "Barracuda_Reputation_BL",
-                    "detected": True,
-                    "reference": "https://barracudacentral.org/lookups",
-                    "elapsed_ms": 0,
-                },
-                "2": {
-                    "name": "BlockedServersRBL",
-                    "detected": True,
-                    "reference": "https://www.blockedservers.com/",
-                    "elapsed_ms": 0,
-                },
-            },
-            "detections": 5,
-            "engines_count": 10,
-            "detection_rate": "50%",
-            "scan_time_ms": 2012,
-        },
-        "information": {
-            "reverse_dns": "battery.census.shodan.io",
-            "is_eu": True,
-            "continent_code": "EU",
-            "continent_name": "Europe",
-            "country_code": "NL",
-            "country_name": "Netherlands (Kingdom of the)",
-            "currency": "EUR",
-            "calling_code": "31",
-            "region_name": "Noord-Holland",
-            "city_name": "Amsterdam",
-            "latitude": 52.378502,
-            "longitude": 4.89998,
-            "isp": "FiberXpress BV",
-            "asn": "AS202425",
-        },
-        "anonymity": {"is_proxy": False, "is_webproxy": False, "is_vpn": False, "is_hosting": False, "is_tor": False},
-        "risk_score": {"result": 100},
-        "elapsed_ms": 2084,
-    },
-    "/v2/domain-reputation": {
-        "host": "google.com",
-        "blacklists": {
-            "engines": {
-                "0": {
-                    "name": "Phishing Test",
-                    "detected": False,
-                    "reference": "https://www.novirusthanks.org/",
-                    "confidence": "low",
-                    "elapsed_ms": 0,
-                },
-                "1": {
-                    "name": "Scam Test",
-                    "detected": False,
-                    "reference": "https://www.novirusthanks.org/",
-                    "confidence": "low",
-                    "elapsed_ms": 1,
-                },
-            },
-            "detections": 0,
-            "engines_count": 42,
-            "detection_rate": "0%",
-            "scan_time_ms": 397,
-        },
-        "server_details": {
-            "ip": "142.250.9.101",
-            "reverse_dns": "yq-in-f101.1e100.net",
-            "continent_code": "NA",
-            "continent_name": "North America",
-            "country_code": "US",
-            "country_name": "United States of America",
-            "region_name": "California",
-            "city_name": "Mountain View",
-            "latitude": 37.405992,
-            "longitude": -122.078515,
-            "isp": "Google LLC",
-            "asn": "AS15169",
-        },
-        "category": {"is_free_hosting": False, "is_anonymizer": False, "is_url_shortener": False},
-        "security_checks": {
-            "is_most_abused_tld": False,
-            "is_domain_ipv4_assigned": True,
-            "is_domain_blacklisted": False,
-            "website_popularity": "high",
-        },
-        "risk_score": {"result": 0},
-        "elapsed_ms": 501,
-    },
-    "/v2/url-reputation": {
-        "url": "https://blog.google/products/android/",
-        "dns_records": {
-            "ns": [
-                {
-                    "target": "ns1.zdns.google",
-                    "ip": "216.239.32.114",
-                    "country_code": "US",
-                    "country_name": "United States of America",
-                    "isp": "Google LLC",
-                }
-            ],
-            "mx": [
-                {
-                    "target": "smtp.google.com",
-                    "ip": "172.217.203.26",
-                    "country_code": "US",
-                    "country_name": "United States of America",
-                    "isp": "Google LLC",
-                }
-            ],
-            "cname": "",
-        },
-        "domain_blacklist": {
-            "engines": [
-                {"name": "AntiSocial Blacklist", "reference": "https://theantisocialengineer.com/", "detected": False},
-                {"name": "PhishTank", "reference": "https://www.phishtank.com/", "detected": False},
-            ],
-            "detections": 0,
-            "engines_count": 32,
-        },
-        "file_type": {"signature": "HTML", "extension": "", "headers": "HTML"},
-        "geo_location": {"countries": ["US"]},
-        "html_info": {
-            "title": "Official Android news and updates | Google Blog",
-            "description": "Read the latest news and updates about Android",
-            "lang": "en-us",
-        },
-        "redirection": {"found": False, "external": False, "url": "", "redirects": []},
-        "response_headers": {"code": 200, "status": "HTTP/2 200", "content-type": "text/html; charset=utf-8"},
-        "risk_score": {"result": 0},
-        "security_checks": {"is_url_accessible": True, "is_valid_https": True},
-        "server_details": {
-            "ip": "216.239.32.21",
-            "hostname": "any-in-2015.1e100.net",
-            "country_code": "US",
-            "country_name": "United States of America",
-            "isp": "Google LLC",
-        },
-        "site_category": {"is_free_hosting": False, "is_anonymizer": False},
-        "url_parts": {"scheme": "https", "host": "blog.google", "path": "/products/android/"},
-        "elapsed_ms": 937,
-    },
-    "/v2/dns-lookup": {
-        "host": "example.com",
-        "records": {
-            "a": [{"target": "93.184.215.14", "ttl": 3380}],
-            "aaaa": [{"target": "2606:2800:21f:cb07:6820:80da:af6b:8b2c", "ttl": 3380}],
-            "mx": [
-                {"pref": 10, "target": "alt1.gmail-smtp-in.l.google.com", "ttl": 2700},
-                {"pref": 20, "target": "alt2.gmail-smtp-in.l.google.com", "ttl": 2700},
-            ],
-            "ns": [{"target": "b.iana-servers.net", "ttl": 86180}, {"target": "a.iana-servers.net", "ttl": 86180}],
-            "txt": [{"target": "v=spf1 -all", "ttl": 86180}],
-        },
-        "elapsed_ms": 28,
-    },
-    "/v2/ssl-info": {
-        "host": "paypal.com",
-        "certificate": {
-            "found": True,
-            "fingerprint_sha1": "6f55d7d0b407cb6bb13bd14a1cbb105c0ee5c3d5",
-            "fingerprint_sha256": "faf941ad6b7339463bcea590e77e39f7930a168eb6d130d79c3be12c5de83894",
-            "type": "Extended Validation",
-            "name_match": True,
-            "expired": False,
-            "revoked": False,
-            "valid": True,
-            "details": {
-                "subject": {
-                    "common_name": "paypal.com",
-                    "organization": "PayPal, Inc.",
-                    "country": "US",
-                    "state": "California",
-                    "location": "San Jose",
-                },
-                "issuer": {"common_name": "DigiCert EV RSA CA G2", "organization": "DigiCert Inc", "country": "US"},
-                "validity": {
-                    "days_left": 269,
-                    "valid_from": "Mon, 26 Aug 2024 00:00:00 UTC",
-                    "valid_to": "Mon, 25 Aug 2025 23:59:59 UTC",
-                },
-            },
-        },
-        "elapsed_ms": 289,
-    },
-    "/v2/email-verify": {
-        "email": "a1k5z0a3@yopmail.com",
-        "valid_format": True,
-        "username": "a1k5z0a3",
-        "role_address": False,
-        "suspicious_username": False,
-        "domain": "yopmail.com",
-        "valid_tld": True,
-        "disposable": True,
-        "has_mx_records": True,
-        "dmarc_configured": True,
-        "should_block": True,
-        "score": 0,
-        "elapsed_ms": "20",
-    },
-    "/v2/site-trust": {
-        "host": "amazon.com",
-        "dns_records": {
-            "ns": [
-                {
-                    "target": "ns1.amzndns.net",
-                    "ip": "156.154.65.10",
-                    "country_code": "US",
-                    "country_name": "United States of America",
-                    "isp": "Vercara LLC",
-                }
-            ],
-            "mx": [
-                {
-                    "target": "amazon-smtp.amazon.com",
-                    "ip": "35.172.144.184",
-                    "country_code": "US",
-                    "country_name": "United States of America",
-                    "isp": "Amazon Technologies Inc.",
-                }
-            ],
-            "cname": "",
-        },
-        "domain_blacklist": {
-            "engines": [{"name": "AntiSocial Blacklist", "reference": "https://theantisocialengineer.com/", "detected": False}],
-            "detections": 0,
-            "engines_count": 30,
-        },
-        "html_info": {
-            "title": "Amazon.com. Spend less. Smile more.",
-            "description": "Free shipping on millions of items",
-            "lang": "en-us",
-        },
-        "security_checks": {
-            "is_website_accessible": True,
-            "is_valid_https": True,
-            "is_domain_blacklisted": False,
-            "is_website_popular": True,
-            "domain_creation_date": "1994-11-01",
-            "domain_age_in_days": 11034,
-            "domain_age_in_months": 355,
-            "domain_age_in_years": 30,
-        },
-        "server_details": {
-            "ip": "205.251.242.103",
-            "country_code": "US",
-            "country_name": "United States of America",
-            "isp": "Amazon.com Inc.",
-        },
-        "trust_score": {"result": 100},
-        "elapsed_ms": 2922,
-    },
-    "/v2/parked-domain": {"host": "example.com", "parked_domain": False, "a_records_found": True, "elapsed_ms": 162},
-    "/v2/domain-age": {
-        "host": "example.com",
-        "debug_message": "",
-        "domain_age_found": True,
-        "domain_registered": "yes",
-        "domain_creation_date": "1995-08-14",
-        "domain_age_in_days": 10700,
-        "domain_age_in_months": 345,
-        "domain_age_in_years": 29,
-        "elapsed_ms": 310,
-    },
-    "/v2/screenshot": {
-        "base64_file": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
-        "elapsed_ms": 100,
-    },
-    "/v2/url-to-pdf": {
-        "base64_file": "JVBERi0xLgoxIDAgb2JqPDwvUGFnZXMgMiAwIFI+PmVuZG9iagoyIDAgb2JqPDwvS2lkc1szIDAgUl0vQ291bnQgMT4+ZW5kb2JqCjMgMCBvYmo8PC9QYXJlbnQgMiAwIFI+PmVuZG9iagp0cmFpbGVyPDwvUm9vdCAxIDAgUj4+Cg==",
-        "elapsed_ms": 100,
-    },
-}
-# ============================================================================
-# END OF MOCK DATA
-# ============================================================================
-
 """CONSTANTS"""
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -321,7 +37,7 @@ FIELD_MAPPING = {
     "currency": "country_currency",
     "scan_time_ms": "scantime",
     "html_info": "web_page",
-    "fingerprint_sha256": "fingerprint",
+    "fingerprint_sha1": "fingerprint",
 }
 
 
@@ -330,22 +46,13 @@ class Client(BaseClient):
     APIVoid V2 Client - handles all API requests with V2 authentication
     """
 
-    def __init__(self, base_url: str, apikey: str, verify: bool, proxy: bool, use_mock: bool = True):
+    def __init__(self, base_url: str, apikey: str, verify: bool, proxy: bool):
         headers = {"X-API-Key": apikey, "Content-Type": "application/json"}
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
-        self.use_mock = use_mock
 
     def api_request(self, endpoint: str, json_data: dict) -> dict:
         """Generic V2 API request method"""
         demisto.debug(f"APIVoid: Making API request to {endpoint} with data: {json_data}")
-
-        if self.use_mock:
-            # Return mock data if available
-            if endpoint in MOCK_RESPONSES:
-                demisto.debug(f"APIVoid: Using mock data for endpoint {endpoint}")
-                return MOCK_RESPONSES[endpoint]
-            else:
-                raise DemistoException(f"No mock data available for endpoint: {endpoint}")
 
         response = self._http_request(method="POST", url_suffix=endpoint, json_data=json_data)
         demisto.debug(f"APIVoid: Received response with {len(response)} fields")
@@ -460,7 +167,12 @@ def ip_reputation_command(
 
     # Create DBot score object
     dbot_score = Common.DBotScore(
-        indicator=ip, indicator_type=DBotScoreType.IP, integration_name="APIVoid", score=score, reliability=reliability
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="APIVoid",
+        score=score,
+        reliability=reliability,
+        malicious_description=f"Detection rate of {detections}/{engines_count}",
     )
 
     # Create IP indicator with standard context
@@ -480,7 +192,7 @@ def ip_reputation_command(
     )
 
     # Build custom context outputs
-    outputs = {} if reputation_only else response
+    outputs = None if reputation_only else response
 
     readable_data = {
         "Address": ip,
@@ -558,7 +270,12 @@ def domain_reputation_command(
 
     # Create DBot score object
     dbot_score = Common.DBotScore(
-        indicator=domain, indicator_type=DBotScoreType.DOMAIN, integration_name="APIVoid", score=score, reliability=reliability
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="APIVoid",
+        score=score,
+        reliability=reliability,
+        malicious_description=f"Detection rate of {detections}/{engines_count}",
     )
 
     # Create Domain indicator
@@ -567,15 +284,20 @@ def domain_reputation_command(
     )
 
     # Build custom context outputs
-    outputs = {}
-    if not reputation_only:
-        outputs["APIVoid.Domain(val.host && val.host == obj.host)"] = response
+    outputs = None if reputation_only else response
 
     readable_data = {"Name": domain, "DNS": domain, "DetectionEngines": engines_count, "PositiveDetections": detections}
 
     readable_output = tableToMarkdown(f"APIVoid information for {domain}:", readable_data)
 
-    return CommandResults(outputs=outputs, indicator=domain_indicator, readable_output=readable_output, raw_response=response)
+    return CommandResults(
+        outputs_prefix="APIVoid.Domain",
+        outputs_key_field="host",
+        outputs=outputs,
+        indicator=domain_indicator,
+        readable_output=readable_output,
+        raw_response=response,
+    )
 
 
 def url_reputation_command(
@@ -626,22 +348,32 @@ def url_reputation_command(
 
     # Create DBot score object
     dbot_score = Common.DBotScore(
-        indicator=url, indicator_type=DBotScoreType.URL, integration_name="APIVoid", score=score, reliability=reliability
+        indicator=url,
+        indicator_type=DBotScoreType.URL,
+        integration_name="APIVoid",
+        score=score,
+        reliability=reliability,
+        malicious_description=f"Detection rate of {detections}/{engines_count}",
     )
 
     # Create URL indicator
     url_indicator = Common.URL(url=url, dbot_score=dbot_score, detection_engines=engines_count, positive_detections=detections)
 
     # Build custom context outputs
-    outputs = {}
-    if not reputation_only:
-        outputs["APIVoid.URL(val.url && val.url == obj.url)"] = response
+    outputs = None if reputation_only else response
 
     readable_data = {"Data": url, "DetectionEngines": engines_count, "PositiveDetections": detections}
 
     readable_output = tableToMarkdown(f"APIVoid information for {url}:", readable_data)
 
-    return CommandResults(outputs=outputs, indicator=url_indicator, readable_output=readable_output, raw_response=response)
+    return CommandResults(
+        outputs_prefix="APIVoid.URL",
+        outputs_key_field="url",
+        outputs=outputs,
+        indicator=url_indicator,
+        readable_output=readable_output,
+        raw_response=response,
+    )
 
 
 def dns_lookup_command(client: Client, args: dict) -> CommandResults:
@@ -730,13 +462,14 @@ def ssl_info_command(client: Client, args: dict) -> CommandResults:
             del md_data["details"]
 
         certificate["host"] = host
-        ec = {"APIVoid.SSL(val.host && val.host == obj.host)": certificate}
         md = tableToMarkdown(f"APIVoid SSL Information for {host}:", md_data)
     else:
-        ec = {}
         md = f"## No SSL information for {host}"
+    outputs = certificate if certificate else None
 
-    return CommandResults(outputs=ec, readable_output=md, raw_response=response)
+    return CommandResults(
+        outputs_prefix="APIVoid.SSL", outputs_key_field="host", outputs=outputs, readable_output=md, raw_response=response
+    )
 
 
 def email_verify_command(client: Client, args: dict) -> CommandResults:
@@ -996,7 +729,7 @@ def main():
 
     # Get parameters once
     params = demisto.params()
-    base_url = "https://api.apivoid.com"
+    base_url = params.get("url", "https://api.apivoid.com")
     apikey = params.get("credentials", {}).get("password") or params.get("apikey", "")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -1077,8 +810,9 @@ def main():
         elif command == "apivoid-site-trustworthiness":
             result = site_trustworthiness_command(client, args)
             return_results(result)
+
         elif command in ["apivoid-threatlog", "apivoid-url-to-html"]:
-            raise DemistoException(f"Command {command} is deprecated")
+            raise DemistoException(f"Command {command} is not supported in API V2")
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
