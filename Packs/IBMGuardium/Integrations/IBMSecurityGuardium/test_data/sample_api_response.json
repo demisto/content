@@ -1,0 +1,28 @@
+{
+    "result": {
+        "report_layout": {
+            "report_headers": [
+                {"sequence": 1, "header_name": "ClientIP", "field_name": {"nls_value": "Client IP"}},
+                {"sequence": 2, "header_name": "DBUserName", "field_name": {"nls_value": "Database User"}},
+                {"sequence": 3, "header_name": "SourceProgram", "field_name": {"nls_value": "Source Program"}},
+                {"sequence": 4, "header_name": "ServerIP", "field_name": {"nls_value": "Server IP"}},
+                {"sequence": 5, "header_name": "ServiceName", "field_name": {"nls_value": "Service Name"}},
+                {"sequence": 6, "header_name": "DatabaseName", "field_name": {"nls_value": "Database Name"}},
+                {"sequence": 7, "header_name": "SessionStart", "field_name": {"nls_value": "Session Start Time"}}
+            ]
+        },
+        "data": [
+            {
+                "results": {
+                    "1": "10.130.4.38",
+                    "2": "admin",
+                    "3": "sqlcmd",
+                    "4": "10.130.17.21",
+                    "5": "MS SQL SERVER",
+                    "6": "MASTER",
+                    "7": "2025-06-07 16:52:57.0"
+                }
+            }
+        ]
+    }
+}
