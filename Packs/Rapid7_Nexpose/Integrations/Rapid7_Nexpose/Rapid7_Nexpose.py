@@ -1,12 +1,17 @@
+import csv
+import io
 import json
 from copy import deepcopy
 from enum import Enum, EnumMeta
 from time import strptime, struct_time
 from typing import overload
+from collections.abc import AsyncGenerator
 
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
+import asyncio
+import aiohttp
 
 VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
 API_DEFAULT_PAGE_SIZE = 10  # Default page size that's set on the API. Used for calculations.
@@ -21,6 +26,324 @@ VALID_ASSET_GROUP_TYPES = ["dynamic", "static"]
 VALID_TAG_COLORS = ["blue", "green", "orange", "red", "purple", "default"]
 
 urllib3.disable_warnings()  # Disable insecure warnings
+
+DEFAULT_BATCH_SIZE = 3000
+BASE_QUERY_FOR_ASSETS = """WITH asset_tags AS (
+    SELECT
+        dta.asset_id,
+        json_agg(
+            json_build_object(
+                'Name', dt.tag_name,
+                'Type', dt.tag_type
+            )
+        ) AS aggregated_tags_json
+    FROM
+        dim_tag_asset dta
+    JOIN
+        dim_tag dt USING (tag_id)
+    GROUP BY
+        dta.asset_id
+),
+asset_macs AS (
+    SELECT
+        dama.asset_id,
+        json_agg(dama.mac_address) AS aggregated_mac_addresses
+    FROM
+        dim_asset_mac_address dama
+    GROUP BY
+        dama.asset_id
+),
+asset_ips AS (
+    SELECT
+        daia.asset_id,
+        json_agg(daia.ip_address) AS aggregated_ip_addresses
+    FROM
+        dim_asset_ip_address daia
+    GROUP BY
+        daia.asset_id
+),
+asset_files AS (
+    SELECT
+        daf.asset_id,
+        json_agg(
+            json_build_object(
+                'file_id', daf.file_id,
+                'type', daf.type,
+                'name', daf.name,
+                'size', daf.size
+            )
+        ) AS aggregated_files_json
+    FROM
+        dim_asset_file daf
+    GROUP BY
+        daf.asset_id
+),
+asset_service AS (
+    SELECT
+        dase.asset_id,
+        json_agg(
+            json_build_object(
+                'service_id', dase.service_id,
+                'protocol', dase.protocol_id,
+                'port', dase.port,
+                'service_fingerprint_id', dase.service_fingerprint_id,
+                'certainty', dase.certainty
+            )
+        ) AS asset_services
+    FROM
+        dim_asset_service dase
+    GROUP BY
+        dase.asset_id
+),
+    assets_host AS (
+        SELECT
+            dahn.asset_id,
+            json_agg(
+                json_build_object(
+                    'source_type_id', dahn.source_type_id,
+                    'description', dhnst.description
+                )
+                ) AS asset_hosts
+        FROM
+            dim_asset_host_name dahn
+        JOIN
+            dim_host_name_source_type dhnst ON dahn.source_type_id = dhnst.type_id
+        GROUP BY
+            dahn.asset_id
+    ),
+-- Finds the single, absolute latest scan for each asset (regardless of status)
+asset_latest_scan AS (
+    SELECT DISTINCT ON (fas.asset_id)
+        fas.asset_id,
+        ds.finished AS last_scan_date,
+        ds.status_id AS last_scan_status_id,
+        ds.scan_id AS scan_id,
+        ds.started As started,
+        ds.type_id AS type_id,
+        ds.scan_name AS scan_name,
+        fas.vulnerabilities AS vulnerabilities,
+        fas.aggregated_credential_status_id AS aggregated_credential_status_id
+
+    FROM
+        fact_asset_scan fas
+    JOIN
+        dim_scan ds ON fas.scan_id = ds.scan_id
+    ORDER BY
+        fas.asset_id, ds.finished DESC -- Order by asset ID, then descending finish time to get the absolute latest
+),
+latest_os_certainty AS (
+    SELECT DISTINCT ON (fasos.asset_id)
+        fasos.asset_id,
+        fasos.certainty AS latest_os_certainty_value
+    FROM
+        fact_asset_scan_operating_system fasos
+    JOIN
+        dim_scan ds ON fasos.scan_id = ds.scan_id
+    ORDER BY
+        fasos.asset_id, ds.finished DESC, fasos.certainty DESC -- Use certainty as a tie-breaker if dates are equal
+)
+
+SELECT
+    da.last_assessed_for_vulnerabilities AS "dim_asset.last_assessed_for_vulnerabilities",
+    fad.last_discovered AS "fact_asset_discovery.last_discovered",
+    da.asset_id AS "dim_asset.asset_id",
+    da.host_name AS "dim_asset.host_name",
+    da.host_type_id AS "dim_asset.host_type_id",
+    dht.description AS "dim_host_type.description",
+    CASE
+        WHEN da.ip_address LIKE '%:%' THEN NULL
+        ELSE da.ip_address
+    END AS "ipv4",
+
+    CASE
+        WHEN da.ip_address LIKE '%:%' THEN da.ip_address
+        ELSE NULL
+    END AS "ipv6",
+    da.mac_address AS "dim_asset.mac_address",
+    da.sites AS "dim_asset.sites",
+    da.operating_system_id AS "dim_asset.operating_system_id",
+    dos.architecture AS "dim_operating_system.architecture",
+    dos.description AS "dim_operating_system.description",
+    dos.family AS "dim_operating_system.family",
+    dos.name AS "dim_operating_system.name",
+    dos.system AS "dim_operating_system.system",
+    dos.asset_type AS "dim_operating_system.asset_type",
+    dos.vendor AS "dim_operating_system.vendor",
+    dos.version AS "dim_operating_system.version",
+    dos.cpe AS "dim_operating_system.cpe",
+    loc.latest_os_certainty_value AS "fact_asset_scan_operating_system.certainty",
+    atags.aggregated_tags_json AS "dim_tag_asset.tags",
+    am.aggregated_mac_addresses AS "dim_asset_mac_address.mac_address",
+    ai.aggregated_ip_addresses AS "dim_asset_ip_address.ip_address",
+    af.aggregated_files_json AS "asset_files",
+    das.software_id AS "dim_asset_software.software_id",
+    das.fingerprint_source_id AS "dim_asset_software.fingerprint_source_id",
+    ds.vendor AS "dim_software.vendor",
+    ds.family AS "dim_software.family",
+    ds.name AS "dim_software.name",
+    ds.version AS "dim_software.version",
+    ds.software_class AS "dim_software.software_class",
+    ds.cpe AS "dim_software.cpe",
+    als.last_scan_date AS "dim_scan.finished",
+    als.last_scan_status_id AS "dim_scan.status_id",
+    als.scan_id AS "dim_scan.scan_id",
+    als.started As "dim_scan.started",
+    als.type_id AS "dim_scan.type_id",
+    als.scan_name AS "dim_scan.scan_name",
+    als.vulnerabilities AS "fact_asset_scan.vulnerabilities",
+    als.aggregated_credential_status_id AS "fact_asset_scan.aggregated_credential_status_id",
+    dacs.aggregated_credential_status_description AS "dim_aggregated_credential_status.aggregated_credential_status_description",
+    ah.asset_hosts AS "asset hosts",
+    ase.asset_services AS "asset_services"
+
+FROM
+    dim_asset da
+LEFT JOIN
+    fact_asset_discovery fad ON da.asset_id = fad.asset_id
+LEFT JOIN
+    dim_operating_system dos ON da.operating_system_id = dos.operating_system_id
+LEFT JOIN
+    asset_tags atags ON da.asset_id = atags.asset_id
+LEFT JOIN
+    asset_macs am ON da.asset_id = am.asset_id
+LEFT JOIN
+    asset_ips ai ON da.asset_id = ai.asset_id
+LEFT JOIN
+    asset_files af ON da.asset_id = af.asset_id
+LEFT JOIN
+    dim_host_type dht ON da.host_type_id = dht.host_type_id
+LEFT JOIN
+    dim_asset_software das ON da.asset_id = das.asset_id
+LEFT JOIN
+    dim_software ds ON das.software_id = ds.software_id
+LEFT JOIN
+    assets_host ah ON da.asset_id = ah.asset_id
+INNER JOIN
+    asset_latest_scan als ON da.asset_id = als.asset_id
+LEFT JOIN
+    dim_aggregated_credential_status dacs ON als.aggregated_credential_status_id = dacs.aggregated_credential_status_id
+LEFT JOIN
+    latest_os_certainty loc ON da.asset_id = loc.asset_id -- Join the new CTE
+LEFT JOIN
+    asset_service ase ON da.asset_id = ase.asset_id
+
+WHERE
+    als.last_scan_date >= CURRENT_DATE - INTERVAL '100 days'
+    AND als.last_scan_status_id = 'C'
+
+ORDER BY
+    da.asset_id ASC"""
+
+BASE_QUERY_FOR_VULNERABILITIES = """
+WITH cve_references AS (
+    SELECT
+        dvr.vulnerability_id,
+        array_to_string(array_agg(dvr.reference), ', ') AS aggregated_cves
+    FROM
+        dim_vulnerability_reference AS dvr
+    WHERE
+        dvr.source = 'CVE'
+    GROUP BY
+        dvr.vulnerability_id
+),
+aggregated_categories AS (
+    SELECT
+        dvc.vulnerability_id,
+        json_agg(
+            json_build_object(
+                'id', dvc.category_id,
+                'name', dvc.category_name
+            )
+        ) AS vuln_categories
+    FROM
+        dim_vulnerability_category AS dvc
+    GROUP BY
+        dvc.vulnerability_id
+),
+aggregated_details AS (
+    SELECT
+        fasvi.asset_id,
+        fasvi.vulnerability_id,
+        fasvi.scan_id,
+        fasvi.date AS scan_date,
+        
+        -- Aggregate the related finding details into a JSON array of objects
+        json_agg(
+            json_build_object(
+                'status_id', fasvi.status_id,
+                'proof', htmlToText(fasvi.proof),
+                'service_id', fasvi.service_id,
+                'port', fasvi.port,
+                'protocol_id', fasvi.protocol_id
+            )
+        ) AS finding_details_json
+    FROM
+        fact_asset_scan_vulnerability_instance fasvi
+    INNER JOIN
+        fact_asset_vulnerability_finding favf
+        ON fasvi.asset_id = favf.asset_id
+        AND fasvi.vulnerability_id = favf.vulnerability_id
+        AND fasvi.scan_id = favf.scan_id
+    GROUP BY
+        fasvi.asset_id,
+        fasvi.vulnerability_id,
+        fasvi.scan_id,
+        fasvi.date
+)
+SELECT
+    ad.asset_id,
+    ad.vulnerability_id AS vuln_id,
+    ad.scan_id,
+    ad.scan_date AS date,
+    ad.finding_details_json,
+    dv.nexpose_id AS vulnerability_name,
+    dv.severity AS vulnerability_severity,
+    dv.title,
+    REPLACE(REPLACE(dv.description, CHR(10), ' '), CHR(13), ' ') AS description,
+    dv.date_published,
+    dv.date_added,
+    dv.severity_score,
+    dv.riskscore,
+    dv.cvss_authentication_id,
+    dv.cvss_exploit_score,
+    dv.cvss_impact_score,
+    dv.cvss_v2_score,
+    dv.cvss_v2_exploit_score,
+    dv.cvss_v2_impact_score,
+    dv.cvss_v3_score,
+    dv.cvss_v3_exploit_score,
+    dv.denial_of_service,
+    dv.exploits,
+    dv.malware_kits,
+    dv.date_modified,
+    ac.vuln_categories,
+    cef.aggregated_cves
+FROM
+    aggregated_details ad
+LEFT JOIN dim_vulnerability AS dv
+    ON ad.vulnerability_id = dv.vulnerability_id
+LEFT JOIN aggregated_categories AS ac
+    ON ad.vulnerability_id = ac.vulnerability_id
+LEFT JOIN cve_references cef
+    ON ad.vulnerability_id = cef.vulnerability_id
+WHERE
+    ad.scan_date >= CURRENT_DATE - INTERVAL '100 days'
+ORDER BY
+    ad.asset_id, ad.vulnerability_id, ad.scan_date DESC
+"""
+BASE_QUERY = {"asset": BASE_QUERY_FOR_ASSETS, "vulnerability": BASE_QUERY_FOR_VULNERABILITIES}
+VENDOR = {"asset": "Rapid7", "vulnerability": "Rapid7"}
+PRODUCT = {"asset": "nexpose_assets", "vulnerability": "nexpose_vulnerabilities"}
+XSIAM_EVENT_CHUNK_SIZE = 2**20  # 1 Mib
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10**6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
+
+# 24 hours converted to seconds
+TWENTYFOUR_HOURS_AS_SECONDS = 24 * 60 * 60
+
+
+def log(event_type: str, log_line: str):
+    full_log_line = f"[{event_type}] {log_line}"
+    demisto.debug(full_log_line)
 
 
 class ScanStatus(Enum):
@@ -2243,6 +2566,102 @@ class Client(BaseClient):
             method="GET",
             resp_type="json",
         )
+
+
+class InsightVMClient:
+    """
+    Asynchronous client for interacting with the Rapid7 InsightVM API.
+    Handles session and authentication management.
+    """
+
+    def __init__(
+        self,
+        base_url: str,
+        username: str,
+        password: str,
+        token: str = "",
+        verify: bool = True,
+    ):
+        self._base_url = base_url.rstrip("/")
+        self._auth_username = username
+        self._auth_password = password
+        self._auth_token = token
+        self._verify = verify
+        self._headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        }
+        self.connection_error_retries = CONNECTION_ERRORS_RETRIES
+
+        # Add 2FA token to headers if provided
+        if token:
+            self._headers.update({"Token": token})
+
+        auth_string = base64.b64encode(f"{username}:{password}".encode()).decode("utf-8")
+        self._headers.update({"Authorization": f"Basic {auth_string}"})
+
+    async def __aenter__(self):
+        """Asynchronous context manager entry: creates the aiohttp session."""
+        # Create a single session that persists for the client's lifespan
+        self._session = aiohttp.ClientSession()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Asynchronous context manager exit: closes the aiohttp session."""
+        await self._session.close()
+
+    async def http_request(self, method: str, endpoint: str, payload: Optional[Dict[str, Any]] = None) -> aiohttp.ClientResponse:
+        """
+        Executes an asynchronous HTTP request and returns the raw response object.
+        Includes retry logic for server errors.
+        """
+        url = self._base_url + endpoint
+
+        # Select the method function (get, post, etc.)
+        request_func = getattr(self._session, method.lower())
+
+        MAX_RETRIES = 3
+        # Retry on: 500/502/503/504 (Server Errors), 429 (Rate Limit)
+        RETRYABLE_STATUSES = {500, 502, 503, 504, 429}
+
+        for attempt in range(MAX_RETRIES + 1):
+            if attempt > 0:
+                delay = 5**attempt
+                demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{MAX_RETRIES}. Waiting {delay}s...")
+                await asyncio.sleep(delay)
+
+            try:
+                response = await request_func(url, headers=self._headers, json=payload, ssl=False)
+
+                # 1. Handle Retryable Errors
+                if response.status in RETRYABLE_STATUSES:
+                    try:
+                        message = response.message
+                    except AttributeError:
+                        message = "No message from Rapid7"
+                    demisto.debug(f"API returned retryable status {response.status}: {message}")
+                    response.close()  # Close connection before retrying
+                    continue
+
+                # 2. Handle Fatal Client Errors (4xx)
+                if 400 <= response.status < 500:
+                    try:
+                        error_body = await response.text()
+                    except Exception:
+                        error_body = "Could not read error body."
+                    response.close()
+                    raise DemistoException(f"Client API Error ({response.status}): {error_body}")
+
+                # 3. Success (2xx)
+                # Return the RAW response object so the caller can read headers/json as needed.
+                return response
+
+            except aiohttp.ClientConnectorError as e:
+                demisto.debug(f"Connection error: {e}")
+                if attempt == MAX_RETRIES:
+                    raise
+
+        raise DemistoException(f"API request failed after {MAX_RETRIES} attempts.")
 
 
 class Site:
@@ -6458,6 +6877,1123 @@ def get_list_asset_group_command(
     )
 
 
+##############################################################################
+# ASYNC FUNCTIONS
+##############################################################################
+
+
+async def create_report_config_from_template(client: InsightVMClient, event_type: str) -> str:
+    """
+    Creates a new report configuration asynchronously.
+
+    This function waits (blocks the calling workflow) until the API
+    responds, ensuring the report is created before moving on.
+    """
+    endpoint = "/api/3/reports"
+
+    # Define the payload
+    payload = {
+        "format": "sql-query",
+        "name": f"PA_Asset_Collector_{int(time.time())}",
+        "query": BASE_QUERY.get(event_type),
+        "version": "2.3.0",
+    }
+    log(event_type, "Creating report config.")
+    response = await client.http_request(method="POST", endpoint=endpoint, payload=payload)
+
+    try:
+        # The Location header contains the URL of the new report
+        report_url = response.headers.get("Location")
+        response.release()
+
+        if not report_url:
+            raise DemistoException(f"Failed to retrieve report URL from Location header. Status: {response.status}")
+
+        report_id = report_url.split("/")[-1]
+
+        return report_id
+
+    except Exception as e:
+        # Ensure connection is closed even if parsing fails
+        response.release()
+        raise DemistoException(f"Error creating report configuration: {e}")
+
+
+async def generate_report(client: InsightVMClient, report_id: str, event_type: str) -> str:
+    """Triggers the generation of a report."""
+    endpoint = f"/api/3/reports/{report_id}/generate"
+
+    # Use the client's http_request method for POST
+    response = await client.http_request("POST", endpoint, payload={})
+
+    # Handle response logic
+    data = await response.json()
+    await response.release()
+    instance_id = str(data.get("id"))
+    log(event_type, f"Report generation started. Instance ID: {instance_id}")
+    return instance_id
+
+
+async def check_status_of_report(client: InsightVMClient, report_id: str, instance_id: str, event_type: str) -> str:
+    """Checks the status of a report instance with non-blocking waits."""
+    while True:
+        endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
+
+        # Use the client's http_request method for GET
+        response = await client.http_request("GET", endpoint)
+
+        status_data = await response.json()
+        await response.release()
+        status = status_data.get("status", "unknown").lower()
+
+        log(event_type, f"Current report status: '{status}' for {report_id=} and {instance_id=}")
+
+        if status == "complete":
+            return instance_id
+
+        if status in ["failed", "aborted"]:
+            log(event_type, f"Report {instance_id} status is '{status}'. Re-triggering report generation")
+            instance_id = await generate_report(client, report_id, event_type)
+
+        if status in ["generated", "running", "unknown"]:
+            log(event_type, f"Report {instance_id} still processing. Waiting 60 seconds")
+
+        await asyncio.sleep(REPORT_DOWNLOAD_WAIT_TIME)
+
+
+async def stream_report(
+    client: "InsightVMClient", report_id: str, instance_id: str, event_type: str
+) -> AsyncGenerator[str, None]:  # noqa: E501
+    """
+    Asynchronously streams the content of a Rapid7 InsightVM report.
+    Yields decoded text lines (strings) to be consumed by the parser.
+    """
+    endpoint = f"/api/3/reports/{report_id}/history/{instance_id}/output"
+    log(event_type, f"Starting report download stream from: {endpoint}")
+
+    response = await client.http_request("GET", endpoint)
+
+    buffer = b""  # Buffer to hold partial lines across chunks
+
+    try:
+        content_stream = response.content
+
+        # Asynchronously iterate over chunks as they arrive
+        async for chunk in content_stream.iter_any():
+            buffer += chunk
+
+            # Split the buffer into lines (including the delimiter in the result)
+            lines = buffer.splitlines(keepends=True)
+
+            # Update the buffer with the last (potentially incomplete) line
+            # Check if the buffer ended with a newline before popping the last element
+            if buffer.endswith(b"\n"):
+                buffer = b""
+            else:
+                buffer = lines.pop()
+
+            # Yield all complete lines found
+            for line_bytes in lines:
+                # CRITICAL: Decode the byte string (bytes) into a text string (str).
+                # The .strip() is REMOVED to preserve any trailing whitespace/newlines
+                # for the CSV parser (though newlines are usually handled by splitlines).
+                yield line_bytes.decode("utf-8")
+
+        # Process any final content left in the buffer
+        if buffer:
+            yield buffer.decode("utf-8")
+
+        log(event_type, "Finished streaming report.")
+
+    finally:
+        # Crucial: Always ensure the response object is released/closed
+        await response.release()
+
+
+async def stream_and_parse_report(
+    client: "InsightVMClient",
+    report_id: str,
+    instance_id: str,
+    event_integration_context: dict,
+    event_type: str,
+    batch_size: int = DEFAULT_BATCH_SIZE,
+):
+    # --- Checkpoint Setup ---
+    # Retrieve checkpoints:
+    last_sent_line_raw = event_integration_context.get("last_sent_line", 0)
+    total_records_ingested = event_integration_context.get("total_records_ingested", 0)
+    header: Optional[List[str]] = None
+    # The start line for the *next* batch we will build
+    # NOTE: raw line numbers are 1-based and inclusive.
+    start_line_for_batch_raw = last_sent_line_raw + 1
+    pending_tasks: set[asyncio.Task] = set()
+
+    log(event_type, f"--- Starting Data Stream (Resuming from line: {start_line_for_batch_raw}) ---")
+    # --- Lookahead Stream Setup ---
+    try:
+        stream_iterator = stream_report(client, report_id, instance_id, event_type)
+    except Exception as e:
+        raise DemistoException(f"Failed to initialize stream: {e}")
+
+    line_to_process: Optional[str] = None
+
+    log(event_type, f"--- Starting Data Stream for report instance {instance_id} ---")
+
+    try:
+        # INITIAL LINE READ: Get the header of the report
+        try:
+            # Fetch the very first line (Line 1)
+            header_line = await anext(stream_iterator)
+
+            # Parse the header immediately
+            header = next(csv.reader(io.StringIO(header_line)))
+            log(event_type, f"CSV Header parsed: {header}")
+
+        except StopAsyncIteration:
+            log(event_type, "Report was empty (no header found).")
+            return
+        except Exception as e:
+            raise DemistoException(f"Failed to parse CSV header on line 1: {e}")
+
+        try:
+            # Try to fetch Line 2 (the first data line)
+            line_to_process = await anext(stream_iterator)
+        except StopAsyncIteration:
+            # Report has a header but no data
+            line_to_process = None
+
+        # --- EXECUTION PHASE ---
+        if line_to_process:
+            await process_data_stream(
+                stream_iterator=stream_iterator,
+                line_to_process=line_to_process,
+                header=header,
+                last_sent_line_raw=last_sent_line_raw,
+                total_records_ingested=total_records_ingested,
+                batch_size=batch_size,
+                event_type=event_type,
+                pending_tasks=pending_tasks,
+                event_integration_context=event_integration_context,
+                instance_id=instance_id,
+            )
+        else:
+            log(event_type, "No data rows to process.")
+
+    except Exception as e:
+        raise DemistoException(f"\nFATAL ERROR during streaming or sending events: {e}")
+
+
+async def process_data_stream(
+    stream_iterator: Any,
+    line_to_process: Optional[str],
+    header: List[str],
+    last_sent_line_raw: int,
+    total_records_ingested: int,
+    batch_size: int,
+    event_type: str,
+    pending_tasks: set,
+    event_integration_context: dict,
+    instance_id: str,
+) -> None:
+    """
+    Consumes the stream iterator, processes data rows, and triggers batch submission.
+    """
+
+    # Initialize Loop State
+    # We are starting at Line 1 because the header (Line 1) was already processed outside.
+    current_line_count = 1
+    batch_counter = 0
+    current_batch: List[str] = []
+    current_run_data_records = 0
+    snapshot_id = event_integration_context.get("snapshot_id", "")
+
+    if not snapshot_id:
+        snapshot_id = str(round(time.time() * 1000))
+        log(event_type, f"Did not get snapshot_id from context, will use {snapshot_id=}")
+        update_integration_context_by_event_type(event_type, {"snapshot_id": snapshot_id})
+
+    # The start line for the *next* batch we will build
+    # NOTE: raw line numbers are 1-based and inclusive.
+    start_line_for_batch_raw = last_sent_line_raw + 1
+
+    # --- MAIN LOOP ---
+    while line_to_process is not None:
+        current_line_count += 1
+        current_line = line_to_process
+
+        # --- Try to read the NEXT line (Lookahead) ---
+        next_line = await _get_next_line(stream_iterator)
+
+        # 1. Skip Checkpoint
+        if _should_skip_line(current_line_count, last_sent_line_raw):
+            line_to_process = next_line
+            continue
+
+        # 2. Parse Data Row and Append to Batch
+        data_row = _parse_csv_row(current_line, header, current_line_count, event_type)
+
+        if data_row:
+            current_batch.append(data_row)
+            current_run_data_records += 1  # Count of data records in the current run
+
+        else:
+            # if the line was malformed, we continue to the next line
+            line_to_process = next_line
+            continue
+
+        # 3. BATCHING AND LOOKAHEAD CHECK
+        is_last_batch = next_line is None
+
+        # Send batch if it's full OR if the stream has ended
+        if _is_last_batch(len(current_batch), batch_size, is_last_batch):
+            batch_counter += 1
+
+            start_line_for_batch_raw, total_records_ingested = await handle_batch_submission(
+                current_batch=current_batch,
+                start_line_for_batch_raw=start_line_for_batch_raw,
+                total_records_ingested=total_records_ingested,
+                current_run_data_records=current_run_data_records,
+                is_last_batch=is_last_batch,
+                event_type=event_type,
+                pending_tasks=pending_tasks,
+                snapshot_id=snapshot_id,
+                batch_counter=batch_counter,
+                instance_id=instance_id,
+            )
+
+            current_run_data_records = 0  # Reset count for the new batch
+            current_batch = []
+
+            log(event_type, f"Batch task created. Continuing stream. (Current line: {current_line_count})")
+
+        # Move processing to the next line:
+        line_to_process = next_line
+
+    if pending_tasks:
+        log(event_type, f"Waiting for {len(pending_tasks)} final submission task(s) to finish.")
+        results = await asyncio.gather(*pending_tasks, return_exceptions=True)
+
+        for res in results:
+            if isinstance(res, Exception):
+                raise res
+
+
+def _should_skip_line(current_line_count: int, last_sent_line_raw: int) -> bool:
+    """
+    Determines if the current line was already processed in a previous run.
+    """
+    return current_line_count <= last_sent_line_raw
+
+
+def _is_last_batch(len_current_batch: int, batch_size: int, is_last_batch: bool):
+    """
+    Determines if this is the last batch of events to send.
+    """
+    return len_current_batch >= batch_size or is_last_batch
+
+
+async def _get_next_line(stream_iterator: Any) -> Optional[str]:
+    """
+    Safely retrieves the next line from the iterator.
+    Returns None if the stream has ended.
+    """
+    try:
+        return await anext(stream_iterator)
+    except StopAsyncIteration:
+        return None
+
+
+def _parse_csv_row(current_line: str, header: List[str], current_line_count: int, event_type: str) -> Optional[str]:
+    """
+    Parses a CSV string into a JSON string.
+    Returns None if the row is malformed or invalid.
+    """
+    try:
+        # Parse the CSV line
+        data_row = next(csv.reader(io.StringIO(current_line)))
+
+        # Validate column count matches header
+        if not header or len(data_row) != len(header):
+            # Only log if it's not just an empty trailing line
+            if "".join(data_row).strip():
+                log(
+                    event_type,
+                    f"Skipping malformed row {current_line_count}. " f"Got {len(data_row)} cols, expected {len(header)}.",
+                )
+            return None
+
+        # Success: Zip headers with data and dump to JSON
+        record_dict = dict(zip(header, data_row))
+        return json.dumps(record_dict)
+
+    except Exception as e:
+        log(event_type, f"Error parsing CSV line {current_line_count}: {e}. Skipping record.")
+        return None
+
+
+async def handle_batch_submission(
+    current_batch: List[str],
+    start_line_for_batch_raw: int,
+    total_records_ingested: int,
+    current_run_data_records: int,
+    is_last_batch: bool,
+    event_type: str,
+    pending_tasks: set,
+    snapshot_id: str,
+    batch_counter: int,
+    instance_id: str,
+) -> tuple[int, int]:
+    """
+    Calculates batch metrics, determines the finality indicator, spawns the
+    background send_events task, and returns the updated state for the next batch.
+
+    Returns:
+        tuple[int, int]: (next_start_line_raw, new_total_records_ingested)
+    """
+
+    batch_size_actual = len(current_batch)
+    # NOTE: raw line numbers are 1-based and inclusive.
+    # Example: if start=500 and batch size=100 → end=599 → next start=600.
+    total_lines_after_batch_raw = start_line_for_batch_raw + batch_size_actual - 1
+
+    # Calculate the NEW cumulative total records ingested after this batch
+    new_total_records = total_records_ingested + current_run_data_records
+
+    # --- FINAL COUNT LOGIC ---
+    if is_last_batch:
+        # If this is the last batch, the indicator MUST be the final total record count.
+        lines_to_send_indicator = new_total_records
+        log(
+            event_type,
+            f"DEBUG: End of report number {instance_id} reached. Sending Final Report Total: \
+        {lines_to_send_indicator}",
+        )
+    else:
+        # Otherwise, send the placeholder (1) to indicate it's a middle batch.
+        lines_to_send_indicator = 1
+
+    # --- END FINAL COUNT LOGIC ---
+    # Create the asynchronous task for concurrent submission
+
+    try:
+        log(event_type, f"Sending {batch_size_actual} {event_type} to xsiam")
+        task = asyncio.create_task(
+            process_and_send_events_to_xsiam(
+                current_batch,
+                total_lines_after_batch_raw,  # Raw line number for resuming stream (e.g., 1001)
+                batch_counter,
+                new_total_records,  # Cumulative data records processed (e.g., 1000)
+                event_type,
+                snapshot_id,
+                lines_to_send_indicator,
+            )
+        )
+
+        # Manage the task set
+        pending_tasks.add(task)
+        task.add_done_callback(pending_tasks.discard)
+    except Exception as e:
+        log(event_type, f"CRITICAL ERROR: Failed to schedule batch submission task: {e}")
+        if "task" in locals() and not task.done():
+            task.cancel()
+            log(event_type, "Safe guard: Orphaned task cancelled.")
+
+    # Reset batch trackers for the next iteration
+    start_line_for_batch_raw = total_lines_after_batch_raw + 1
+
+    return start_line_for_batch_raw, new_total_records
+
+
+async def delete_report_instance(client: InsightVMClient, report_id: str, instance_id: str, event_type: str):
+    """Deletes a specific report instance (a single run)."""
+    endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
+    demisto.debug(f"Deleting report instance ID: {instance_id} for {event_type}.")
+    try:
+        await client.http_request("DELETE", endpoint)
+        demisto.debug(f"Report instance {instance_id} for {event_type} deleted successfully.")
+    except Exception as e:
+        # Expected if resource is already gone (e.g., Status 404)
+        demisto.debug(f"Warning: Could not guarantee deletion of report {instance_id} instance. {e}")
+
+
+async def delete_report_configuration(client: InsightVMClient, report_id: str, event_type: str):
+    """Deletes the entire report configuration."""
+    endpoint = f"/api/3/reports/{report_id}"
+    demisto.debug(f"Deleting report configuration ID: {report_id} for {event_type}.")
+    try:
+        await client.http_request("DELETE", endpoint)
+        demisto.debug(f"Report {report_id} for {event_type} configuration deleted successfully.")
+    except Exception as e:
+        # Expected if resource is already gone (e.g., Status 404)
+        demisto.debug(f"Warning: Could not guarantee deletion of report configuration. {e}")
+
+
+def _apply_collector_changes(collector_context: Dict[str, Dict[str, Any]], collector_type: str, changes: Dict[str, Any]) -> None:
+    """
+    Helper function to apply changes to a specific collector's context dict
+    with concurrency safety logic.
+
+    Modifies 'collector_context' in place.
+    """
+    # 1. Ensure the sub-dictionary exists for this collector type
+    if collector_type not in collector_context:
+        collector_context[collector_type] = {}
+
+    current_sub_dict = collector_context[collector_type]
+
+    # Keys that must strictly increase during normal operation
+    MONITORED_KEYS = {"last_sent_line", "total_records_ingested"}
+
+    # 2. Determine 'finish_current_report_stream' state for logic decisions
+    # Priority: Argument in 'changes' > Persisted value in Context > Default False
+    if "finish_current_report_stream" in changes:
+        finish_current_report_stream = changes["finish_current_report_stream"]
+    else:
+        finish_current_report_stream = current_sub_dict.get("finish_current_report_stream", False)
+
+    # 3. Iterate through ALL keys in the changes dictionary
+    for key, new_value in changes.items():
+        # LOGIC A: Handle Monitored Counters (prevent race conditions)
+        if key in MONITORED_KEYS and not finish_current_report_stream:
+            old_value = current_sub_dict.get(key, 0)
+
+            if isinstance(new_value, int | float) and isinstance(old_value, int | float):
+                if new_value > old_value:
+                    current_sub_dict[key] = new_value
+            else:
+                # Fallback for unexpected types
+                current_sub_dict[key] = new_value
+
+        # LOGIC B: Handle Everything Else
+        # This includes IDs, standard keys, AND the 'finish_current_report_stream' key itself.
+        else:
+            current_sub_dict[key] = new_value
+
+
+def update_integration_context_by_event_type(event_type: str, changes: Dict[str, Any]) -> None:
+    """
+    Retrieves the current integration context, updates the specified event's
+    state with the provided changes, and saves the updated context.
+
+    Args:
+        collector_type: The top-level key to update ('asset' or 'vulnerability').
+        changes: A dictionary of {key: value} updates to apply.
+    """
+
+    # 1. Get the current context
+    current_context = get_integration_context()
+
+    # 2. Apply the update using the helper function
+    _apply_collector_changes(current_context, event_type, changes)
+
+    # 3. Set the updated context back to the platform
+    set_integration_context(current_context)
+    log(event_type, f"State checkpoint saved. New line: {current_context[event_type]}")  # noqa: E501
+
+
+#################################################
+# copy from akamai
+#################################################
+
+
+async def process_and_send_events_to_xsiam(
+    events: list[str],
+    total_lines_after_batch_raw: int | None,
+    batch_counter: int,
+    new_total_records: int,
+    event_type: str,
+    snapshot_id: str,
+    items_count: int = 1,
+):
+    """Send the events to CSP's send_events_to_xsiam.
+    save the offset after the execution is done and update the module health.
+
+    Args:
+        events (list[str]): The list of json serialized events.
+        should_skip_decode_events (bool): Whether we should skip serializing and decoding events or not.
+        offset (str | None): The offset hash.
+        counter (int): The current execution number.
+    """
+    log(event_type, f"Running in interval = {batch_counter}. got {len(events)} lines, moving to processing data.")  # noqa: E501
+    processed_events = events
+
+    size_in_bytes = sum(len(line.encode("utf-8")) for line in events)
+
+    tasks = send_events_to_xsiam_rapid7(
+        processed_events,
+        VENDOR.get(event_type),
+        PRODUCT.get(event_type),
+        should_update_health_module=False,
+        chunk_size=size_in_bytes,
+        send_events_asynchronously=True,
+        url_key="host",
+        data_format="json",
+        data_size_expected_to_split_evenly=True,
+        counter=batch_counter,
+        items_count=items_count,
+        snapshot_id=snapshot_id,
+    )
+    log(event_type, f"Running in interval = {batch_counter}. Finished executing send_events_to_xsiam, waiting for tasks to end.")
+    await asyncio.gather(*tasks)
+    log(event_type, f"Running in interval = {batch_counter}. Finished gathering all tasks.")
+    log(event_type, f"Running in interval = {batch_counter}. Updating module health.")
+
+    update_integration_context_by_event_type(
+        event_type,
+        {"last_sent_line": total_lines_after_batch_raw, "total_records_ingested": new_total_records},
+    )
+    demisto.updateModuleHealth({"assetsPulled": len(processed_events)})
+    log(event_type, f"Running in interval = {batch_counter}. Finished updating module health.")
+
+
+def rapid7_send_data_to_xsiam(
+    data,
+    vendor,
+    product,
+    data_format=None,
+    url_key="url",
+    num_of_attempts=3,
+    chunk_size=XSIAM_EVENT_CHUNK_SIZE,
+    data_type=ASSETS,
+    should_update_health_module=True,
+    add_proxy_to_request=False,
+    snapshot_id="",
+    items_count=None,
+    send_events_asynchronously=False,
+    data_size_expected_to_split_evenly=False,
+    counter=0,
+):  # pragma: no cover
+    """
+    Send the supported fetched data types into the XDR data-collector private api.
+
+    :type data: ``Union[str, list]``
+    :param data: The data to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an event or asset.
+        2. String containing raw events separated by a new line.
+
+    :type vendor: ``str``
+    :param vendor: The vendor corresponding to the integration that originated the data.
+
+    :type product: ``str``
+    :param product: The product corresponding to the integration that originated the data.
+
+    :type data_format: ``str``
+    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
+        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+
+    :type url_key: ``str``
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type chunk_size: ``int``
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
+
+    :type data_type: ``str``
+    :param data_type: Type of data to send to Xsiam, events or assets.
+
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
+        This can be useful when using send_data_to_xsiam in batches for the same fetch.
+
+    :type add_proxy_to_request: ``bool``
+    :param add_proxy_to_request: whether to add proxy to the send evnets request.
+
+    :type snapshot_id: ``str``
+    :param snapshot_id: the snapshot id.
+
+    :type items_count: ``str``
+    :param items_count: the asset snapshot items count.
+
+    :type send_events_asynchronously: ``bool``
+    :param send_events_asynchronously: whether to use asyncio to send the events to xsiam asynchronously or not.
+    Note that when set to True, the debug should be done from the integration itself.
+
+    :type data_size_expected_to_split_evenly: ``bool``
+    :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
+    Use this to split data to chunks faster.
+
+    :return: Either None if running regularly or a list of asyncio task objects if running asynchronously:.
+    In case of running asynchronously:, the list of tasks will hold the number of events sent and can be accessed by:
+    await asyncio.gather(*tasks)
+    :rtype: ``List[Task]`` or ``None``
+    """
+    data_size = 0
+    params = demisto.params()
+    url = params.get(url_key)
+    calling_context = demisto.callingContext.get("context", {})
+    instance_name = calling_context.get("IntegrationInstance", "")
+    collector_name = calling_context.get("IntegrationBrand", "")
+    if not items_count:
+        items_count = len(data) if isinstance(data, list) else 1
+    if data_type not in DATA_TYPES:
+        demisto.debug(f"data type must be one of these values: {DATA_TYPES}")
+        return None
+
+    if not data:
+        demisto.debug(
+            f"send_data_to_xsiam function received no {data_type}, skipping the API call to send {data_type} (data_type) to XSIAM"
+        )  # noqa: E501
+        demisto.updateModuleHealth({f"{data_type}Pulled": data_size})
+        return None
+
+    # only in case we have data to send to XSIAM we continue with this flow.
+    # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
+    if isinstance(data, list):
+        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
+        demisto.debug(f"Sending {len(data)} {data_type} (data type) to XSIAM")
+        if isinstance(data[0], dict):
+            data = [json.dumps(item) for item in data]
+            data_format = "json"
+        # Separating each event with a new line
+        data = "\n".join(data)
+    elif not isinstance(data, str):
+        raise DemistoException(f"Unsupported type: {type(data)} for the {data_type} parameter. Should be a string or list.")
+    if not data_format:
+        data_format = "text"
+
+    xsiam_api_token = demisto.getLicenseCustomField("Http_Connector.token")
+    xsiam_domain = demisto.getLicenseCustomField("Http_Connector.url")
+    xsiam_url = f"https://api-{xsiam_domain}"
+    headers = remove_empty_elements(
+        {
+            "authorization": xsiam_api_token,
+            "format": data_format,
+            "product": product,
+            "vendor": vendor,
+            "content-encoding": "gzip",
+            "collector-name": collector_name,
+            "instance-name": instance_name,
+            "final-reporting-device": url,
+            "collector-type": ASSETS if data_type == ASSETS else EVENTS,
+        }
+    )
+    if data_type == ASSETS:
+        if not snapshot_id:
+            snapshot_id = str(round(time.time() * 1000))
+            log(data_type, f"Did not get snapshot_id, will send {snapshot_id=}")
+
+        # We are setting a time stamp ahead of the instance name since snapshot-ids must be configured in ascending
+        # alphabetical order such that first_snapshot < second_snapshot etc.
+        headers["snapshot-id"] = snapshot_id + instance_name
+        headers["total-items-count"] = str(items_count)
+
+    header_msg = f"Error sending new {data_type} into XSIAM.\n"
+
+    def data_error_handler(res):
+        """
+        Internal function to parse the XSIAM API errors
+        """
+        try:
+            response = res.json()
+            error = res.reason
+            if response.get("error").lower() == "false":
+                xsiam_server_err_msg = response.get("error")
+                error += ": " + xsiam_server_err_msg
+
+        except ValueError:
+            if res.text:
+                error = f"\n{res.text}"
+            else:
+                error = "Received empty response from the server"
+
+        api_call_info = (
+            "Parameters used:\n"
+            f"\tURL: {xsiam_url}\n"
+            f"\tHeaders: {json.dumps(headers, indent=8)}\n\n"
+            f"Response status code: {res.status_code}\n"
+            f"Error received:\n\t{error}"
+        )
+
+        demisto.error(header_msg + api_call_info)
+        raise DemistoException(header_msg + error, DemistoException)
+
+    client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
+    if data_size_expected_to_split_evenly:
+        data_chunks = split_data_by_slices(data, chunk_size)
+    else:
+        data_chunks = split_data_to_chunks(data, chunk_size)
+
+    def send_events(data_chunk):
+        chunk_size = len(data_chunk)
+        data_chunk = "\n".join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode("utf-8"))  # type: ignore[AttributeError,attr-defined]
+        xsiam_api_call_with_retries(
+            client=client,
+            events_error_handler=data_error_handler,
+            error_msg=header_msg,
+            headers=headers,
+            num_of_attempts=num_of_attempts,
+            xsiam_url=xsiam_url,
+            zipped_data=zipped_data,
+            is_json_response=True,
+            data_type=data_type,
+        )
+        return chunk_size
+
+    async def send_events_async(data_chunk):
+        chunk_size = len(data_chunk)
+        data_chunk = "\n".join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode("utf-8"))  # type: ignore[AttributeError,attr-defined]
+        _ = await xsiam_api_call_async_with_retries(
+            headers=headers, num_of_attempts=num_of_attempts, xsiam_url=xsiam_url, zipped_data=zipped_data, data_type=data_type
+        )
+        return chunk_size
+
+    if send_events_asynchronously:
+        demisto.info(f"Running in interval = {counter}. Sending events to xsiam asynchronously.")
+        all_chunks = list(data_chunks)
+        demisto.info(f"Running in interval = {counter}. Finished appending all data_chunks to a list.")
+        tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in all_chunks]
+
+        demisto.info(f"Finished submiting {len(tasks)} tasks for the {counter} time")
+        return tasks
+    else:
+        demisto.info("Sending events to xsiam synchronously.")
+        for chunk in data_chunks:
+            data_size += send_events(chunk)
+
+        if should_update_health_module:
+            demisto.updateModuleHealth({f"{data_type}Pulled": data_size})
+    return None
+
+
+def split_data_by_slices(data, target_chunk_size):  # pragma: no cover
+    """
+    Splits a string/list of data into chunks of an approximately specified size.
+    The actual size can be lower. the slicing is based on the assumption that all entries have the same size.
+
+    :type data: ``list`` or a ``string``
+    :param data: A list of data or a string delimited with \n  to split to chunks.
+    :type target_chunk_size: ``int``
+    :param target_chunk_size: The maximum size of each chunk. The maximal size allowed is 9MB.
+
+    :return: An iterable of lists where each list contains events with approx size of chunk size.
+    :rtype: ``collections.Iterable[list]``
+    """
+    target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
+    if isinstance(data, str):
+        data = data.split("\n")
+
+    # Handle empty list case immediately
+    if not data:
+        return []
+
+    entry_size = sys.getsizeof(data[0])
+    num_of_entries_per_chunk = target_chunk_size // entry_size
+    step_size = max(1, num_of_entries_per_chunk)
+
+    for i in range(0, len(data), step_size):
+        chunk = data[i : i + step_size]
+        yield chunk
+
+
+async def xsiam_api_call_async_with_retries(
+    xsiam_url,
+    zipped_data,
+    headers,
+    num_of_attempts,
+    data_type=ASSETS,
+):  # pragma: no cover
+    """
+    Send the fetched events or assets into the XDR data-collector private api.
+    :type xsiam_url: ``str``
+    :param xsiam_url: The URL of XSIAM to send the api request.
+    :type zipped_data: ``bytes``
+    :param zipped_data: encoded events
+    :type headers: ``dict``
+    :param headers: headers for the request
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes).
+    :type data_type: ``str``
+    :param data_type: events or assets
+    :return: Response object or DemistoException
+    :rtype: ``requests.Response`` or ``DemistoException``
+    """
+    # retry mechanism in case there is a rate limit (429) from xsiam.
+    status_code = None
+    attempt_num = 1
+    response = None
+    while status_code != 200 and attempt_num < num_of_attempts + 1:
+        demisto.debug(f"Sending {data_type} into xsiam, attempt number {attempt_num}")
+        # in the last try we should raise an exception if any error occurred, including 429
+        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
+        async with aiohttp.ClientSession() as session:  # noqa: SIM117
+            async with session.post(urljoin(xsiam_url, "/logs/v1/xsiam"), data=zipped_data, headers=headers) as response:
+                try:
+                    response.raise_for_status()  # This raises an exception for non-2xx status codes
+                    status_code = response.status
+                except aiohttp.ClientResponseError as e:
+                    if ok_codes and e.status in ok_codes:
+                        continue
+                    else:
+                        header_msg = f"Error sending new {data_type} into XSIAM.\n"
+                        api_call_info = (
+                            "Parameters used:\n"
+                            f"\tURL: {xsiam_url}\n"
+                            f"\tHeaders: {json.dumps(e.headers, indent=8)}\n\n"
+                            f"Response status code: {e.status}\n"
+                            f"Error received:\n\t{e.message}\n"
+                            f"additional request info: \n\t{e.request_info}"
+                        )
+
+                        demisto.error(header_msg + api_call_info)
+                        demisto.updateModuleHealth(header_msg + e.message, is_error=True)
+
+        demisto.debug(f"received status code: {status_code}")
+        if status_code == 429:
+            await asyncio.sleep(1)
+        attempt_num += 1
+    return response
+
+
+def send_events_to_xsiam_rapid7(
+    events,
+    vendor,
+    product,
+    data_format=None,
+    url_key="url",
+    num_of_attempts=3,
+    chunk_size=XSIAM_EVENT_CHUNK_SIZE,
+    should_update_health_module=True,
+    add_proxy_to_request=False,
+    send_events_asynchronously=True,
+    data_size_expected_to_split_evenly=False,
+    counter=0,
+    items_count=1,
+    snapshot_id="",
+):  # pragma: no cover
+    """
+    Send the fetched events into the XDR data-collector private api.
+
+    :type events: ``Union[str, list]``
+    :param events: The events to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an event.
+        2. String containing raw events separated by a new line.
+
+    :type vendor: ``str``
+    :param vendor: The vendor corresponding to the integration that originated the events.
+
+    :type product: ``str``
+    :param product: The product corresponding to the integration that originated the events.
+
+    :type data_format: ``str``
+    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
+        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+
+    :type url_key: ``str``
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type chunk_size: ``int``
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
+
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
+
+    :type add_proxy_to_request :``bool``
+    :param add_proxy_to_request: whether to add proxy to the send evnets request.
+
+    :type send_events_asynchronously: ``bool``
+    :param send_events_asynchronously: whether to use asyncio to send the events to xsiam asynchronously or not.
+    Note that when set to True, the debug should be done from the integration itself.
+
+    :type data_size_expected_to_split_evenly: ``bool``
+    :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
+    Use this to split data to chunks faster.
+
+    :return: Either None if running regularly or a list of asyncio task objects if running asynchronously:.
+    In case of running asynchronously:, the list of tasks will hold the number of events sent and can be accessed by:
+    await asyncio.gather(*tasks)
+    :rtype: ``List[Task]`` or ``None``
+    """
+    return rapid7_send_data_to_xsiam(
+        events,
+        vendor,
+        product,
+        data_format,
+        url_key,
+        num_of_attempts,
+        chunk_size,
+        data_type="assets",
+        should_update_health_module=should_update_health_module,
+        add_proxy_to_request=add_proxy_to_request,
+        send_events_asynchronously=send_events_asynchronously,
+        data_size_expected_to_split_evenly=data_size_expected_to_split_evenly,
+        counter=counter,
+        items_count=items_count,
+        snapshot_id=snapshot_id,
+    )
+
+
+async def run_full_collector_workflow(client: InsightVMClient, event_type: str, batch_size: int = DEFAULT_BATCH_SIZE):
+    """
+    Orchestrates the full report lifecycle: State Check, Create/Generate, Stream, Cleanup.
+
+    The function signature is adapted to receive the client instance.
+    """
+    integration_context = get_integration_context()
+    log(event_type, f"Got integration_context: {integration_context}")
+
+    # 1. RETRIEVE STATE
+    event_integration_context = integration_context.get(event_type, {})
+    report_id = event_integration_context.get("report_id", "")
+    instance_id = event_integration_context.get("instance_id", "")
+    finish_current_report_stream = event_integration_context.get(
+        "finish_current_report_stream", False
+    )  # if we finished the current report, but the server crashed before removing the instance id and report id from the context
+    if not finish_current_report_stream:
+        try:
+            if report_id and instance_id:
+                log(event_type, f"State found in context. Resuming check for Report ID: {report_id}, Instance ID: {instance_id}")
+                # If IDs exist, go straight to checking the status of the ongoing report
+                instance_id = await check_status_of_report(client, report_id, instance_id, event_type)
+
+            else:
+                log(event_type, "No state found. Starting new report generation.")
+                if not report_id:
+                    raise DemistoException(f"Report ID for {event_type} is missing from context despite setup phase.")
+
+                # 2. GENERATE REPORT
+                instance_id = await generate_report(client, report_id, event_type)
+                update_integration_context_by_event_type(event_type, {"instance_id": instance_id})
+
+                # 3. CHECK STATUS (Will wait asynchronously until finished or retry if failed)
+                instance_id = await check_status_of_report(client, report_id, instance_id, event_type)
+                update_integration_context_by_event_type(event_type, {"instance_id": instance_id})
+
+            # 4. STREAM DATA AND SEND EVENTS
+            log(event_type, "\n--- Starting Data Streaming Phase ---")
+
+            await stream_and_parse_report(client, report_id, instance_id, event_integration_context, event_type, batch_size)
+            update_integration_context_by_event_type(
+                event_type,
+                {"last_sent_line": 0, "finish_current_report_stream": True, "snapshot_id": "", "total_records_ingested": 0},
+            )
+            log(event_type, "--- Data Streaming Phase Complete ---")
+
+        except Exception as e:
+            log(event_type, f"\nFATAL WORKFLOW ERROR: {e}")
+            # Preserve the original exception message to ensure test expectations are met
+            raise DemistoException(f"Got the following error: {str(e)}")
+
+    # 5. CLEANUP:
+    log(event_type, "\n--- Starting Cleanup Phase ---")
+
+    if report_id and instance_id:
+        await delete_report_instance(client, report_id, instance_id, event_type)
+    if report_id:
+        await delete_report_configuration(client, report_id, event_type)
+
+    # Clear all state markers in context for the next 12-hour run
+    update_integration_context_by_event_type(
+        event_type, {"instance_id": "", "report_id": "", "finish_current_report_stream": False}
+    )
+
+    log(event_type, "--- Cleanup Phase Complete ---")
+
+
+async def ensure_report_config_exists(client: InsightVMClient, event_type: str, context: dict) -> None:
+    """
+    Checks if a report configuration exists in the integration context.
+    If not, it creates one sequentially and updates the context.
+    """
+    existing_id = context.get(event_type, {}).get("report_id")
+
+    if existing_id:
+        log(event_type, f"Report config already exists (ID: {existing_id}). Skipping creation.")
+        return
+
+    log(event_type, "No report config found. Creating new configuration.")
+
+    # We await this call so it finishes completely before moving on
+    new_report_id = await create_report_config_from_template(client, event_type)
+
+    update_integration_context_by_event_type(event_type, {"report_id": new_report_id})
+    log(event_type, f"Context updated with new Report ID: {new_report_id}")
+
+
+async def run_all_collectors(
+    client: InsightVMClient,
+    batch_size: int = DEFAULT_BATCH_SIZE,
+):
+    """
+    Runs the Asset and Vulnerability report collector workflows concurrently,
+    using the provided, initialized InsightVMClient.
+    """
+
+    try:
+        context = get_integration_context()
+        await ensure_report_config_exists(client, "asset", context)
+        await ensure_report_config_exists(client, "vulnerability", context)
+
+    except Exception as e:
+        raise DemistoException(f"FATAL: Failed during report configuration setup. Aborting run. Error: {e}")
+
+    demisto.debug("Starting concurrent execution of Asset and Vulnerability collectors")
+
+    asset_task = run_full_collector_workflow(client=client, batch_size=batch_size, event_type="asset")
+    vulnerability_task = run_full_collector_workflow(client=client, batch_size=batch_size, event_type="vulnerability")
+
+    # Run both tasks concurrently. return_exceptions=True ensures one failure
+    # doesn't immediately stop the other task.
+    results = await asyncio.gather(asset_task, vulnerability_task, return_exceptions=True)
+    demisto.debug("\n--- Concurrent Execution Complete ---")
+
+    success = True
+    exceptions = []
+
+    for i, result in enumerate(results):
+        if isinstance(result, Exception):
+            task_name = "Asset Collector" if i == 0 else "Vulnerability Collector"
+            exceptions.append(f"!!! ERROR: {task_name} failed: {result}")
+            success = False
+
+    if not success:
+        # Aggregate all errors into a single failure message
+        error_message = "\n".join(exceptions)
+        raise DemistoException(f"One or more concurrent collector workflows failed:\n{error_message}")
+
+    demisto.debug("All collector workflows finished successfully.")
+
+
+async def fetch_assets_long_running_command(params: dict, token: str):
+    """
+    Performs the long running execution loop.
+    Args:
+        client (Client): The client.
+        fetch_interval (int): Fetch time for this fetching events cycle.
+    """
+    while True:
+        demisto.debug("Started long running execution")
+        start_time = time.time()
+        try:
+            async with InsightVMClient(
+                base_url=params["server"],
+                username=params["credentials"].get("identifier"),
+                password=params["credentials"].get("password"),
+                token=token,
+                verify=not params.get("unsecure"),
+            ) as client:
+                await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE)
+            demisto.debug("Finished running all collectors")
+
+        except Exception as e:
+            demisto.debug(f"Got the following error while trying to stream events: {str(e)}")
+
+        finally:
+            end_time = time.time()
+            duration_seconds = end_time - start_time
+            demisto.debug(f"The whole run took {duration_seconds} seconds")
+            remaining_time_seconds = TWENTYFOUR_HOURS_AS_SECONDS - duration_seconds
+            demisto.debug(f"Will sleep for {remaining_time_seconds} seconds")
+
+            await asyncio.sleep(remaining_time_seconds)
+
+
 def main():  # pragma: no cover
     try:
         args = demisto.args()
@@ -6467,9 +8003,9 @@ def main():  # pragma: no cover
 
         # A workaround for fixing compatibility issues when upgrading existing instances that are < 1.2.0.
         # ('token' field was converted from type 0 to type 9)
-        token = None
+        token = ""
 
-        if params.get("token"):
+        if params.get("token", ""):
             if isinstance(params["token"], str):
                 token = params["token"]
 
@@ -6490,6 +8026,9 @@ def main():  # pragma: no cover
         if command == "test-module":
             client.get_assets(page_size=1, limit=1)
             results = "ok"
+        elif command == "long-running-execution":
+            demisto.info("Starting long-running execution.")
+            asyncio.run(fetch_assets_long_running_command(params, token))
         elif command == "nexpose-create-asset":
             results = create_asset_command(client=client, **args)
         elif command == "nexpose-create-assets-report":
