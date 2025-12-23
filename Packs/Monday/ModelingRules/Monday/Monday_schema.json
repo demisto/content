@@ -31,6 +31,10 @@
       "user_id": {
         "type": "int",
         "is_array": false
+      },
+      "event_type": {
+        "type": "int",
+        "is_array": false
       }
     }
   }
