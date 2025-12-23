@@ -71,7 +71,7 @@ script:
       required: false
     description: Manual command to fetch and display events.
     name: ibm-guardium-get-events
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.6391686
   isfetchevents: true
   runonce: false
   script: '-'
