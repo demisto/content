@@ -1266,7 +1266,7 @@ def safely_update_context_data_partial(
         merged_size_bytes = {key: calculate_object_size(value) for key, value in merged.items()}
         try:
             print_debug_msg(f"Saving merged context, {merged_size_bytes=}.")
-            set_integration_context(merged, version=version)
+            set_integration_context(merged)
             return  # success
         except Exception as e:
             print_debug_msg(f"Version conflict or error setting context: {e}. Retrying...")
@@ -2897,7 +2897,7 @@ def long_running_execution_command(client: Client, params: dict):
     assets_limit = int(params.get("limit_assets", DEFAULT_ASSETS_LIMIT))
     if not argToBoolean(params.get("retry_events_fetch", True)):
         EVENTS_SEARCH_TRIES = 1
-    context_data, version = qradar_get_integration_context()
+    context_data = qradar_get_integration_context()
     is_reset_triggered(context_data)
     recover_from_last_run(context_data)
     long_running_container_id = str(uuid.uuid4())
