@@ -466,10 +466,7 @@ def filter_context_fields(output_keys: list, context: list) -> list:
     """
     Filters only specific keys from the context dictionary where values are not None.
     """
-    return [
-        {k: v for k in output_keys if (v := alert.get(k)) is not None}
-        for alert in context
-    ]
+    return [{k: v for k in output_keys if (v := alert.get(k)) is not None} for alert in context]
 
 
 class Client(CoreClient):

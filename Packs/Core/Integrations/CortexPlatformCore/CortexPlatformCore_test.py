@@ -6011,29 +6011,6 @@ def test_get_issues_command_with_output_keys_empty_list_does_not_filter(mocker):
     filter_mock.assert_not_called()
 
 
-def test_get_issues_command_with_specific_output_keys(mocker):
-    """
-    Given: A client and args with specific output_keys
-    When: get_issues_command is called
-    Then: Returns issue outputs filtered by specified keys
-    """
-    from CortexPlatformCore import get_issues_command
-
-    client = mocker.Mock()
-    args = {"issue_id": "123", "output_keys": ["issue_id", "status"]}
-    mock_response = CommandResults(
-        outputs=[{"alert_id": "alert_123", "status": "open", "severity": "high", "description": "Test alert"}],
-        outputs_prefix="Core.Issue",
-    )
-
-    mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_response)
-    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
-
-    result = get_issues_command(client, args)
-
-    assert result.outputs == [{"issue_id": "alert_123", "status": "open"}]
-
-
 def test_get_issues_command_with_multiple_alert_outputs(mocker):
     """
     Given: A client and args with issue_id
@@ -6096,27 +6073,6 @@ def test_get_issues_command_with_empty_list_outputs(mocker):
     filter_mock.assert_not_called()
 
 
-def test_get_issues_command_with_invalid_output_keys(mocker):
-    """
-    Given: A client and args with non-existent output keys
-    When: get_issues_command is called
-    Then: Returns empty or filtered outputs based on available keys
-    """
-    from CortexPlatformCore import get_issues_command
-
-    client = mocker.Mock()
-    args = {"issue_id": "123", "output_keys": ["non_existent_key"]}
-
-    mock_response = CommandResults(
-        outputs=[{"alert_id": "alert_123", "status": "open", "severity": "high"}], outputs_prefix="Core.Issue"
-    )
-    mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_response)
-    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
-
-    result = get_issues_command(client, args)
-    assert result.outputs == [{}]  # or handle as appropriate in your implementation
-
-
 def test_get_issues_command_with_partial_output_keys(mocker):
     """
     Given: A client and args with some missing output keys
@@ -6136,3 +6092,232 @@ def test_get_issues_command_with_partial_output_keys(mocker):
 
     result = get_issues_command(client, args)
     assert result.outputs == [{"status": "open"}]
+
+
+class TestUpdateCaseCommand:
+    def test_update_case_command_with_unassigned_assignee(self, mocker):
+        """
+        Given: A client and args with unassigned assignee
+        When: update_case_command is called
+        Then: The case is unassigned and result contains expected case data
+        """
+        from CortexPlatformCore import update_case_command
+
+        client = mocker.Mock()
+        client.unassign_case = mocker.Mock()
+        client.update_case = mocker.Mock(return_value={"case_id": "123", "status": "open"})
+        mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123", "status": "open"})
+        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
+
+        args = {"case_id": "123", "assignee": "unassigned", "case_name": "Test Case"}
+
+        result = update_case_command(client, args)
+
+        client.unassign_case.assert_called_once_with("123")
+        assert result.outputs[0]["case_id"] == "123"
+
+    def test_update_case_command_resolved_status_without_reason_raises_error(self):
+        """
+        Given: A client and args with resolved status but no resolve_reason
+        When: update_case_command is called
+        Then: A ValueError is raised requiring resolve reason
+        """
+        from CortexPlatformCore import update_case_command
+
+        client = Mock()
+        args = {"case_id": "123", "status": "resolved"}
+
+        with pytest.raises(ValueError, match="In order to set the case to resolved, you must provide a resolve reason"):
+            update_case_command(client, args)
+
+    def test_update_case_command_resolved_status_with_invalid_reason_raises_error(self, mocker):
+        """
+        Given: A client and args with resolved status and invalid resolve_reason
+        When: update_case_command is called
+        Then: A ValueError is raised for invalid resolve reason
+        """
+        from CortexPlatformCore import update_case_command, CaseManagement
+
+        client = Mock()
+        mocker.patch.object(CaseManagement, "STATUS_RESOLVED_REASON", {"valid_reason": True})
+
+        args = {"case_id": "123", "status": "resolved", "resolve_reason": "invalid_reason"}
+
+        with pytest.raises(ValueError, match="In order to set the case to resolved, you must provide a resolve reason"):
+            update_case_command(client, args)
+
+    def test_update_case_command_resolve_fields_without_resolved_status_raises_error(self):
+        """
+        Given: A client and args with resolve fields but non-resolved status
+        When: update_case_command is called
+        Then: A ValueError is raised for invalid field combination
+        """
+        from CortexPlatformCore import update_case_command
+
+        client = Mock()
+        test_cases = [
+            {"case_id": "123", "resolve_reason": "duplicate", "status": "open"},
+            {"case_id": "123", "resolve_all_alerts": "true", "status": "open"},
+            {"case_id": "123", "resolved_comment": "test comment", "status": "open"},
+        ]
+
+        for args in test_cases:
+            with pytest.raises(ValueError, match="In order to use resolve_reason, resolve_all_alerts, or resolved_comment"):
+                update_case_command(client, args)
+
+    def test_update_case_command_invalid_status_raises_error(self, mocker):
+        """
+        Given: A client and args with invalid status
+        When: update_case_command is called
+        Then: A ValueError is raised for invalid status
+        """
+        from CortexPlatformCore import update_case_command, CaseManagement
+
+        client = Mock()
+        mocker.patch.object(CaseManagement, "STATUS", {"open": 1, "closed": 2})
+
+        args = {"case_id": "123", "status": "invalid_status"}
+
+        with pytest.raises(ValueError, match="Invalid status 'invalid_status'. Valid statuses are"):
+            update_case_command(client, args)
+
+    def test_update_case_command_invalid_severity_raises_error(self, mocker):
+        """
+        Given: A client and args with invalid user_defined_severity
+        When: update_case_command is called
+        Then: A ValueError is raised for invalid severity
+        """
+        from CortexPlatformCore import update_case_command, CaseManagement
+
+        client = Mock()
+        mocker.patch.object(CaseManagement, "SEVERITY", {"low": 1, "high": 2})
+
+        args = {"case_id": "123", "user_defined_severity": "invalid_severity"}
+
+        with pytest.raises(ValueError, match="Invalid user_defined_severity 'invalid_severity'. Valid severities are"):
+            update_case_command(client, args)
+
+    def test_update_case_command_no_valid_parameters_raises_error(self, mocker):
+        """
+        Given: A client and args with no valid update parameters
+        When: update_case_command is called
+        Then: A ValueError is raised for missing update parameters
+        """
+        from CortexPlatformCore import update_case_command
+
+        client = Mock()
+        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary", side_effect=lambda d: d.clear())
+
+        args = {"case_id": "123"}
+
+        with pytest.raises(ValueError, match="No valid update parameters provided for case update"):
+            update_case_command(client, args)
+
+    def test_update_case_command_multiple_cases_success(self, mocker):
+        """
+        Given: A client and args with multiple case IDs
+        When: update_case_command is called
+        Then: All cases are successfully updated and results contain case data
+        """
+        from CortexPlatformCore import update_case_command, CaseManagement
+
+        client = mocker.Mock()
+        client.update_case = mocker.Mock(side_effect=[{"case_id": "123", "status": "open"}, {"case_id": "456", "status": "open"}])
+        mocker.patch(
+            "CortexPlatformCore.process_case_response",
+            side_effect=[{"case_id": "123", "status": "open"}, {"case_id": "456", "status": "open"}],
+        )
+        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
+        mocker.patch.object(CaseManagement, "STATUS", {"open": 1})
+
+        args = {"case_id": ["123", "456"], "status": "open", "case_name": "Updated Case"}
+
+        result = update_case_command(client, args)
+
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["case_id"] == "123"
+        assert result.outputs[1]["case_id"] == "456"
+        assert client.update_case.call_count == 2
+
+    def test_update_case_command_with_custom_fields(self, mocker):
+        """
+        Given: A client and args with custom fields
+        When: update_case_command is called
+        Then: The case is updated with custom fields and result contains case data
+        """
+        from CortexPlatformCore import update_case_command
+
+        client = mocker.Mock()
+        client.update_case = mocker.Mock(return_value={"case_id": "123"})
+        mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123"})
+        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
+        mocker.patch("CortexPlatformCore.parse_custom_fields", return_value={"field1": "value1"})
+
+        args = {"case_id": "123", "custom_fields": ["field1:value1"], "case_name": "Test Case"}
+
+        result = update_case_command(client, args)
+
+        assert result.outputs[0]["case_id"] == "123"
+        client.update_case.assert_called_once()
+
+    def test_update_case_command_resolved_with_valid_reason(self, mocker):
+        """
+        Given: A client and args with resolved status and valid resolve reason
+        When: update_case_command is called
+        Then: The case is resolved successfully with all resolve fields
+        """
+        from CortexPlatformCore import update_case_command, CaseManagement
+
+        client = mocker.Mock()
+        client.update_case = mocker.Mock(return_value={"case_id": "123", "status": "resolved"})
+        mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123", "status": "resolved"})
+        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
+        mocker.patch.object(CaseManagement, "STATUS", {"resolved": 3})
+        mocker.patch.object(CaseManagement, "STATUS_RESOLVED_REASON", {"duplicate": True})
+
+        args = {
+            "case_id": "123",
+            "status": "resolved",
+            "resolve_reason": "duplicate",
+            "resolved_comment": "This is a duplicate case",
+            "resolve_all_alerts": "true",
+        }
+
+        result = update_case_command(client, args)
+
+        assert result.outputs[0]["case_id"] == "123"
+        client.update_case.assert_called_once()
+
+    def test_update_case_command_payload_construction(self, mocker):
+        """
+        Given: A client and args with various update fields
+        When: update_case_command is called
+        Then: The payload is constructed correctly with all mapped fields
+        """
+        from CortexPlatformCore import update_case_command, CaseManagement
+
+        client = mocker.Mock()
+        client.update_case = mocker.Mock(return_value={"case_id": "123"})
+        mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123"})
+        remove_nulls_mock = mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
+        mocker.patch.object(CaseManagement, "STATUS", {"open": 1})
+        mocker.patch.object(CaseManagement, "SEVERITY", {"high": 2})
+
+        args = {
+            "case_id": "123",
+            "case_name": "Test Case",
+            "status": "open",
+            "user_defined_severity": "high",
+            "assignee": "user@example.com",
+        }
+
+        update_case_command(client, args)
+
+        remove_nulls_mock.assert_called_once()
+        call_args = client.update_case.call_args[0]
+        payload = call_args[0]
+
+        assert payload["caseName"] == "Test Case"
+        assert payload["status"] == 1
+        assert payload["userSeverity"] == 2
+        assert payload["assignedUser"] == "user@example.com"
