@@ -15,13 +15,6 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
-  additionalinfo: |
-    ## How to generate the API Key
-    
-    1. Go to https://dash.apivoid.com/api-keys/
-    2. Copy your API key
-    
-    **Note:** The API key is sent in the X-API-Key header for all V2 API requests.
 - display: API KEY
   name: apikey
   defaultvalue: ''
@@ -1165,7 +1158,7 @@ script:
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
       type: string
-    description: Check if a website is present on ThreatLog database
+    description: 'Deprecated. This command is deprecated because it is not supported in API V2. Check if a website is present on ThreatLog database'
   - name: apivoid-parked-domain
     arguments:
     - name: domain
@@ -1339,7 +1332,7 @@ script:
     - contextPath: File.Extension
       description: 'The extension of the file.'
       type: string
-    description: Get the body of an html page after javascript has been executed
+    description: 'Deprecated. This command is deprecated because it is not supported in API V2. Get the body of an html page after javascript has been executed'
   - name: apivoid-site-trustworthiness
     arguments:
     - name: host
