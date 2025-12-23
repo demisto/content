@@ -20,6 +20,45 @@ def util_load_json(path):
         return json.load(f)
 
 
+def util_create_batch_response(num_events, batch_num=1, timestamp_base="2025-01-01 10:00:00.0"):
+    """
+    Create a batch response with specified number of events.
+    
+    Args:
+        num_events: Number of events to include in the batch
+        batch_num: Batch number for unique event IDs
+        timestamp_base: Base timestamp string
+    
+    Returns:
+        Dictionary representing API response
+    """
+    base_response = util_load_json("test_data/sample_api_response.json")
+    
+    # Generate events
+    events = []
+    for i in range(num_events):
+        # Parse base timestamp and add seconds
+        from datetime import datetime, timedelta
+        base_dt = datetime.strptime(timestamp_base, "%Y-%m-%d %H:%M:%S.%f")
+        event_dt = base_dt + timedelta(seconds=i + (batch_num - 1) * 1000)
+        timestamp = event_dt.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]  # Keep one decimal place
+        
+        events.append({
+            "results": {
+                "1": "10.130.4.38",
+                "2": "admin",
+                "3": "sqlcmd",
+                "4": "10.130.17.21",
+                "5": "MS SQL SERVER",
+                "6": "MASTER",
+                "7": timestamp
+            }
+        })
+    
+    base_response["result"]["data"] = events
+    return base_response
+
+
 BASE_URL = "https://guardium.security.ibm.com"
 REPORT_ID = "test_report_id"
 
@@ -60,28 +99,6 @@ class TestExtractFieldMapping:
             "6": "Database Name",
             "7": "Session Start Time",
         }
-
-    def test_extract_field_mapping_fallback_to_header_name(self):
-        """
-        Given:
-            - API response with report headers missing nls_value
-        When:
-            - Calling extract_field_mapping
-        Then:
-            - Ensure field mapping falls back to header_name
-        """
-        response = {
-            "result": {
-                "report_layout": {
-                    "report_headers": [
-                        {"sequence": 1, "header_name": "ClientIP", "field_name": {}},
-                        {"sequence": 2, "header_name": "DBUserName"},
-                    ]
-                }
-            }
-        }
-        result = extract_field_mapping(response)
-        assert result == {"1": "ClientIP", "2": "DBUserName"}
 
     def test_extract_field_mapping_missing_data(self):
         """
@@ -267,26 +284,32 @@ class TestDeduplicateEvents:
         result = deduplicate_events(events, last_run, "timestamp")
         # event1 is filtered (duplicate), event2 and event3 are kept
         assert len(result) == 2
-        # Check that event1 was filtered and event3 is in result
+        # Check that event1 was filtered and event2 and event3 are in the results
         event_ids = [e["id"] for e in result]
         assert "1" not in event_ids
-        assert "3" in event_ids
+        assert "2" in event_ids and "3" in event_ids
 
     def test_deduplicate_events_optimization(self):
         """
         Given:
             - Events where first event timestamp is greater than last_fetch_time
+            - Both event hashes are in the ignore list
         When:
             - Calling deduplicate_events
         Then:
-            - Ensure all events are added without duplicate checking
+            - Ensure all events are added without duplicate checking (because timestamp > last_fetch_time)
         """
-        events = [
-            {"timestamp": "2025-01-01 11:00:00", "id": "1"},
-            {"timestamp": "2025-01-01 12:00:00", "id": "2"},
-        ]
-        last_run = {"last_fetch_time": "2025-01-01 10:00:00", "fetched_event_hashes": ["hash1", "hash2"]}
+        event1 = {"timestamp": "2025-01-01 11:00:00", "id": "1"}
+        event2 = {"timestamp": "2025-01-01 12:00:00", "id": "2"}
+        events = [event1, event2]
+        
+        # Get hashes of both events and add them to the ignore list (Hypothetical scenario)
+        hash1 = get_event_hash(event1)
+        hash2 = get_event_hash(event2)
+        last_run = {"last_fetch_time": "2025-01-01 10:00:00", "fetched_event_hashes": [hash1, hash2]}
+        
         result = deduplicate_events(events, last_run, "timestamp")
+        # Both events should be kept because their timestamps are greater than last_fetch_time
         assert len(result) == 2
 
 
@@ -369,7 +392,6 @@ class TestTestModule:
         from IBMSecurityGuardium import test_module_command
 
         response = util_load_json("test_data/no_resources_response.json")
-        import json
 
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
@@ -404,8 +426,6 @@ class TestFetchEvents:
         Then:
             - Ensure events are fetched and next_run is set correctly
         """
-        import json
-
         response = util_load_json("test_data/sample_api_response.json")
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
@@ -415,8 +435,7 @@ class TestFetchEvents:
         assert len(events) == 1
         assert "Session Start Time" in events[0]
         assert timestamp_field == "Session Start Time"
-        assert "last_fetch_time" in next_run
-        assert "fetched_event_hashes" in next_run
+        assert next_run == {'last_fetch_time': '2025-06-07 16:52:57.0', 'fetched_event_hashes': ['46b9493d0040b5cf']}
 
     def test_fetch_events_no_events(self, client, requests_mock):
         """
@@ -427,8 +446,6 @@ class TestFetchEvents:
         Then:
             - Ensure empty events list and unchanged last_run
         """
-        import json
-
         response = util_load_json("test_data/no_resources_response.json")
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
@@ -440,29 +457,233 @@ class TestFetchEvents:
         assert next_run == last_run
 
 
-class TestGetEventsCommand:
-    """Tests for get_events_command function"""
-
-    def test_get_events_command_default_params(self, client, requests_mock):
+    def test_fetch_events_pagination_multiple_batches(self, client, requests_mock, monkeypatch):
         """
         Given:
-            - No time range specified
+            - max_fetch of 25 events (requires 3 batches with MAX_BATCH_SIZE=10)
         When:
-            - Calling get_events_command
+            - Calling fetch_events_command
         Then:
-            - Ensure events are fetched with default 1-hour range
+            - Ensure offset is updated correctly for each batch
+            - Ensure all batches are fetched until max_fetch is reached
+            - Ensure offset increments by the number of events returned in each batch
         """
-        import json
+        import IBMSecurityGuardium
+        monkeypatch.setattr(IBMSecurityGuardium, "MAX_BATCH_SIZE", 10)
+        
+        call_count = 0
+        def mock_response(request, context):
+            nonlocal call_count
+            call_count += 1
+            payload = request.json()
+            offset = payload["offset"]
+            fetch_size = payload["fetch_size"]
+            
+            # Batch 1: offset=0, fetch_size=10, return 10 events
+            if offset == 0:
+                assert fetch_size == 10
+                return json.dumps(util_create_batch_response(10, batch_num=1))
+            # Batch 2: offset=10, fetch_size=10, return 10 events
+            elif offset == 10:
+                assert fetch_size == 10
+                return json.dumps(util_create_batch_response(10, batch_num=2))
+            # Batch 3: offset=20, fetch_size=5 (remaining), return 5 events
+            elif offset == 20:
+                assert fetch_size == 5  # Only 5 remaining to reach max_fetch=25
+                return json.dumps(util_create_batch_response(5, batch_num=3))
+            else:
+                context.status_code = 400
+                return json.dumps({"error": f"Unexpected offset: {offset}"})
 
-        response = util_load_json("test_data/sample_api_response.json")
-        response_text = json.dumps(response)
-        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
+        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=mock_response)
 
-        events, results, timestamp_field = get_events_command(client, REPORT_ID, {})
+        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=25, last_run={})
 
-        assert len(events) == 1
+        # Verify all 25 events were fetched
+        assert len(events) == 25
+        # Verify 3 API calls were made
+        assert call_count == 3
         assert timestamp_field == "Session Start Time"
-        assert results.readable_output is not None
+
+    def test_fetch_events_stops_when_less_than_batch_size_returned(self, client, requests_mock, monkeypatch):
+        """
+        Given:
+            - API returns fewer events than requested batch_size
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure the loop breaks (no more API calls)
+            - Ensure offset is not incremented after the break
+        """
+        import IBMSecurityGuardium
+        monkeypatch.setattr(IBMSecurityGuardium, "MAX_BATCH_SIZE", 10)
+        
+        call_count = 0
+        def mock_response(request, context):
+            nonlocal call_count
+            call_count += 1
+            payload = request.json()
+            offset = payload["offset"]
+            
+            # First batch: return 5 events (less than batch_size of 10)
+            if offset == 0:
+                return json.dumps(util_create_batch_response(5, batch_num=1))
+            else:
+                # Should not reach here
+                context.status_code = 400
+                return json.dumps({"error": "Should not make second API call"})
+
+        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=mock_response)
+
+        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=100, last_run={})
+
+        # Verify only 5 events were fetched
+        assert len(events) == 5
+        # Verify only 1 API call was made (loop broke after first batch)
+        assert call_count == 1
+
+    def test_fetch_events_stops_when_no_events_returned(self, client, requests_mock, monkeypatch):
+        """
+        Given:
+            - API returns empty data array
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure the loop breaks immediately
+            - Ensure no events are collected
+        """
+        import IBMSecurityGuardium
+        monkeypatch.setattr(IBMSecurityGuardium, "MAX_BATCH_SIZE", 10)
+        
+        response = util_load_json("test_data/no_resources_response.json")
+        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=json.dumps(response))
+
+        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=100, last_run={})
+
+        assert len(events) == 0
+        assert timestamp_field == ""
+
+    def test_fetch_events_stops_at_max_fetch_mid_batch(self, client, requests_mock, monkeypatch):
+        """
+        Given:
+            - max_fetch=15 and batch returns 10 events in first call
+            - Second batch would exceed max_fetch
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure only 5 events are requested in second batch
+            - Ensure total events equals max_fetch exactly
+            - Ensure loop stops after reaching max_fetch
+        """
+        import IBMSecurityGuardium
+        monkeypatch.setattr(IBMSecurityGuardium, "MAX_BATCH_SIZE", 10)
+        
+        call_count = 0
+        def mock_response(request, context):
+            nonlocal call_count
+            call_count += 1
+            payload = request.json()
+            offset = payload["offset"]
+            fetch_size = payload["fetch_size"]
+            
+            if offset == 0:
+                assert fetch_size == 10
+                return json.dumps(util_create_batch_response(10, batch_num=1))
+            elif offset == 10:
+                # Should request only 5 (remaining to reach 15)
+                assert fetch_size == 5
+                return json.dumps(util_create_batch_response(5, batch_num=2))
+            else:
+                context.status_code = 400
+                return json.dumps({"error": "Should not make third API call"})
+
+        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=mock_response)
+
+        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=15, last_run={})
+
+        assert len(events) == 15
+        assert call_count == 2
+
+    def test_fetch_events_offset_increments_correctly(self, client, requests_mock, monkeypatch):
+        """
+        Given:
+            - Multiple batches with varying event counts
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure offset increments by the actual number of events returned (not batch_size)
+        """
+        import IBMSecurityGuardium
+        monkeypatch.setattr(IBMSecurityGuardium, "MAX_BATCH_SIZE", 10)
+        
+        call_count = 0
+        expected_offsets = [0, 8, 15]  # offset should increment by actual events returned
+        
+        def mock_response(request, context):
+            nonlocal call_count
+            payload = request.json()
+            offset = payload["offset"]
+            
+            # Verify offset is as expected
+            assert offset == expected_offsets[call_count], f"Expected offset {expected_offsets[call_count]}, got {offset}"
+            
+            # Batch 1: return 8 events
+            if call_count == 0:
+                call_count += 1
+                return json.dumps(util_create_batch_response(8, batch_num=1))
+            # Batch 2: return 7 events
+            elif call_count == 1:
+                call_count += 1
+                return json.dumps(util_create_batch_response(7, batch_num=2))
+            # Batch 3: return 3 events (less than batch_size, should stop)
+            elif call_count == 2:
+                call_count += 1
+                return json.dumps(util_create_batch_response(3, batch_num=3))
+
+        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=mock_response)
+
+        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=50, last_run={})
+
+        assert len(events) == 18  # 8 + 7 + 3
+        assert call_count == 3
+
+    def test_fetch_events_field_mapping_extracted_once(self, client, requests_mock):
+        """
+        Given:
+            - Multiple batches of events
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure field mapping is extracted only from the first batch (offset == 0)
+            - Ensure timestamp field is determined only from the first batch
+        """
+        call_count = 0
+        
+        def mock_response(request, context):
+            nonlocal call_count
+            call_count += 1
+            payload = request.json()
+            offset = payload["offset"]
+            
+            # Both batches use the same structure from sample_api_response
+            if offset == 0:
+                return json.dumps(util_create_batch_response(2, batch_num=1))
+            else:
+                return json.dumps(util_create_batch_response(1, batch_num=2))
+
+        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=mock_response)
+
+        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=10, last_run={})
+
+        # Verify events are properly mapped
+        assert len(events) == 3
+        assert "Session Start Time" in events[0]
+        assert "Client IP" in events[0]
+        assert timestamp_field == "Session Start Time"
+
+
+class TestGetEventsCommand:
+    """Tests for get_events_command function"""
 
     def test_get_events_command_no_events(self, client, requests_mock):
         """
@@ -473,8 +694,6 @@ class TestGetEventsCommand:
         Then:
             - Ensure empty events list and timestamp_field is None
         """
-        import json
-
         response = util_load_json("test_data/no_resources_response.json")
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)

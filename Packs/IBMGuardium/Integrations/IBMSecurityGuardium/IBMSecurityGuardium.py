@@ -78,7 +78,7 @@ class Client(BaseClient):
 def extract_field_mapping(response: dict[str, Any]) -> dict[str, str]:
     """
     Extract field mapping from the API response's report_headers.
-    Uses the user-friendly field_name.nls_value when available, otherwise falls back to header_name.
+    Uses the user-friendly field_name.nls_value.
 
     Args:
         response: API response containing report_layout with report_headers
@@ -94,7 +94,7 @@ def extract_field_mapping(response: dict[str, Any]) -> dict[str, str]:
         field_mapping = {}
         for header in headers:
             sequence = str(header["sequence"])
-            field_name = header.get("field_name", {}).get("nls_value") or header["header_name"]
+            field_name = header.get("field_name", {}).get("nls_value")
             field_mapping[sequence] = field_name
         demisto.debug(f"Extracted field mapping: {field_mapping}")
         return field_mapping
