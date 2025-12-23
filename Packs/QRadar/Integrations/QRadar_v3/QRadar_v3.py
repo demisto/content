@@ -1,6 +1,7 @@
 import concurrent.futures
 import copy
 import secrets
+import sys
 import uuid
 from enum import Enum
 from ipaddress import ip_address
@@ -45,7 +46,7 @@ EVENTS_POLLING_TRIES = 10  # number of retries for events polling
 EVENTS_SEARCH_RETRY_SECONDS = 100  # seconds between retries to create a new search
 CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
 CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
-
+LAST_FETCHED_ID = None
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     "DOMAIN_ENRCH_FLG",
@@ -1243,8 +1244,60 @@ def deep_merge_context_changes(
     always_merger.merge(current_ctx, changes)  # updates `current_ctx` in place with `changes`
 
 
+def get_integration_context(sync=True, with_version=False):
+    """
+    Gets the integration context.
+
+    :type sync: ``bool``
+    :param sync: Whether to get the integration context directly from the DB.
+
+    :type with_version: ``bool``
+    :param with_version: Whether to return the version.
+
+    :rtype: ``dict``
+    :return: The integration context.
+    """
+    if is_versioned_context_available():
+        integration_context = demisto.getIntegrationContextVersioned(sync)
+
+        if with_version:
+            return integration_context
+        else:
+            if isinstance(integration_context,list):
+                demisto.error(f"QRadar integration context is a list: {integration_context=}")
+            return integration_context.get('context', {})
+    else:
+        return demisto.getIntegrationContext()
+
+
 def qradar_get_integration_context():
-    return get_integration_context()
+    global LAST_FETCHED_ID
+    try:
+        context_data = get_integration_context()
+    except AttributeError as e:
+        demisto.error(f"Failed to get QRadar integration context due to its not a dict: {str(e)}")
+        sys.exit(0)
+
+    if context_data and context_data.get(LAST_FETCH_KEY) and LAST_FETCHED_ID:
+        ctx_last_fetch_id = int(context_data[LAST_FETCH_KEY])
+        if ctx_last_fetch_id <int(LAST_FETCHED_ID):
+            demisto.error(f" QRadar integration context {ctx_last_fetch_id=} {LAST_FETCHED_ID=}")
+            sys.exit(0)
+
+    return context_data
+
+
+def qradar_set_integration_context(context_data):
+    global LAST_FETCHED_ID
+
+    set_integration_context(context_data)
+
+    last_fetch_key = context_data.get(LAST_FETCH_KEY)
+    if last_fetch_key:
+        LAST_FETCHED_ID = last_fetch_key
+        demisto.info(f"LAST_FETCHED_ID variable set to {LAST_FETCHED_ID}")
+    else:
+        demisto.info("LAST_FETCH_KEY not found in context")
 
 def safely_update_context_data_partial(
     changes: dict,
@@ -1266,7 +1319,7 @@ def safely_update_context_data_partial(
         merged_size_bytes = {key: calculate_object_size(value) for key, value in merged.items()}
         try:
             print_debug_msg(f"Saving merged context, {merged_size_bytes=}.")
-            set_integration_context(merged)
+            qradar_set_integration_context(merged)
             return  # success
         except Exception as e:
             print_debug_msg(f"Version conflict or error setting context: {e}. Retrying...")
