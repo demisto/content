@@ -115,6 +115,7 @@ def find_timestamp_field(event: dict[str, Any]) -> str:
     Raises:
         DemistoException: If no timestamp field is found in the event
     """
+    #TODO consider adding map for type
     for key, value in event.items():
         if isinstance(value, str) and any(char in value for char in ["-", ":"]) and len(value) >= 10:
             try:
@@ -317,7 +318,10 @@ def fetch_events_command(
     # Determine fetch time range
     now = datetime.utcnow()
     if last_fetch_time_str:
-        last_fetch_time = datetime.strptime(last_fetch_time_str, DATE_FORMAT)
+        # Use dateparser to handle various timestamp formats flexibly
+        last_fetch_time = dateparser.parse(last_fetch_time_str)
+        if not last_fetch_time:
+            raise DemistoException(f"Failed to parse last_fetch_time: {last_fetch_time_str}")
     else:
         last_fetch_time = now - timedelta(hours=1)
         demisto.debug("No last_fetch_time found, using default: 1 hour ago")
