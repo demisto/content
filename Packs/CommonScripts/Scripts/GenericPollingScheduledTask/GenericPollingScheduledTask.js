@@ -141,29 +141,19 @@ function shouldRunWithGuid() {
 
 function genericPollingScheduled(){
     try {
-        logDebug('[GenericPollingScheduledTask] Starting iteration. args.ids=' + args.ids + ', args.pendingIds=' + args.pendingIds);
-
         shouldRunWithGuid = shouldRunWithGuid();
-        logDebug('[GenericPollingScheduledTask] Flow determination: shouldRunWithGuid=' + shouldRunWithGuid);
-
         if (shouldRunWithGuid) {
             var endTime = stringToDate(args.endTime, "%Y-%m-%d %H:%M:%S");
             var currentTime = new Date();
-            logDebug('[GenericPollingScheduledTask] GUID flow: Checking timeout. currentTime=' + currentTime.toISOString() + ', endTime=' + endTime.toISOString());
 
             if (currentTime >= endTime) {
-                logDebug('[GenericPollingScheduledTask] GUID flow: Timeout reached. FINISHING polling task.');
                 return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
             }
-            logDebug('[GenericPollingScheduledTask] GUID flow: Timeout not reached, continuing polling.');
         }
         else {
-            logDebug('[GenericPollingScheduledTask] Non-GUID flow (XSIAM): Checking timeout. timeout=' + args.timeout);
             if (args.timeout <= 0) {
-                logDebug('[GenericPollingScheduledTask] Non-GUID flow: Timeout reached (timeout <= 0). FINISHING polling task.');
                 return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
             }
-            logDebug('[GenericPollingScheduledTask] Non-GUID flow: Timeout not reached, continuing polling.');
         }
 
         // Get ids that have not finished yet
@@ -172,7 +162,7 @@ function genericPollingScheduled(){
             ids[i] = ids[i].replace(/[\\]*"/g, '');
         }
 
-
+    
         // Set the context of the scheduled task to the local playbook context
         var idsToPoll = ids;
         var pendingPath = args.pendingIds;
@@ -181,41 +171,18 @@ function genericPollingScheduled(){
             playbookContext = 'subplaybook-' + args.playbookId;
             pendingPath = playbookContext + "." + args.pendingIds;
         }
-        logDebug('[GenericPollingScheduledTask] Evaluating dt condition. pendingPath="' + pendingPath + '"');
-
-        var pendings = null;
-        var dtEvaluationError = null;
-
-        try {
-            pendings = dq(invContext, pendingPath);
-            var pendingsStr = (pendings !== null) ? JSON.stringify(pendings).substring(0, 500) : 'null';
-            logDebug('[GenericPollingScheduledTask] dt evaluation result: pendings=' + pendingsStr);
-        } catch (err) {
-            dtEvaluationError = err;
-            logDebug('[GenericPollingScheduledTask] ERROR during dt evaluation: ' + err.message + ', pendingPath="' + pendingPath + '"');
-        }
+        var pendings = dq(invContext, pendingPath);
 
         if (pendings === null) {
-            if (dtEvaluationError) {
-                logDebug('[GenericPollingScheduledTask] dt field does not exist or error occurred. FINISHING polling task.');
-            } else {
-                logDebug('[GenericPollingScheduledTask] dt evaluation returned null (no pending IDs). FINISHING polling task.');
-            }
             return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
         }
 
         var idsStrArr = listOfStrings(ids);
         var pendingsStrArr = listOfStrings(pendings);
         idsToPoll = intersect(idsStrArr, pendingsStrArr);
-
-        logDebug('[GenericPollingScheduledTask] Intersection check: original_ids=[' + idsStrArr.join(',') + '], pending_ids=[' + pendingsStrArr.join(',') + '], ids_to_poll=[' + idsToPoll.join(',') + ']');
-
         if (idsToPoll.length === 0) {
-            logDebug('[GenericPollingScheduledTask] No IDs to poll (intersection is empty). FINISHING polling task.');
             return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
         }
-
-        logDebug('[GenericPollingScheduledTask] Found ' + idsToPoll.length + ' IDs to poll: [' + idsToPoll.join(',') + ']');
 
         // Run the polling command for each id
         var pollingCommandArgs = {};
@@ -227,7 +194,6 @@ function genericPollingScheduled(){
 
         pollingCommandArgs[args.pollingCommandArgName] = idsToPoll.join(',');
         checkCommandSanitized(args.pollingCommand, pollingCommandArgs);
-        logDebug('[GenericPollingScheduledTask] Executing polling command: ' + args.pollingCommand + ' with args: ' + JSON.stringify(pollingCommandArgs).substring(0, 500));
         var res = executeCommand(args.pollingCommand, pollingCommandArgs);
 
         // Change the context output of the polling results to the local playbook context
@@ -241,25 +207,17 @@ function genericPollingScheduled(){
                 }
             }
         }
-        logDebug('[GenericPollingScheduledTask] Polling command executed successfully.');
 
         if (!shouldRunWithGuid) {
-            // Schedule the next iteration, old version (XSIAM flow).
-            logDebug('[GenericPollingScheduledTask] Non-GUID flow: SCHEDULING next iteration. remaining_timeout=' + (parseInt(args.timeout) - parseInt(args.interval)));
+            // Schedule the next iteration, old version.
             var scheduleTaskRes = setNextRun(args.ids, args.playbookId, args.pollingCommand, args.pollingCommandArgName, args.pendingIds, args.interval, args.timeout, args.tag, args.additionalPollingCommandArgNames, args.additionalPollingCommandArgValues, args.extractMode);
             if (isError(scheduleTaskRes[0])) {
-                logDebug('[GenericPollingScheduledTask] ERROR: Failed to schedule next iteration: ' + JSON.stringify(scheduleTaskRes[0]));
                 res.push(scheduleTaskRes);
-            } else {
-                logDebug('[GenericPollingScheduledTask] Non-GUID flow: Next iteration scheduled successfully.');
             }
-        } else {
-            logDebug('[GenericPollingScheduledTask] GUID flow: Iteration complete. Next run will be triggered by cron (automatic scheduling).');
         }
         return res;
     }
     catch (err) {
-        logDebug('[GenericPollingScheduledTask] FATAL ERROR in polling task: ' + err.message + '. FINISHING polling task with error.');
         finish(args.playbookId, args.tag, err, args.scheduledEntryGuid);
         throw err;
     }

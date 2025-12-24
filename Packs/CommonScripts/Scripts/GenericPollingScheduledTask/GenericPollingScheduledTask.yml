@@ -1,8 +1,7 @@
 commonfields:
-  id: CustomGenericPollingScheduledTask
+  id: GenericPollingScheduledTask
   version: -1
-name: CustomGenericPollingScheduledTask
-display: Custom Generic Polling Scheduled Task
+name: GenericPollingScheduledTask
 script: ''
 type: javascript
 tags: []
