@@ -4160,6 +4160,7 @@ def create_issues_filter(args) -> dict:
     filter_dict = filter_builder.to_dict()
     return filter_dict
 
+
 def get_issues_by_filter_command(client: CoreClient, args: Dict):
     def fix_array_value(match: Match[str]) -> str:
         """
@@ -4271,7 +4272,8 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
         readable_output=tableToMarkdown(f"{ALERT_OR_ISSUE}", human_readable),
         raw_response=data,
     )
-    
+
+
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
     """
     Get alerts by filter.

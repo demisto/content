@@ -2831,7 +2831,7 @@ class TestGetAlertByFilter:
             "{'OR': [{'SEARCH_FIELD': 'actor_process_image_sha256', 'SEARCH_TYPE': 'EQ',"
             " 'SEARCH_VALUE': '222'}]}]}" in request_data_log.call_args[0][0]
         )
-        
+
 
 class TestGetIssueByFilter:
     @freeze_time("2022-05-03 11:00:00 GMT")
@@ -2962,6 +2962,8 @@ class TestGetIssueByFilter:
         assert "'SEARCH_FIELD': 'actor_effective_username'" in logged_request
         assert "'SEARCH_TYPE': 'CONTAINS'" in logged_request
         assert "'SEARCH_VALUE': 'N/A'" in logged_request
+
+
 class TestPollingCommands:
     @staticmethod
     def create_mocked_responses(status_count):
@@ -5288,6 +5290,7 @@ class TestDetermineEmailOrName:
         result = determine_email_or_name(assignee_list)
         assert result == "name"
 
+
 def test_get_issues_by_filter_custom_filter_valid_json(requests_mock):
     """
     Given:
@@ -5334,4 +5337,3 @@ def test_get_issues_by_filter_custom_filter_malformed_json_fixed(requests_mock):
 
     response = get_issues_by_filter_command(client, args)
     assert response.outputs[0].get("internal_id", {}) == 33333
-
