@@ -44,6 +44,7 @@ In the Playground, run the ***!monday-auth-test*** command. A 'Success' message 
 [Audit log API docs](https://support.monday.com/hc/en-us/articles/4406042650002-Audit-Log-API)
 
 Generating the API token
+
 1. Access the Admin section of your account.
 2. Click Security, and then select the Audit tab.
 3. Select Monitor by API.
