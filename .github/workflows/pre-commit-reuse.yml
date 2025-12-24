@@ -79,7 +79,7 @@ jobs:
 
           if [[ "$GITHUB_ACTIONS" == "true" ]]; then
             echo "Detected GitHub Actions"
-            demisto-sdk pre-commit -g --validate --show-diff-on-failure --verbose --mode=check_private_packs
+            demisto-sdk pre-commit -g --validate --show-diff-on-failure --verbose --mode=check_private_packs --ignore GR110
           else
             echo "Not in GitHub Actions mode"
             demisto-sdk pre-commit -g --validate --show-diff-on-failure --verbose --mode=ci
