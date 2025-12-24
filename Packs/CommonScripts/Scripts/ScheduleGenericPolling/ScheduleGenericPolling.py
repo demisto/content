@@ -130,9 +130,7 @@ def main():  # pragma: no cover
     # Verify correct dt path (does not verify condition!)
     demisto.debug(f"[ScheduleGenericPolling] Starting dt path validation. args={args}")
     if not demisto.dt(demisto.context(), dt):
-        demisto.debug(
-            "[ScheduleGenericPolling] dt evaluation returned empty/null. Checking if dt path exists without condition."
-        )
+        demisto.debug("[ScheduleGenericPolling] dt evaluation returned empty/null. Checking if dt path exists without condition.")
         if not demisto.dt(demisto.context(), re.sub(r"\(.*\)", "", dt)):
             demisto.debug(f"[ScheduleGenericPolling] ERROR: dt path not found in context. dt='{dt}'")
             demisto.debug(f"Could not find the dt path: {dt} in the context: {demisto.context()}")
@@ -169,7 +167,9 @@ def main():  # pragma: no cover
         # See XSUP-36162 for the reason adding 2
         schedule_command_args["times"] = (timeout // interval) + 2
         schedule_command_args["scheduledEntryGuid"] = entryGuid
-        demisto.debug(f"[ScheduleGenericPolling] GUID flow details: entryGuid={entryGuid}, times={schedule_command_args['times']}")
+        demisto.debug(
+            f"[ScheduleGenericPolling] GUID flow details: entryGuid={entryGuid}, times={schedule_command_args['times']}"
+        )
 
     demisto.debug(f"[ScheduleGenericPolling] Executing ScheduleCommand with args: {schedule_command_args}")
     res = demisto.executeCommand("ScheduleCommand", schedule_command_args)
