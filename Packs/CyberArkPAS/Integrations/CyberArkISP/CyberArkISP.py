@@ -212,14 +212,20 @@ def add_time_to_events(events: list[dict[str, Any]]) -> None:
     """Add _time field to events for XSIAM ingestion.
 
     Maps the event's 'timestamp' field to '_time' for proper XSIAM indexing.
-    The value is copied as-is without any parsing or transformation.
+    If an event doesn't have a timestamp, sets _time to current time in milliseconds.
     """
+    current_time_ms = int(time.time() * 1000)
+
     for event in events:
         event_timestamp = event.get("timestamp")
         if event_timestamp:
             event["_time"] = event_timestamp
         else:
-            demisto.debug(f"[Event Time] WARNING: Event missing 'timestamp' field: {event.get('uuid', 'unknown')}")
+            event["_time"] = current_time_ms
+            demisto.debug(
+                f"[Event Time] WARNING: Event missing 'timestamp' field (UUID: {event.get('uuid', 'unknown')}). "
+                f"Using current time: {current_time_ms}"
+            )
 
 
 def deduplicate_events(events: list[dict[str, Any]], last_fetched_uuids: list[str]) -> list[dict[str, Any]]:
@@ -597,28 +603,29 @@ def fetch_events_command(client: Client) -> None:
         send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Fetch] Pushed {len(new_events)} events to XSIAM")
 
-        # Update Last Run
-        last_event = events[-1]
-        new_last_run_timestamp = last_event.get("timestamp")
+    # Update Last Run - always update based on ALL fetched events (not just new_events)
+    # This ensures we advance the high-water mark even if some/all events were duplicates
+    last_event = events[-1]
+    new_last_run_timestamp = last_event.get("timestamp")
 
-        if new_last_run_timestamp:
-            # Convert timestamp to formatted string for next run
-            try:
-                last_event_dt = datetime.fromtimestamp(new_last_run_timestamp / 1000, tz=timezone.utc)  # noqa: UP017
-                new_last_run_time = last_event_dt.strftime(Config.DATE_FORMAT)
-            except (ValueError, TypeError, OSError):
-                demisto.debug("[Fetch] Warning: Failed to convert last event timestamp. Using raw value.")
-                new_last_run_time = str(new_last_run_timestamp)
+    if new_last_run_timestamp:
+        # Convert timestamp to formatted string for next run
+        try:
+            last_event_dt = datetime.fromtimestamp(new_last_run_timestamp / 1000, tz=timezone.utc)  # noqa: UP017
+            new_last_run_time = last_event_dt.strftime(Config.DATE_FORMAT)
+        except (ValueError, TypeError, OSError):
+            demisto.debug("[Fetch] Warning: Failed to convert last event timestamp. Using raw value.")
+            new_last_run_time = str(new_last_run_timestamp)
 
-            # Collect UUIDs for the new high-water mark timestamp
-            uuids_at_last_timestamp = [
-                event.get("uuid") for event in events if event.get("timestamp") == new_last_run_timestamp and event.get("uuid")
-            ]
+        # Collect UUIDs for the new high-water mark timestamp
+        uuids_at_last_timestamp = [
+            event.get("uuid") for event in events if event.get("timestamp") == new_last_run_timestamp and event.get("uuid")
+        ]
 
-            demisto.setLastRun({"last_fetch": new_last_run_time, "last_fetched_uuids": uuids_at_last_timestamp})
-            demisto.debug(f"[Fetch] State updated. New HWM: {new_last_run_time}")
-        else:
-            demisto.debug("[Fetch] Warning: Last event missing timestamp. State not updated.")
+        demisto.setLastRun({"last_fetch": new_last_run_time, "last_fetched_uuids": uuids_at_last_timestamp})
+        demisto.debug(f"[Fetch] State updated. New HWM: {new_last_run_time}")
+    else:
+        demisto.debug("[Fetch] Warning: Last event missing timestamp. State not updated.")
 
 
 # endregion
