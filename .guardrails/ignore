@@ -3,3 +3,5 @@ poetry.lock
 "Api key auth"
 API_KEY_AUTH
 Api key auth
+API_KEY_AUTH = "Api key auth"
+"API_KEY_AUTH = "Api key auth""
