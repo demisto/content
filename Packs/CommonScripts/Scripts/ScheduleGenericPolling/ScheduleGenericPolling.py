@@ -152,7 +152,8 @@ def main():  # pragma: no cover
         return_error(message)
 
     demisto.debug(
-        f"[ScheduleGenericPolling] Scheduling polling task. use_guid={should_run_with_guid()}, interval={interval}, timeout={timeout}"
+        f"[ScheduleGenericPolling] Scheduling polling task. use_guid={should_run_with_guid()}, "
+        f"interval={interval}, timeout={timeout}"
     )
 
     schedule_command_args = {"command": command_string, "cron": f"*/{interval} * * * *", "times": 1}
