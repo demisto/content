@@ -9,13 +9,13 @@ args:
 - name: ip_list
 compliantpolicies:
 - IP Blockage
-- Soft User Remediation
+- User Soft Remediation
 comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
 commonfields:
-  id: Y
+  id: valid-compliantpolicies-script
   version: -1
 enabled: false
-name: Y
+name: 
 outputs:
 - contextPath: BaseScript.Output
   description: '[Enter a description of the data returned in this output.]'
