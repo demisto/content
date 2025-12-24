@@ -1718,7 +1718,7 @@
 						"name": "SentinelOne UAM Alert Details",
 						"static": false,
 						"w": 1,
-						"wrapLabels": false,
+						"wrapLabels": true,
 						"x": 0,
 						"y": 0
 					}
@@ -3603,7 +3603,6 @@
 			}
 		]
 	},
-	"quickViewV2": null,
 	"system": false,
 	"version": -1,
 	"fromVersion": "6.0.0"

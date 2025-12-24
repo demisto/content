@@ -98,6 +98,83 @@ def test_fetch_incidents__2_0(mocker, requests_mock, demisto_mocker_2_0):
     assert incidents_for_fetch == incidents
 
 
+def test_fetch_uam_alerts(mocker, requests_mock):
+    """
+    When:
+        fetch-incidents is called with fetch_uam_alert_type configured.
+    Then:
+        Ensure UAM alerts are fetched via GraphQL and converted to XSOAR incidents with correct mapping.
+    """
+    # 1. Mock the API Response (GraphQL format)
+    mock_graphql_response = {
+        "data": {
+            "alerts": {
+                "edges": [
+                    {
+                        "node": {
+                            "id": "uam_123",
+                            "name": "Malicious Activity Detected",
+                            "severity": "CRITICAL",
+                            "createdAt": "2025-12-24T12:00:00.000000Z",
+                            "realTime": {
+                                "scope": {
+                                    "account": {"id": "acc_1", "name": "Test Account"},
+                                    "site": {"id": "site_1", "name": "Test Site"},
+                                }
+                            },
+                            "asset": {"agentUuid": "agent-uuid-123", "osType": "windows"},
+                        }
+                    }
+                ],
+                "pageInfo": {"hasNextPage": False, "endCursor": "cursor123"},
+            }
+        }
+    }
+
+    # 2. Setup Mocks
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/unifiedalerts/graphql", json=mock_graphql_response)
+
+    # Mock demisto params to include UAM fetch settings
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "token": "token",
+            "url": "https://usea1.sentinelone.net",
+            "api_version": "2.1",
+            "fetch_type": "None",  # Disable standard Threats/Alerts for this test
+            "fetch_uam_alert_type": "all",
+            "fetch_limit": "10",
+        },
+    )
+
+    # Set the last run to a time before our mock incident
+    mocker.patch.object(demisto, "getLastRun", return_value={"time": 1735041600000})  # 2025-12-24 12:00:00
+    mocker.patch.object(demisto, "command", return_value="fetch-incidents")
+    mock_incidents = mocker.patch.object(demisto, "incidents")
+
+    # 3. Execution
+    main()
+
+    # 4. Assertions
+    assert mock_incidents.call_count == 1
+    incidents = mock_incidents.call_args[0][0]
+
+    assert len(incidents) == 1
+    uam_incident = incidents[0]
+
+    # Verify mapping logic in to_incident
+    assert uam_incident["name"] == "Sentinel One UAM Alert: Malicious Activity Detected"
+    assert uam_incident["occurred"] == "2025-12-24T12:00:00.000000Z"
+    assert uam_incident["severity"] == 4  # CRITICAL mapping from UAM_SEVERITY_MAPPING
+
+    # Verify Custom Fields
+    custom_fields = uam_incident["CustomFields"]
+    assert custom_fields["sentineloneaccountid"] == "acc_1"
+    assert custom_fields["sentinelonesitename"] == "Test Site"
+    assert custom_fields["deviceid"] == "agent-uuid-123"
+
+
 def test_get_threats_outputs():
     """
     When:
