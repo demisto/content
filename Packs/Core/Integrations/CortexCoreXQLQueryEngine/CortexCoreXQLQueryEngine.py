@@ -114,11 +114,8 @@ def get_xql_query_results_platform_polling(client: CoreClient, args: dict) -> di
         Union[CommandResults, dict]: The command results.
     """
     # get the query data either from the integration context (if its not the first run) or from the given args.
-    interval_in_secs = int(args.get("interval_in_seconds", 30))
-    timeout_in_secs = int(args.get("timeout_in_seconds", 600))
-    max_fields = arg_to_number(args.get("max_fields", 20))
-    if max_fields is None:
-        raise DemistoException("Please provide a valid number for max_fields argument.")
+    interval_in_secs = 10
+    timeout_in_secs = int(args.get("timeout_in_seconds", 180))
 
     # Block execution until the execution status isn't pending or we time out
     polling_start_time = datetime.now()
@@ -157,11 +154,10 @@ def start_xql_query_platform(client: CoreClient, args: Dict[str, Any]) -> str:
         "timeframe": convert_timeframe_string_to_json(timeframe),
     }
 
-    demisto.debug(f"Calling start_xql_query with {data=}")
+    demisto.debug(f"Calling xql_queries/submit with {data=}")
     res = client._http_request(
         url_suffix="/xql_queries/submit/", method="POST", data=data, ok_codes=[200]
     )  # TODO: test bad status code error output
-    demisto.debug(f"start_xql_query output: {res=}")
     return res
 
 
@@ -175,14 +171,11 @@ def xql_query_platform_command(client: CoreClient, args: dict) -> Union[CommandR
     Returns:
         CommandResults: The command results.
     """
-    execution_id = args.get("query_id")
-    if not execution_id:
-        execution_id = start_xql_query_platform(client, args)
+    execution_id = start_xql_query_platform(client, args)
 
     if not execution_id:
         raise DemistoException("Failed to start query\n")
 
-    demisto.debug(f"Polling query execution with {execution_id=}")
     args["query_id"] = execution_id
 
     query_url = "/".join([demisto.demistoUrls().get("server", ""), "xql/xql-search", execution_id])
@@ -192,32 +185,12 @@ def xql_query_platform_command(client: CoreClient, args: dict) -> Union[CommandR
     }
 
     if argToBoolean(args.get("wait_for_results", False)):
+        demisto.debug(f"Polling query execution with {execution_id=}")
         outputs.update(get_xql_query_results_platform_polling(client, args))
 
     return CommandResults(
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
     )
-
-
-def get_query_info(client: CoreClient, args: dict):
-    query_id = args.get("query_id")
-    get_results = argToBoolean(args.get("fetch_results", False))
-
-    data: Dict[str, Any] = {
-        "query_id": query_id,
-    }
-
-    demisto.debug(f"Calling get_query_id with {data=}")
-    res = demisto._platformAPICall(path="/xql_queries/results/info/", method="POST", data=data)
-    demisto.debug(f"get_query_id output: {res=}")
-
-    res_data = json.loads(res.get("data", {}))
-    if get_results and res_data.get("status", "").lower() == "success":
-        data = {"stream_id": res_data.get("stream_id")}
-        res = demisto._platformAPICall(path="/xql_queries/results/", method="POST", data=data)
-
-    return res
-
 
 GENERIC_QUERY_COMMANDS = {
     "test-module": test_module,
@@ -253,8 +226,6 @@ def main() -> None:
         elif command in PLATFORM_QUERY_COMMANDS:
             client.use_platform_api = True
             return_results(PLATFORM_QUERY_COMMANDS[command](client, args))
-        elif command == "xdr-xql-get-query-info":  # TODO: Remove get query info logic
-            return_results(get_query_info(client, args))
         else:
             raise NotImplementedError(f"Command {command} does not exist.")
     except Exception as e:
