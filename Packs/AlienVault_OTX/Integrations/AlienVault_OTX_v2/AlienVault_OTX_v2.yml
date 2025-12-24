@@ -96,6 +96,9 @@ name: AlienVault OTX v2
 script:
   commands:
   - arguments:
+    - name: ip
+    name: ba129-command-invalid
+  - arguments:
     - default: true
       description: The IP address to query.
       isArray: true

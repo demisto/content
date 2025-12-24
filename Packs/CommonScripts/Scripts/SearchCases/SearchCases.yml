@@ -42,7 +42,8 @@ args:
   - defaultValue: '100'
     description: Maximum number of cases to return per page. The default and maximum is 100.
     name: page_size
-    
+  - name: list
+  - name: username
 outputs:
   - contextPath: Core.Case.case_id
     description: Unique ID assigned to each returned case.
