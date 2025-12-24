@@ -184,6 +184,7 @@ class FilterBuilder:
         GTE = ("GTE", "OR")
         ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        WILDCARD = ("WILDCARD", "OR")
         IS_EMPTY = ("IS_EMPTY", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
         ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
@@ -4076,13 +4077,13 @@ def create_issues_filter(args) -> dict:
         ISSUE_FIELDS["start_time"], start_time=args.get("start_time"), end_time=args.get("end_time")
     )
     filter_builder.add_field(ISSUE_FIELDS["starred"], FilterType.EQ, args.get("starred"))
-    filter_builder.add_field(ISSUE_FIELDS["issue_id"], FilterType.EQ, argToList(args.get("issue_id")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_id"], FilterType.WILDCARD, argToList(args.get("alert_id")))
     filter_builder.add_field(
         ISSUE_FIELDS["action_external_hostname"], FilterType.CONTAINS, argToList(args.get("action_external_hostname"))
     )
     filter_builder.add_field(ISSUE_FIELDS["rule_id"], FilterType.EQ, argToList(args.get("rule_id")))
     filter_builder.add_field(ISSUE_FIELDS["rule_name"], FilterType.EQ, argToList(args.get("rule_name")))
-    filter_builder.add_field(ISSUE_FIELDS["issue_name"], FilterType.CONTAINS, argToList(args.get("issue_name")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_name"], FilterType.CONTAINS, argToList(args.get("alert_name")))
     filter_builder.add_field(ISSUE_FIELDS["user_name"], FilterType.CONTAINS, argToList(args.get("user_name")))
     filter_builder.add_field(
         ISSUE_FIELDS["actor_process_image_name"], FilterType.CONTAINS, argToList(args.get("actor_process_image_name"))
@@ -4127,16 +4128,16 @@ def create_issues_filter(args) -> dict:
     filter_builder.add_field(
         ISSUE_FIELDS["mitre_technique_id_and_name"], FilterType.CONTAINS, argToList(args.get("mitre_technique_id_and_name"))
     )
-    filter_builder.add_field(ISSUE_FIELDS["issue_category"], FilterType.EQ, argToList(args.get("issue_category")))
-    filter_builder.add_field(ISSUE_FIELDS["issue_domain"], FilterType.EQ, argToList(args.get("issue_domain")))
-    filter_builder.add_field(ISSUE_FIELDS["issue_description"], FilterType.CONTAINS, argToList(args.get("issue_description")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_category"], FilterType.EQ, argToList(args.get("alert_category")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_domain"], FilterType.EQ, argToList(args.get("alert_domain")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_description"], FilterType.CONTAINS, argToList(args.get("alert_description")))
     filter_builder.add_field(
         ISSUE_FIELDS["os_actor_process_image_sha256"], FilterType.EQ, argToList(args.get("os_actor_process_image_sha256"))
     )
     filter_builder.add_field(
         ISSUE_FIELDS["action_file_macro_sha256"], FilterType.EQ, argToList(args.get("action_file_macro_sha256"))
     )
-    filter_builder.add_field(ISSUE_FIELDS["asset_ids"], FilterType.EQ, argToList(args.get("asset_ids")))
+    filter_builder.add_field(ISSUE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
     source_values = [DETECTION_METHOD_HR_TO_MACHINE_NAME.get(val, val) for val in argToList(args.get("alert_source"))]
     filter_builder.add_field(ISSUE_FIELDS["issue_source"], FilterType.CONTAINS, source_values)
     status_values = [STATUS_PROGRESS.get(val, val) for val in argToList(args.get("status"))]
@@ -4145,7 +4146,7 @@ def create_issues_filter(args) -> dict:
     filter_builder.add_field(ISSUE_FIELDS["status"], FilterType.NEQ, not_status_values)
     severity_values = [SEVERITY_STATUSES.get(val, val) for val in argToList(args.get("severity"))]
     filter_builder.add_field(ISSUE_FIELDS["severity"], FilterType.EQ, severity_values)
-    action_status_values = [ALERT_STATUS_TYPES_REVERSE_DICT.get(val, val) for val in argToList(args.get("issue_action_status"))]
+    action_status_values = [ALERT_STATUS_TYPES_REVERSE_DICT.get(val, val) for val in argToList(args.get("alert_action_status"))]
     filter_builder.add_field(ISSUE_FIELDS["issue_action_status"], FilterType.EQ, action_status_values)
     filter_builder.add_field_with_mappings(
         determine_issue_assignee_filter_field(argToList(args.get("assignee", "").lower())),
@@ -4158,6 +4159,7 @@ def create_issues_filter(args) -> dict:
     )
 
     filter_dict = filter_builder.to_dict()
+    demisto.debug(f"{filter_dict=}")
     return filter_dict
 
 

@@ -639,12 +639,10 @@ script:
           predefined:
             - DESC
             - ASC
-        - defaultValue: "0"
-          description: This argument is deprecated. Use *page* instead. The first page number to retrieve issues from.
+        - description: This argument is deprecated. Use *page* instead. The first page number to retrieve issues from.
           name: offset
           deprecated: true
-        - defaultValue: "50"
-          description: This argument is deprecated. Use *page_size* instead. The last page number to retrieve issues from.
+        - description: This argument is deprecated. Use *page_size* instead. The last page number to retrieve issues from.
           name: limit
           deprecated: true
         - defaultValue: "0"
