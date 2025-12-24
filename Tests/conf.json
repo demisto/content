@@ -5875,6 +5875,15 @@
             "memory_threshold": 100
         },
         {
+            "playbookID": "ExpirePassword - Test",
+            "integrations": ["Okta v2", "Microsoft Graph User", "Active Directory Query v2"],
+            "instance_names": [
+                "ms_graph_user_dev",
+                "active_directory_ninja"
+            ],
+            "memory_threshold": 100
+        },
+        {
             "playbookID": "QuarantineFile-Test",
             "integrations": "Cortex XDR - IR",
             "timeout": 300,
