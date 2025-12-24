@@ -763,7 +763,7 @@ class TestFetchRemovingIrrelevantIncidents:
         mock_last_run = {
             "time": "2024-02-12T10:00:00",
             "latest_time": "2024-02-19T10:00:00",
-            "found_incidents_ids": {"1": {"occurred_time": "2024-02-12T09:59:59"}, "2": {"occurred_time": "2024-02-18T10:00:00"}},
+            "found_incidents_ids": {"1": {"occurred_time": "2024-02-12T08:59:59"}, "2": {"occurred_time": "2024-02-18T10:00:00"}},
         }
         mock_params = {"fetchQuery": "`notable` is cool", "fetch_limit": 2}
         mocker.patch("demistomock.getLastRun", return_value=mock_last_run)
@@ -779,6 +779,51 @@ class TestFetchRemovingIrrelevantIncidents:
             "3": {"occurred_time": "2024-02-19T10:00:00"},
             "4": {"occurred_time": "2024-02-19T10:00:00"},
         }
+
+    def test_daylight_saving_time_delta_handling(self, mocker: MockerFixture):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round
+        - A fetch window that overlaps with a daylight saving time transition period
+
+        When
+        - Fetching notables and filtering irrelevant incident IDs
+
+        Then
+        - Make sure that incidents within the DAYLIGHT_SAVING_TIME_DELTA buffer are kept in cache
+        - This prevents duplicate incidents during clock changes
+        """
+        from SplunkPy import remove_irrelevant_incident_ids
+
+        # Setup: Create a scenario where an incident is just outside the normal window
+        # but within the DST delta buffer
+        window_start_time = "2024-03-10T10:00:00"  # DST transition date example
+        window_end_time = "2024-03-10T12:00:00"
+
+        # Incident that occurred 59 minutes before window start (within 1-hour DST buffer)
+        incident_within_dst_buffer = "2024-03-10T09:01:00"
+
+        # Incident that occurred 61 minutes before window start (outside DST buffer)
+        incident_outside_dst_buffer = "2024-03-10T08:59:00"
+
+        last_run_fetched_ids = {
+            "incident_within_buffer": {"occurred_time": incident_within_dst_buffer},
+            "incident_outside_buffer": {"occurred_time": incident_outside_dst_buffer},
+        }
+
+        # Execute the function
+        filtered_ids = remove_irrelevant_incident_ids(last_run_fetched_ids, window_start_time, window_end_time)
+
+        # Verify: Incident within DST buffer should be kept
+        assert "incident_within_buffer" in filtered_ids, "Incident within DAYLIGHT_SAVING_TIME_DELTA should be kept in cache"
+
+        # Verify: Incident outside DST buffer should be removed
+        assert (
+            "incident_outside_buffer" not in filtered_ids
+        ), "Incident outside DAYLIGHT_SAVING_TIME_DELTA should be removed from cache"
+
+        # Verify the kept incident has the correct structure
+        assert filtered_ids["incident_within_buffer"]["occurred_time"] == incident_within_dst_buffer
 
 
 class TestFetchForLateIndexedEvents:
@@ -2057,6 +2102,115 @@ def test_drilldown_enrichment(notable_data, expected_result):
         job_and_queries = jobs_and_queries[i]
         assert job_and_queries[0] == expected_result[i][0]
         assert job_and_queries[1] == expected_result[i][1]
+        assert isinstance(job_and_queries[2], client.Job)
+
+
+@pytest.mark.parametrize(
+    "notable_data, expected_result",
+    [
+        (
+            {
+                "event_id": "test_id",
+                "drilldown_name": "View all login attempts by system $src$",
+                "drilldown_search": "NULL",
+                "drilldown_searches": [
+                    '{"name":"View all login attempts by system $src$","search":"| from datamodel:\\"Authent'
+                    'ication\\".\\"Authentication\\" | search src=$src|s$","earliest":1715040000,'
+                    '"latest":1715126400}'
+                ],
+                "_raw": "src='test_src'",
+                "drilldown_latest": "1715126400.000000000",
+                "drilldown_earliest": "1715040000.000000000",
+            },
+            [
+                (
+                    "View all login attempts by system 'test_src'",
+                    '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"',
+                )
+            ],
+        ),
+        (
+            {
+                "event_id": "test_id",
+                "drilldown_name": "View all login attempts by system $src$",
+                "drilldown_search": '| from datamodel:"Authentication"."Authentication" | search src=$src|s$',
+                "drilldown_searches": "[]",
+                "_raw": "src='test_src'",
+                "drilldown_latest": "1715126400.000000000",
+                "drilldown_earliest": "1715040000.000000000",
+            },
+            [
+                (
+                    "View all login attempts by system 'test_src'",
+                    '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"',
+                )
+            ],
+        ),
+    ],
+)
+def test_drilldown_enrichment_fillnull(mocker: MockerFixture, notable_data, expected_result):
+    """
+    Tests the drilldown enrichment process when a 'splunk.FILLNULL_VALUE' is "NULL"
+
+    Given:
+        1. A notable data with a drilldown_search=NULL
+        2. A notable data with a drilldown_searches is empty
+    When:
+        Performing drilldown enrichment to generate search jobs and queries
+    Then:
+        - The generated queries match the expected enriched queries
+        - The fillnull value is correctly applied during query construction
+    """
+    from splunklib import client
+
+    service = Service("DONE")
+
+    mock_params = {"fetchQuery": "`notable` is cool | fillnull value=NULL"}
+    mocker.patch("demistomock.params", return_value=mock_params)
+
+    jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
+    for i in range(len(jobs_and_queries)):
+        job_and_queries = jobs_and_queries[i]
+        assert job_and_queries[0] == expected_result[i][0]
+        assert job_and_queries[1] == expected_result[i][1]
+        assert isinstance(job_and_queries[2], client.Job)
+
+
+def test_drilldown_enrichment_query_earliest(mocker: MockerFixture):
+    """
+    Tests the drilldown enrichment process when query contains earliest filter
+
+    Given:
+        A drilldown data without drilldown_earliest and drilldown_latest values,
+        the drilldown search query contains earliest filter.
+    When:
+        Performing drilldown enrichment to generate search jobs and queries
+    Then:
+        The generated query match the expected enriched query and contains then earliest value
+    """
+
+    from splunklib import client
+
+    service = Service("DONE")
+
+    mock_params = {"fetchQuery": "`notable` is cool | fillnull value=NULL"}
+    mocker.patch("demistomock.params", return_value=mock_params)
+
+    notable_data = {
+        "event_id": "test_id",
+        "drilldown_name": "View all login attempts by system $src$",
+        "drilldown_search": '| from datamodel:"Authentication"."Authentication" | search src=$src|s$ | earliest=1d',
+        "drilldown_searches": "[]",
+        "_raw": "src='test_src'",
+    }
+
+    jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
+    for i in range(len(jobs_and_queries)):
+        job_and_queries = jobs_and_queries[i]
+        assert job_and_queries[0] == "View all login attempts by system 'test_src'"
+        assert (
+            job_and_queries[1] == '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'" | earliest=1d'
+        )
         assert isinstance(job_and_queries[2], client.Job)
 
 
@@ -4861,3 +5015,155 @@ def test_fetch_vs_mirror_comment_storage_difference(mocker):
     assert all(isinstance(comment, dict) and "Comment" in comment for comment in mirror_notable_map[test_id]["SplunkComments"])
     assert mirror_notable_map[test_id]["SplunkComments"][0]["Comment"] == "Second comment"  # Most recent first
     assert mirror_notable_map[test_id]["SplunkComments"][1]["Comment"] == "First comment"
+
+
+@pytest.mark.parametrize(
+    "query, expected",
+    [
+        # Positive cases
+        ("index=your_index earliest=-5m", True),
+        ("index=your_index earliest= @d", True),
+        ("index=your_index earliest     =@mon", True),
+        ('index=your_index earliest = "01/01/2025:00:00:00"', True),
+        ("no keyword here", False),
+        ("earliest", False),
+    ],
+)
+def test_earliest_time_exists_in_query(query, expected):
+    """
+    Given:
+        - A query string that may or may not contain an 'earliest=' pattern.
+    When:
+        - earliest_time_exists_in_query is invoked with the query.
+    Then:
+        - It returns True only when 'earliest' is followed by an equals sign
+          with optional whitespace (e.g., 'earliest=...', 'earliest = ...').
+        - Otherwise, it returns False.
+    """
+    from SplunkPy import earliest_time_exists_in_query
+
+    assert earliest_time_exists_in_query(query) == expected
+
+
+def test_splunk_get_indexes_command_success(mocker):
+    """
+    Given:
+        - A Splunk service object.
+        - The REST API query for indexes succeeds.
+    When:
+        - calling splunk_get_indexes_command.
+    Then:
+        - Ensure the command returns the expected indexes from the REST API query.
+        - Ensure the fallback mechanism (service.indexes) is NOT used.
+    """
+    from SplunkPy import splunk_get_indexes_command
+
+    # Mock the service and the oneshot job results
+    service = mocker.MagicMock()
+    mock_result = {"name": "main", "count": "100"}
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=[mock_result])
+
+    # Mock return_results to capture the output
+    return_results_mock = mocker.patch("SplunkPy.return_results")
+
+    # Call the function
+    splunk_get_indexes_command(service, "search")
+
+    # Verify results
+    assert return_results_mock.call_count == 1
+    results = return_results_mock.call_args[0][0]
+    assert results.raw_response == json.dumps([mock_result])
+
+    # Verify oneshot was called
+    service.jobs.oneshot.assert_called_once()
+
+
+def test_splunk_get_indexes_command_fallback(mocker):
+    """
+    Given:
+        - A Splunk service object.
+        - The REST API query for indexes fails.
+        - The direct API (service.indexes) succeeds.
+    When:
+        - calling splunk_get_indexes_command.
+    Then:
+        - Ensure the command returns the expected indexes from the direct API.
+        - Ensure the error is logged and fallback is attempted.
+    """
+    from SplunkPy import splunk_get_indexes_command
+
+    # Mock the service
+    service = mocker.MagicMock()
+
+    # Mock oneshot to raise an exception
+    service.jobs.oneshot.side_effect = Exception("REST API Failed")
+
+    # Mock service.indexes to return a list of indexes
+    mock_index = mocker.MagicMock()
+    mock_index.name = "history"
+    # Mocking dictionary access for the index object since the code uses index["totalEventCount"]
+    mock_index.__getitem__.return_value = "50"
+
+    service.indexes = [mock_index]
+
+    # Mock logging and return_results
+    error_mock = mocker.patch("demistomock.error")
+    debug_mock = mocker.patch("demistomock.debug")
+    return_results_mock = mocker.patch("SplunkPy.return_results")
+
+    # Call the function
+    splunk_get_indexes_command(service, "search")
+
+    # Verify error was logged
+    assert error_mock.call_count == 1
+    assert "Failed to get indexes using REST API query approach" in error_mock.call_args[0][0]
+
+    # Verify fallback was attempted (debug log)
+    fallback_log_found = False
+    for call in debug_mock.call_args_list:
+        if "Falling back to direct API approach" in call[0][0]:
+            fallback_log_found = True
+            break
+    assert fallback_log_found
+
+    # Verify results
+    expected_result = [{"name": "history", "count": "50"}]
+    assert return_results_mock.call_count == 1
+    results = return_results_mock.call_args[0][0]
+    assert results.raw_response == json.dumps(expected_result)
+
+
+def test_splunk_get_indexes_command_failure(mocker):
+    """
+    Given:
+        - A Splunk service object.
+        - Both the REST API query and the direct API fail.
+    When:
+        - calling splunk_get_indexes_command.
+    Then:
+        - Ensure a DemistoException is raised with details from both errors.
+    """
+    from SplunkPy import splunk_get_indexes_command
+
+    # Mock the service
+    service = mocker.MagicMock()
+
+    # Mock oneshot to raise an exception
+    service.jobs.oneshot.side_effect = Exception("REST API Failed")
+
+    # Mock service.indexes to raise an exception (property access raises exception)
+    type(service).indexes = mocker.PropertyMock(side_effect=Exception("Direct API Failed"))
+
+    # Mock logging
+    error_mock = mocker.patch("demistomock.error")
+
+    # Call the function and expect DemistoException
+    with pytest.raises(DemistoException) as e:
+        splunk_get_indexes_command(service, "search")
+
+    assert "Failed to retrieve indexes using both methods" in str(e.value)
+    assert "REST API error: REST API Failed" in str(e.value)
+    assert "Direct API error: Direct API Failed" in str(e.value)
+
+    # Verify errors were logged
+    assert error_mock.call_count >= 2  # One for REST failure, one for Direct failure

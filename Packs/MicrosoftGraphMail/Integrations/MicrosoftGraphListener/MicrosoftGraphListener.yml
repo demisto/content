@@ -112,18 +112,18 @@ configuration:
   required: false
   type: 8
   section: Collect
-- display: Email address from which to fetch incidents (e.g., "example@mail.com")
+- display: Email address to associate for this integration.
   name: mailbox_to_fetch
-  required: true
+  required: false
   type: 0
-  section: Collect
+  section: Connect
   additionalinfo: During authentication, ensure you are logged in to this email address.
 - display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing)
   name: folder_to_fetch
   type: 0
   defaultvalue: Inbox
   section: Collect
-  required: true
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: '15 minutes'
@@ -1068,13 +1068,13 @@ script:
       description: The replyTo recipients of the email.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.4834757
+  dockerimage: demisto/crypto:1.0.0.5490413
   isfetch: true
   script: ''
   type: python
   subtype: python3
 tests:
-- No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in NonCircleTests folder
+- MicrosoftGraphMailSingleUser-Test_dev
 defaultclassifier: Microsoft Graph Mail Single User
 defaultmapperin: Microsoft Graph Mail Single User-mapper
 fromversion: 5.0.0

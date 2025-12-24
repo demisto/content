@@ -22,6 +22,15 @@ configuration:
     Select this option to use the V1 Alpha API.
 
     Note: If this option is selected, Update the Region and provide the v1 Alpha API supported Service Account JSON and Project Instance ID.
+- display: API URL Format
+  additionalinfo: "Select the API URL format to use for API requests. Default value is '<chronicle>.<REGION>.<rep.googleapis.com>'. Only applicable if the \"Use V1 Alpha API\" parameter is selected."
+  name: url_format
+  required: false
+  type: 15
+  options:
+  - "<REGION>-<chronicle.googleapis.com>"
+  - "<chronicle>.<REGION>.<rep.googleapis.com>"
+  section: Connect
 - section: Connect
   display: Google SecOps Project Instance ID
   name: project_instance_id
@@ -31,6 +40,15 @@ configuration:
     Provide the Project Instance ID of the Google SecOps. Only applicable if the "Use V1 Alpha API" parameter is selected.
 
     Note: User can retrieve the Customer ID(Project Instance ID) in the Profile section of the Google SecOps page.
+- display: Google SecOps Project Number
+  additionalinfo: |-
+    Provide the Project Number of the Google SecOps. Only applicable if the "Use V1 Alpha API" parameter is selected.
+    
+    Note: User can retrieve the Project Number in the Profile section of the Google SecOps page. If Project Number is not provided, then Project ID(from Service Account JSON) will be used.
+  name: project_number
+  required: false
+  type: 0
+  section: Connect
 - additionalinfo: Select the region based on the location of the Google SecOps instance. If the region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
   defaultvalue: General
   display: Region
@@ -103,10 +121,11 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: Select the severity of detections to be considered for Fetch Incidents. Available options are 'High', 'Medium', 'Low', 'Informational' and 'Unspecified' (If not selected, fetches all detections).
+- additionalinfo: Select the severity of detections to be considered for Fetch Incidents. Available options are 'Critical', 'High', 'Medium', 'Low', 'Informational' and 'Unspecified' (If not selected, fetches all detections).
   display: Severity of Detection
   name: detection_severity
   options:
+  - Critical
   - High
   - Medium
   - Low
@@ -142,6 +161,21 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo: Select the default severity for incident when detection does not specify a severity. Available options are 'Critical', 'High', 'Medium', 'Low', 'Informational' and 'Unspecified' (If not selected, defaults to Unspecified).
+  display: Default Severity of Incident
+  name: default_severity
+  type: 15
+  section: Collect
+  defaultvalue: Unspecified
+  advanced: true
+  options:
+  - Critical
+  - High
+  - Medium
+  - Low
+  - Informational
+  - Unspecified
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -158,7 +192,7 @@ description: Use the Google SecOps Streaming API integration to ingest detection
 display: Google SecOps Streaming API
 name: Google Chronicle Backstory Streaming API
 script:
-  dockerimage: demisto/googleapi-python3:1.0.0.4892936
+  dockerimage: demisto/googleapi-python3:1.0.0.5476125
   longRunning: true
   isFetchSamples: true
   runonce: false
