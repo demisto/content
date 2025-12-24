@@ -214,6 +214,10 @@ def get_elastic_token():
             demisto.debug("get_elastic_token - Using existing access token from integration context.")
             return access_token
 
+        if not USERNAME or not PASSWORD:
+            demisto.debug("get_elastic_token - username or password fields are missing.")
+            raise DemistoException("get_elastic_token - username or password fields are missing.")
+        
         # 2. Token exists but expired, and refresh token is valid
         if refresh_token and not is_access_token_expired(refresh_token_expires_in):
             demisto.debug(
@@ -221,7 +225,7 @@ def get_elastic_token():
             )
 
             payload = {"grant_type": "refresh_token", "refresh_token": refresh_token}
-            response = requests.post(url, headers=headers, json=payload, verify=INSECURE)
+            response = requests.post(url, headers=headers, json=payload, verify=INSECURE, auth=(USERNAME, PASSWORD))
 
             if response.status_code == 200:
                 now = datetime.now()
@@ -243,17 +247,13 @@ def get_elastic_token():
                 demisto.debug(
                     "get_elastic_token - Access token received successfully by refresh token and set to integration context."
                 )
-                return access_token
+                return integration_context["access_token"]
 
             # If refresh fails, clear the refresh token to force generating of new token
             demisto.debug("get_elastic_token - refresh fails, a new token will be generated via password grant.")
             integration_context.update({"refresh_token": None, "refresh_token_expires_in": None})
 
         # Generate a new access vi password grant
-        if not USERNAME or not PASSWORD:
-            demisto.debug("get_elastic_token - username or password fields are missing.")
-            raise DemistoException("get_elastic_token - username or password fields are missing.")
-
         demisto.debug("get_elastic_token - Attempting to get token using grant_type:password")
 
         payload = {"grant_type": "password", "username": USERNAME, "password": PASSWORD}
@@ -278,7 +278,7 @@ def get_elastic_token():
             demisto.debug(
                 "get_elastic_token - Access token received successfully via password grant and set to integration context."
             )
-            return access_token
+            return integration_context["access_token"]
 
         demisto.debug(f"Failed to authenticate: {response.status_code}\n{response.text}")
         raise DemistoException(f"Failed to authenticate: {response.status_code}\n{response.text}")
