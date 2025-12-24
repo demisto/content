@@ -445,7 +445,7 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
         )
 
 
-def add_playbook_metadata(data: dict, command: str, silent: bool = False):
+def add_playbook_metadata(data: dict, command: str):
     ctx_output: dict = demisto.callingContext or {}
 
     context = ctx_output.get("context") or {}
@@ -466,9 +466,6 @@ def add_playbook_metadata(data: dict, command: str, silent: bool = False):
         "integration_name": brand,
         "command_name": command,
     }
-    if silent:
-        playbook_metadata["playbook_type"] = "silent"
-
     data["request_data"]["playbook_metadata"] = playbook_metadata
     demisto.debug(
         f"Added playbook metadata data['request_data']['playbook_metadata']: {data['request_data']['playbook_metadata']}"
@@ -499,7 +496,7 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
     }
 
     try:
-        add_playbook_metadata(data, "start_xql_query", silent=args.get("silent", False))
+        add_playbook_metadata(data, "start_xql_query")
     except Exception as e:
         demisto.error(f"Error adding playbook metadata: {str(e)}")
 
@@ -735,7 +732,7 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
         interval_in_secs = int(args.get("interval_in_seconds", 20))
         timeout_in_secs = int(args.get("timeout_in_seconds", 600))
         scheduled_command = ScheduledCommand(
-            command=demisto.command(), next_run_in_seconds=interval_in_secs, args=args, timeout_in_seconds=timeout_in_secs
+            command="xdr-xql-generic-query", next_run_in_seconds=interval_in_secs, args=args, timeout_in_seconds=timeout_in_secs
         )
         command_results.scheduled_command = scheduled_command
         command_results.readable_output = (
