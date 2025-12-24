@@ -3382,25 +3382,6 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> list[C
     standards = reply.get("standards")
     filtered_count = reply.get("result_count")
     returned_count = len(standards)
-    
-    # payload = assessment_profile_results_payload(
-    #     standards=standards,
-    # )
-    
-    # response = client.get_assessment_profile_results(payload)
-    # reply = response.get("reply", {})
-    # data = reply.get("data")
-    
-    # standard_to_count = {
-    #     item.get("STANDARD_NAME"): item.get("PROFILES_COUNT", 0)
-    #     for item in data 
-    #     if item.get("STANDARD_NAME")
-    # }
-
-    # for s in standards:
-    #     s_name = s.get("name")
-    #     s["assessments_profiles_count"] = standard_to_count.get(s_name, 0)
-
 
     filtered_standards = [
         {
