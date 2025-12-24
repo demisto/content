@@ -3707,6 +3707,7 @@ def fetch_detections_by_product_type(
     filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
     if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value}:
         filter = filter.replace("product:", "type:")
+    
     if fetch_query:
         filter = f"({filter})+({fetch_query})"
     response = get_detections_ids(filter_arg=filter, limit=fetch_limit, offset=offset, product_type=product_type)
