@@ -1,6 +1,6 @@
 import importlib
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest import mock
 from unittest.mock import patch, MagicMock
 
@@ -1247,3 +1247,243 @@ def test_search_command_with_query_esql(mocker):
     assert res.raw_response == magic_mock.body
     assert call_args["headers"] == EXPECTED_HEADERS
     assert call_args["body"] == {"query": f"{query}| LIMIT 2"}
+
+
+class TestGetElasticToken:
+    """Tests for the get_elastic_token function."""
+
+    @pytest.fixture
+    def mock_integration_context(self, mocker):
+        """Fixture to mock integration context functions."""
+        mock_get = mocker.patch("Elasticsearch_v2.get_integration_context")
+        mock_set = mocker.patch("Elasticsearch_v2.set_integration_context")
+        return mock_get, mock_set
+
+    @pytest.fixture
+    def mock_requests_post(self, mocker):
+        """Fixture to mock requests.post."""
+        return mocker.patch("Elasticsearch_v2.requests.post")
+
+    def test_get_elastic_token_existing_valid_token(self, mocker, mock_integration_context):
+        """
+        Given:
+            - An existing valid access token in integration context that hasn't expired
+        When:
+            - Calling get_elastic_token
+        Then:
+            - Return the existing access token without making any API calls
+        """
+        import Elasticsearch_v2
+
+        mock_get, mock_set = mock_integration_context
+        future_time = (datetime.now() + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        
+        mock_get.return_value = {
+            "access_token": "existing_valid_token",
+            "access_token_expires_in": future_time,
+            "refresh_token": "refresh_token",
+            "refresh_token_expires_in": future_time,
+        }
+
+        mocker.patch("Elasticsearch_v2.USERNAME", "test_user")
+        mocker.patch("Elasticsearch_v2.PASSWORD", "test_pass")
+        mocker.patch("Elasticsearch_v2.SERVER", "http://test-server")
+        mocker.patch("Elasticsearch_v2.INSECURE", True)
+
+        result = Elasticsearch_v2.get_elastic_token()
+
+        assert result == "existing_valid_token"
+
+    def test_get_elastic_token_expired_token_valid_refresh(self, mocker, mock_integration_context, mock_requests_post):
+        """
+        Given:
+            - An expired access token but a valid refresh token in integration context
+        When:
+            - Calling get_elastic_token
+        Then:
+            - Use the refresh token to get a new access token
+            - Update the integration context with new tokens
+            - Return the new access token
+        """
+        import Elasticsearch_v2
+
+        mock_get, mock_set = mock_integration_context
+        past_time = (datetime.now() - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        future_time = (datetime.now() + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        
+        mock_get.return_value = {
+            "access_token": "expired_token",
+            "access_token_expires_in": past_time,
+            "refresh_token": "valid_refresh_token",
+            "refresh_token_expires_in": future_time,
+        }
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "access_token": "new_access_token",
+            "refresh_token": "new_refresh_token",
+            "expires_in": 3600,
+        }
+        mock_requests_post.return_value = mock_response
+
+        mocker.patch("Elasticsearch_v2.USERNAME", "test_user")
+        mocker.patch("Elasticsearch_v2.PASSWORD", "test_pass")
+        mocker.patch("Elasticsearch_v2.SERVER", "http://test-server")
+        mocker.patch("Elasticsearch_v2.INSECURE", True)
+
+        result = Elasticsearch_v2.get_elastic_token()
+
+        assert result == "new_access_token"
+        assert mock_requests_post.call_count == 1
+        call_args = mock_requests_post.call_args
+        assert call_args[1]["json"]["grant_type"] == "refresh_token"
+        assert call_args[1]["json"]["refresh_token"] == "valid_refresh_token"
+
+    def test_get_elastic_token_password_grant(self, mocker, mock_integration_context, mock_requests_post):
+        """
+        Given:
+            - No existing tokens or expired refresh token
+        When:
+            - Calling get_elastic_token
+        Then:
+            - Perform password grant authentication
+            - Store new tokens in integration context
+            - Return the new access token
+        """
+        import Elasticsearch_v2
+
+        mock_get, mock_set = mock_integration_context
+        mock_get.return_value = {}
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "access_token": "password_grant_token",
+            "refresh_token": "password_grant_refresh",
+            "expires_in": 3600,
+        }
+        mock_requests_post.return_value = mock_response
+
+        mocker.patch("Elasticsearch_v2.USERNAME", "test_user")
+        mocker.patch("Elasticsearch_v2.PASSWORD", "test_pass")
+        mocker.patch("Elasticsearch_v2.SERVER", "http://test-server")
+        mocker.patch("Elasticsearch_v2.INSECURE", True)
+
+        result = Elasticsearch_v2.get_elastic_token()
+
+        assert result == "password_grant_token"
+        assert mock_requests_post.call_count == 1
+        call_args = mock_requests_post.call_args
+        assert call_args[1]["json"]["grant_type"] == "password"
+        assert call_args[1]["json"]["username"] == "test_user"
+        assert call_args[1]["json"]["password"] == "test_pass"
+
+    def test_get_elastic_token_missing_credentials(self, mocker, mock_integration_context):
+        """
+        Given:
+            - Missing username or password
+        When:
+            - Calling get_elastic_token
+        Then:
+            - Raise DemistoException with appropriate error message
+        """
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        mock_get, mock_set = mock_integration_context
+        mock_get.return_value = {}
+
+        mocker.patch("Elasticsearch_v2.USERNAME", None)
+        mocker.patch("Elasticsearch_v2.PASSWORD", "test_pass")
+        mocker.patch("Elasticsearch_v2.SERVER", "http://test-server")
+        mocker.patch("Elasticsearch_v2.INSECURE", True)
+
+        with pytest.raises(DemistoException) as exc_info:
+            Elasticsearch_v2.get_elastic_token()
+
+        assert "username or password fields are missing" in str(exc_info.value)
+
+    def test_get_elastic_token_refresh_fails_fallback_to_password(self, mocker, mock_integration_context, mock_requests_post):
+        """
+        Given:
+            - Expired access token and valid refresh token
+            - Refresh token request fails
+        When:
+            - Calling get_elastic_token
+        Then:
+            - Attempt refresh token flow first
+            - Fall back to password grant when refresh fails
+            - Return new access token from password grant
+        """
+        import Elasticsearch_v2
+
+        mock_get, mock_set = mock_integration_context
+        past_time = (datetime.now() - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        future_time = (datetime.now() + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        
+        mock_get.return_value = {
+            "access_token": "expired_token",
+            "access_token_expires_in": past_time,
+            "refresh_token": "valid_refresh_token",
+            "refresh_token_expires_in": future_time,
+        }
+
+        # First call (refresh) fails, second call (password grant) succeeds
+        mock_refresh_response = MagicMock()
+        mock_refresh_response.status_code = 401
+
+        mock_password_response = MagicMock()
+        mock_password_response.status_code = 200
+        mock_password_response.json.return_value = {
+            "access_token": "new_password_token",
+            "refresh_token": "new_refresh_token",
+            "expires_in": 3600,
+        }
+
+        mock_requests_post.side_effect = [mock_refresh_response, mock_password_response]
+
+        mocker.patch("Elasticsearch_v2.USERNAME", "test_user")
+        mocker.patch("Elasticsearch_v2.PASSWORD", "test_pass")
+        mocker.patch("Elasticsearch_v2.SERVER", "http://test-server")
+        mocker.patch("Elasticsearch_v2.INSECURE", True)
+
+        result = Elasticsearch_v2.get_elastic_token()
+
+        assert result == "new_password_token"
+        assert mock_requests_post.call_count == 2
+        # Verify first call was refresh token
+        assert mock_requests_post.call_args_list[0][1]["json"]["grant_type"] == "refresh_token"
+        # Verify second call was password grant
+        assert mock_requests_post.call_args_list[1][1]["json"]["grant_type"] == "password"
+
+    def test_get_elastic_token_authentication_failure(self, mocker, mock_integration_context, mock_requests_post):
+        """
+        Given:
+            - No existing tokens
+            - Password grant authentication fails
+        When:
+            - Calling get_elastic_token
+        Then:
+            - Raise DemistoException with authentication failure message
+        """
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        mock_get, mock_set = mock_integration_context
+        mock_get.return_value = {}
+
+        mock_response = MagicMock()
+        mock_response.status_code = 401
+        mock_response.text = "Unauthorized"
+        mock_requests_post.return_value = mock_response
+
+        mocker.patch("Elasticsearch_v2.USERNAME", "test_user")
+        mocker.patch("Elasticsearch_v2.PASSWORD", "wrong_pass")
+        mocker.patch("Elasticsearch_v2.SERVER", "http://test-server")
+        mocker.patch("Elasticsearch_v2.INSECURE", True)
+
+        with pytest.raises(DemistoException) as exc_info:
+            Elasticsearch_v2.get_elastic_token()
+
+        assert "Failed to authenticate" in str(exc_info.value)
