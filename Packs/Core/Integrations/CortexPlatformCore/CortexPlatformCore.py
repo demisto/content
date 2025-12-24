@@ -2262,12 +2262,13 @@ def build_exception_rules_filter(args: dict) -> FilterBuilder:
     filter_builder.add_field("CONDITIONS_PRETTY", FilterType.CONTAINS, argToList(args.get("conditions")))
     filter_builder.add_field("CREATED_BY", FilterType.CONTAINS, argToList(args.get("created_by")))
     filter_builder.add_field("USER_EMAIL", FilterType.CONTAINS, argToList(args.get("user_email")))
-    start_modification_time_str , end_modification_time_str = args.get("start_modification_time") , args.get("end_modification_time")
-    if end_modification_time_str and not start_modification_time_str:
-        start_modification_time_str = '0'
-    filter_builder.add_time_range_field(
-        "MODIFICATION_TIME", start_modification_time_str, end_modification_time_str
+    start_modification_time_str, end_modification_time_str = (
+        args.get("start_modification_time"),
+        args.get("end_modification_time"),
     )
+    if end_modification_time_str and not start_modification_time_str:
+        start_modification_time_str = "0"
+    filter_builder.add_time_range_field("MODIFICATION_TIME", start_modification_time_str, end_modification_time_str)
     filter_builder.add_field("STATUS", FilterType.EQ, argToList(args.get("status")))
     filter_builder.add_field("SUBTYPE", FilterType.EQ, argToList(args.get("rule_type")))
     return filter_builder
@@ -3320,17 +3321,18 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> list[CommandRe
 
     final_readable_output = "\n".join(readable_output_lines)
 
-    return [CommandResults(
-        readable_output=final_readable_output,
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ExceptionRules",
-        outputs_key_field="ID",
-        outputs=all_outputs,
-        raw_response=all_raw_responses,
-    )  ,
+    return [
+        CommandResults(
+            readable_output=final_readable_output,
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ExceptionRules",
+            outputs_key_field="ID",
+            outputs=all_outputs,
+            raw_response=all_raw_responses,
+        ),
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ExceptionRulesMetadata",
             outputs={"filter_count": total_filter_count, "returned_count": len(all_outputs)},
-        )
+        ),
     ]
 
 

@@ -1953,7 +1953,6 @@ class TestFilterBuilder:
         assert start_time is None
         assert end_time is None
 
-
     def test_prepare_time_range_end_time_without_start_time_raises_exception(self):
         """
         Given: None as start_time_str and a valid end_time_str.
@@ -7071,7 +7070,7 @@ def test_get_webapp_data_retrieve_all_multiple_pages(mocker: MockerFixture):
     ]
 
     filter_builder = FilterBuilder()
-    records, raw_responses, filter_count= get_webapp_data(
+    records, raw_responses, filter_count = get_webapp_data(
         client=mock_client,
         table_name="TEST_TABLE",
         filter_dict=filter_builder,
@@ -7308,7 +7307,7 @@ def test_list_exception_rules_command_no_data(mocker: MockerFixture):
     result = list_exception_rules_command(mock_client, args)
 
     assert len(result[0].outputs) == 0
-    assert "No data found" in result.readable_output
+    assert "No data found" in result[0].readable_output
 
 
 def test_list_system_users_command_with_emails(mocker: MockerFixture):
