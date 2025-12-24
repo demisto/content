@@ -3325,7 +3325,7 @@ def assessment_profile_results_payload(standards):
         if isinstance(standard_labels, list):
             labels.update(standard_labels)
 
-    payload = {"request_data": {"filters": []}}
+    payload: dict = {"request_data": {"filters": []}}
 
     for label in labels:
         payload["request_data"]["filters"].append({"field": "labels", "operator": "contains", "value": label})
