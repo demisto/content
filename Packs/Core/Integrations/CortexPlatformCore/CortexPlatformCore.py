@@ -3208,11 +3208,11 @@ def create_assessment_profile_payload(
     return payload
 
 def list_compliance_standards_payload(
-    name: str, 
-    created_by: str, 
-    labels: list,
-    page,
-    page_size,
+    name: str = None, 
+    created_by: str = None, 
+    labels: list = None,
+    page = None,
+    page_size = None,
 ) -> Dict[str, Any]:
     """
     Prepare assessment profile payload
@@ -3281,20 +3281,46 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
     Returns:
         CommandResults: Contains the result of adding the assessment profile.
     """
-    name = args.get('name', "")
-    description = args.get('description', "")
-    standard_id = args.get('standard_id', "")
-    asset_group_id = args.get('asset_group_id', "")
+    profile_name = args.get('profile_name', "")
+    profile_description = args.get('profile_description', "")
+    standard_name = args.get('standard_name', "")
+    asset_group_name = args.get('asset_group_name', "")
+    payload = list_compliance_standards_payload(
+        name=standard_name,
+    )
+    response = client.list_compliance_standards_command(payload)
+    reply = response.get("reply", {})
+    standards = reply.get("standards")
+    demisto.debug(f"{standards=}")
+    if not standards:
+        return_error("No compliance standards found matching the provided name.")
+    if len(standards) > 1:
+        standard_names = [standard.get('name') for standard in standards]
+        return_error(f"The name you provided matches more than one standard:\n\n{"\n".join(standard_names)}\n\nPlease provide a more specific name.")
+    
+    standard_id = standards[0].get("id")
+    
+    filter = FilterBuilder()
+    filter.add_field("XDM.ASSET_GROUP.NAME", FilterType.CONTAINS, asset_group_name)
+    filter_str = filter.to_dict()
+    groups = client.search_asset_groups(filter_str).get("reply", {}).get("data", [])
+    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+    group_names = [group.get("XDM.ASSET_GROUP.NAME") for group in groups if group.get("XDM.ASSET_GROUP.NAME")]
 
-    # Optional arguments
+    if not group_ids:
+        return_error("No asset group found matching the provided name.")
+    
+    if len(group_ids) > 1:
+        return_error(f"The name you provided matches more than one asset group:\n\n{"\n".join(group_names)}\n\nPlease provide a more specific name.")
+    demisto.debug(f"{group_ids=}")
+    asset_group_id = group_ids[0]
     day = args.get('day', 'sunday')
     time = args.get('time', "12:00")
 
-    # Create the assessment profile payload
     payload = create_assessment_profile_payload(
-        name=name,
-        description=description, 
-        standard_id=standard_id,
+        name=profile_name,
+        description=profile_description, 
+        standard_id=str(standard_id),
         asset_group_id=asset_group_id,
         day=day,
         time=time,

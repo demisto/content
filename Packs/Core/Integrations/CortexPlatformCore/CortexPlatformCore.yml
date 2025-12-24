@@ -2770,17 +2770,17 @@ script:
         description: The cloud region of the endpoint.
         type: String
     - arguments:
-      - name: name
+      - name: profile_name
         description: The name of the assessment profile to create.
         required: true
-      - name: description
+      - name: profile_description
         description: The description of the assessment profile to create.
         required: true
-      - name: standard_id
-        description: The ID of the compliance standard to associate with the profile.
+      - name: standard_name
+        description: The name of the compliance standard to associate with the profile.
         required: true
-      - name: asset_group_id
-        description: The ID of the asset group to apply the assessment profile to.
+      - name: asset_group_name
+        description: The name of the asset group to apply the assessment profile to.
         required: true
       - auto: PREDEFINED
         name: day
