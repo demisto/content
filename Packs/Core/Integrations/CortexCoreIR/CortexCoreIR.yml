@@ -2542,6 +2542,7 @@ script:
     description: Initiates a new endpoint script execution to kill a process.
     name: core-run-script-kill-process
     supportedModules:
+    
       - C3
       - X0
       - X3
