@@ -100,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 9cedcdef-f528-4344-89d6-a7333564f10f
+    taskid: 5fd4efe3-6ae8-4376-b32a-bb230f5ecee5
     type: regular
     task:
-      id: 9cedcdef-f528-4344-89d6-a7333564f10f
+      id: 5fd4efe3-6ae8-4376-b32a-bb230f5ecee5
       version: -1
       name: Set initial query
       description: |-
@@ -123,25 +123,11 @@ tasks:
       - "75"
     scriptarguments:
       key:
-        simple: MITRETactics
+        simple: InitialQuery
       value:
-        complex:
-          root: inputs.EntityType
-          transformers:
-          - operator: ConcatFormat
-            args:
-              ctx_data: {}
-              ctx_inc: {}
-              ctx_inputs:
-                value:
-                  simple: inputs
-                iscontext: true
-              keep_symbol_to_null: {}
-              prefix: {}
-              suffix:
-                value:
-                  simple: :"${inputs.EntityID}" and (
-              variable_markers: {}
+        simple: ${inputs.EntityType}:"${inputs.EntityID}"
+      append:
+        simple: "false"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -156,15 +142,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: a6fafebb-c3f5-4df6-8151-d1e87e45dfcf
+    taskid: 905b13af-9587-4caf-9be1-fdc20dee98f6
     type: regular
     task:
-      id: a6fafebb-c3f5-4df6-8151-d1e87e45dfcf
+      id: 905b13af-9587-4caf-9be1-fdc20dee98f6
       version: -1
       name: Add Reconnaissance to query
       description: |-
@@ -184,21 +170,13 @@ tasks:
       - "87"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: MITRETactics
       stringify:
         simple: "true"
       value:
-        complex:
-          root: MITRETactics
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: 'mitreattcktactic:"TA0043 - Reconnaissance" or '
+        simple: 'mitreattcktactic:"TA0043 - Reconnaissance" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -213,7 +191,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "70":
@@ -304,10 +282,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: 5af0d290-f0ca-43c9-8976-50a35ff78282
+    taskid: aafe402c-d97f-45f6-a4e7-399b0737b1fb
     type: regular
     task:
-      id: 5af0d290-f0ca-43c9-8976-50a35ff78282
+      id: aafe402c-d97f-45f6-a4e7-399b0737b1fb
       version: -1
       name: Hunt techniques
       description: |-
@@ -318,7 +296,7 @@ tasks:
         - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
         - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
         - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
-      scriptName: SearchIncidentsV2
+      scriptName: SearchAlertsV2
       type: regular
       iscommand: false
       brand: ""
@@ -333,8 +311,21 @@ tasks:
         simple: "false"
       query:
         complex:
-          root: MITRETactics
+          root: InitialQuery
           transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' and ('
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: MITRETactics
+                iscontext: true
           - operator: concat
             args:
               prefix: {}
@@ -357,7 +348,7 @@ tasks:
       {
         "position": {
           "x": 780,
-          "y": 5910
+          "y": 6240
         }
       }
     note: false
@@ -428,10 +419,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: f8704cbd-2216-4667-80a6-0598eea4c297
+    taskid: 22dbeb74-ba83-47ef-8554-986178f0d6af
     type: regular
     task:
-      id: f8704cbd-2216-4667-80a6-0598eea4c297
+      id: 22dbeb74-ba83-47ef-8554-986178f0d6af
       version: -1
       name: Add Command and Control to query
       description: |-
@@ -451,21 +442,13 @@ tasks:
       - "97"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: MITRETactics
       stringify:
         simple: "true"
       value:
-        complex:
-          root: MITRETactics
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: 'mitreattcktactic:"TA0011 - Command and Control" or '
+        simple: 'mitreattcktactic:"TA0011 - Command and Control" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -480,7 +463,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "77":
@@ -1345,10 +1328,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "98":
     id: "98"
-    taskid: 6a7cbc3f-4505-4433-8824-547496ae78df
+    taskid: 78f6390b-1e26-48dc-a7e3-5743e67c788b
     type: regular
     task:
-      id: 6a7cbc3f-4505-4433-8824-547496ae78df
+      id: 78f6390b-1e26-48dc-a7e3-5743e67c788b
       version: -1
       name: Add Initial Access to query
       description: |-
@@ -1368,21 +1351,13 @@ tasks:
       - "88"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: MITRETactics
       stringify:
         simple: "true"
       value:
-        complex:
-          root: MITRETactics
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: 'mitreattcktactic:"TA0001 - Initial Access" or '
+        simple: 'mitreattcktactic:"TA0001 - Initial Access" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1397,15 +1372,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "99":
     id: "99"
-    taskid: 24bb20be-c615-41e3-85bd-53684350c012
+    taskid: fe9e8a06-28c8-471a-9494-e19b7cc9fafc
     type: regular
     task:
-      id: 24bb20be-c615-41e3-85bd-53684350c012
+      id: fe9e8a06-28c8-471a-9494-e19b7cc9fafc
       version: -1
       name: Add Execution to query
       description: |-
@@ -1425,21 +1400,13 @@ tasks:
       - "89"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: MITRETactics
       stringify:
         simple: "true"
       value:
-        complex:
-          root: MITRETactics
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: 'mitreattcktactic:"TA0002 - Execution" or '
+        simple: 'mitreattcktactic:"TA0002 - Execution" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1454,15 +1421,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "100":
     id: "100"
-    taskid: ababc384-4722-4441-83d8-ca5851899d1a
+    taskid: e5af9901-4738-4216-b2b5-e7a6b78143e0
     type: regular
     task:
-      id: ababc384-4722-4441-83d8-ca5851899d1a
+      id: e5af9901-4738-4216-b2b5-e7a6b78143e0
       version: -1
       name: Add Persistence to query
       description: |-
@@ -1482,21 +1449,13 @@ tasks:
       - "90"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: MITRETactics
       stringify:
         simple: "true"
       value:
-        complex:
-          root: MITRETactics
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: 'mitreattcktactic:"TA0003 - Persistence" or '
+        simple: 'mitreattcktactic:"TA0003 - Persistence" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1511,15 +1470,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: 3ec25bba-f072-46b5-853d-f7d32b698359
+    taskid: c4a5b356-ecc5-4122-bdc2-7c674bc79bed
     type: regular
     task:
-      id: 3ec25bba-f072-46b5-853d-f7d32b698359
+      id: c4a5b356-ecc5-4122-bdc2-7c674bc79bed
       version: -1
       name: Add Privilege Escalation to query
       description: |-
@@ -1539,21 +1498,13 @@ tasks:
       - "91"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: MITRETactics
       stringify:
         simple: "true"
       value:
-        complex:
-          root: MITRETactics
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: 'mitreattcktactic:"TA0004 - Privilege Escalation" or '
+        simple: 'mitreattcktactic:"TA0004 - Privilege Escalation" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1568,15 +1519,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "108":
     id: "108"
-    taskid: 8ef51106-2ea7-4020-86df-3af2dc171900
+    taskid: 59e1062f-491a-4ad7-bb69-fd79bd5f989e
     type: regular
     task:
-      id: 8ef51106-2ea7-4020-86df-3af2dc171900
+      id: 59e1062f-491a-4ad7-bb69-fd79bd5f989e
       version: -1
       name: Add Defense Evasion to query
       description: |-
@@ -1596,21 +1547,13 @@ tasks:
       - "92"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: MITRETactics
       stringify:
         simple: "true"
       value:
-        complex:
-          root: MITRETactics
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: 'mitreattcktactic:"TA0005 - Defense Evasion" or '
+        simple: 'mitreattcktactic:"TA0005 - Defense Evasion" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1625,15 +1568,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "109":
     id: "109"
-    taskid: 2f5a14c3-7d46-4c59-805b-8fbb811b4b51
+    taskid: 019451fd-f6e2-4b12-9e3e-a6bd5cd23ad8
     type: regular
     task:
-      id: 2f5a14c3-7d46-4c59-805b-8fbb811b4b51
+      id: 019451fd-f6e2-4b12-9e3e-a6bd5cd23ad8
       version: -1
       name: Add Credential Access to query
       description: |-
@@ -1653,21 +1596,13 @@ tasks:
       - "93"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: MITRETactics
       stringify:
         simple: "true"
       value:
-        complex:
-          root: MITRETactics
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: 'mitreattcktactic:"TA0006 - Credential Access" or '
+        simple: 'mitreattcktactic:"TA0006 - Credential Access" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1682,15 +1617,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "110":
     id: "110"
-    taskid: bf903dce-296b-4bd0-8eb2-a6c7d07f2813
+    taskid: 4e2fd1ad-39aa-427d-a94f-963013f20625
     type: regular
     task:
-      id: bf903dce-296b-4bd0-8eb2-a6c7d07f2813
+      id: 4e2fd1ad-39aa-427d-a94f-963013f20625
       version: -1
       name: Add Discovery to query
       description: |-
@@ -1710,21 +1645,13 @@ tasks:
       - "94"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: MITRETactics
       stringify:
         simple: "true"
       value:
-        complex:
-          root: MITRETactics
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: 'mitreattcktactic:"TA0007 - Discovery" or '
+        simple: 'mitreattcktactic:"TA0007 - Discovery" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1739,15 +1666,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "111":
     id: "111"
-    taskid: c2386f08-8339-401d-8d25-4ec123c827db
+    taskid: 197b7f7d-a02f-48c4-9fec-7f8e1a671e48
     type: regular
     task:
-      id: c2386f08-8339-401d-8d25-4ec123c827db
+      id: 197b7f7d-a02f-48c4-9fec-7f8e1a671e48
       version: -1
       name: Add Lateral Movement to query
       description: |-
@@ -1767,21 +1694,13 @@ tasks:
       - "95"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: MITRETactics
       stringify:
         simple: "true"
       value:
-        complex:
-          root: MITRETactics
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: 'mitreattcktactic:"TA0008 - Lateral Movement" or '
+        simple: 'mitreattcktactic:"TA0008 - Lateral Movement" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1796,15 +1715,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: b88de95c-964b-4cc6-834e-50dfa3963736
+    taskid: 4e424106-428f-494f-a8f4-79204f09532f
     type: regular
     task:
-      id: b88de95c-964b-4cc6-834e-50dfa3963736
+      id: 4e424106-428f-494f-a8f4-79204f09532f
       version: -1
       name: Add Collection to query
       description: |-
@@ -1824,21 +1743,13 @@ tasks:
       - "70"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: MITRETactics
       stringify:
         simple: "true"
       value:
-        complex:
-          root: MITRETactics
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: 'mitreattcktactic:"TA0009 - Collection" or '
+        simple: 'mitreattcktactic:"TA0009 - Collection" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1853,15 +1764,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "113":
     id: "113"
-    taskid: 2cc2e6ef-3fa9-4dda-81a7-659b5ec94529
+    taskid: 31e57586-eedf-4ca7-8c22-34089cfef454
     type: regular
     task:
-      id: 2cc2e6ef-3fa9-4dda-81a7-659b5ec94529
+      id: 31e57586-eedf-4ca7-8c22-34089cfef454
       version: -1
       name: Add Impact to query
       description: |-
@@ -1881,21 +1792,13 @@ tasks:
       - "115"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: MITRETactics
       stringify:
         simple: "true"
       value:
-        complex:
-          root: MITRETactics
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: 'mitreattcktactic:"TA0040 - Impact" or '
+        simple: 'mitreattcktactic:"TA0040 - Impact" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1910,7 +1813,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "114":
@@ -1930,8 +1833,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 6110
+          "x": 10,
+          "y": 6420
         }
       }
     note: false
@@ -1955,7 +1858,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "74"
+      - "118"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1989,6 +1892,8 @@ tasks:
       - "117"
       Yes - Specified Huntings:
       - "68"
+      '#default#':
+      - "114"
     separatecontext: false
     conditions:
     - label: Yes - Hunt All
@@ -2116,8 +2021,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": -800
+          "x": 50,
+          "y": -770
         }
       }
     note: false
@@ -2143,7 +2048,7 @@ tasks:
         - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
         - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
         - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
-      scriptName: SearchIncidentsV2
+      scriptName: SearchAlertsV2
       type: regular
       iscommand: false
       brand: ""
@@ -2178,8 +2083,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -100,
-          "y": -15
+          "x": -330,
+          "y": -580
         }
       }
     note: false
@@ -2193,14 +2098,105 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: c3fdb869-e3e4-4267-b0c8-6d73acb9cef8
+    type: condition
+    task:
+      id: c3fdb869-e3e4-4267-b0c8-6d73acb9cef8
+      version: -1
+      name: Check if any tactics were added to the query
+      description: Checks whether any MITRE tactics were selected for the search.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "114"
+      "yes":
+      - "119"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MITRETactics
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 5900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: 0b3345d8-a950-4702-acc6-e0f26e5d55d8
+    type: regular
+    task:
+      id: 0b3345d8-a950-4702-acc6-e0f26e5d55d8
+      version: -1
+      name: Join MITRE Tactics list into a single object
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: MITRETactics
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: MITRETactics
+          transformers:
+          - operator: join
+            args:
+              separator: {}
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 6090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "116_114_#default#": 0.11,
+      "118_114_#default#": 0.2
+    },
     "paper": {
       "dimensions": {
-        "height": 7245,
-        "width": 1260,
-        "x": -100,
+        "height": 7550,
+        "width": 1490,
+        "x": -330,
         "y": -1070
       }
     }
@@ -2319,8 +2315,31 @@ fromversion: 6.8.0
 contentitemexportablefields:
   contentitemfields: {}
 system: true
-
-
+inputSections:
+- inputs:
+  - HuntReconnaissanceTechniques
+  - HuntInitialAccessTechniques
+  - HuntExecutionTechniques
+  - HuntPersistenceTechniques
+  - HuntPrivilegeEscalationTechniques
+  - HuntDefenseEvasionTechniques
+  - HuntDiscoveryTechniques
+  - HuntLateralMovementTechniques
+  - HuntCollectionTechniques
+  - HuntCnCTechniques
+  - HuntImpactTechniques
+  - HuntCredentialAccessTechniques
+  - timeRange
+  - RunAll
+  - EntityType
+  - EntityID
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs:
+  - foundIncidents
+  name: General (Outputs group)
+  description: Generic group for outputs
 supportedModules:
 - X1
 - X3
