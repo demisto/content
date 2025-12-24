@@ -3168,7 +3168,7 @@ def main():  # pragma: no cover
         client_url = data_platform_api_url
     elif command in APPSEC_COMMANDS:
         client_url = appsec_api_url
-    elif command in AGENTS_COMMANDS:
+    elif command in ENDPOINT_COMMANDS:
         client_url = agents_api_url
     elif command in XSOAR_COMMANDS:
         client_url = xsoar_api_url

@@ -5031,7 +5031,7 @@ def test_get_endpoint_support_file_command_missing_group_action_id(mocker):
 
     args = {"endpoint_ids": ["endpoint1"]}
 
-    with pytest.raises(DemistoException, match="No group_action_id found in the response"):
+    with pytest.raises(DemistoException, match="No group_action_id found. Please ensure that valid endpoint IDs are provided."):
         get_endpoint_support_file_command(mock_client, args)
 
 
