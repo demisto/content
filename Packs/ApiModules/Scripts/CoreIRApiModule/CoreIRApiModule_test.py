@@ -2859,7 +2859,7 @@ class TestGetIssueByFilter:
         response = get_issues_by_filter_command(client, args)
         assert response.outputs[0].get("internal_id", {}) == 33333
 
-    def test_get_alert_by_alert_action_status_filter(self, requests_mock, mocker):
+    def test_get_issues_by_alert_action_status_filter(self, requests_mock, mocker):
         """
         Given:
             - Core client
@@ -2892,7 +2892,7 @@ class TestGetIssueByFilter:
         assert "SEARCH_TYPE': 'EQ'" in logged_request
         assert "SEARCH_VALUE': 'SCANNED'" in logged_request
 
-    def test_get_alert_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
+    def test_get_issues_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
         """
         Given:
             - Core client
@@ -2923,7 +2923,7 @@ class TestGetIssueByFilter:
         assert "'SEARCH_VALUE': 'first'" in logged_request
         assert "'SEARCH_VALUE': 'second'" in logged_request
 
-    def test_get_alert_by_filter_command_multiple_args(self, requests_mock, mocker):
+    def test_get_issues_by_filter_command_multiple_args(self, requests_mock, mocker):
         """
         Given:
             - Core client
