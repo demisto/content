@@ -412,6 +412,543 @@
                 }
             }
         },
+        "Dataminr Pulse ReGenAI Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertId",
+                        "transformers": []
+                    }
+                },
+                "Alert Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "headline",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Airport": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "intelAgents.discoveredEntities.type"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "airport"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "intelAgents.discoveredEntities",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Alert Timestamp": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertTimestamp",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Alert Topics": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertTopics",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Alert Type": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "alertType",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Available Related Alerts": {
+                    "complex": {
+                        "accessor": "count",
+                        "filters": [],
+                        "root": "linkedAlerts",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Companies": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertCompanies",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Country": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "intelAgents.discoveredEntities.type"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "country"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "intelAgents.discoveredEntities",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Event Corroboration Summary": {
+                    "complex": {
+                        "accessor": "summary",
+                        "filters": [],
+                        "root": "eventCorroboration",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Event corroboration Timestamp": {
+                    "complex": {
+                        "accessor": "timestamp",
+                        "filters": [],
+                        "root": "eventCorroboration",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Event Location Coordinates": {
+                    "complex": {
+                        "accessor": "coordinates",
+                        "filters": [],
+                        "root": "estimatedEventLocation",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Event Location Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "estimatedEventLocation",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Event Location Radius": {
+                    "complex": {
+                        "accessor": "probabilityRadius",
+                        "filters": [],
+                        "root": "estimatedEventLocation",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Expand Alert URL": {
+                    "complex": {
+                        "filters": [],
+                        "root": "dataminrAlertUrl",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Flight Route": {
+                    "complex": {
+                        "filters": [],
+                        "root": "flight_data",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Generic Event": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "intelAgents.discoveredEntities.type"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "genericEvent"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "intelAgents.discoveredEntities",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Impacted Assets": {
+                    "complex": {
+                        "accessor": "locationAssets",
+                        "filters": [],
+                        "root": "assetsMatched",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "assetsMatched.thirdPartyAssets"
+                                        }
+                                    },
+                                    "raw": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "AppendIfNotEmpty"
+                            },
+                            {
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "assetsMatched.travelSegments"
+                                        }
+                                    },
+                                    "raw": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "AppendIfNotEmpty"
+                            }
+                        ]
+                    }
+                },
+                "Dataminr Pulse Impacted Assets Text": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assetsMatched",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Intel Agents Discovered Entities": {
+                    "complex": {
+                        "accessor": "discoveredEntities",
+                        "filters": [],
+                        "root": "intelAgents",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Intel Agents Summary": {
+                    "complex": {
+                        "accessor": "summary",
+                        "filters": [],
+                        "root": "intelAgents",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Intel Agents Timestamp": {
+                    "complex": {
+                        "accessor": "timestamp",
+                        "filters": [],
+                        "root": "intelAgents",
+                        "transformers": [
+                            {
+                                "operator": "FirstArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Dataminr Pulse Intel Agents Version": {
+                    "complex": {
+                        "accessor": "version",
+                        "filters": [],
+                        "root": "intelAgents",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Lists Matched": {
+                    "complex": {
+                        "filters": [],
+                        "root": "listsMatched",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Live Brief Timestamp": {
+                    "complex": {
+                        "accessor": "timestamp",
+                        "filters": [],
+                        "root": "liveBrief",
+                        "transformers": [
+                            {
+                                "operator": "FirstArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Dataminr Pulse Live Brief": {
+                    "complex": {
+                        "filters": [],
+                        "root": "liveBrief",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Malware": {
+                    "complex": {
+                        "filters": [],
+                        "root": "malware_indicators",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber AS Orgs": {
+                    "complex": {
+                        "accessor": "asOrgs",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber Address": {
+                    "complex": {
+                        "accessor": "addresses",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber Hash Values": {
+                    "complex": {
+                        "accessor": "hashValues",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber URL": {
+                    "complex": {
+                        "accessor": "URL",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Organization": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "intelAgents.discoveredEntities.type"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "organization"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "intelAgents.discoveredEntities",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Parent Alert ID": {
+                    "complex": {
+                        "accessor": "parentAlertId",
+                        "filters": [],
+                        "root": "linkedAlerts",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Point Of Interest": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "intelAgents.discoveredEntities.type"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "pointOfInterest"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "intelAgents.discoveredEntities",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Post Channels": {
+                    "complex": {
+                        "accessor": "channels",
+                        "filters": [],
+                        "root": "publicPost",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Post English Text": {
+                    "complex": {
+                        "accessor": "englishText",
+                        "filters": [],
+                        "root": "publicPost",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Post Link": {
+                    "complex": {
+                        "accessor": "href",
+                        "filters": [],
+                        "root": "publicPost",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Post Media Content": {
+                    "complex": {
+                        "accessor": "media",
+                        "filters": [],
+                        "root": "publicPost",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Post Media Photo": {
+                    "complex": {
+                        "filters": [],
+                        "root": "media_html",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Post Text": {
+                    "complex": {
+                        "accessor": "text",
+                        "filters": [],
+                        "root": "publicPost",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Post Timestamp": {
+                    "complex": {
+                        "accessor": "timestamp",
+                        "filters": [],
+                        "root": "publicPost",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Publicly Known Person": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "intelAgents.discoveredEntities.type"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "person"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "intelAgents.discoveredEntities",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Region": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "intelAgents.discoveredEntities.type"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "city"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "intelAgents.discoveredEntities",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Related Terms": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertReferenceTerms",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Sectors": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertSectors",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Sub Headline Content": {
+                    "complex": {
+                        "accessor": "content",
+                        "filters": [],
+                        "root": "subHeadline",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Sub Headline Title": {
+                    "complex": {
+                        "accessor": "title",
+                        "filters": [],
+                        "root": "subHeadline",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Threat Actor": {
+                    "complex": {
+                        "filters": [],
+                        "root": "threat_actors_indicators",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Vulnerability": {
+                    "complex": {
+                        "filters": [],
+                        "root": "vulnerability_indicators",
+                        "transformers": []
+                    }
+                }
+            }
+        },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
