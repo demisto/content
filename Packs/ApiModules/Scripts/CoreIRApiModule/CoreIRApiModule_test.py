@@ -4408,8 +4408,8 @@ def test_get_alert_by_filter_custom_filter_valid_json(requests_mock):
     from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
     api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-    requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
-    client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+    requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
     # Valid JSON with agent_id
     custom_filter = '{"AND":[{"SEARCH_FIELD": "agent_id", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": "1.2.3.4"}]}'
@@ -4432,8 +4432,8 @@ def test_get_alert_by_filter_custom_filter_malformed_json_fixed(requests_mock):
     from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
     api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-    requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
-    client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+    requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
     # Malformed JSON with agent_id - array values as string with unescaped quotes
     custom_filter = '{"AND":[{"SEARCH_FIELD": "agent_id", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": "[1.2.3.4, 5.6.7.8]"}]}'
@@ -5334,50 +5334,4 @@ def test_get_issues_by_filter_custom_filter_malformed_json_fixed(requests_mock):
 
     response = get_issues_by_filter_command(client, args)
     assert response.outputs[0].get("internal_id", {}) == 33333
-    
-def test_get_alert_by_filter_custom_filter_valid_json(requests_mock):
-    """
-    Given:
-        - Core client
-        - Valid JSON custom_filter with agent_id
-    When:
-        - Running get_alerts_by_filter command
-    Then:
-        - Verify the JSON is parsed correctly without any fixes applied
-    """
-    from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
-    api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
-    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
-
-    # Valid JSON with agent_id
-    custom_filter = '{"AND":[{"SEARCH_FIELD": "agent_id", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": "1.2.3.4"}]}'
-    args = {"custom_filter": custom_filter}
-
-    response = get_alerts_by_filter_command(client, args)
-    assert response.outputs[0].get("internal_id", {}) == 33333
-
-
-def test_get_alert_by_filter_custom_filter_malformed_json_fixed(requests_mock):
-    """
-    Given:
-        - Core client
-        - Malformed JSON custom_filter with agent_id containing array-like string values
-    When:
-        - Running get_alerts_by_filter command
-    Then:
-        - Verify the malformed JSON is automatically fixed and parsed correctly
-    """
-    from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
-
-    api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
-    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
-
-    # Malformed JSON with agent_id - array values as string with unescaped quotes
-    custom_filter = '{"AND":[{"SEARCH_FIELD": "agent_id", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": "[1.2.3.4, 5.6.7.8]"}]}'
-    args = {"custom_filter": custom_filter}
-
-    response = get_alerts_by_filter_command(client, args)
-    assert response.outputs[0].get("internal_id", {}) == 33333
