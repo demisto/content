@@ -10,34 +10,6 @@ This integration collects audit events from CyberArk Identity Security Platform 
 
 This integration uses OAuth2 Client Credentials flow combined with API key authentication for secure access to the CyberArk Identity Security Platform Audit API.
 
-### Authentication Flow
-
-1. **OAuth2 Token Generation**: The integration obtains an access token from the CyberArk Identity service using client credentials (Client ID and Client Secret).
-2. **API Authentication**: The access token is combined with an API key to authenticate requests to the Audit API.
-3. **Token Caching**: Access tokens are cached and automatically refreshed when expired to optimize performance.
-
-### Security Features
-
-- **Automatic Token Refresh**: Tokens are automatically refreshed before expiration
-- **Secure Credential Storage**: All credentials are securely stored in Cortex
-- **Telemetry Tracking**: Integration usage is tracked via telemetry headers for monitoring and analytics
-
-## CyberArk ISP Architecture
-
-CyberArk Identity Security Platform uses **two separate services** for different purposes:
-
-1. **Identity Service** (OAuth2 Authentication): Used for generating access tokens
-   - Example: `https://abc1234.id.cyberark.cloud`
-   - Used to construct Token URL: `https://abc1234.id.cyberark.cloud/OAuth2/Token/{WEB_APP_ID}`
-
-2. **Audit Service** (Audit API): Used for fetching audit events
-   - Example: `https://example-domain.audit.cyberark.cloud`
-   - API Endpoints:
-     - `/api/audits/stream/createQuery` - Create a stream query
-     - `/api/audits/stream/results` - Retrieve paginated results
-
-**Important**: These services are on different domains and must be configured separately for the integration to work correctly.
-
 ## Before You Start
 
 Before configuring the integration, you must complete the following prerequisites in your CyberArk Identity Administration:
@@ -97,11 +69,7 @@ Before configuring the integration, you must complete the following prerequisite
 
 **Important**: You can only have two third-party SIEM integrations. If you want to add an integration, you must delete one of the existing integrations.
 
-## Configure CyberArk Identity Security Platform in Cortex
-
-1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**
-2. Search for CyberArk Identity Security Platform.
-3. Click **Add instance** to create and configure a new integration instance.
+## Integration Parameters
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -114,26 +82,6 @@ Before configuring the integration, you must complete the following prerequisite
 | Trust any certificate (not secure) | When selected, the integration will not verify SSL certificates. | False |
 | Use system proxy settings | When selected, the integration will use the system proxy settings. | False |
 | Maximum number of audit events per fetch | Maximum number of events to fetch per collection cycle.<br/>Default: 10000<br/>Note: The API returns a maximum of 1000 events per page. | False |
-
-4. Click **Test** to validate the connection and authentication.
-5. Click **Done** to save the integration instance.
-
-## How It Works
-
-This integration automatically collects audit events from CyberArk Identity Security Platform and sends them to your Cortex environment for security monitoring and compliance.
-
-1. **Initial Collection**: On the first run, the integration begins collecting events from 1 minute ago.
-2. **Continuous Monitoring**: The integration automatically tracks the last collected event timestamp and fetches only new events on subsequent runs.
-3. **Automatic Pagination**: The integration handles large result sets automatically, retrieving up to the configured maximum number of events per collection cycle.
-4. **Deduplication**: Events are deduplicated based on their UUID to prevent duplicate ingestion.
-5. **Timestamp Tracking**: The integration maintains a high-water mark timestamp and UUIDs to ensure no events are missed or duplicated.
-
-### Event Collection Process
-
-1. **Create Query**: The integration creates a stream query with a date range filter
-2. **Fetch Pages**: Results are fetched page by page using cursor-based pagination
-3. **Deduplicate**: Events are checked against previously fetched UUIDs
-4. **Ingest**: New events are sent to XSIAM with the `_time` field mapped from the event's `timestamp`
 
 ## Commands
 
@@ -197,133 +145,6 @@ Gets audit events from CyberArk Identity Security Platform. This command is used
 !cyberark-isp-get-events date_from="1 hour ago" limit=10 should_push_events=false
 ```
 
-## API Documentation
-
-The integration uses the following CyberArk Identity Security Platform APIs:
-
-### 1. OAuth2 Token API
-
-**Endpoint**: `POST https://{identity_fqdn}/OAuth2/Token/{WEB_APP_ID}`
-
-**Purpose**: Generate access tokens for API authentication
-
-**Request Example**:
-
-```http
-POST /oauth2/token/xsiamapp
-Host: abc1234.id.cyberark.cloud
-Content-Type: application/x-www-form-urlencoded
-
-grant_type=client_credentials&client_id=<client_id>&client_secret=<client_secret>&scope=isp.audit.events%3Aread
-```
-
-**Response Example**:
-
-```json
-{
-  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "token_type": "Bearer",
-  "expires_in": 21600
-}
-```
-
-### 2. Create Stream Query API
-
-**Endpoint**: `POST /api/audits/stream/createQuery`
-
-**Purpose**: Create a query to stream audit events
-
-**Headers**:
-
-- `Authorization: Bearer {access_token}`
-- `x-api-key: {api_key}`
-- `x-cybr-telemetry: {base64_encoded_telemetry}`
-- `Content-Type: application/json`
-
-**Request Example**:
-
-```json
-{
-  "filterModel": {
-    "dateFrom": "2025-09-15 17:10:00",
-    "dateTo": "2025-09-15 17:11:00"
-  },
-  "sortModel": [
-    {
-      "field_name": "timestamp",
-      "direction": "asc"
-    }
-  ]
-}
-```
-
-**Response Example**:
-
-```json
-{
-  "cursorRef": "eyJxdWVyeSI6eyJwYWdlU2l6ZSI6MTAwMCwic2VsZWN0ZWRGaWVsZHMiOls..."
-}
-```
-
-### 3. Stream Results API
-
-**Endpoint**: `POST /api/audits/stream/results`
-
-**Purpose**: Retrieve paginated audit events using cursor reference
-
-**Request Example**:
-
-```json
-{
-  "cursorRef": "eyJxdWVyeSI6eyJwYWdlU2l6ZSI6MTAwMCwic2VsZWN0ZWRGaWVsZHMiOls..."
-}
-```
-
-**Response Example**:
-
-```json
-{
-  "data": [
-    {
-      "uuid": "12345678-1234-1234-1234-123456789abc",
-      "tenantId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-      "timestamp": 1609459200000,
-      "username": "user@example.com",
-      "applicationCode": "IDP",
-      "auditCode": "IDP1301",
-      "auditType": "Info",
-      "action": "User login successful",
-      "customData": {...}
-    }
-  ],
-  "paging": {
-    "cursor": {
-      "cursorRef": "eyJxdWVyeSI6eyJwYWdlU2l6ZSI6MTAwMCwic2VsZWN0ZWRGaWVsZHMiOls..."
-    }
-  }
-}
-```
-
-## Telemetry
-
-The integration includes telemetry headers in all API requests to provide CyberArk with insights into integration usage:
-
-**Header**: `x-cybr-telemetry`
-
-**Value** (base64 encoded):
-
-```
-in=CyberArk Identity Security Platform&it=SIEM&iv=1.0&vn=Palo Alto Networks&VV=3.x
-```
-
-**Fields**:
-
-- `in`: Integration Name
-- `it`: Integration Type (SIEM)
-- `iv`: Integration Version
-- `vn`: Vendor Name
-- `VV`: Vendor Version
-
 ## Additional Resources
 
 For more information about CyberArk Identity Security Platform integration, refer to the official CyberArk documentation:
@@ -331,57 +152,3 @@ For more information about CyberArk Identity Security Platform integration, refe
 - [Integrate Audit with third-party SIEM applications](https://docs.cyberark.com/identity/latest/en/Content/Integrations/SIEM/SIEM-intro.htm)
 - [SIEM Integration API](https://docs.cyberark.com/identity/latest/en/Content/Developer/SIEM-API.htm)
 - [Integrate the CyberArk Identity client credentials flow](https://docs.cyberark.com/identity/latest/en/Content/Developer/OAuth-client-creds.htm)
-
-## Best Practices
-
-1. **Use Exact URLs**: Copy the exact URLs from your CyberArk environment:
-   - Identity URL from your Identity tenant
-   - Audit Server URL from the SIEM integration
-2. **Verify Both URLs**: Ensure both Identity URL and Audit Server URL are on their correct domains (different from each other).
-3. **Secure Credential Storage**: Ensure that authentication credentials (Client Secret and API Key) are stored securely.
-4. **Configure Appropriate Limits**: Set the maximum number of events per fetch based on your organization's event volume (default: 10000).
-5. **Monitor Token Usage**: The integration automatically manages token lifecycle, but monitor for any authentication errors.
-6. **Test Before Production**: Use the `cyberark-isp-get-events` command with `should_push_events=false` to test event retrieval before enabling automatic collection.
-
-## Troubleshooting
-
-### 401 Unauthorized Error
-
-If you receive a 401 Unauthorized error, verify:
-
-1. **Client Credentials are correct**: Ensure your Client ID and Client Secret match the service user created in Identity Administration.
-2. **Service User has OAuth confidential client enabled**: Verify the service user is configured as an OAuth confidential client.
-3. **Web App ID is correct**: Ensure the Web App ID matches the Application ID configured in the OAuth2 Server web app.
-4. **Scope is configured**: Verify the scope `isp.audit.events:read` is added to the OAuth2 Server web app.
-
-### 403 Forbidden Error
-
-If you receive a 403 error:
-
-1. **Check Service User Permissions**: Ensure the service user has Grant, View, Run, and Automatically Deploy permissions on the OAuth2 Server web app.
-2. **Verify API Key**: Ensure the API Key is correct and copied from the SIEM integration in the Administration space.
-
-### 404 Not Found Error
-
-If you receive a 404 error:
-
-1. **Check URLs**: Verify both the Identity URL and Audit Server URL are correct and accessible.
-2. **Verify SIEM Integration**: Ensure the SIEM integration is created and active in the Administration space.
-3. **Check Web App ID**: Verify the Web App ID exists and is correctly configured.
-
-### No Events Retrieved
-
-If no events are being retrieved:
-
-1. **Check Date Range**: Ensure the date range includes periods with audit activity.
-2. **Verify Event Generation**: Check that audit events are being generated in your CyberArk environment.
-3. **Review Filters**: Ensure no filters are preventing event retrieval.
-4. **Check Limits**: Verify the maximum events limit is appropriate for your environment.
-
-### Duplicate Events
-
-If you're seeing duplicate events:
-
-1. **Avoid Manual Commands**: Don't use `cyberark-isp-get-events` with `should_push_events=true` while automatic fetch is enabled.
-2. **Check Multiple Instances**: Ensure you don't have multiple integration instances fetching the same events.
-3. **Review Deduplication**: The integration uses UUID-based deduplication; verify events have unique UUIDs.
