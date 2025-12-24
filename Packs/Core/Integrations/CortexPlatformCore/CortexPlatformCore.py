@@ -2265,7 +2265,7 @@ def build_exception_rules_filter(args: dict) -> FilterBuilder:
         args.get("end_modification_time"),
     )
     if end_modification_time_str and not start_modification_time_str:
-        start_modification_time_str = "0"
+        start_modification_time_str = "1970-01-01" # The standard "beginning of time" for most systems - beginning_of_unix = datetime.fromtimestamp(0)
     filter_builder.add_time_range_field("MODIFICATION_TIME", start_modification_time_str, end_modification_time_str)
     filter_builder.add_field("STATUS", FilterType.EQ, argToList(args.get("status")))
     filter_builder.add_field("SUBTYPE", FilterType.EQ, argToList(args.get("rule_type")))
