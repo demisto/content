@@ -428,8 +428,10 @@ class IncidentType(Enum):
     IOA_EVENTS = "ioa_events"
     ON_DEMAND = "ods"
     OFP = "ofp"
-    NGSIEM = ":ngsiem:"
     THIRD_PARTY = ":thirdparty:"
+    NGSIEM_DETECTION = ":ngsiem:"
+    NGSIEM_INCIDENT = ":xdr"
+    NGSIEM_AUTOMATED_LEAD = ":automated-lead:"
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get("mirror_direction"))
@@ -2599,7 +2601,7 @@ def get_remote_data_command(args: dict[str, Any]):
         elif incident_type in (
             IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
             IncidentType.ON_DEMAND,
-            IncidentType.NGSIEM,
+            IncidentType.NGSIEM_DETECTION,
             IncidentType.THIRD_PARTY,
         ):
             mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(remote_incident_id)
@@ -2639,8 +2641,8 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION
     if IncidentType.ON_DEMAND.value in remote_incident_id:
         return IncidentType.ON_DEMAND
-    if IncidentType.NGSIEM.value in remote_incident_id:
-        return IncidentType.NGSIEM
+    if IncidentType.NGSIEM_DETECTION.value in remote_incident_id:
+        return IncidentType.NGSIEM_DETECTION
     if IncidentType.THIRD_PARTY.value in remote_incident_id:
         return IncidentType.THIRD_PARTY
     demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
@@ -2912,7 +2914,7 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
 
             elif incident_type in (
                 IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
-                IncidentType.NGSIEM,
+                IncidentType.NGSIEM_DETECTION,
                 IncidentType.THIRD_PARTY,
             ):
                 result = update_remote_for_multiple_detection_types(delta, parsed_args.inc_status, remote_incident_id)
@@ -3845,7 +3847,7 @@ def fetch_detections_by_product_type(
         detections = (
             truncate_long_time_str(detections, "occurred")
             if product_type
-            in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM, IncidentType.THIRD_PARTY}
+            in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM_DETECTION, IncidentType.THIRD_PARTY}
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(
