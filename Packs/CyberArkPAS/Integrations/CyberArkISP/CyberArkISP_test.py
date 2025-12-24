@@ -786,35 +786,50 @@ def test_fetch_events_with_pagination_date_parameters(mocker, client, date_from,
                 {"uuid": "2", "timestamp": 1704153600000, "action": "login", "_time": 1704153600000},
             ],
         ),
-        (
-            [
-                {"uuid": "1", "user": "test@example.com"},
-                {"uuid": "2", "action": "login"},
-            ],
-            [
-                {"uuid": "1", "user": "test@example.com"},
-                {"uuid": "2", "action": "login"},
-            ],
-        ),
         ([], []),
-        (
-            [
-                {"uuid": "1", "timestamp": 1704067200000},
-                {"uuid": "2", "timestamp": 1704153600000},
-                {"uuid": "3"},
-            ],
-            [
-                {"uuid": "1", "timestamp": 1704067200000, "_time": 1704067200000},
-                {"uuid": "2", "timestamp": 1704153600000, "_time": 1704153600000},
-                {"uuid": "3"},
-            ],
-        ),
     ],
 )
 def test_add_time_to_events(input_events, expected_results):
     """Tests add_time_to_events copies timestamp field to _time."""
     add_time_to_events(input_events)
     assert input_events == expected_results
+
+
+def test_add_time_to_events_without_timestamp():
+    """Tests add_time_to_events adds current time for events without timestamp."""
+    events: list[dict[str, Any]] = [
+        {"uuid": "1", "user": "test@example.com"},
+        {"uuid": "2", "action": "login"},
+    ]
+
+    add_time_to_events(events)
+
+    # Verify _time was added to both events
+    assert "_time" in events[0]
+    assert "_time" in events[1]
+    # Verify _time is a reasonable timestamp (within last minute)
+    current_time_ms = int(time.time() * 1000)
+    assert abs(int(events[0]["_time"]) - current_time_ms) < 60000  # Within 1 minute
+    assert abs(int(events[1]["_time"]) - current_time_ms) < 60000
+
+
+def test_add_time_to_events_mixed_timestamps():
+    """Tests add_time_to_events handles mix of events with and without timestamps."""
+    events: list[dict[str, Any]] = [
+        {"uuid": "1", "timestamp": 1704067200000},
+        {"uuid": "2", "timestamp": 1704153600000},
+        {"uuid": "3"},
+    ]
+
+    add_time_to_events(events)
+
+    # Events with timestamp should use it
+    assert events[0]["_time"] == 1704067200000
+    assert events[1]["_time"] == 1704153600000
+    # Event without timestamp should get current time
+    assert "_time" in events[2]
+    current_time_ms = int(time.time() * 1000)
+    assert abs(int(events[2]["_time"]) - current_time_ms) < 60000  # Within 1 minute
 
 
 def test_add_time_to_events_preserves_all_fields():
@@ -1139,7 +1154,11 @@ def test_fetch_events_command_with_deduplication(mocker, client):
 
 
 def test_fetch_events_command_all_duplicates(mocker, client):
-    """Tests fetch_events_command when all fetched events are duplicates."""
+    """Tests fetch_events_command when all fetched events are duplicates.
+
+    Even when all events are duplicates, we still update the last run timestamp
+    to prevent infinite loops of fetching the same duplicates.
+    """
     mock_events = [
         {"uuid": "1", "timestamp": 1704067200000},
         {"uuid": "2", "timestamp": 1704067200000},
@@ -1156,9 +1175,14 @@ def test_fetch_events_command_all_duplicates(mocker, client):
 
     fetch_events_command(client)
 
+    # No events sent to XSIAM (all duplicates)
     CyberArkISP.add_time_to_events.assert_not_called()  # type: ignore[attr-defined]
     CyberArkISP.send_events_to_xsiam.assert_not_called()  # type: ignore[attr-defined]
-    demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
+
+    # But we still update last run to advance the high-water mark
+    demisto.setLastRun.assert_called_once_with(  # type: ignore[attr-defined]
+        {"last_fetch": "2024-01-01 00:00:00", "last_fetched_uuids": ["1", "2"]}
+    )
 
 
 def test_fetch_events_command_no_events(mocker, client):
