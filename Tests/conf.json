@@ -2073,6 +2073,24 @@
             "instance_names": "use_python_requests_handler"
         },
         {
+            "integrations": "SplunkPy v2",
+            "playbookID": "SplunkPy KV commands",
+            "memory_threshold": 200,
+            "instance_names": "splunkpy_v2_regular"
+        },
+        {
+            "integrations": "SplunkPy v2",
+            "playbookID": "SplunkPy-Test-V2",
+            "memory_threshold": 200,
+            "instance_names": "splunkpy_v2_regular"
+        },
+        {
+            "integrations": "SplunkPy v2",
+            "playbookID": "SplunkPy parse-raw - Test",
+            "memory_threshold": 200,
+            "instance_names": "splunkpy_v2_regular"
+        },
+        {
             "integrations": "McAfee NSM",
             "playbookID": "McAfeeNSMTest",
             "timeout": 400
