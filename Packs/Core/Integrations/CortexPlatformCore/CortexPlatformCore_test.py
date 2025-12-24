@@ -7033,7 +7033,7 @@ def test_get_webapp_data_single_page(mocker: MockerFixture):
     mock_client.get_webapp_data.return_value = {"reply": {"DATA": [{"id": "1"}, {"id": "2"}]}}
 
     filter_builder = FilterBuilder()
-    records, raw_responses = get_webapp_data(
+    records, raw_responses, filter_count = get_webapp_data(
         client=mock_client,
         table_name="TEST_TABLE",
         filter_dict=filter_builder,
@@ -7071,7 +7071,7 @@ def test_get_webapp_data_retrieve_all_multiple_pages(mocker: MockerFixture):
     ]
 
     filter_builder = FilterBuilder()
-    records, raw_responses = get_webapp_data(
+    records, raw_responses, filter_count= get_webapp_data(
         client=mock_client,
         table_name="TEST_TABLE",
         filter_dict=filter_builder,
@@ -7103,7 +7103,7 @@ def test_get_webapp_data_with_offset(mocker: MockerFixture):
     mock_client.get_webapp_data.return_value = {"reply": {"DATA": [{"id": "51"}, {"id": "52"}]}}
 
     filter_builder = FilterBuilder()
-    records, raw_responses = get_webapp_data(
+    records, raw_responses, filter_count = get_webapp_data(
         client=mock_client,
         table_name="TEST_TABLE",
         filter_dict=filter_builder,
@@ -7161,9 +7161,9 @@ def test_list_exception_rules_command_single_type(mocker: MockerFixture):
 
     result = list_exception_rules_command(mock_client, args)
 
-    assert len(result.outputs) == 1
-    assert result.outputs[0]["ID"] == "rule_1"
-    assert "table" in result.readable_output
+    assert len(result[0].outputs) == 1
+    assert result[0].outputs[0]["ID"] == "rule_1"
+    assert "table" in result[0].readable_output
 
 
 def test_list_exception_rules_command_all_types(mocker: MockerFixture):
@@ -7221,7 +7221,7 @@ def test_list_exception_rules_command_all_types(mocker: MockerFixture):
 
     result = list_exception_rules_command(mock_client, args)
 
-    assert len(result.outputs) == 2
+    assert len(result[0].outputs) == 2
     assert mock_client.get_webapp_data.call_count == 2
 
 
@@ -7282,7 +7282,7 @@ def test_list_exception_rules_command_retrieve_all(mocker: MockerFixture):
 
     result = list_exception_rules_command(mock_client, args)
 
-    assert len(result.outputs) == 120
+    assert len(result[0].outputs) == 120
 
 
 def test_list_exception_rules_command_no_data(mocker: MockerFixture):
@@ -7307,7 +7307,7 @@ def test_list_exception_rules_command_no_data(mocker: MockerFixture):
 
     result = list_exception_rules_command(mock_client, args)
 
-    assert len(result.outputs) == 0
+    assert len(result[0].outputs) == 0
     assert "No data found" in result.readable_output
 
 
