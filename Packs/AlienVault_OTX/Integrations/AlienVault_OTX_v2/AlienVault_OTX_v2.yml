@@ -98,6 +98,8 @@ script:
   - arguments:
     - name: ip
     name: ba129-command-invalid
+    description: none
+    outputs: []
   - arguments:
     - default: true
       description: The IP address to query.

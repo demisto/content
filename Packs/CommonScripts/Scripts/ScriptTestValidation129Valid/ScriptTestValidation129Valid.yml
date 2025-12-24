@@ -7,9 +7,9 @@ args:
   secret: false
 - name: username
 - name: ip_list
-- compliantpolicies:
-  - IP Blockage
-  - Soft User Remediation
+compliantpolicies:
+- IP Blockage
+- Soft User Remediation
 comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
 commonfields:
   id: Y
