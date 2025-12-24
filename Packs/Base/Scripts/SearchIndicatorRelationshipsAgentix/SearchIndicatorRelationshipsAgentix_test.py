@@ -337,3 +337,50 @@ def test_filter_relationships_by_entity_types_domain_relates_to(mocker):
     assert result[0]["Relationship"] == "relates-to"
     assert result[0]["EntityAType"] == "Domain"
     assert result[0]["EntityBType"] == "Domain"
+
+
+def test_filter_relationships_by_entity_types_domain_not_matching_type(mocker):
+    """
+    Given: A relationship exists where google.com relates to 8.8.8.8 (IP)
+    When: Calling filter_relationships_by_entity_types function with google.com and DOMAIN type
+    Then: No relationships should be returned
+    """
+    from SearchIndicatorRelationshipsAgentix import filter_relationships_by_entity_types
+
+    mock_execute_command = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.executeCommand")
+    mock_get = mocker.patch("SearchIndicatorRelationshipsAgentix.demisto.get")
+
+    mock_execute_command.return_value = [
+        {
+            "Contents": {
+                "Relationships": [
+                    {
+                        "EntityAType": "Domain",
+                        "EntityBType": "IP",
+                        "EntityA": "google.com",
+                        "EntityB": "8.8.8.8",
+                        "Relationship": "relates-to",
+                        "id": "rel1",
+                    }
+                ]
+            }
+        }
+    ]
+
+    mock_get.return_value = {
+        "Relationships": [
+            {
+                "EntityAType": "Domain",
+                "EntityBType": "IP",
+                "EntityA": "google.com",
+                "EntityB": "8.8.8.8",
+                "Relationship": "relates-to",
+                "id": "rel1",
+            }
+        ],
+        "RelationshipsPagination": [],
+    }
+
+    result = filter_relationships_by_entity_types(["google.com"], ["Domain"], ["relates-to"], 10)
+
+    assert len(result) == 0
