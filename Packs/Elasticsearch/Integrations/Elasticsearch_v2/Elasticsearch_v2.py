@@ -217,7 +217,7 @@ def get_elastic_token():
         if not USERNAME or not PASSWORD:
             demisto.debug("get_elastic_token - username or password fields are missing.")
             raise DemistoException("get_elastic_token - username or password fields are missing.")
-        
+
         # 2. Token exists but expired, and refresh token is valid
         if refresh_token and not is_access_token_expired(refresh_token_expires_in):
             demisto.debug(

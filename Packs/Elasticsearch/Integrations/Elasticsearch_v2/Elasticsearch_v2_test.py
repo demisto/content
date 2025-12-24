@@ -1277,7 +1277,7 @@ class TestGetElasticToken:
 
         mock_get, mock_set = mock_integration_context
         future_time = (datetime.now() + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        
+
         mock_get.return_value = {
             "access_token": "existing_valid_token",
             "access_token_expires_in": future_time,
@@ -1310,7 +1310,7 @@ class TestGetElasticToken:
         mock_get, mock_set = mock_integration_context
         past_time = (datetime.now() - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
         future_time = (datetime.now() + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        
+
         mock_get.return_value = {
             "access_token": "expired_token",
             "access_token_expires_in": past_time,
@@ -1421,7 +1421,7 @@ class TestGetElasticToken:
         mock_get, mock_set = mock_integration_context
         past_time = (datetime.now() - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
         future_time = (datetime.now() + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        
+
         mock_get.return_value = {
             "access_token": "expired_token",
             "access_token_expires_in": past_time,
