@@ -1257,19 +1257,12 @@ def get_integration_context(sync=True, with_version=False):
     :rtype: ``dict``
     :return: The integration context.
     """
-    demisto.info("custom get_integration_context")
     if is_versioned_context_available():
         integration_context = demisto.getIntegrationContextVersioned(sync)
 
         if with_version:
             return integration_context
         else:
-            #TODO: remove
-            import random
-            r = random.randint(1, 5)
-            if r == 5:
-                integration_context = ["test1", "test2"]
-
             if isinstance(integration_context,list):
                 demisto.error(f"QRadar integration context is a list: {integration_context=}")
             return integration_context.get('context', {})
