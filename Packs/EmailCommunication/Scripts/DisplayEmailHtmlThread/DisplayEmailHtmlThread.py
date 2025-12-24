@@ -39,8 +39,21 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, em
 
     return single_reply
 
+def rewrite_img_src(html: str, account_name: str) -> str:
+    """
+    Replace:
+      src="xsoar/entry/download/<id>"
+    With:
+      src="xsoar/<account_name>/entry/download/<id>"
+    """
 
-def html_cleanup(full_thread_html):
+    pattern = r'src="xsoar/entry/download/([^"]+)"'
+    replacement = rf'src="xsoar/{account_name}/entry/download/\1"'
+
+    return re.sub(pattern, replacement, html)
+
+
+def html_cleanup(full_thread_html, account_name):
     """
         Moves various HTML tags so the final output is a single HTML document
     Args:
@@ -56,31 +69,11 @@ def html_cleanup(full_thread_html):
     # Place needed HTML tags in their appropriate locations
     final_html_result = f"<!DOCTYPE html>\n<html>\n<body>\n{full_thread_html}\n</body>\n</html>"
 
+    if account_name:
+        final_html_result = rewrite_img_src(final_html_result, account_name)
+
     return final_html_result
 
-def replace_img_with_object(html: str, account_name: str) -> str:
-    pattern = re.compile(
-        r'<img\b([^>]*?)\bsrc="([^"]+)"([^>]*)\/?>',
-        re.IGNORECASE
-    )
-
-    def replacer(match):
-        before_src = match.group(1)
-        src = match.group(2)
-        after_src = match.group(3)
-
-        new_img_src = src.replace(
-            "xsoar/entry/",
-            f"xsoar/{account_name}/entry/"
-        )
-
-        return (
-            f'<object data="{src}" type="image/jpg">'
-            f'<img{before_src}src="{new_img_src}"{after_src}>'
-            f'</object>'
-        )
-
-    return pattern.sub(replacer, html)
 
 def remove_color_from_html_text(html_message):
     """Remove the color from the html text, so the color will be determined by the front-end.
@@ -162,11 +155,7 @@ def main():
             )
             full_thread_html += email_reply
 
-        final_html_result = html_cleanup(full_thread_html)
-
-        if account_name:
-            final_html_result = replace_img_with_object(final_html_result, account_name)
-
+        final_html_result = html_cleanup(full_thread_html, account_name)
         return_results({"ContentsFormat": EntryFormat.HTML, "Type": EntryType.NOTE, "Contents": final_html_result})
     else:
         return_error(f"An email thread of {thread_number} was not found. Please make sure this thread number is correct.")
