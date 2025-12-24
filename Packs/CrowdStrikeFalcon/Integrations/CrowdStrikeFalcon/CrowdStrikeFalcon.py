@@ -430,7 +430,6 @@ class IncidentType(Enum):
     OFP = "ofp"
     THIRD_PARTY = ":thirdparty:"
     NGSIEM_DETECTION = ":ngsiem:"
-    NGSIEM_INCIDENT = ":xdr"
     NGSIEM_AUTOMATED_LEAD = ":automated-lead:"
 
 
@@ -2601,8 +2600,9 @@ def get_remote_data_command(args: dict[str, Any]):
         elif incident_type in (
             IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
             IncidentType.ON_DEMAND,
-            IncidentType.NGSIEM_DETECTION,
             IncidentType.THIRD_PARTY,
+            IncidentType.NGSIEM_DETECTION,
+            IncidentType.NGSIEM_AUTOMATED_LEAD,
         ):
             mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(remote_incident_id)
             if updated_object:
@@ -2659,7 +2659,7 @@ def get_remote_incident_data(remote_incident_id: str):
     mirrored_data = mirrored_data_list[0]
 
     if "status" in mirrored_data:
-        mirrored_data["status"] = STATUS_NUM_TO_TEXT.get(int(str(mirrored_data.get("status"))))
+        mirrored_data["status"] = STATUS_NUM_TO_TEXT.get(int(mirrored_data.get("status")))
 
     updated_object: dict[str, Any] = {"incident_type": "incident"}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
@@ -2717,27 +2717,35 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
         updated_object = {"incident_type": IDP_DETECTION}
         detection_type = "IDP"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS_IDP
-    if "mobile" in mirrored_data["product"]:
+    elif "mobile" in mirrored_data["product"]:
         updated_object = {"incident_type": MOBILE_DETECTION}
         detection_type = "Mobile"
         mirroring_fields.append("mobile_detection_id")
-    if "epp" in mirrored_data["product"]:
+    elif "epp" in mirrored_data["product"]:
         updated_object = {"incident_type": ENDPOINT_DETECTION}
         detection_type = "Detection"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    if "ofp" in mirrored_data["type"]:
+    elif "ofp" in mirrored_data["type"]:
         updated_object = {"incident_type": OFP_DETECTION}
         detection_type = "ofp"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    if "ods" in mirrored_data["type"]:
+    elif "ods" in mirrored_data["type"]:
         updated_object = {"incident_type": ON_DEMAND_SCANS_DETECTION}
         detection_type = "ods"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    if "ngsiem" in mirrored_data["product"]:
+    elif "ngsiem" in mirrored_data["product"]:
         updated_object = {"incident_type": NGSIEM_DETECTION}
         detection_type = "ngsiem"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    if "thirdparty" in mirrored_data["product"]:
+    elif "xdr" in mirrored_data["product"]:
+        updated_object = {"incident_type": NGSIEM_INCIDENT}
+        detection_type = "xdr"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    elif "automated-lead" in mirrored_data["product"]:
+        updated_object = {"incident_type": NGSIEM_AUTOMATED_LEAD}
+        detection_type = "automated-lead"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    elif "thirdparty" in mirrored_data["product"]:
         updated_object = {"incident_type": THIRD_PARTY_DETECTION}
         detection_type = "thirdparty"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
@@ -2871,6 +2879,14 @@ def get_modified_remote_data_command(args: dict[str, Any]):
     if NGSIEM_DETECTION_FETCH_TYPE in fetch_types:
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'ngsiem'"
+        ).get("resources", [])
+    if NGSIEM_INCIDENT_FETCH_TYPE in fetch_types:
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'xdr'"
+        ).get("resources", [])
+    if NGSIEM_AUTOMATED_LEADS_FETCH_TYPE in fetch_types:
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'automated-lead'"
         ).get("resources", [])
     if THIRD_PARTY_DETECTION_FETCH_TYPE in fetch_types:
         raw_ids += get_detections_ids(
