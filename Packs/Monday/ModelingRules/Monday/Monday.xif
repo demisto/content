@@ -33,6 +33,6 @@ Audit Logs: https://developer.monday.com/api-reference/reference/audit-logs
     xdm.target.resource.value = extract_resource_value,
     xdm.target.resource_before.value = extract_resource_previous_value,
     xdm.target.file.filename = activity_metadata -> asset_file_name,
-    xdm.event.type = event_type
+    xdm.event.type = event_type,
     xdm.target.resource.id = coalesce(all_resources_id,asset_and_board_id,asset_and_holder_id,board_and_holder_id,extract_resource_asset_id, extract_resource_board_id, extract_resource_asset_holder_id);
     
