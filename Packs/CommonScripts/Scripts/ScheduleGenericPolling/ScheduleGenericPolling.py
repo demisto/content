@@ -128,7 +128,7 @@ def main():  # pragma: no cover
     demisto.debug(f"[ScheduleGenericPolling] Starting dt path validation. args={args}")
     if not demisto.dt(demisto.context(), dt):
         demisto.debug(
-            f"[ScheduleGenericPolling] dt evaluation returned empty/null. Checking if dt path exists without condition."
+            "[ScheduleGenericPolling] dt evaluation returned empty/null. Checking if dt path exists without condition."
         )
         if not demisto.dt(demisto.context(), re.sub(r"\(.*\)", "", dt)):
             demisto.debug(f"[ScheduleGenericPolling] ERROR: dt path not found in context. dt='{dt}'")
@@ -156,7 +156,7 @@ def main():  # pragma: no cover
 
     schedule_command_args = {"command": command_string, "cron": f"*/{interval} * * * *", "times": 1}
     if should_run_with_guid():
-        demisto.debug(f"[ScheduleGenericPolling] Entering GUID flow (XSOAR)")
+        demisto.debug("[ScheduleGenericPolling] Entering GUID flow (XSOAR)")
         # Generate a GUID for the scheduled entry and add it to the command.
         entryGuid = str(uuid.uuid4())
         command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{calculate_end_time(timeout)}"'
