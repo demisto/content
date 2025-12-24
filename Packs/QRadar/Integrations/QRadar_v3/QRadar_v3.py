@@ -1257,12 +1257,19 @@ def get_integration_context(sync=True, with_version=False):
     :rtype: ``dict``
     :return: The integration context.
     """
+    demisto.info("custom get_integration_context")
     if is_versioned_context_available():
         integration_context = demisto.getIntegrationContextVersioned(sync)
 
         if with_version:
             return integration_context
         else:
+            #TODO: remove
+            import random
+            r = random.randint(1, 5)
+            if r == 5:
+                integration_context = ["test1", "test2"]
+
             if isinstance(integration_context,list):
                 demisto.error(f"QRadar integration context is a list: {integration_context=}")
             return integration_context.get('context', {})
@@ -1276,13 +1283,13 @@ def qradar_get_integration_context():
         context_data = get_integration_context()
     except AttributeError as e:
         demisto.error(f"Failed to get QRadar integration context due to its not a dict: {str(e)}")
-        sys.exit(0)
+        sys.exit(1)
 
     if context_data and context_data.get(LAST_FETCH_KEY) and LAST_FETCHED_ID:
         ctx_last_fetch_id = int(context_data[LAST_FETCH_KEY])
-        if ctx_last_fetch_id <int(LAST_FETCHED_ID):
-            demisto.error(f" QRadar integration context {ctx_last_fetch_id=} {LAST_FETCHED_ID=}")
-            sys.exit(0)
+        if ctx_last_fetch_id < int(LAST_FETCHED_ID):
+            demisto.error(f"invalid QRadar integration context {ctx_last_fetch_id=} {LAST_FETCHED_ID=}")
+            sys.exit(1)
 
     return context_data
 
@@ -4405,7 +4412,6 @@ def add_modified_remote_offenses(
     Args:
         client: Qradar client
         context_data: The context data to update.
-        version: The version of the context data to update.
         mirror_options: The mirror options for the integration.
         new_modified_records_ids: The new modified offenses ids.
         new_last_update_modified: The current last mirror update modified.
