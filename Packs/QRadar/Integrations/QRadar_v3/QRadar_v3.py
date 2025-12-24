@@ -1292,9 +1292,9 @@ def qradar_set_integration_context(context_data):
 
     set_integration_context(context_data)
 
-    last_fetch_key = context_data.get(LAST_FETCH_KEY)
-    if last_fetch_key:
-        LAST_FETCHED_ID = last_fetch_key
+    last_fetch_id = context_data.get(LAST_FETCH_KEY)
+    if last_fetch_id:
+        LAST_FETCHED_ID = last_fetch_id
         demisto.info(f"LAST_FETCHED_ID variable set to {LAST_FETCHED_ID}")
     else:
         demisto.info("LAST_FETCH_KEY not found in context")
