@@ -6702,7 +6702,7 @@ def test_normalize_key_without_prefix():
 
 def test_core_list_compliance_standards_command_with_empty_args(mocker):
     """Test core_list_compliance_standards_command with empty arguments.
-    
+
     Given: A mock client with empty standards response and empty args
     When: core_list_compliance_standards_command is called
     Then: Returns two results with empty outputs and zero counts
@@ -6710,25 +6710,21 @@ def test_core_list_compliance_standards_command_with_empty_args(mocker):
     from CortexPlatformCore import core_list_compliance_standards_command
 
     mock_client = mocker.Mock()
-    mock_response = {
-        "reply": {
-            "standards": [],
-            "result_count": 0
-        }
-    }
+    mock_response = {"reply": {"standards": [], "result_count": 0}}
     mock_client.list_compliance_standards_command.return_value = mock_response
-    mocker.patch('CortexPlatformCore.list_compliance_standards_payload', return_value={})
-    
+    mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+
     args: dict[str, str] = {}
     result = core_list_compliance_standards_command(mock_client, args)
-    
+
     assert len(result) == 2
     assert result[0].outputs == []
     assert result[1].outputs == {"filter_count": 0, "returned_count": 0}
 
+
 def test_core_list_compliance_standards_command_with_labels(mocker):
     """Test core_list_compliance_standards_command with labels.
-    
+
     Given: A mock client with standard response and args containing labels
     When: core_list_compliance_standards_command is called with labels "Alibaba Cloud,On Prem"
     Then: Returns results with processed labels and correct controls count
@@ -6739,36 +6735,26 @@ def test_core_list_compliance_standards_command_with_labels(mocker):
     mock_response = {
         "reply": {
             "standards": [
-                {
-                    "id": "std1",
-                    "name": "Test Standard",
-                    "controls_ids": ["ctrl1", "ctrl2"],
-                    "assessments_profiles_count": 5
-                }
+                {"id": "std1", "name": "Test Standard", "controls_ids": ["ctrl1", "ctrl2"], "assessments_profiles_count": 5}
             ],
-            "result_count": 1
+            "result_count": 1,
         }
     }
     mock_client.list_compliance_standards_command.return_value = mock_response
-    mock_payload = mocker.patch('CortexPlatformCore.list_compliance_standards_payload')
-    
+    mock_payload = mocker.patch("CortexPlatformCore.list_compliance_standards_payload")
+
     # Test with multiple labels including Alibaba Cloud and On Prem
     args: dict[str, str] = {"labels": "Alibaba Cloud,On Prem"}
     result = core_list_compliance_standards_command(mock_client, args)
-    
-    mock_payload.assert_called_once_with(
-        name="",
-        created_by="",
-        labels=["alibaba_cloud", "on_prem"],
-        page="0",
-        page_size=None
-    )
+
+    mock_payload.assert_called_once_with(name="", created_by="", labels=["alibaba_cloud", "on_prem"], page="0", page_size=None)
     assert len(result) == 2
     assert result[0].outputs[0]["controls_count"] == 2
 
+
 def test_core_list_compliance_standards_command_with_missing_controls_ids(mocker):
     """Test core_list_compliance_standards_command with missing controls_ids.
-    
+
     Given: A mock client with standard response missing controls_ids field
     When: core_list_compliance_standards_command is called
     Then: Returns result with controls_count defaulted to 0
@@ -6777,34 +6763,21 @@ def test_core_list_compliance_standards_command_with_missing_controls_ids(mocker
 
     mock_client = mocker.Mock()
     mock_response = {
-        "reply": {
-            "standards": [
-                {
-                    "id": "std1",
-                    "name": "Test Standard",
-                    "assessments_profiles_count": 3
-                }
-            ],
-            "result_count": 1
-        }
+        "reply": {"standards": [{"id": "std1", "name": "Test Standard", "assessments_profiles_count": 3}], "result_count": 1}
     }
     mock_client.list_compliance_standards_command.return_value = mock_response
-    mocker.patch('CortexPlatformCore.list_compliance_standards_payload', return_value={})
-    
+    mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+
     args: dict[str, str] = {}
     result = core_list_compliance_standards_command(mock_client, args)
-    
-    expected_output = {
-        "id": "std1",
-        "name": "Test Standard",
-        "controls_count": 0,
-        "assessments_profiles_count": 3
-    }
+
+    expected_output = {"id": "std1", "name": "Test Standard", "controls_count": 0, "assessments_profiles_count": 3}
     assert result[0].outputs[0] == expected_output
+
 
 def test_core_list_compliance_standards_command_with_missing_assessments_count(mocker):
     """Test core_list_compliance_standards_command with missing assessments count.
-    
+
     Given: A mock client with standard response missing assessments_profiles_count field
     When: core_list_compliance_standards_command is called
     Then: Returns result with assessments_profiles_count defaulted to 0
@@ -6813,28 +6786,208 @@ def test_core_list_compliance_standards_command_with_missing_assessments_count(m
 
     mock_client = mocker.Mock()
     mock_response = {
-        "reply": {
-            "standards": [
-                {
-                    "id": "std2",
-                    "name": "Another Standard",
-                    "controls_ids": ["ctrl1"]
-                }
-            ],
-            "result_count": 1
-        }
+        "reply": {"standards": [{"id": "std2", "name": "Another Standard", "controls_ids": ["ctrl1"]}], "result_count": 1}
     }
     mock_client.list_compliance_standards_command.return_value = mock_response
-    mocker.patch('CortexPlatformCore.list_compliance_standards_payload', return_value={})
-    
+    mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+
     args: dict[str, str] = {}
     result = core_list_compliance_standards_command(mock_client, args)
-    
-    expected_output = {
-        "id": "std2",
-        "name": "Another Standard",
-        "controls_count": 1,
-        "assessments_profiles_count": 0
-    }
+
+    expected_output = {"id": "std2", "name": "Another Standard", "controls_count": 1, "assessments_profiles_count": 0}
     assert result[0].outputs[0] == expected_output
 
+
+class TestCoreAddAssessmentProfileCommand:
+    def test_core_add_assessment_profile_command_success(self, mocker):
+        """Test successful assessment profile creation
+
+        Given: Mock client with valid standards and asset groups responses
+        When: core_add_assessment_profile_command is called with valid arguments
+        Then: Returns successful result with profile ID
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        # Mock compliance standards response
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        # Mock asset groups response
+        asset_groups_response = {"reply": {"data": [{"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group"}]}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        # Mock add assessment profile response
+        add_profile_response = {"assessment_profile_id": "profile-789"}
+        mock_client.add_assessment_profile.return_value = add_profile_response
+
+        # Mock payload functions
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.create_assessment_profile_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+
+        args = {
+            "profile_name": "Test Profile",
+            "profile_description": "Test Description",
+            "standard_name": "Test Standard",
+            "asset_group_name": "Test Group",
+            "day": "monday",
+            "time": "14:30",
+        }
+
+        result = core_add_assessment_profile_command(mock_client, args)
+
+        assert result.readable_output == "Assessment Profile profile-789 successfully added"
+        assert result.outputs_prefix == "Core.AssessmentProfile"
+        assert result.outputs_key_field == "assessment_profile_id"
+        assert result.outputs == "profile-789"
+
+    def test_core_add_assessment_profile_command_no_compliance_standards(self, mocker):
+        """Test when no compliance standards are found
+
+        Given: Mock client with empty standards response
+        When: core_add_assessment_profile_command is called with nonexistent standard
+        Then: Raises exception indicating no compliance standards found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": []}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("No compliance standards found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Nonexistent Standard", "asset_group_name": "Test Group"}
+
+        with pytest.raises(Exception, match="No compliance standards found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_multiple_compliance_standards(self, mocker):
+        """Test when multiple compliance standards match
+
+        Given: Mock client with multiple standards that match the search criteria
+        When: core_add_assessment_profile_command is called with ambiguous standard name
+        Then: Raises exception indicating multiple standards found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {
+            "reply": {"standards": [{"id": "std-123", "name": "Test Standard 1"}, {"id": "std-456", "name": "Test Standard 2"}]}
+        }
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("Multiple standards found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test", "asset_group_name": "Test Group"}
+
+        with pytest.raises(Exception, match="Multiple standards found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_no_asset_groups(self, mocker):
+        """Test when no asset groups are found
+
+        Given: Mock client with valid standards but empty asset groups response
+        When: core_add_assessment_profile_command is called with nonexistent asset group
+        Then: Raises exception indicating no asset group found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {"reply": {"data": []}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("No asset group found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test Standard", "asset_group_name": "Nonexistent Group"}
+
+        with pytest.raises(Exception, match="No asset group found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_multiple_asset_groups(self, mocker):
+        """Test when multiple asset groups match
+
+        Given: Mock client with multiple asset groups that match the search criteria
+        When: core_add_assessment_profile_command is called with ambiguous asset group name
+        Then: Raises exception indicating multiple asset groups found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {
+            "reply": {
+                "data": [
+                    {"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group 1"},
+                    {"XDM.ASSET_GROUP.ID": "group-789", "XDM.ASSET_GROUP.NAME": "Test Group 2"},
+                ]
+            }
+        }
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("Multiple asset groups found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test Standard", "asset_group_name": "Test"}
+
+        with pytest.raises(Exception, match="Multiple asset groups found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_default_values(self, mocker):
+        """Test with default day and time values
+
+        Given: Mock client with valid responses and arguments without day/time specified
+        When: core_add_assessment_profile_command is called with minimal arguments
+        Then: Uses default values for day (sunday) and time (12:00) and returns successful result
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {"reply": {"data": [{"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group"}]}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        add_profile_response = {"assessment_profile_id": "profile-789"}
+        mock_client.add_assessment_profile.return_value = add_profile_response
+
+        mock_create_payload = mocker.patch("CortexPlatformCore.create_assessment_profile_payload", return_value={})
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+
+        args = {
+            "profile_name": "Test Profile",
+            "profile_description": "Test Description",
+            "standard_name": "Test Standard",
+            "asset_group_name": "Test Group",
+        }
+
+        result = core_add_assessment_profile_command(mock_client, args)
+
+        mock_create_payload.assert_called_with(
+            name="Test Profile",
+            description="Test Description",
+            standard_id="std-123",
+            asset_group_id="group-456",
+            day="sunday",
+            time="12:00",
+            report_type="ALL",
+        )
+        assert result.outputs == "profile-789"

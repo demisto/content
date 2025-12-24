@@ -2799,6 +2799,7 @@ script:
         defaultvalue: "12:00"
       name: core-add-assessment-profile
       description: Create new assessment profile.
+      hidden: true
       outputs:
       - contextPath: Core.AssessmentProfile.assessment_profile_id
         description: The unique identifier of the newly created assessment profile.
@@ -2833,6 +2834,7 @@ script:
           - "Openshift"
       name: core-list-compliance-standards
       description: Create new assessment profile.
+      hidden: true
       outputs:
       - contextPath: Core.ComplianceStandards.id
         description: The unique identifier of the standard.

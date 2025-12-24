@@ -18,15 +18,7 @@ MAX_GET_ENDPOINTS_LIMIT = 100
 MAX_COMPLIANCE_STANDARDS = 100
 AGENTS_TABLE = "AGENTS_TABLE"
 
-DAY_MAP = {
-    "sunday": 0,
-    "monday": 1,
-    "tuesday": 2,
-    "wednesday": 3,
-    "thursday": 4,
-    "friday": 5,
-    "saturday": 6
-}
+DAY_MAP = {"sunday": 0, "monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6}
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -900,7 +892,7 @@ class Client(CoreClient):
             },
             json_data=request_data,
         )
-    
+
     def add_assessment_profile(self, profile_payload: dict) -> dict:
         """
         Add a new assessment profile to Cortex XDR.
@@ -916,7 +908,7 @@ class Client(CoreClient):
             url_suffix="/compliance/add_assessment_profile",
             json_data=profile_payload,
         )
-        
+
     def list_compliance_standards_command(self, payload: dict) -> dict:
         """
         List compliance standards from Cortex XDR.
@@ -932,7 +924,7 @@ class Client(CoreClient):
             url_suffix="/compliance/get_standards",
             json_data=payload,
         )
-                
+
     def get_assessment_profile_results(self, payload: dict) -> dict:
         """
         Get assessment profile results from Cortex XDR.
@@ -948,9 +940,6 @@ class Client(CoreClient):
             url_suffix="/compliance/get_assessment_results",
             json_data=payload,
         )
-
-        
-        
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -3147,10 +3136,11 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
         raw_response=data,
     )
 
+
 def parse_frequency(day: str, time: str) -> str:
     """
     Convert day and time to cron-style frequency string
-    
+
     Cron format: Minute Hour Day-of-Month Month Day-of-Week
     Example: "0 12 * * 2" means:
     - Minute: 0 (The task starts at the 0th minute of the hour)
@@ -3158,27 +3148,22 @@ def parse_frequency(day: str, time: str) -> str:
     - Day of Month: * (Every day of the month)
     - Month: * (Every month)
     - Day of Week: 2 (Tuesday)
-    
+
     :param day: Day of month (optional)
     :param time: Time in HH:MM format
     :return: Cron-style frequency string
     """
 
-    minutes, hours = time.split(':')
+    minutes, hours = time.split(":")
     return f"{minutes} {hours} * * {DAY_MAP[day]}"
 
+
 def create_assessment_profile_payload(
-    name: str, 
-    description: str, 
-    standard_id: str, 
-    asset_group_id: str, 
-    day: str, 
-    time: str,
-    report_type: str = "ALL"
+    name: str, description: str, standard_id: str, asset_group_id: str, day: str, time: str, report_type: str = "ALL"
 ) -> Dict[str, Any]:
     """
     Prepare assessment profile payload
-    
+
     :param name: Name of the assessment profile
     :param description: Description of the profile
     :param standard_id: ID of the compliance standard
@@ -3201,22 +3186,23 @@ def create_assessment_profile_payload(
             "description": description,
             "report_targets": [],
             "report_type": report_type,
-            "evaluation_frequency": report_frequency
+            "evaluation_frequency": report_frequency,
         }
     }
-    
+
     return payload
 
+
 def list_compliance_standards_payload(
-    name: str = None, 
-    created_by: str = None, 
+    name: str = None,
+    created_by: str = None,
     labels: list = None,
-    page = None,
-    page_size = None,
+    page=None,
+    page_size=None,
 ) -> Dict[str, Any]:
     """
     Prepare assessment profile payload
-    
+
     :param name: Name of the assessment profile
     :param description: Description of the profile
     :param standard_id: ID of the compliance standard
@@ -3228,47 +3214,33 @@ def list_compliance_standards_payload(
     """
 
     # Construct payload matching the example structure
-    payload : dict = {"request_data": {
-        "filters": []
-        }}
-        
+    payload: dict = {"request_data": {"filters": []}}
+
     # Add name filter if provided
     if name:
-        payload["request_data"]["filters"].append({
-            "field": "name",
-            "operator": "contains",
-            "value": name
-        })
-        
+        payload["request_data"]["filters"].append({"field": "name", "operator": "contains", "value": name})
+
     # Add created_by filter if provided
     if created_by:
-        payload["request_data"]["filters"].append({
-            "field": "created_by",
-            "operator": "in",
-            "value": [created_by]
-        })
-        
+        payload["request_data"]["filters"].append({"field": "created_by", "operator": "in", "value": [created_by]})
+
     # Add labels filter if provided
     if labels:
-        payload["request_data"]["filters"].append({
-            "field": "labels",
-            "operator": "contains",
-            "value": labels[0] if labels else ""
-        })
-        
+        payload["request_data"]["filters"].append(
+            {"field": "labels", "operator": "contains", "value": labels[0] if labels else ""}
+        )
+
     # Add hardcoded sort
-    payload["request_data"]["sort"] = {
-        "field": "insertion_time",
-        "keyword": "desc"
-    }
-        
+    payload["request_data"]["sort"] = {"field": "insertion_time", "keyword": "desc"}
+
     # Add pagination
     payload["request_data"]["pagination"] = {
         "search_from": (page - 1) * page_size if page and page_size else 0,
-        "search_to": (page * page_size) - 1 if page and page_size else 24
+        "search_to": (page * page_size) - 1 if page and page_size else 24,
     }
-        
+
     return payload
+
 
 def core_add_assessment_profile_command(client: Client, args: dict) -> CommandResults:
     """
@@ -3281,10 +3253,10 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
     Returns:
         CommandResults: Contains the result of adding the assessment profile.
     """
-    profile_name = args.get('profile_name', "")
-    profile_description = args.get('profile_description', "")
-    standard_name = args.get('standard_name', "")
-    asset_group_name = args.get('asset_group_name', "")
+    profile_name = args.get("profile_name", "")
+    profile_description = args.get("profile_description", "")
+    standard_name = args.get("standard_name", "")
+    asset_group_name = args.get("asset_group_name", "")
     payload = list_compliance_standards_payload(
         name=standard_name,
     )
@@ -3295,11 +3267,15 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
     if not standards:
         return_error("No compliance standards found matching the provided name.")
     if len(standards) > 1:
-        standard_names = [standard.get('name') for standard in standards]
-        return_error(f"The name you provided matches more than one standard:\n\n{"\n".join(standard_names)}\n\nPlease provide a more specific name.")
-    
+        standard_names = [standard.get("name") for standard in standards]
+        new_line = "\n"
+        return_error(
+            f"The name you provided matches more than one standard:\n\n{new_line.join(standard_names)}\n\n"
+            "Please provide a more specific name."
+        )
+
     standard_id = standards[0].get("id")
-    
+
     filter = FilterBuilder()
     filter.add_field("XDM.ASSET_GROUP.NAME", FilterType.CONTAINS, asset_group_name)
     filter_str = filter.to_dict()
@@ -3309,17 +3285,21 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
 
     if not group_ids:
         return_error("No asset group found matching the provided name.")
-    
+
     if len(group_ids) > 1:
-        return_error(f"The name you provided matches more than one asset group:\n\n{"\n".join(group_names)}\n\nPlease provide a more specific name.")
+        new_line = "\n"
+        return_error(
+            f"The name you provided matches more than one asset group:\n\n{new_line.join(group_names)}\n\n"
+            "Please provide a more specific name."
+        )
     demisto.debug(f"{group_ids=}")
     asset_group_id = group_ids[0]
-    day = args.get('day', 'sunday')
-    time = args.get('time', "12:00")
+    day = args.get("day", "sunday")
+    time = args.get("time", "12:00")
 
     payload = create_assessment_profile_payload(
         name=profile_name,
-        description=profile_description, 
+        description=profile_description,
         standard_id=str(standard_id),
         asset_group_id=asset_group_id,
         day=day,
@@ -3330,50 +3310,44 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
     reply = client.add_assessment_profile(payload)
     assessment_profile_id = reply.get("assessment_profile_id")
     return CommandResults(
-        readable_output= f"Assessment Profile {assessment_profile_id} successfully added",
-        outputs_prefix='Core.AssessmentProfile',
-        outputs_key_field='assessment_profile_id',
+        readable_output=f"Assessment Profile {assessment_profile_id} successfully added",
+        outputs_prefix="Core.AssessmentProfile",
+        outputs_key_field="assessment_profile_id",
         outputs=assessment_profile_id,
-        raw_response=reply
+        raw_response=reply,
     )
 
-def assessment_profile_results_payload(standards):    
+
+def assessment_profile_results_payload(standards):
     labels = set()
     for s in standards:
         standard_labels = s.get("labels", [])
         if isinstance(standard_labels, list):
             labels.update(standard_labels)
 
-    payload = {
-        "request_data": {
-            "filters": []
-        }
-    }
-        
+    payload = {"request_data": {"filters": []}}
+
     for label in labels:
-        payload["request_data"]["filters"].append({
-            "field": "labels",
-            "operator": "contains",
-            "value": label
-        })
-        
+        payload["request_data"]["filters"].append({"field": "labels", "operator": "contains", "value": label})
+
     return payload
-        
+
+
 def core_list_compliance_standards_command(client: Client, args: dict) -> list[CommandResults]:
-    
     name = args.get("name", "")
     created_by = args.get("created_by", "")
     labels = argToList(args.get("labels", ""))
     labels = ["alibaba_cloud" if label == "Alibaba Cloud" else "on_prem" if label == "On Prem" else label for label in labels]
     page = args.get("page", "0")
-    page_size = args.get("page_size", )
+    page_size = args.get(
+        "page_size",
+    )
 
-    
     payload = list_compliance_standards_payload(
         name=name,
-        created_by=created_by, 
+        created_by=created_by,
         labels=labels,
-        page = page,
+        page=page,
         page_size=page_size,
     )
 
@@ -3388,28 +3362,31 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> list[C
             "id": s.get("id"),
             "name": s.get("name"),
             "controls_count": len(s.get("controls_ids", [])),
-            "assessments_profiles_count": s.get("assessments_profiles_count", 0)
+            "assessments_profiles_count": s.get("assessments_profiles_count", 0),
         }
         for s in standards
     ]
-    
+
     command_results = []
-    command_results.append(CommandResults(
-        readable_output= tableToMarkdown("Compliance Standards", filtered_standards),
-        outputs_prefix='Core.ComplianceStandards',
-        outputs_key_field='id',
-        outputs=filtered_standards,
-        raw_response=reply
-    ))
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Compliance Standards", filtered_standards),
+            outputs_prefix="Core.ComplianceStandards",
+            outputs_key_field="id",
+            outputs=filtered_standards,
+            raw_response=reply,
+        )
+    )
     command_results.append(
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ComplianceStandardsMetadata",
             outputs={"filter_count": filtered_count, "returned_count": returned_count},
         )
     )
-   
+
     return command_results
-     
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
