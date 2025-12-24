@@ -56,7 +56,7 @@ def parse_custom_headers(headers_text: str) -> dict[str, str]:
     for line in headers_text.splitlines():
         clean_line = line.strip()
 
-        if not clean_line or ":" not in clean_line:
+        if not clean_line:
             continue
 
         try:
@@ -69,8 +69,7 @@ def parse_custom_headers(headers_text: str) -> dict[str, str]:
                 headers[header_name] = header_value
 
         except ValueError:
-            demisto.debug(f"Skipping malformed header line: {line}")
-            continue
+            raise ValueError(f"Invalid header line format: {line}")
 
     demisto.debug(f"parse_custom_headers={headers}")
     return headers
@@ -569,10 +568,11 @@ class Client:
             else:
                 return "ok"
 
-    async def list_tools(self):
+    async def list_tools(self, default_server_name: str = ""):
         async with self._get_session() as (session, server_name):
             tools = await session.list_tools()
 
+        server_name = default_server_name or server_name
         tool_names = [tool.name for tool in tools.tools]
         readable_output = f"{server_name} has {len(tool_names)} available tools:\n{tool_names}"
         demisto.debug(f"Available tools: {tool_names}")

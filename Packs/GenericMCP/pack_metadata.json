@@ -1,6 +1,6 @@
 {
     "name": "Generic MCP",
-    "description": "Generic Module Content Pack for managing and extending integration capabilities",
+    "description": "This pack contains a generic integration with Model Context Protocol (MCP) servers, allowing seamless connectivity to an MCP servers",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "serverMinVersion": "8.13.0",
