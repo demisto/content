@@ -7,8 +7,6 @@ import dateparser
 from enum import Enum
 import copy
 
-from Packs.Core.Integrations.CortexPlatformCore.CommonServerPython import CommandResults
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
