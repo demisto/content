@@ -2785,7 +2785,7 @@ script:
       - auto: PREDEFINED
         name: day
         description: The day of the week to schedule the assessment.
-        defaultvalue: "sunday"
+        defaultValue: "sunday"
         predefined:
           - "sunday"
           - "monday"
@@ -2796,7 +2796,7 @@ script:
           - "saturday"
       - name: time
         description: The time of day to run the assessment in HH:MM format.
-        defaultvalue: "12:00"
+        defaultValue: "12:00"
       name: core-add-assessment-profile
       description: Create new assessment profile.
       hidden: true
@@ -2807,8 +2807,12 @@ script:
     - arguments:
       - name: name
         description: The name of the standard.
-      - name: created_by
+      - auto: PREDEFINED
+        name: created_by
         description: The user or entity who created the compliance.
+        predefined:
+        - System
+        - Custom
       - name: page_size
         description: The number of standards to return per page. Default is 100.
       - name: page_number

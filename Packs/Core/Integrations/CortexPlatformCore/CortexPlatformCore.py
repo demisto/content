@@ -3213,30 +3213,27 @@ def list_compliance_standards_payload(
     :return: Assessment profile payload
     """
 
-    # Construct payload matching the example structure
+    start_index = page * page_size
+    end_index = start_index + page_size
     payload: dict = {"request_data": {"filters": []}}
 
-    # Add name filter if provided
     if name:
         payload["request_data"]["filters"].append({"field": "name", "operator": "contains", "value": name})
 
-    # Add created_by filter if provided
     if created_by:
-        payload["request_data"]["filters"].append({"field": "created_by", "operator": "in", "value": [created_by]})
-
-    # Add labels filter if provided
-    if labels:
         payload["request_data"]["filters"].append(
-            {"field": "labels", "operator": "contains", "value": labels[0] if labels else ""}
+            {"field": "IS_CUSTOM", "operator": "in", "value": "yes" if created_by == "Custom" else "no"}
         )
 
-    # Add hardcoded sort
+    if labels:
+        for label in labels:
+            payload["request_data"]["filters"].append({"field": "labels", "operator": "contains", "value": label})
+
     payload["request_data"]["sort"] = {"field": "insertion_time", "keyword": "desc"}
 
-    # Add pagination
     payload["request_data"]["pagination"] = {
-        "search_from": (page - 1) * page_size if page and page_size else 0,
-        "search_to": (page * page_size) - 1 if page and page_size else 24,
+        "search_from": start_index,
+        "search_to": end_index,
     }
 
     return payload
@@ -3339,9 +3336,7 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> list[C
     labels = argToList(args.get("labels", ""))
     labels = ["alibaba_cloud" if label == "Alibaba Cloud" else "on_prem" if label == "On Prem" else label for label in labels]
     page = args.get("page", "0")
-    page_size = args.get(
-        "page_size",
-    )
+    page_size = args.get("page_size") or MAX_COMPLIANCE_STANDARDS
 
     payload = list_compliance_standards_payload(
         name=name,
