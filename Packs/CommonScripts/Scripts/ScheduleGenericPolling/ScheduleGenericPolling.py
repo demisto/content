@@ -51,7 +51,8 @@ def should_run_with_guid():  # pragma: no cover
             and is_demisto_version_ge(MINIMUM_XSOAR_VERSION)
             and int(build_number) >= MINIMUM_BUILD_NUMBER_XSOAR
         )
-    except ValueError:
+    except ValueError as e:
+        demisto.debug(f"[ScheduleGenericPolling] Error parsing version or build number: {e}")
         return False
 
 
@@ -124,6 +125,8 @@ def main():  # pragma: no cover
     args_names = (args.get("additionalPollingCommandArgNames", "") or "").strip()
     args_values = (args.get("additionalPollingCommandArgValues", "") or "").strip()
 
+    demisto.debug(f"[ScheduleGenericPolling] Processed arguments: ids={ids}, interval={interval}, timeout={timeout}")
+
     # Verify correct dt path (does not verify condition!)
     demisto.debug(f"[ScheduleGenericPolling] Starting dt path validation. args={args}")
     if not demisto.dt(demisto.context(), dt):
@@ -166,8 +169,11 @@ def main():  # pragma: no cover
         # See XSUP-36162 for the reason adding 2
         schedule_command_args["times"] = (timeout // interval) + 2
         schedule_command_args["scheduledEntryGuid"] = entryGuid
+        demisto.debug(f"[ScheduleGenericPolling] GUID flow details: entryGuid={entryGuid}, times={schedule_command_args['times']}")
 
+    demisto.debug(f"[ScheduleGenericPolling] Executing ScheduleCommand with args: {schedule_command_args}")
     res = demisto.executeCommand("ScheduleCommand", schedule_command_args)
+    demisto.debug(f"[ScheduleGenericPolling] ScheduleCommand result: {res}")
     if isError(res[0]):
         return_error(res)
 
