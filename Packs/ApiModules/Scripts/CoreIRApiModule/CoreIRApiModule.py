@@ -4160,8 +4160,7 @@ def create_issues_filter(args) -> dict:
     filter_dict = filter_builder.to_dict()
     return filter_dict
 
-
-def get_alerts_by_filter_command(client: CoreClient, args: Dict):
+def get_issues_by_filter_command(client: CoreClient, args: Dict):
     def fix_array_value(match: Match[str]) -> str:
         """
         Fixes malformed array values in the 'agent_id' custom_filter argument.
@@ -4271,6 +4270,132 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict):
         outputs=data,
         readable_output=tableToMarkdown(f"{ALERT_OR_ISSUE}", human_readable),
         raw_response=data,
+    )
+    
+def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
+    """
+    Get alerts by filter.
+
+    Args:
+        client (CoreClient): The Core client to use for the request.
+        args (Dict): The arguments for the command.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+
+    def fix_array_value(match: Match[str]) -> str:
+        """
+        Fixes malformed array values in the 'agent_id' custom_filter argument.
+        It converts a stringified list (e.g., "[\"a\",\"b\"]") into a proper JSON array.
+        """
+        array_content = match.group(1)
+        elements = [elem.strip().strip('"') for elem in array_content.split(",")]
+        fixed_array = json.dumps(elements)
+        # Return the full match with only SEARCH_VALUE fixed
+        full_match = match.group(0)
+        return full_match.replace(f'"[{array_content}]"', fixed_array)
+
+    # get arguments
+    request_data: dict = {"filter_data": {}}
+    filter_data = request_data["filter_data"]
+    sort_field = args.pop("sort_field", "source_insert_ts")
+    sort_order = args.pop("sort_order", "DESC")
+    prefix = args.pop("integration_context_brand", "CoreApiModule")
+    args.pop("integration_name", None)
+    custom_filter = {}
+    filter_data["sort"] = [{"FIELD": sort_field, "ORDER": sort_order}]
+    offset = int(args.pop("offset", 0))
+    limit = int(args.pop("limit", 50))
+    if offset > limit:
+        raise DemistoException("starting offset cannot be greater than limit")
+
+    filter_data["paging"] = {"from": int(offset), "to": int(limit)}
+    if not args:
+        raise DemistoException("Please provide at least one filter argument.")
+
+    # handle custom filter
+    custom_filter_str = args.pop("custom_filter", None)
+
+    if custom_filter_str:
+        try:
+            custom_filter = json.loads(custom_filter_str)
+
+        except json.JSONDecodeError:
+            demisto.debug(
+                "Failed to load custom filter, trying to fix malformed array values in the agent_id custom_filter argument"
+            )  # noqa: E501
+            # Trying to fix malformed array values in the agent_id custom_filter argument
+            pattern = r'"SEARCH_FIELD":\s*"agent_id"[^}]*"SEARCH_VALUE":\s*"\[([^\]]+)\]"'
+            fixed_json_str = re.sub(pattern, fix_array_value, custom_filter_str)
+            custom_filter = json.loads(fixed_json_str)
+
+        except Exception as e:
+            raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
+
+    filter_res = create_filter_from_args(args)
+    if custom_filter:  # if exists, add custom filter to the built filter
+        if "AND" in custom_filter:
+            filter_obj = custom_filter["AND"]
+            filter_res["AND"].extend(filter_obj)
+        else:
+            filter_res["AND"].append(custom_filter)
+
+    filter_data["filter"] = filter_res
+    demisto.debug(f"sending the following request data: {request_data}")
+    raw_response = client.get_alerts_by_filter_data(request_data)
+
+    context = []
+    for alert in raw_response.get("alerts", []):
+        alert = alert.get("alert_fields")
+        if "alert_action_status" in alert:
+            # convert the status, if failed take the original status
+            action_status = alert.get("alert_action_status")
+            alert["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
+
+        context.append(alert)
+
+    ALERT_OR_ISSUE = "Alert"
+    if is_platform():
+        ALERT_OR_ISSUE = "Issue"
+        human_readable = [
+            {
+                "Issue ID": alert.get("internal_id"),
+                "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
+                "Name": alert.get("alert_name"),
+                "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")),
+                "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress")),
+                "Category": alert.get("alert_category"),
+                "Action": alert.get("alert_action_status_readable"),
+                "Description": alert.get("alert_description"),
+                "Host IP": alert.get("agent_ip_addresses"),
+                "Host Name": alert.get("agent_hostname"),
+            }
+            for alert in context
+        ]
+    else:
+        human_readable = [
+            {
+                "Alert ID": alert.get("internal_id"),
+                "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
+                "Name": alert.get("alert_name"),
+                "Severity": alert.get("severity"),
+                "Status": alert.get("status.progress"),
+                "Category": alert.get("alert_category"),
+                "Action": alert.get("alert_action_status_readable"),
+                "Description": alert.get("alert_description"),
+                "Host IP": alert.get("agent_ip_addresses"),
+                "Host Name": alert.get("agent_hostname"),
+            }
+            for alert in context
+        ]
+
+    return CommandResults(
+        outputs_prefix=f"{prefix}.{ALERT_OR_ISSUE}",
+        outputs_key_field="internal_id",
+        outputs=context,
+        readable_output=tableToMarkdown(f"{ALERT_OR_ISSUE}", human_readable),
+        raw_response=raw_response,
     )
 
 
