@@ -1249,3 +1249,47 @@ def test_apply_zone_update_append_with_range():
         "gateways": [{"type": "CIDR", "value": "192.168.1.1/32"}, {"type": "RANGE", "value": "192.168.1.2-192.168.1.10"}],
         "proxies": [{"type": "CIDR", "value": "10.0.0.1/32"}, {"type": "RANGE", "value": "10.0.0.2-10.0.0.5"}],
     }
+
+
+@pytest.mark.parametrize(
+    "group_name, mock_response, expected_id",
+    [
+        (
+            "Existing Group",
+            [{"id": "123", "profile": {"name": "Existing Group"}}],
+            "123",
+        ),
+        (
+            "Non-existent Group",
+            [{"id": "123", "profile": {"name": "Existing Group"}}],
+            None,
+        ),
+        (
+            "Empty Response",
+            [],
+            None,
+        ),
+        (
+            "Multiple Groups",
+            [
+                {"id": "123", "profile": {"name": "Group A"}},
+                {"id": "456", "profile": {"name": "Multiple Groups"}},
+            ],
+            "456",
+        ),
+    ],
+)
+def test_get_group_id(mocker, group_name, mock_response, expected_id):
+    """
+    Given:
+        - A group name to search for.
+    When:
+        - Calling the get_group_id method.
+    Then:
+        - Ensure the correct group ID is returned if found, otherwise None.
+    """
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+    mocker.patch("Okta_v2.encode_string_results", side_effect=lambda x: x)  # Mock encode_string_results
+
+    group_id = client.get_group_id(group_name)
+    assert group_id == expected_id
