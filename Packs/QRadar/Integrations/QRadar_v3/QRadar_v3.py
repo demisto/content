@@ -1273,6 +1273,11 @@ def get_integration_context(sync=True, with_version=False):
 
 def qradar_get_integration_context():
     global LAST_FETCHED_ID
+    global IS_OPP
+
+    if not IS_OPP:
+        return get_integration_context()
+
     try:
         context_data = get_integration_context()
     except AttributeError as e:
@@ -1281,7 +1286,6 @@ def qradar_get_integration_context():
     except Exception as e:
         demisto.error(f"Failed to get QRadar integration context: {str(e)}")
         sys.exit(1)
-
 
 
     if context_data and context_data.get(LAST_FETCH_KEY) and LAST_FETCHED_ID:
@@ -1295,8 +1299,12 @@ def qradar_get_integration_context():
 
 def qradar_set_integration_context(context_data):
     global LAST_FETCHED_ID
+    global IS_OPP
 
     set_integration_context(context_data)
+
+    if not IS_OPP:
+        return
 
     last_fetch_id = context_data.get(LAST_FETCH_KEY)
     if last_fetch_id:
