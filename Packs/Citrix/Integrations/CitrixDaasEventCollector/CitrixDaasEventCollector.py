@@ -14,46 +14,8 @@ PRODUCT = "DaaS"
 RECORDS_REQUEST_LIMIT = 1000
 ACCESS_TOKEN_CONST = "access_token"
 SITE_ID_CONST = "site_id"
-SOURCE_LOG_TYPE = "configlog"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 API_RES_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-
-
-RES_EXAMPLE = {
-    "ContinuationToken": "ContinuationToken",
-    "Items": [
-        {
-            "FormattedStartTime": "2025-12-06T16:44:35.470Z",
-            "Id": "id5",
-            "OperationType": "ConfigurationChange",
-            "Text": "Shutdown Machine",
-        },
-        {
-            "FormattedStartTime": "2025-12-03T16:44:35.470Z",
-            "Id": "id4",
-            "OperationType": "ConfigurationChange",
-            "Text": "Shutdown Machine",
-        },
-        {
-            "FormattedStartTime": "2025-12-02T16:44:35.470Z",
-            "Id": "id3",
-            "OperationType": "ConfigurationChange",
-            "Text": "Shutdown Machine",
-        },
-        {
-            "FormattedStartTime": "2025-12-01T16:44:35.470Z",
-            "Id": "id2",
-            "OperationType": "ConfigurationChange",
-            "Text": "Shutdown Machine",
-        },
-        {
-            "FormattedStartTime": "2025-12-01T10:44:35.470Z",
-            "Id": "id1",
-            "OperationType": "ConfigurationChange",
-            "Text": "Shutdown Machine",
-        },
-    ],
-}
 
 
 """ CLIENT CLASS """
@@ -130,9 +92,6 @@ class Client(BaseClient):
         return site_id
 
     def get_operations(self, search_date_option: str | None, continuation_token: str = None, limit: int = None, days: int = None):
-        # TODO: remove
-        # return RES_EXAMPLE
-
         # get access token value
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
