@@ -2842,6 +2842,12 @@ script:
       - contextPath: Core.ComplianceStandards.name
         description: The name of the standard.
         type: String
+      - contextPath: Core.ComplianceStandards.description
+        description: The description of the standard.
+        type: String
+      - contextPath: Core.ComplianceStandards.labels
+        description: The labels associated with the compliance standard.
+        type: Array
       - contextPath: Core.ComplianceStandards.controls_count
         description: The number of controls in the standard.
         type: Number
