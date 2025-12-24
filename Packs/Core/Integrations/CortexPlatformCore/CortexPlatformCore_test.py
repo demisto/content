@@ -1953,6 +1953,19 @@ class TestFilterBuilder:
         assert start_time is None
         assert end_time is None
 
+
+    def test_prepare_time_range_end_time_without_start_time_raises_exception(self):
+        """
+        Given: None as start_time_str and a valid end_time_str.
+        When: _prepare_time_range is called with end_time but no start_time.
+        Then: A DemistoException should be raised with appropriate error message.
+        """
+        from CortexPlatformCore import FilterBuilder
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="When 'end_time' is provided, 'start_time' must be provided as well."):
+            FilterBuilder._prepare_time_range(None, "2023-01-02T15:30:00")
+
     def test_prepare_time_range_invalid_start_time_raises_value_error(self, mocker: MockerFixture):
         """
         Given: An invalid start_time string that cannot be parsed by dateparser.

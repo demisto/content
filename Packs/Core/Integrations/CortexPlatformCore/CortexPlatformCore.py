@@ -493,6 +493,9 @@ class FilterBuilder:
     @staticmethod
     def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
         """Prepare start and end time from args, parsing relative time strings."""
+        if end_time_str and not start_time_str:
+            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
+
         start_time, end_time = None, None
 
         if start_time_str:
@@ -510,9 +513,6 @@ class FilterBuilder:
         if start_time and not end_time:
             # Set end_time to the current time if only start_time is provided
             end_time = int(datetime.now().timestamp() * 1000)
-
-        if end_time and not start_time:
-            start_time = 0
 
         return start_time, end_time
 
@@ -2227,8 +2227,11 @@ def build_exception_rules_filter(args: dict) -> FilterBuilder:
     filter_builder.add_field("CONDITIONS_PRETTY", FilterType.CONTAINS, argToList(args.get("conditions")))
     filter_builder.add_field("CREATED_BY", FilterType.CONTAINS, argToList(args.get("created_by")))
     filter_builder.add_field("USER_EMAIL", FilterType.CONTAINS, argToList(args.get("user_email")))
+    start_modification_time_str , end_modification_time_str = args.get("start_modification_time") , args.get("end_modification_time")
+    if end_modification_time_str and not start_modification_time_str:
+        start_modification_time_str = '0'
     filter_builder.add_time_range_field(
-        "MODIFICATION_TIME", args.get("start_modification_time"), args.get("end_modification_time")
+        "MODIFICATION_TIME", start_modification_time_str, end_modification_time_str
     )
     filter_builder.add_field("STATUS", FilterType.EQ, argToList(args.get("status")))
     filter_builder.add_field("SUBTYPE", FilterType.EQ, argToList(args.get("rule_type")))
