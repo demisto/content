@@ -2106,6 +2106,7 @@ tasks:
       id: c3fdb869-e3e4-4267-b0c8-6d73acb9cef8
       version: -1
       name: Check if any tactics were added to the query
+      description: Checks whether any MITRE tactics were selected for the search.
       type: condition
       iscommand: false
       brand: ""
