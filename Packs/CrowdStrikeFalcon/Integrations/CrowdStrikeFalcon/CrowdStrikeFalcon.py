@@ -3708,7 +3708,7 @@ def fetch_detections_by_product_type(
     if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value}:
         filter = filter.replace("product:", "type:")
     if fetch_query:
-        filter = f"({filter})" f"+({fetch_query})"
+        filter = f"({filter})+({fetch_query})"
     response = get_detections_ids(filter_arg=filter, limit=fetch_limit, offset=offset, product_type=product_type)
     detections_ids: list[dict] = demisto.get(response, "resources", [])
     demisto.debug(f"CrowdStrikeFalconMsg: Total fetched detections: {len(detections_ids)}")
