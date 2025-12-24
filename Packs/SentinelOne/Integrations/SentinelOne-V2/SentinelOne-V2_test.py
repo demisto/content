@@ -98,6 +98,32 @@ def test_fetch_incidents__2_0(mocker, requests_mock, demisto_mocker_2_0):
     assert incidents_for_fetch == incidents
 
 
+def test_get_threats_outputs():
+    """
+    When:
+        parsing raw response from the API to XSOAR output
+    Returns:
+        List of threat outputs.
+    """
+    raw_threat_response = util_load_json("test_data/get_threats_2_1_raw_response.json")["data"]
+    expected = util_load_json("test_data/threats_outputs.json")
+    threats_output = list(sentinelone_v2.get_threats_outputs(raw_threat_response))
+    assert expected == threats_output
+
+
+def test_get_agents_outputs():
+    """
+    When:
+        parsing raw response of agents from the API to XSOAR output
+    Returns:
+        List of agents.
+    """
+    raw_agent_response = util_load_json("test_data/agents_raw_response.json")
+    expected = util_load_json("test_data/agent_outputs.json")
+    agent_output = list(sentinelone_v2.get_agents_outputs(raw_agent_response))
+    assert expected == agent_output
+
+
 def test_fetch_uam_alerts(mocker, requests_mock):
     """
     When:
@@ -173,32 +199,6 @@ def test_fetch_uam_alerts(mocker, requests_mock):
     assert custom_fields["sentineloneaccountid"] == "acc_1"
     assert custom_fields["sentinelonesitename"] == "Test Site"
     assert custom_fields["deviceid"] == "agent-uuid-123"
-
-
-def test_get_threats_outputs():
-    """
-    When:
-        parsing raw response from the API to XSOAR output
-    Returns:
-        List of threat outputs.
-    """
-    raw_threat_response = util_load_json("test_data/get_threats_2_1_raw_response.json")["data"]
-    expected = util_load_json("test_data/threats_outputs.json")
-    threats_output = list(sentinelone_v2.get_threats_outputs(raw_threat_response))
-    assert expected == threats_output
-
-
-def test_get_agents_outputs():
-    """
-    When:
-        parsing raw response of agents from the API to XSOAR output
-    Returns:
-        List of agents.
-    """
-    raw_agent_response = util_load_json("test_data/agents_raw_response.json")
-    expected = util_load_json("test_data/agent_outputs.json")
-    agent_output = list(sentinelone_v2.get_agents_outputs(raw_agent_response))
-    assert expected == agent_output
 
 
 def test_fetch_file(mocker, requests_mock):
