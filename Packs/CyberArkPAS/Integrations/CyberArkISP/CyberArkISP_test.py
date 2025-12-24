@@ -5,6 +5,7 @@ Pytest Unit Tests: all function names must start with "test_"
 More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
+import base64
 import json
 import os
 import re
@@ -157,8 +158,6 @@ def test_parse_date_or_use_current_invalid_returns_current():
 )
 def test_get_formatted_time(date_input, expected_format_pattern):
     """Tests get_formatted_time returns properly formatted string."""
-    import re
-
     result = get_formatted_time(date_input)
     assert isinstance(result, str)
     assert re.match(expected_format_pattern, result)
@@ -166,8 +165,6 @@ def test_get_formatted_time(date_input, expected_format_pattern):
 
 def test_generate_telemetry_header():
     """Tests generate_telemetry_header returns base64 encoded string."""
-    import base64
-
     result = generate_telemetry_header()
     assert isinstance(result, str)
 

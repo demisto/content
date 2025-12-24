@@ -35,12 +35,10 @@ class Config:
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
     DEFAULT_LIMIT = 10000
-    MAX_PAGE_SIZE = 1000
     CACHE_BUFFER_SECONDS = 60
 
     # Token default settings
-    DEFAULT_TOKEN_TTL_HOURS = 6
-    DEFAULT_TOKEN_TTL_SECONDS = DEFAULT_TOKEN_TTL_HOURS * 60 * 60
+    DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60  # 6 hours
 
     # Test module settings
     TEST_MODULE_LOOKBACK_MINUTES = 1
@@ -182,7 +180,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     if not client_id:
         raise DemistoException("Client ID is required.")
 
-    credentials = params.get("client_secret", {})
+    credentials = params.get("credentials", {})
     client_secret = credentials.get("password", "").strip()
     if not client_secret:
         raise DemistoException("Client Secret is required.")

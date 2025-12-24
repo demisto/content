@@ -33,7 +33,7 @@ configuration:
   type: 0
   section: Connect
   additionalinfo: Service username without domain (configured as OAuth confidential client).
-- name: client_secret
+- name: credentials
   display: Client Secret (Service User Password)
   displaypassword: Client Secret
   required: true
@@ -164,3 +164,4 @@ marketplaces:
 - marketplacev2
 tests:
 - No tests (auto formatted)
+
