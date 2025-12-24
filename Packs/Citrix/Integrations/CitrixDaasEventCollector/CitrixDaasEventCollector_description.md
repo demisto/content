@@ -1,3 +1,4 @@
+In order to access Citrix DaaS, the Citrix Cloud environment must be properly configured.
 
 ## Step by step configuration
 
