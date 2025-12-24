@@ -58,29 +58,6 @@ def html_cleanup(full_thread_html):
 
     return final_html_result
 
-def replace_img_with_object(html: str, account_name: str) -> str:
-    pattern = re.compile(
-        r'<img\b([^>]*?)\bsrc="([^"]+)"([^>]*)\/?>',
-        re.IGNORECASE
-    )
-
-    def replacer(match):
-        before_src = match.group(1)
-        src = match.group(2)
-        after_src = match.group(3)
-
-        new_img_src = src.replace(
-            "xsoar/entry/",
-            f"xsoar/{account_name}/entry/"
-        )
-
-        return (
-            f'<object data="{src}" type="image/jpg">'
-            f'<img{before_src}src="{new_img_src}"{after_src}>'
-            f'</object>'
-        )
-
-    return pattern.sub(replacer, html)
 
 def remove_color_from_html_text(html_message):
     """Remove the color from the html text, so the color will be determined by the front-end.
@@ -114,9 +91,7 @@ def remove_color_from_html_text(html_message):
 
 
 def main():
-    args = demisto.args()
     incident = demisto.incident()
-    account_name = args.get("account_name", "")
     custom_fields = incident.get("CustomFields")
     thread_number = custom_fields.get("emailselectedthread", 0)
     incident_context = demisto.context()
@@ -163,10 +138,6 @@ def main():
             full_thread_html += email_reply
 
         final_html_result = html_cleanup(full_thread_html)
-
-        if account_name:
-            final_html_result = replace_img_with_object(final_html_result, account_name)
-
         return_results({"ContentsFormat": EntryFormat.HTML, "Type": EntryType.NOTE, "Contents": final_html_result})
     else:
         return_error(f"An email thread of {thread_number} was not found. Please make sure this thread number is correct.")
