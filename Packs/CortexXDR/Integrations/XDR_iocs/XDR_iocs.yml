@@ -226,23 +226,12 @@ script:
     - description: The time of the file creation (use UTC time zone).
       name: time
       required: true
-    - description: The time of the file creation (use UTC time zone).
-      name: time
-      required: true
     deprecated: true
   - description: Creates the sync file for the manual process. Run this command when instructed by the XDR support team.
     name: xdr-iocs-create-sync-file
     arguments:
     - name: zip
       description: Whether to zip the output file.
-      defaultValue: false
-      required: true
-    - name: set_time
-      description: Whether to modify the sync time locally.
-      defaultValue: false
-      required: true
-    - name: set_time
-      description: Whether to modify the sync time locally.
       defaultValue: false
       required: true
     - name: set_time
