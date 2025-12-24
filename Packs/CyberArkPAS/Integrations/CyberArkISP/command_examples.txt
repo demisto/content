@@ -6,3 +6,4 @@
 !cyberark-isp-get-events date_from="2025-09-27 06:15:11" date_to="2025-09-27 06:16:11" limit=50
 !cyberark-isp-get-events date_from="24 hours ago" limit=1000
 !cyberark-isp-get-events date_from="30 minutes ago" limit=25 should_push_events=false
+!cyberark-isp-get-events date_from="1 hour ago" limit=100 should_push_events=true
