@@ -1,2 +1,5 @@
 Integrations/Active_Directory_Query/test_data/key.pem
 poetry.lock
+"Api key auth"
+API_KEY_AUTH
+Api key auth
