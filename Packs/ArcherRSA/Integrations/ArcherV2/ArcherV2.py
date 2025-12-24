@@ -1044,13 +1044,15 @@ def generate_field_contents(client, fields_values, level_fields, depth):
     if fields_values and not isinstance(fields_values, dict):
         demisto.debug(f"Fields values string before escaping: {fields_values}")
 
-        # PRE-PROCESSING: Handle even number of backslashes (2, 4, 6, etc.) before quotes
-        # Pattern: (\\\\)+ matches pairs of backslashes (each \\\\ in regex = \\ in string = one pair)
-        # When we have an even number of backslashes before a quote, the quote is NOT escaped
-        # and will terminate the string. We need to escape it.
-        # Example: \\" in string = one backslash + quote (quote terminates) -> need \\\" = one backslash + escaped quote
+        '''
+        PRE-PROCESSING: Handle even number of backslashes (2, 4, 6, etc.) before quotes
+        Pattern: (\\\\)+ matches pairs of backslashes (each \\\\ in regex = \\ in string = one pair)
+        When we have an even number of backslashes before a quote, the quote is NOT escaped
+        and will terminate the string. We need to escape it.
+        Example: \\" in string = one backslash + quote (quote terminates) -> need \\\" = one backslash + escaped quote
+        '''
         fields_values = re.sub(r'((?:\\\\)+)"', lambda m: m.group(1) + r"\"", fields_values)
-        demisto.debug(f"Fields values string after pre-processing even backslashes before quotes: {fields_values}")
+        demisto.debug(f"Fields values string after pre-processing: {fields_values}")
 
         # Pattern explanation:
         # Group 1 (valid): Matches any valid JSON escape sequence (e.g., \", \\, \n, \u1234)
