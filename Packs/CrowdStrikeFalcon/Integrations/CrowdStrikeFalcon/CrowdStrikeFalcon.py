@@ -24,7 +24,7 @@ VENDOR = "CrowdStrike"
 PRODUCT = "Falcon_Event"
 INTEGRATION_NAME = "CrowdStrike Falcon"
 
-# Incidents Type names - use for debugging and context save.
+# Incidents Type names -  use for debugging and context save.
 IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
 ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
