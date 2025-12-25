@@ -8257,13 +8257,15 @@ def test_fetch_endpoint_detections_builds_grouped_filter_arg(mocker: MockerFixtu
 
     # stop later logic from doing real work
     mocker.patch("CrowdStrikeFalcon.get_detections_entities", return_value={"resources": []})
-    mocker.patch("CrowdStrikeFalcon.filter_incidents_by_duplicates_and_limit", side_effect=lambda incidents_res, **_: incidents_res)
+    mocker.patch(
+        "CrowdStrikeFalcon.filter_incidents_by_duplicates_and_limit", side_effect=lambda incidents_res, **_: incidents_res
+    )
     mocker.patch("CrowdStrikeFalcon.update_last_run_object", side_effect=lambda **kwargs: kwargs["last_run"])
 
     fetch_endpoint_detections(current_fetch_info_detections={"offset": 0}, look_back=2, is_fetch_events=False)
 
     assert get_fetch_detections_mocker.call_args[1]["filter_arg"] == (
-        "(created_timestamp:>'2025-12-18T11:44:17Z')+(severity_name:\"Critical\", severity_name:\"High\")"
+        '(created_timestamp:>\'2025-12-18T11:44:17Z\')+(severity_name:"Critical", severity_name:"High")'
     )
 
 
@@ -8287,7 +8289,9 @@ def test_fetch_endpoint_detections_builds_grouped_filter_arg(mocker: MockerFixtu
         ),
     ],
 )
-def test_fetch_detections_by_product_type_builds_grouped_filter(mocker: MockerFixture, product_type, fetch_query, expected_filter):
+def test_fetch_detections_by_product_type_builds_grouped_filter(
+    mocker: MockerFixture, product_type, fetch_query, expected_filter
+):
     """
     Given:
         - A known start_fetch_time returned from get_fetch_run_time_range.
@@ -8308,7 +8312,9 @@ def test_fetch_detections_by_product_type_builds_grouped_filter(mocker: MockerFi
     )
 
     mocker.patch("CrowdStrikeFalcon.get_detection_entities", return_value={"resources": []})
-    mocker.patch("CrowdStrikeFalcon.filter_incidents_by_duplicates_and_limit", side_effect=lambda incidents_res, **_: incidents_res)
+    mocker.patch(
+        "CrowdStrikeFalcon.filter_incidents_by_duplicates_and_limit", side_effect=lambda incidents_res, **_: incidents_res
+    )
     mocker.patch("CrowdStrikeFalcon.update_last_run_object", side_effect=lambda **kwargs: kwargs["last_run"])
     mocker.patch("CrowdStrikeFalcon.truncate_long_time_str", side_effect=lambda x, *_: x)
 
