@@ -5110,6 +5110,138 @@ def test_update_issue_command_link_cases_empty_list_no_other_updates(mocker: Moc
     mock_update_issue.assert_not_called()
 
 
+def test_list_scripts_command_with_multiple_platforms():
+    """
+    GIVEN:
+        A client with a mock response containing a script that supports multiple platforms.
+    WHEN:
+        The list_scripts_command function is called with platform filters.
+    THEN:
+        The script is returned with correct platform support flags.
+    """
+    from CortexPlatformCore import list_scripts_command
+
+    client = Mock()
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "NAME": "test_script",
+                    "PLATFORM": "AGENT_OS_WINDOWS,AGENT_OS_LINUX",
+                    "GUID": "test-guid-123",
+                    "ID": "script-id-1",
+                    "DESCRIPTION": "Test script for multiple platforms",
+                    "ENTRY_POINT_DEFINITION": {"input_params": [{"name": "param1", "type": "string"}]},
+                }
+            ],
+            "FILTER_COUNT": 1,
+            "TOTAL_COUNT": 1,
+        }
+    }
+    client.get_webapp_data.return_value = mock_response
+
+    args: dict[str, list] = {"script_platforms": ["windows", "linux"], "limit": 50}
+
+    result = list_scripts_command(client, args)
+
+    scripts = result[0].outputs
+    assert len(scripts) == 1
+    assert scripts[0]["windows_supported"] is True
+    assert scripts[0]["linux_supported"] is True
+    assert scripts[0]["macos_supported"] is False
+
+
+def test_list_scripts_command_with_script_name_filter():
+    """
+    GIVEN:
+        A client with a mock response containing a script with the specified name.
+    WHEN:
+        The list_scripts_command function is called with a script name filter.
+    THEN:
+        The script with matching name is returned and the client method is called once.
+    """
+    from CortexPlatformCore import list_scripts_command
+
+    client = Mock()
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "NAME": "test_script",
+                    "PLATFORM": "AGENT_OS_WINDOWS,AGENT_OS_LINUX",
+                    "GUID": "test-guid-123",
+                    "ID": "script-id-1",
+                    "DESCRIPTION": "Test script for filtering by name",
+                    "ENTRY_POINT_DEFINITION": {"input_params": []},
+                }
+            ],
+            "FILTER_COUNT": 1,
+            "TOTAL_COUNT": 1,
+        }
+    }
+    client.get_webapp_data.return_value = mock_response
+
+    args: dict[str, str] = {"script_name": "test_script"}
+
+    result = list_scripts_command(client, args)
+
+    client.get_webapp_data.assert_called_once()
+    scripts = result[0].outputs
+    assert len(scripts) == 1
+    assert scripts[0]["name"] == "test_script"
+
+
+def test_list_scripts_command_outputs_structure():
+    """
+    GIVEN:
+        A client with a mock response containing a complete script with all platform support and input parameters.
+    WHEN:
+        The list_scripts_command function is called without arguments.
+    THEN:
+        The result contains the correct output structure with proper key field, raw response, and expected script data.
+    """
+    from CortexPlatformCore import list_scripts_command
+
+    client = Mock()
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "NAME": "complete_script",
+                    "PLATFORM": "AGENT_OS_WINDOWS,AGENT_OS_LINUX,AGENT_OS_MAC",
+                    "GUID": "complete-guid-456",
+                    "ID": "complete-id-2",
+                    "DESCRIPTION": "Complete script with all platform support",
+                    "ENTRY_POINT_DEFINITION": {
+                        "input_params": [{"name": "param1", "type": "string"}, {"name": "param2", "type": "int"}]
+                    },
+                }
+            ],
+            "FILTER_COUNT": 1,
+            "TOTAL_COUNT": 1,
+        }
+    }
+    client.get_webapp_data.return_value = mock_response
+
+    args: dict[str, str] = {}
+
+    result = list_scripts_command(client, args)
+
+    assert result[0].outputs_key_field == "script_id"
+    assert result[0].raw_response == mock_response
+    expected_script = {
+        "name": "complete_script",
+        "description": "Complete script with all platform support",
+        "windows_supported": True,
+        "linux_supported": True,
+        "macos_supported": True,
+        "script_uid": "complete-guid-456",
+        "script_id": "complete-id-2",
+        "script_inputs": [{"name": "param1", "type": "string"}, {"name": "param2", "type": "int"}],
+    }
+    assert result[0].outputs[0] == expected_script
+
+
 class TestGetAppsecSuggestion(unittest.TestCase):
     def setUp(self):
         self.mock_client = Mock(spec=Client)
@@ -6698,3 +6830,324 @@ def test_normalize_key_without_prefix():
     # Field names that contain 'xdm' but don't start with it
     assert normalize_key("field.xdm.name") == "field.xdm.name"
     assert normalize_key("some_xdm_field") == "some_xdm_field"
+
+
+def test_run_script_agentix_command_both_script_uid_and_name_provided():
+    """
+    Given:
+        - Both script_uid and script_name are provided in args.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - ValueError is raised indicating only one should be provided.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_uid": "test_uid", "script_name": "test_name", "endpoint_ids": ["endpoint1"]}
+
+    with pytest.raises(ValueError, match="Please provide either script_uid or script_name, not both."):
+        run_script_agentix_command(client, args)
+
+
+def test_run_script_agentix_command_no_script_identifier_provided():
+    """
+    Given:
+        - Neither script_uid nor script_name are provided in args.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - ValueError is raised indicating one must be specified.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"endpoint_ids": ["endpoint1"]}
+
+    with pytest.raises(ValueError, match="You must specify either script_uid or script_name."):
+        run_script_agentix_command(client, args)
+
+
+def test_run_script_agentix_command_both_endpoint_identifiers_provided():
+    """
+    Given:
+        - Both endpoint_ids and endpoint_names are provided in args.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - ValueError is raised indicating only one should be provided.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_uid": "test_uid", "endpoint_ids": ["endpoint1"], "endpoint_names": ["endpoint_name1"]}
+
+    with pytest.raises(ValueError, match="Please provide either endpoint_ids or endpoint_names, not both."):
+        run_script_agentix_command(client, args)
+
+
+def test_run_script_agentix_command_no_endpoint_identifier_provided():
+    """
+    Given:
+        - Neither endpoint_ids nor endpoint_names are provided in args.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - ValueError is raised indicating one must be specified.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_uid": "test_uid"}
+
+    with pytest.raises(ValueError, match="You must specify either endpoint_ids or endpoint_names."):
+        run_script_agentix_command(client, args)
+
+
+@patch("CortexPlatformCore.list_scripts_command")
+def test_run_script_agentix_command_multiple_scripts_found(mock_list_scripts):
+    """
+    Given:
+        - Multiple scripts exist with the same name.
+    When:
+        - Calling run_script_agentix_command with script_name.
+    Then:
+        - ValueError is raised with detailed information about all matching scripts.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_name": "test_script", "endpoint_ids": ["endpoint1"]}
+
+    mock_scripts_result = Mock()
+    mock_scripts_result = [
+        CommandResults(
+            outputs={
+                "Scripts": [
+                    {
+                        "script_uid": "uid1",
+                        "description": "First script",
+                        "name": "test_script",
+                        "windows_supported": True,
+                        "linux_supported": False,
+                        "macos_supported": True,
+                        "script_inputs": [],
+                    },
+                    {
+                        "script_uid": "uid2",
+                        "description": "Second script",
+                        "name": "test_script",
+                        "windows_supported": False,
+                        "linux_supported": True,
+                        "macos_supported": False,
+                        "script_inputs": [],
+                    },
+                ]
+            }
+        ),
+        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+    ]
+
+    mock_list_scripts.return_value = mock_scripts_result
+
+    with pytest.raises(ValueError) as exc_info:
+        run_script_agentix_command(client, args)
+
+    error_message = str(exc_info.value)
+    assert "Multiple scripts found" in error_message
+    assert "uid1" in error_message
+    assert "uid2" in error_message
+    assert "First script" in error_message
+    assert "Second script" in error_message
+
+
+@patch("CortexPlatformCore.list_scripts_command")
+def test_run_script_agentix_command_no_scripts_found(mock_list_scripts):
+    """
+    Given:
+        - No scripts exist with the specified name.
+    When:
+        - Calling run_script_agentix_command with script_name.
+    Then:
+        - ValueError is raised indicating no scripts were found.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_name": "nonexistent_script", "endpoint_ids": ["endpoint1"]}
+
+    mock_scripts_result = Mock()
+    mock_scripts_result = [
+        CommandResults(outputs={"Scripts": []}),
+        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+    ]
+    mock_list_scripts.return_value = mock_scripts_result
+
+    with pytest.raises(ValueError, match="No scripts found with the name: nonexistent_script"):
+        run_script_agentix_command(client, args)
+
+
+@patch("CortexPlatformCore.list_scripts_command")
+def test_run_script_agentix_command_script_requires_parameters_but_none_provided(mock_list_scripts):
+    """
+    Given:
+        - A script that requires input parameters but no parameters are provided.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - ValueError is raised listing the required parameters.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_name": "test_script", "endpoint_ids": ["endpoint1"]}
+
+    mock_scripts_result = Mock()
+    mock_scripts_result = [
+        CommandResults(
+            outputs={
+                "Scripts": [
+                    {
+                        "script_uid": "uid1",
+                        "description": "Test script",
+                        "name": "test_script",
+                        "windows_supported": True,
+                        "linux_supported": True,
+                        "macos_supported": True,
+                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                    }
+                ]
+            }
+        ),
+        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+    ]
+    mock_list_scripts.return_value = mock_scripts_result
+
+    with pytest.raises(ValueError) as exc_info:
+        run_script_agentix_command(client, args)
+
+    error_message = str(exc_info.value)
+    assert "requires the following input parameters: param1, param2" in error_message
+    assert "but none were provided" in error_message
+
+
+@patch("CortexPlatformCore.core_list_endpoints_command")
+def test_run_script_agentix_command_no_endpoints_found_by_name(mock_list_endpoints):
+    """
+    Given:
+        - No endpoints exist with the specified names.
+    When:
+        - Calling run_script_agentix_command with endpoint_names.
+    Then:
+        - ValueError is raised indicating no endpoints were found.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_uid": "test_uid", "endpoint_names": ["nonexistent_endpoint"]}
+
+    mock_list_endpoints.return_value = Mock(outputs=[])
+
+    with pytest.raises(ValueError, match="No endpoints found with the specified names: nonexistent_endpoint"):
+        run_script_agentix_command(client, args)
+
+
+@patch("CortexPlatformCore.script_run_polling_command")
+@patch("CortexPlatformCore.list_scripts_command")
+def test_run_script_agentix_command_successful_with_script_name_and_endpoint_ids(mock_list_scripts, mock_polling):
+    """
+    Given:
+        - Valid script_name, endpoint_ids, and parameters.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - Script is executed successfully and client base URL is updated.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_name": "test_script", "endpoint_ids": ["endpoint1", "endpoint2"], "parameters": "param=value"}
+
+    mock_scripts_result = Mock()
+    mock_scripts_result = [
+        CommandResults(
+            outputs={
+                "Scripts": [
+                    {
+                        "script_uid": "uid1",
+                        "description": "Test script",
+                        "name": "test_script",
+                        "windows_supported": True,
+                        "linux_supported": True,
+                        "macos_supported": True,
+                        "script_inputs": [],
+                    }
+                ]
+            }
+        ),
+        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+    ]
+
+    mock_list_scripts.return_value = mock_scripts_result
+
+    expected_result = Mock()
+    mock_polling.return_value = expected_result
+
+    result = run_script_agentix_command(client, args)
+
+    mock_polling.assert_called_once_with(
+        {"endpoint_ids": ["endpoint1", "endpoint2"], "script_uid": "uid1", "parameters": "param=value", "is_core": True},
+        client,
+    )
+    assert result == expected_result
+    assert client._base_url == "/api/webapp/public_api/v1"
+
+
+@patch("CortexPlatformCore.script_run_polling_command")
+@patch("CortexPlatformCore.list_scripts_command")
+def test_run_script_agentix_command_script_with_inputs_and_parameters_provided(mock_list_scripts, mock_polling):
+    """
+    Given:
+        - A script with required inputs and matching parameters are provided.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - Script is executed successfully with the provided parameters.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_name": "test_script", "endpoint_ids": ["endpoint1"], "parameters": "param1=value1;param2=value2"}
+
+    mock_scripts_result = Mock()
+    mock_scripts_result = [
+        CommandResults(
+            outputs={
+                "Scripts": [
+                    {
+                        "script_uid": "uid1",
+                        "description": "Test script",
+                        "name": "test_script",
+                        "windows_supported": True,
+                        "linux_supported": True,
+                        "macos_supported": True,
+                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                    }
+                ]
+            }
+        ),
+        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+    ]
+
+    mock_list_scripts.return_value = mock_scripts_result
+
+    expected_result = Mock()
+    mock_polling.return_value = expected_result
+
+    result = run_script_agentix_command(client, args)
+
+    mock_polling.assert_called_once_with(
+        {"endpoint_ids": ["endpoint1"], "script_uid": "uid1", "parameters": "param1=value1;param2=value2", "is_core": True},
+        client,
+    )
+    assert result == expected_result
