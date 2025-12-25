@@ -103,10 +103,18 @@ args:
     description: The first page from which we bring the issues.
     isArray: true
     name: offset
+    deprecated: true
   - defaultValue: "50"
     description: The last page from which we bring the issues.
     isArray: true
     name: limit
+    deprecated: true
+  - defaultValue: "0"
+    description: The page number for the issues to return for pagination. 
+    name: page
+  - defaultValue: "50"
+    description: The number of issues to return per page.
+    name: page_size
   - description: Additional output fields.
     isArray: true
     name: additional_output_fields
@@ -171,13 +179,13 @@ outputs:
   - contextPath: Core.Issue.internal_id
     description: The internal ID of the issue.
     type: String
-  - contextPath: Core.Issue.case_id
-    description: The case ID associated with the issue.
+  - contextPath: Core.Issue.case_ids
+    description: The case IDs associated with the issue.
     type: String
   - contextPath: Core.Issue.issue_source
     description: The source of the issue.
     type: String
-  - contextPath: Core.Issue.agentsid
+  - contextPath: Core.Issue.agent_ids
     description: The agent (endpoint) IDs associated with the issue.
     type: List
   - contextPath: Core.Issue.status.progress
@@ -189,8 +197,8 @@ outputs:
   - contextPath: Core.Issue.assigned_to
     description: The user assigned to the issue.
     type: String
-  - contextPath: Core.Issue.assetid
-    description: The asset ID related to the issue.
+  - contextPath: Core.Issue.asset_ids
+    description: The asset IDs related to the issue.
     type: String
   - contextPath: Core.Issue.action_file_macro_sha256
     description: File Macro SHA256 hash of the action file macro.
@@ -228,9 +236,15 @@ outputs:
   - contextPath: Core.Issue.issue_description
     description: The issue description.
     type: String
-  - contextPath: Core.Issue.Identity_type
+  - contextPath: Core.Issue.identity_type
     description: The identity type of the account.
     type: String
+  - contextPath: Core.IssueMetadata.returned_count
+    description: The actual number of issues that match all filter criteria and returned in this specific response.
+    type: Number
+  - contextPath: Core.IssueMetadata.filtered_count
+    description: The total number of issues in the system that match all filter criteria.
+    type: Number
 isInternal: true
 script: "-"
 subtype: python3
@@ -244,3 +258,7 @@ tests:
   - No tests (auto formatted)
 marketplaces:
   - platform
+supportedModules:
+  - agentix
+  - xsiam
+  - cloud_posture

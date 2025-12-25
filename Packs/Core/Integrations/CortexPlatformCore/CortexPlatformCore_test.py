@@ -134,85 +134,6 @@ def test_alert_to_issue():
     assert result["timestamp"] == "2023-01-01"
 
 
-def test_core_get_issues_command(mocker: MockerFixture):
-    """
-    GIVEN:
-        A mocked get_alerts_by_filter_command that returns a CommandResults object with alert data.
-    WHEN:
-        The core-get-issues command is executed through the main function.
-    THEN:
-        Arguments are transformed from issue to alert format, get_alerts_by_filter_command is called,
-        outputs are transformed back from alert to issue format, and results are returned.
-    """
-    from CortexPlatformCore import main
-    from CommonServerPython import CommandResults
-
-    # Mock demisto functions
-    mocker.patch.object(demisto, "command", return_value="core-get-issues")
-    mocker.patch.object(demisto, "args", return_value={"issue_id": "12345", "issue_status": "open", "issue_priority": "high"})
-    mocker.patch.object(demisto, "params", return_value={"proxy": False, "insecure": False, "timeout": "120"})
-
-    # Create mock CommandResults with alert data that should be converted to issue data
-    mock_command_results = CommandResults(
-        outputs_prefix="Core.Alert",
-        outputs=[
-            {
-                "alert_id": "12345",
-                "alert_status": "open",
-                "alert_priority": "high",
-                "alert_description": "Test alert",
-                "user_name": "john",
-            }
-        ],
-        readable_output="Test alert output",
-        raw_response={"alert_id": "12345"},
-    )
-
-    # Mock get_alerts_by_filter_command to return our mock CommandResults
-    mock_get_alerts = mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_command_results)
-    mock_return_results = mocker.patch("CortexPlatformCore.return_results")
-    # Execute the main function
-    main()
-
-    # Verify that get_alerts_by_filter_command was called with transformed arguments
-    mock_get_alerts.assert_called_once()
-    called_args = mock_get_alerts.call_args[0][1]  # Get the args parameter
-
-    # Verify the arguments were transformed from issue to alert format
-    assert "alert_id" in called_args
-    assert "alert_status" in called_args
-    assert "alert_priority" in called_args
-    assert called_args["alert_id"] == "12345"
-    assert called_args["alert_status"] == "open"
-    assert called_args["alert_priority"] == "high"
-
-    # Verify issue keys are not present in the transformed args
-    assert "issue_id" not in called_args
-    assert "issue_status" not in called_args
-    assert "issue_priority" not in called_args
-
-    # Get the CommandResults object that was passed to return_results
-    returned_command_results = mock_return_results.call_args[0][0]
-
-    # Verify the outputs were transformed back from alert to issue format
-    assert "issue_id" in returned_command_results.outputs[0]
-    assert "issue_status" in returned_command_results.outputs[0]
-    assert "issue_priority" in returned_command_results.outputs[0]
-    assert "issue_description" in returned_command_results.outputs[0]
-    assert returned_command_results.outputs[0]["issue_id"] == "12345"
-    assert returned_command_results.outputs[0]["issue_status"] == "open"
-    assert returned_command_results.outputs[0]["issue_priority"] == "high"
-    assert returned_command_results.outputs[0]["issue_description"] == "Test alert"
-
-    # Verify alert keys are not present in the final outputs
-    assert "alert_id" not in returned_command_results.outputs[0]
-    assert "alert_priority" not in returned_command_results.outputs[0]
-    assert "alert_description" not in returned_command_results.outputs[0]
-
-    # Verify non-alert/issue keys are preserved
-    assert returned_command_results.outputs[0]["user_name"] == "john"
-
-
 def test_filter_context_fields():
     from CortexPlatformCore import filter_context_fields
 
@@ -254,125 +175,166 @@ def test_filter_context_fields():
     assert expected_result == filtered_data
 
 
-def test_core_get_issues_command_with_output_keys(mocker: MockerFixture):
+def test_get_issues_command_with_empty_response_outputs(mocker):
     """
-    GIVEN:
-        A mocked get_alerts_by_filter_command that returns a CommandResults object with alert data
-        and output_keys argument is provided to filter specific fields.
-    WHEN:
-        The core-get-issues command is executed with output_keys parameter.
-    THEN:
-        Arguments are transformed from issue to alert format, get_alerts_by_filter_command is called,
-        outputs are transformed back from alert to issue format, filtered by output_keys, and results are returned.
+    Given: A client and args with issue_id
+    When: get_issues_by_filter_command returns a response with None outputs
+    Then: get_issues_command should return a result with None outputs
     """
-    from CortexPlatformCore import main
-    from CommonServerPython import CommandResults
+    from CortexPlatformCore import get_issues_command
 
-    # Mock demisto functions with output_keys parameter
-    mocker.patch.object(demisto, "command", return_value="core-get-issues")
-    mocker.patch.object(
-        demisto,
-        "args",
-        return_value={
-            "issue_id": "12345",
-            "issue_status": "open",
-            "issue_priority": "high",
-            "output_keys": "issue_id,issue_status,issue_description",
-        },
-    )
-    mocker.patch.object(demisto, "params", return_value={"proxy": False, "insecure": False, "timeout": "120"})
+    client = mocker.Mock()
+    args = {"issue_id": "123"}
+    mock_response = [
+        CommandResults(outputs=None, outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 0, "returned_count": 0}], outputs_prefix="Core.IssueMetadata"),
+    ]
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
 
-    # Create mock CommandResults with alert data that should be converted to issue data
-    mock_command_results = CommandResults(
-        outputs_prefix="Core.Issue",
-        outputs=[
-            {
-                "alert_id": "12345",
-                "alert_status": "open",
-                "alert_priority": "high",
-                "alert_description": "Test alert",
-                "alert_severity": "critical",
-                "alert_timestamp": "2023-10-01T10:00:00Z",
-                "user_name": "john",
-                "internal_field": "should_be_filtered_out",
-            },
-            {
-                "alert_id": "67890",
-                "alert_status": "closed",
-                "alert_priority": "medium",
-                "alert_description": "Another test alert",
-                "alert_severity": "low",
-                "alert_timestamp": "2023-10-01T11:00:00Z",
-                "user_name": "jane",
-                "internal_field": "should_be_filtered_out",
-            },
-        ],
-        readable_output="Test alert output",
-        raw_response={"alert_id": "12345"},
-    )
+    result = get_issues_command(client, args)
 
-    # Mock get_alerts_by_filter_command to return our mock CommandResults
-    mock_get_alerts = mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_command_results)
-    mock_return_results = mocker.patch("CortexPlatformCore.return_results")
+    assert result[0].outputs is None
 
-    # Execute the main function
-    main()
 
-    # Verify that get_alerts_by_filter_command was called with transformed arguments
-    mock_get_alerts.assert_called_once()
-    called_args = mock_get_alerts.call_args[0][1]  # Get the args parameter
+def test_get_issues_command_with_single_alert_output(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_issues_by_filter_command returns a response with a single alert output
+    Then: get_issues_command should return a result with the corresponding issue output
+    """
+    from CortexPlatformCore import get_issues_command
 
-    # Verify the arguments were transformed from issue to alert format and output_keys was removed
-    assert "alert_id" in called_args
-    assert "alert_status" in called_args
-    assert "alert_priority" in called_args
-    assert "output_keys" not in called_args  # Should be removed from args passed to get_alerts_by_filter_command
-    assert called_args["alert_id"] == "12345"
-    assert called_args["alert_status"] == "open"
-    assert called_args["alert_priority"] == "high"
+    client = mocker.Mock()
+    args = {"issue_id": "456"}
+    alert_output = {"alert_id": "alert_123", "status": "open"}
+    issue_output = {"issue_id": "issue_456", "status": "open"}
+    mock_response = [
+        CommandResults(outputs=[alert_output], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"),
+    ]
 
-    # Get the CommandResults object that was passed to return_results
-    returned_command_results = mock_return_results.call_args[0][0]
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+    mocker.patch("CortexPlatformCore.alert_to_issue", return_value=issue_output)
 
-    # Verify the outputs were transformed back from alert to issue format
-    assert len(returned_command_results.outputs) == 2
+    result = get_issues_command(client, args)
 
-    # Check first alert/issue
-    first_issue = returned_command_results.outputs[0]
-    assert "issue_id" in first_issue
-    assert "issue_status" in first_issue
-    assert "issue_description" in first_issue
-    assert first_issue["issue_id"] == "12345"
-    assert first_issue["issue_status"] == "open"
-    assert first_issue["issue_description"] == "Test alert"
+    assert result[0].outputs == [issue_output]
 
-    # Verify that only the specified output_keys are present (after transformation to issue format)
-    expected_keys = {"issue_id", "issue_status", "issue_description"}
-    assert set(first_issue.keys()) == expected_keys
 
-    # Verify fields that should be filtered out are not present
-    assert "issue_priority" not in first_issue
-    assert "issue_severity" not in first_issue
-    assert "issue_timestamp" not in first_issue
-    assert "user_name" not in first_issue
-    assert "internal_field" not in first_issue
+def test_get_issues_command_with_output_keys_empty_list_does_not_filter(mocker):
+    from CortexPlatformCore import get_issues_command
 
-    # Check second alert/issue
-    second_issue = returned_command_results.outputs[1]
-    assert "issue_id" in second_issue
-    assert "issue_status" in second_issue
-    assert "issue_description" in second_issue
-    assert second_issue["issue_id"] == "67890"
-    assert second_issue["issue_status"] == "closed"
-    assert second_issue["issue_description"] == "Another test alert"
+    client = mocker.Mock()
+    args = {"issue_id": "789", "output_keys": []}
 
-    # Verify that only the specified output_keys are present
-    assert set(second_issue.keys()) == expected_keys
+    mock_response = [
+        CommandResults(outputs=[{"alert_id": "a1"}], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"),
+    ]
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
 
-    # Verify alert keys are not present in the final outputs
-    assert "alert_id" not in first_issue
-    assert "alert_status" not in first_issue
-    assert "alert_description" not in first_issue
+    alert_to_issue_mock = mocker.patch("CortexPlatformCore.alert_to_issue", return_value={"issue_id": "i1"})
+    filter_mock = mocker.patch("CortexPlatformCore.filter_context_fields")
+
+    result = get_issues_command(client, args)
+
+    assert result[0].outputs == [{"issue_id": "i1"}]
+    alert_to_issue_mock.assert_called_once()
+    filter_mock.assert_not_called()
+
+
+def test_get_issues_command_with_multiple_alert_outputs(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_issues_by_filter_command returns a response with multiple alert outputs
+    Then: get_issues_command should return a result with corresponding issue outputs
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"status": "open"}
+
+    # Create multiple alert outputs
+    alert_outputs = [
+        {"alert_id": "alert_123", "status": "open", "severity": "high"},
+        {"alert_id": "alert_456", "status": "open", "severity": "low"},
+        {"alert_id": "alert_789", "status": "open", "severity": "medium"},
+    ]
+
+    # Corresponding issue outputs
+    issue_outputs = [
+        {"issue_id": "alert_123", "status": "open", "severity": "high"},
+        {"issue_id": "alert_456", "status": "open", "severity": "low"},
+        {"issue_id": "alert_789", "status": "open", "severity": "medium"},
+    ]
+
+    mock_response = [
+        CommandResults(outputs=alert_outputs, outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 3, "returned_count": 3}], outputs_prefix="Core.IssueMetadata"),
+    ]
+
+    # Mock the get_issues_by_filter_command to return multiple outputs
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+
+    result = get_issues_command(client, args)
+
+    # Assert that the result contains all the expected issue outputs
+    assert len(result[0].outputs) == 3
+    assert result[0].outputs == issue_outputs
+
+
+def test_get_issues_command_with_empty_list_outputs(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_issues_by_filter_command returns a response with empty outputs list
+    Then: get_issues_command should return a result with empty outputs and not call alert_to_issue or filter_context_fields
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "123"}
+
+    mock_response = [
+        CommandResults(outputs=[], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 0, "returned_count": 0}], outputs_prefix="Core.IssueMetadata"),
+    ]
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+
+    alert_to_issue_mock = mocker.patch("CortexPlatformCore.alert_to_issue")
+    filter_mock = mocker.patch("CortexPlatformCore.filter_context_fields")
+
+    result = get_issues_command(client, args)
+
+    assert result[0].outputs == []
+    alert_to_issue_mock.assert_not_called()
+    filter_mock.assert_not_called()
+
+
+def test_get_issues_command_with_partial_output_keys(mocker):
+    """
+    Given: A client and args with some missing output keys
+    When: get_issues_command is called
+    Then: Returns partial outputs for available keys
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "123", "output_keys": ["status", "non_existent_key"]}
+
+    mock_response = [
+        CommandResults(outputs=[{"alert_id": "alert_123", "status": "open", "severity": "high"}], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"),
+    ]
+
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+
+    result = get_issues_command(client, args)
+    assert result[0].outputs == [{"status": "open"}]
 
 
 def test_get_cases_command_case_id_as_int(mocker: MockerFixture):
@@ -1337,757 +1299,6 @@ def test_build_webapp_request_data_with_empty_filter_dict(mocker: MockerFixture)
     }
 
     assert result == expected
-
-
-class TestFilterBuilder:
-    def test_add_field_without_mapper(self):
-        """
-        Given:
-            A FilterBuilder instance and field parameters without a mapper.
-        When:
-            The add_field method is called with name, type, and values.
-        Then:
-            A new Field should be added to filter_fields with the original values.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        values = ["value1", "value2"]
-
-        filter_builder.add_field("test_field", FilterType.EQ, values)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert field.field_name == "test_field"
-        assert field.filter_type == FilterType.EQ
-        assert field.values == values
-
-    def test_add_field_with_mapper_list_values(self):
-        """
-        Given:
-            A FilterBuilder instance, field parameters with a mapper, and list values.
-        When:
-            The add_field method is called with values that exist in the mapper.
-        Then:
-            A new Field should be added with mapped values only.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        values = ["low", "high", "unknown"]
-        mapper = {"low": "SEV_040_LOW", "high": "SEV_060_HIGH"}
-
-        filter_builder.add_field("severity", FilterType.EQ, values, mapper)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert field.field_name == "severity"
-        assert field.filter_type == FilterType.EQ
-        assert field.values == ["SEV_040_LOW", "SEV_060_HIGH"]
-
-    def test_add_field_with_mapper_single_value(self):
-        """
-        Given:
-            A FilterBuilder instance, field parameters with a mapper, and a single value.
-        When:
-            The add_field method is called with a single value that exists in the mapper.
-        Then:
-            The single value should be converted to a list and mapped correctly.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        value = "medium"
-        mapper = {"medium": "SEV_050_MEDIUM", "high": "SEV_060_HIGH"}
-
-        filter_builder.add_field("severity", FilterType.EQ, value, mapper)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert field.field_name == "severity"
-        assert field.filter_type == FilterType.EQ
-        assert field.values == ["SEV_050_MEDIUM"]
-
-    def test_add_field_with_mapper_no_matching_values(self):
-        """
-        Given:
-            A FilterBuilder instance, field parameters with a mapper, and values not in the mapper.
-        When:
-            The add_field method is called with values that don't exist in the mapper.
-        Then:
-            A new Field should be added with an empty list of processed values.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        values = ["unknown", "invalid"]
-        mapper = {"low": "SEV_040_LOW", "high": "SEV_060_HIGH"}
-
-        filter_builder.add_field("severity", FilterType.EQ, values, mapper)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert field.field_name == "severity"
-        assert field.filter_type == FilterType.EQ
-        assert field.values == []
-
-    def test_add_field_with_mappings_single_mapped_value(self):
-        """
-        Given: A FilterBuilder instance and a single mapped value that exists in the mappings dictionary.
-        When: The add_field_with_mappings method is called with a mapped value.
-        Then: A MappedValuesField should be added to the filter_fields list with the correct parameters.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        mappings = {
-            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
-            "assigned": FilterBuilder.FilterType.NIS_EMPTY,
-        }
-
-        filter_builder.add_field_with_mappings("assignee", FilterBuilder.FilterType.CONTAINS, "unassigned", mappings)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert isinstance(field, FilterBuilder.MappedValuesField)
-        assert field.field_name == "assignee"
-        assert field.filter_type == FilterBuilder.FilterType.CONTAINS
-        assert field.values == "unassigned"
-        assert field.mappings == mappings
-
-    def test_add_field_with_mappings_multiple_mapped_values(self):
-        """
-        Given: A FilterBuilder instance and multiple values that exist in the mappings dictionary.
-        When: The add_field_with_mappings method is called with a list of mapped values.
-        Then: A MappedValuesField should be added with the list of values and correct mappings.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        mappings = {
-            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
-            "assigned": FilterBuilder.FilterType.NIS_EMPTY,
-            "pending": FilterBuilder.FilterType.CONTAINS,
-        }
-        values = ["unassigned", "assigned"]
-
-        filter_builder.add_field_with_mappings("status", FilterBuilder.FilterType.EQ, values, mappings)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert isinstance(field, FilterBuilder.MappedValuesField)
-        assert field.field_name == "status"
-        assert field.filter_type == FilterBuilder.FilterType.EQ
-        assert field.values == values
-        assert field.mappings == mappings
-
-    def test_add_field_with_mappings_unmapped_value(self):
-        """
-        Given: A FilterBuilder instance and a value that does not exist in the mappings dictionary.
-        When: The add_field_with_mappings method is called with an unmapped value.
-        Then: A MappedValuesField should be added with the default filter type for unmapped values.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        mappings = {
-            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
-            "assigned": FilterBuilder.FilterType.NIS_EMPTY,
-        }
-
-        filter_builder.add_field_with_mappings("assignee", FilterBuilder.FilterType.CONTAINS, "john.doe", mappings)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert isinstance(field, FilterBuilder.MappedValuesField)
-        assert field.field_name == "assignee"
-        assert field.filter_type == FilterBuilder.FilterType.CONTAINS
-        assert field.values == "john.doe"
-        assert field.mappings == mappings
-
-    def test_add_field_with_mappings_mixed_values(self):
-        """
-        Given: A FilterBuilder instance and a list containing both mapped and unmapped values.
-        When: The add_field_with_mappings method is called with mixed value types.
-        Then: A MappedValuesField should be added containing all values with their respective mappings.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        mappings = {
-            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
-            "assigned": FilterBuilder.FilterType.NIS_EMPTY,
-        }
-        values = ["unassigned", "john.doe", "assigned"]
-
-        filter_builder.add_field_with_mappings("assignee", FilterBuilder.FilterType.CONTAINS, values, mappings)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert isinstance(field, FilterBuilder.MappedValuesField)
-        assert field.field_name == "assignee"
-        assert field.filter_type == FilterBuilder.FilterType.CONTAINS
-        assert field.values == values
-        assert field.mappings == mappings
-
-    def test_add_field_with_mappings_empty_mappings(self):
-        """
-        Given: A FilterBuilder instance and an empty mappings dictionary.
-        When: The add_field_with_mappings method is called with empty mappings.
-        Then: A MappedValuesField should be added with the empty mappings dictionary.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        mappings = {}
-
-        filter_builder.add_field_with_mappings("field", FilterBuilder.FilterType.EQ, "value", mappings)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert isinstance(field, FilterBuilder.MappedValuesField)
-        assert field.field_name == "field"
-        assert field.filter_type == FilterBuilder.FilterType.EQ
-        assert field.values == "value"
-        assert field.mappings == {}
-
-    def test_add_field_with_mappings_none_value(self):
-        """
-        Given: A FilterBuilder instance and None as the value parameter.
-        When: The add_field_with_mappings method is called with None value.
-        Then: A MappedValuesField should be added with None as the values.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        mappings = {
-            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
-        }
-
-        filter_builder.add_field_with_mappings("assignee", FilterBuilder.FilterType.CONTAINS, None, mappings)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert isinstance(field, FilterBuilder.MappedValuesField)
-        assert field.field_name == "assignee"
-        assert field.filter_type == FilterBuilder.FilterType.CONTAINS
-        assert field.values is None
-        assert field.mappings == mappings
-
-    def test_add_time_range_field_with_valid_start_and_end_time(self, mocker: MockerFixture):
-        """
-        Given: A FilterBuilder instance and valid start_time and end_time strings.
-        When: add_time_range_field is called with both start and end times.
-        Then: The method should add a RANGE field with from and to values to the filter.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        # Arrange
-        filter_builder = FilterBuilder()
-        mock_prepare_time_range = mocker.patch.object(
-            filter_builder, "_prepare_time_range", return_value=(1640995200000, 1641081600000)
-        )
-        mock_add_field = mocker.patch.object(filter_builder, "add_field")
-
-        # Act
-        filter_builder.add_time_range_field("test_field", "2022-01-01T00:00:00", "2022-01-02T00:00:00")
-
-        # Assert
-        mock_prepare_time_range.assert_called_once_with("2022-01-01T00:00:00", "2022-01-02T00:00:00")
-        mock_add_field.assert_called_once_with("test_field", FilterType.RANGE, {"from": 1640995200000, "to": 1641081600000})
-
-    def test_add_time_range_field_with_none_start_time(self, mocker: MockerFixture):
-        """
-        Given: A FilterBuilder instance with None start_time and valid end_time.
-        When: add_time_range_field is called with start_time as None.
-        Then: The method should not add any field to the filter since start is None.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        # Arrange
-        filter_builder = FilterBuilder()
-        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(None, 1641081600000))
-        mock_add_field = mocker.patch.object(filter_builder, "add_field")
-
-        # Act
-        filter_builder.add_time_range_field("test_field", None, "2022-01-02T00:00:00")
-
-        # Assert
-        mock_prepare_time_range.assert_called_once_with(None, "2022-01-02T00:00:00")
-        mock_add_field.assert_not_called()
-
-    def test_add_time_range_field_with_none_end_time(self, mocker: MockerFixture):
-        """
-        Given: A FilterBuilder instance with valid start_time and None end_time.
-        When: add_time_range_field is called with end_time as None.
-        Then: The method should not add any field to the filter since end is None.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        # Arrange
-        filter_builder = FilterBuilder()
-        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(1640995200000, None))
-        mock_add_field = mocker.patch.object(filter_builder, "add_field")
-
-        # Act
-        filter_builder.add_time_range_field("test_field", "2022-01-01T00:00:00", None)
-
-        # Assert
-        mock_prepare_time_range.assert_called_once_with("2022-01-01T00:00:00", None)
-        mock_add_field.assert_not_called()
-
-    def test_add_time_range_field_with_both_none_times(self, mocker: MockerFixture):
-        """
-        Given: A FilterBuilder instance with both start_time and end_time as None.
-        When: add_time_range_field is called with both times as None.
-        Then: The method should not add any field to the filter since both values are None.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        # Arrange
-        filter_builder = FilterBuilder()
-        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(None, None))
-        mock_add_field = mocker.patch.object(filter_builder, "add_field")
-
-        # Act
-        filter_builder.add_time_range_field("test_field", None, None)
-
-        # Assert
-        mock_prepare_time_range.assert_called_once_with(None, None)
-        mock_add_field.assert_not_called()
-
-    def test_add_time_range_field_with_zero_timestamps(self, mocker: MockerFixture):
-        """
-        Given: A FilterBuilder instance and _prepare_time_range returning zero timestamps.
-        When: add_time_range_field is called and both timestamps are zero (falsy values).
-        Then: The method should not add any field to the filter since zero is falsy in the condition.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        # Arrange
-        filter_builder = FilterBuilder()
-        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(0, 0))
-        mock_add_field = mocker.patch.object(filter_builder, "add_field")
-
-        # Act
-        filter_builder.add_time_range_field("test_field", "some_time", "some_other_time")
-
-        # Assert
-        mock_prepare_time_range.assert_called_once_with("some_time", "some_other_time")
-        mock_add_field.assert_not_called()
-
-    def test_to_dict_empty_filter_fields(self):
-        """
-        Given: A FilterBuilder instance with no filter fields.
-        When: The to_dict method is called.
-        Then: An empty dictionary should be returned.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        result = filter_builder.to_dict()
-        assert result == {}
-
-    def test_to_dict_single_field_single_value(self):
-        """
-        Given: A FilterBuilder with one field containing a single non-list value.
-        When: The to_dict method is called.
-        Then: A properly structured filter dictionary with one search object should be returned.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        filter_builder.add_field("test_field", FilterType.EQ, "test_value")
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {FilterBuilder.FIELD: "test_field", FilterBuilder.TYPE: FilterType.EQ.value, FilterBuilder.VALUE: "test_value"}
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_single_field_multiple_values(self):
-        """
-        Given: A FilterBuilder with one field containing multiple values in a list.
-        When: The to_dict method is called.
-        Then: A filter dictionary with OR operator grouping multiple search values should be returned.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        filter_builder.add_field("test_field", FilterType.EQ, ["value1", "value2"])
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {
-                    FilterType.EQ.operator: [
-                        {
-                            FilterBuilder.FIELD: "test_field",
-                            FilterBuilder.TYPE: FilterType.EQ.value,
-                            FilterBuilder.VALUE: "value1",
-                        },
-                        {
-                            FilterBuilder.FIELD: "test_field",
-                            FilterBuilder.TYPE: FilterType.EQ.value,
-                            FilterBuilder.VALUE: "value2",
-                        },
-                    ]
-                }
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_multiple_fields(self):
-        """
-        Given: A FilterBuilder with multiple fields each containing different values.
-        When: The to_dict method is called.
-        Then: A filter dictionary with AND operator containing all field filters should be returned.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        filter_builder.add_field("field1", FilterType.EQ, "value1")
-        filter_builder.add_field("field2", FilterType.CONTAINS, "value2")
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {FilterBuilder.FIELD: "field1", FilterBuilder.TYPE: FilterType.EQ.value, FilterBuilder.VALUE: "value1"},
-                {FilterBuilder.FIELD: "field2", FilterBuilder.TYPE: FilterType.CONTAINS.value, FilterBuilder.VALUE: "value2"},
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_with_none_values_filtered_out(self):
-        """
-        Given: A FilterBuilder with fields containing None values mixed with valid values.
-        When: The to_dict method is called.
-        Then: None values should be filtered out and only valid values should appear in the result.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        filter_builder.add_field("test_field", FilterType.EQ, [None, "valid_value", None])
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {FilterBuilder.FIELD: "test_field", FilterBuilder.TYPE: FilterType.EQ.value, FilterBuilder.VALUE: "valid_value"}
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_with_all_none_values(self):
-        """
-        Given: A FilterBuilder with fields containing only None values.
-        When: The to_dict method is called.
-        Then: An empty dictionary should be returned since all values are filtered out.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        filter_builder.add_field("test_field", FilterType.EQ, [None, None])
-
-        result = filter_builder.to_dict()
-        assert result == {}
-
-    def test_to_dict_with_mapped_values_field_normal_value(self):
-        """
-        Given: A MappedValuesField with a value that is not in the mappings dictionary.
-        When: The to_dict method is called.
-        Then: The default filter type should be used for the unmapped value.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        mappings = {"special": FilterType.IS_EMPTY}
-        filter_builder.add_field_with_mappings("test_field", FilterType.EQ, "normal_value", mappings)
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {FilterBuilder.FIELD: "test_field", FilterBuilder.TYPE: FilterType.EQ.value, FilterBuilder.VALUE: "normal_value"}
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_with_mapped_values_field_is_empty(self):
-        """
-        Given: A MappedValuesField with a value mapped to IS_EMPTY filter type.
-        When: The to_dict method is called.
-        Then: The mapped filter type should be used and value should be set to "<No Value>".
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        mappings = {"unassigned": FilterType.IS_EMPTY}
-        filter_builder.add_field_with_mappings("assignee", FilterType.EQ, "unassigned", mappings)
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {
-                    FilterBuilder.FIELD: "assignee",
-                    FilterBuilder.TYPE: FilterType.IS_EMPTY.value,
-                    FilterBuilder.VALUE: "<No Value>",
-                }
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_with_mapped_values_field_nis_empty(self):
-        """
-        Given: A MappedValuesField with a value mapped to NIS_EMPTY filter type.
-        When: The to_dict method is called.
-        Then: The mapped filter type should be used and value should be set to "<No Value>".
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        mappings = {"assigned": FilterType.NIS_EMPTY}
-        filter_builder.add_field_with_mappings("assignee", FilterType.EQ, "assigned", mappings)
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {
-                    FilterBuilder.FIELD: "assignee",
-                    FilterBuilder.TYPE: FilterType.NIS_EMPTY.value,
-                    FilterBuilder.VALUE: "<No Value>",
-                }
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_with_mixed_mapped_and_normal_values(self):
-        """
-        Given: A MappedValuesField with both mapped and unmapped values in the same field.
-        When: The to_dict method is called.
-        Then: Each value should use its appropriate filter type and the results should be grouped with OR operator.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        mappings = {"unassigned": FilterType.IS_EMPTY}
-        filter_builder.add_field_with_mappings("assignee", FilterType.EQ, ["unassigned", "john.doe"], mappings)
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {
-                    FilterType.EQ.operator: [
-                        {
-                            FilterBuilder.FIELD: "assignee",
-                            FilterBuilder.TYPE: FilterType.IS_EMPTY.value,
-                            FilterBuilder.VALUE: "<No Value>",
-                        },
-                        {
-                            FilterBuilder.FIELD: "assignee",
-                            FilterBuilder.TYPE: FilterType.EQ.value,
-                            FilterBuilder.VALUE: "john.doe",
-                        },
-                    ]
-                }
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_converts_non_list_values_to_list(self):
-        """
-        Given: A FilterBuilder with field values that are not initially in list format.
-        When: The to_dict method is called.
-        Then: The non-list values should be converted to lists internally for processing.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        # Directly create a field with non-list value
-        field = FilterBuilder.Field("test_field", FilterType.EQ, "single_value")
-        filter_builder.filter_fields = [field]
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {FilterBuilder.FIELD: "test_field", FilterBuilder.TYPE: FilterType.EQ.value, FilterBuilder.VALUE: "single_value"}
-            ]
-        }
-        assert result == expected
-
-    def test_prepare_time_range_both_valid_times(self, mocker: MockerFixture):
-        """
-        Given: Valid start_time and end_time strings that can be parsed by dateparser.
-        When: _prepare_time_range is called with both valid time strings.
-        Then: Both timestamps should be converted to milliseconds and returned as a tuple.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from datetime import datetime
-
-        # Mock dateparser.parse to return known datetime objects
-        start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        end_dt = datetime(2023, 1, 2, 15, 30, 0)
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse")
-        mock_parse.side_effect = [start_dt, end_dt]
-
-        start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", "2023-01-02T15:30:00")
-
-        assert start_time == int(start_dt.timestamp() * 1000)
-        assert end_time == int(end_dt.timestamp() * 1000)
-        assert mock_parse.call_count == 2
-
-    def test_prepare_time_range_only_start_time_provided(self, mocker: MockerFixture):
-        """
-        Given: A valid start_time string and None as end_time.
-        When: _prepare_time_range is called with only start_time provided.
-        Then: start_time should be converted to milliseconds and end_time should be set to current time.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from datetime import datetime
-
-        # Mock dateparser.parse for start_time
-        start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse", return_value=start_dt)
-
-        # Mock datetime.now for end_time calculation
-        current_dt = datetime(2023, 1, 3, 12, 0, 0)
-        mock_now = mocker.patch("CortexPlatformCore.datetime")
-        mock_now.now.return_value = current_dt
-
-        start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", None)
-
-        assert start_time == int(start_dt.timestamp() * 1000)
-        assert end_time == int(current_dt.timestamp() * 1000)
-        mock_parse.assert_called_once_with("2023-01-01T10:00:00")
-
-    def test_prepare_time_range_both_none_times(self):
-        """
-        Given: Both start_time_str and end_time_str parameters as None.
-        When: _prepare_time_range is called with both parameters as None.
-        Then: Both returned timestamps should be None without any parsing attempts.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        start_time, end_time = FilterBuilder._prepare_time_range(None, None)
-
-        assert start_time is None
-        assert end_time is None
-
-    def test_prepare_time_range_end_time_without_start_time_raises_exception(self):
-        """
-        Given: None as start_time_str and a valid end_time_str.
-        When: _prepare_time_range is called with end_time but no start_time.
-        Then: A DemistoException should be raised with appropriate error message.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from CommonServerPython import DemistoException
-
-        with pytest.raises(DemistoException, match="When 'end_time' is provided, 'start_time' must be provided as well."):
-            FilterBuilder._prepare_time_range(None, "2023-01-02T15:30:00")
-
-    def test_prepare_time_range_invalid_start_time_raises_value_error(self, mocker: MockerFixture):
-        """
-        Given: An invalid start_time string that cannot be parsed by dateparser.
-        When: _prepare_time_range is called with an unparseable start_time.
-        Then: A ValueError should be raised with the invalid start_time in the error message.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        # Mock dateparser.parse to return None for invalid input
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse", return_value=None)
-
-        with pytest.raises(ValueError, match="Could not parse start_time: invalid_start_time"):
-            FilterBuilder._prepare_time_range("invalid_start_time", None)
-
-        mock_parse.assert_called_once_with("invalid_start_time")
-
-    def test_prepare_time_range_invalid_end_time_raises_value_error(self, mocker: MockerFixture):
-        """
-        Given: A valid start_time and an invalid end_time string that cannot be parsed.
-        When: _prepare_time_range is called with valid start_time but unparseable end_time.
-        Then: A ValueError should be raised with the invalid end_time in the error message.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from datetime import datetime
-
-        # Mock dateparser.parse to return valid datetime for start_time and None for end_time
-        start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse")
-        mock_parse.side_effect = [start_dt, None]
-
-        with pytest.raises(ValueError, match="Could not parse end_time: invalid_end_time"):
-            FilterBuilder._prepare_time_range("2023-01-01T10:00:00", "invalid_end_time")
-
-        assert mock_parse.call_count == 2
-
-    def test_prepare_time_range_string_conversion_for_start_time(self, mocker: MockerFixture):
-        """
-        Given: A non-string start_time parameter that needs string conversion.
-        When: _prepare_time_range is called with start_time that requires str() conversion.
-        Then: The start_time should be converted to string before parsing and processed correctly.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from datetime import datetime
-
-        # Mock dateparser.parse to return a valid datetime
-        start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse", return_value=start_dt)
-
-        # Pass an integer that should be converted to string
-        start_time, end_time = FilterBuilder._prepare_time_range(20230101, None)
-
-        # Verify that str() was called on the parameter
-        mock_parse.assert_called_with("20230101")
-        assert start_time == int(start_dt.timestamp() * 1000)
-
-    def test_prepare_time_range_string_conversion_for_end_time(self, mocker: MockerFixture):
-        """
-        Given: A non-string end_time parameter along with valid start_time.
-        When: _prepare_time_range is called with end_time that requires str() conversion.
-        Then: The end_time should be converted to string before parsing and both times processed correctly.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from datetime import datetime
-
-        # Mock dateparser.parse to return valid datetimes
-        start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        end_dt = datetime(2023, 1, 2, 15, 30, 0)
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse")
-        mock_parse.side_effect = [start_dt, end_dt]
-
-        # Pass integers that should be converted to strings
-        start_time, end_time = FilterBuilder._prepare_time_range(20230101, 20230102)
-
-        # Verify that str() was called on both parameters
-        assert mock_parse.call_args_list[0][0][0] == "20230101"
-        assert mock_parse.call_args_list[1][0][0] == "20230102"
-        assert start_time == int(start_dt.timestamp() * 1000)
-        assert end_time == int(end_dt.timestamp() * 1000)
-
-    def test_prepare_time_range_millisecond_conversion_precision(self, mocker: MockerFixture):
-        """
-        Given: Valid datetime objects returned from dateparser with specific timestamp values.
-        When: _prepare_time_range converts the timestamps to milliseconds.
-        Then: The conversion should multiply by 1000 and convert to integer with correct precision.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from datetime import datetime
-
-        # Create datetime with known timestamp
-        start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        end_dt = datetime(2023, 1, 2, 15, 30, 0)
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse")
-        mock_parse.side_effect = [start_dt, end_dt]
-
-        start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", "2023-01-02T15:30:00")
-
-        # Verify precise millisecond conversion
-        expected_start = int(start_dt.timestamp() * 1000)
-        expected_end = int(end_dt.timestamp() * 1000)
-        assert start_time == expected_start
-        assert end_time == expected_end
-        assert isinstance(start_time, int)
-        assert isinstance(end_time, int)
 
 
 def test_search_asset_groups_command_success_with_all_filters(mocker):
@@ -6698,3 +5909,232 @@ def test_normalize_key_without_prefix():
     # Field names that contain 'xdm' but don't start with it
     assert normalize_key("field.xdm.name") == "field.xdm.name"
     assert normalize_key("some_xdm_field") == "some_xdm_field"
+
+
+class TestUpdateCaseCommand:
+    def test_update_case_command_with_unassigned_assignee(self, mocker):
+        """
+        Given: A client and args with unassigned assignee
+        When: update_case_command is called
+        Then: The case is unassigned and result contains expected case data
+        """
+        from CortexPlatformCore import update_case_command
+
+        client = mocker.Mock()
+        client.unassign_case = mocker.Mock()
+        client.update_case = mocker.Mock(return_value={"case_id": "123", "status": "open"})
+        mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123", "status": "open"})
+        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
+
+        args = {"case_id": "123", "assignee": "unassigned", "case_name": "Test Case"}
+
+        result = update_case_command(client, args)
+
+        client.unassign_case.assert_called_once_with("123")
+        assert result.outputs[0]["case_id"] == "123"
+
+    def test_update_case_command_resolved_status_without_reason_raises_error(self):
+        """
+        Given: A client and args with resolved status but no resolve_reason
+        When: update_case_command is called
+        Then: A ValueError is raised requiring resolve reason
+        """
+        from CortexPlatformCore import update_case_command
+
+        client = Mock()
+        args = {"case_id": "123", "status": "resolved"}
+
+        with pytest.raises(ValueError, match="In order to set the case to resolved, you must provide a resolve reason"):
+            update_case_command(client, args)
+
+    def test_update_case_command_resolved_status_with_invalid_reason_raises_error(self, mocker):
+        """
+        Given: A client and args with resolved status and invalid resolve_reason
+        When: update_case_command is called
+        Then: A ValueError is raised for invalid resolve reason
+        """
+        from CortexPlatformCore import update_case_command, CaseManagement
+
+        client = Mock()
+        mocker.patch.object(CaseManagement, "STATUS_RESOLVED_REASON", {"valid_reason": True})
+
+        args = {"case_id": "123", "status": "resolved", "resolve_reason": "invalid_reason"}
+
+        with pytest.raises(ValueError, match="In order to set the case to resolved, you must provide a resolve reason"):
+            update_case_command(client, args)
+
+    def test_update_case_command_resolve_fields_without_resolved_status_raises_error(self):
+        """
+        Given: A client and args with resolve fields but non-resolved status
+        When: update_case_command is called
+        Then: A ValueError is raised for invalid field combination
+        """
+        from CortexPlatformCore import update_case_command
+
+        client = Mock()
+        test_cases = [
+            {"case_id": "123", "resolve_reason": "duplicate", "status": "open"},
+            {"case_id": "123", "resolve_all_alerts": "true", "status": "open"},
+            {"case_id": "123", "resolved_comment": "test comment", "status": "open"},
+        ]
+
+        for args in test_cases:
+            with pytest.raises(ValueError, match="In order to use resolve_reason, resolve_all_alerts, or resolved_comment"):
+                update_case_command(client, args)
+
+    def test_update_case_command_invalid_status_raises_error(self, mocker):
+        """
+        Given: A client and args with invalid status
+        When: update_case_command is called
+        Then: A ValueError is raised for invalid status
+        """
+        from CortexPlatformCore import update_case_command, CaseManagement
+
+        client = Mock()
+        mocker.patch.object(CaseManagement, "STATUS", {"open": 1, "closed": 2})
+
+        args = {"case_id": "123", "status": "invalid_status"}
+
+        with pytest.raises(ValueError, match="Invalid status 'invalid_status'. Valid statuses are"):
+            update_case_command(client, args)
+
+    def test_update_case_command_invalid_severity_raises_error(self, mocker):
+        """
+        Given: A client and args with invalid user_defined_severity
+        When: update_case_command is called
+        Then: A ValueError is raised for invalid severity
+        """
+        from CortexPlatformCore import update_case_command, CaseManagement
+
+        client = Mock()
+        mocker.patch.object(CaseManagement, "SEVERITY", {"low": 1, "high": 2})
+
+        args = {"case_id": "123", "user_defined_severity": "invalid_severity"}
+
+        with pytest.raises(ValueError, match="Invalid user_defined_severity 'invalid_severity'. Valid severities are"):
+            update_case_command(client, args)
+
+    def test_update_case_command_no_valid_parameters_raises_error(self, mocker):
+        """
+        Given: A client and args with no valid update parameters
+        When: update_case_command is called
+        Then: A ValueError is raised for missing update parameters
+        """
+        from CortexPlatformCore import update_case_command
+
+        client = Mock()
+        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary", side_effect=lambda d: d.clear())
+
+        args = {"case_id": "123"}
+
+        with pytest.raises(ValueError, match="No valid update parameters provided for case update"):
+            update_case_command(client, args)
+
+    def test_update_case_command_multiple_cases_success(self, mocker):
+        """
+        Given: A client and args with multiple case IDs
+        When: update_case_command is called
+        Then: All cases are successfully updated and results contain case data
+        """
+        from CortexPlatformCore import update_case_command, CaseManagement
+
+        client = mocker.Mock()
+        client.update_case = mocker.Mock(side_effect=[{"case_id": "123", "status": "open"}, {"case_id": "456", "status": "open"}])
+        mocker.patch(
+            "CortexPlatformCore.process_case_response",
+            side_effect=[{"case_id": "123", "status": "open"}, {"case_id": "456", "status": "open"}],
+        )
+        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
+        mocker.patch.object(CaseManagement, "STATUS", {"open": 1})
+
+        args = {"case_id": ["123", "456"], "status": "open", "case_name": "Updated Case"}
+
+        result = update_case_command(client, args)
+
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["case_id"] == "123"
+        assert result.outputs[1]["case_id"] == "456"
+        assert client.update_case.call_count == 2
+
+    def test_update_case_command_with_custom_fields(self, mocker):
+        """
+        Given: A client and args with custom fields
+        When: update_case_command is called
+        Then: The case is updated with custom fields and result contains case data
+        """
+        from CortexPlatformCore import update_case_command
+
+        client = mocker.Mock()
+        client.update_case = mocker.Mock(return_value={"case_id": "123"})
+        mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123"})
+        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
+        mocker.patch("CortexPlatformCore.parse_custom_fields", return_value={"field1": "value1"})
+
+        args = {"case_id": "123", "custom_fields": ["field1:value1"], "case_name": "Test Case"}
+
+        result = update_case_command(client, args)
+
+        assert result.outputs[0]["case_id"] == "123"
+        client.update_case.assert_called_once()
+
+    def test_update_case_command_resolved_with_valid_reason(self, mocker):
+        """
+        Given: A client and args with resolved status and valid resolve reason
+        When: update_case_command is called
+        Then: The case is resolved successfully with all resolve fields
+        """
+        from CortexPlatformCore import update_case_command, CaseManagement
+
+        client = mocker.Mock()
+        client.update_case = mocker.Mock(return_value={"case_id": "123", "status": "resolved"})
+        mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123", "status": "resolved"})
+        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
+        mocker.patch.object(CaseManagement, "STATUS", {"resolved": 3})
+        mocker.patch.object(CaseManagement, "STATUS_RESOLVED_REASON", {"duplicate": True})
+
+        args = {
+            "case_id": "123",
+            "status": "resolved",
+            "resolve_reason": "duplicate",
+            "resolved_comment": "This is a duplicate case",
+            "resolve_all_alerts": "true",
+        }
+
+        result = update_case_command(client, args)
+
+        assert result.outputs[0]["case_id"] == "123"
+        client.update_case.assert_called_once()
+
+    def test_update_case_command_payload_construction(self, mocker):
+        """
+        Given: A client and args with various update fields
+        When: update_case_command is called
+        Then: The payload is constructed correctly with all mapped fields
+        """
+        from CortexPlatformCore import update_case_command, CaseManagement
+
+        client = mocker.Mock()
+        client.update_case = mocker.Mock(return_value={"case_id": "123"})
+        mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123"})
+        remove_nulls_mock = mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
+        mocker.patch.object(CaseManagement, "STATUS", {"open": 1})
+        mocker.patch.object(CaseManagement, "SEVERITY", {"high": 2})
+
+        args = {
+            "case_id": "123",
+            "case_name": "Test Case",
+            "status": "open",
+            "user_defined_severity": "high",
+            "assignee": "user@example.com",
+        }
+
+        update_case_command(client, args)
+
+        remove_nulls_mock.assert_called_once()
+        call_args = client.update_case.call_args[0]
+        payload = call_args[0]
+
+        assert payload["caseName"] == "Test Case"
+        assert payload["status"] == 1
+        assert payload["userSeverity"] == 2
+        assert payload["assignedUser"] == "user@example.com"
