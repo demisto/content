@@ -66,9 +66,7 @@ class Client(OktaClient):
         uri = "/api/v1/groups"
         query_params = {"q": encode_string_results(group_name)}
         res = self.http_request(method="GET", url_suffix=uri, params=query_params)
-        if res and len(res) == 1:
-            return res[0].get("id")
-        return None
+        return next((r.get("id") for r in (res or []) if r.get("profile", {}).get("name") == group_name), None)
 
     def get_app_id(self, app_name):
         uri = "/api/v1/apps"
@@ -681,7 +679,7 @@ def add_user_to_group_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
         if group_id is None:
-            raise ValueError("Either the group name was not found or multiple groups contain this name.")
+            raise ValueError("The group was not found.")
     raw_response = client.add_user_to_group(user_id, group_id)
     outputs = {
         "Okta.Metadata(true)": client.request_metadata,
@@ -701,7 +699,7 @@ def remove_from_group_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
         if group_id is None:
-            raise ValueError("Either the group name was not found or multiple groups contain this name.")
+            raise ValueError("The group was not found.")
     raw_response = client.remove_user_from_group(user_id, group_id)
     outputs = {
         "Okta.Metadata(true)": client.request_metadata,
@@ -842,7 +840,7 @@ def get_group_members_command(client, args):
     limit = args.get("limit")
     group_id = args.get("groupId") or client.get_group_id(args.get("groupName"))
     if group_id is None:
-        raise ValueError("Either the group name was not found or multiple groups contain this name.")
+        raise ValueError("The group was not found.")
     raw_members = client.get_group_members(group_id, limit)
     users_context = client.get_users_context(raw_members)
     users_readable = client.get_readable_users(raw_members, args.get("verbose"))
@@ -1138,7 +1136,7 @@ def assign_group_to_app_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
         if group_id is None:
-            raise ValueError("Either the group name was not found or multiple groups contain this name.")
+            raise ValueError("The group was not found.")
     app_id = client.get_app_id(args.get("appName"))
     raw_response = client.assign_group_to_app(group_id, app_id)
     outputs = {"Okta.Metadata(true)": client.request_metadata}
