@@ -6718,14 +6718,14 @@ script:
       description: Next page token for pagination.
       type: string
   - name: aws-kms-key-rotation-enable
-    description: Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
+    description: Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores. The default value is us-east-1.
     arguments:
     - name: account_id
       description: The AWS account ID.
       required: true
     - name: region
       description: The AWS region.
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
         - us-east-1
