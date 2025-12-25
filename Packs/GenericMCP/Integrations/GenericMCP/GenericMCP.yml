@@ -98,7 +98,7 @@ configuration:
     type: 8
     required: false
     advanced: true
-description: Use this integration to connect securely with an MCP server and access its tools in real time.
+description: Use this integration to connect to any MCP server and automatically discover its available tools.
 display: Generic MCP
 name: GenericMCP
 script:

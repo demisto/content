@@ -96,15 +96,13 @@ def test_extract_root_error_message_with_deeply_nested_exception_group():
     assert "ConnectionError: Network timeout" in result
 
 
-def test_parse_custom_headers_valid_headers():
+def test_parse_custom_headers_valid_input():
     """
-    Given: A multiline string containing valid header lines.
+    Given: A multiline string with valid header format lines.
     When: parse_custom_headers is called.
-    Then: A dictionary with the parsed headers should be returned.
+    Then: A dictionary with parsed headers is returned.
     """
-    headers_text = """Authorization: Bearer token123
-Content-Type: application/json
-X-Custom-Header: custom-value"""
+    headers_text = "Authorization: Bearer token123\nContent-Type: application/json\nX-Custom-Header: custom-value"
 
     result = parse_custom_headers(headers_text)
 
@@ -114,22 +112,22 @@ X-Custom-Header: custom-value"""
 
 def test_parse_custom_headers_empty_input():
     """
-    Given: An empty string as input.
+    Given: An empty string input.
     When: parse_custom_headers is called.
-    Then: An empty dictionary should be returned.
+    Then: An empty dictionary is returned.
     """
-    assert parse_custom_headers("") == {}
+    result = parse_custom_headers("")
+
+    assert result == {}
 
 
-def test_parse_custom_headers_with_malformed_lines():
+def test_parse_custom_headers_with_whitespace():
     """
-    Given: A multiline string containing both valid headers and malformed lines.
+    Given: A multiline string with headers containing extra whitespace and empty lines.
     When: parse_custom_headers is called.
-    Then: Only the valid headers should be parsed and malformed lines should be skipped.
+    Then: Headers are parsed with whitespace properly trimmed.
     """
-    headers_text = """Authorization: Bearer token123
-InvalidHeaderWithoutColon
-Content-Type: application/json"""
+    headers_text = "\n  Authorization:   Bearer token123  \n\nContent-Type:application/json\n  "
 
     result = parse_custom_headers(headers_text)
 
@@ -137,38 +135,47 @@ Content-Type: application/json"""
     assert result == expected
 
 
-def test_parse_custom_headers_with_whitespace_and_empty_lines():
+def test_parse_custom_headers_invalid_format():
     """
-    Given: A multiline string containing headers with extra whitespace and empty lines.
+    Given: A header line without a colon separator.
     When: parse_custom_headers is called.
-    Then: The headers should be parsed with whitespace trimmed.
+    Then: A ValueError is raised with details about the invalid format.
     """
-    headers_text = """
-    Authorization:    Bearer token123
-    
-Content-Type:application/json
+    headers_text = "Authorization: Bearer token123\nInvalidHeaderLine\nContent-Type: application/json"
 
-    X-Custom-Header  :  custom-value
+    with pytest.raises(ValueError) as exc_info:
+        parse_custom_headers(headers_text)
+
+    assert "Invalid header line format: InvalidHeaderLine" in str(exc_info.value)
+
+
+def test_parse_custom_headers_empty_header_name():
     """
-
-    result = parse_custom_headers(headers_text)
-
-    expected = {"Authorization": "Bearer token123", "Content-Type": "application/json", "X-Custom-Header": "custom-value"}
-    assert result == expected
-
-
-def test_parse_custom_headers_with_empty_header_name():
-    """
-    Given: A header line with an empty header name.
+    Given: A header line with empty header name but valid colon format.
     When: parse_custom_headers is called.
-    Then: Headers with empty names should be skipped.
+    Then: The invalid header is skipped and valid headers are still parsed.
     """
-    headers_text = """: empty-name-header
-Authorization: Bearer token123"""
+    headers_text = ": empty-name-header\nAuthorization: Bearer token123"
 
     result = parse_custom_headers(headers_text)
 
     expected = {"Authorization": "Bearer token123"}
+    assert result == expected
+
+
+def test_parse_custom_headers_debug_logging(mocker):
+    """
+    Given: Valid headers input and a mocked demisto debug function.
+    When: parse_custom_headers is called.
+    Then: The debug function is called with the parsed headers.
+    """
+    mock_debug = mocker.patch("MCPApiModule.demisto.debug")
+    headers_text = "Authorization: Bearer token123"
+
+    result = parse_custom_headers(headers_text)
+
+    expected = {"Authorization": "Bearer token123"}
+    mock_debug.assert_called_once_with(f"parse_custom_headers={expected}")
     assert result == expected
 
 
@@ -704,12 +711,22 @@ class TestClient:
         Then: The method should return CommandResults with readable output and tool data.
         """
         mocker.patch.object(Client, "_resolve_headers", return_value={"Authorization": "Bearer test-token"})
-        mock_session = mocker.MagicMock()
-        mock_session.initialize = mocker.AsyncMock()
 
-        mock_tool1 = Mock(name="search_tool")
-        mock_tool2 = Mock(name="analysis_tool")
-        mock_tools = Mock(tools=[mock_tool1, mock_tool2])
+        # Mock the session and its initialize method with proper return values
+        mock_session = mocker.MagicMock()
+        mock_server_info = Mock()
+        mock_server_info.name = "TestServer"
+        mock_init_result = Mock()
+        mock_init_result.serverInfo = mock_server_info
+        mock_session.initialize = mocker.AsyncMock(return_value=mock_init_result)
+
+        # Mock tools with proper name attributes
+        mock_tool1 = Mock()
+        mock_tool1.name = "search_tool"
+        mock_tool2 = Mock()
+        mock_tool2.name = "analysis_tool"
+        mock_tools = Mock()
+        mock_tools.tools = [mock_tool1, mock_tool2]
         mock_session.list_tools = mocker.AsyncMock(return_value=mock_tools)
 
         # FIX: Explicitly mock streamablehttp_client context manager return value
@@ -725,8 +742,9 @@ class TestClient:
         result = await mock_client_instance.list_tools()
 
         assert isinstance(result, CommandResults)
-        assert "Available 2 tools:" in result.readable_output
-        assert result.outputs_prefix == "ListTools.Tools"
+        assert "TestServer has 2 available tools:" in result.readable_output
+        assert "['search_tool', 'analysis_tool']" in result.readable_output
+        assert result.outputs_prefix == "ListTools"
         mock_session.list_tools.assert_called_once()
 
     @pytest.mark.asyncio

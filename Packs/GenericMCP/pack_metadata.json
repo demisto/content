@@ -1,6 +1,6 @@
 {
     "name": "Generic MCP",
-    "description": "This pack contains a generic integration with Model Context Protocol (MCP) servers, allowing seamless connectivity to an MCP servers",
+    "description": "This content pack provides a generic integration with Model Context Protocol (MCP) servers. By connecting to any external MCP server, the system automatically discovers the tools exposed by that server and generates corresponding agentic system actions, enabling Cortex agents to immediately use new capabilities without manual configuration.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "serverMinVersion": "8.13.0",
