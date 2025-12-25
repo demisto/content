@@ -10,25 +10,31 @@ sectionorder:
 - Collect
 configuration:
 - name: url
-  display: Audit Server URL (Audit API Base URL)
+  display: Audit Server URL
   required: true
   type: 0
   section: Connect
   additionalinfo: The Audit API base URL from the SIEM integration (e.g., https://example-domain.audit.cyberark.cloud).
 - name: identity_url
-  display: Identity URL (CyberArk Identity FQDN)
+  display: Identity URL
   required: true
   type: 0
   section: Connect
   additionalinfo: The CyberArk Identity FQDN for OAuth2 authentication (e.g., https://abc1234.id.cyberark.cloud).
 - name: web_app_id
-  display: OAuth2 Web App ID
+  display: Web App ID
   required: true
   type: 0
   section: Connect
   additionalinfo: The Application ID of the OAuth2 Server web app configured in Identity Administration.
+- name: api_key
+  display: API Key
+  required: true
+  type: 14
+  section: Connect
+  additionalinfo: The API key from the SIEM integration created in the Administration space.
 - name: client_id
-  display: Client ID (Service User)
+  display: Client ID
   required: true
   type: 0
   section: Connect
@@ -41,12 +47,7 @@ configuration:
   section: Connect
   hiddenusername: true
   additionalinfo: Service user password for OAuth2 authentication.
-- name: api_key
-  display: API Key
-  required: true
-  type: 14
-  section: Connect
-  additionalinfo: The API key from the SIEM integration created in the Administration space.
+
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
