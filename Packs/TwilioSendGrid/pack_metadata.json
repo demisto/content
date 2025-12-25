@@ -1,13 +1,13 @@
 {
-    "name": "Forcepoint DLP",
-    "description": "Forcepoint DLP event collector",
+    "name": "Twilio SendGrid",
+    "description": "Twilio SendGrid is a cloud-based email platform designed to help businesses send and manage both transactional and marketing emails reliably and at scale.",
     "support": "xsoar",
-    "currentVersion": "1.0.16",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Endpoint"
+        "Analytics & SIEM"
     ],
     "tags": [],
     "useCases": [],
@@ -15,13 +15,5 @@
     "marketplaces": [
         "marketplacev2",
         "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
-        "agentix",
-        "xsiam"
     ]
 }
