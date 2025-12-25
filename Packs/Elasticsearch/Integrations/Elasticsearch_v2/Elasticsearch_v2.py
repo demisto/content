@@ -666,7 +666,16 @@ def test_timestamp_format(timestamp):
             return_error(f"Fetched timestamp is not in milliseconds since epoch.\nFetched: {timestamp}")
 
 
-def test_connectivity_auth(proxies):
+def test_connectivity_auth(proxies) -> tuple[bool, str]:
+    """
+    Test connectivity and authentication with Elasticsearch server
+    Args:
+        proxies (dict): Dictionary of proxy settings
+
+    Returns:
+    bool: True if authentication and connectivity test passes, False otherwise
+    """
+
     demisto.debug("test_connectivity_auth started")
     headers = {"Content-Type": "application/json"}
     res = None
@@ -686,25 +695,19 @@ def test_connectivity_auth(proxies):
             headers["Authorization"] = f"Bearer {get_elastic_token()}"
             res = requests.get(SERVER, verify=INSECURE, headers=headers)
 
-        if res and res.status_code >= 400:
-            try:
-                res.raise_for_status()
+        if res is not None:
+            if res.status_code >= 400:
+                demisto.debug(f"test_connectivity_auth - Failed to connect.\n{res.status_code=}, {res.text=}")
+                return False, f"Failed to connect.\n{res.status_code=}, {res.text=}"
 
-            except requests.exceptions.HTTPError as e:
-                if HTTP_ERRORS.get(res.status_code) is not None:
-                    # if it is a known http error - get the message form the preset messages
-                    return_error(f"Failed to connect. The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
+            elif res.status_code == 200:
+                demisto.debug("test_connectivity_auth - Connectivity test successful")
+                verify_es_server_version(res.json())
+                return True, "Connectivity test successful"
 
-                else:
-                    # if it is unknown error - get the message from the error itself
-                    return_error(f"Failed to connect. The following error occurred: {e}")
-
-        elif res and res.status_code == 200:
-            demisto.debug("test_connectivity_auth - Connectivity test successful")
-            verify_es_server_version(res.json())
-
-    except requests.exceptions.RequestException as e:
-        return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
+    except Exception as e:
+        demisto.debug(f"test_connectivity_auth - Failed to connect.\nError message: {e}")
+        return False, f"Failed to connect.\nError message: {e}"
 
 
 def verify_es_server_version(res):
@@ -744,15 +747,19 @@ def test_func(proxies):
     as excepted the user should run the es-integration-health-check command.
 
     """
-    test_connectivity_auth(proxies)
+    success, message = test_connectivity_auth(proxies)
+    if not success:
+        return message
     if demisto.params().get("isFetch"):
         # check the existence of all necessary fields for fetch
         fetch_params_check()
-    demisto.results("ok")
+    return "ok"
 
 
 def integration_health_check(proxies):
-    test_connectivity_auth(proxies)
+    success, message = test_connectivity_auth(proxies)
+    if not success:
+        raise DemistoException(message)
     # build general Elasticsearch class
     es = elasticsearch_builder(proxies)
 
@@ -1308,7 +1315,6 @@ def get_indices_statistics(client):
 
     return raw_indices_data
 
-
 def get_indices_statistics_command(args, proxies):
     """
     Returns statistics and information of the Elasticsearch indices.
@@ -1359,7 +1365,7 @@ def main():  # pragma: no cover
     try:
         LOG(f"command is {demisto.command()}")
         if demisto.command() == "test-module":
-            test_func(proxies)
+            return_results(test_func(proxies))
         elif demisto.command() == "fetch-incidents":
             fetch_incidents(proxies)
         elif demisto.command() in ["search", "es-search"]:
