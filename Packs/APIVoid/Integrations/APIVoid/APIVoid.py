@@ -740,10 +740,7 @@ def main():
     }
 
     demisto.debug(f"APIVoid: Initialized with base_url={base_url}, verify={verify}, proxy={proxy}, reliability={reliability}")
-    demisto.debug(
-        f'APIVoid: Thresholds configured - '
-        f'suspicious={thresholds["suspicious"]}%, bad={thresholds["bad"]}%'
-    )
+    demisto.debug(f'APIVoid: Thresholds configured - ' f'suspicious={thresholds["suspicious"]}%, bad={thresholds["bad"]}%')
 
     # Create client
     client = Client(base_url, apikey, verify, proxy)
