@@ -3197,8 +3197,8 @@ def list_compliance_standards_payload(
     name: str = None,
     created_by: str = None,
     labels: list = None,
-    page=None,
-    page_size=None,
+    page=0,
+    page_size=MAX_COMPLIANCE_STANDARDS,
 ) -> Dict[str, Any]:
     """
     Prepare assessment profile payload
@@ -3335,8 +3335,8 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> list[C
     created_by = args.get("created_by", "")
     labels = argToList(args.get("labels", ""))
     labels = ["alibaba_cloud" if label == "Alibaba Cloud" else "on_prem" if label == "On Prem" else label for label in labels]
-    page = args.get("page", "0")
-    page_size = args.get("page_size") or MAX_COMPLIANCE_STANDARDS
+    page = arg_to_number(args.get("page", "0"))
+    page_size = arg_to_number(args.get("page_size", MAX_COMPLIANCE_STANDARDS))
 
     payload = list_compliance_standards_payload(
         name=name,
