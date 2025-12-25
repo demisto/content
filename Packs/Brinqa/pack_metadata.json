@@ -1,0 +1,21 @@
+{
+    "name": "Brinqa",
+    "description": "The Brinqa integration for Cortex XSOAR enables analysts to query cyber\n  asset inventory and risk context from Brinqa Cyber Risk Platform (CAASM GraphQL\n  API). This pack currently provides an operation to search through tables in Brinqa, vulnerabilities, and hosts. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Karen Vo",
+    "url": "",
+    "email": "",
+    "created": "2025-12-25T03:33:26Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "karenvo"
+    ]
+}
