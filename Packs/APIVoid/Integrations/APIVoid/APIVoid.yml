@@ -29,13 +29,6 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Good Reputation (Percentage)
-  name: good
-  defaultvalue: '10'
-  type: 0
-  required: true
-  additionalinfo: If the percentage of detections is BELOW this value, the indicator is considered GOOD
-  section: Collect
 - display: Suspicious Reputation (Percentage)
   name: suspicious
   defaultvalue: '30'

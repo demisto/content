@@ -98,7 +98,7 @@ def calculate_dbot_score(engines_count: int, detections: int, thresholds: dict) 
     Args:
         engines_count: Total number of engines
         detections: Number of positive detections
-        thresholds: Dict with 'good', 'suspicious', 'bad' thresholds (%)
+        thresholds: Dict with 'suspicious', 'bad' thresholds (%)
 
     Returns:
         DBot score (0-3)
@@ -108,14 +108,12 @@ def calculate_dbot_score(engines_count: int, detections: int, thresholds: dict) 
 
     detection_rate = (detections / engines_count) * 100
 
-    if detection_rate < thresholds["good"]:
-        return Common.DBotScore.GOOD
     if detection_rate > thresholds["bad"]:
         return Common.DBotScore.BAD
     if detection_rate > thresholds["suspicious"]:
         return Common.DBotScore.SUSPICIOUS
 
-    return Common.DBotScore.NONE
+    return Common.DBotScore.GOOD
 
 
 def ip_reputation_command(
@@ -737,14 +735,13 @@ def main():
 
     # Threshold configuration
     thresholds = {
-        "good": arg_to_number(params.get("good", 10)),
         "suspicious": arg_to_number(params.get("suspicious", 30)),
         "bad": arg_to_number(params.get("bad", 60)),
     }
 
     demisto.debug(f"APIVoid: Initialized with base_url={base_url}, verify={verify}, proxy={proxy}, reliability={reliability}")
     demisto.debug(
-        f'APIVoid: Thresholds configured - good={thresholds["good"]}%, '
+        f'APIVoid: Thresholds configured - '
         f'suspicious={thresholds["suspicious"]}%, bad={thresholds["bad"]}%'
     )
 

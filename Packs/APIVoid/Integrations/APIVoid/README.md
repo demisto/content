@@ -6,8 +6,7 @@ APIVoid wraps up a number of services such as ipvoid & urlvoid.
 | --- | --- | --- |
 | Server URL |  | True |
 | API Key |  | False |
-| Good Reputation (Percentage) | If the percentage of detections is BELOW this value, the indicator is considered GOOD | True |
-| Suspicious Reputation (Percentage) | If the percentage of detections is ABOVE this value, the indicator is considered SUSPICIOUS | True |
+| Suspicious Reputation (Percentage) | If the percentage of detections is ABOVE this value, the indicator is considered SUSPICIOUS. If the percentage of detections is BELOW this value, the indicator is considered GOOD. | True |
 | Bad Reputation (Percentage) | If the percentage of detections is ABOVE this value, the indicator is considered BAD | True |
 | Malicious | Consider the indicator malicious if either "suspicious" or "bad" | True |
 | Trust any certificate (not secure) |  | False |

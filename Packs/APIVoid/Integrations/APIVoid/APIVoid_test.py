@@ -100,7 +100,6 @@ def mock_demisto(mocker):
             "insecure": False,
             "proxy": False,
             "integrationReliability": "C - Fairly reliable",
-            "good": "10",
             "suspicious": "30",
             "bad": "60",
         },
@@ -214,7 +213,7 @@ class TestIpReputationWithStrictValidation:
         mock_http = mocker.patch.object(client, "_http_request", return_value=MOCK_IP_RESPONSE)
 
         args = {"ip": "8.8.8.8"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         ip_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
 
@@ -234,7 +233,7 @@ class TestIpReputationWithStrictValidation:
         Then: Should send correct IP in request body
         """
         mock_http = mocker.patch.object(client, "_http_request", return_value=MOCK_IP_RESPONSE)
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         test_ips = ["8.8.8.8", "1.1.1.1", "192.168.1.1", "10.0.0.1"]
 
@@ -257,7 +256,7 @@ class TestIpReputationWithStrictValidation:
         mocker.patch.object(client, "_http_request", return_value=MOCK_IP_RESPONSE)
 
         args = {"ip": "8.8.8.8"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         result = ip_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
 
@@ -286,7 +285,7 @@ class TestDomainReputationWithStrictValidation:
         mock_http = mocker.patch.object(client, "_http_request", return_value=MOCK_DOMAIN_RESPONSE)
 
         args = {"domain": "google.com"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         domain_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
 
@@ -306,7 +305,7 @@ class TestDomainReputationWithStrictValidation:
         Then: Should send correct domain in request body
         """
         mock_http = mocker.patch.object(client, "_http_request", return_value=MOCK_DOMAIN_RESPONSE)
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         test_domains = ["example.com", "google.com", "test.org", "subdomain.example.com"]
 
@@ -338,7 +337,7 @@ class TestUrlReputationWithStrictValidation:
         mock_http = mocker.patch.object(client, "_http_request", return_value=MOCK_URL_RESPONSE)
 
         args = {"url": "https://example.com"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         url_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
 
@@ -358,7 +357,7 @@ class TestUrlReputationWithStrictValidation:
         Then: Should send correct URL in request body
         """
         mock_http = mocker.patch.object(client, "_http_request", return_value=MOCK_URL_RESPONSE)
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         test_urls = [
             "https://example.com",
@@ -770,18 +769,18 @@ class TestCalculateDbotScore:
         When: calculate_dbot_score is called
         Then: Score should be GOOD (1)
         """
-        score = calculate_dbot_score(engines_count=10, detections=0, thresholds={"good": 10, "suspicious": 30, "bad": 60})
+        score = calculate_dbot_score(engines_count=10, detections=0, thresholds={"suspicious": 30, "bad": 60})
         assert score == Common.DBotScore.GOOD
 
-    def test_score_good_below_threshold(self):
+    def test_score_good_below_suspicious_threshold(self):
         """
-        Test DBot score calculation below good threshold
+        Test DBot score calculation below suspicious threshold (previously 'gap' area)
 
-        Given: 5 detections out of 100 engines_count (5%)
-        When: calculate_dbot_score is called with good threshold 10%
+        Given: 20 detections out of 100 engines_count (20%)
+        When: calculate_dbot_score is called with suspicious threshold 30%
         Then: Score should be GOOD (1)
         """
-        score = calculate_dbot_score(engines_count=100, detections=5, thresholds={"good": 10, "suspicious": 30, "bad": 60})
+        score = calculate_dbot_score(engines_count=100, detections=20, thresholds={"suspicious": 30, "bad": 60})
         assert score == Common.DBotScore.GOOD
 
     def test_score_suspicious(self):
@@ -789,10 +788,10 @@ class TestCalculateDbotScore:
         Test DBot score calculation in suspicious range
 
         Given: 40 detections out of 100 engines_count (40%)
-        When: calculate_dbot_score is called with thresholds 10/30/60
+        When: calculate_dbot_score is called with thresholds 30/60
         Then: Score should be SUSPICIOUS (2)
         """
-        score = calculate_dbot_score(engines_count=100, detections=40, thresholds={"good": 10, "suspicious": 30, "bad": 60})
+        score = calculate_dbot_score(engines_count=100, detections=40, thresholds={"suspicious": 30, "bad": 60})
         assert score == Common.DBotScore.SUSPICIOUS
 
     def test_score_bad(self):
@@ -803,7 +802,7 @@ class TestCalculateDbotScore:
         When: calculate_dbot_score is called with bad threshold 60%
         Then: Score should be BAD (3)
         """
-        score = calculate_dbot_score(engines_count=100, detections=70, thresholds={"good": 10, "suspicious": 30, "bad": 60})
+        score = calculate_dbot_score(engines_count=100, detections=70, thresholds={"suspicious": 30, "bad": 60})
         assert score == Common.DBotScore.BAD
 
     def test_score_none_zero_engines(self):
@@ -814,7 +813,7 @@ class TestCalculateDbotScore:
         When: calculate_dbot_score is called
         Then: Score should be NONE (0)
         """
-        score = calculate_dbot_score(engines_count=0, detections=0, thresholds={"good": 10, "suspicious": 30, "bad": 60})
+        score = calculate_dbot_score(engines_count=0, detections=0, thresholds={"suspicious": 30, "bad": 60})
         assert score == Common.DBotScore.NONE
 
 
@@ -842,7 +841,7 @@ class TestMaliciousDescription:
         mocker.patch.object(client, "_http_request", return_value=mock_response)
 
         args = {"ip": "8.8.8.8"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         result = ip_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
 
@@ -866,7 +865,7 @@ class TestMaliciousDescription:
         mocker.patch.object(client, "_http_request", return_value=mock_response)
 
         args = {"domain": "malicious.com"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         result = domain_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
 
@@ -890,7 +889,7 @@ class TestMaliciousDescription:
         mocker.patch.object(client, "_http_request", return_value=mock_response)
 
         args = {"url": "https://example.com"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         result = url_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
 
@@ -914,7 +913,7 @@ class TestMaliciousDescription:
         mocker.patch.object(client, "_http_request", return_value=mock_response)
 
         args = {"ip": "8.8.8.8"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         result = ip_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
 
@@ -942,7 +941,7 @@ class TestErrorHandling:
         mocker.patch.object(client, "_http_request", return_value=MOCK_ERROR_RESPONSE)
 
         args = {"ip": "8.8.8.8"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         with pytest.raises(DemistoException, match="Error checking IP"):
             ip_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
@@ -958,7 +957,7 @@ class TestErrorHandling:
         mocker.patch.object(client, "_http_request", return_value=MOCK_ERROR_RESPONSE)
 
         args = {"domain": "example.com"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         with pytest.raises(DemistoException, match="Error checking domain"):
             domain_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
@@ -974,7 +973,7 @@ class TestErrorHandling:
         mocker.patch.object(client, "_http_request", return_value=MOCK_ERROR_RESPONSE)
 
         args = {"url": "https://example.com"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         with pytest.raises(DemistoException, match="Error checking URL"):
             url_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
@@ -1398,7 +1397,7 @@ class TestExceptionHandling:
         mocker.patch.object(client, "_http_request", side_effect=Exception("Connection timeout"))
 
         args = {"ip": "8.8.8.8"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         with pytest.raises(DemistoException, match="Failed to get IP reputation"):
             ip_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
@@ -1414,7 +1413,7 @@ class TestExceptionHandling:
         mocker.patch.object(client, "_http_request", side_effect=Exception("Network error"))
 
         args = {"domain": "example.com"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         with pytest.raises(DemistoException, match="Failed to get domain reputation"):
             domain_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
@@ -1430,7 +1429,7 @@ class TestExceptionHandling:
         mocker.patch.object(client, "_http_request", side_effect=Exception("Timeout"))
 
         args = {"url": "https://example.com"}
-        thresholds = {"good": 10, "suspicious": 30, "bad": 60}
+        thresholds = {"suspicious": 30, "bad": 60}
 
         with pytest.raises(DemistoException, match="Failed to get URL reputation"):
             url_reputation_command(client, args, False, thresholds, "C - Fairly reliable")
