@@ -3154,7 +3154,7 @@ def parse_frequency(day: str, time: str) -> str:
     :return: Cron-style frequency string
     """
 
-    minutes, hours = time.split(":")
+    hours, minutes = time.split(":")
     return f"{minutes} {hours} * * {DAY_MAP[day]}"
 
 
@@ -3222,7 +3222,7 @@ def list_compliance_standards_payload(
 
     if created_by:
         payload["request_data"]["filters"].append(
-            {"field": "IS_CUSTOM", "operator": "in", "value": "yes" if created_by == "Custom" else "no"}
+            {"field": "IS_CUSTOM", "operator": "in", "value": ["yes" if created_by == "Custom" else "no"]}
         )
 
     if labels:
@@ -3261,8 +3261,10 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
     reply = response.get("reply", {})
     standards = reply.get("standards")
     demisto.debug(f"{standards=}")
+
     if not standards:
         return_error("No compliance standards found matching the provided name.")
+
     if len(standards) > 1:
         standard_names = [standard.get("name") for standard in standards]
         new_line = "\n"
@@ -3359,7 +3361,7 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> list[C
             "description": s.get("description"),
             "controls_count": len(s.get("controls_ids", [])),
             "assessments_profiles_count": s.get("assessments_profiles_count", 0),
-            "labels": len(s.get("labels", [])),
+            "labels": s.get("labels", []),
         }
         for s in standards
     ]
@@ -3377,7 +3379,7 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> list[C
     command_results.append(
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ComplianceStandardsMetadata",
-            outputs={"filter_count": filtered_count, "returned_count": returned_count},
+            outputs={"filtered_count": filtered_count, "returned_count": returned_count},
         )
     )
 

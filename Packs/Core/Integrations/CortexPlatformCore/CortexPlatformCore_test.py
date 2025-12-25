@@ -6927,7 +6927,7 @@ class TestCoreListComplianceStandardsCommand:
 
         assert len(result) == 2
         assert result[0].outputs_prefix == "Core.ComplianceStandards"
-        assert result[1].outputs["filter_count"] == 1
+        assert result[1].outputs["filtered_count"] == 1
         assert result[1].outputs["returned_count"] == 1
 
     def test_core_list_compliance_standards_command_with_empty_standards_list(self, mocker):
@@ -6947,7 +6947,7 @@ class TestCoreListComplianceStandardsCommand:
 
         assert len(result) == 2
         assert result[0].outputs == []
-        assert result[1].outputs["filter_count"] == 0
+        assert result[1].outputs["filtered_count"] == 0
         assert result[1].outputs["returned_count"] == 0
 
     def test_core_list_compliance_standards_command_multiple_standards(self, mocker):
