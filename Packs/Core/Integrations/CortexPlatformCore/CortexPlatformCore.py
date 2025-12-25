@@ -1581,27 +1581,7 @@ def map_case_format(case_list):
 
     return mapped_cases
 
-
-def get_cases_command(client, args):
-    """
-    Retrieves cases from Cortex platform based on provided filtering criteria.
-
-    Args:
-        client: The Cortex platform client instance for making API requests.
-        args (dict): Dictionary containing filter parameters including page number,
-                    limits, time ranges, status, severity, and other case attributes.
-
-    Returns:
-        List of mapped case objects containing case details and metadata.
-    """
-    page = arg_to_number(args.get("page")) or 0
-    limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
-
-    limit = page * MAX_GET_CASES_LIMIT + limit
-    page = page * MAX_GET_CASES_LIMIT
-
-    sort_by_modification_time = args.get("sort_by_modification_time")
-    sort_by_creation_time = args.get("sort_by_creation_time")
+def build_get_cases_filter(args: dict) -> FilterBuilder:
     since_creation_start_time = args.get("since_creation_time")
     since_creation_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_creation_start_time else None
     since_modification_start_time = args.get("since_modification_time")
@@ -1610,8 +1590,6 @@ def get_cases_command(client, args):
     lte_creation_time = args.get("lte_creation_time")
     gte_modification_time = args.get("gte_modification_time")
     lte_modification_time = args.get("lte_modification_time")
-
-    sort_field, sort_order = get_cases_sort_order(sort_by_creation_time, sort_by_modification_time)
 
     status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("status"))]
     severity_values = [CaseManagement.SEVERITY[severity] for severity in argToList(args.get("severity"))]
@@ -1686,9 +1664,31 @@ def get_cases_command(client, args):
         },
     )
 
+    return filter_builder
+
+def get_cases_command(client, args):
+    """
+    Retrieves cases from Cortex platform based on provided filtering criteria.
+
+    Args:
+        client: The Cortex platform client instance for making API requests.
+        args (dict): Dictionary containing filter parameters including page number,
+                    limits, time ranges, status, severity, and other case attributes.
+
+    Returns:
+        List of mapped case objects containing case details and metadata.
+    """
+
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
+
+    limit = page * MAX_GET_CASES_LIMIT + limit
+    page = page * MAX_GET_CASES_LIMIT
+
+    sort_field, sort_order = get_cases_sort_order(args.get("sort_by_creation_time"), args.get("sort_by_modification_time"))
     request_data = build_webapp_request_data(
         table_name=CASES_TABLE,
-        filter_dict=filter_builder.to_dict(),
+        filter_dict=build_get_cases_filter(args).to_dict(),
         limit=limit,
         sort_field=sort_field,
         sort_order=sort_order,
@@ -1705,14 +1705,10 @@ def get_cases_command(client, args):
     filter_count = int(reply.get("FILTER_COUNT", "0"))
     returned_count = len(data)
 
-    command_results = []
-
-    command_results.append(
-        CommandResults(
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
-            outputs={"filter_count": filter_count, "returned_count": returned_count},
-        )
-    )
+    command_results = [CommandResults(
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
+        outputs={"filter_count": filter_count, "returned_count": returned_count},
+    )]
 
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
     # In case enriched case data was requested
