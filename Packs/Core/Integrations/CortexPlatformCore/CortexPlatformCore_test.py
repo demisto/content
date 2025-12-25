@@ -185,7 +185,10 @@ def test_get_issues_command_with_empty_response_outputs(mocker):
 
     client = mocker.Mock()
     args = {"issue_id": "123"}
-    mock_response = [CommandResults(outputs=None, outputs_prefix="Core.Issue"), CommandResults(outputs=[{"filtered_count": 0, "returned_count": 0}], outputs_prefix="Core.IssueMetadata")]
+    mock_response = [
+        CommandResults(outputs=None, outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 0, "returned_count": 0}], outputs_prefix="Core.IssueMetadata"),
+    ]
     mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
     mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
 
@@ -206,7 +209,10 @@ def test_get_issues_command_with_single_alert_output(mocker):
     args = {"issue_id": "456"}
     alert_output = {"alert_id": "alert_123", "status": "open"}
     issue_output = {"issue_id": "issue_456", "status": "open"}
-    mock_response = [CommandResults(outputs=[alert_output], outputs_prefix="Core.Issue"), CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata")]
+    mock_response = [
+        CommandResults(outputs=[alert_output], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"),
+    ]
 
     mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
     mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
@@ -223,7 +229,10 @@ def test_get_issues_command_with_output_keys_empty_list_does_not_filter(mocker):
     client = mocker.Mock()
     args = {"issue_id": "789", "output_keys": []}
 
-    mock_response = [CommandResults(outputs=[{"alert_id": "a1"}], outputs_prefix="Core.Issue"), CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata")]
+    mock_response = [
+        CommandResults(outputs=[{"alert_id": "a1"}], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"),
+    ]
     mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
     mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
 
@@ -262,7 +271,10 @@ def test_get_issues_command_with_multiple_alert_outputs(mocker):
         {"issue_id": "alert_789", "status": "open", "severity": "medium"},
     ]
 
-    mock_response = [CommandResults(outputs=alert_outputs, outputs_prefix="Core.Issue"), CommandResults(outputs=[{"filtered_count": 3, "returned_count": 3}], outputs_prefix="Core.IssueMetadata")]
+    mock_response = [
+        CommandResults(outputs=alert_outputs, outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 3, "returned_count": 3}], outputs_prefix="Core.IssueMetadata"),
+    ]
 
     # Mock the get_issues_by_filter_command to return multiple outputs
     mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
@@ -285,11 +297,10 @@ def test_get_issues_command_with_empty_list_outputs(mocker):
     client = mocker.Mock()
     args = {"issue_id": "123"}
 
-    mock_response = [CommandResults(
-        outputs=[], outputs_prefix="Core.Issue"
-    ), CommandResults(
-        outputs=[{"filtered_count": 0, "returned_count": 0}], outputs_prefix="Core.IssueMetadata"
-    )]
+    mock_response = [
+        CommandResults(outputs=[], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 0, "returned_count": 0}], outputs_prefix="Core.IssueMetadata"),
+    ]
     mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
     mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
 
@@ -314,19 +325,18 @@ def test_get_issues_command_with_partial_output_keys(mocker):
     client = mocker.Mock()
     args = {"issue_id": "123", "output_keys": ["status", "non_existent_key"]}
 
-    mock_response = [CommandResults(
-        outputs=[{"alert_id": "alert_123", "status": "open", "severity": "high"}], outputs_prefix="Core.Issue"
-    ), CommandResults(
-        outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"
-    )]
-    
+    mock_response = [
+        CommandResults(outputs=[{"alert_id": "alert_123", "status": "open", "severity": "high"}], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"),
+    ]
+
     mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
     mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
 
     result = get_issues_command(client, args)
     assert result[0].outputs == [{"status": "open"}]
-    
-    
+
+
 def test_get_cases_command_case_id_as_int(mocker: MockerFixture):
     """
     Given:
@@ -5899,6 +5909,7 @@ def test_normalize_key_without_prefix():
     # Field names that contain 'xdm' but don't start with it
     assert normalize_key("field.xdm.name") == "field.xdm.name"
     assert normalize_key("some_xdm_field") == "some_xdm_field"
+
 
 class TestUpdateCaseCommand:
     def test_update_case_command_with_unassigned_assignee(self, mocker):
