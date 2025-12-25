@@ -187,6 +187,10 @@
             "memory_threshold": 200
         },
         {
+            "integrations": "Cortex Core - IR",
+            "playbookID": "Test-CortexCoreIR"
+        },
+        {
             "integrations": "Twitter v2",
             "playbookID": "playbook-Test_Twitter_v2",
             "instance_names": "Twitter v2"

@@ -4522,7 +4522,7 @@ script:
   type: python
   dockerimage: demisto/google-cloud-storage:1.0.0.4885491
 tests:
-- No tests
+- Test-CortexCoreIR
 supportsquickactions: true
 fromversion: 6.2.0
 supportedModules:
