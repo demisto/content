@@ -1,7 +1,10 @@
 category: Analytics & SIEM
 commonfields:
-  id: Twilio SendGrid Event Collector
+  id: Twilio SendGrid
   version: -1
+description: Twilio SendGrid is a cloud-based email delivery platform that provides email activity tracking and analytics.
+display: Twilio SendGrid
+name: Twilio SendGrid
 sectionorder:
 - Connect
 - Collect
@@ -45,9 +48,6 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: Use this integration to fetch email activity events from Twilio SendGrid as Cortex XSIAM events.
-display: Twilio SendGrid Event Collector
-name: Twilio SendGrid Event Collector
 script:
   commands:
   - name: twilio-sendgrid-get-events
@@ -61,9 +61,9 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: Maximum number of events to retrieve. The API is limited to 1000 events per call, so multiple calls will be made if needed. Default is 10000.
+    - description: Maximum number of events to retrieve. The API is limited to 1000 events per call. Default is 10000.
       name: limit
-      defaultValue: '10000'
+      defaultValue: '1000'
       required: false
     - description: Start time for event retrieval. Supports relative times (e.g., "3 days") or ISO format (e.g., "2024-01-15T00:00:00Z").
       name: from_date

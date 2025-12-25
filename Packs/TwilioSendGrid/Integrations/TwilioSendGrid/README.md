@@ -1,9 +1,9 @@
-Use this integration to fetch email activity events from Twilio SendGrid as Cortex XSIAM events.
+Twilio SendGrid is a cloud-based email delivery platform that provides email activity tracking and analytics. Use this integration to collect email activity events such as deliveries, opens, clicks, bounces, and spam reports.
 **Note:** You must purchase [additional email activity history](https://app.sendgrid.com/settings/billing/addons/email_activity) to access the Email Activity Feed API.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Twilio SendGrid Event Collector in Cortex
+## Configure Twilio SendGrid in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -32,7 +32,7 @@ Returns email activity events from Twilio SendGrid. This command is used for dev
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
-| limit | Maximum number of events to retrieve. The API is limited to 1000 events per call, so multiple calls will be made if needed. Default is 10000. | Optional |
+| limit | Maximum number of events to retrieve. The API is limited to 1000 events per call. Default is 1000. | Optional |
 | from_date | Start time for event retrieval. Supports relative times (e.g., "3 days") or ISO format (e.g., "2024-01-15T00:00:00Z"). | Optional |
 | to_date | End time for event retrieval. Supports relative times or ISO format. | Optional |
 

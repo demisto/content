@@ -1,5 +1,5 @@
 import urllib3
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, UTC
 from typing import Any
 import threading
 import queue
@@ -219,9 +219,9 @@ def get_last_event_time(last_run: dict[str, Any]) -> str:
         demisto.debug(f"Using last_event_time from last_run: {last_fetch_time}")
         return last_fetch_time
 
-    # First fetch - default to 1 minute ago
-    demisto.debug("First fetch - defaulting to 1 minute ago")
-    first_fetch_dt = datetime.now(UTC) - timedelta(minutes=1)
+    # First fetch - default to current time (now)
+    demisto.debug("First fetch - defaulting to current time")
+    first_fetch_dt = datetime.now(UTC)
 
     return first_fetch_dt.strftime(DATE_FORMAT)
 
@@ -311,7 +311,9 @@ def enrich_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return events
 
 
-def update_last_run(last_run: dict[str, Any], events: list[dict[str, Any]], previous_ids: set[str]) -> dict[str, Any]:
+def update_last_run(
+    last_run: dict[str, Any], events: list[dict[str, Any]], previous_ids: set[str], query_time: str | None = None
+) -> dict[str, Any]:
     """
     Update the last_run dictionary with the latest timestamp and message IDs.
 
@@ -319,12 +321,18 @@ def update_last_run(last_run: dict[str, Any], events: list[dict[str, Any]], prev
         last_run: Current last_run dictionary
         events: List of events that were processed
         previous_ids: Set of message IDs from the latest timestamp bracket
+        query_time: The time used for the query (only used on first run when no events found)
 
     Returns:
         Updated last_run dictionary
     """
     if not events:
-        demisto.debug("No events to update last_run with")
+        if query_time and not last_run.get("last_event_time"):
+            last_run["last_event_time"] = query_time
+            last_run["previous_ids"] = []
+            demisto.debug(f"First run with no events. Set last_run to query_time: {query_time}")
+        else:
+            demisto.debug("No events found. Keeping existing last_run unchanged to query larger time window on next run")
         return last_run
 
     # Get the latest event's timestamp
@@ -514,9 +522,11 @@ def _event_consumer(
     metrics: ProducerConsumerMetrics,
     last_run: dict[str, Any],
     last_run_lock: threading.Lock,
+    processed_events: list[dict[str, Any]],
 ):
     """
-    The consumer thread function. Gets events from the queue, processes, and sends them.
+    The consumer thread function. Gets events from the queue and processes them.
+    Events are collected but NOT sent to XSIAM (that happens after all threads complete).
     """
     while not stop_event.is_set() or not event_queue.empty():
         try:
@@ -532,13 +542,17 @@ def _event_consumer(
 
             if unique_events:
                 enriched_events = enrich_events(unique_events)
-                send_events_to_xsiam(enriched_events, vendor=VENDOR, product=PRODUCT)
+
+                with last_run_lock:
+                    processed_events.extend(enriched_events)
+                    last_run.update(update_last_run(last_run, enriched_events, new_previous_ids))
+
                 metrics.increment_consumed(len(enriched_events))
                 metrics.increment_duplicates(len(event_batch.events) - len(unique_events))
-
-                # Update last_run for the main thread
+            else:
+                # No unique events after deduplication - still update last_run with query time
                 with last_run_lock:
-                    last_run.update(update_last_run(last_run, enriched_events, new_previous_ids))
+                    last_run.update(update_last_run(last_run, [], set(), query_time=from_time))
 
             event_batch.status = EventBatchStatus.COMPLETED
             event_queue.task_done()
@@ -569,6 +583,7 @@ def fetch_events_producer_consumer(
     event_queue: queue.Queue[EventBatch] = queue.Queue(maxsize=QUEUE_MAX_SIZE)
     stop_event = threading.Event()
     last_run_lock = threading.Lock()
+    processed_events: list[dict[str, Any]] = []
 
     producer = threading.Thread(target=_event_producer, args=(client, event_queue, stop_event, metrics, last_run, max_fetch))
     producer.start()
@@ -577,7 +592,7 @@ def fetch_events_producer_consumer(
     for i in range(MAX_CONSUMER_THREADS):
         consumer = threading.Thread(
             target=_event_consumer,
-            args=(event_queue, stop_event, metrics, last_run, last_run_lock),
+            args=(event_queue, stop_event, metrics, last_run, last_run_lock, processed_events),
             name=f"Consumer-{i + 1}",
         )
         consumer.start()
@@ -588,6 +603,11 @@ def fetch_events_producer_consumer(
         consumer.join()
 
     demisto.debug(metrics.get_summary())
+
+    if processed_events:
+        demisto.debug(f"Sending {len(processed_events)} total events to XSIAM")
+        send_events_to_xsiam(processed_events, vendor=VENDOR, product=PRODUCT)
+
     return [], last_run
 
 
@@ -602,6 +622,7 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
 
     demisto.debug(f"Command being called: {command}")
+    support_multithreading()
 
     try:
         # Parse parameters

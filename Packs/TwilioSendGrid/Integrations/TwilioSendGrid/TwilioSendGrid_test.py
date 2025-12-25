@@ -69,7 +69,7 @@ def test_build_query_filter(from_time: str, to_time: str | None, expected_query:
     "last_run, expected_time",
     [
         ({"last_event_time": "2024-01-15T10:00:00Z"}, "2024-01-15T10:00:00Z"),
-        ({}, "2024-01-15T11:59:00Z"),  # Changed from 11:30 to 11:59 (1 minute ago)
+        ({}, "2024-01-15T12:00:00Z"),  # First fetch defaults to current time (now)
     ],
 )
 def test_get_last_event_time(last_run: dict[str, Any], expected_time: str, capfd):
@@ -278,6 +278,7 @@ def test_consumer_processes_batch(mock_send_events: MagicMock, mock_events: list
         stop_event = threading.Event()
         event_queue: queue.Queue = queue.Queue()
         last_run: dict[str, Any] = {"previous_ids": [], "last_event_time": "2024-01-15T10:00:00Z"}
+        processed_events: list[dict[str, Any]] = []
 
         # Put a batch in the queue
         event_batch = EventBatch(events=mock_events, batch_id=1)
@@ -287,9 +288,9 @@ def test_consumer_processes_batch(mock_send_events: MagicMock, mock_events: list
         stop_event.set()
         last_run_lock = threading.Lock()
 
-        _event_consumer(event_queue, stop_event, metrics, last_run, last_run_lock)
+        _event_consumer(event_queue, stop_event, metrics, last_run, last_run_lock, processed_events)
 
-        mock_send_events.assert_called_once()
+        assert len(processed_events) == 3
         assert metrics.events_consumed == 3
         assert "last_event_time" in last_run
         assert last_run["last_event_time"] == "2024-01-15T10:40:00Z"
@@ -303,6 +304,7 @@ def test_last_run_thread_safety(mock_send_events: MagicMock, mock_events: list[d
         metrics = ProducerConsumerMetrics()
         stop_event = threading.Event()
         event_queue: queue.Queue = queue.Queue()
+        processed_events: list[dict[str, Any]] = []
 
         # Create multiple batches with different timestamps
         batch1 = EventBatch(events=mock_events, batch_id=1)  # Max time: 10:40
@@ -321,7 +323,10 @@ def test_last_run_thread_safety(mock_send_events: MagicMock, mock_events: list[d
         threads = []
         last_run_lock = threading.Lock()
         for _i in range(2):
-            t = threading.Thread(target=_event_consumer, args=(event_queue, stop_event, metrics, last_run, last_run_lock))
+            t = threading.Thread(
+                target=_event_consumer,
+                args=(event_queue, stop_event, metrics, last_run, last_run_lock, processed_events),
+            )
             threads.append(t)
             t.start()
 
@@ -335,6 +340,7 @@ def test_last_run_thread_safety(mock_send_events: MagicMock, mock_events: list[d
         # Verify final state reflects the latest time
         assert last_run["last_event_time"] == "2024-01-15T11:00:00Z"
         assert len(last_run["previous_ids"]) == 3  # Should contain IDs from the latest batch
+        assert len(processed_events) == 6  # Should have processed all 6 events (3 from each batch)
 
 
 def test_identical_timestamps_handling(capfd):
