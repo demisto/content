@@ -80,7 +80,8 @@ def main():
         print("⚠️ No AI Review comment found from content-bot.")
 
     print(
-        '❌ AI Review check failed. Please trigger a review with "@content_bot start review" and approve the results with a 👍 reaction.'
+        '❌ AI Review check failed. Please trigger a review with "@content_bot start review"'
+        "and approve the results with a 👍 reaction."
     )
     sys.exit(1)
 
