@@ -1356,6 +1356,23 @@ script:
           description: The type of the file artifact.
           type: String
     - arguments:
+      - description: The ID of the case to retrieve AI summary for.
+        name: case_id
+        required: true
+        type: number
+      name: core-get-case-ai-summary
+      description: Retrieves an AI-generated summary for a specific case, including case details and description.
+      outputs:
+        - contextPath: Core.CaseAISummary.case_id
+          description: The unique identifier for the case.
+          type: Number
+        - contextPath: Core.CaseAISummary.case_name
+          description: The name of the case.
+          type: String
+        - contextPath: Core.CaseAISummary.case_description
+          description: The AI-generated description of the case.
+          type: String
+    - arguments:
       - description: Issue ID to update. If empty, updates the current issue ID.
         name: id
         type: string

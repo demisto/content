@@ -53,6 +53,7 @@ WEBAPP_COMMANDS = [
     "core-get-appsec-issues",
     "core-update-case",
     "core-list-endpoints",
+    "core-get-case-ai-summary",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -888,6 +889,22 @@ class Client(CoreClient):
                 "Content-Type": "application/json",
             },
             json_data=request_data,
+        )
+
+    def get_case_ai_summary(self, case_id: int) -> dict:
+        """
+        Retrieves AI-generated summary for a specific case ID.
+
+        Args:
+            case_id (int): The ID of the case to retrieve AI summary for.
+
+        Returns:
+            dict: API response containing case AI summary.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/cases/get_ai_case_details",
+            json_data={"case_id": case_id},
         )
 
 
@@ -3086,6 +3103,43 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def get_case_ai_summary_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves AI-generated summary for a specific case ID.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - case_id (str): The ID of the case to retrieve AI summary for.
+
+    Returns:
+        CommandResults: Object containing the formatted AI summary data,
+                        raw response, and outputs for integration context.
+    """
+    case_id = arg_to_number(args.get("case_id"))
+    
+    response = client.get_case_ai_summary(case_id)
+    if not response:
+        raise DemistoException(f"Failed to fetch ai summary for case {case_id}. Ensure the asset ID is valid.")
+
+    reply = response.get("reply", {})
+    
+    output = {
+        "case_id": reply.get("case_id"),
+        "case_name": reply.get("case_name"),
+        "case_description": reply.get("case_description"),
+    }
+    
+    return CommandResults(
+        readable_output=tableToMarkdown("Case AI Summary", output, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CaseAISummary",
+        outputs_key_field="case_id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -3208,6 +3262,10 @@ def main():  # pragma: no cover
 
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
+            
+        elif command == "core-get-case-ai-summary":
+            return_results(get_case_ai_summary_command(client, args))
+            
 
     except Exception as err:
         demisto.error(traceback.format_exc())
