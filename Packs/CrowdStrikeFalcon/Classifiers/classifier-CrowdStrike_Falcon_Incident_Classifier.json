@@ -16,7 +16,8 @@
         "On-Demand Scans detection": "CrowdStrike Falcon On-Demand Scans Detection",
         "OFP detection": "CrowdStrike Falcon OFP Detection",
         "thirdparty_detection": "CrowdStrike Falcon Third Party Detection",
-        "ngsiem_detection": "CrowdStrike Falcon NGSIEM Detection"
+        "ngsiem_detection": "CrowdStrike Falcon NGSIEM Detection",
+        "Recon notifications": "CrowdStrike Falcon Intelligence Recon notification"
 	},
 	"transformer": {
         "complex": {
