@@ -1942,33 +1942,65 @@ function Remove-EmptyItems {
 
     $newDict = @{}
 
-    foreach ($property in $inputObject.PSObject.Properties) {
-        $value = $property.Value
-        $propertyName = $property.Name
-        $Demisto.Debug("Looking at property '$propertyName' with value: '$value'")
-
-        # Skip if value is null
-        if ($null -eq $value) {
-            $Demisto.Debug("Skipping null value for property '$propertyName'")
-            continue
+    if ($inputObject -is [hashtable]) {
+        # Handle hashtable input
+        foreach ($key in $inputObject.Keys) {
+            $value = $inputObject[$key]
+            $Demisto.Debug("Looking at hashtable key '$key' with value: '$value'")
+            
+            # Skip if value is null
+            if ($null -eq $value) {
+                $Demisto.Debug("Skipping null value for key '$key'")
+                continue
+            }
+            
+            # Skip if value is a string and is empty or whitespace
+            if ($value -is [string] -and [string]::IsNullOrWhiteSpace($value)) {
+                $Demisto.Debug("Skipping empty string for key '$key'")
+                continue
+            }
+            
+            # Skip if value is an empty collection
+            if ($value -is [System.Collections.IEnumerable] -and -not ($value -is [string]) -and
+                (($value | Measure-Object).Count -eq 0 -or $value.Count -eq 0)) {
+                $Demisto.Debug("Skipping empty collection for key '$key'")
+                continue
+            }
+            
+            # If we got here, the value is not empty, so add it to the new dictionary
+            $newDict[$key] = $value
+            $Demisto.Debug("Added key '$key' with value: '$value'")
         }
+    } else {
+        # Handle PSObject input
+        foreach ($property in $inputObject.PSObject.Properties) {
+            $value = $property.Value
+            $propertyName = $property.Name
+            $Demisto.Debug("Looking at property '$propertyName' with value: '$value'")
 
-        # Skip if value is a string and is empty or whitespace
-        if ($value -is [string] -and [string]::IsNullOrWhiteSpace($value)) {
-            $Demisto.Debug("Skipping empty string for property '$propertyName'")
-            continue
+            # Skip if value is null
+            if ($null -eq $value) {
+                $Demisto.Debug("Skipping null value for property '$propertyName'")
+                continue
+            }
+
+            # Skip if value is a string and is empty or whitespace
+            if ($value -is [string] -and [string]::IsNullOrWhiteSpace($value)) {
+                $Demisto.Debug("Skipping empty string for property '$propertyName'")
+                continue
+            }
+
+            # Skip if value is an empty collection (array, list, etc.)
+            if ($value -is [System.Collections.IEnumerable] -and -not ($value -is [string]) -and
+                (($value | Measure-Object).Count -eq 0 -or $value.Count -eq 0)) {
+                $Demisto.Debug("Skipping empty collection for property '$propertyName'")
+                continue
+            }
+
+            # If we got here, the value is not empty, so add it to the new dictionary
+            $newDict[$propertyName] = $value
+            $Demisto.Debug("Added property '$propertyName' with value: '$value'")
         }
-
-        # Skip if value is an empty collection (array, list, etc.)
-        if ($value -is [System.Collections.IEnumerable] -and -not ($value -is [string]) -and
-            (($value | Measure-Object).Count -eq 0 -or $value.Count -eq 0)) {
-            $Demisto.Debug("Skipping empty collection for property '$propertyName'")
-            continue
-        }
-
-        # If we got here, the value is not empty, so add it to the new dictionary
-        $newDict[$propertyName] = $value
-        $Demisto.Debug("Added property '$propertyName' with value: '$value'")
     }
 
     return $newDict
@@ -2275,7 +2307,6 @@ function EXOGetQuarantineMessageCommand {
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.GetQuarantineMessage(obj.Identity === val.Identity)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
-
 
 function EXOReleaseQuarantineMessageCommand
 {
