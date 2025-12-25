@@ -1,6 +1,6 @@
 {
     "name": "Twilio SendGrid",
-    "description": "wilio SendGrid is a cloud-based email platform designed to help businesses send and manage both transactional and marketing emails reliably and at scale. This pack provides event collection capabilities for email activity data.",
+    "description": "Twilio SendGrid is a cloud-based email platform designed to help businesses send and manage both transactional and marketing emails reliably and at scale.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
