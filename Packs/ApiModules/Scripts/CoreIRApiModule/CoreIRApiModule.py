@@ -3995,7 +3995,10 @@ ISSUE_FIELDS = {
     "action_registry_name": "action_registry_key_name",
     "action_registry_key_data": "action_registry_data",
     "rule_name": "fw_rule",
-    "rule_id": "matching_service_rule_id",
+    "rule_id": "fw_rule_id",
+    "causality_actor_process_image_command_line": "causality_actor_process_command_line",
+    "causality_actor_process_image_sha256": "causality_actor_process_image_sha256",
+    "action_process_image_sha256": "action_process_image_sha256",
 }
 
 ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
@@ -4081,34 +4084,34 @@ def create_issues_filter(args) -> dict:
     filter_builder.add_field(
         ISSUE_FIELDS["action_external_hostname"], FilterType.CONTAINS, argToList(args.get("action_external_hostname"))
     )
-    filter_builder.add_field(ISSUE_FIELDS["rule_id"], FilterType.EQ, argToList(args.get("rule_id")))
-    filter_builder.add_field(ISSUE_FIELDS["rule_name"], FilterType.EQ, argToList(args.get("rule_name")))
+    filter_builder.add_field(ISSUE_FIELDS["rule_id"], FilterType.CONTAINS, argToList(args.get("rule_id")))
+    filter_builder.add_field(ISSUE_FIELDS["rule_name"], FilterType.CONTAINS, argToList(args.get("rule_name")))
     filter_builder.add_field(ISSUE_FIELDS["issue_name"], FilterType.CONTAINS, argToList(args.get("issue_name")))
     filter_builder.add_field(ISSUE_FIELDS["user_name"], FilterType.CONTAINS, argToList(args.get("user_name")))
     filter_builder.add_field(
         ISSUE_FIELDS["actor_process_image_name"], FilterType.CONTAINS, argToList(args.get("actor_process_image_name"))
     )
     filter_builder.add_field(
-        ISSUE_FIELDS["actor_process_command_line"],
+        ISSUE_FIELDS["causality_actor_process_image_command_line"],
         FilterType.EQ,
         argToList(args.get("causality_actor_process_image_command_line")),
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_command_line"], FilterType.CONTAINS, argToList(args.get("actor_process_image_command_line"))
     )
     filter_builder.add_field(ISSUE_FIELDS["agent_id"], FilterType.EQ, argToList(args.get("agent_id")))
     filter_builder.add_field(ISSUE_FIELDS["Identity_type"], FilterType.EQ, argToList(args.get("Identity_type")))
     filter_builder.add_field(
-        ISSUE_FIELDS["actor_process_command_line"], FilterType.EQ, argToList(args.get("actor_process_image_command_line"))
-    )
-    filter_builder.add_field(
-        ISSUE_FIELDS["action_process_image_command_line"], FilterType.EQ, argToList(args.get("action_process_image_command_line"))
+        ISSUE_FIELDS["action_process_image_command_line"], FilterType.CONTAINS, argToList(args.get("action_process_image_command_line"))
     )
     filter_builder.add_field(
         ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("actor_process_image_sha256"))
     )
     filter_builder.add_field(
-        ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("causality_actor_process_image_sha256"))
+        ISSUE_FIELDS["causality_actor_process_image_sha256"], FilterType.EQ, argToList(args.get("causality_actor_process_image_sha256"))
     )
     filter_builder.add_field(
-        ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("action_process_image_sha256"))
+        ISSUE_FIELDS["action_process_image_sha256"], FilterType.EQ, argToList(args.get("action_process_image_sha256"))
     )
     filter_builder.add_field(
         ISSUE_FIELDS["action_file_image_sha256"], FilterType.EQ, argToList(args.get("action_file_image_sha256"))
