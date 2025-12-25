@@ -72,7 +72,6 @@ INFO_MIN_TIME = "info_min_time"
 INFO_MAX_TIME = "info_max_time"
 INCIDENTS = "incidents"
 MIRRORED_ENRICHING_NOTABLES = "MIRRORED_ENRICHING_NOTABLES"
-PROCESSED_MIRRORED_EVENTS = "processed_mirror_in_events_cache"
 DUMMY = "dummy"
 NOTABLE = "notable"
 ENRICHMENTS = "enrichments"
@@ -605,20 +604,14 @@ def fetch_notables(
 
 def fetch_incidents(service: client.Service, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str):
     if ENABLED_ENRICHMENTS:
-        integration_context = get_integration_context() or {}
-        if not demisto.getLastRun() and INCIDENTS in integration_context:
+        integration_context = get_integration_context()
+        if not demisto.getLastRun() and integration_context:
             # In "Pull from instance" in Classification & Mapping the last run object is empty, integration context
             # will not be empty because of the enrichment mechanism. In regular enriched fetch, we use dummy data
             # in the last run object to avoid entering this case
-            demisto.debug(
-                "running fetch_incidents_for_mapping. If this is a regular fetch, please run "
-                "splunk-reset-enriching-fetch-mechanism command."
-            )
+            demisto.debug("running fetch_incidents_for_mapping")
 
             fetch_incidents_for_mapping(integration_context)
-            # We set the dummy last run to avoid entering this case again in the next fetch
-            # this will set the last run object only if this is a regular fetch
-            demisto.setLastRun({DUMMY: DUMMY})
         else:
             demisto.debug("running run_enrichment_mechanism")
             run_enrichment_mechanism(service, integration_context, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
@@ -2028,7 +2021,7 @@ def get_modified_remote_data_command(
     # 3. This cache is stored in the integration context and loaded at the start of the next run.
     # 4. Any fetched event whose key exists in the cache is skipped as a duplicate.
     integration_context = get_integration_context()
-    processed_events_cache = set(integration_context.get(PROCESSED_MIRRORED_EVENTS, []))
+    processed_events_cache = set(integration_context.get("processed_mirror_in_events_cache", []))
     demisto.debug(f"Loaded {len(processed_events_cache)} processed events from cache.")
 
     # Build the query with the 60-second look-behind buffer.
@@ -2071,7 +2064,7 @@ def get_modified_remote_data_command(
         current_run_processed_events.add(event_key)
 
     # Persist the cache of events processed in this run for the next iteration.
-    integration_context[PROCESSED_MIRRORED_EVENTS] = list(current_run_processed_events)
+    integration_context["processed_mirror_in_events_cache"] = list(current_run_processed_events)
     set_integration_context(integration_context)
 
     is_new_splunk_es_version = is_splunk_es_version_or_higher(service, SPLUNK_ES_NEW_COMMENT_MECHANISM_VERSION)
