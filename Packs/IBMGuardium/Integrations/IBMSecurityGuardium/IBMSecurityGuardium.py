@@ -308,10 +308,21 @@ def test_module_command(client: Client, report_id: str) -> str:
         demisto.debug(f"Testing connectivity: fetching 1 event from {from_date} to {to_date}")
         client.run_report(report_id, fetch_size=1, offset=0, from_date=from_date, to_date=to_date)
         return "ok"
+    except DemistoException as e:
+        error_str = str(e)
+        demisto.debug(f"Test module failed with DemistoException: {error_str}\nTraceback: {traceback.format_exc()}")
+        
+        if "Forbidden" in error_str or "Unauthorized" in error_str or "401" in error_str or "403" in error_str:
+            return "Authorization Error: Please verify that the API Key and Secret are correctly configured."
+        elif "ConnectionError" in error_str or "Name does not resolve" in error_str or "Failed to resolve" in error_str:
+            return "Connection Error: Unable to connect to the server. Please verify the Server URL is correct and accessible."
+        elif "timeout" in error_str.lower() or "timed out" in error_str.lower():
+            return "Connection Error: Request timed out. Please verify the Server URL and network connectivity."
+        else:
+            return f"Error: {error_str}"
     except Exception as e:
-        if "Forbidden" in str(e) or "Unauthorized" in str(e):
-            return f"Authorization Error: make sure API Key and Secret are correctly set. Full error: {e}"
-        raise
+        demisto.debug(f"Test module failed with unexpected exception: {str(e)}\nTraceback: {traceback.format_exc()}")
+        return f"Unexpected error during connection test: {str(e)}"
 
 
 def fetch_events_command(
