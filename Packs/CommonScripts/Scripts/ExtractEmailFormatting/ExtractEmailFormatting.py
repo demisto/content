@@ -96,7 +96,17 @@ def extract_email_from_url_query(email_address: str) -> str:
         str: an email address
     """
 
-    # First, try to find and extract an email that appears before an '=' sign anywhere in the string
+    # First, try the original reverse logic
+    # This handles cases like: co/ed/trn/update?a=b&email=user@test6.net
+    extracted_email = re.match("(.*?)=", email_address[::-1])
+
+    if extracted_email:
+        result = extracted_email.group(1)[::-1]
+        # Validate that the result looks like an email (contains @)
+        if "@" in result:
+            return result
+
+    # Fallback to search pattern for cases where reverse logic doesn't work
     # This handles cases like: https://example.com/?marketing.comunicacion@example.com=ABA=123
     # Use a restrictive pattern that doesn't match URL characters like / and ?
     extracted_email = re.search(r"([\w.!#$%&'*+^_`{|}~-]+@[\w.-]+\.[A-Za-z]{2,})=", email_address)
@@ -104,15 +114,7 @@ def extract_email_from_url_query(email_address: str) -> str:
     if extracted_email:
         return extracted_email.group(1)
 
-    # Fallback to original reverse logic for backward compatibility
-    # This handles cases like: co/ed/trn/update?a=b&email=user@test6.net
-    extracted_email = re.match("(.*?)=", email_address[::-1])
-
-    if extracted_email:
-        return extracted_email.group(1)[::-1]
-
-    else:
-        return ""
+    return ""
 
 
 def main():
