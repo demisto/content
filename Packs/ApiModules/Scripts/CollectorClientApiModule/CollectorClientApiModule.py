@@ -140,6 +140,10 @@ class ShardConfig(TypedDict, total=False):
 class CollectorError(DemistoException):
     """Base error for all collector failures."""
 
+    def __init__(self, message: str, response: Optional[httpx.Response] = None):
+        super().__init__(message)
+        self.response = response
+
 
 class CollectorAuthenticationError(CollectorError):
     """Raised when authentication cannot be completed."""
@@ -1894,7 +1898,7 @@ class CollectorClient:
                         await anyio.sleep(delay)
                         continue
                     self.circuit_breaker.record_failure()
-                    raise CollectorRateLimitError(f"Rate limit exceeded: {exc.response.text}") from exc
+                    raise CollectorRateLimitError(f"Rate limit exceeded: {exc.response.text}", response=exc.response) from exc
                 elif exc.response.status_code in (401, 403):
                     self.metrics.auth_error += 1
                     self.logger.error("Authentication error", {"status": exc.response.status_code, "error_type": "auth"})
@@ -1906,7 +1910,9 @@ class CollectorClient:
                         await anyio.sleep(delay)
                         continue
                     self.circuit_breaker.record_failure()
-                    raise CollectorAuthenticationError(f"Authentication failed: {exc.response.text}") from exc
+                    raise CollectorAuthenticationError(
+                        f"Authentication failed: {exc.response.text}", response=exc.response
+                    ) from exc
                 else:
                     self.metrics.service_error += 1
                     self.logger.error("Service error", {"status": exc.response.status_code, "error_type": "service"})
@@ -1918,7 +1924,7 @@ class CollectorClient:
                         await anyio.sleep(delay)
                         continue
                     self.circuit_breaker.record_failure()
-                    raise CollectorError(f"Request failed: {exc.response.text}") from exc
+                    raise CollectorError(f"Request failed: {exc.response.text}", response=exc.response) from exc
             except Exception as exc:
                 elapsed_ms = (_now() - start) * 1000
                 if self.blueprint.diagnostic_mode and trace:
@@ -1929,7 +1935,8 @@ class CollectorClient:
                 self.logger.error("Non-retryable exception occurred", {"error": str(exc), "error_type": type(exc).__name__})
                 raise
         self.circuit_breaker.record_failure()
-        raise CollectorRetryError(f"Exceeded retry attempts: {last_error}")
+        last_response = getattr(last_error, "response", None)
+        raise CollectorRetryError(f"Exceeded retry attempts: {last_error}", response=last_response)
 
     def request_sync(self, request: CollectorRequest) -> httpx.Response:
         return anyio.run(self._request, request)
@@ -3434,6 +3441,9 @@ class CollectorBlueprintBuilder:
             time_field=getattr(self, '_time_field', None),
         )
 
+
+# Resolve forward references
+CollectorBlueprint.update_forward_refs()
 
 # Public exports to match API Module expectations
 __all__ = [
