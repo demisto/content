@@ -40,8 +40,8 @@ tasks:
     task:
       id: 14f3f209-501e-4660-8da3-d48e7e02dbf8
       version: -1
-      name: Cortex XDR - quarantine file v2
-      playbookName: Cortex XDR - quarantine file v2
+      name: Cortex XDR - Quarantine File v2
+      playbookName: Cortex XDR - Quarantine File v2
       type: playbook
       iscommand: false
       brand: ""
