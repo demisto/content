@@ -3065,7 +3065,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
 
     fetch_query = demisto.params().get("fetch_query")
     if fetch_query:
-        fetch_query = f"(created_timestamp:>'{start_fetch_time})'+({fetch_query})"
+        fetch_query = f"(created_timestamp:>'{start_fetch_time}')+({fetch_query})"
         response = get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit, offset=detections_offset)
     else:
         response = get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit, offset=detections_offset)
@@ -3155,7 +3155,7 @@ def fetch_endpoint_incidents(current_fetch_info_incidents, look_back, is_fetch_e
 
     fetch_query = demisto.params().get("incidents_fetch_query")
     if fetch_query:
-        fetch_query = f"(start:>'{start_fetch_time})'+({fetch_query})"
+        fetch_query = f"(start:>'{start_fetch_time}')+({fetch_query})"
         response = get_incidents_ids(filter_arg=fetch_query, limit=fetch_limit, offset=incidents_offset)
 
     else:
