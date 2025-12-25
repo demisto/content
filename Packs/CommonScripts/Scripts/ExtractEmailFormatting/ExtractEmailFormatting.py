@@ -97,7 +97,7 @@ def extract_email_from_url_query(email_address: str) -> str:
     """
 
     # First, try the original reverse logic
-    # This handles cases like: co/ed/trn/update?a=b&email=user@test6.net
+    # This handles cases like: https://example.com/url/?email=user@test.net&a=b (email as a query parameter `value`)
     extracted_email = re.match("(.*?)=", email_address[::-1])
 
     if extracted_email:
@@ -107,8 +107,7 @@ def extract_email_from_url_query(email_address: str) -> str:
             return result
 
     # Fallback to search pattern for cases where reverse logic doesn't work
-    # This handles cases like: https://example.com/?marketing.comunicacion@example.com=ABA=123
-    # Use a restrictive pattern that doesn't match URL characters like / and ?
+    # This handles cases like: https://example.com/url/?user@test.net=email&a=b (email as a query parameter `key`)
     extracted_email = re.search(r"([\w.!#$%&'*+^_`{|}~-]+@[\w.-]+\.[A-Za-z]{2,})=", email_address)
 
     if extracted_email:
