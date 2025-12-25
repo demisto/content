@@ -2602,6 +2602,10 @@ script:
           isArray: true
     - name: core-list-scripts
       hidden: true
+      supportedModules:
+        - cloud_runtime_security
+        - edr
+        - xsiam
       description:  Gets a list of scripts available in the scripts library.
       arguments:
       - description: A comma-separated list of the script names.
@@ -2655,6 +2659,10 @@ script:
       description: Run a script on endpoints.
       hidden: true
       polling: true
+      supportedModules:
+        - cloud_runtime_security
+        - edr
+        - xsiam
       arguments:
         - name: script_uid
           description: The Globally Unique Identifier of the script. Either this field or script_name must be provided.
