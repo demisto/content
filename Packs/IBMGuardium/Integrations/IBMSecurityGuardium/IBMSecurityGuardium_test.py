@@ -20,7 +20,9 @@ def util_load_json(path):
         return json.load(f)
 
 
-def util_create_batch_response(num_events, batch_num=1, timestamp_base="2025-01-01 10:00:00.0"):
+def util_create_batch_response(
+    num_events, batch_num=1, timestamp_base="2025-01-01 10:00:00.0", limit_reached=True, final_result=False
+):
     """
     Create a batch response with specified number of events.
 
@@ -28,6 +30,8 @@ def util_create_batch_response(num_events, batch_num=1, timestamp_base="2025-01-
         num_events: Number of events to include in the batch
         batch_num: Batch number for unique event IDs
         timestamp_base: Base timestamp string
+        limit_reached: Whether the limit was reached (indicates more data available)
+        final_result: Whether this is the final result
 
     Returns:
         Dictionary representing API response
@@ -59,6 +63,8 @@ def util_create_batch_response(num_events, batch_num=1, timestamp_base="2025-01-
         )
 
     base_response["result"]["data"] = events
+    base_response["result"]["limit_reached"] = limit_reached
+    base_response["result"]["final_result"] = final_result
     return base_response
 
 
@@ -270,42 +276,42 @@ class TestDeduplicateEvents:
     def test_deduplicate_events_with_duplicates(self):
         """
         Given:
-            - Events with same timestamp as last_fetch_time and matching hashes
+            - Events in descending order with same timestamp as last_fetch_time and matching hashes
         When:
             - Calling deduplicate_events
         Then:
             - Ensure duplicate events are filtered out
         """
-        event1 = {"timestamp": "2025-01-01 10:00:00", "id": "1"}
-        event2 = {"timestamp": "2025-01-01 10:00:00", "id": "2"}
-        event3 = {"timestamp": "2025-01-01 11:00:00", "id": "3"}
-        events = [event1, event2, event3]
+        event1 = {"timestamp": "2025-01-01 10:00:00", "id": "2"}
+        event2 = {"timestamp": "2025-01-01 10:00:00", "id": "1"}
+        event3 = {"timestamp": "2025-01-01 09:00:00", "id": "0"}
+        events = [event1, event2, event3]  # Descending order (newest first)
 
-        hash1 = get_event_hash(event1)
-        last_run = {"last_fetch_time": "2025-01-01 10:00:00", "fetched_event_hashes": [hash1]}
+        hash2 = get_event_hash(event2)
+        last_run = {"last_fetch_time": "2025-01-01 10:00:00", "fetched_event_hashes": [hash2]}
 
         result = deduplicate_events(events, last_run, "timestamp")
-        # event1 is filtered (duplicate), event2 and event3 are kept
+        # event2 is filtered (duplicate), event1 and event3 are kept
         assert len(result) == 2
-        # Check that event1 was filtered and event2 and event3 are in the results
+        # Check that event2 was filtered and event1 and event3 are in the results
         event_ids = [e["id"] for e in result]
         assert "1" not in event_ids
         assert "2" in event_ids
-        assert "3" in event_ids
+        assert "0" in event_ids
 
     def test_deduplicate_events_optimization(self):
         """
         Given:
-            - Events where first event timestamp is greater than last_fetch_time
+            - Events in descending order where all timestamps are greater than last_fetch_time
             - Both event hashes are in the ignore list
         When:
             - Calling deduplicate_events
         Then:
             - Ensure all events are added without duplicate checking (because timestamp > last_fetch_time)
         """
-        event1 = {"timestamp": "2025-01-01 11:00:00", "id": "1"}
-        event2 = {"timestamp": "2025-01-01 12:00:00", "id": "2"}
-        events = [event1, event2]
+        event1 = {"timestamp": "2025-01-01 12:00:00", "id": "2"}
+        event2 = {"timestamp": "2025-01-01 11:00:00", "id": "1"}
+        events = [event1, event2]  # Descending order (newest first)
 
         # Get hashes of both events and add them to the ignore list (Hypothetical scenario)
         hash1 = get_event_hash(event1)
@@ -352,18 +358,18 @@ class TestBuildIgnoreList:
     def test_build_ignore_list_multiple_timestamps(self):
         """
         Given:
-            - Events with different timestamps
+            - Events in descending order with different timestamps
         When:
             - Calling build_ignore_list
         Then:
-            - Ensure only events with last timestamp are in ignore list
+            - Ensure only events with most recent (first) timestamp are in ignore list
         """
         events = [
-            {"timestamp": "2025-01-01 10:00:00", "id": "1"},
-            {"timestamp": "2025-01-01 11:00:00", "id": "2"},
             {"timestamp": "2025-01-01 12:00:00", "id": "3"},
             {"timestamp": "2025-01-01 12:00:00", "id": "4"},
-        ]
+            {"timestamp": "2025-01-01 11:00:00", "id": "2"},
+            {"timestamp": "2025-01-01 10:00:00", "id": "1"},
+        ]  # Descending order (newest first)
         result = build_ignore_list(events, "timestamp")
         assert len(result) == 2
 
@@ -488,15 +494,15 @@ class TestFetchEvents:
             # Batch 1: offset=0, fetch_size=10, return 10 events
             if offset == 0:
                 assert fetch_size == 10
-                return json.dumps(util_create_batch_response(10, batch_num=1))
+                return json.dumps(util_create_batch_response(10, batch_num=1, limit_reached=True))
             # Batch 2: offset=10, fetch_size=10, return 10 events
             elif offset == 10:
                 assert fetch_size == 10
-                return json.dumps(util_create_batch_response(10, batch_num=2))
+                return json.dumps(util_create_batch_response(10, batch_num=2, limit_reached=True))
             # Batch 3: offset=20, fetch_size=5 (remaining), return 5 events
             elif offset == 20:
                 assert fetch_size == 5  # Only 5 remaining to reach max_fetch=25
-                return json.dumps(util_create_batch_response(5, batch_num=3))
+                return json.dumps(util_create_batch_response(5, batch_num=3, limit_reached=False, final_result=True))
             else:
                 context.status_code = 400
                 return json.dumps({"error": f"Unexpected offset: {offset}"})
@@ -535,7 +541,7 @@ class TestFetchEvents:
 
             # First batch: return 5 events (less than batch_size of 10)
             if offset == 0:
-                return json.dumps(util_create_batch_response(5, batch_num=1))
+                return json.dumps(util_create_batch_response(5, batch_num=1, limit_reached=False))
             else:
                 # Should not reach here
                 context.status_code = 400
@@ -599,11 +605,11 @@ class TestFetchEvents:
 
             if offset == 0:
                 assert fetch_size == 10
-                return json.dumps(util_create_batch_response(10, batch_num=1))
+                return json.dumps(util_create_batch_response(10, batch_num=1, limit_reached=True))
             elif offset == 10:
                 # Should request only 5 (remaining to reach 15)
                 assert fetch_size == 5
-                return json.dumps(util_create_batch_response(5, batch_num=2))
+                return json.dumps(util_create_batch_response(5, batch_num=2, limit_reached=False, final_result=True))
             else:
                 context.status_code = 400
                 return json.dumps({"error": "Should not make third API call"})
@@ -640,10 +646,10 @@ class TestFetchEvents:
             # Both batches use the same structure from sample_api_response
             # First batch: full batch_size
             if offset == 0:
-                return json.dumps(util_create_batch_response(10, batch_num=1))
+                return json.dumps(util_create_batch_response(10, batch_num=1, limit_reached=True))
             # Second batch: partial (triggers stop)
             else:
-                return json.dumps(util_create_batch_response(3, batch_num=2))
+                return json.dumps(util_create_batch_response(3, batch_num=2, limit_reached=False))
 
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=mock_response)
 
