@@ -55,6 +55,7 @@ async def main() -> None:  # pragma: no cover
         redirect_uri = params.get("redirect_uri", "") or REDIRECT_URI
         custom_headers = parse_custom_headers(params.get("custom_headers") or "")
         verify: bool = not argToBoolean(params.get("insecure", False))
+        server_name = params.get("server_name", "")
 
         # Validation is run before creating the client
         validate_required_params(base_url, auth_type, user_name, password, token, client_id, client_secret)
@@ -87,7 +88,7 @@ async def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command == "list-tools":
-            result = await client.list_tools()
+            result = await client.list_tools(server_name)
             return_results(result)
 
         elif command == "call-tool":

@@ -87,13 +87,18 @@ configuration:
     section: Connect
     displaypassword: Password
     additionalinfo: Username & Password to use for basic authentication.
+  - name: server_name
+    section: Connect
+    display: Server Name
+    type: 0
+    additionalinfo: The name to use for the server in tool names. If not provided, the default name returned by the server will be used.
   - name: insecure
     section: Connect
     display: Trust any certificate (not secure)
     type: 8
     required: false
     advanced: true
-description: Use this integration to connect securely with any MCP server and access its tools in real time.
+description: Use this integration to connect securely with an MCP server and access its tools in real time.
 display: Generic MCP
 name: GenericMCP
 script:
@@ -102,13 +107,7 @@ script:
     description: Retrieves a list of available tools in the MCP server.
     name: list-tools
     hidden: true
-    outputs:
-    - contextPath: ListTools.server_name
-      description: The name of the MCP server.
-      type: String
-    - contextPath: ListTools.Tools
-      description: A list of available tools in the MCP server.
-      type: Unknown
+    outputs: []
   - arguments:
     - name: name
       description: The name of the tool to call.
@@ -117,10 +116,7 @@ script:
     description: Calls a specific tool on the MCP server with optional input parameters.
     name: call-tool
     hidden: true
-    outputs:
-    - contextPath: CallTool.Tool
-      description: The result of calling the specified tool.
-      type: Unknown
+    outputs: []
   - description: Test the authentication configuration with the MCP server.
     name: generic-mcp-auth-test
   - description: Generate an authentication login URL.
@@ -133,63 +129,3 @@ script:
 fromversion: 8.13.0
 tests:
 - No tests (auto formatted)
-triggers:
-  - conditions:
-      - name: auth_type
-        operator: equal
-        value: OAuth 2.0 Authorization Code
-    effects:
-      - name: redirect_uri
-        action:
-          hidden: false
-  - conditions:
-      - name: auth_type
-        operator: equal
-        value: OAuth 2.0 Dynamic Client Registration
-    effects:
-      - name: redirect_uri
-        action:
-          hidden: false
-  - conditions:
-      - name: auth_type
-        operator: equal
-        value: OAuth 2.0 Authorization Code
-    effects:
-      - name: authorization_endpoint
-        action:
-          hidden: false
-      - name: token_endpoint
-        action:
-          hidden: false
-  - conditions:
-      - name: auth_type
-        operator: equal
-        value: OAuth 2.0 Client Credentials
-    effects:
-      - name: token_endpoint
-        action:
-          hidden: false
-  - conditions:
-      - name: auth_type
-        operator: equal
-        value: OAuth 2.0 Client Credentials
-    effects:
-      - name: scope
-        action:
-          hidden: false
-  - conditions:
-      - name: auth_type
-        operator: equal
-        value: OAuth 2.0 Authorization Code
-    effects:
-      - name: scope
-        action:
-          hidden: false
-  - conditions:
-      - name: auth_type
-        operator: equal
-        value: OAuth 2.0 Dynamic Client Registration
-    effects:
-      - name: scope
-        action:
-          hidden: false
