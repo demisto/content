@@ -126,7 +126,6 @@ def find_timestamp_field(event: dict[str, Any]) -> str:
     Raises:
         DemistoException: If no timestamp field is found in the event
     """
-    # TODO consider adding map for type
     for key, value in event.items():
         if isinstance(value, str) and any(char in value for char in ["-", ":"]) and len(value) >= 10:
             try:
