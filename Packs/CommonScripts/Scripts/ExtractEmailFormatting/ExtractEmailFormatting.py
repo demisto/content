@@ -96,13 +96,24 @@ def extract_email_from_url_query(email_address: str) -> str:
         str: an email address
     """
 
+    # First, try the original reverse logic
+    # This handles cases like: https://example.com/url/?email=user@test.net&a=b (email as a query parameter `value`)
     extracted_email = re.match("(.*?)=", email_address[::-1])
 
     if extracted_email:
-        return extracted_email.group(1)[::-1]
+        result = extracted_email.group(1)[::-1]
+        # Validate that the result looks like an email (contains @)
+        if "@" in result:
+            return result
 
-    else:
-        return ""
+    # Fallback to search pattern for cases where reverse logic doesn't work
+    # This handles cases like: https://example.com/url/?user@test.net=email&a=b (email as a query parameter `key`)
+    extracted_email = re.search(r"([\w.!#$%&'*+^_`{|}~-]+@[\w.-]+\.[A-Za-z]{2,})=", email_address)
+
+    if extracted_email:
+        return extracted_email.group(1)
+
+    return ""
 
 
 def main():
