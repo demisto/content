@@ -2584,31 +2584,25 @@ script:
           description: Tag name associated with the case.
           type: String
     - name: core-update-case-custom-fields
-      description: |
-        Update a custom field for a case with dynamically generated values.
-        This command is designed for AI agents to set custom fields with content like HTML, markdown, or other AI-generated data.
-        The command validates that the field exists, is a custom field (not a system field), and is editable before updating.
       hidden: true
+      description: |-
+        Updates custom fields on a case. This command is designed for AI agents to safely update custom fields with AI-generated content (HTML, markdown, etc.) without risk of overriding system fields.
+        It validates that the fields exist and are custom fields before updating.
       arguments:
-        - name: case_id
-          description: The ID of the case to update.
-          required: true
-          type: String
-        - name: field_name
-          description: The name of the custom field to update. Must be an existing custom field, not a system field.
-          required: true
-          type: String
-        - name: field_value
-          description: The value to set for the custom field. Can contain HTML, markdown, or any other content.
-          required: true
-          type: String
+      - name: case_id
+        required: true
+        description: The ID of the case to update.
+      - name: custom_fields
+        required: true
+        description: |
+          A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
       outputs:
-        - contextPath: Core.Case.case_id
-          description: The ID of the updated case.
-          type: String
-        - contextPath: Core.Case.custom_fields
-          description: The updated custom fields of the case.
-          type: Unknown
+      - contextPath: Core.Case.case_id
+        description: The ID of the updated case.
+        type: String
+      - contextPath: Core.Case.CustomFields
+        description: The updated custom fields of the case.
+        type: JSON
     - name: core-run-playbook
       description:  Runs a playbook on specific issue IDs.
       hidden: true
