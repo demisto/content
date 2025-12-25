@@ -61,22 +61,3 @@ The integration uses OAuth2 Client Credentials flow with API key authentication.
 6. Copy the **API key** and the **API base URL** for use in the integration configuration.
 
 **Important**: You can only have two third-party SIEM integrations. If you want to add an integration, you must delete one of the existing integrations.
-
-## Configuration Parameters
-
-| **Parameter** | **Description** | **Example** |
-| --- | --- | --- |
-| Identity URL | CyberArk Identity FQDN for OAuth2 authentication | `https://abc1234.id.cyberark.cloud` |
-| Audit Server URL | Audit API base URL from the SIEM integration | `https://example-domain.audit.cyberark.cloud` |
-| Web App ID | Application ID of the OAuth2 Server web app configured in Step 1 | `xsiamapp` |
-| Client ID | Service username without domain (from Step 2) | `serviceuser` |
-| Client Secret | Service user password (from Step 2) | `********` |
-| API Key | API key from the SIEM integration (from Step 4) | `********` |
-
-## Additional Resources
-
-For more information about CyberArk Identity Security Platform integration, refer to the official CyberArk documentation:
-
-- [Integrate Audit with third-party SIEM applications](https://docs.cyberark.com/identity/latest/en/Content/Integrations/SIEM/SIEM-intro.htm)
-- [SIEM Integration API](https://docs.cyberark.com/identity/latest/en/Content/Developer/SIEM-API.htm)
-- [Integrate the CyberArk Identity client credentials flow](https://docs.cyberark.com/identity/latest/en/Content/Developer/OAuth-client-creds.htm)
