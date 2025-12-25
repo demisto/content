@@ -14,6 +14,11 @@ args:
   predefined:
   - 'true'
   - 'false'
+- name: verbose
+  defaultValue: "false"
+  description: >
+    Return detailed relationship attributes when true.
+    When false, returns basic fields: name, Entity A/B values and types, relationship type.
 - defaultValue: '20'
   description: The number of results to return. Default is 20.
   name: limit

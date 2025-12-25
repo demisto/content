@@ -35,7 +35,9 @@ def test_get_relationships_with_entities_only(mocker):
 
     result = get_relationships({"entities": ["example.com"]})
 
-    mock_execute_command.assert_called_once_with("SearchIndicatorRelationships", {"entities": ["example.com"], "limit": 20})
+    mock_execute_command.assert_called_once_with(
+        "SearchIndicatorRelationships", {"entities": ["example.com"], "limit": 20, "verbose": "false", "revoked": "false"}
+    )
     assert result == [{"id": "rel1", "type": "related-to"}]
 
 
@@ -52,7 +54,7 @@ def test_get_relationships_with_entities_types_calls_filter_function(mocker):
 
     result = get_relationships({"entities": ["malware.exe"], "entities_types": ["File"], "limit": 10})
 
-    mock_filter.assert_called_once_with(["malware.exe"], ["File"], [], 10)
+    mock_filter.assert_called_once_with(["malware.exe"], ["File"], [], 10, "false", "false")
     assert result == [{"id": "filtered_rel", "type": "indicates"}]
 
 

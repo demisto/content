@@ -4,7 +4,9 @@ from CommonServerUserPython import *
 import re
 
 
-def filter_relationships_by_entity_types(entities: list, entities_types: list, relationships: list, limit: int) -> list:
+def filter_relationships_by_entity_types(
+    entities: list, entities_types: list, relationships: list, limit: int, verbose: str = "false", revoked: str = "false"
+) -> list:
     """
     Filters indicator relationships by entity types using pagination.
 
@@ -24,6 +26,8 @@ def filter_relationships_by_entity_types(entities: list, entities_types: list, r
         search_params = {
             "entities": entities,
             "relationships": relationships,
+            "revoked": revoked,
+            "verbose": verbose,
         }
 
         if searchAfter:
@@ -90,6 +94,8 @@ def get_relationships(args: dict) -> list:
     entities_types = argToList(args.pop("entities_types", []))
     entities = argToList(args.get("entities", []))
     relationships = argToList(args.get("relationships", []))
+    verbose = args.get("verbose", "false")
+    revoked = args.get("revoked", "false")
     limit = int(args.get("limit", "20"))
 
     if not entities and not entities_types and not relationships:
@@ -100,10 +106,14 @@ def get_relationships(args: dict) -> list:
         "entities_types": entities_types,
         "relationships": relationships,
         "limit": limit,
+        "verbose": verbose,
+        "revoked": revoked,
     }
     remove_nulls_from_dictionary(search_params)
     if entities_types:
-        filtered_relationships = filter_relationships_by_entity_types(entities, entities_types, relationships, limit)
+        filtered_relationships = filter_relationships_by_entity_types(
+            entities, entities_types, relationships, limit, verbose, revoked
+        )
         return filtered_relationships
 
     res = demisto.executeCommand("SearchIndicatorRelationships", search_params)
