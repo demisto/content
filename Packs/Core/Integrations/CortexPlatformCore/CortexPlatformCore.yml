@@ -2139,6 +2139,13 @@ script:
           predefined:
             - 'true'
             - 'false'
+        - auto: PREDEFINED
+          description: Whether to replace the case description in the response with the ai generated summary. Recommended for up to 10 cases.
+          name: ai_generated_description
+          defaultValue: 'false'
+          predefined:
+            - 'true'
+            - 'false'
         - description: A comma-separated list of tags to filter cases by.
           name: tag
       name: core-get-cases
