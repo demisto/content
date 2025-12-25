@@ -791,8 +791,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-      - us-gov-east-1
-      - us-gov-west-1
 
     outputs:
     - contextPath: AWS.IAM.PasswordPolicy.MinimumPasswordLength
@@ -919,8 +917,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-      - us-gov-east-1
-      - us-gov-west-1
 
     - name: role_name
       description: 'The name of the role to associate the policy with. This parameter accepts a string of upper and lowercase letters and numbers, with no spaces. You can also include any of the following characters: _+=,.@-.'
@@ -975,8 +971,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-      - us-gov-east-1
-      - us-gov-west-1
     - name: user_name
       description: The name of the user whose password you want to delete.
       required: true
@@ -1024,8 +1018,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-      - us-gov-east-1
-      - us-gov-west-1
     - name: user_name
       description: The name of the user to associate the policy with.
       required: true
@@ -1079,8 +1071,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-      - us-gov-east-1
-      - us-gov-west-1
     - name: instance_profile_name
       description: The name of the instance profile to update.
       required: true
@@ -1131,8 +1121,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-      - us-gov-east-1
-      - us-gov-west-1
     - name: access_key_id
       description: The access key ID of the secret access key you want to update.
       required: true
