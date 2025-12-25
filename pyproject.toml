@@ -50,7 +50,7 @@ types-six = "^1.16.21.20240513"
 types-paramiko = "2.12.0"
 types-PyMySQL = "1.1.0.20240425"
 types-markdown = "3.6.0.20240316"
-types-PyYAML = "6.0.12.20240311"
+types-PyYAML = "6.0.12.20250915"
 types-emoji = "2.1.0.3"
 
 [tool.ruff]
