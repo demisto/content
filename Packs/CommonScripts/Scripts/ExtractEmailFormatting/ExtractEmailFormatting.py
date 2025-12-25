@@ -39,26 +39,21 @@ def extract_email(email_address: str) -> str:
 
     if {"=", "?"}.issubset(set(email_address)):
         # If we find these chars in a string it means the regex caught it as part of a url query and needs pruning.
-        extracted = extract_email_from_url_query(email_address)
-        if extracted:
-            return extracted
-
-    # Handle Unicode escape sequences like \u003c (which is <)
-    # Replace \\u followed by 4 hex digits with empty string to strip them
-    email_address = re.sub(r'\\u[0-9a-f]{4}', '', email_address, flags=re.IGNORECASE)
+        email_address = extract_email_from_url_query(email_address)
 
     email_format = re.compile(
-        r"[<(\[{\"'.]*"
-        r"([\w.!#$%&'*+/=?^_`{|}~-]{1,64}"
-        r"\[?@]?[\w.-]{1,255}(?:\[?\.]?"
-        r"[A-Za-z]{2,}){1,2})",
+        "[<(\[{\"'.]*"
+        "(?:(?:\\\\|\^{3})u[a-f\d]{4})?"
+        "([\w.!#$%&'*+/=?^_`{|}~-]{1,64}"
+        "\[?@]?[\w.-]{1,255}(?:\[?\.]?"
+        "[A-Za-z]{2,}){1,2})",
         re.IGNORECASE,
     )
 
-    match = re.match(email_format, email_address)
+    email_address = re.match(email_format, email_address)
 
-    if match:
-        return match.group(1)
+    if email_address:
+        return email_address.group(1)
     else:
         return ""
 
@@ -100,24 +95,24 @@ def extract_email_from_url_query(email_address: str) -> str:
     Returns:
         str: an email address
     """
-    # Extract email from URL query string using regex
-    # First try to match email after = sign (most common case: ?email=user@test.com)
-    # Use [^&]+ to avoid matching across & boundaries
-    email_pattern = r'=([a-zA-Z0-9.!#$%\'*+/=?^_`{|}~-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})'
-    match = re.search(email_pattern, email_address)
-    
-    if match:
-        return match.group(1)
-    
-    # Second try: match email before = sign (case: ?user@test.com=value or user@test.com=value)
-    # Allow optional ? or & before the email
-    email_pattern = r'(?:^|[?&])([a-zA-Z0-9.!#$%\'*+^_`{|}~-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})='
-    match = re.search(email_pattern, email_address)
-    
-    if match:
-        return match.group(1)
-    
-    return ""
+
+    # First, try to find and extract an email that appears before an '=' sign anywhere in the string
+    # This handles cases like: https://example.com/?marketing.comunicacion@example.com=ABA=123
+    # Use a restrictive pattern that doesn't match URL characters like / and ?
+    extracted_email = re.search(r"([\w.!#$%&'*+^_`{|}~-]+@[\w.-]+\.[A-Za-z]{2,})=", email_address)
+
+    if extracted_email:
+        return extracted_email.group(1)
+
+    # Fallback to original reverse logic for backward compatibility
+    # This handles cases like: co/ed/trn/update?a=b&email=user@test6.net
+    extracted_email = re.match("(.*?)=", email_address[::-1])
+
+    if extracted_email:
+        return extracted_email.group(1)[::-1]
+
+    else:
+        return ""
 
 
 def main():
@@ -151,4 +146,3 @@ def main():
 
 if __name__ in ("__main__", "builtin", "builtins"):
     main()
-
