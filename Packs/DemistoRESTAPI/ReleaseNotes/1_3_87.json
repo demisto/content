@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Added undefined as a task state to identify playbook tasks that have not yet been reached in the work plan."
+}

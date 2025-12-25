@@ -22,6 +22,7 @@ urllib3.disable_warnings()
 """ GLOBALS/PARAMS """
 VENDOR = "CrowdStrike"
 PRODUCT = "Falcon_Event"
+CNAPP_PRODUCT = "Falcon_CNAPP"
 INTEGRATION_NAME = "CrowdStrike Falcon"
 
 # Incidents Type names -  use for debugging and context save.
@@ -3568,6 +3569,106 @@ def fetch_items(command="fetch-incidents"):
 
     demisto.debug(f"CrowdStrikeFalconMsg: Updated last_run object after fetch: {last_run}")
     return last_run, items
+
+
+def list_cnapp_alerts_command(args: dict[str, Any]) -> CommandResults:
+    filter = args.get("filter", "")
+
+    response = preform_get_cnapp_alerts_request(filter=filter)
+
+    alerts = response.get("resources", [])
+    return CommandResults(
+        outputs_prefix="CrowdStrike.CnappAlert",
+        outputs_key_field="detection_name",
+        outputs=alerts,
+        readable_output=tableToMarkdown(
+            name="CrowdStrike CNAPP alerts",
+            t=alerts,
+            sort_headers=False,
+        ),
+        raw_response=alerts,
+    )
+
+
+def preform_get_cnapp_alerts_request(offset=0, filter=""):
+    """Preforms request to get CNAPP alerts
+
+    Args:
+        offset (int, optional): The offset for pagination
+        filter (str, optional): A filter to use if given.
+
+    Returns:
+       the response.
+    """
+    limit = 100
+    endpoint = "/container-security/combined/container-alerts/v1"
+    params = {"offset": offset, "limit": limit}
+    if filter:
+        params["filter"] = filter
+    demisto.info(f"Preforming a reuest to get cnapp alerts. Calling {endpoint=} with {params=}")
+    return http_request("GET", endpoint, params)
+
+
+def get_cnapp_assets():
+    last_run = demisto.getAssetsLastRun()
+    demisto.debug(f"Starting a new cnapp fetch assets execution with {last_run=}")
+    snapshot_id = last_run.get("snapshot_id", str(round(time.time() * 1000)))
+    offset = int(last_run.get("offset", 0))
+    total_fetched_until_now = int(last_run.get("total_fetched_until_now", 0))
+    new_last_run = {}
+
+    response = preform_get_cnapp_alerts_request(offset=offset)
+
+    cnapp_alerts = response.get("resources", [])
+    total_detections = demisto.get(response, "meta.pagination.total")
+    total_fetched_until_now += len(cnapp_alerts)
+    demisto.debug(f"Fetched {len(cnapp_alerts)} CNAPP assets, reulsting a toal of {total_fetched_until_now}.")
+
+    if total_detections > total_fetched_until_now:  # type: ignore
+        demisto.debug(
+            f"Fetch {total_fetched_until_now} assets out of expected {total_detections} so far, setting NextTrigger to 0."
+        )
+        offset += len(cnapp_alerts)
+        items_count = 1
+        new_last_run = {
+            "offset": offset,
+            "total_fetched_until_now": total_fetched_until_now,
+            "snapshot_id": snapshot_id,
+            "nextTrigger": "0",
+            "type": 1,
+        }
+    else:
+        demisto.debug(f"Fetched all expected assets ({total_detections}), closing the snapshot.")
+        offset = 0
+        items_count = total_fetched_until_now
+        new_last_run = {"offset": offset, "total_fetched_until_now": 0}
+
+    return new_last_run, cnapp_alerts, items_count, snapshot_id
+
+
+def fetch_assets_command():
+    demisto.info("Strating fetch assets exeuction.")
+    new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
+
+    demisto.debug(f"Sending a batch of {len(detections)} assets to xsiam with {snapshot_id=}")
+    send_data_to_xsiam(
+        data=detections,
+        vendor=VENDOR,
+        product=CNAPP_PRODUCT,
+        data_type="assets",
+        snapshot_id=snapshot_id,
+        items_count=items_count,
+        should_update_health_module=False,
+    )
+    demisto.debug("Finished sending a batch of assets.")
+
+    demisto.debug(f"Preparing to save assets last run with {new_last_run=}.")
+    demisto.setAssetsLastRun(new_last_run)
+    demisto.debug("Assets last run was saved succesfuly.")
+
+    demisto.updateModuleHealth({"assetsPulled": len(detections)})
+
+    demisto.info("Finished fetch assets exeuction.")
 
 
 def fetch_detections_by_product_type(
@@ -7944,6 +8045,10 @@ def main():  # pragma: no cover
             return_results(get_incident_behavior_command(args=args))
         elif command == "cs-falcon-get-ioarules":
             return_results(get_ioarules_command(args=args))
+        elif command == "fetch-assets":
+            fetch_assets_command()
+        elif command == "cs-falcon-list-cnapp-alerts":
+            return_results(list_cnapp_alerts_command(args=args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
