@@ -3155,7 +3155,7 @@ def fetch_endpoint_incidents(current_fetch_info_incidents, look_back, is_fetch_e
 
     fetch_query = demisto.params().get("incidents_fetch_query")
     if fetch_query:
-        fetch_query = f"(start:>'{start_fetch_time}')+({fetch_query})"
+        fetch_query = f"start:>'{start_fetch_time}'+{fetch_query}"
         response = get_incidents_ids(filter_arg=fetch_query, limit=fetch_limit, offset=incidents_offset)
 
     else:

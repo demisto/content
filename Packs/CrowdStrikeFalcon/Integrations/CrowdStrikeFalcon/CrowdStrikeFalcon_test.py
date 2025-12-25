@@ -8231,3 +8231,96 @@ class TestFetchAssetsFlow:
         )
         assert command_results_to_assert.outputs == expected_outputs
         assert command_results_to_assert.readable_output == expected_readable_outputs
+
+
+def test_fetch_endpoint_detections_builds_grouped_filter_arg(mocker: MockerFixture):
+    """
+    Given:
+        - A known start_fetch_time returned from get_fetch_run_time_range.
+        - A user fetch_query configured via demisto.params()["fetch_query"].
+    When:
+        - Calling fetch_endpoint_detections.
+    Then:
+        - Validate that we call get_fetch_detections with:
+          (created_timestamp:>'<start_fetch_time>')+(<fetch_query>)
+          so the timestamp constraint is applied to the full user query.
+    """
+    from CrowdStrikeFalcon import fetch_endpoint_detections
+
+    mocker.patch("CrowdStrikeFalcon.get_fetch_run_time_range", return_value=("2025-12-18T11:44:17Z", "end"))
+    mocker.patch.object(demisto, "params", return_value={"fetch_query": 'severity_name:"Critical", severity_name:"High"'})
+
+    get_fetch_detections_mocker = mocker.patch(
+        "CrowdStrikeFalcon.get_fetch_detections",
+        return_value={"resources": [], "meta": {"pagination": {"total": 0}}},
+    )
+
+    # stop later logic from doing real work
+    mocker.patch("CrowdStrikeFalcon.get_detections_entities", return_value={"resources": []})
+    mocker.patch("CrowdStrikeFalcon.filter_incidents_by_duplicates_and_limit", side_effect=lambda incidents_res, **_: incidents_res)
+    mocker.patch("CrowdStrikeFalcon.update_last_run_object", side_effect=lambda **kwargs: kwargs["last_run"])
+
+    fetch_endpoint_detections(current_fetch_info_detections={"offset": 0}, look_back=2, is_fetch_events=False)
+
+    assert get_fetch_detections_mocker.call_args[1]["filter_arg"] == (
+        "(created_timestamp:>'2025-12-18T11:44:17Z')+(severity_name:\"Critical\", severity_name:\"High\")"
+    )
+
+
+@pytest.mark.parametrize(
+    "product_type, fetch_query, expected_filter",
+    [
+        (
+            "idp",
+            'severity_name:"Critical", severity_name:"High"',
+            "(product:'idp'+created_timestamp:>'2025-12-18T11:44:17Z')+(severity_name:\"Critical\", severity_name:\"High\")",
+        ),
+        (
+            "ods",
+            "status:'new'",
+            "(type:'ods'+created_timestamp:>'2025-12-18T11:44:17Z')+(status:'new')",
+        ),
+        (
+            "idp",
+            "",
+            "product:'idp'+created_timestamp:>'2025-12-18T11:44:17Z'",
+        ),
+    ],
+)
+def test_fetch_detections_by_product_type_builds_grouped_filter(mocker: MockerFixture, product_type, fetch_query, expected_filter):
+    """
+    Given:
+        - A known start_fetch_time returned from get_fetch_run_time_range.
+        - A product_type and an optional user fetch_query.
+    When:
+        - Calling fetch_detections_by_product_type.
+    Then:
+        - Validate that we build a base filter and, when fetch_query exists, group it as:
+          (<base_filter>)+(<fetch_query>)
+        - Validate that for ODS/OFP we replace 'product:' with 'type:'.
+    """
+    from CrowdStrikeFalcon import fetch_detections_by_product_type
+
+    mocker.patch("CrowdStrikeFalcon.get_fetch_run_time_range", return_value=("2025-12-18T11:44:17Z", "end"))
+    get_detections_ids_mocker = mocker.patch(
+        "CrowdStrikeFalcon.get_detections_ids",
+        return_value={"resources": [], "meta": {"pagination": {"total": 0}}},
+    )
+
+    mocker.patch("CrowdStrikeFalcon.get_detection_entities", return_value={"resources": []})
+    mocker.patch("CrowdStrikeFalcon.filter_incidents_by_duplicates_and_limit", side_effect=lambda incidents_res, **_: incidents_res)
+    mocker.patch("CrowdStrikeFalcon.update_last_run_object", side_effect=lambda **kwargs: kwargs["last_run"])
+    mocker.patch("CrowdStrikeFalcon.truncate_long_time_str", side_effect=lambda x, *_: x)
+
+    fetch_detections_by_product_type(
+        current_fetch_info={"offset": 0},
+        look_back=2,
+        product_type=product_type,
+        fetch_query=fetch_query,
+        detections_type="dummy",
+        detection_name_prefix="dummy",
+        start_time_key="created_timestamp",
+        is_fetch_events=False,
+    )
+
+    assert get_detections_ids_mocker.call_args[1]["filter_arg"] == expected_filter
