@@ -26,6 +26,7 @@ DATE_TIME_FORMAT = "%d/%m/%Y %H:%M:%S"
 
 """ CLIENT CLASS """
 
+
 def to_str_time(t: datetime) -> str:
     return t.strftime(DATE_TIME_FORMAT)
 
@@ -134,7 +135,7 @@ class Client(BaseClient):
             "to_date": to_date_str,
         }
         demisto.debug(f"Fetching incidents {from_date_str=} {to_date_str=}")
-        
+
         try:
             response = self.http_request(
                 method="POST",
@@ -203,9 +204,9 @@ def fetch_events_command_sub(
     events = []
     last_run_ids = set(last_run_ids or set())
     new_last_run_ids: dict[str, set] = defaultdict(set)
-    
+
     demisto.debug(f"Fetching events: {from_time=}, {to_time=}, {max_fetch=}")
-    
+
     incidents_response = client.get_incidents(from_time, to_time)
     incidents = incidents_response["incidents"]
     demisto.debug(f"Received {len(incidents)} incidents from API")
@@ -249,19 +250,19 @@ def fetch_events(client, first_fetch, max_fetch):
 
     from_time = from_str_time(forward["last_fetch"])
     to_time = client.utc_now
-    
+
     demisto.debug(f"Fetch events started: {from_time=}, {to_time=}, {max_fetch=}")
     demisto.info(f"looking for backward events from:{from_time} to:{to_time}")
-    
+
     # Ensure from_time is not in the future compared to to_time
     if from_time > to_time:
         demisto.debug(f"from_time ({from_time}) is greater than to_time ({to_time}), adjusting from_time to to_time")
         from_time = to_time
-    
+
     forward_events, last_events_ids, next_fetch_time = fetch_events_command_sub(
         client, max_fetch, to_time, from_time, forward["last_events_ids"]
     )
-    
+
     forward = {
         "last_fetch": next_fetch_time,
         "last_events_ids": last_events_ids,
@@ -294,7 +295,7 @@ def main():  # pragma: no cover
         base_url = urljoin(params["url"], "/dlp/rest/v1")
 
         demisto.debug(f"Configuration: {base_url=}, {max_fetch=}, {first_fetch=}")
-        
+
         client = Client(
             base_url=base_url,
             verify=not params.get("insecure", False),
@@ -303,7 +304,7 @@ def main():  # pragma: no cover
             password=password,
             utc_now=datetime.utcnow(),
         )
-        
+
         if command == "test-module":
             demisto.debug("Executing test-module command")
             test_module_first_fetch: datetime = arg_to_datetime(DEFAULT_TEST_MODULE_SINCE_TIME, settings=DATEPARSER_SETTINGS)  # type: ignore[assignment]
