@@ -1,0 +1,24 @@
+{
+    "name": "Generic MCP",
+    "description": "This pack contains a generic integration with Model Context Protocol (MCP) servers, allowing seamless connectivity to an MCP servers",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "serverMinVersion": "8.13.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "cloud_posture",
+        "xsiam"
+    ]
+}
