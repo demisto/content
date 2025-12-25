@@ -10265,9 +10265,9 @@ class AsyncClient:
             "Content-Type": "application/json",
         },
         verify: bool = True,
-        connection_error_retries: int = 5,
         connection_error_interval: int = 1,
-        proxy: bool = False
+        proxy: bool = False,
+        auth = None
     ):
         """
         Initialize the AsyncClient.
@@ -10282,10 +10282,10 @@ class AsyncClient:
         self._base_url = base_url.rstrip("/")
         self.headers = headers or {}
         self._verify = verify
-        self.connection_error_retries = connection_error_retries
         self.connection_error_interval = connection_error_interval
         self._session = None
         self._proxy = proxy
+        self._auth = auth
 
     async def __aenter__(self):
         """Asynchronous context manager entry: creates the aiohttp session."""
@@ -10298,6 +10298,38 @@ class AsyncClient:
         """Asynchronous context manager exit: closes the aiohttp session."""
         if self._session:
             await self._session.close()
+            
+    def _handle_error(self, error_handler, res):
+            """ Handles error response by calling error handler or default handler.
+
+            :type res: ``requests.Response``
+            :param res: Response from API after the request for which to check error type
+
+            :type error_handler ``callable``
+            :param error_handler: Given an error entry, the error handler outputs the
+                new formatted error message.
+            """
+            if error_handler:
+                error_handler(res)
+            else:
+                self.client_error_handler(res) 
+
+    def client_error_handler(self, res):
+        """Generic handler for API call error
+        Constructs and throws a proper error for the API call response.
+
+        :type response: ``requests.Response``
+        :param response: Response from API after the request for which to check the status.
+        """
+        err_msg = 'Error in API call [{}] - {}'.format(res.status_code, res.reason)
+        try:
+            # Try to parse json error response
+            error_entry = res.json()
+            err_msg += '\n{}'.format(json.dumps(error_entry))
+            raise DemistoException(err_msg, res=res)
+        except ValueError:
+            err_msg += '\n{}'.format(res.text)
+            raise DemistoException(err_msg, res=res)
 
     async def _http_request(self,
                             method: str,
@@ -10306,7 +10338,11 @@ class AsyncClient:
                             headers: dict = None,
                             retryable_statuses: set = {500, 502, 503, 504, 429},
                             params: dict = {},
-                            timeout: int = 60):
+                            timeout: int = 60,
+                            auth = None,
+                            error_handler=None,
+                            num_of_retires = 1,
+                            ok_codes = (200,)):
         """
         Executes an asynchronous HTTP request and returns the raw response object.
         Includes retry logic for server errors.
@@ -10333,24 +10369,32 @@ class AsyncClient:
 
         # Select the method function (get, post, etc.)
         request_func = getattr(self._session, method.lower())
+        auth = auth if auth else self._auth
+        if auth:
+            auth = aiohttp.BasicAuth(auth)
 
-        MAX_RETRIES = self.connection_error_retries
 
-        for attempt in range(MAX_RETRIES + 1):
-            if attempt > 0:
+        for attempt in range(1, num_of_retires + 1):
+            if attempt > 1:
                 delay = self.connection_error_interval * attempt
-                demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{MAX_RETRIES}. Waiting {delay}s...")
+                demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{num_of_retires}. Waiting {delay}s...")
                 await asyncio.sleep(delay)
-
             try:
-                response = await request_func(url,
-                                              headers=request_headers,
-                                              json=payload,
-                                              ssl=not self._verify,
-                                              params=params,
-                                              timeout=timeout)
-
-                # 1. Handle Retryable Errors
+                response = await request_func(
+                    url,
+                    headers=request_headers,
+                    json=payload,
+                    ssl=self._verify,
+                    params=params,
+                    timeout=timeout,
+                    auth=auth
+                    )
+                
+                if response.status in ok_codes:
+                    # Return the RAW response object so the caller can read headers/json as needed.
+                    return response
+                    
+                # Handle Retryable Errors
                 if response.status in retryable_statuses:
                     try:
                         message = response.message
@@ -10360,25 +10404,17 @@ class AsyncClient:
                     response.close()  # Close connection before retrying
                     continue
 
-                # 2. Handle Fatal Client Errors (4xx)
+                # Handle Fatal Client Errors (4xx)
                 if 400 <= response.status < 500:
-                    try:
-                        error_body = await response.text()
-                    except Exception:
-                        error_body = "Could not read error body."
                     response.close()
-                    raise DemistoException(f"Client API Error ({response.status}): {error_body}")
-
-                # 3. Success (2xx)
-                # Return the RAW response object so the caller can read headers/json as needed.
-                return response
+                    self._handle_error(error_handler, response)
 
             except aiohttp.ClientConnectorError as e:
                 demisto.debug(f"Connection error: {e}")
-                if attempt == MAX_RETRIES:
-                    raise DemistoException(f"Connection error after {MAX_RETRIES} attempts: {str(e)}")
+                if attempt == num_of_retires:
+                    raise DemistoException(f"Connection error after {num_of_retires} attempts: {str(e)}")
 
-        raise DemistoException(f"API request failed after {MAX_RETRIES} attempts.")
+        raise DemistoException(f"API request failed after {num_of_retires} attempts.")
 
 def generic_http_request(method,
                          server_url,
@@ -12838,6 +12874,280 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
         return time_difference.total_seconds() > seconds_threshold
     else:
         raise ValueError("Failed to parse timestamp: {timestamp_str}".format(timestamp_str=timestamp_str))
+    
+
+def async_send_data_to_xsiam(
+    data,
+    vendor,
+    product,
+    data_format=None,
+    url_key="url",
+    num_of_attempts=3,
+    chunk_size=XSIAM_EVENT_CHUNK_SIZE,
+    data_type=EVENTS,
+    add_proxy_to_request=False,
+    snapshot_id="",
+    items_count=None,
+    data_size_expected_to_split_evenly=False,
+):  # pragma: no cover
+    """
+    Send the supported fetched data types into the XDR data-collector private api.
+
+    :type data: ``Union[str, list]``
+    :param data: The data to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an event or asset.
+        2. String containing raw events separated by a new line.
+
+    :type vendor: ``str``
+    :param vendor: The vendor corresponding to the integration that originated the data.
+
+    :type product: ``str``
+    :param product: The product corresponding to the integration that originated the data.
+
+    :type data_format: ``str``
+    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
+        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+
+    :type url_key: ``str``
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type chunk_size: ``int``
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
+
+    :type data_type: ``str``
+    :param data_type: Type of data to send to Xsiam, events or assets.
+
+    :type add_proxy_to_request: ``bool``
+    :param add_proxy_to_request: whether to add proxy to the send evnets request.
+
+    :type snapshot_id: ``str``
+    :param snapshot_id: the snapshot id.
+
+    :type items_count: ``str``
+    :param items_count: the asset snapshot items count.
+
+    :type data_size_expected_to_split_evenly: ``bool``
+    :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
+    Use this to split data to chunks faster.
+
+    :return: Either None if running regularly or a list of asyncio task objects if running asynchronously:.
+    In case of running asynchronously:, the list of tasks will hold the number of events sent and can be accessed by:
+    await asyncio.gather(*tasks)
+    :rtype: ``List[Task]`` or ``None``
+    """
+    import asyncio
+    data_size = 0
+    params = demisto.params()
+    url = params.get(url_key)
+    calling_context = demisto.callingContext.get("context", {})
+    instance_name = calling_context.get("IntegrationInstance", "")
+    collector_name = calling_context.get("IntegrationBrand", "")
+    if not items_count:
+        items_count = len(data) if isinstance(data, list) else 1
+    if data_type not in DATA_TYPES:
+        demisto.debug(f"data type must be one of these values: {DATA_TYPES}")
+        return None
+
+    if not data:
+        demisto.debug(f"send_data_to_xsiam function received no {data_type}, skipping the API call to send {data_type} to XSIAM")
+        demisto.updateModuleHealth({f"{data_type}Pulled": data_size})
+        return None
+
+    # only in case we have data to send to XSIAM we continue with this flow.
+    # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
+    if isinstance(data, list):
+        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
+        demisto.debug(f"Sending {len(data)} {data_type} to XSIAM")
+        if isinstance(data[0], dict):
+            data = [json.dumps(item) for item in data]
+            data_format = "json"
+        # Separating each event with a new line
+        data = "\n".join(data)
+    elif not isinstance(data, str):
+        raise DemistoException(f"Unsupported type: {type(data)} for the {data_type} parameter. Should be a string or list.")
+    if not data_format:
+        data_format = "text"
+
+    xsiam_api_token = demisto.getLicenseCustomField("Http_Connector.token")
+    xsiam_domain = demisto.getLicenseCustomField("Http_Connector.url")
+    xsiam_url = f"https://api-{xsiam_domain}"
+    headers = remove_empty_elements(
+        {
+            "authorization": xsiam_api_token,
+            "format": data_format,
+            "product": product,
+            "vendor": vendor,
+            "content-encoding": "gzip",
+            "collector-name": collector_name,
+            "instance-name": instance_name,
+            "final-reporting-device": url,
+            "collector-type": ASSETS if data_type == ASSETS else EVENTS,
+        }
+    )
+    if data_type == ASSETS:
+        if not snapshot_id:
+            snapshot_id = str(round(time.time() * 1000))
+
+        # We are setting a time stamp ahead of the instance name since snapshot-ids must be configured in ascending
+        # alphabetical order such that first_snapshot < second_snapshot etc.
+        headers["snapshot-id"] = snapshot_id + instance_name
+        headers["total-items-count"] = str(items_count)
+
+    header_msg = f"Error sending new {data_type} into XSIAM.\n"
+
+    def data_error_handler(res):
+        """
+        Internal function to parse the XSIAM API errors
+        """
+        try:
+            response = res.json()
+            error = res.reason
+            if response.get("error").lower() == "false":
+                xsiam_server_err_msg = response.get("error")
+                error += ": " + xsiam_server_err_msg
+
+        except ValueError:
+            if res.text:
+                error = f"\n{res.text}"
+            else:
+                error = "Received empty response from the server"
+
+        api_call_info = (
+            "Parameters used:\n"
+            f"\tURL: {xsiam_url}\n"
+            f"\tHeaders: {json.dumps(headers, indent=8)}\n\n"
+            f"Response status code: {res.status_code}\n"
+            f"Error received:\n\t{error}"
+        )
+
+        demisto.error(header_msg + api_call_info)
+        raise DemistoException(header_msg + error, DemistoException)
+
+    client = AsyncClient(base_url=xsiam_url, proxy=add_proxy_to_request)
+    if data_size_expected_to_split_evenly:
+        data_chunks = split_data_by_slices(data, chunk_size)
+    else:
+        data_chunks = split_data_to_chunks(data, chunk_size)
+
+    async def send_events_async(data_chunk):
+        chunk_size = len(data_chunk)
+        data_chunk = "\n".join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode("utf-8"))  # type: ignore[AttributeError,attr-defined]
+        _ = await xsiam_api_call_async_with_retries(
+            client = client,
+            xsiam_url=xsiam_url,
+            zipped_data=zipped_data,
+            headers=headers,
+            num_of_attempts=num_of_attempts,
+            data_type=data_type,
+            error_handler=data_error_handler,
+            error_msg=header_msg,
+            is_json_response=True
+        )
+        
+        return chunk_size
+
+    all_chunks = list(data_chunks)
+    tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in all_chunks]
+    return tasks
+
+
+def split_data_by_slices(data, target_chunk_size):  # pragma: no cover
+    """
+    Splits a string/list of data into chunks of an approximately specified size.
+    The actual size can be lower. the slicing is based on the assumption that all entries have the same size.
+
+    :type data: ``list`` or a ``string``
+    :param data: A list of data or a string delimited with \n  to split to chunks.
+    :type target_chunk_size: ``int``
+    :param target_chunk_size: The maximum size of each chunk. The maximal size allowed is 9MB.
+
+    :return: An iterable of lists where each list contains events with approx size of chunk size.
+    :rtype: ``collections.Iterable[list]``
+    """
+    target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
+    if isinstance(data, str):
+        data = data.split("\n")
+    entry_size = sys.getsizeof(data[0])
+    num_of_entries_per_chunk = target_chunk_size // entry_size
+    for i in range(0, len(data), num_of_entries_per_chunk):
+        chunk = data[i : i + num_of_entries_per_chunk]
+        yield chunk
+
+
+
+async def xsiam_api_call_async_with_retries(
+    client: AsyncClient,
+    zipped_data,
+    headers,
+    num_of_attempts,
+    error_handler=None,
+    error_msg='',
+    is_json_response=False,
+    data_type=EVENTS
+):  # pragma: no cover
+    """
+    Send the fetched events or assests into the XDR data-collector private api.
+
+    :type client: ``AsyncClient``
+    :param client: base client containing the XSIAM url.
+
+    :type xsiam_url: ``str``
+    :param xsiam_url: The URL of XSIAM to send the api request.
+
+    :type zipped_data: ``bytes``
+    :param zipped_data: encoded events
+
+    :type headers: ``dict``
+    :param headers: headers for the request
+
+    :type error_msg: ``str``
+    :param error_msg: The error message prefix in case of an error.
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes).
+
+    :type error_handler: ``callable``
+    :param error_handler: error handler function
+
+    :type data_type: ``str``
+    :param data_type: events or assets
+
+    :return: Response object or DemistoException
+    :rtype: ``requests.Response`` or ``DemistoException``
+    """
+    # retry mechanism in case there is a rate limit (429) from xsiam.
+    status_code = None
+    attempt_num = 1
+    response = None
+
+    while status_code != 200 and attempt_num < num_of_attempts + 1:
+        demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(
+            data_type=data_type, attempt_num=attempt_num))
+        # in the last try we should raise an exception if any error occurred, including 429
+        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
+        response = await client._http_request(
+            method='POST',
+            endpoint='/logs/v1/xsiam',
+            payload=zipped_data,
+            headers=headers,
+            error_handler=error_handler,
+            ok_codes=ok_codes,
+            resp_type='response'
+        )
+        status_code = response.status_code
+        demisto.debug('received status code: {status_code}'.format(status_code=status_code))
+        if status_code == 429:
+            time.sleep(1)
+        attempt_num += 1
+    if is_json_response and response:
+        response = response.json()
+        if response.get('error', '').lower() != 'false':
+            raise DemistoException(error_msg + response.get('error'))
+    return response
 
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,

@@ -6846,7 +6846,7 @@ async def create_report_config_from_template(client: InsightVMClient, event_type
         "version": "2.3.0",
     }
     log(event_type, "Creating report config.")
-    response = await client._http_request(method="POST", endpoint=endpoint, payload=payload)
+    response = await client._http_request(method="POST", endpoint=endpoint, payload=payload, num_of_retires=5)
 
     try:
         # The Location header contains the URL of the new report
@@ -6871,7 +6871,7 @@ async def generate_report(client: InsightVMClient, report_id: str, event_type: s
     endpoint = f"/api/3/reports/{report_id}/generate"
 
     # Use the client's _http_request method for POST
-    response = await client._http_request("POST", endpoint, payload={})
+    response = await client._http_request("POST", endpoint, payload={}, num_of_retires=5)
 
     # Handle response logic
     data = await response.json()
@@ -6887,7 +6887,7 @@ async def check_status_of_report(client: InsightVMClient, report_id: str, instan
         endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
 
         # Use the client's _http_request method for GET
-        response = await client._http_request("GET", endpoint)
+        response = await client._http_request("GET", endpoint, num_of_retires=5)
 
         status_data = await response.json()
         await response.release()
@@ -6918,7 +6918,7 @@ async def stream_report(
     endpoint = f"/api/3/reports/{report_id}/history/{instance_id}/output"
     log(event_type, f"Starting report download stream from: {endpoint}")
 
-    response = await client._http_request("GET", endpoint)
+    response = await client._http_request("GET", endpoint, num_of_retires=5)
 
     buffer = b""  # Buffer to hold partial lines across chunks
 
@@ -7256,7 +7256,7 @@ async def delete_report_instance(client: InsightVMClient, report_id: str, instan
     endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
     demisto.debug(f"Deleting report instance ID: {instance_id} for {event_type}.")
     try:
-        await client._http_request("DELETE", endpoint)
+        await client._http_request("DELETE", endpoint, num_of_retires=5)
         demisto.debug(f"Report instance {instance_id} for {event_type} deleted successfully.")
     except Exception as e:
         # Expected if resource is already gone (e.g., Status 404)
@@ -7268,7 +7268,7 @@ async def delete_report_configuration(client: InsightVMClient, report_id: str, e
     endpoint = f"/api/3/reports/{report_id}"
     demisto.debug(f"Deleting report configuration ID: {report_id} for {event_type}.")
     try:
-        await client._http_request("DELETE", endpoint)
+        await client._http_request("DELETE", endpoint, num_of_retires=5)
         demisto.debug(f"Report {report_id} for {event_type} configuration deleted successfully.")
     except Exception as e:
         # Expected if resource is already gone (e.g., Status 404)
