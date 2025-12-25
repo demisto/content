@@ -311,7 +311,7 @@ def test_module_command(client: Client, report_id: str) -> str:
     except DemistoException as e:
         error_str = str(e)
         demisto.debug(f"Test module failed with DemistoException: {error_str}\nTraceback: {traceback.format_exc()}")
-        
+
         if "Forbidden" in error_str or "Unauthorized" in error_str or "401" in error_str or "403" in error_str:
             return "Authorization Error: Please verify that the API Key and Secret are correctly configured."
         elif "ConnectionError" in error_str or "Name does not resolve" in error_str or "Failed to resolve" in error_str:
