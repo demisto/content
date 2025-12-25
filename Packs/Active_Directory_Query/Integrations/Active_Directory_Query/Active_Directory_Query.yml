@@ -123,9 +123,7 @@ script:
     - name: username
       required: true
       description: The username (samAccountName) of the user to modify.
-      prettyname: Run action on
-      prettypredefined:
-        Actor effective username: ${issue.matching_info.actor_effective_username}
+      prettyname: username
     - name: base-dn
       prettyname: Base DN
       description: Root (for example, DC=domain,DC=com).
@@ -280,9 +278,7 @@ script:
     - description: "The username of the account to disable (sAMAccountName)."
       name: username
       required: true
-      prettyname: Run action on
-      prettypredefined:
-        Actor effective username: ${issue.matching_info.actor_effective_username}
+      prettyname: username
     - name: base-dn
       prettyname: Base DN
       description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance is used.
@@ -295,9 +291,7 @@ script:
     prettyname: Enable User Account [ActiveDirectory]
     arguments:
     - name: username
-      prettyname: Run action on
-      prettypredefined:
-        Actor effective username: ${issue.matching_info.actor_effective_username}
+      prettyname: username
       required: true
       description: "The username of the account to enable (sAMAccountName)."
     - name: base-dn
