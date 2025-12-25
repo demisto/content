@@ -2975,7 +2975,8 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         elif field_name in custom_fields:
             valid_fields[field_name] = field_value
         else:
-            error_messages.append(f"Field '{field_name}' does not exist.")
+            available_fields = ", ".join(sorted(custom_fields.keys()))
+            error_messages.append(f"Field '{field_name}' does not exist. Possible custom fields to set are: {available_fields}")
 
     return valid_fields, error_messages
 
@@ -3006,9 +3007,17 @@ def update_case_custom_fields_command(client: Client, args: dict) -> CommandResu
         successful_section = f"### Successful Fields\nSuccessfully updated: {successful_fields}"
         success_table = tableToMarkdown(f"Updated case {case_id}", reply, headerTransform=string_to_table_header)
         readable_output = f"{unsuccessful_section}\n\n{successful_section}\n\n{success_table}"
-    else:
-        success_msg = f"Successfully updated {len(valid_fields_to_update)} custom field(s) on case {case_id}: {successful_fields}"
-        readable_output = tableToMarkdown(success_msg, reply, headerTransform=string_to_table_header)
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+            outputs_key_field="case_id",
+            outputs=reply,
+            raw_response=reply,
+            entry_type=4,
+        )
+
+    success_msg = f"Successfully updated {len(valid_fields_to_update)} custom field(s) on case {case_id}: {successful_fields}"
+    readable_output = tableToMarkdown(success_msg, reply, headerTransform=string_to_table_header)
 
     return CommandResults(
         readable_output=readable_output,
