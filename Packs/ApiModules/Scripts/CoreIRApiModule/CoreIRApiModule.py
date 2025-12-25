@@ -4245,17 +4245,17 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
     demisto.debug(f"{reply=}")
     data = reply.get("DATA", [])
 
-    for alert in data:
-        if "alert_action_status" in alert:
-            action_status = alert.get("alert_action_status")
-            alert["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
-
-    ALERT_OR_ISSUE = "Issue" if is_platform() else "Alert"
-    id_field = "Issue ID" if is_platform() else "Alert ID"
+    filtered_count = int(reply.get("FILTER_COUNT", "0"))
+    returned_count = len(data)
+    
+    for issue in data:
+        if "alert_action_status" in issue:
+            action_status = issue.get("alert_action_status")
+            issue["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
 
     human_readable = [
         {
-            id_field: alert.get("internal_id"),
+            "Issue ID": alert.get("internal_id"),
             "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
             "Name": alert.get("alert_name"),
             "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")) if is_platform() else alert.get("severity"),
@@ -4270,13 +4270,23 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
         }
         for alert in data
     ]
-    return CommandResults(
-        outputs_prefix=f"{prefix}.{ALERT_OR_ISSUE}",
+    command_results = []
+    command_results.append(CommandResults(
+        outputs_prefix=f"{prefix}.Issue",
         outputs_key_field="internal_id",
         outputs=data,
-        readable_output=tableToMarkdown(f"{ALERT_OR_ISSUE}", human_readable),
+        readable_output=tableToMarkdown("Issue", human_readable),
         raw_response=data,
+    ))
+    
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{prefix}.IssueMetadata",
+            outputs={"filtered_count": filtered_count, "returned_count": returned_count},
+        )
     )
+    
+    return command_results
 
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:

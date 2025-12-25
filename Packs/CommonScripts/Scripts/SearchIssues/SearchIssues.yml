@@ -239,6 +239,12 @@ outputs:
   - contextPath: Core.Issue.identity_type
     description: The identity type of the account.
     type: String
+  - contextPath: Core.IssueMetadata.returned_count
+    description: The actual number of issues that match all filter criteria and returned in this specific response.
+    type: Number
+  - contextPath: Core.IssueMetadata.filtered_count
+    description: The total number of issues in the system that match all filter criteria.
+    type: Number
 isInternal: true
 script: "-"
 subtype: python3

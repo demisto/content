@@ -796,6 +796,12 @@ script:
         - contextPath: Core.Issue.actor_process_image_sha256
           description: Actor process image SHA256 hash.
           type: String
+        - contextPath: Core.IssueMetadata.returned_count
+          description: The actual number of issues that match all filter criteria and returned in this specific response.
+          type: Number
+        - contextPath: Core.IssueMetadata.filtered_count
+          description: The total number of issues in the system that match all filter criteria.
+          type: Number
     - arguments:
         - description: Asset unique identifier.
           name: asset_id

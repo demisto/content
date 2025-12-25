@@ -2853,14 +2853,14 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_issues_command(client: Client, args: dict) -> CommandResults:
-    response: CommandResults = get_issues_by_filter_command(client, args)
+def get_issues_command(client: Client, args: dict) -> list[CommandResults]:
+    response: list[CommandResults] = get_issues_by_filter_command(client, args)
     output_keys = argToList(args.pop("output_keys", []))
-    if isinstance(response.outputs, list) and response.outputs:
-        response.outputs = [alert_to_issue(output) for output in response.outputs]
+    if isinstance(response[0].outputs, list) and response[0].outputs:
+        response[0].outputs = [alert_to_issue(output) for output in response[0].outputs]
 
         if output_keys:
-            response.outputs = filter_context_fields(output_keys, response.outputs)
+            response[0].outputs = filter_context_fields(output_keys, response[0].outputs)
 
     return response
 
