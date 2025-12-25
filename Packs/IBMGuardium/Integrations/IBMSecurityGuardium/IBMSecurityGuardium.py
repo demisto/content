@@ -16,6 +16,7 @@ VENDOR = "IBM"
 PRODUCT = "Guardium"
 DEFAULT_MAX_FETCH = 10000
 MAX_BATCH_SIZE = 1000
+MAX_ITERATIONS = 10
 
 """ CLIENT CLASS """
 
@@ -36,7 +37,7 @@ class Client(BaseClient):
             to_date: End date in ISO format
 
         Returns:
-            API response containing report data
+            API response containing report data and pagination metadata
         """
         payload = {
             "fetch_size": fetch_size,
@@ -52,24 +53,34 @@ class Client(BaseClient):
                 {"key": "QUERY_TO_DATE", "runtime_parameter_type": "DATE", "operator_type": "LESS_THAN", "value": to_date},
             ],
             "without_limit": True,
-            "date_range": {"type": "CUSTOM", "from_date": from_date, "to_date": to_date},
-            "order_by": "ASC",
         }
         demisto.debug(f"Running report {report_id} with payload: {payload}")
         response = self._http_request(method="POST", url_suffix="/api/v3/reports/run", json_data=payload, resp_type="text")
+
         # The API returns multiple JSON objects separated by newlines
-        # Parse the first JSON object which contains the report data
+        # First line: report data with report_layout and data array
+        # Second line (optional): pagination metadata with limit_reached, total_number_of_rows, final_result
         lines = response.strip().split("\n")
-        # TODO Remove
-        demisto.debug(f"{lines=}")
-        if lines:
-            # TODO consider getting more lines
-            parsed_response = json.loads(lines[0])
-            # TODO Remove
-            demisto.debug(f"{parsed_response=}")
-            return parsed_response
-        else:
+        demisto.debug(f"Received {len(lines)} JSON response line(s)")
+
+        if not lines:
             raise DemistoException("Empty response from API")
+
+        # Parse first line containing report data
+        parsed_response = json.loads(lines[0])
+
+        # Parse second line if present and merge pagination metadata
+        if len(lines) > 1:
+            try:
+                pagination_data = json.loads(lines[1])
+                # Merge pagination metadata into the main response
+                if "result" in pagination_data:
+                    parsed_response.setdefault("result", {}).update(pagination_data["result"])
+                    demisto.debug(f"Merged pagination metadata: {pagination_data['result']}")
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Failed to parse pagination data: {e}")
+
+        return parsed_response
 
 
 """ HELPER FUNCTIONS """
@@ -115,7 +126,7 @@ def find_timestamp_field(event: dict[str, Any]) -> str:
     Raises:
         DemistoException: If no timestamp field is found in the event
     """
-    #TODO consider adding map for type
+    # TODO consider adding map for type
     for key, value in event.items():
         if isinstance(value, str) and any(char in value for char in ["-", ":"]) and len(value) >= 10:
             try:
@@ -187,14 +198,15 @@ def send_events_to_xsiam_with_time(events: list[dict[str, Any]], timestamp_field
 def deduplicate_events(events: list[dict[str, Any]], last_run: dict[str, Any], timestamp_field: str) -> list[dict[str, Any]]:
     """
     Deduplicate events based on the ignore list from last run.
+    Events are in descending order (newest first).
 
     Args:
-        events: List of events ordered by timestamp ascending
+        events: List of events ordered by timestamp descending (newest first)
         last_run: Dictionary containing last_fetch_time and fetched_event_hashes
         timestamp_field: Name of the timestamp field to use (required)
 
     Returns:
-        List of deduplicated events
+        List of deduplicated events in descending order
     """
     if not events:
         return events
@@ -208,16 +220,18 @@ def deduplicate_events(events: list[dict[str, Any]], last_run: dict[str, Any], t
     )
 
     deduplicated: list[dict[str, Any]] = []
-    for idx, event in enumerate(events):
+    
+    # Iterate from the end (oldest first)
+    for idx in range(len(events) - 1, -1, -1):
+        event = events[idx]
         event_time = event.get(timestamp_field)
 
-        # If event timestamp is greater than last_fetch_time, all remaining events are new
+        # If timestamp is greater than last_fetch_time, add this event and all remaining (newer) events
         if event_time and last_fetch_time and event_time > last_fetch_time:
-            # Add this event and all remaining events without checking
-            deduplicated.extend(events[idx:])
+            deduplicated = events[:idx + 1]
             demisto.debug(
-                f"Found event with timestamp {event_time} > last_fetch_time {last_fetch_time}, "
-                f"adding remaining {len(events) - idx} events without duplicate check"
+                f"Found event at index {idx} with timestamp {event_time} > last_fetch_time {last_fetch_time}, "
+                f"added {idx + 1} newer events without duplicate check"
             )
             break
 
@@ -228,7 +242,7 @@ def deduplicate_events(events: list[dict[str, Any]], last_run: dict[str, Any], t
                 demisto.debug(f"Skipping duplicate event with hash {event_hash} at time {event_time}")
                 continue
 
-        deduplicated.append(event)
+        deduplicated.insert(0, event)  # Insert at beginning to maintain descending order
 
     demisto.debug(
         f"Deduplication complete. Original: {len(events)}, Deduplicated: {len(deduplicated)}, "
@@ -240,32 +254,35 @@ def deduplicate_events(events: list[dict[str, Any]], last_run: dict[str, Any], t
 
 def build_ignore_list(events: list[dict[str, Any]], timestamp_field: str) -> set[str]:
     """
-    Build ignore list of event hashes with the same timestamp as the last event.
+    Build ignore list of event hashes with the same timestamp as the most recent event.
+    Events are expected in descending order (newest first).
 
     Args:
-        events: List of events ordered by timestamp ascending
+        events: List of events ordered by timestamp descending (newest first)
         timestamp_field: Name of the timestamp field to use (required)
 
     Returns:
-        Set of event hashes for events with the same timestamp as the last event
+        Set of event hashes for events with the same timestamp as the most recent (first) event
     """
     ignore_set: set[str] = set()
     if not events:
         return ignore_set
 
-    last_event_time = events[-1].get(timestamp_field)
+    # Most recent event is the first one (descending order)
+    most_recent_time = events[0].get(timestamp_field)
 
-    if not last_event_time:
-        raise DemistoException(f"Timestamp field '{timestamp_field}' not found in last event")
+    if not most_recent_time:
+        raise DemistoException(f"Timestamp field '{timestamp_field}' not found in first event")
 
-    for event in reversed(events):
+    # Iterate from the beginning to collect all events with the same timestamp as the most recent
+    for event in events:
         event_time = event.get(timestamp_field)
-        if event_time == last_event_time:
+        if event_time == most_recent_time:
             ignore_set.add(get_event_hash(event))
         else:
             break
 
-    demisto.debug(f"Created ignore list with {len(ignore_set)} event hashes at timestamp {last_event_time}")
+    demisto.debug(f"Created ignore list with {len(ignore_set)} event hashes at timestamp {most_recent_time}")
     return ignore_set
 
 
@@ -302,18 +319,20 @@ def fetch_events_command(
 ) -> tuple[list[dict[str, Any]], dict[str, Any], str]:
     """
     Fetch events from IBM Guardium with deduplication.
+    The API returns events in descending order (newest first).
 
     Args:
         client: IBM Guardium client
         report_id: Report ID to fetch events from
-        max_fetch: Maximum number of events to fetch
+        max_fetch: Maximum number of events to fetch (capped at 10000)
         last_run: Last run context with last_fetch_time and fetched_event_hashes
 
     Returns:
-        Tuple of (deduplicated events list, next run context, timestamp field name)
+        Tuple of (deduplicated events list in descending order, next run context, timestamp field name)
     """
     demisto.debug(f"Starting fetch_events with last_run: {last_run}, max_fetch: {max_fetch}")
     last_fetch_time_str = last_run.get("last_fetch_time")
+    max_fetch = min(max_fetch, DEFAULT_MAX_FETCH)
 
     # Determine fetch time range
     now = datetime.utcnow()
@@ -334,33 +353,37 @@ def fetch_events_command(
     offset = 0
     field_mapping: dict[str, str] = {}
     timestamp_field: str = ""
+    final_result = False
+    iteration = 0
 
-    while len(events) < max_fetch:
+    while len(events) < max_fetch and not final_result and iteration < MAX_ITERATIONS:
+        iteration += 1
         remaining = max_fetch - len(events)
         batch_size = min(MAX_BATCH_SIZE, remaining)
-        demisto.debug(f"Fetching batch with offset: {offset}, batch_size: {batch_size}, remaining: {remaining}")
+        demisto.debug(
+            f"Iteration {iteration}: Fetching batch with offset={offset}, batch_size={batch_size}, remaining={remaining}"
+        )
+
         response = client.run_report(
             report_id=report_id, fetch_size=batch_size, offset=offset, from_date=from_date, to_date=to_date
         )
 
         # Extract field mapping and timestamp field only on first batch (offset == 0)
-        # to avoid redundant processing on subsequent batches
         if offset == 0:
             field_mapping = extract_field_mapping(response)
             raw_events_temp = response.get("result", {}).get("data", [])
             if raw_events_temp:
                 first_event = map_event(raw_events_temp[0]["results"], field_mapping)
-                # Find timestamp field from first event - all events in the report have the same structure
                 timestamp_field = find_timestamp_field(first_event)
 
         raw_events = response.get("result", {}).get("data", [])
-
         demisto.debug(f"Raw events count: {len(raw_events)}")
 
         if not raw_events:
             demisto.debug("No events returned in batch, stopping fetch loop")
             break
 
+        # Process events
         for raw_event in raw_events:
             event_data = raw_event["results"]
             mapped_event = map_event(event_data, field_mapping)
@@ -370,28 +393,50 @@ def fetch_events_command(
                 demisto.debug(f"Reached max_fetch limit of {max_fetch}, stopping event collection")
                 break
 
-        demisto.debug(f"Fetched batch of {len(raw_events)} events. Total events so far: {len(events)}")
+        # Check for final_result flag in the response
+        result_data = response.get("result", {})
+        final_result = result_data.get("final_result", False)
+        limit_reached = result_data.get("limit_reached", False)
 
-        if len(raw_events) < batch_size:
-            demisto.debug(f"Received {len(raw_events)} events (less than batch_size {batch_size}), stopping")
+        demisto.debug(
+            f"Batch complete: fetched {len(raw_events)} events, total so far: {len(events)}, "
+            f"final_result={final_result}, limit_reached={limit_reached}"
+        )
+
+        # Stop if we've reached the final result
+        if final_result:
+            demisto.debug("Received final_result=true, stopping pagination")
             break
 
+        # Stop if limit not reached (no more data available)
+        if not limit_reached:
+            demisto.debug("limit_reached is false or absent, stopping pagination")
+            break
+
+        # Update offset for next iteration
         offset += len(raw_events)
 
+    if iteration >= MAX_ITERATIONS:
+        demisto.debug(f"WARNING: Reached maximum iterations ({MAX_ITERATIONS}), stopping fetch")
+
+    # Deduplicate events (events are in descending order - newest first)
     deduplicated_events = deduplicate_events(events, last_run, timestamp_field)
     new_ignore_set = build_ignore_list(deduplicated_events, timestamp_field)
 
+    # Update last_run with the most recent event (first event in descending order)
     if deduplicated_events:
-        last_event = deduplicated_events[-1]
-        if timestamp_field in last_event:
-            next_run = {"last_fetch_time": last_event[timestamp_field], "fetched_event_hashes": list(new_ignore_set)}
+        most_recent_event = deduplicated_events[0]  # First event is the newest
+        if timestamp_field in most_recent_event:
+            next_run = {"last_fetch_time": most_recent_event[timestamp_field], "fetched_event_hashes": list(new_ignore_set)}
         else:
-            raise DemistoException(f"Timestamp field '{timestamp_field}' not found in last event")
+            raise DemistoException(f"Timestamp field '{timestamp_field}' not found in most recent event")
     else:
         next_run = last_run
         demisto.debug(f"No events after deduplication, keeping last_run unchanged: {next_run}")
 
-    demisto.debug(f"Fetch completed. Total events: {len(events)}, Deduplicated: {len(deduplicated_events)}. Next run: {next_run}")
+    demisto.debug(
+        f"Fetch completed. Total events: {len(events)}, Deduplicated: {len(deduplicated_events)}. " f"Next run: {next_run}"
+    )
     return deduplicated_events, next_run, timestamp_field
 
 
