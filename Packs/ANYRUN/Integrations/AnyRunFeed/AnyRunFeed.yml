@@ -109,7 +109,7 @@ description: Threat Intelligence Feeds provide data on the known indicators of c
 display: ANY.RUN TI Feed
 name: ANY.RUN TI Feed
 script:
-  dockerimage: demisto/anyrun-sdk:1.0.0.5185978
+  dockerimage: demisto/anyrun-sdk:1.0.0.6192697
   subtype: python3
   runonce: false
   script: '-'
