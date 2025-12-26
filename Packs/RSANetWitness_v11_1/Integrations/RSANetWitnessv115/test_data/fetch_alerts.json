@@ -1,24 +1,32 @@
 {
     "items": [
         {
-            "id": "test",
-            "title": "sk_test300",
-            "detail": null,
-            "created": "2023-07-03T11: 04: 16.408Z",
-            "source": "NetWitness Investigate",
-            "riskScore": 50,
-            "type": "Log",
-            "events": []
+            "_id": "test1",
+            "incidentId": "INC-80",
+            "alert": {	"name": "sk_test300",
+            		"source": "ESA",
+            		"type": "Log",
+            		"source": "NetWitness Investigate",
+            		"riskScore": 50,
+                        "severity": 50,
+            		"numEvents": 3,
+                        "timestamp": "2023-07-03T11: 04: 24.256Z",
+                        "groupby_device_type": "rhlinux"
+                      }
         },
         {
-            "id": "test ",
-            "title": "sk_test300",
-            "detail": null,
-            "created": "2023-07-03T11: 04: 24.256Z",
-            "source": "NetWitness Investigate",
-            "riskScore": 50,
-            "type": "Log",
-            "events": []
-        }
+            "_id": "test123",
+            "incidentId": "INC-81",
+            "alert": {	"name": "sk_test301",
+            		"source": "ESA",
+            		"type": "Log",
+            		"source": "NetWitness Investigate",
+            		"riskScore": 5,
+                        "severity": 5,
+            		"numEvents": 1,
+                        "timestamp": "2023-09-03T13: 04: 24.256Z",
+                        "groupby_device_type": "fortinet"
+                      }
+        },
     ]
 }
