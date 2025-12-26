@@ -18,6 +18,30 @@ from dateutil.parser import parse
 urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message=".*using SSL with verify_certs=False is insecure.")
 
+# .ymla values
+BASIC_AUTH = "Basic auth"
+BEARER_AUTH = "Bearer auth"
+API_KEY_AUTH = "Api key auth"
+
+API_KEY_PREFIX = "_api_key_id:"
+
+AUTH_TYPE = demisto.params().get("auth_type", "Basic auth")
+USERNAME: str = demisto.params().get("credentials", {}).get("identifier")
+PASSWORD: str = demisto.params().get("credentials", {}).get("password")
+API_KEY_ID: str = demisto.params().get("api_key_auth_credentials", {}).get("identifier")
+API_KEY_SECRET: str = demisto.params().get("api_key_auth_credentials", {}).get("password")
+API_KEY = None
+
+# Using Api key auth by username and password fields for backward compatibility.
+if AUTH_TYPE == BASIC_AUTH:
+    if USERNAME and USERNAME.startswith(API_KEY_PREFIX):
+        AUTH_TYPE = API_KEY_AUTH
+        API_KEY_ID = USERNAME[len(API_KEY_PREFIX) :]
+        API_KEY = (API_KEY_ID, PASSWORD)
+
+elif AUTH_TYPE == API_KEY_AUTH:
+    API_KEY = (API_KEY_ID, API_KEY_SECRET)
+
 ELASTICSEARCH_V8 = "Elasticsearch_v8"
 ELASTICSEARCH_V9 = "Elasticsearch_v9"
 OPEN_SEARCH = "OpenSearch"
@@ -40,14 +64,7 @@ else:  # Elasticsearch (<= v7)
 
 ES_DEFAULT_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSSSS"
 PYTHON_DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
-API_KEY_PREFIX = "_api_key_id:"
 SERVER = demisto.params().get("url", "").rstrip("/")
-USERNAME: str = demisto.params().get("credentials", {}).get("identifier")
-PASSWORD: str = demisto.params().get("credentials", {}).get("password")
-API_KEY_ID = USERNAME[len(API_KEY_PREFIX) :] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
-if API_KEY_ID:
-    USERNAME = ""
-    API_KEY = (API_KEY_ID, PASSWORD)
 PROXY = demisto.params().get("proxy")
 HTTP_ERRORS = {
     400: "400 Bad Request - Incorrect or invalid parameters",
@@ -158,6 +175,119 @@ def get_api_key_header_val(api_key):
     return "ApiKey " + api_key
 
 
+def is_access_token_expired(expires_in: str) -> bool:
+    """Check if access token is expired."""
+
+    # Subtract 1 min to refresh slightly early and avoid expiration issues.
+    is_not_expired = expires_in > (datetime.now() + timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    if is_not_expired:
+        demisto.debug(
+            f"is_access_token_expired - using existing Access token from integration context (expires in {expires_in})."
+        )
+        return False
+    else:
+        demisto.debug("is_access_token_expired - Access token expired.")
+        return True
+
+
+def get_elastic_token():
+    """
+    Authenticates and retrieves an OAuth 2.0 access token from Elasticsearch.
+
+    Returns an access token either by refreshing an existing token or performing a new token request.
+        1. Check if existing access token is valid (with 1min buffer).
+        2. If not, try to use refresh token if it exists and is valid.
+        3. If not, perform a full password grant authentication for receiving initial access token.
+    """
+    try:
+        url = urljoin(SERVER, "_security/oauth2/token")
+        headers = {"Content-Type": "application/json"}
+
+        integration_context = get_integration_context()
+        access_token = integration_context.get("access_token", "")
+        access_token_expires_in = integration_context.get("access_token_expires_in", "")
+        refresh_token = integration_context.get("refresh_token", "")
+        refresh_token_expires_in = integration_context.get("refresh_token_expires_in", "")
+
+        # 1. Check if token exists and if it is still valid
+        if access_token and not is_access_token_expired(access_token_expires_in):
+            demisto.debug("get_elastic_token - Using existing access token from integration context.")
+            return access_token
+
+        if not USERNAME or not PASSWORD:
+            demisto.debug("get_elastic_token - username or password fields are missing.")
+            raise DemistoException("get_elastic_token - username or password fields are missing.")
+
+        # 2. Token exists but expired, and refresh token is valid
+        if refresh_token and not is_access_token_expired(refresh_token_expires_in):
+            demisto.debug(
+                "get_elastic_token - Access token expired, but Refresh token valid. Attempting to get token using refresh token"
+            )
+
+            payload = {"grant_type": "refresh_token", "refresh_token": refresh_token}
+            response = requests.post(url, headers=headers, json=payload, verify=INSECURE, auth=(USERNAME, PASSWORD))
+
+            if response.status_code == 200:
+                now = datetime.now()
+                token_data = response.json()
+                access_token_expires_in = (now + timedelta(seconds=token_data.get("expires_in"))).strftime("%Y-%m-%dT%H:%M:%SZ")
+                refresh_token_expires_in = (now + timedelta(hours=24)).strftime(
+                    "%Y-%m-%dT%H:%M:%SZ"
+                )  # refresh token has a lifetime of 24 hours
+
+                integration_context.update(
+                    {
+                        "access_token": token_data.get("access_token"),
+                        "refresh_token": token_data.get("refresh_token"),
+                        "access_token_expires_in": access_token_expires_in,
+                        "refresh_token_expires_in": refresh_token_expires_in,
+                    }
+                )
+                set_integration_context(integration_context)
+                demisto.debug(
+                    "get_elastic_token - Access token received successfully by refresh token and set to integration context."
+                )
+                return integration_context["access_token"]
+
+            # If refresh fails, clear the refresh token to force generating of new token
+            demisto.debug("get_elastic_token - refresh fails, a new token will be generated via password grant.")
+            integration_context.update({"refresh_token": None, "refresh_token_expires_in": None})
+
+        # Generate a new access vi password grant
+        demisto.debug("get_elastic_token - Attempting to get token using grant_type:password")
+
+        payload = {"grant_type": "password", "username": USERNAME, "password": PASSWORD}
+        response = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), json=payload, verify=INSECURE)
+        if response.status_code == 200:
+            now = datetime.now()
+            token_data = response.json()
+            access_token_expires_in = (now + timedelta(seconds=token_data.get("expires_in"))).strftime("%Y-%m-%dT%H:%M:%SZ")
+            refresh_token_expires_in = (now + timedelta(hours=24)).strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            )  # refresh token has a lifetime of 24 hours
+
+            integration_context.update(
+                {
+                    "access_token": token_data.get("access_token"),
+                    "refresh_token": token_data.get("refresh_token"),
+                    "access_token_expires_in": access_token_expires_in,
+                    "refresh_token_expires_in": refresh_token_expires_in,
+                }
+            )
+            set_integration_context(integration_context)
+            demisto.debug(
+                "get_elastic_token - Access token received successfully via password grant and set to integration context."
+            )
+            return integration_context["access_token"]
+
+        demisto.debug(f"Failed to authenticate: {response.status_code}\n{response.text}")
+        raise DemistoException(f"Failed to authenticate: {response.status_code}\n{response.text}")
+
+    except Exception as e:
+        demisto.debug(f"get_elastic_token error: \n{str(e)}")
+        raise DemistoException(f"get_elastic_token error:\n{str(e)}")
+
+
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
 
@@ -182,19 +312,24 @@ def elasticsearch_builder(proxies):
 
         connection_args["node_class"] = CustomHttpNode  # type: ignore[assignment]
 
-    if API_KEY_ID:
+    if AUTH_TYPE == API_KEY_AUTH and API_KEY:
         connection_args["api_key"] = API_KEY
 
-    elif USERNAME:
+    elif AUTH_TYPE == BASIC_AUTH and USERNAME and PASSWORD:
         if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
             connection_args["basic_auth"] = (USERNAME, PASSWORD)
         else:  # Elasticsearch version v7 and below or OpenSearch (BC)
             connection_args["http_auth"] = (USERNAME, PASSWORD)
 
+    elif AUTH_TYPE == BEARER_AUTH:
+        connection_args["bearer_auth"] = get_elastic_token()
+
     es = Elasticsearch(**connection_args)  # type: ignore[arg-type]
+
+    # Ensuring api_key will be set correctly in case the authentication type is Api key auth.
     # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
     # In some versions of the ES library, the transport object does not have a get_session func
-    if API_KEY_ID and hasattr(es, "transport") and hasattr(es.transport, "get_connection"):
+    if AUTH_TYPE == API_KEY_AUTH and hasattr(es, "transport") and hasattr(es.transport, "get_connection"):
         es.transport.get_connection().session.headers["authorization"] = get_api_key_header_val(  # type: ignore[attr-defined]
             API_KEY
         )
@@ -531,36 +666,48 @@ def test_timestamp_format(timestamp):
             return_error(f"Fetched timestamp is not in milliseconds since epoch.\nFetched: {timestamp}")
 
 
-def test_connectivity_auth(proxies):
+def test_connectivity_auth(proxies) -> tuple[bool, str]:
+    """
+    Test connectivity and authentication with Elasticsearch server
+    Args:
+        proxies (dict): Dictionary of proxy settings
+
+    Returns:
+    bool: True if authentication and connectivity test passes, False otherwise
+    """
+
+    demisto.debug("test_connectivity_auth started")
     headers = {"Content-Type": "application/json"}
-    if API_KEY_ID:
-        headers["authorization"] = get_api_key_header_val(API_KEY)
+    res = None
 
     try:
-        if USERNAME:
+        if AUTH_TYPE == BASIC_AUTH:
+            demisto.debug("test_connectivity_auth - Basic auth setting authorization header and sending request")
             res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE, headers=headers)
 
-        else:
+        elif AUTH_TYPE == API_KEY_AUTH:
+            demisto.debug("test_connectivity_auth - Api key auth setting authorization header and sending request")
+            headers["authorization"] = get_api_key_header_val(API_KEY)
             res = requests.get(SERVER, verify=INSECURE, headers=headers)
 
-        if res.status_code >= 400:
-            try:
-                res.raise_for_status()
+        elif AUTH_TYPE == BEARER_AUTH:
+            demisto.debug("test_connectivity_auth - Bearer auth setting authorization header and sending request")
+            headers["Authorization"] = f"Bearer {get_elastic_token()}"
+            res = requests.get(SERVER, verify=INSECURE, headers=headers)
 
-            except requests.exceptions.HTTPError as e:
-                if HTTP_ERRORS.get(res.status_code) is not None:
-                    # if it is a known http error - get the message form the preset messages
-                    return_error(f"Failed to connect. The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
+        if res is not None:
+            if res.status_code >= 400:
+                demisto.debug(f"test_connectivity_auth - Failed to connect.\n{res.status_code=}, {res.text=}")
+                return False, f"Failed to connect.\n{res.status_code=}, {res.text=}"
 
-                else:
-                    # if it is unknown error - get the message from the error itself
-                    return_error(f"Failed to connect. The following error occurred: {e}")
+            elif res.status_code == 200:
+                demisto.debug("test_connectivity_auth - Connectivity test successful")
+                verify_es_server_version(res.json())
+                return True, "Connectivity test successful"
 
-        elif res.status_code == 200:
-            verify_es_server_version(res.json())
-
-    except requests.exceptions.RequestException as e:
-        return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
+    except Exception as e:
+        demisto.debug(f"test_connectivity_auth - Failed to connect.\nError message: {e}")
+        return False, f"Failed to connect.\nError message: {e}"
 
 
 def verify_es_server_version(res):
@@ -600,15 +747,19 @@ def test_func(proxies):
     as excepted the user should run the es-integration-health-check command.
 
     """
-    test_connectivity_auth(proxies)
+    success, message = test_connectivity_auth(proxies)
+    if not success:
+        return message
     if demisto.params().get("isFetch"):
         # check the existence of all necessary fields for fetch
         fetch_params_check()
-    demisto.results("ok")
+    return "ok"
 
 
 def integration_health_check(proxies):
-    test_connectivity_auth(proxies)
+    success, message = test_connectivity_auth(proxies)
+    if not success:
+        raise DemistoException(message)
     # build general Elasticsearch class
     es = elasticsearch_builder(proxies)
 
@@ -1164,7 +1315,6 @@ def get_indices_statistics(client):
 
     return raw_indices_data
 
-
 def get_indices_statistics_command(args, proxies):
     """
     Returns statistics and information of the Elasticsearch indices.
@@ -1215,7 +1365,7 @@ def main():  # pragma: no cover
     try:
         LOG(f"command is {demisto.command()}")
         if demisto.command() == "test-module":
-            test_func(proxies)
+            return_results(test_func(proxies))
         elif demisto.command() == "fetch-incidents":
             fetch_incidents(proxies)
         elif demisto.command() in ["search", "es-search"]:
