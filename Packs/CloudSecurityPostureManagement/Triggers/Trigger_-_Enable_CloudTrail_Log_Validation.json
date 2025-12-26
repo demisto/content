@@ -1,0 +1,25 @@
+{
+  "trigger_id": "4b4867dd915da7aaf1d97e342dc69ee2",
+  "playbook_id": "",
+  "suggestion_reason": "Recommended for enabling CloudTrail log validation",
+  "description": "This CLI command requires 'cloudtrail:UpdateTrail' permission. Successful execution will enable the log file validation for this CloudTrail.",
+  "trigger_name": "Enable CloudTrail Log Validation",
+  "automation_type": "command",
+  "automation_id": "aws-cloudtrail-trail-enable-log-validation-quick-action",
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X5"
+  ],
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+          "SEARCH_FIELD": "matching_service_rule_id",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "38e3d3cf-b694-46ec-8bd2-8f02194b5040"
+        }
+      ]
+    }
+  }
+}

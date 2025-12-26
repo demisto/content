@@ -1,0 +1,25 @@
+{
+  "trigger_id": "092fb9bad71860744dc6709395f3b832",
+  "playbook_id": "",
+  "suggestion_reason": "Recommended for remediating AWS RDS cluster not configured with IAM authentication",
+  "description": "This CLI command requires 'rds:ModifyDBCluster' permission. Successful execution will enable IAM Authentication for the reported AWS RDS cluster.",
+  "trigger_name": "Enable IAM Authentication on RDS Cluster",
+  "automation_type": "command",
+  "automation_id": "aws-rds-db-cluster-enable-iam-auth-quick-action",
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X5"
+  ],
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+          "SEARCH_FIELD": "matching_service_rule_id",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "f79f0e00-fcf1-49ef-ab0c-b3db225b086d"
+        }
+      ]
+    }
+  }
+}

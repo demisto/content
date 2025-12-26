@@ -1,0 +1,25 @@
+{
+  "trigger_id": "415d5b9adae33ed99bb5865473ee816b",
+  "playbook_id": "",
+  "suggestion_reason": "Recommended for remediating Azure MySQL database flexible server without SSL enforcement",
+  "description": "This CLI command requires 'Microsoft.DBforMySQL/flexibleServers/configurations/write' permission. Successful execution will enable SSL connection on your Azure MySQL database flexible server.",
+  "trigger_name": "Set Secure Transport for MySQL",
+  "automation_type": "command",
+  "automation_id": "azure-mysql-set-secure-transport-quick-action",
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X5"
+  ],
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+          "SEARCH_FIELD": "matching_service_rule_id",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "50ba3795-c6c7-43f2-af00-5162cb1a14f3"
+        }
+      ]
+    }
+  }
+}
