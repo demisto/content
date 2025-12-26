@@ -1,0 +1,21 @@
+{
+    "name": "Forcepoint DLP",
+    "description": "This pack is used for integration of Forcepoint DLP with XSOAR and can able to pull the incidents directly from Forcepoint DLP.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Sasyareeth Malyala",
+    "url": "",
+    "email": "",
+    "created": "2025-12-19T06:38:33Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "sasyareeth"
+    ]
+}
