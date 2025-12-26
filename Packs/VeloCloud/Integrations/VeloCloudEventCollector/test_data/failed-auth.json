@@ -1,8 +1,0 @@
-{
-  "error": {
-    "code": -32000,
-    "message": "tokenError [Invalid API Token]"
-  },
-  "id": 1762207011832,
-  "jsonrpc": "2.0"
-}
