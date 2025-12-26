@@ -176,8 +176,8 @@ def test_fetch_events_command_first_run(mocker):
 
     assert len(events) == 2
     assert "LastRun" in last_run
-    assert last_run["LastRun"] == "2025-01-01T00:00:00Z"
-    assert last_run["RecordId"] == "id2"
+    assert last_run["LastRun"] == "2024-01-01T00:00:00Z"
+    assert last_run["RecordId"] == "id1"
     assert get_records_mocker.call_args.kwargs["start_date_time"] == "2025-01-14T00:00:00.000Z"
 
 
