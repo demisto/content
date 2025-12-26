@@ -630,8 +630,7 @@ There is no context output for this command.
 
 ***
 Changes the user password.
-Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
-Note: In order to change the password, you need additional permissions: Auth Admin, Privileged Auth Admin or Global Admin, depending on the target user's role.
+Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated).
 
 #### Base Command
 
@@ -641,10 +640,11 @@ Note: In order to change the password, you need additional permissions: Auth Adm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName to update password for. | Required |
-| password | The new password. | Required |
-| force_change_password_next_sign_in | Whether the password will be changed on the next sign in. Possible values are: true, false. Default is true. | Optional |
-| force_change_password_with_mfa | Whether to change the password with MFA. Possible values are: true, false. Default is false. | Optional |
+| password | The password to validate. | Required |
+
+#### Context Output
+
+There is no context output for this command.
 
 ### msgraph-user-test
 
@@ -899,6 +899,106 @@ This operation is supported only when using a self-deployed app flow with the Di
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user | User ID or userPrincipalName. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-get-owned-devices
+
+***
+Retrieves the properties from the owned devices of a user.
+
+#### Base Command
+
+`msgraph-user-get-owned-devices`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | The onPremisesSamAccountName. | Required |
+| properties | A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone". | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-get-groups
+
+***
+Retrieves the groups a user is part of.
+
+#### Base Command
+
+`msgraph-user-get-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | The User ID or userPrincipalName of the user for which to get the MFA methods properties. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-get-by-sam
+
+***
+Retrieves the properties and relationships of a user object by its onPremisesSamAccountName. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+Permissions: - User.Read (Delegated) - User.Read.All (Application).
+
+#### Base Command
+
+`msgraph-user-get-by-sam`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName to update password for. | Required |
+| password | The new password. | Required |
+| force_change_password_next_sign_in | Whether the password will be changed on the next sign in. Possible values are: true, false. Default is true. | Optional |
+| force_change_password_with_mfa | Whether to change the password with MFA. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-validate-password
+
+***
+Validates whether a password is valid according to the password policies.
+
+#### Base Command
+
+`msgraph-user-validate-password`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-get-auth-methods
+
+***
+Retrieves the properties from the owned devices of a user.
+
+#### Base Command
+
+`msgraph-user-get-auth-methods`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | The User ID or userPrincipalName of the user for which to get the owned devices properties. | Required |
 
 #### Context Output
 
