@@ -52,3 +52,4 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 8.2.0
+provider: "symantec"
