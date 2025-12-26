@@ -1132,6 +1132,46 @@
       }
     }
   },
+  "######### base_time - issue.occurred",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_platform": true
+    },
+    "issue": {
+      "occurred": "2025-01-01T01:23:45.1234Z",
+      "created": "0001-01-01T00:00:00Z"
+    },
+    "results": {
+      "QueryParams": {
+        "query_name": "test",
+        "query_string": "Dummy XQL",
+        "earliest_time": "2024-12-31T01:23:45.123+00:00",
+        "latest_time": "2025-01-01T01:23:45.123+00:00"
+      }
+    }
+  },
   "######### base_time - alert.created",
   {
     "args": {
@@ -1160,6 +1200,46 @@
       "is_xsiam": true
     },
     "alert": {
+      "occurred": "0001-01-01T00:00:00Z",
+      "created": "2025-01-01T01:23:45.1234Z"
+    },
+    "results": {
+      "QueryParams": {
+        "query_name": "test",
+        "query_string": "Dummy XQL",
+        "earliest_time": "2024-12-31T01:23:45.123+00:00",
+        "latest_time": "2025-01-01T01:23:45.123+00:00"
+      }
+    }
+  },
+  "######### base_time - issue.created",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_platform": true
+    },
+    "issue": {
       "occurred": "0001-01-01T00:00:00Z",
       "created": "2025-01-01T01:23:45.1234Z"
     },
@@ -1702,6 +1782,50 @@
       }
     }
   },
+  "######### config.issue.default - new keys",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${issue.node1} ${issue.node2}"
+            }
+          },
+          "config": {
+            "issue": {
+              "default": {
+                "node2": "issue.node2"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_platform": true
+    },
+    "issue": {
+      "node1": "issue.node1"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "issue.node1 issue.node2",
+        "Contents": null
+      }
+    }
+  },
   "######### config.incident.default - new keys",
   {
     "args": {
@@ -1827,6 +1951,50 @@
         "Type": 1,
         "ContentsFormat": "markdown",
         "HumanReadable": "alert.node1",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.issue.default - existing keys",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${issue.node1}"
+            }
+          },
+          "config": {
+            "issue": {
+              "default": {
+                "node1": "xxx"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_platform": true
+    },
+    "issue": {
+      "node1": "issue.node1"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "issue.node1",
         "Contents": null
       }
     }
@@ -2125,6 +2293,59 @@
       }
     }
   },
+  "######### config.issue.filters",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${issue.node1} ${issue.node2.sub1.[0]} ${issue.node2.sub2.[0]}"
+            }
+          },
+          "config": {
+            "issue": {
+              "filters": [
+                "node1",
+                "node2.sub2"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_platform": true
+    },
+    "issue": {
+      "node1": "issue.node1",
+      "node2": [
+        {
+          "sub1": "issue.node2.sub1"
+        },
+        {
+          "sub2": "issue.node2.sub2"
+        }
+      ]
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "issue.node1 ${issue.node2.sub1.[0]} issue.node2.sub2",
+        "Contents": null
+      }
+    }
+  },
   "######### config.incident.filters",
   {
     "args": {
@@ -2359,6 +2580,70 @@
       }
     }
   },
+  "######### config.issue.remove-null - entries-only (true - default)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${issue=>JSON.stringify(val)}"
+            }
+          },
+          "config": {
+            "issue": {
+              "filters": [
+                "node1"
+              ],
+              "remove-null": {
+                "paths": [
+                  "node1.sub1",
+                  "node1.sub2",
+                  "node1.sub3",
+                  "node1.sub4"
+                ]
+              },
+              "default": {
+                "node1": {
+                  "sub1": "default node1.sub1",
+                  "sub2": "default node1.sub2",
+                  "sub3": "default node1.sub3"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_platform": true
+    },
+    "issue": {
+      "node1": {
+        "sub1": null,
+        "sub2": {},
+        "sub3": "sub3",
+        "sub4": [1, null, 2]
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "{\"node1\": {\"sub1\": \"default node1.sub1\", \"sub2\": {}, \"sub3\": \"sub3\", \"sub4\": [1, null, 2]}}",
+        "Contents": null
+      }
+    }
+  },
   "######### config.alert.remove-null - entries-only (false)",
   {
     "args": {
@@ -2408,6 +2693,71 @@
       "is_xsiam": true
     },
     "alert": {
+      "node1": {
+        "sub1": null,
+        "sub2": {},
+        "sub3": "sub3",
+        "sub4": [1, null, 2]
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "{\"node1\": {\"sub1\": \"default node1.sub1\", \"sub2\": {}, \"sub3\": \"sub3\", \"sub4\": [1, 2]}}",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.issue.remove-null - entries-only (false)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${issue=>JSON.stringify(val)}"
+            }
+          },
+          "config": {
+            "issue": {
+              "filters": [
+                "node1"
+              ],
+              "remove-null": {
+                "entries-only": false,
+                "paths": [
+                  "node1.sub1",
+                  "node1.sub2",
+                  "node1.sub3",
+                  "node1.sub4"
+                ]
+              },
+              "default": {
+                "node1": {
+                  "sub1": "default node1.sub1",
+                  "sub2": "default node1.sub2",
+                  "sub3": "default node1.sub3"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_platform": true
+    },
+    "issue": {
       "node1": {
         "sub1": null,
         "sub2": {},
@@ -3877,6 +4227,43 @@
         "Contents": {
           "stats": 1234
         }
+      }
+    }
+  },
+  "######### Backward compatibility: Access the alert fields using the ${issue}",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${alert.node1}"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_platform": true
+    },
+    "issue": {
+      "node1": "issue.node1"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "issue.node1",
+        "Contents": null
       }
     }
   }
