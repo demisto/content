@@ -254,7 +254,7 @@
     ],
     "isPredefined": true,
     "marketplaces": [
-        "xsoar_on_prem",
+        "xsoar",
         "xpanse"
     ]
 }

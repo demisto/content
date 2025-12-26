@@ -6,17 +6,19 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d0dcb500-d703-41df-81df-538ebad1ba0c
+    taskid: 492c7ec3-3547-4449-890a-475c8370424d
     type: start
     task:
-      id: d0dcb500-d703-41df-81df-538ebad1ba0c
+      id: 492c7ec3-3547-4449-890a-475c8370424d
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "11"
+      - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -35,35 +37,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 058eeda6-b8b3-4350-8724-3f0ad32dc336
-    type: regular
+    taskid: 17509410-f7f8-46cb-8512-0fb4fa29818b
+    type: title
     task:
-      id: 058eeda6-b8b3-4350-8724-3f0ad32dc336
+      id: 17509410-f7f8-46cb-8512-0fb4fa29818b
       version: -1
-      name: Delete Context
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: DeleteContext
-      type: regular
+      name: Case 1 - Base
+      type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "52"
-    scriptarguments:
-      all:
-        simple: "yes"
+      - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 370
+          "y": 220
         }
       }
     note: false
@@ -75,33 +69,37 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 8ce4fb1b-ee8d-473d-8a36-906ddaeac579
+    taskid: 1b7f12b2-b35c-4f82-b238-9755946c1704
     type: regular
     task:
-      id: 8ce4fb1b-ee8d-473d-8a36-906ddaeac579
+      id: 1b7f12b2-b35c-4f82-b238-9755946c1704
       version: -1
-      name: Create SHA256
-      description: |
-        Creating a hash of a given input, support sha1, sha256, sha512, md5 and blake. Wrapper for https://docs.python.org/3/library/hashlib.html.
-      scriptName: CreateHash
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "9"
+      - "3"
     scriptarguments:
-      text:
-        simple: ${RandomString}
-      type:
-        simple: sha256
+      all:
+        simple: "yes"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 710
+          "y": 390
         }
       }
     note: false
@@ -113,12 +111,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ca6c64f1-935d-4418-8b73-81b1ca01f52d
+    taskid: 8b7eaea9-4f61-488d-8125-c5710bfe89c5
     type: regular
     task:
-      id: ca6c64f1-935d-4418-8b73-81b1ca01f52d
+      id: 8b7eaea9-4f61-488d-8125-c5710bfe89c5
       version: -1
-      name: File Enrichment Internal
+      name: file-enrichment
       description: This script gathers file reputation data from multiple integrations
         and returns a "FileEnrichment" object with consolidated information to the
         context output.
@@ -126,22 +124,23 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "4"
-      - "12"
-      - "25"
-      - "51"
+      - "5"
+      - "6"
     scriptarguments:
       file_hash:
-        simple: ${CreateHash}
+        simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1050
+          "y": 575
         }
       }
     note: false
@@ -153,20 +152,99 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 19cf1724-a6a1-4265-80dc-0ec53e628a21
+    taskid: 75107d08-019b-4752-8a47-4f8cb7f70053
     type: condition
     task:
-      id: 19cf1724-a6a1-4265-80dc-0ec53e628a21
+      id: 75107d08-019b-4752-8a47-4f8cb7f70053
       version: -1
-      name: |
-        Validate Brand
-      description: Pretty-print the contents of the playbook context.
+      name: FileEnrichment Object Exists with all keys
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
-      - "10"
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Hashes
+                accessor: SHA256
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.MaxScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Status
+            iscontext: true
+          right:
+            value:
+              simple: Fresh
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d03566f5-10a0-4b04-afbf-3e2c36e8b1bf
+    type: condition
+    task:
+      id: d03566f5-10a0-4b04-afbf-3e2c36e8b1bf
+      version: -1
+      name: WildFire-v2 indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "7"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -174,25 +252,69 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: FileEnrichment.Brand
+              simple: FileEnrichment.Results.Brand
             iscontext: true
           right:
             value:
               simple: WildFire-v2
-      - - operator: containsGeneral
+      - - operator: isExists
           left:
             value:
-              simple: FileEnrichment.Brand
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Results.SHA256
             iscontext: true
           right:
             value:
-              simple: TIM
+              simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Reliability
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1220
+          "x": 910,
+          "y": 760
         }
       }
     note: false
@@ -204,37 +326,148 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7c31acee-a806-48ae-81cd-ca99fcb50f7f
-    type: regular
+    taskid: 9f8cda56-af5b-4a0b-a43c-fe85e8fdbd66
+    type: condition
     task:
-      id: 7c31acee-a806-48ae-81cd-ca99fcb50f7f
+      id: 9f8cda56-af5b-4a0b-a43c-fe85e8fdbd66
       version: -1
-      name: File Enrichment External
-      description: This script gathers file reputation data from multiple integrations
-        and returns a "FileEnrichment" object with consolidated information to the
-        context output.
-      scriptName: file-enrichment
-      type: regular
+      name: TIM Indicator exists
+      type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: TIM
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                accessor: Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                accessor: SHA256
+            iscontext: true
+          right:
+            value:
+              simple: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 82ed17d9-b60c-4868-945b-19f3602b6bb3
+    type: title
+    task:
+      id: 82ed17d9-b60c-4868-945b-19f3602b6bb3
+      version: -1
+      name: Case 2 - One Brand
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "15"
-      - "16"
-      - "17"
-      - "26"
-    scriptarguments:
-      brands:
-        simple: VirusTotal (API v3)
-      file_hash:
-        simple: ${CreateHash}
+      - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1720
+          "y": 945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: cdf6394e-2051-4efe-8eee-f7de3adef4f0
+    type: regular
+    task:
+      id: cdf6394e-2051-4efe-8eee-f7de3adef4f0
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1115
         }
       }
     note: false
@@ -246,34 +479,39 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 7e432d7e-f126-44b3-b1ab-b40426204811
+    taskid: 92053139-75ce-4aaa-abc9-786221f3859b
     type: regular
     task:
-      id: 7e432d7e-f126-44b3-b1ab-b40426204811
+      id: 92053139-75ce-4aaa-abc9-786221f3859b
       version: -1
-      name: Create File Indicator SHA256
-      description: commands.local.cmd.new.indicator
-      script: Builtin|||createNewIndicator
+      name: file-enrichment
+      description: This script gathers file reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information to the
+        context output.
+      scriptName: file-enrichment
       type: regular
-      iscommand: true
-      brand: Builtin
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "3"
+      - "10"
+      - "11"
+      - "12"
+      - "13"
     scriptarguments:
-      tags:
-        simple: FileEnrichmentTest
-      type:
-        simple: File
-      value:
-        simple: ${CreateHash}
+      brands:
+        simple: VirusTotal (API v3)
+      file_hash:
+        simple: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 880
+          "y": 1300
         }
       }
     note: false
@@ -285,25 +523,74 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 5a2c4c88-ac67-434a-8baf-9d67da59ab10
-    type: title
+    taskid: e9170aac-4a69-4a10-a55b-86bc42c50ed5
+    type: condition
     task:
-      id: 5a2c4c88-ac67-434a-8baf-9d67da59ab10
+      id: e9170aac-4a69-4a10-a55b-86bc42c50ed5
       version: -1
-      name: External Enrichment
-      type: title
+      name: FileEnrichment Object Exists with all keys
+      type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
-      '#none#':
-      - "14"
+      "yes":
+      - "15"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Hashes
+                accessor: SHA256
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.MaxScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Status
+            iscontext: true
+          right:
+            value:
+              simple: Fresh
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1390
+          "x": 265,
+          "y": 1485
         }
       }
     note: false
@@ -315,25 +602,90 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 4e0e79d8-37b5-4a68-8ba8-0d47a8e454cb
-    type: title
+    taskid: 4aa0d2e9-454e-4bd1-9fcd-50a56353652f
+    type: condition
     task:
-      id: 4e0e79d8-37b5-4a68-8ba8-0d47a8e454cb
+      id: 4aa0d2e9-454e-4bd1-9fcd-50a56353652f
       version: -1
-      name: 'Internal Enrichment '
-      type: title
+      name: VirusTotal (API v3) indicator exists
+      type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
-      '#none#':
-      - "1"
+      "yes":
+      - "15"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal (API v3)
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: SHA256
+            iscontext: true
+          right:
+            value:
+              simple: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Reliability
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 210
+          "x": 695,
+          "y": 1485
         }
       }
     note: false
@@ -345,37 +697,117 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 631cfe4c-767b-497c-a58f-0733a499dac2
+    taskid: 8be12252-3c93-4dc2-9ba7-9729195e55af
     type: condition
     task:
-      id: 631cfe4c-767b-497c-a58f-0733a499dac2
+      id: 8be12252-3c93-4dc2-9ba7-9729195e55af
       version: -1
-      name: Validate Indicator
+      name: TIM Indicator exists
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
-      - "10"
+      - "15"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
-              simple: FileEnrichment.SHA256
+              simple: FileEnrichment.Results.Brand
             iscontext: true
           right:
             value:
-              simple: CreateHash
+              simple: TIM
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                accessor: Score
             iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                accessor: SHA256
+            iscontext: true
+          right:
+            value:
+              simple: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1220
+          "x": 1125,
+          "y": 1485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f681bee1-b206-4952-9ea3-d7f95782b506
+    type: condition
+    task:
+      id: f681bee1-b206-4952-9ea3-d7f95782b506
+      version: -1
+      name: WildFire Indicator not exists
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: WildFire-v2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1485
         }
       }
     note: false
@@ -387,37 +819,43 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 3ba4a398-c45c-4c91-b9f4-c063e2881ab7
+    taskid: ba39ca26-10a2-4c28-a42b-e9d2b28ad342
     type: regular
     task:
-      id: 3ba4a398-c45c-4c91-b9f4-c063e2881ab7
+      id: ba39ca26-10a2-4c28-a42b-e9d2b28ad342
       version: -1
-      name: Delete Context
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: DeleteContext
+      name: file-enrichment
+      description: This script gathers for reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information in the
+        context output. The script runs core-get-hash-analytics-prevalence on SHA256
+        values only.
+      scriptName: file-enrichment
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "6"
+      - "20"
+      - "17"
+      - "19"
+      - "18"
+      - "16"
     scriptarguments:
-      all:
-        simple: "yes"
-      keysToKeep:
-        simple: CreateHash, RandomString
+      additional_fields:
+        simple: "true"
+      external_enrichment:
+        simple: "true"
+      file_hash:
+        simple: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1550
+          "y": 2025
         }
       }
     note: false
@@ -429,46 +867,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 9e055155-1b2a-4080-849d-e69f8756c808
-    type: condition
+    taskid: 81be1044-e69d-4b74-919e-d92339636452
+    type: title
     task:
-      id: 9e055155-1b2a-4080-849d-e69f8756c808
+      id: 81be1044-e69d-4b74-919e-d92339636452
       version: -1
-      name: |
-        Validate Brand
-      description: Pretty-print the contents of the playbook context.
-      type: condition
+      name: Case 3 - External Enrichment + Additional Fields
+      type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
-      "yes":
-      - "18"
+      '#none#':
+      - "21"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: FileEnrichment.Brand
-            iscontext: true
-          right:
-            value:
-              simple: VirusTotal (API v3)
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: FileEnrichment.Brand
-            iscontext: true
-          right:
-            value:
-              simple: TIM
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1890
+          "x": 910,
+          "y": 1670
         }
       }
     note: false
@@ -480,18 +899,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 048e6c9d-c88f-4e8a-8c8b-1bda22983e48
+    taskid: 92f3d426-a4c3-47d1-8853-d5ae4832e6d0
     type: condition
     task:
-      id: 048e6c9d-c88f-4e8a-8c8b-1bda22983e48
+      id: 92f3d426-a4c3-47d1-8853-d5ae4832e6d0
       version: -1
-      name: Validate Indicator
+      name: FileEnrichment Object Exists with all keys
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
-      - "18"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -499,18 +920,53 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FileEnrichment.SHA256
+              simple: FileEnrichment.Value
             iscontext: true
           right:
             value:
-              simple: CreateHash
+              simple: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Hashes
+                accessor: SHA256
+                transformers:
+                - operator: toLowerCase
             iscontext: true
+          right:
+            value:
+              simple: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.MaxScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Status
+            iscontext: true
+          right:
+            value:
+              simple: Fresh
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1890
+          "x": 1770,
+          "y": 2210
         }
       }
     note: false
@@ -522,36 +978,90 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 6aaf819f-5655-4f85-821b-16208e1af097
+    taskid: 25433af3-0d90-4146-b97b-3a18708c9e1b
     type: condition
     task:
-      id: 6aaf819f-5655-4f85-821b-16208e1af097
+      id: 25433af3-0d90-4146-b97b-3a18708c9e1b
       version: -1
-      name: Validate Score
+      name: VirusTotal (API v3) indicator exists
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
-      - "18"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
-              simple: FileEnrichment.Score
+              simple: FileEnrichment.Results.Brand
             iscontext: true
           right:
             value:
-              simple: "0"
+              simple: VirusTotal (API v3)
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: SHA256
+            iscontext: true
+          right:
+            value:
+              simple: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Reliability
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1890
+          "x": 480,
+          "y": 2210
         }
       }
     note: false
@@ -563,25 +1073,74 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 3f82c133-4c26-47e4-833d-6c23aee46fb0
-    type: title
+    taskid: c98ae5f1-56e4-4080-8732-97f64fddd364
+    type: condition
     task:
-      id: 3f82c133-4c26-47e4-833d-6c23aee46fb0
+      id: c98ae5f1-56e4-4080-8732-97f64fddd364
       version: -1
-      name: Internal and External Enrichment
-      type: title
+      name: TIM Indicator exists
+      type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
-      '#none#':
-      - "19"
+      "yes":
+      - "22"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: TIM
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                accessor: Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                accessor: SHA256
+            iscontext: true
+          right:
+            value:
+              simple: CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2060
+          "x": 1340,
+          "y": 2210
         }
       }
     note: false
@@ -593,37 +1152,90 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 24d1d2e1-087c-45e9-801a-94253cac061f
-    type: regular
+    taskid: 46254a52-4cea-4cd5-99bc-51f9f234b64c
+    type: condition
     task:
-      id: 24d1d2e1-087c-45e9-801a-94253cac061f
+      id: 46254a52-4cea-4cd5-99bc-51f9f234b64c
       version: -1
-      name: Delete Context
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: DeleteContext
-      type: regular
+      name: WildFire-v2 indicator exists
+      type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      all:
-        simple: "yes"
-      keysToKeep:
-        simple: RandomString
+      "yes":
+      - "22"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: WildFire-v2
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Results.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Reliability
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 2220
+          "y": 2210
         }
       }
     note: false
@@ -635,33 +1247,35 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 8243ce1d-e45f-4ba8-b962-082ef384e83f
-    type: regular
+    taskid: 689bca42-7f52-40e9-88f6-faaef69a217a
+    type: condition
     task:
-      id: 8243ce1d-e45f-4ba8-b962-082ef384e83f
+      id: 689bca42-7f52-40e9-88f6-faaef69a217a
       version: -1
-      name: Create Hash MD5
-      description: |
-        Creating a hash of a given input, support sha1, sha256, sha512, md5 and blake. Wrapper for https://docs.python.org/3/library/hashlib.html.
-      scriptName: CreateHash
-      type: regular
+      name: Additional Fields Exists
+      type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      text:
-        simple: ${RandomString}
-      type:
-        simple: md5
+      "yes":
+      - "22"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FileEnrichment.Results.AdditionalFields
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2390
+          "x": 50,
+          "y": 2210
         }
       }
     note: false
@@ -673,723 +1287,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 736980a1-2358-47cd-b621-a70e49f38145
+    taskid: a79c488f-ccc6-47ec-86d0-ae86942bd2b9
     type: regular
     task:
-      id: 736980a1-2358-47cd-b621-a70e49f38145
-      version: -1
-      name: Create File Indicator MD5
-      description: commands.local.cmd.new.indicator
-      script: Builtin|||createNewIndicator
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      tags:
-        simple: FileEnrichmentTest
-      type:
-        simple: File
-      value:
-        simple: ${CreateHash}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 2560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: e8a72579-51c2-4a24-8486-c933c5e6f915
-    type: regular
-    task:
-      id: e8a72579-51c2-4a24-8486-c933c5e6f915
-      version: -1
-      name: File Enrichment Internal and External
-      description: This script gathers file reputation data from multiple integrations
-        and returns a "FileEnrichment" object with consolidated information to the
-        context output.
-      scriptName: file-enrichment
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-      - "28"
-      - "29"
-      - "30"
-    scriptarguments:
-      brands:
-        simple: VirusTotal (API v3),WildFire-v2
-      file_hash:
-        simple: ${CreateHash}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 2730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: 7f951085-52e5-4fe0-8b9a-443082e62467
-    type: title
-    task:
-      id: 7f951085-52e5-4fe0-8b9a-443082e62467
-      version: -1
-      name: Case 4 - Some Hash Malformed
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "45"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 3070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: bb00d571-9985-4c1f-8521-87ac1ee4ee09
-    type: condition
-    task:
-      id: bb00d571-9985-4c1f-8521-87ac1ee4ee09
-      version: -1
-      name: Validate DBotScore
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              simple: DBotScore
-            iscontext: true
-          right:
-            value: {}
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: d306be45-d560-494f-80c1-45f279df3499
-    type: condition
-    task:
-      id: d306be45-d560-494f-80c1-45f279df3499
-      version: -1
-      name: Validate DBotScore
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "18"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Indicator
-            iscontext: true
-          right:
-            value:
-              simple: CreateHash
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Vendor
-            iscontext: true
-          right:
-            value:
-              simple: VirusTotal (API v3)
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1890
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: b4388142-5f26-4ba8-b260-9b0ab6ecaf47
-    type: condition
-    task:
-      id: b4388142-5f26-4ba8-b260-9b0ab6ecaf47
-      version: -1
-      name: |
-        Validate Brand
-      description: Pretty-print the contents of the playbook context.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "24"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: FileEnrichment.Brand
-            iscontext: true
-          right:
-            value:
-              simple: VirusTotal (API v3)
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: FileEnrichment.Brand
-            iscontext: true
-          right:
-            value:
-              simple: TIM
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: FileEnrichment.Brand
-            iscontext: true
-          right:
-            value:
-              simple: WildFire-v2
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: fd9db349-55df-4378-8968-ab738650b038
-    type: condition
-    task:
-      id: fd9db349-55df-4378-8968-ab738650b038
-      version: -1
-      name: Validate Indicator
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "24"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: FileEnrichment.MD5
-            iscontext: true
-          right:
-            value:
-              simple: CreateHash
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 2900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: 583c8fb7-be60-4bbf-ac73-f60d59e1c232
-    type: condition
-    task:
-      id: 583c8fb7-be60-4bbf-ac73-f60d59e1c232
-      version: -1
-      name: Validate Score
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "24"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: FileEnrichment.Score
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 2900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: ad94a8fb-e0f9-4e07-a76c-9499bd444167
-    type: condition
-    task:
-      id: ad94a8fb-e0f9-4e07-a76c-9499bd444167
-      version: -1
-      name: Validate DBotScore
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "24"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Indicator
-            iscontext: true
-          right:
-            value:
-              simple: CreateHash
-            iscontext: true
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: DBotScore.Vendor
-            iscontext: true
-          right:
-            value:
-              simple: VirusTotal (API v3)
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: DBotScore.Vendor
-            iscontext: true
-          right:
-            value:
-              simple: WildFire-v2
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1555,
-          "y": 2900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: 30b98f10-d224-448d-9640-3bb9ab899c09
-    type: regular
-    task:
-      id: 30b98f10-d224-448d-9640-3bb9ab899c09
-      version: -1
-      name: File Enrichment
-      description: This script gathers file reputation data from multiple integrations
-        and returns a "FileEnrichment" object with consolidated information to the
-        context output.
-      scriptName: file-enrichment
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#error#':
-      - "53"
-      '#none#':
-      - "39"
-    scriptarguments:
-      additional_fields:
-        simple: "true"
-      brands:
-        simple: dummy
-      file_hash:
-        simple: ${CreateHash}
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: errorPath
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 4720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: 872c502b-5611-4ea2-89d2-343ed90e35c8
-    type: title
-    task:
-      id: 872c502b-5611-4ea2-89d2-343ed90e35c8
-      version: -1
-      name: A Brand Does Not Exist
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 4560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 92dd8b63-ef05-4dcf-886a-0063594bee88
-    type: title
-    task:
-      id: 92dd8b63-ef05-4dcf-886a-0063594bee88
-      version: -1
-      name: No Arguments
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "37"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 3900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
-    taskid: f65e4943-98ee-4438-8f0f-283fd610dae4
-    type: regular
-    task:
-      id: f65e4943-98ee-4438-8f0f-283fd610dae4
-      version: -1
-      name: File Enrichment
-      description: This script gathers file reputation data from multiple integrations
-        and returns a "FileEnrichment" object with consolidated information to the
-        context output.
-      scriptName: file-enrichment
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#error#':
-      - "41"
-      '#none#':
-      - "39"
-    scriptarguments:
-      additional_fields:
-        simple: "true"
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: errorPath
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 4060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
-    taskid: e4d8f52f-46a0-4032-8e9a-dec5af8b3e3e
-    type: condition
-    task:
-      id: e4d8f52f-46a0-4032-8e9a-dec5af8b3e3e
-      version: -1
-      name: Failure
-      type: condition
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: "1"
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 807.5,
-          "y": 4890
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: 3041f980-bdcf-46ab-8bb0-7428ceb257ad
-    type: title
-    task:
-      id: 3041f980-bdcf-46ab-8bb0-7428ceb257ad
-      version: -1
-      name: Finish
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 5060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
-    taskid: 9e960836-4880-4666-8431-70e452b71645
-    type: title
-    task:
-      id: 9e960836-4880-4666-8431-70e452b71645
-      version: -1
-      name: Malformed Hash
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "43"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 582.5,
-          "y": 4230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
-    taskid: 02df73cc-459f-44f6-8a3b-5a4e00e1df23
-    type: regular
-    task:
-      id: 02df73cc-459f-44f6-8a3b-5a4e00e1df23
-      version: -1
-      name: File Enrichment
-      description: This script gathers file reputation data from multiple integrations
-        and returns a "FileEnrichment" object with consolidated information to the
-        context output.
-      scriptName: file-enrichment
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#error#':
-      - "34"
-      '#none#':
-      - "39"
-    scriptarguments:
-      additional_fields:
-        simple: "true"
-      file_hash:
-        simple: dummy
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: errorPath
-    view: |-
-      {
-        "position": {
-          "x": 582.5,
-          "y": 4390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "44":
-    id: "44"
-    taskid: 0f4ad71a-c11c-4017-8bc9-ba21e9c65743
-    type: title
-    task:
-      id: 0f4ad71a-c11c-4017-8bc9-ba21e9c65743
-      version: -1
-      name: Sad Flows
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "35"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 3740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "45":
-    id: "45"
-    taskid: acb120d6-e0b3-4472-87f3-9a8057bcc231
-    type: regular
-    task:
-      id: acb120d6-e0b3-4472-87f3-9a8057bcc231
+      id: a79c488f-ccc6-47ec-86d0-ae86942bd2b9
       version: -1
       name: Delete Context
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1402,21 +1303,1624 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "46"
+      - "14"
     scriptarguments:
       all:
         simple: "yes"
-      keysToKeep:
-        simple: CreateHash
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
+          "x": 910,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 343b0944-0fd5-4cca-ba71-78968a35b2b5
+    type: title
+    task:
+      id: 343b0944-0fd5-4cca-ba71-78968a35b2b5
+      version: -1
+      name: Case 4 - Multiple Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 911879f4-9aa9-4e3f-a046-709fd6bd57a0
+    type: regular
+    task:
+      id: 911879f4-9aa9-4e3f-a046-709fd6bd57a0
+      version: -1
+      name: file-enrichment
+      description: This script gathers for reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information in the
+        context output. The script runs core-get-hash-analytics-prevalence on SHA256
+        values only.
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "25"
+      - "28"
+      - "30"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      external_enrichment:
+        simple: "false"
+      file_hash:
+        simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd,eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 2814fc58-a556-4e65-8d56-2d4fbd3c5ac9
+    type: regular
+    task:
+      id: 2814fc58-a556-4e65-8d56-2d4fbd3c5ac9
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: ba5befff-3a82-4563-bc6d-5f99848b1789
+    type: condition
+    task:
+      id: ba5befff-3a82-4563-bc6d-5f99848b1789
+      version: -1
+      name: FileEnrichment Object Exists with all keys for first indicator
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+            iscontext: true
+          right:
+            value:
+              simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+                accessor: Hashes.SHA256
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+                accessor: MaxScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+                accessor: TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: Fresh
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 04f2ea7f-ba9a-43d8-ad27-d6427a9cbe83
+    type: condition
+    task:
+      id: 04f2ea7f-ba9a-43d8-ad27-d6427a9cbe83
+      version: -1
+      name: WildFire-v2 indicator exists for first indicator
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+                accessor: Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: WildFire-v2
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+                accessor: Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+                accessor: Results.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+                accessor: Results.Reliability
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 1c4a0d67-bdc7-4121-b8b8-0ab900903f2b
+    type: condition
+    task:
+      id: 1c4a0d67-bdc7-4121-b8b8-0ab900903f2b
+      version: -1
+      name: TIM Indicator exists for first indicator
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+                accessor: Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: TIM
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+                accessor: Results.Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+                accessor: Results.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 8de4ab3a-644f-4491-94b3-7a2c39326a62
+    type: condition
+    task:
+      id: 8de4ab3a-644f-4491-94b3-7a2c39326a62
+      version: -1
+      name: FileEnrichment Object Exists with all keys for second indicator
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+            iscontext: true
+          right:
+            value:
+              simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                accessor: Hashes.SHA256
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                accessor: MaxScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                accessor: TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: Fresh
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 78b6a80f-e3f2-44a8-8163-ba8e139b01d3
+    type: condition
+    task:
+      id: 78b6a80f-e3f2-44a8-8163-ba8e139b01d3
+      version: -1
+      name: WildFire-v2 indicator exists  for second indicator
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                accessor: Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: WildFire-v2
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                accessor: Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                accessor: Results.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                accessor: Results.Reliability
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: cc761849-7501-4497-8d16-f03c8455c251
+    type: condition
+    task:
+      id: cc761849-7501-4497-8d16-f03c8455c251
+      version: -1
+      name: TIM Indicator exists  for second indicator
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                accessor: Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: TIM
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+                accessor: Results.Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+                accessor: Results.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 17a984a5-480b-452d-baee-1bdcc378a6c8
+    type: title
+    task:
+      id: 17a984a5-480b-452d-baee-1bdcc378a6c8
+      version: -1
+      name: Case 5 - One Valid Input, One Invalid Input
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 76388962-6c1a-4c6c-8e2b-1c124f17ed3f
+    type: regular
+    task:
+      id: 76388962-6c1a-4c6c-8e2b-1c124f17ed3f
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: f4cebef7-2795-4c6d-9bf3-3efb96842aaa
+    type: regular
+    task:
+      id: f4cebef7-2795-4c6d-9bf3-3efb96842aaa
+      version: -1
+      name: file-enrichment
+      description: This script gathers file reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information to the
+        context output.
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "37"
+      - "38"
+      - "39"
+      - "40"
+    scriptarguments:
+      file_hash:
+        simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,aa
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 516acc62-db94-49bd-8384-c9a55e42f007
+    type: condition
+    task:
+      id: 516acc62-db94-49bd-8384-c9a55e42f007
+      version: -1
+      name: FileEnrichment Object Exists with all keys
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Hashes
+                accessor: SHA256
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.MaxScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Status
+            iscontext: true
+          right:
+            value:
+              simple: Fresh
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 988cde18-74a5-45bb-86da-8f3a58f317e2
+    type: condition
+    task:
+      id: 988cde18-74a5-45bb-86da-8f3a58f317e2
+      version: -1
+      name: WildFire-v2 indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: WildFire-v2
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Results.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Reliability
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
           "x": 695,
-          "y": 3230
+          "y": 3845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: bb26fe74-d913-4847-870a-bc1c66a5ae05
+    type: condition
+    task:
+      id: bb26fe74-d913-4847-870a-bc1c66a5ae05
+      version: -1
+      name: TIM Indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: TIM
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                accessor: Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                accessor: SHA256
+            iscontext: true
+          right:
+            value:
+              simple: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: b818dc49-fe43-493f-b473-59a813a10d4a
+    type: condition
+    task:
+      id: b818dc49-fe43-493f-b473-59a813a10d4a
+      version: -1
+      name: Invalid Entry exists
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: aa
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: aa
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: Error
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: aa
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Invalid
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 3845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 05956320-032f-466c-bce0-60d2ec35e2b3
+    type: title
+    task:
+      id: 05956320-032f-466c-bce0-60d2ec35e2b3
+      version: -1
+      name: Case 6 - One Valid Brand, One Invalid Brand
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 44d59455-ab3d-41f6-86e3-65e4a660e2d2
+    type: regular
+    task:
+      id: 44d59455-ab3d-41f6-86e3-65e4a660e2d2
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 5a1755cb-cd0d-4f96-8e16-8edef2864fe6
+    type: regular
+    task:
+      id: 5a1755cb-cd0d-4f96-8e16-8edef2864fe6
+      version: -1
+      name: file-enrichment
+      description: This script gathers file reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information to the
+        context output.
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "44"
+      - "45"
+      - "46"
+      - "47"
+    scriptarguments:
+      brands:
+        simple: WildFire-v2,aa
+      file_hash:
+        simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 156389cb-1940-4ce7-83e5-1f2bbb77a131
+    type: condition
+    task:
+      id: 156389cb-1940-4ce7-83e5-1f2bbb77a131
+      version: -1
+      name: FileEnrichment Object Exists with all keys
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Hashes
+                accessor: SHA256
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.MaxScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.TIMScore
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Status
+            iscontext: true
+          right:
+            value:
+              simple: Fresh
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: dea796de-af41-4aa4-8994-fbbff0aa5b0d
+    type: condition
+    task:
+      id: dea796de-af41-4aa4-8994-fbbff0aa5b0d
+      version: -1
+      name: WildFire-v2 indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: WildFire-v2
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Results.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Reliability
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4570
         }
       }
     note: false
@@ -1428,37 +2932,74 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: c692a586-64e2-4850-8dee-7dbe493abd39
-    type: regular
+    taskid: d1cec984-88a1-4ac1-88b7-7e45aba12d1b
+    type: condition
     task:
-      id: c692a586-64e2-4850-8dee-7dbe493abd39
+      id: d1cec984-88a1-4ac1-88b7-7e45aba12d1b
       version: -1
-      name: File Enrichment Hash Malformed
-      description: This script gathers file reputation data from multiple integrations
-        and returns a "FileEnrichment" object with consolidated information to the
-        context output.
-      scriptName: file-enrichment
-      type: regular
+      name: TIM Indicator exists
+      type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
-      '#none#':
-      - "47"
+      "yes":
       - "48"
-      - "49"
-      - "50"
-    scriptarguments:
-      brands:
-        simple: VirusTotal (API v3),WildFire-v2
-      file_hash:
-        simple: ${CreateHash}, 1
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: TIM
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                accessor: Score
+            iscontext: true
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                accessor: SHA256
+            iscontext: true
+          right:
+            value:
+              simple: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3400
+          "x": 1125,
+          "y": 4570
         }
       }
     note: false
@@ -1470,54 +3011,38 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 5f4c7103-3b6a-4bb1-bd78-5c87cafc68f6
+    taskid: 36f1e080-2564-4aa7-92ff-633855bb51fb
     type: condition
     task:
-      id: 5f4c7103-3b6a-4bb1-bd78-5c87cafc68f6
+      id: 36f1e080-2564-4aa7-92ff-633855bb51fb
       version: -1
-      name: |
-        Validate Brand
-      description: Pretty-print the contents of the playbook context.
+      name: Invalid brand not exists
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
-      - "44"
+      - "48"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: notContainsGeneral
           left:
             value:
-              simple: FileEnrichment.Brand
+              simple: FileEnrichment.Results.Brand
             iscontext: true
           right:
             value:
-              simple: VirusTotal (API v3)
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: FileEnrichment.Brand
-            iscontext: true
-          right:
-            value:
-              simple: TIM
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: FileEnrichment.Brand
-            iscontext: true
-          right:
-            value:
-              simple: WildFire-v2
+              simple: aa
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3570
+          "x": 1555,
+          "y": 4570
         }
       }
     note: false
@@ -1529,37 +3054,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 9ccf01a5-7543-4e36-8dca-93db7d087a33
-    type: condition
+    taskid: ae50f3d6-18fb-4fa4-a001-574eb812ce9a
+    type: title
     task:
-      id: 9ccf01a5-7543-4e36-8dca-93db7d087a33
+      id: ae50f3d6-18fb-4fa4-a001-574eb812ce9a
       version: -1
-      name: Validate Indicator
-      type: condition
+      name: Sad Flow
+      type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
-      "yes":
-      - "44"
+      '#none#':
+      - "51"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: FileEnrichment.MD5
-            iscontext: true
-          right:
-            value:
-              simple: CreateHash
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3570
+          "x": 910,
+          "y": 4755
         }
       }
     note: false
@@ -1571,36 +3086,37 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: bf60235f-9eed-4588-af18-a143fb2c381d
-    type: condition
+    taskid: 57572b6a-7ab7-4bdc-8e60-4fcc81a47c03
+    type: regular
     task:
-      id: bf60235f-9eed-4588-af18-a143fb2c381d
+      id: 57572b6a-7ab7-4bdc-8e60-4fcc81a47c03
       version: -1
-      name: Validate Score
-      type: condition
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
-      "yes":
-      - "44"
+      '#none#':
+      - "50"
+    scriptarguments:
+      all:
+        simple: "yes"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: FileEnrichment.Score
-            iscontext: true
-          right:
-            value:
-              simple: "0"
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 3570
+          "x": 910,
+          "y": 5095
         }
       }
     note: false
@@ -1612,53 +3128,37 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 99bd2444-89ab-426d-bb00-29bb56941128
-    type: condition
+    taskid: ad89f04f-cb83-4065-b3fd-60f60576c2d5
+    type: regular
     task:
-      id: 99bd2444-89ab-426d-bb00-29bb56941128
+      id: ad89f04f-cb83-4065-b3fd-60f60576c2d5
       version: -1
-      name: Validate DBotScore
-      type: condition
+      name: file-enrichment
+      description: This script gathers file reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information to the
+        context output.
+      scriptName: file-enrichment
+      type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
-      "yes":
-      - "44"
+      '#error#':
+      - "52"
+      '#none#':
+      - "56"
+    scriptarguments:
+      file_hash:
+        simple: aa
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Indicator
-            iscontext: true
-          right:
-            value:
-              simple: CreateHash
-            iscontext: true
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: DBotScore.Vendor
-            iscontext: true
-          right:
-            value:
-              simple: VirusTotal (API v3)
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: DBotScore.Vendor
-            iscontext: true
-          right:
-            value:
-              simple: WildFire-v2
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
-          "x": 1555,
-          "y": 3570
+          "x": 910,
+          "y": 5280
         }
       }
     note: false
@@ -1670,36 +3170,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 6c955236-bdeb-4028-8a8a-82640f182cc6
-    type: condition
+    taskid: 0dbe0479-244d-40f1-989e-9c7ba3205612
+    type: title
     task:
-      id: 6c955236-bdeb-4028-8a8a-82640f182cc6
+      id: 0dbe0479-244d-40f1-989e-9c7ba3205612
       version: -1
-      name: Validate Score
-      type: condition
+      name: Case 1 - Invalid Input Only
+      type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
-      "yes":
-      - "10"
+      '#none#':
+      - "49"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: FileEnrichment.Score
-            iscontext: true
-          right:
-            value:
-              simple: "0"
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1220
+          "x": 910,
+          "y": 4925
         }
       }
     note: false
@@ -1711,38 +3202,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 91954582-d29c-4960-b2e1-06dc182fa0ad
-    type: regular
+    taskid: 51adf592-596e-40d5-8145-17e7837d737a
+    type: title
     task:
-      id: 91954582-d29c-4960-b2e1-06dc182fa0ad
+      id: 51adf592-596e-40d5-8145-17e7837d737a
       version: -1
-      name: Generate Random String
-      description: Generates random string
-      scriptName: GenerateRandomString
-      type: regular
+      name: Case 2 - Invalid Brand Only
+      type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "2"
-    scriptarguments:
-      Digits:
-        simple: "False"
-      Length:
-        simple: "10"
-      Lowercase:
-        simple: "True"
-      Punctuation:
-        simple: "False"
-      Uppercase:
-        simple: "False"
+      - "53"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 540
+          "x": 705,
+          "y": 5465
         }
       }
     note: false
@@ -1754,30 +3234,150 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: bd90e289-94ac-4161-b3fa-ff4af34153e9
+    taskid: ba7881a7-138a-4ad4-8f23-468cdded542a
     type: regular
     task:
-      id: bd90e289-94ac-4161-b3fa-ff4af34153e9
+      id: ba7881a7-138a-4ad4-8f23-468cdded542a
       version: -1
-      name: 'Success '
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "40"
+      - "54"
     scriptarguments:
-      value:
-        simple: '"Done"'
+      all:
+        simple: "yes"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 4890
+          "x": 705,
+          "y": 5635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 8f9b4674-02e5-4931-a380-fd63669a0001
+    type: regular
+    task:
+      id: 8f9b4674-02e5-4931-a380-fd63669a0001
+      version: -1
+      name: file-enrichment
+      description: This script gathers file reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information to the
+        context output.
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#error#':
+      - "55"
+      '#none#':
+      - "56"
+    scriptarguments:
+      brands:
+        simple: aa
+      file_hash:
+        simple: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 5820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: c7540cbf-b4e3-4368-a210-89451d73ea19
+    type: title
+    task:
+      id: c7540cbf-b4e3-4368-a210-89451d73ea19
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 6012.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 0e4f5e10-8c55-4469-8bec-23d5cbcc6f34
+    type: condition
+    task:
+      id: 0e4f5e10-8c55-4469-8bec-23d5cbcc6f34
+      version: -1
+      name: failure
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "1"
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 6005
         }
       }
     note: false
@@ -1792,8 +3392,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5070,
-        "width": 1885,
+        "height": 6030,
+        "width": 2100,
         "x": 50,
         "y": 50
       }
@@ -1801,5 +3401,4 @@ view: |-
   }
 inputs: []
 outputs: []
-quiet: true
-dirtyInputs: true
+adopted: true

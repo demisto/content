@@ -11,7 +11,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* RubrikPolaris
+This playbook does not use any integrations.
 
 ### Scripts
 
@@ -20,11 +20,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
+* closeInvestigation
+* rubrik-anomaly-csv-analysis-v2
+* rubrik-event-list
 * rubrik-gps-snapshot-files-download
 * rubrik-radar-suspicious-file-list
-* rubrik-event-list
-* rubrik-radar-anomaly-csv-analysis
-* closeInvestigation
 
 ## Playbook Inputs
 

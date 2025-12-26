@@ -52,6 +52,17 @@ configuration:
   type: 16
   required: false
   section: Collect
+- defaultvalue: SEVERITY_CRITICAL
+  display: Event severities to fetch as incidents
+  additionalinfo: "Event severities to fetch as incidents.\nNote: Supports the listed options only. If not provided, it will fetch events for critical severity level. Applies only when RSC fetch type is set to \"Event\"."
+  name: event_severities
+  options:
+  - SEVERITY_CRITICAL
+  - SEVERITY_WARNING
+  - SEVERITY_INFO
+  type: 16
+  required: false
+  section: Collect
 - additionalinfo: "Select Threat Monitoring Match Types to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"Threat Monitoring object\"."
   display: Threat Monitoring Match Types
   name: threat_monitoring_match_types
@@ -102,18 +113,6 @@ configuration:
   type: 15
   required: false
   section: Collect
-- additionalinfo: When a threat monitoring object is fetched, this setting indicates what severity will get assigned within XSOAR.
-  defaultvalue: XSOAR HIGH
-  display: Threat Monitoring Object Severity Level Mapping
-  name: threat_monitoring_severity_mapping
-  options:
-  - XSOAR CRITICAL
-  - XSOAR HIGH
-  - XSOAR MEDIUM
-  - XSOAR LOW
-  type: 15
-  required: false
-  section: Collect
 - additionalinfo: When an event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   defaultvalue: XSOAR LOW
   display: Event Warning Severity Level Mapping
@@ -125,7 +124,18 @@ configuration:
   - XSOAR LOW
   type: 15
   required: false
-  hidden: true
+  section: Collect
+- additionalinfo: When a threat monitoring object is fetched, this setting indicates what severity will get assigned within XSOAR.
+  defaultvalue: XSOAR HIGH
+  display: Threat Monitoring Object Severity Level Mapping
+  name: threat_monitoring_severity_mapping
+  options:
+  - XSOAR CRITICAL
+  - XSOAR HIGH
+  - XSOAR MEDIUM
+  - XSOAR LOW
+  type: 15
+  required: false
   section: Collect
 - name: integration_reliability
   display: Source Reliability
@@ -4592,6 +4602,54 @@ script:
       type: string
     - contextPath: RubrikPolaris.AdvanceIOCScan.__typename
       description: The GraphQL typename for the HuntResponse object.
+      type: string
+  - arguments:
+    - description: "The unique ID of the cluster.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
+      name: cluster_id
+      required: true
+    - description: "The CDM snapshot ID.\n\nNote: Use the \"rubrik-radar-suspicious-file-list\" command to retrieve the actual CDM ID from the Anomaly ID.\nExample format to get the snapshot CDM ID from Anomaly ID: \"<Cluster-ID>:::VirtualMachine:::<Snappable-ID>:::<CDM-ID>\"."
+      name: snapshot_id
+      required: true
+    - description: "The VM object ID (Snappable ID).\n\nNote: Users can retrieve the list of Snappable IDs by executing the \"rubrik-polaris-vm-objects-list\" command.\nExample format to get the Snappable ID: \"VirtualMachine:::<Snappable-ID>\"."
+      name: object_id
+      required: true
+    - name: polling
+      description: "Whether to poll for the command."
+      required: false
+      hidden: true
+    description: Request for the analysis and directly download the anomaly CSV analyzed file.
+    name: rubrik-anomaly-csv-analysis-v2
+    polling: true
+    outputs:
+    - contextPath: RubrikPolaris.AnomalyCSVv2.clusterId
+      description: The ID of the cluster.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyCSVv2.snapshotId
+      description: The ID of the snapshot.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyCSVv2.objectId
+      description: The ID of the object.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyCSVv2.externalId
+      description: The external ID of the CSV file.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyCSVv2.isSuccessful
+      description: Whether the CSV analysis was successful or not.
+      type: Boolean
+    - contextPath: InfoFile.Name
+      description: FileName.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
       type: string
   dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.2072916
   isfetch: true

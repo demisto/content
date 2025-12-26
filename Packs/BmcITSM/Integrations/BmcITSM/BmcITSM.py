@@ -2238,6 +2238,18 @@ def task_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         args.get("additional_fields"),  # type: ignore[arg-type]
         "additional_fields",
     )
+
+    if not template_id:
+        validate_required_arguments_provided(
+            summary=summary,
+            details=details,
+            root_ticket_type=args.get("root_ticket_type"),
+            root_request_id=root_request_id,
+            status=status,
+            priority=priority,
+            location_company=company,
+        )
+
     parent_ticket = get_ticket(client, args.get("root_ticket_type"), root_request_id)  # type: ignore[arg-type]
     response = client.create_task_request(  # type: ignore[arg-type,call-arg]
         template_id,  # type: ignore[arg-type]

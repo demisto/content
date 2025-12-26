@@ -18,17 +18,22 @@ The Security and Compliance PowerShell module relies on legacy eDiscovery. We re
 - **O365 - Security and Compliance - Search Action - Delete**: Deletes emails found by the search.
 - **O365 - Security and Compliance - Search Action - Preview**: Provides a preview of emails identified by the search.
 
-## Permissions Setup in the Security & Compliance Center
+## Permissions and Authentication Setup
 
 ### Overview
 
-To set up the integration and register the application in Azure, follow these steps:
+This section describes how to configure permissions for the integration, supporting both **App-only Authentication** and **Delegated User Authentication**.
 
-1. **App Registration**: Register a new application in Entra ID and configure necessary permissions.
+---
+
+### App Authentication (App-Only)
+
+To set up the integration and register the application in Azure, you will need to perform the following three primary steps:
+
+1. **App Registration and Permission Configuration**: Register a new application in Entra ID and configure necessary permissions.
 2. **Authentication Configuration**: Enable public client flows and create an app secret.
-3. **Role Setup**: Assign the required roles in the Security & Compliance Center for the integration to function correctly.
-
-### Step-by-Step Instructions
+3. **Role Setup**: Assign the required roles for the App Service Principal to function correctly.
+Detailed instructions for each step are provided below.
 
 #### 1. App Registration and Permission Configuration
 
@@ -37,33 +42,76 @@ To set up the integration and register the application in Azure, follow these st
 3. **Register a New App**: Click **New registration**, provide a name, and register the app.
 4. **Add API Permissions**:
    - Under **Manage**, select **API permissions** > **Add a permission**.
-   - Select **APIs my organization uses**.
-   - Search for "Office 365 Exchange Online".
-   - Select **Delegated permissions** and search for `Exchange.Manage`.
-   - Check the box and click **Add permissions**.
-   - Ensure the permissions are granted by selecting **Grant admin consent for [Your Organization]**.
+     - Select **APIs my organization uses**.
+     - Search for "Office 365 Exchange Online".
+     - Select **Delegated permissions** and search for `Exchange.Manage`.
+     - Check the box and click **Add permissions**.
+   - Again select **Add a permission**.
+     - Select **APIs my organization uses**.
+     - Search for "Microsoft Graph".
+     - Select **Delegated permissions** and search for `eDiscovery.ReadWrite.All`.
+     - Check the box and click **Add permissions**.
+   - Ensure the permissions are gra
 
-#### 2. Enable "Allow Public Client Flows"
+#### 2.  Authentication Configuration
 
-1. **Navigate to Authentication Settings**: In your app registration, select **Authentication** under **Manage**.
+1. Navigate to Authentication Settings: In your app registration, click on Authentication -> Settings.
 2. **Enable Public Client Flows**:
-   - Scroll to **Advanced settings**.
-   - Set **Allow public client flows** to **Yes**.
-   - Click **Save** to apply the changes.
+   - Set Allow public client flows to Enabled.
+   - Click Save to apply the changes.
 
-### Authentication Requirements
+#### 3. Role Setup
 
-To access the **Microsoft Purview** (formerly Compliance Center) capabilities used by this integration, the account used must either have global administrator permissions or the Role Management role, assigned within the Organization Management role group. This role allows users to view, create, and modify role groups.
+1. In the Azure portal, go to **Microsoft Entra roles and administrators**.
+2. **Locate the Required Role**  
+   - Search for the role **Compliance Administrator**.
+   - Select the role to open its details page.
+3. **Add Role Assignment**  
+   - Click **Add assignments**.
+   - Select Members.
+   - Search for your new application name.
+   - Select the application and confirm the assignment.
 
-**Note:** The account used by the integration does not require Global Administrator permissions.
+---
 
-1. **Sign in to the [Microsoft Purview Portal](https://purview.microsoft.com/)**
-2. Log in with the account that is being used in the integration.
-3. **Set Up Roles**:
-   - Select Settings in the top-right corner, then select Roles and scopes, and then click Role groups in the left navigation pane.
-   - Look for roles that allow purge actions (Only users with these roles can create or run purge rules):
-     - Compliance Administrator.
-     - Records Management
+### Delegated User Authentication
+
+This section describes how to configure **delegated authentication** using a user account. You may either create a dedicated service account for the integration or use an existing user account (including an administrator account). If an existing user is used, you can skip the user creation step and proceed directly to the MFA and role assignment steps.
+
+#### 1. Create a Dedicated User (Microsoft Entra ID)
+
+Create a new user account to serve as a dedicated service account for the integration.
+
+- Go to the **[Azure Portal](https://portal.azure.com)** and sign in with an organization administrator account.
+- Navigate to **Entra ID** → **Users** → **New user**.
+- Create a new user and define:
+  - **User Principal Name (UPN)** – this will be used in the integration configuration
+  - **Display name**
+  - **Password** – store this securely
+
+#### 2. Disable Multi-Factor Authentication (MFA)
+
+For delegated authentication to work, MFA must be disabled for this service account.
+
+- Go to the **[Microsoft 365 Admin Center](https://admin.microsoft.com)** and sign in with an organization administrator account.
+- Navigate to **Users** → **Active users**.
+- At the top menu, select **Multi-factor authentication**.
+- Locate the user and verify that the **MFA status** is set to **Disabled**.
+
+#### 3. Purview Role Assignment (Microsoft Purview Portal)
+
+Grant the service account the required permissions to run Security & Compliance PowerShell cmdlets.
+
+- Sign in to the **[Microsoft Purview Portal](https://purview.microsoft.com/)** using an organization administrator account.
+- Under Setting, navigate to **Roles & scopes** → **Role groups**.
+- Locate the built-in **eDiscovery Manager** role group.
+- Select **Copy** to create a new custom role group.
+- Provide a **name** and **description**.
+- In the **Roles** section, add the **Search and Purge** role to the custom role group.
+- In the **Users** section, add your user.
+- Review the configuration and complete the setup.
+
+Note: Role assignment propagation may take up to one hour.
 
 ### Known Endpoints
 
@@ -136,7 +184,7 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
 **Scenario:** When running the `!o365-sc-auth-start` command, you may encounter the error message: "Response status code does not indicate success: 404 Not Found."
 
 **Solution:**
-**Verify Required Parameters:** Ensure that all required parameters in the integration instance configuration are correctly filled out. This includes:
+**Verify Required Parameters:** Ensure that all required parameters for App-only (using device code) Authentication in the integration instance configuration are correctly filled out. This includes:
 
 - **UPN/Email**: The email address (UPN) of the user account for the integration.
 - **App ID**: The application (client) ID from Azure.
@@ -179,7 +227,7 @@ Missing or incorrect values in these fields can cause a 404 error, as the integr
 
 #### Failed Delegated User Authentication
 
-**Scenario:** You Filled out the 'UPN' and 'UPN Passwords' integration parameters and after running the `!o365-sc-auth-test` command, the authorization process fails, and you get the error 'you must use multi-factor authentication to access ...'.
+**Scenario:** You Filled out the 'UPN' and 'UPN Password' integration parameters and after running the `!o365-sc-auth-test` command, the authorization process fails, and you get the error 'you must use multi-factor authentication to access ...'.
 
 **Solution:**
 

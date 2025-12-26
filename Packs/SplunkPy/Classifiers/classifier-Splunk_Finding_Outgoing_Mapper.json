@@ -1,0 +1,50 @@
+{
+    "description": "Maps Splunk Finding outgoing fields for mirror-out functionality.",
+    "feed": false,
+    "id": "Splunk Finding - Outgoing Mapper",
+    "mapping": {
+        "Splunk Finding": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "status": {
+                    "complex": null,
+                    "simple": "splunkstatus"
+                },
+                "urgency": {
+                    "complex": null,
+                    "simple": "splunkurgency"
+                },
+                "disposition": {
+                    "complex": null,
+                    "simple": "splunkdisposition"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "owner": {
+                    "complex": null,
+                    "simple": "owner"
+                }
+            }
+        }
+    },
+    "name": "Splunk Finding - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "fromVersion": "6.2.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
+}

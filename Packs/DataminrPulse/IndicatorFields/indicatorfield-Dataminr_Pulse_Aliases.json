@@ -1,0 +1,31 @@
+{
+    "id": "indicator_dataminrpulsealiases",
+    "version": -1,
+    "modified": "2025-09-23T21:03:57.82769674+05:30",
+    "name": "Dataminr Pulse Aliases",
+    "ownerOnly": false,
+    "cliName": "dataminrpulsealiases",
+    "type": "tagsSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse Threat Actor Indicator"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

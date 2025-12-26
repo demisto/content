@@ -8025,3 +8025,209 @@ def test_http_request_is_time_sensitive_timeout_and_retries(mocker):
     call_args = mock_generic_http_request.call_args[1]  # kwargs
     assert call_args["retries"] == 5, f"Expected retries=5 when get_token_flag=False, got {call_args['retries']}"
     assert call_args["timeout"] == 60, f"Expected timeout=60 when get_token_flag=False, got {call_args['timeout']}"
+
+
+class TestFetchAssetsFlow:
+    """Tests for the fetch-assets flow."""
+
+    def generate_mock_alerts(self, count, start_id=1):
+        """Generates a list of mock CNAPP alerts."""
+        alerts = []
+        for i in range(count):
+            alerts.append(
+                {
+                    "severity": "Critical",
+                    "first_seen_timestamp": "2025-11-24T11:04:03Z",
+                    "last_seen_timestamp": "2025-11-26T10:18:35Z",
+                    "detection_name": f"PotentialKernelTampering-{start_id + i}",
+                    "detection_event_simple_name": "BPFCommandIssued",
+                    "detection_description": "The eBPF feature has been invoked from within a container. This is a highly"
+                    "unusual activity from within the container and can be used to load a kernel root kit or manipulate kernel"
+                    "behavior or settings effecting the entire host system where the container is running.",
+                    "containers_impacted_count": "1",
+                    "containers_impacted_ids": ["test"],
+                }
+            )
+        return alerts
+
+    @pytest.mark.parametrize(
+        "total, expected_items_count, expected_snapshot_id, expected_last_run",
+        [
+            (
+                100,
+                100,
+                "123123",
+                {
+                    "offset": 0,
+                    "total_fetched_until_now": 0,
+                },
+            ),
+            (
+                200,
+                1,
+                "123123",
+                {"offset": 100, "total_fetched_until_now": 100, "snapshot_id": "123123", "nextTrigger": "0", "type": 1},
+            ),
+        ],
+    )
+    def test_get_cnapp_assets(self, mocker, requests_mock, total, expected_items_count, expected_snapshot_id, expected_last_run):
+        """
+        Given:
+            - a mock response for /container-security/combined/container-alerts/v1 endpoint.
+            - case 1: mock where the response is the last one (no further calls should be done)
+            - case 2: mock where the response is not the last one (further calls should be done)
+        When:
+            - Calling get_cnapp_assets.
+        Then:
+            - Verify that http_request is called with correct pagination parameters.
+            - Verify that all alerts are collected.
+            - Verify that the last_run object is updated correctly for pagination.
+            - case 1: items_count should be set to 1, no nextTrigger/type/snapshot_id in the last run
+            - case 2: items_count should be set to 100, nextTrigger/type/snapshot_id in the last run
+        """
+        from CrowdStrikeFalcon import get_cnapp_assets
+        import time
+
+        initial_last_run = {"offset": 0, "total_fetched_until_now": 0}
+
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": SERVER_URL,
+            },
+        )
+        mocker.patch("CrowdStrikeFalcon.demisto.getAssetsLastRun", return_value=initial_last_run)
+        mocker.patch.object(time, "time", return_value=123.123)
+        mock_alerts_page1 = self.generate_mock_alerts(100, 1)
+        request_mock_obj = requests_mock.get(
+            f"{SERVER_URL}/container-security/combined/container-alerts/v1?offset=0&limit=100",
+            json={"resources": mock_alerts_page1, "meta": {"pagination": {"offset": 0, "limit": 100, "total": total}}},
+        )
+
+        new_last_run, cnapp_alerts, items_count, snapshot_id = get_cnapp_assets()
+
+        assert request_mock_obj.call_count == 1
+        assert len(cnapp_alerts) == 100
+        assert items_count == expected_items_count
+        assert snapshot_id == expected_snapshot_id
+        assert new_last_run == expected_last_run
+
+    def test_fetch_assets_command_two_calls_flow(self, mocker, requests_mock):
+        """
+        Given:
+            - A scenario where fetch-assets needs two API calls to retrieve all assets.
+            - First call returns 100 assets, indicating a total of 150.
+            - Second call returns the remaining 50 assets.
+        When:
+            - Calling fetch_assets_command twice to simulate the full flow.
+        Then:
+            - Verify that http_request is called with correct pagination parameters for both calls.
+            - Verify that send_data_to_xsiam is called twice with the correct assets and snapshot_id.
+            - Verify that setAssetsLastRun is called twice with the correct last_run objects.
+            - Verify that updateModuleHealth is called twice with the correct assetsPulled count.
+        """
+        from CrowdStrikeFalcon import fetch_assets_command, CNAPP_PRODUCT, VENDOR
+        import time
+
+        # Mocks
+        mock_get_assets_last_run = mocker.patch("CrowdStrikeFalcon.demisto.getAssetsLastRun")
+        mock_set_assets_last_run = mocker.patch("CrowdStrikeFalcon.demisto.setAssetsLastRun")
+        mock_send_data_to_xsiam = mocker.patch("CrowdStrikeFalcon.send_data_to_xsiam")
+        mock_update_module_health = mocker.patch("CrowdStrikeFalcon.demisto.updateModuleHealth")
+        mocker.patch.object(time, "time", return_value=123.123)
+
+        # --- First Call ---
+        # Initial last_run for the first call
+        mock_get_assets_last_run.return_value = {"offset": 0, "total_fetched_until_now": 0}
+
+        # Mock API response for the first call (100 assets out of 150)
+        mock_alerts_page1 = self.generate_mock_alerts(100, 1)
+        requests_mock.get(
+            f"{SERVER_URL}/container-security/combined/container-alerts/v1?offset=0&limit=100",
+            json={"resources": mock_alerts_page1, "meta": {"pagination": {"offset": 0, "limit": 100, "total": 150}}},
+        )
+
+        fetch_assets_command()
+
+        # Assertions for the first call
+        assert mock_send_data_to_xsiam.call_count == 1
+        mock_send_data_to_xsiam.assert_called_with(
+            data=mock_alerts_page1,
+            vendor=VENDOR,
+            product=CNAPP_PRODUCT,
+            data_type="assets",
+            snapshot_id="123123",
+            items_count=1,
+            should_update_health_module=False,
+        )
+        assert mock_set_assets_last_run.call_count == 1
+        mock_set_assets_last_run.assert_called_with(
+            {"offset": 100, "total_fetched_until_now": 100, "snapshot_id": "123123", "nextTrigger": "0", "type": 1}
+        )
+        assert mock_update_module_health.call_count == 1
+        mock_update_module_health.assert_called_with({"assetsPulled": 100})
+
+        # --- Second Call ---
+        # last_run for the second call (as it would be after the first call)
+        mock_get_assets_last_run.return_value = {
+            "offset": 100,
+            "total_fetched_until_now": 100,
+            "snapshot_id": "123123",
+            "nextTrigger": "0",
+            "type": 1,
+        }
+
+        # Mock API response for the second call (remaining 50 assets)
+        mock_alerts_page2 = self.generate_mock_alerts(50, 101)
+        requests_mock.get(
+            f"{SERVER_URL}/container-security/combined/container-alerts/v1?offset=100&limit=100",
+            json={"resources": mock_alerts_page2, "meta": {"pagination": {"offset": 100, "limit": 100, "total": 150}}},
+        )
+
+        fetch_assets_command()
+
+        # Assertions for the second call
+        assert mock_send_data_to_xsiam.call_count == 2
+        mock_send_data_to_xsiam.assert_called_with(
+            data=mock_alerts_page2,
+            vendor=VENDOR,
+            product=CNAPP_PRODUCT,
+            data_type="assets",
+            snapshot_id="123123",
+            items_count=150,
+            should_update_health_module=False,
+        )
+        assert mock_set_assets_last_run.call_count == 2
+        mock_set_assets_last_run.assert_called_with({"offset": 0, "total_fetched_until_now": 0})
+        assert mock_update_module_health.call_count == 2
+        mock_update_module_health.assert_called_with({"assetsPulled": 50})
+
+    def test_list_cnapp_alerts_command(self, requests_mock):
+        """
+        Given:
+            - A mock for get cnapp alerts request.
+        When:
+            - Calling list_cnapp_alerts_command twice.
+        Then:
+            Ensures the data was parsed correctly into a CommandResults object
+        """
+        from CrowdStrikeFalcon import list_cnapp_alerts_command
+
+        mock_alerts_page1 = self.generate_mock_alerts(1, 1)
+        requests_mock.get(
+            f"{SERVER_URL}/container-security/combined/container-alerts/v1",
+            json={"resources": mock_alerts_page1, "meta": {"pagination": {"offset": 0, "limit": 100, "total": 1}}},
+        )
+        command_results_to_assert = list_cnapp_alerts_command(args={})
+        expected_outputs = mock_alerts_page1
+        expected_readable_outputs = (
+            "### CrowdStrike CNAPP alerts\n|severity|first_seen_timestamp|last_seen_timestamp|"
+            "detection_name|detection_event_simple_name|detection_description|containers_impacted_count|containers_impacted_ids|"
+            "\n|---|---|---|---|---|---|---|---|\n| Critical | 2025-11-24T11:04:03Z | 2025-11-26T10:18:35Z |"
+            " PotentialKernelTampering-1 | BPFCommandIssued | The eBPF feature has been invoked from within a container. This is"
+            " a highlyunusual activity from within the container and can be used to load a kernel root kit or manipulate"
+            " kernelbehavior or settings effecting the entire host system where the container is running. | 1 | test |\n"
+        )
+        assert command_results_to_assert.outputs == expected_outputs
+        assert command_results_to_assert.readable_output == expected_readable_outputs

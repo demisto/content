@@ -8,23 +8,23 @@
             "internalMapping": {
                 "Orca Cloud Account": {
                     "complex": null,
-                    "simple": "cloud_provider_id"
+                    "simple": "AssetData.cloud_provider_id"
                 },
                 "Orca Alert ID": {
                     "complex": null,
-                    "simple": "state.alert_id"
+                    "simple": "AlertId"
                 },
                 "Orca Asset Unique ID": {
                     "complex": null,
-                    "simple": "asset_unique_id"
+                    "simple": "GroupUniqueId"
                 },
                 "Orca Reason": {
                     "complex": null,
-                    "simple": "type_string"
+                    "simple": "AlertType"
                 },
                 "details": {
                     "complex": null,
-                    "simple": "details"
+                    "simple": "Details"
                 },
                 "severity": {
                     "complex": null,
@@ -46,11 +46,11 @@
             "internalMapping": {
                 "details": {
                     "complex": null,
-                    "simple": "description"
+                    "simple": "Description"
                 },
                 "name": {
                     "complex": null,
-                    "simple": "state.alert_id"
+                    "simple": "AlertId"
                 },
                 "severity": {
                     "complex": null,

@@ -626,4 +626,5 @@ script:
   subtype: python3
 tests:
 - Microsoft Graph Calendar - Test
+- Microsoft Graph Calendar - Test dev
 fromversion: 5.0.0

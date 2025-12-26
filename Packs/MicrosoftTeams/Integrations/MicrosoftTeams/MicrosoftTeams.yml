@@ -598,7 +598,7 @@ script:
       name: channel
     - description: The new message content.
       name: message
-    - description: The team member the message to be edited was sent to.
+    - description: The message recipient. Accepts the team member's email address or username.
       name: team_member
     - description: Whether or not an adaptive card is being updated.
       name: format_as_card
@@ -815,7 +815,7 @@ script:
     - contextPath: MicrosoftTeams.Message.ID
       description: ID of the message sent.
       type: String
-  dockerimage: demisto/teams:1.0.0.4835986
+  dockerimage: demisto/teams:1.0.0.6091526
   longRunning: true
   longRunningPort: true
   script: ''

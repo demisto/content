@@ -222,6 +222,10 @@ FORMAT_QUERY = [
         "https://test.dev?email=some@email.addres",
     ),  # disable-secrets-detection
     (
+        "https://test.dev?email=some@email.addres/",  # disable-secrets-detection
+        "https://test.dev?email=some@email.addres/",
+    ),  # disable-secrets-detection
+    (
         "https://abc.ly/test?a=b',",
         "https://abc.ly/test?a=b",
     ),  # disable-secrets-detection
@@ -249,6 +253,27 @@ FORMAT_REFANG = [
     ("hxxps://www[.]cortex-xsoar[.]com", "https://www.cortex-xsoar.com"),  # disable-secrets-detection
     ("https[:]//www.test.com/foo", "https://www.test.com/foo"),  # disable-secrets-detection
     ("https[:]//www[.]test[.]com/foo", "https://www.test.com/foo"),  # disable-secrets-detection
+]
+
+FORMAT_HTML_ENTITIES = [
+    (
+        "https://example.com?4&amp;r=737NBh0Q9Alr9/",  # disable-secrets-detection
+        "https://example.com?4&r=737NBh0Q9Alr9/",
+    ),  # disable-secrets-detection
+    # Multiple &amp; entities
+    (
+        "https://test.com?a=1&amp;amp;b=2&amp;c=3",  # disable-secrets-detection
+        "https://test.com?a=1&b=2&c=3",
+    ),  # disable-secrets-detection
+    (
+        "https://test.com?quote=&quot;hello&quot;",  # disable-secrets-detection
+        'https://test.com?quote="hello"',
+    ),  # disable-secrets-detection
+    # URL without entities should remain unchanged
+    (
+        "https://test.com?a=1&b=2",  # disable-secrets-detection
+        "https://test.com?a=1&b=2",
+    ),  # disable-secrets-detection
 ]
 
 FORMAT_NON_ASCII = [
@@ -376,6 +401,7 @@ FORMAT_TESTS = (
     + FORMAT_NON_ASCII
     + FORMAT_PUNYCODE
     + FORMAT_HEX
+    + FORMAT_HTML_ENTITIES
 )
 
 FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + FORMAT_TESTS

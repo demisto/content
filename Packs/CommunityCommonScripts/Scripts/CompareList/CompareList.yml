@@ -8,7 +8,7 @@ args:
 commonfields:
   id: CompareList
   version: -1
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 comment: Compares two lists.
 enabled: true
 name: CompareList

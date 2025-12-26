@@ -1,0 +1,109 @@
+category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: GenesysCloud
+  version: -1
+configuration:
+# Connect
+- defaultvalue: https://api.mypurecloud.com/
+  display: Server URL
+  name: url
+  required: false
+  type: 0
+  section: Connect
+- display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+# Collect
+- display: Fetch Events
+  name: isFetchEvents
+  required: false
+  type: 8
+  section: Collect
+- display: Service names
+  name: service_names
+  options:
+  - Architect
+  - PeoplePermissions
+  - ContactCenter
+  - Groups
+  - Telephony
+  - Outbound
+  - Routing
+  - Integrations
+  - AnalyticsReporting
+  defaultvalue: Architect,PeoplePermissions,ContactCenter,Groups,Telephony,Outbound,Routing,Integrations,AnalyticsReporting
+  additionalinfo: Ensure all selected services appear in the audit service mapping information.
+  required: false
+  type: 16
+  section: Collect
+- display: Maximum number of events per service
+  name: max_fetch
+  defaultvalue: 2500
+  required: false
+  type: 0
+  section: Collect
+description: Fetch audit events to see changes within a Genesys Cloud organization.
+display: Genesys Cloud
+name: GenesysCloud
+script:
+  commands:
+  - name: genesys-cloud-get-events
+    description: Retrieves audit events from Genesys Cloud from the past 14 days. This command is intended for development and debugging purposes, as it may produce duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
+    arguments:
+    - name: should_push_events
+      description: If true, the command will create events, otherwise it will only display them.
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    - name: service_name
+      description: Filter by the Genesys Cloud service name.
+      auto: PREDEFINED
+      predefined:
+      - Architect
+      - PeoplePermissions
+      - ContactCenter
+      - Groups
+      - Telephony
+      - Outbound
+      - Routing
+      - Integrations
+      - AnalyticsReporting
+      required: true
+    - name: limit
+      description: Maximum number of audit events to return.
+    - name: from_date
+      description: The start date for retrieving events. Must be within the last 14 days.
+      defaultValue: "1 hour ago"
+    - name: to_date
+      description: The end date for retrieving events. Must be within the last 14 days.
+      defaultValue: "now"
+  dockerimage: demisto/auth-utils:1.0.0.6111183
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)

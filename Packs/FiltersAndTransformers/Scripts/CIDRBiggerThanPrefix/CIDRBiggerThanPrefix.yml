@@ -19,7 +19,7 @@ comment: Checks whether a given CIDR prefix is bigger than the defined maximum p
 scripttarget: 0
 isllm: false
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
