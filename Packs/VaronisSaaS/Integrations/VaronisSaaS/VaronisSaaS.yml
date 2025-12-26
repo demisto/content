@@ -539,7 +539,7 @@ script:
     name: get-mapping-fields
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.12.8.3720084
+  dockerimage: demisto/python3:3.12.12.6391686
   feed: false
   isfetch: true
   ismappable: true
