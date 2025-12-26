@@ -62,9 +62,6 @@ script:
     - name: baseline_view
       description: 'Which connections to display when a baseline date range is applied. Default is all. Options include: ‘all’ - All Nodes: all nodes are visible. ‘actual’ - Actual Nodes: nodes present in the “current” timeframe query results are visible. ‘actualold’ - Baseline Nodes: nodes present in the “baseline” timeframe query results are visible. ‘new’ - New Nodes Only: nodes present in the “current” but NOT the “baseline” timeframe are visible. ‘old’ - Baseline Nodes Only: nodes present in the “baseline” but NOT the “current” timeframe are visible.'
     outputs:
-    - contextPath: Arkime.Connection.nodes.id
-      description: The source IP address of the connection nodes.
-      type: String
     - contextPath: Arkime.Connection.nodes.cnt
       description: Number of appearances of the connection nodes.
       type: Number
