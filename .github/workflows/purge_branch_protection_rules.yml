@@ -38,7 +38,7 @@ jobs:
           poetry run python .github/github_workflow_scripts/purge_branch_protection_rules.py
           
       - name: Upload Log to Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: purge_branch_protection_rules_${{ github.run_id }}
           path: "${{ github.workspace }}/purge_branch_protection_rules.log"
