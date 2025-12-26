@@ -954,3 +954,50 @@ def test_update_remote_system_with_entries(mocker):
         "CommentToMicrosoft365Defender",
         "12345",
     )
+
+    # python
+    def test_get_modified_incidents_custom_mapping_hit(mocker):
+        """
+        Ensure that when custom_defender_to_xsoar_close_reason is enabled and the mapping contains
+        the incident classification, the custom mapping value is used as the closeReason.
+        """
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "custom_defender_to_xsoar_close_reason": True,
+                "custom_defender_to_xsoar_close_reason_mapping": "TruePositive:CustomResolved,FalsePositive:CustomFP",
+            },
+        )
+
+        modified_incidents = [{"incidentId": "1", "status": "Resolved", "classification": "TruePositive"}]
+        result = get_modified_incidents_close_or_repopen_entries(modified_incidents, close_incident=True)
+
+        assert len(result) == 1
+        assert result[0]["Type"] == EntryType.NOTE
+        assert result[0]["Contents"]["dbotIncidentClose"] is True
+        assert result[0]["Contents"]["closeReason"] == "CustomResolved"
+
+    def test_get_modified_incidents_custom_mapping_miss(mocker):
+        """
+        Ensure that when custom_defender_to_xsoar_close_reason is enabled but the mapping does not contain
+        the incident classification, the default MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON mapping is used.
+        """
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "custom_defender_to_xsoar_close_reason": True,
+                # mapping intentionally does NOT include TruePositive
+                "custom_defender_to_xsoar_close_reason_mapping": "Other:Something,Unknown:OtherCustom",
+            },
+        )
+
+        modified_incidents = [{"incidentId": "2", "status": "Resolved", "classification": "TruePositive"}]
+        result = get_modified_incidents_close_or_repopen_entries(modified_incidents, close_incident=True)
+
+        assert len(result) == 1
+        assert result[0]["Type"] == EntryType.NOTE
+        assert result[0]["Contents"]["dbotIncidentClose"] is True
+        # fallback to default mapping for TruePositive -> "Resolved"
+        assert result[0]["Contents"]["closeReason"] == "Resolved"
