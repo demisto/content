@@ -16,6 +16,8 @@ SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
 AGENTS_TABLE = "AGENTS_TABLE"
+SECONDS_IN_DAY = 86400  # Number of seconds in one day
+MIN_DIFF_SECONDS = 2 * 3600 # Minimum allowed difference = 2 hours
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -3135,10 +3137,12 @@ def validate_start_end_times(start_time, end_time):
         end_dt = datetime.strptime(end_time, "%H:%M")
         diff = (end_dt - start_dt).total_seconds()
         if diff < 0:
-            diff += 86400
+            diff += SECONDS_IN_DAY
 
-        if diff < 7200:
-            raise DemistoException("A minimum of two hours is required between the start time and the end time.")
+        if diff < MIN_DIFF_SECONDS:
+            raise DemistoException(
+                "Start and end times must be at least two hours apart (midnight crossing is supported)."
+            )
 
 
 def transform_distributions(response):
@@ -3241,14 +3245,14 @@ def update_endpoint_version_command(client, args):
         "upgrade_to_pkg_manager": False,
         "schedule_data": {"START_TIME": start_time, "END_TIME": end_time, "DAYS": days},
     }
-    demisto.debug(f"{request_data=}")
+    demisto.debug(f"Request data of the command core-update-endpoint-version: {request_data}")
     response = client.update_endpoint_version(request_data)
-    demisto.debug(f"{response=}")
+    demisto.debug(f"Response of the command core-update-endpoint-version: {response}")
     group_action_id = response.get("reply", {}).get("group_action_id")
     if not group_action_id:
-        summary = "Failed to update to the target versions."
+        summary = "The update to the target versions was unsuccessful."
     else:
-        summary = f"Successfully updated to the target versions. Action ID: {group_action_id}"
+        summary = f"The update to the target versions was successful. Action ID: {group_action_id}"
 
     return CommandResults(
         readable_output=summary,
