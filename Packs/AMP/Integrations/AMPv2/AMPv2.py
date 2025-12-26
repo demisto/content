@@ -1200,6 +1200,7 @@ def fetch_incidents(
     last_fetch = last_run.get("last_fetch")
 
     # The list of event ids that are suspected of being duplicates
+    # TEST
     previous_ids = set(last_run.get("previous_ids", []))
 
     # Copy the previous_ids list to manage the events list suspectedof
