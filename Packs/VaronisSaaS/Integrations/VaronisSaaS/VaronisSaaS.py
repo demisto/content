@@ -197,16 +197,10 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def __init__(
-        self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None
-    ):
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self._session.verify = verify
-        if (
-            not verify
-            and self._session.adapters["https://"]
-            and hasattr(self._session.adapters["https://"], "context")
-        ):
+        if not verify and self._session.adapters["https://"] and hasattr(self._session.adapters["https://"], "context"):
             self._session.adapters["https://"].context.check_hostname = verify
 
         self.headers: dict[str, Any] = {}
@@ -217,10 +211,7 @@ class Client(BaseClient):
     def varonis_authenticate(self, apiKey: str) -> dict[str, Any]:
         headers = {"x-api-key": apiKey}
         response = self._http_request(
-            "POST",
-            url_suffix="/api/authentication/api_keys/token",
-            data="grant_type=varonis_custom",
-            headers=headers,
+            "POST", url_suffix="/api/authentication/api_keys/token", data="grant_type=varonis_custom", headers=headers
         )
         token = response["access_token"]
         token_type = response["token_type"]
@@ -232,23 +223,14 @@ class Client(BaseClient):
         return response
 
     def varonis_search(self, search_query: str, max_fetch: Optional[int] = 1000):
-        create_search = self._http_request(
-            "POST",
-            "/app/dataquery/api/search/v2/search",
-            data=search_query,
-            headers=self.headers,
-        )
+        create_search = self._http_request("POST", "/app/dataquery/api/search/v2/search", data=search_query, headers=self.headers)
 
         url = create_search[0]["location"]
         url_suffix = f"/app/dataquery/api/search/{url}"
         if max_fetch:
             url_suffix += f"?from=0&to={max_fetch - 1}"
         json_data = self._http_request(
-            method="GET",
-            url_suffix=url_suffix,
-            headers=self.headers,
-            status_list_to_retry=[304, 405, 206],
-            retries=10,
+            method="GET", url_suffix=url_suffix, headers=self.headers, status_list_to_retry=[304, 405, 206], retries=10
         )
         return json_data
 
@@ -319,15 +301,9 @@ class Client(BaseClient):
 
         search_request = (
             SearchRequest()
-            .set_query(
-                Query()
-                .set_entity_name("Alert")
-                .set_filter(Filters().set_filter_operator(0))
-            )
+            .set_query(Query().set_entity_name("Alert").set_filter(Filters().set_filter_operator(0)))
             .set_rows(Rows().set_grouping(""))
-            .set_request_params(
-                RequestParams().set_search_source(1).set_search_source_name("MainTab")
-            )
+            .set_request_params(RequestParams().set_search_source(1).set_search_source_name("MainTab"))
         )
 
         alert_attributes = AlertAttributes()
@@ -335,10 +311,7 @@ class Client(BaseClient):
             search_request.rows.add_column(column)
 
         filter_condition = (
-            FilterCondition()
-            .set_path("Alert.AggregationFilter")
-            .set_operator("Equals")
-            .add_value({"Alert.AggregationFilter": 1})
+            FilterCondition().set_path("Alert.AggregationFilter").set_operator("Equals").add_value({"Alert.AggregationFilter": 1})
         )
         search_request.query.filter.add_filter(filter_condition)
 
@@ -374,108 +347,52 @@ class Client(BaseClient):
                 )  # "displayValue": start_time.isoformat(),
             if last_days:
                 time_condition.set_operator("LastDays").add_value(
-                    {
-                        alert_attributes.Alert_TimeUTC: last_days,
-                        "displayValue": last_days,
-                    }
+                    {alert_attributes.Alert_TimeUTC: last_days, "displayValue": last_days}
                 )
             search_request.query.filter.add_filter(time_condition)
 
         if threat_model_names:
-            rule_condition = (
-                FilterCondition()
-                .set_path(alert_attributes.Alert_Rule_Name)
-                .set_operator("In")
-            )
+            rule_condition = FilterCondition().set_path(alert_attributes.Alert_Rule_Name).set_operator("In")
             for threat_model_name in threat_model_names:
-                rule_condition.add_value(
-                    {
-                        alert_attributes.Alert_Rule_Name: threat_model_name,
-                        "displayValue": "New",
-                    }
-                )
+                rule_condition.add_value({alert_attributes.Alert_Rule_Name: threat_model_name, "displayValue": "New"})
             search_request.query.filter.add_filter(rule_condition)
 
         if alertIds:
-            alert_condition = (
-                FilterCondition().set_path(alert_attributes.Alert_ID).set_operator("In")
-            )
+            alert_condition = FilterCondition().set_path(alert_attributes.Alert_ID).set_operator("In")
             for alertId in alertIds:
-                alert_condition.add_value(
-                    {alert_attributes.Alert_ID: alertId, "displayValue": "New"}
-                )
+                alert_condition.add_value({alert_attributes.Alert_ID: alertId, "displayValue": "New"})
             search_request.query.filter.add_filter(alert_condition)
 
         if device_names:
-            device_condition = (
-                FilterCondition()
-                .set_path(alert_attributes.Alert_Device_HostName)
-                .set_operator("In")
-            )
+            device_condition = FilterCondition().set_path(alert_attributes.Alert_Device_HostName).set_operator("In")
             for device_name in device_names:
-                device_condition.add_value(
-                    {
-                        alert_attributes.Alert_Device_HostName: device_name,
-                        "displayValue": device_name,
-                    }
-                )
+                device_condition.add_value({alert_attributes.Alert_Device_HostName: device_name, "displayValue": device_name})
             search_request.query.filter.add_filter(device_condition)
 
         if user_names:
-            user_condition = (
-                FilterCondition()
-                .set_path(alert_attributes.Alert_User_Identity_Name)
-                .set_operator("In")
-            )
+            user_condition = FilterCondition().set_path(alert_attributes.Alert_User_Identity_Name).set_operator("In")
             for user_name in user_names:
-                user_condition.add_value(
-                    {
-                        alert_attributes.Alert_User_Identity_Name: user_name,
-                        "displayValue": user_name,
-                    }
-                )
+                user_condition.add_value({alert_attributes.Alert_User_Identity_Name: user_name, "displayValue": user_name})
             search_request.query.filter.add_filter(user_condition)
 
         if alert_statuses:
-            status_condition = (
-                FilterCondition()
-                .set_path(alert_attributes.Alert_Status_ID)
-                .set_operator("In")
-            )
+            status_condition = FilterCondition().set_path(alert_attributes.Alert_Status_ID).set_operator("In")
             for status in alert_statuses:
                 status_id = ALERT_STATUSES[status.lower()]
-                status_condition.add_value(
-                    {
-                        alert_attributes.Alert_Status_ID: status_id,
-                        "displayValue": status,
-                    }
-                )
+                status_condition.add_value({alert_attributes.Alert_Status_ID: status_id, "displayValue": status})
             search_request.query.filter.add_filter(status_condition)
 
         if alert_severities:
-            severity_condition = (
-                FilterCondition()
-                .set_path(alert_attributes.Alert_Rule_Severity_ID)
-                .set_operator("In")
-            )
+            severity_condition = FilterCondition().set_path(alert_attributes.Alert_Rule_Severity_ID).set_operator("In")
             for severity in alert_severities:
                 severity_id = ALERT_SEVERITIES[severity.lower()]
-                severity_condition.add_value(
-                    {
-                        alert_attributes.Alert_Rule_Severity_ID: severity_id,
-                        "displayValue": severity,
-                    }
-                )
+                severity_condition.add_value({alert_attributes.Alert_Rule_Severity_ID: severity_id, "displayValue": severity})
             search_request.query.filter.add_filter(severity_condition)
 
         if descending_order:
-            search_request.rows.add_ordering(
-                {"path": "Alert.TimeUTC", "sortOrder": "Desc"}
-            )
+            search_request.rows.add_ordering({"path": "Alert.TimeUTC", "sortOrder": "Desc"})
         else:
-            search_request.rows.add_ordering(
-                {"path": "Alert.TimeUTC", "sortOrder": "Asc"}
-            )
+            search_request.rows.add_ordering({"path": "Alert.TimeUTC", "sortOrder": "Asc"})
 
         dataJSON = search_request.to_json()
         json_data = self.varonis_search(dataJSON, max_fetch)
@@ -533,15 +450,9 @@ class Client(BaseClient):
 
         search_request = (
             SearchRequest()
-            .set_query(
-                Query()
-                .set_entity_name("Event")
-                .set_filter(Filters().set_filter_operator(0))
-            )
+            .set_query(Query().set_entity_name("Event").set_filter(Filters().set_filter_operator(0)))
             .set_rows(Rows().set_grouping(""))
-            .set_request_params(
-                RequestParams().set_search_source(1).set_search_source_name("MainTab")
-            )
+            .set_request_params(RequestParams().set_search_source(1).set_search_source_name("MainTab"))
         )
 
         event_attributes = EventAttributes()
@@ -549,15 +460,9 @@ class Client(BaseClient):
             search_request.rows.add_column(column)
 
         if alertIds and len(alertIds) > 0:
-            time_condition = (
-                FilterCondition()
-                .set_path(event_attributes.Event_Alert_ID)
-                .set_operator("In")
-            )
+            time_condition = FilterCondition().set_path(event_attributes.Event_Alert_ID).set_operator("In")
             for alertId in alertIds:
-                time_condition.add_value(
-                    {event_attributes.Event_Alert_ID: alertId, "displayValue": alertId}
-                )
+                time_condition.add_value({event_attributes.Event_Alert_ID: alertId, "displayValue": alertId})
 
             search_request.query.filter.add_filter(time_condition)
 
@@ -577,13 +482,9 @@ class Client(BaseClient):
         search_request.query.filter.add_filter(time_condition)
 
         if descending_order:
-            search_request.rows.add_ordering(
-                {"path": event_attributes.Event_TimeUTC, "sortOrder": "Desc"}
-            )
+            search_request.rows.add_ordering({"path": event_attributes.Event_TimeUTC, "sortOrder": "Desc"})
         else:
-            search_request.rows.add_ordering(
-                {"path": event_attributes.Event_TimeUTC, "sortOrder": "Asc"}
-            )
+            search_request.rows.add_ordering({"path": event_attributes.Event_TimeUTC, "sortOrder": "Asc"})
 
         dataJSON = search_request.to_json()
         json_data = self.varonis_search(dataJSON, max_fetch)
@@ -600,9 +501,7 @@ class Client(BaseClient):
         :return: The list of objects required for a search filter
         :rtype: ``List[Any]``
         """
-        response = self._http_request(
-            "GET", f"/api/entitymodel/enum/{enum_id}", headers=self.headers
-        )
+        response = self._http_request("GET", f"/api/entitymodel/enum/{enum_id}", headers=self.headers)
         return response
 
     def varonis_update_alert_status(self, query: dict[str, Any]) -> bool:
@@ -615,12 +514,7 @@ class Client(BaseClient):
         :rtype: ``bool``
 
         """
-        return self._http_request(
-            "POST",
-            "/api/alert/alert/SetStatusToAlerts",
-            json_data=query,
-            headers=self.headers,
-        )
+        return self._http_request("POST", "/api/alert/alert/SetStatusToAlerts", json_data=query, headers=self.headers)
 
     def varonis_add_note_to_alerts(self, query: dict[str, Any]) -> bool:
         """Update alert status
@@ -632,12 +526,7 @@ class Client(BaseClient):
         :rtype: ``bool``
 
         """
-        return self._http_request(
-            "POST",
-            "/api/alert/alert/AddNoteToAlerts",
-            json_data=query,
-            headers=self.headers,
-        )
+        return self._http_request("POST", "/api/alert/alert/AddNoteToAlerts", json_data=query, headers=self.headers)
 
 
 class EventAttributes:
@@ -650,16 +539,10 @@ class EventAttributes:
     Event_Location_Country_ID = "Event.Location.Country.ID"
     Event_Filer_Platform_Name = "Event.Filer.Platform.Name"
     Event_Filer_Platform_ID = "Event.Filer.Platform.ID"
-    Event_OnResource_Stats_ExposureLevel_Name = (
-        "Event.OnResource.Stats.ExposureLevel.Name"
-    )
+    Event_OnResource_Stats_ExposureLevel_Name = "Event.OnResource.Stats.ExposureLevel.Name"
     Event_OnResource_Stats_ExposureLevel_ID = "Event.OnResource.Stats.ExposureLevel.ID"
-    Event_ByAccount_Identity_Followup_Flag_Name = (
-        "Event.ByAccount.Identity.Followup.Flag.Name"
-    )
-    Event_ByAccount_Identity_Followup_Flag_ID = (
-        "Event.ByAccount.Identity.Followup.Flag.ID"
-    )
+    Event_ByAccount_Identity_Followup_Flag_Name = "Event.ByAccount.Identity.Followup.Flag.Name"
+    Event_ByAccount_Identity_Followup_Flag_ID = "Event.ByAccount.Identity.Followup.Flag.ID"
     Event_ByAccount_SamAccountName = "Event.ByAccount.SamAccountName"
     Event_ByAccount_SidID = "Event.ByAccount.SidID"
     Event_ByAccount_Type_Name = "Event.ByAccount.Type.Name"
@@ -667,12 +550,8 @@ class EventAttributes:
     Event_ByAccount_DistinguishedName = "Event.ByAccount.DistinguishedName"
     Event_OnAccount_Domain_Name = "Event.OnAccount.Domain.Name"
     Event_OnAccount_Domain_ID = "Event.OnAccount.Domain.ID"
-    Event_OnAccount_Identity_Followup_Flag_Name = (
-        "Event.OnAccount.Identity.Followup.Flag.Name"
-    )
-    Event_OnAccount_Identity_Followup_Flag_ID = (
-        "Event.OnAccount.Identity.Followup.Flag.ID"
-    )
+    Event_OnAccount_Identity_Followup_Flag_Name = "Event.OnAccount.Identity.Followup.Flag.Name"
+    Event_OnAccount_Identity_Followup_Flag_ID = "Event.OnAccount.Identity.Followup.Flag.ID"
     Event_Time = "Event.Time"
     Event_Operation_Name = "Event.Operation.Name"
     Event_Operation_ID = "Event.Operation.ID"
@@ -723,9 +602,7 @@ class EventAttributes:
     Event_OnResource_ModifyDate = "Event.OnResource.ModifyDate"
     Event_OnResource_FSOwner_Name = "Event.OnResource.FSOwner.Name"
     Event_OnResource_FSOwner_SidID = "Event.OnResource.FSOwner.SidID"
-    Event_OnResource_Classification_TotalHitCount = (
-        "Event.OnResource.Classification.TotalHitCount"
-    )
+    Event_OnResource_Classification_TotalHitCount = "Event.OnResource.Classification.TotalHitCount"
     Event_OnMail_ItemType_Name = "Event.OnMail.ItemType.Name"
     Event_OnMail_ItemType_ID = "Event.OnMail.ItemType.ID"
     Event_OnMail_Recipient = "Event.OnMail.Recipient"
@@ -738,26 +615,20 @@ class EventAttributes:
     Event_OnResource_SizeFolder = "Event.OnResource.SizeFolder"
     Event_Alert_Rule_Category_Name = "Event.Alert.Rule.Category.Name"
     Event_Alert_Rule_Category_ID = "Event.Alert.Rule.Category.ID"
-    Event_OnResource_SizeFolderAndSubFolders = (
-        "Event.OnResource.SizeFolderAndSubFolders"
-    )
+    Event_OnResource_SizeFolderAndSubFolders = "Event.OnResource.SizeFolderAndSubFolders"
     Event_Alert_Rule_Severity_Name = "Event.Alert.Rule.Severity.Name"
     Event_Alert_Rule_Severity_ID = "Event.Alert.Rule.Severity.ID"
     Event_OnResource_NumberOfFiles = "Event.OnResource.NumberOfFiles"
     Event_Alert_Time = "Event.Alert.Time"
     Event_Alert_TimeUTC = "Event.Alert.TimeUTC"
     Event_TimeUTC = "Event.TimeUTC"
-    Event_OnResource_NumberOfFilesInSubFolders = (
-        "Event.OnResource.NumberOfFilesInSubFolders"
-    )
+    Event_OnResource_NumberOfFilesInSubFolders = "Event.OnResource.NumberOfFilesInSubFolders"
     Event_Alert_ID = "Event.Alert.ID"
     Event_OnResource_NumberOfNestedFolders = "Event.OnResource.NumberOfNestedFolders"
     Event_Description = "Event.Description"
     Event_OnResource_SizePhysicalSDTFile = "Event.OnResource.SizePhysicalSDTFile"
     Event_EventsCount = "Event.EventsCount"
-    Event_OnResource_SizePhysicalNestedFoldersFiles = (
-        "Event.OnResource.SizePhysicalNestedFoldersFiles"
-    )
+    Event_OnResource_SizePhysicalNestedFoldersFiles = "Event.OnResource.SizePhysicalNestedFoldersFiles"
     Event_ByAccount_PasswordStatus_Name = "Event.ByAccount.PasswordStatus.Name"
     Event_ByAccount_PasswordStatus_ID = "Event.ByAccount.PasswordStatus.ID"
     Event_OnResource_SizePhysicalFiles = "Event.OnResource.SizePhysicalFiles"
@@ -784,32 +655,22 @@ class EventAttributes:
     Event_Direction_ID = "Event.Direction.ID"
     Event_OnAccount_SamAccountName = "Event.OnAccount.SamAccountName"
     Event_OnAccount_SidID = "Event.OnAccount.SidID"
-    Event_ByAccount_PrivilegedAccountType_Name = (
-        "Event.ByAccount.PrivilegedAccountType.Name"
-    )
-    Event_ByAccount_PrivilegedAccountType_ID = (
-        "Event.ByAccount.PrivilegedAccountType.ID"
-    )
+    Event_ByAccount_PrivilegedAccountType_Name = "Event.ByAccount.PrivilegedAccountType.Name"
+    Event_ByAccount_PrivilegedAccountType_ID = "Event.ByAccount.PrivilegedAccountType.ID"
     Event_DNSFlags = "Event.DNSFlags"
     Event_CollectionMethod_Name = "Event.CollectionMethod.Name"
     Event_CollectionMethod_ID = "Event.CollectionMethod.ID"
     Event_OnAccount_AccountType_Name = "Event.OnAccount.AccountType.Name"
     Event_OnAccount_AccountType_ID = "Event.OnAccount.AccountType.ID"
     Event_DNSRecordType = "Event.DNSRecordType"
-    Event_OnResource_Classification_CategorySummary = (
-        "Event.OnResource.Classification.CategorySummary"
-    )
-    Event_ByAccount_Identity_Affiliation_Name = (
-        "Event.ByAccount.Identity.Affiliation.Name"
-    )
+    Event_OnResource_Classification_CategorySummary = "Event.OnResource.Classification.CategorySummary"
+    Event_ByAccount_Identity_Affiliation_Name = "Event.ByAccount.Identity.Affiliation.Name"
     Event_ByAccount_Identity_Affiliation_ID = "Event.ByAccount.Identity.Affiliation.ID"
     Event_OnAccount_Application_ID = "Event.OnAccount.Application.ID"
     Event_TransportLayer_Name = "Event.TransportLayer.Name"
     Event_TransportLayer_ID = "Event.TransportLayer.ID"
     Event_OnAccount_Application_Name = "Event.OnAccount.Application.Name"
-    Event_OnAccount_Identity_Affiliation_Name = (
-        "Event.OnAccount.Identity.Affiliation.Name"
-    )
+    Event_OnAccount_Identity_Affiliation_Name = "Event.OnAccount.Identity.Affiliation.Name"
     Event_OnAccount_Identity_Affiliation_ID = "Event.OnAccount.Identity.Affiliation.ID"
     Event_Destination_URL_Reputation_Name = "Event.Destination.URL.Reputation.Name"
     Event_Destination_URL_Reputation_ID = "Event.Destination.URL.Reputation.ID"
@@ -817,9 +678,7 @@ class EventAttributes:
     Event_HttpMethod_ID = "Event.HttpMethod.ID"
     Event_OnAccount_PublisherName = "Event.OnAccount.PublisherName"
     Event_Destination_IP = "Event.Destination.IP"
-    Event_Destination_URL_Categorization_Name = (
-        "Event.Destination.URL.Categorization.Name"
-    )
+    Event_Destination_URL_Categorization_Name = "Event.Destination.URL.Categorization.Name"
     Event_Destination_URL_Categorization_ID = "Event.Destination.URL.Categorization.ID"
     Event_OnAccount_IsPublisherVerified = "Event.OnAccount.IsPublisherVerified"
     Event_Destination_DeviceName = "Event.Destination.DeviceName"
@@ -833,9 +692,7 @@ class EventAttributes:
     Event_SourcePort = "Event.SourcePort"
     Event_SourceZone = "Event.SourceZone"
     Event_App = "Event.App"
-    Event_Device_ExternalIP_ThreatTypes_Name = (
-        "Event.Device.ExternalIP.ThreatTypes.Name"
-    )
+    Event_Device_ExternalIP_ThreatTypes_Name = "Event.Device.ExternalIP.ThreatTypes.Name"
     Event_Device_ExternalIP_ThreatTypes_ID = "Event.Device.ExternalIP.ThreatTypes.ID"
     Event_Destination_Port = "Event.Destination.Port"
     Event_Destination_Zone = "Event.Destination.Zone"
@@ -853,16 +710,10 @@ class EventAttributes:
     Event_ByAccount_IsMailboxOwner = "Event.ByAccount.IsMailboxOwner"
     Event_StatusReasonCodeName = "Event.StatusReasonCodeName"
     Event_StatusReasonCode = "Event.StatusReasonCode"
-    Event_Authentication_TicketEncryption_Name = (
-        "Event.Authentication.TicketEncryption.Name"
-    )
-    Event_Authentication_TicketEncryption_ID = (
-        "Event.Authentication.TicketEncryption.ID"
-    )
+    Event_Authentication_TicketEncryption_Name = "Event.Authentication.TicketEncryption.Name"
+    Event_Authentication_TicketEncryption_ID = "Event.Authentication.TicketEncryption.ID"
     Event_OnGPO_NewVersion = "Event.OnGPO.NewVersion"
-    Event_Authentication_PreAuthenticationType = (
-        "Event.Authentication.PreAuthenticationType"
-    )
+    Event_Authentication_PreAuthenticationType = "Event.Authentication.PreAuthenticationType"
     Event_OnGPO_Settings_NewValue = "Event.OnGPO.Settings.NewValue"
     Event_Authentication_Protocol_Name = "Event.Authentication.Protocol.Name"
     Event_Authentication_Protocol_ID = "Event.Authentication.Protocol.ID"
@@ -897,27 +748,17 @@ class EventAttributes:
     Event_ImpersonationLevel = "Event.ImpersonationLevel"
     Event_OnMail_AttachmentName = "Event.OnMail.AttachmentName"
     Event_OnMail_WithAttachments = "Event.OnMail.WithAttachments"
-    Event_OnResource_ClassificationLabels_Summary = (
-        "Event.OnResource.ClassificationLabels.Summary"
-    )
-    Event_OnMail_HasOutOfOrganizationReciever = (
-        "Event.OnMail.HasOutOfOrganizationReciever"
-    )
+    Event_OnResource_ClassificationLabels_Summary = "Event.OnResource.ClassificationLabels.Summary"
+    Event_OnMail_HasOutOfOrganizationReciever = "Event.OnMail.HasOutOfOrganizationReciever"
     Event_Type_Activity_Name = "Event.Type.Activity.Name"
     Event_Type_Activity_ID = "Event.Type.Activity.ID"
     Event_InfoTags_Name = "Event.InfoTags.Name"
     Event_InfoTags_ID = "Event.InfoTags.ID"
     Event_Authentication_TicketOptions = "Event.Authentication.TicketOptions"
     Event_OnMail_Headers_SentDate = "Event.OnMail.Headers.SentDate"
-    Event_OnMail_Headers_AuthenticationResults_Spf_Passed = (
-        "Event.OnMail.Headers.AuthenticationResults.Spf.Passed"
-    )
-    Event_OnMail_Headers_AuthenticationResults_Dkim_Passed = (
-        "Event.OnMail.Headers.AuthenticationResults.Dkim.Passed"
-    )
-    Event_OnMail_Headers_AuthenticationResults_Dmarc_Passed = (
-        "Event.OnMail.Headers.AuthenticationResults.Dmarc.Passed"
-    )
+    Event_OnMail_Headers_AuthenticationResults_Spf_Passed = "Event.OnMail.Headers.AuthenticationResults.Spf.Passed"
+    Event_OnMail_Headers_AuthenticationResults_Dkim_Passed = "Event.OnMail.Headers.AuthenticationResults.Dkim.Passed"
+    Event_OnMail_Headers_AuthenticationResults_Dmarc_Passed = "Event.OnMail.Headers.AuthenticationResults.Dmarc.Passed"
     Event_OnMail_Headers_XOriginalSender = "Event.OnMail.Headers.XOriginalSender"
     Event_OnMail_Headers_ReceivedServerIP = "Event.OnMail.Headers.ReceivedServerIP"
     Event_OnResource_Classification_Summary = "Event.OnResource.Classification.Summary"
@@ -929,35 +770,17 @@ class EventAttributes:
     Event_OnResource_LocalMappedPath = "Event.OnResource.LocalMappedPath"
     Event_Session_BrowserType = "Event.Session.BrowserType"
     Event_Session_TrustDomain_Type = "Event.Session.TrustDomain.Type"
-    Event_Session_AzureAuthentication_Requirement = (
-        "Event.Session.AzureAuthentication.Requirement"
-    )
-    Event_Session_AzureAuthentication_ConditionalAccessStatus = (
-        "Event.Session.AzureAuthentication.ConditionalAccessStatus"
-    )
-    Event_Session_AzureAuthentication_TokenIssuerType = (
-        "Event.Session.AzureAuthentication.TokenIssuerType"
-    )
-    Event_Session_AzureAuthentication_Method = (
-        "Event.Session.AzureAuthentication.Method"
-    )
-    Event_Session_AzureAuthentication_MethodDetail = (
-        "Event.Session.AzureAuthentication.MethodDetail"
-    )
+    Event_Session_AzureAuthentication_Requirement = "Event.Session.AzureAuthentication.Requirement"
+    Event_Session_AzureAuthentication_ConditionalAccessStatus = "Event.Session.AzureAuthentication.ConditionalAccessStatus"
+    Event_Session_AzureAuthentication_TokenIssuerType = "Event.Session.AzureAuthentication.TokenIssuerType"
+    Event_Session_AzureAuthentication_Method = "Event.Session.AzureAuthentication.Method"
+    Event_Session_AzureAuthentication_MethodDetail = "Event.Session.AzureAuthentication.MethodDetail"
     Event_Session_AzureAuthentication_Step = "Event.Session.AzureAuthentication.Step"
-    Event_Session_AzureAuthentication_ResultDetail = (
-        "Event.Session.AzureAuthentication.ResultDetail"
-    )
-    Event_Session_AzureAuthentication_ReasonDetails = (
-        "Event.Session.AzureAuthentication.ReasonDetails"
-    )
+    Event_Session_AzureAuthentication_ResultDetail = "Event.Session.AzureAuthentication.ResultDetail"
+    Event_Session_AzureAuthentication_ReasonDetails = "Event.Session.AzureAuthentication.ReasonDetails"
     Event_Device_TrustType = "Event.Device.TrustType"
-    Event_Session_AzureAuthentication_Status_Name = (
-        "Event.Session.AzureAuthentication.Status.Name"
-    )
-    Event_Session_AzureAuthentication_Status_ID = (
-        "Event.Session.AzureAuthentication.Status.ID"
-    )
+    Event_Session_AzureAuthentication_Status_Name = "Event.Session.AzureAuthentication.Status.Name"
+    Event_Session_AzureAuthentication_Status_ID = "Event.Session.AzureAuthentication.Status.ID"
     Event_Device_ManagedStatus_Name = "Event.Device.ManagedStatus.Name"
     Event_Device_ManagedStatus_ID = "Event.Device.ManagedStatus.ID"
     Event_ID = "Event.ID"
@@ -1388,9 +1211,7 @@ class SearchEventObjectMapper(BaseMapper):
 
         return event_item
 
-    def multi_value_to_guid_array(
-        self, row: dict[str, str], field: str
-    ) -> Optional[list[str]]:
+    def multi_value_to_guid_array(self, row: dict[str, str], field: str) -> Optional[list[str]]:
         value = row.get(field)
         if value:
             return list(value.split(","))
@@ -1447,9 +1268,7 @@ class SearchRequest:
         return f"Query: {self.query}, Rows: {self.rows}, Request Params: {self.requestParams}"
 
     def to_json(self):
-        dataJSON = json.dumps(
-            self, default=lambda o: o.__dict__, sort_keys=True, indent=4
-        )
+        dataJSON = json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
         return dataJSON
 
 
@@ -1490,9 +1309,7 @@ class ThreatModelObjectMapper(BaseMapper):
     def map_item(self, row: dict) -> ThreatModelItem:
         threat_model_item = ThreatModelItem()
         threat_model_item.ID = row.get(ThreatModelAttributes.Id, row.get("dataField"))
-        threat_model_item.Name = row.get(
-            ThreatModelAttributes.Name, row.get("displayField")
-        )
+        threat_model_item.Name = row.get(ThreatModelAttributes.Name, row.get("displayField"))
         return threat_model_item
 
 
@@ -1517,12 +1334,7 @@ def convert_to_demisto_severity(severity: Optional[str]) -> float:
     if severity is None:
         return IncidentSeverity.LOW
 
-    return {
-        "Informational": IncidentSeverity.INFO,
-        "Low": IncidentSeverity.LOW,
-        "Medium": IncidentSeverity.MEDIUM,
-        "High": IncidentSeverity.HIGH,
-    }[severity]
+    return {"Informational": IncidentSeverity.INFO, "Low": IncidentSeverity.LOW, "Medium": IncidentSeverity.MEDIUM, "High": IncidentSeverity.HIGH}[severity]
 
 
 def get_included_severitires(severity: Optional[str]) -> list[str]:
@@ -1606,13 +1418,7 @@ def enrich_with_url(output: dict[str, Any], baseUrl: str, id: str) -> dict[str, 
     return output
 
 
-def varonis_update_alert(
-    client: Client,
-    close_reason_id: Optional[int],
-    status_id: Optional[int],
-    alert_ids: list,
-    note,
-) -> bool:
+def varonis_update_alert(client: Client, close_reason_id: Optional[int], status_id: Optional[int], alert_ids: list, note) -> bool:
     """Update Varonis alert. It creates request and pass it to http client
 
     :type client: ``Client``
@@ -1648,11 +1454,7 @@ def varonis_update_alert(
         add_note_result = client.varonis_add_note_to_alerts(add_note_query)
 
     if status_id:
-        update_status_query: dict[str, Any] = {
-            "AlertGuids": alert_ids,
-            "CloseReasonId": close_reason_id,
-            "StatusId": status_id,
-        }
+        update_status_query: dict[str, Any] = {"AlertGuids": alert_ids, "CloseReasonId": close_reason_id, "StatusId": status_id}
         demisto.debug(f"update_status_query: {json.dumps(update_status_query)}")
         update_status_result = client.varonis_update_alert_status(update_status_query)
 
@@ -1666,66 +1468,40 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
     output["ID"] = alert_saas_format.get(AlertAttributes.Alert_ID)
     output["Name"] = alert_saas_format.get(AlertAttributes.Alert_Rule_Name)
     output["Status"] = alert_saas_format.get(AlertAttributes.Alert_Status_Name)
-    output["IPThreatTypes"] = alert_saas_format.get(
-        AlertAttributes.Alert_Device_ExternalIPThreatTypesName
-    )
-    output["CloseReason"] = alert_saas_format.get(
-        AlertAttributes.Alert_CloseReason_Name
-    )
-    output["NumOfAlertedEvents"] = alert_saas_format.get(
-        AlertAttributes.Alert_EventsCount
-    )
-    output["ContainsFlaggedData"] = alert_saas_format.get(
-        AlertAttributes.Alert_Data_IsFlagged
-    )
-    output["ContainMaliciousExternalIP"] = alert_saas_format.get(
-        AlertAttributes.Alert_Device_IsMaliciousExternalIP
-    )
-    output["ContainsSensitiveData"] = alert_saas_format.get(
-        AlertAttributes.Alert_Data_IsSensitive
-    )
+    output["IPThreatTypes"] = alert_saas_format.get(AlertAttributes.Alert_Device_ExternalIPThreatTypesName)
+    output["CloseReason"] = alert_saas_format.get(AlertAttributes.Alert_CloseReason_Name)
+    output["NumOfAlertedEvents"] = alert_saas_format.get(AlertAttributes.Alert_EventsCount)
+    output["ContainsFlaggedData"] = alert_saas_format.get(AlertAttributes.Alert_Data_IsFlagged)
+    output["ContainMaliciousExternalIP"] = alert_saas_format.get(AlertAttributes.Alert_Device_IsMaliciousExternalIP)
+    output["ContainsSensitiveData"] = alert_saas_format.get(AlertAttributes.Alert_Data_IsSensitive)
 
     output["Locations"] = []
     countries = (
         []
         if alert_saas_format.get(AlertAttributes.Alert_Location_CountryName) is None
-        else alert_saas_format.get(AlertAttributes.Alert_Location_CountryName).split(
-            ","
-        )
+        else alert_saas_format.get(AlertAttributes.Alert_Location_CountryName).split(",")
     )
     states = (
         []
         if alert_saas_format.get(AlertAttributes.Alert_Location_SubdivisionName) is None
-        else alert_saas_format.get(
-            AlertAttributes.Alert_Location_SubdivisionName
-        ).split(",")
+        else alert_saas_format.get(AlertAttributes.Alert_Location_SubdivisionName).split(",")
     )
     blacklist_locations = (
         []
-        if alert_saas_format.get(AlertAttributes.Alert_Location_BlacklistedLocation)
-        is None
-        else alert_saas_format.get(
-            AlertAttributes.Alert_Location_BlacklistedLocation
-        ).split(",")
+        if alert_saas_format.get(AlertAttributes.Alert_Location_BlacklistedLocation) is None
+        else alert_saas_format.get(AlertAttributes.Alert_Location_BlacklistedLocation).split(",")
     )
     abnormal_locations = (
         []
-        if alert_saas_format.get(AlertAttributes.Alert_Location_AbnormalLocation)
-        is None
-        else alert_saas_format.get(
-            AlertAttributes.Alert_Location_AbnormalLocation
-        ).split(",")
+        if alert_saas_format.get(AlertAttributes.Alert_Location_AbnormalLocation) is None
+        else alert_saas_format.get(AlertAttributes.Alert_Location_AbnormalLocation).split(",")
     )
     for i in range(len(countries)):
         entry = {
             "Country": "" if len(countries) <= i else countries[i],
             "State": "" if len(states) <= i else states[i],
-            "BlacklistLocation": ""
-            if len(blacklist_locations) <= i
-            else blacklist_locations[i],
-            "AbnormalLocation": ""
-            if len(abnormal_locations) <= i
-            else abnormal_locations[i],
+            "BlacklistLocation": "" if len(blacklist_locations) <= i else blacklist_locations[i],
+            "AbnormalLocation": "" if len(abnormal_locations) <= i else abnormal_locations[i],
         }
         output["Locations"].append(entry)
 
@@ -1743,9 +1519,7 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
     for i in range(len(platforms)):
         entry = {
             "Platform": "" if len(platforms) <= i else platforms[i],
-            "FileServerOrDomain": ""
-            if len(file_server_or_Domain) <= i
-            else file_server_or_Domain[i],
+            "FileServerOrDomain": "" if len(file_server_or_Domain) <= i else file_server_or_Domain[i],
         }
         output["Sources"].append(entry)
 
@@ -1761,10 +1535,7 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
         else alert_saas_format.get(AlertAttributes.Alert_Asset_Path).split(",")
     )
     for i in range(len(device_names)):
-        entry = {
-            "Name": "" if len(device_names) <= i else device_names[i],
-            "Asset": "" if len(assets) <= i else assets[i],
-        }
+        entry = {"Name": "" if len(device_names) <= i else device_names[i], "Asset": "" if len(assets) <= i else assets[i]}
         output["Devices"].append(entry)
 
     output["Users"] = []
@@ -1783,20 +1554,12 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
         if alert_saas_format.get(AlertAttributes.Alert_User_AccountType_Name) is None
         else alert_saas_format[AlertAttributes.Alert_User_AccountType_Name].split(",")
     )
-    departments = (
-        []
-        if alert_saas_format.get("Department") is None
-        else alert_saas_format["Department"].split(",")
-    )
+    departments = [] if alert_saas_format.get("Department") is None else alert_saas_format["Department"].split(",")
     for i in range(len(user_names)):
         entry = {
             "Name": "" if len(user_names) <= i else user_names[i],
-            "SamAccountName": ""
-            if len(sam_account_names) <= i
-            else sam_account_names[i],
-            "PrivilegedAccountType": ""
-            if len(privileged_account_types) <= i
-            else privileged_account_types[i],
+            "SamAccountName": "" if len(sam_account_names) <= i else sam_account_names[i],
+            "PrivilegedAccountType": "" if len(privileged_account_types) <= i else privileged_account_types[i],
             "Department": "" if len(departments) <= i else departments[i],
         }
         output["Users"].append(entry)
@@ -1833,9 +1596,7 @@ def check_module_command(client: Client) -> CommandResults:
     return CommandResults(readable_output=message)
 
 
-def varonis_get_threat_models_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def varonis_get_threat_models_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get threat models from Varonis DA
 
     :type client: ``Client``
@@ -1869,9 +1630,7 @@ def varonis_get_threat_models_command(
                 criteria_match = False
                 if criteria[key] and len(criteria[key]) > 0:
                     for value in criteria[key]:
-                        if isinstance(value, str) and fnmatch.filter(
-                            [str(item[key])], value
-                        ):
+                        if isinstance(value, str) and fnmatch.filter([str(item[key])], value):
                             criteria_match = True
                             break
                     if not criteria_match:
@@ -1887,16 +1646,9 @@ def varonis_get_threat_models_command(
     outputs = {}
     outputs["ThreatModel"] = filtered_items
 
-    readable_output = tableToMarkdown(
-        "Varonis Threat Models", filtered_items, headers=["ID", "Name"]
-    )
+    readable_output = tableToMarkdown("Varonis Threat Models", filtered_items, headers=["ID", "Name"])
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="Varonis",
-        outputs_key_field="ID",
-        outputs=outputs,
-    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Varonis", outputs_key_field="ID", outputs=outputs)
 
 
 def fetch_incidents_command(
@@ -1951,21 +1703,15 @@ def fetch_incidents_command(
     if first_fetch_time is None:
         raise ValueError("first_fetch_time can't be None")
 
-    last_fetched_ingest_time_str = last_run.get(
-        "last_fetched_ingest_time", first_fetch_time.isoformat()
-    )
+    last_fetched_ingest_time_str = last_run.get("last_fetched_ingest_time", first_fetch_time.isoformat())
     last_fetched_ingest_time = try_convert(
         last_fetched_ingest_time_str,
         lambda x: datetime.fromisoformat(x),
-        ValueError(
-            f"last_fetched_ingest_time should be in iso format, but it is {last_fetched_ingest_time_str}."
-        ),
+        ValueError(f"last_fetched_ingest_time should be in iso format, but it is {last_fetched_ingest_time_str}."),
     )
     ingest_time_to = datetime.now()
 
-    demisto.debug(
-        f"Fetching incidents. Last fetched ingest time: {last_fetched_ingest_time}"
-    )
+    demisto.debug(f"Fetching incidents. Last fetched ingest time: {last_fetched_ingest_time}")
 
     statuses = []
     if alert_status:
@@ -2004,9 +1750,7 @@ def fetch_incidents_command(
         ingestTime = try_convert(
             alert[AlertAttributes.Alert_IngestTime],
             lambda x: datetime.fromisoformat(x),
-            ValueError(
-                f"IngestTime should be in iso format, but it is {ingestTime_str}."
-            ),
+            ValueError(f"IngestTime should be in iso format, but it is {ingestTime_str}."),
         )
 
         if not last_fetched_ingest_time or ingestTime > last_fetched_ingest_time:
@@ -2019,9 +1763,7 @@ def fetch_incidents_command(
         alert_converted = convert_incident_alert_to_onprem_format(alert)
         alert_converted.update(
             {
-                "mirror_direction": MIRROR_DIRECTION_MAPPING.get(
-                    params.get("mirror_direction")
-                ),
+                "mirror_direction": MIRROR_DIRECTION_MAPPING.get(params.get("mirror_direction")),
                 "mirror_instance": demisto.integrationInstance(),
             }
         )
@@ -2031,15 +1773,11 @@ def fetch_incidents_command(
             "occurred": f"{alert_time}Z",
             "rawJSON": json.dumps(alert_converted),
             "type": "Varonis SaaS Incident",
-            "severity": convert_to_demisto_severity(
-                alert_converted[AlertAttributes.Alert_Rule_Severity_Name]
-            ),
+            "severity": convert_to_demisto_severity(alert_converted[AlertAttributes.Alert_Rule_Severity_Name]),
         }
 
         incidents.append(incident)
-        demisto.debug(
-            f"New incident: {json.dumps(alert, indent=4, sort_keys=True, default=str)}"
-        )
+        demisto.debug(f"New incident: {json.dumps(alert, indent=4, sort_keys=True, default=str)}")
 
     next_run = {"last_fetched_ingest_time": last_fetched_ingest_time.isoformat()}
 
@@ -2087,22 +1825,14 @@ def varonis_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandR
     descending_order = argToBoolean(args.get("descending_order", "True"))
 
     if last_days:
-        last_days = try_convert(
-            last_days,
-            lambda x: int(x),
-            ValueError(f"last_days should be integer, but it is {last_days}."),
-        )
+        last_days = try_convert(last_days, lambda x: int(x), ValueError(f"last_days should be integer, but it is {last_days}."))
 
         if last_days <= 0:
             raise ValueError("last_days cannot be less then 1")
 
-    alert_severities = try_convert(
-        alert_severities, lambda x: argToList(x, separator="|")
-    )
+    alert_severities = try_convert(alert_severities, lambda x: argToList(x, separator="|"))
     device_names = try_convert(device_names, lambda x: argToList(x, separator="|"))
-    threat_model_names = try_convert(
-        threat_model_names, lambda x: argToList(x, separator="|")
-    )
+    threat_model_names = try_convert(threat_model_names, lambda x: argToList(x, separator="|"))
     user_names = try_convert(user_names, lambda x: argToList(x, separator="|"))
     extra_fields = try_convert(extra_fields, lambda x: argToList(x, separator="|"))
 
@@ -2112,24 +1842,18 @@ def varonis_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandR
         ValueError(f"start_time should be in iso format, but it is {start_time}."),
     )
     end_time = try_convert(
-        end_time,
-        lambda x: datetime.fromisoformat(x),
-        ValueError(f"end_time should be in iso format, but it is {start_time}."),
+        end_time, lambda x: datetime.fromisoformat(x), ValueError(f"end_time should be in iso format, but it is {start_time}.")
     )
 
     ingest_time_from = try_convert(
         ingest_time_from,
         lambda x: datetime.fromisoformat(x),
-        ValueError(
-            f"ingest_time_from should be in iso format, but it is {ingest_time_from}."
-        ),
+        ValueError(f"ingest_time_from should be in iso format, but it is {ingest_time_from}."),
     )
     ingest_time_to = try_convert(
         ingest_time_to,
         lambda x: datetime.fromisoformat(x),
-        ValueError(
-            f"ingest_time_to should be in iso format, but it is {ingest_time_to}."
-        ),
+        ValueError(f"ingest_time_to should be in iso format, but it is {ingest_time_to}."),
     )
 
     alert_statuses = try_convert(alert_statuses, lambda x: argToList(x, separator="|"))
@@ -2167,21 +1891,14 @@ def varonis_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandR
         for alert in alerts:
             enrich_with_url(alert, client._base_url, alert[alert_attributes.Alert_ID])
 
-    readable_output = tableToMarkdown(
-        "Varonis Alerts", alerts, headers=alert_attributes.get_fields(extra_fields)
-    )
+    readable_output = tableToMarkdown("Varonis Alerts", alerts, headers=alert_attributes.get_fields(extra_fields))
 
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="Varonis",
-        outputs_key_field="Alert.ID",
-        outputs=outputs,
+        readable_output=readable_output, outputs_prefix="Varonis", outputs_key_field="Alert.ID", outputs=outputs
     )
 
 
-def varonis_get_alerted_events_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def varonis_get_alerted_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get alerted events from Varonis DA
 
     :type client: ``Client``
@@ -2214,13 +1931,9 @@ def varonis_get_alerted_events_command(
         ValueError(f"start_time should be in iso format, but it is {start_time}."),
     )
     end_time = try_convert(
-        end_time,
-        lambda x: datetime.fromisoformat(x),
-        ValueError(f"end_time should be in iso format, but it is {end_time}."),
+        end_time, lambda x: datetime.fromisoformat(x), ValueError(f"end_time should be in iso format, but it is {end_time}.")
     )
-    extra_fields = try_convert(
-        args.get("extra_fields"), lambda x: argToList(x, separator="|")
-    )
+    extra_fields = try_convert(args.get("extra_fields"), lambda x: argToList(x, separator="|"))
 
     events = client.varonis_get_alerted_events(
         alertIds=alertIds,
@@ -2234,17 +1947,10 @@ def varonis_get_alerted_events_command(
     outputs["Event"] = events
 
     event_attributes = EventAttributes()
-    readable_output = tableToMarkdown(
-        "Varonis Alerted Events",
-        events,
-        headers=event_attributes.get_fields(extra_fields),
-    )
+    readable_output = tableToMarkdown("Varonis Alerted Events", events, headers=event_attributes.get_fields(extra_fields))
 
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="Varonis",
-        outputs_key_field="Event.ID",
-        outputs=outputs,
+        readable_output=readable_output, outputs_prefix="Varonis", outputs_key_field="Event.ID", outputs=outputs
     )
 
 
@@ -2267,11 +1973,7 @@ def varonis_alert_add_note_command(client: Client, args: dict[str, Any]) -> bool
     note = str(args.get("note"))
 
     return varonis_update_alert(
-        client,
-        close_reason_id=None,
-        status_id=None,
-        alert_ids=argToList(args.get("alert_id"), separator="|"),
-        note=note,
+        client, close_reason_id=None, status_id=None, alert_ids=argToList(args.get("alert_id"), separator="|"), note=note
     )
 
 
@@ -2304,11 +2006,7 @@ def varonis_update_alert_status_command(client: Client, args: dict[str, Any]) ->
     note = args.get("note")
 
     return varonis_update_alert(
-        client,
-        close_reason_id=None,
-        status_id=status_id,
-        alert_ids=argToList(args.get("alert_id"), separator="|"),
-        note=note,
+        client, close_reason_id=None, status_id=status_id, alert_ids=argToList(args.get("alert_id"), separator="|"), note=note
     )
 
 
@@ -2336,11 +2034,7 @@ def varonis_close_alert_command(client: Client, args: dict[str, Any]) -> bool:
 
     note = args.get("note")
     return varonis_update_alert(
-        client,
-        close_reason_id,
-        ALERT_STATUSES["closed"],
-        argToList(args.get("alert_id"), separator="|"),
-        note,
+        client, close_reason_id, ALERT_STATUSES["closed"], argToList(args.get("alert_id"), separator="|"), note
     )
 
 
@@ -2372,14 +2066,11 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     if parsed_args.delta:
         demisto.debug(f"Got the following delta keys {list(parsed_args.delta)}.")
 
-    demisto.debug(
-        f"Sending incident with remote ID [{alert_id}] to remote system. Status {parsed_args.inc_status}."
-    )
+    demisto.debug(f"Sending incident with remote ID [{alert_id}] to remote system. Status {parsed_args.inc_status}.")
     demisto.debug(f"Got the following data {parsed_args.data}.")
 
     if ("Status" in parsed_args.delta or "CloseReason" in parsed_args.delta) and (
-        parsed_args.data.get("Status", "").lower() == "closed"
-        or parsed_args.inc_status == IncidentStatus.DONE
+        parsed_args.data.get("Status", "").lower() == "closed" or parsed_args.inc_status == IncidentStatus.DONE
     ):
         demisto.debug(f"Closing remote incident {alert_id}")
         note = parsed_args.data.get("CloseNotes", "Closed from XSOAR")
@@ -2387,13 +2078,10 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         close_reason_id = CLOSE_REASONS.get(close_reason, CLOSE_REASONS["other"])
         if not close_reason_id:
             close_reason_id = CLOSE_REASONS["other"]
-        varonis_update_alert(
-            client, close_reason_id, ALERT_STATUSES["closed"], argToList(alert_id), note
-        )
+        varonis_update_alert(client, close_reason_id, ALERT_STATUSES["closed"], argToList(alert_id), note)
 
     elif (
-        "Status" in parsed_args.delta
-        and parsed_args.data.get("Status").lower() != "closed"
+        "Status" in parsed_args.delta and parsed_args.data.get("Status").lower() != "closed"
     ) or parsed_args.inc_status == IncidentStatus.ACTIVE:
         demisto.debug(f"Update remote incident {alert_id}")
         note = "Status changed from XSOAR"
@@ -2401,9 +2089,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         status_id = ALERT_STATUSES.get(status)
 
         close_reason_id = CLOSE_REASONS["none"]
-        varonis_update_alert(
-            client, close_reason_id, status_id, argToList(alert_id), note
-        )
+        varonis_update_alert(client, close_reason_id, status_id, argToList(alert_id), note)
 
     return alert_id
 
@@ -2499,9 +2185,7 @@ def main() -> None:
             severity = params.get("severity")
             max_fetch = arg_to_number(params.get("max_fetch"))
             first_fetch_time = arg_to_datetime(
-                arg=params.get("first_fetch", "1 week"),
-                arg_name="First fetch time",
-                required=True,
+                arg=params.get("first_fetch", "1 week"), arg_name="First fetch time", required=True
             )
 
             next_run, incidents = fetch_incidents_command(

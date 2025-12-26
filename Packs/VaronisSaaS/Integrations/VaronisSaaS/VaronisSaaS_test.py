@@ -9,9 +9,7 @@ from CommonServerUserPython import *  # noqa
 
 
 def util_load_json(file):
-    __location__ = os.path.realpath(
-        os.path.join(os.getcwd(), os.path.dirname(__file__))
-    )
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
     full_path = os.path.join(__location__, file)
     with open(full_path, encoding="utf-8") as f:
         return json.loads(f.read())
@@ -36,9 +34,7 @@ def test_update_remote_system_command(mocker: MockerFixture):
 
     from VaronisSaaS import ALERT_STATUSES, CLOSE_REASONS, update_remote_system_command
 
-    varonis_update_alert_mock = mocker.patch(
-        "VaronisSaaS.varonis_update_alert", return_value=None
-    )
+    varonis_update_alert_mock = mocker.patch("VaronisSaaS.varonis_update_alert", return_value=None)
 
     # Test case 1: Incident not changed, no remote incident ID
     args = {"incidentChanged": False, "remoteId": None}
@@ -49,35 +45,17 @@ def test_update_remote_system_command(mocker: MockerFixture):
     assert update_remote_system_command(None, args) == "12345"
 
     # Test case 3: Incident changed, delta keys present
-    args = {
-        "incidentChanged": True,
-        "remoteId": "12345",
-        "data": {"Status": "closed"},
-        "delta": ["Status"],
-    }
+    args = {"incidentChanged": True, "remoteId": "12345", "data": {"Status": "closed"}, "delta": ["Status"]}
     assert update_remote_system_command(None, args) == "12345"
     varonis_update_alert_mock.assert_called_with(
-        ANY,
-        CLOSE_REASONS["other"],
-        ALERT_STATUSES["closed"],
-        ["12345"],
-        "Closed from XSOAR",
+        ANY, CLOSE_REASONS["other"], ALERT_STATUSES["closed"], ["12345"], "Closed from XSOAR"
     )
 
     # Test case 4: Incident changed, status not closed
-    args = {
-        "incidentChanged": True,
-        "remoteId": "12345",
-        "delta": ["Status"],
-        "data": {"Status": "under investigation"},
-    }
+    args = {"incidentChanged": True, "remoteId": "12345", "delta": ["Status"], "data": {"Status": "under investigation"}}
     assert update_remote_system_command(None, args) == "12345"
     varonis_update_alert_mock.assert_called_with(
-        ANY,
-        CLOSE_REASONS["none"],
-        ALERT_STATUSES["under investigation"],
-        ["12345"],
-        "Status changed from XSOAR",
+        ANY, CLOSE_REASONS["none"], ALERT_STATUSES["under investigation"], ["12345"], "Status changed from XSOAR"
     )
 
 
@@ -91,9 +69,7 @@ def test_get_mapping_fields_command():
 
     # Assert that the incident type scheme is added to the response
     assert len(response.scheme_types_mappings) == 1
-    assert strEqual(
-        response.scheme_types_mappings[0].type_name, "Varonis SaaS Incident"
-    )
+    assert strEqual(response.scheme_types_mappings[0].type_name, "Varonis SaaS Incident")
 
     # Assert that all the fields are added to the incident type scheme
     expected_fields = INCIDENT_FIELDS
@@ -118,9 +94,7 @@ def test_varonis_get_alerts_command(requests_mock: MockerFixture):
     )
     requests_mock.get(
         "https://test.com/app/dataquery/api/search/v2/rows/af6a26a1d70e4be182adc148b831f476/",
-        json=util_load_json(
-            "test_data/varonis_get_alerts_execute_search_response.json"
-        ),
+        json=util_load_json("test_data/varonis_get_alerts_execute_search_response.json"),
     )
 
     args = util_load_json("test_data/demisto_search_alerts_args.json")
@@ -128,9 +102,7 @@ def test_varonis_get_alerts_command(requests_mock: MockerFixture):
     client = Client(base_url="https://test.com", verify=False, proxy=False)
     result = varonis_get_alerts_command(client, args)
 
-    expected_outputs = util_load_json(
-        "test_data/varonis_get_alerts_command_output.json"
-    )
+    expected_outputs = util_load_json("test_data/varonis_get_alerts_command_output.json")
     assert result.outputs_prefix == "Varonis"
     assert result.outputs == expected_outputs
 
@@ -159,10 +131,7 @@ def test_varonis_close_alert_command(requests_mock):
 
     client = Client(base_url="https://test.com", verify=False, proxy=False)
 
-    args = {
-        "close_reason": "other",
-        "alert_id": "C8CF4194-133F-4F5A-ACB1-FFFB00573468, F8F608A7-0256-42E0-A527-FFF4749C1A8B",
-    }
+    args = {"close_reason": "other", "alert_id": "C8CF4194-133F-4F5A-ACB1-FFFB00573468, F8F608A7-0256-42E0-A527-FFF4749C1A8B"}
 
     resp = varonis_close_alert_command(client, args)
 
@@ -183,21 +152,15 @@ def test_varonis_get_alerted_events_command(requests_mock: MockerFixture):
     client = Client(base_url="https://test.com", verify=False, proxy=False)
     requests_mock.post(
         "https://test.com/app/dataquery/api/search/v2/search",
-        json=util_load_json(
-            "test_data/varonis_get_alerted_events_create_search_response.json"
-        ),
+        json=util_load_json("test_data/varonis_get_alerted_events_create_search_response.json"),
     )
     requests_mock.get(
         "https://test.com/app/dataquery/api/search/v2/rows/af6a26a1d70e4be182adc148b831f476/",
-        json=util_load_json(
-            "test_data/varonis_get_alerted_events_execute_search_response.json"
-        ),
+        json=util_load_json("test_data/varonis_get_alerted_events_execute_search_response.json"),
     )
 
     args = util_load_json("test_data/demisto_alerted_events_args.json")
-    expected_outputs = util_load_json(
-        "test_data/varonis_get_alerted_events_command_output.json"
-    )
+    expected_outputs = util_load_json("test_data/varonis_get_alerted_events_command_output.json")
 
     result = varonis_get_alerted_events_command(client, args)
 
@@ -208,18 +171,11 @@ def test_varonis_get_alerted_events_command(requests_mock: MockerFixture):
 def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     from VaronisSaaS import AlertAttributes, fetch_incidents_command
 
-    create_search_result = util_load_json(
-        "test_data/fetch_incidents_create_search_response.json"
-    )
+    create_search_result = util_load_json("test_data/fetch_incidents_create_search_response.json")
     alerts = util_load_json("test_data/fetch_incidents_execute_search_response.json")
 
-    requests_mock.post(
-        "https://test.com/app/dataquery/api/search/v2/search", json=create_search_result
-    )
-    requests_mock.get(
-        "https://test.com/app/dataquery/api/search/v2/rows/af6a26a1d70e4be182adc148b831f476/",
-        json=alerts,
-    )
+    requests_mock.post("https://test.com/app/dataquery/api/search/v2/search", json=create_search_result)
+    requests_mock.get("https://test.com/app/dataquery/api/search/v2/rows/af6a26a1d70e4be182adc148b831f476/", json=alerts)
 
     client = Client(base_url="https://test.com", verify=False, proxy=False)
     mocker.patch.object(demisto, "debug", return_value=None)
@@ -255,11 +211,7 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
 
 
 def test_varonis_authenticate(requests_mock: MockerFixture):
-    fetch_output = {
-        "access_token": "token_here",
-        "token_type": "bearer",
-        "expires_in": 599,
-    }
+    fetch_output = {"access_token": "token_here", "token_type": "bearer", "expires_in": 599}
     auth_url = "https://test.com/api/authentication/api_keys/token"
 
     requests_mock.post(auth_url, json=fetch_output)
@@ -318,9 +270,4 @@ def test_get_excluded_severitires():
     assert get_included_severitires("Low") == ["high", "medium", "low"]
     assert get_included_severitires("Medium") == ["high", "medium"]
     assert get_included_severitires("High") == ["high"]
-    assert get_included_severitires("Informational") == [
-        "high",
-        "medium",
-        "low",
-        "informational",
-    ]
+    assert get_included_severitires("Informational") == ["high", "medium", "low", "informational"]

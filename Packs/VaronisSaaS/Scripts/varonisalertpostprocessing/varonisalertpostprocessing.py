@@ -6,10 +6,7 @@ def update_alert_status():
     incident = demisto.incident()
     incident_id = incident["id"]
     demisto.debug(f"Post processing incident: {incident_id}")
-    demisto.executeCommand(
-        "setIncident",
-        {"id": incident_id, "customFields": {"varonissaasalertstatus": "closed"}},
-    )
+    demisto.executeCommand("setIncident", {"id": incident_id, "customFields": {"varonissaasalertstatus": "closed"}})
 
 
 def main():
