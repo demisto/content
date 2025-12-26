@@ -1341,6 +1341,7 @@ def convert_to_demisto_severity(severity: Optional[str]) -> float:
             "High": IncidentSeverity.HIGH,
         }[severity]
 
+
 def get_included_severitires(severity: Optional[str]) -> list[str]:
     """Return list of severities that is equal or higher then provided
 
