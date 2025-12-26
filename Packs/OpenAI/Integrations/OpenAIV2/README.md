@@ -1,5 +1,5 @@
 
-## OpenAI GPT
+## OpenAI
 
 ### Instance Configuration
 
