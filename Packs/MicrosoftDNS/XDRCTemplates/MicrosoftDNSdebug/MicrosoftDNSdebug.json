@@ -3,6 +3,7 @@
     "profile_type": "STANDARD",
     "name": "MicrosoftDNSdebug",
     "content_global_id": "MicrosoftDNSdebug",
+    "id": "MicrosoftDNSdebug",
     "from_xdr_version": "3.5.0",
     "yaml_template": ""
 }
