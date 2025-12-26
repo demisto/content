@@ -1,36 +1,27 @@
+commonfields:
+  id: SearchIndicatorRelationshipsAgentix
+  version: -1
+name: SearchIndicatorRelationshipsAgentix
+comment: This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
+isInternal: true
+script: '-'
+type: python
 args:
-- description: 'A comma-separated list of entities for which to search for relationships. For example: 192.168.1.1,192.168.1.2. The search applies to both entity A or entity B values. This argument can be used in conjunction with the entityType and the relationship arguments and all arguments will be treated with the AND operator.'
-  isArray: true
-  name: entities
-- auto: PREDEFINED
-  description: 'A comma-separated list of entity types for which to search for relationships. For example: IP,URL. This argument can be used in conjunction with the entities and the relationship arguments and all arguments will be treated with the AND operator.'
-  isArray: true
-  name: entities_types
+- defaultValue: 'false'
+  description: The status of the relationships to return. Default is false.
+  name: revoked
+  auto: PREDEFINED
   predefined:
-  - IP
-  - Domain
-  - URL
-  - CVE
-  - DomainGlob
-  - Email
-  - FILE
-  - Host
-  - CIDR
-  - IPv6
-  - IPv6CIDR
-  - Registry Key
-  - ssdeep
-  - accountRep
-  - CIDR
-  - Attack Pattern
-  - Malware
-  - Report
-  - Threat Actor
-  - Tool
-  - Intrusion Set
-  - Campaign
-  - Course of Action
-  - Infrastructure.
+  - 'true'
+  - 'false'
+- name: verbose
+  defaultValue: "false"
+  description: >
+    Return detailed relationship attributes when true.
+    When false, returns basic fields: name, Entity A/B values and types, relationship type.
+- defaultValue: '20'
+  description: The number of results to return. Default is 20.
+  name: limit
 - description: 'A comma-separated list of relationship types for which to search for relationships. For example: related-to,contains. This argument can be used in conjunction with the entities and the entitiesTypes arguments and all arguments will be treated with the AND operator.'
   isArray: true
   auto: PREDEFINED
@@ -109,31 +100,38 @@ args:
   - variant-of
   - detects
   - detected-by
-- defaultValue: '20'
-  description: The number of results to return. Default is 20.
-  name: limit
-- defaultValue: 'false'
-  description: Whether all of the relationships attributes will be returned or just the basic attributes. Default is false and the returned values will be name, entity A value, entity A type, entity B value, entity B type, relationships type. If true, all attributes will be returned.
-  name: verbose
-  auto: PREDEFINED
+- description: 'A comma-separated list of entities for which to search for relationships. For example: 192.168.1.1,192.168.1.2. The search applies to both entity A or entity B values. This argument can be used in conjunction with the entityType and the relationship arguments and all arguments will be treated with the AND operator.'
+  isArray: true
+  name: entities
+- auto: PREDEFINED
+  description: 'A comma-separated list of entity types for which to search for relationships. For example: IP,URL. This argument can be used in conjunction with the entities and the relationship arguments and all arguments will be treated with the AND operator.'
+  isArray: true
+  name: entities_types
   predefined:
-  - 'true'
-  - 'false'
-- defaultValue: 'false'
-  description: The status of the relationships to return. Default is false.
-  name: revoked
-  auto: PREDEFINED
-  predefined:
-  - 'true'
-  - 'false'
-- description: Use the searchAfter token from the preceding response to indicate the starting point for retrieving the subsequent batch of relationships.
-  name: searchAfter
-  isArray: True
-comment: This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
-commonfields:
-  id: SearchIndicatorRelationships
-  version: -1
-name: SearchIndicatorRelationships
+  - IP
+  - Domain
+  - URL
+  - CVE
+  - DomainGlob
+  - Email
+  - FILE
+  - Host
+  - CIDR
+  - IPv6
+  - IPv6CIDR
+  - Registry Key
+  - ssdeep
+  - accountRep
+  - CIDR
+  - Attack Pattern
+  - Malware
+  - Report
+  - Threat Actor
+  - Tool
+  - Intrusion Set
+  - Campaign
+  - Course of Action
+  - Infrastructure.
 outputs:
 - contextPath: Relationships.EntityA
   description: The source of the relationship.
@@ -177,16 +175,12 @@ outputs:
 - contextPath: Relationships.Type
   description: The type of the relationship.
   type: string
-- contextPath: RelationshipsPagination
-  description: The searchAfter token for retrieving the next batch of relationships.
-  type: string
-script: '-'
-tags:
-- basescript
+system: false
 timeout: '0'
-type: python
 subtype: python3
 dockerimage: demisto/python3:3.12.12.6391686
-fromversion: 6.2.0
+fromversion: 6.6.0
 tests:
-- Relationships scripts - Test
+- No tests (auto formatted)
+marketplaces:
+- platform
