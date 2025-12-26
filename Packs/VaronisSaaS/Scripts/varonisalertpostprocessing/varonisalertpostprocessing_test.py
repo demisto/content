@@ -20,6 +20,9 @@ def test_update_alert_status(mocker):
     mocker.patch.object(demisto, "incident", return_value=incident)
     execute_mocker = mocker.patch.object(demisto, "executeCommand")
     expected_command = "setIncident"
-    expected_args = {"id": incident["id"], "customFields": {"varonissaasalertstatus": "closed"}}
+    expected_args = {
+        "id": incident["id"],
+        "customFields": {"varonissaasalertstatus": "closed"},
+    }
     update_alert_status()
     execute_mocker.assert_called_with(expected_command, expected_args)
