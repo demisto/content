@@ -1,0 +1,136 @@
+category: Vulnerability Management
+commonfields:
+  id: Brinqa
+  version: -1
+configuration:
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  section: Collect
+  type: 15
+- display: username
+  displaypassword: password
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: https://<instance-name>.brinqa.net
+  display: Server URL (e.g., https://<instance-name>.brinqa.net
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- defaultvalue: '10'
+  display: Maximum number of alerts per fetch
+  name: max_fetch
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
+  advanced: true
+  defaultvalue: '65'
+  display: Score threshold for IP reputation command
+  name: threshold_ip
+  required: false
+  section: Collect
+  type: 0
+- defaultvalue: low
+  display: Severity of alerts to fetch
+  name: severity
+  options:
+  - low
+  - medium
+  - high
+  - critical
+  required: true
+  section: Collect
+  type: 15
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  section: Collect
+  type: 0
+- advanced: true
+  defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    isoverridable: false
+    itemVersion: ''
+    packID: 28988477-0d73-4eb3-8e56-54f7f31cd73e
+    packName: Brinqa Contribution Pack
+    prevname: ''
+    propagationLabels:
+    - all
+    toServerVersion: ''
+description: The Brinqa integration for Cortex XSOAR enables analysts to query cyber asset inventory and risk context from Brinqa Cyber Risk Platform (CAASM GraphQL API). This pack currently provides an operation to search Hosts by displayName with rich attributes—risk scores, profiles, owners, OS, IPs, DNS names, subnets, categories, compliance status, and more.
+display: Brinqa
+name: Brinqa
+script:
+  commands:
+  - arguments:
+    - name: display_name
+      required: true
+    - name: limit
+    description: Queries hosts on brinqa
+    name: brinqa-query-hosts
+    outputs:
+    - contextPath: Brinqa.Hosts
+  - arguments: []
+    name: test-brinqa-connection
+  - arguments:
+    - defaultValue: Empty by Default
+      description: The "filter" string. ex.) "displayName CONTAINS <displayName>"
+      name: search
+    - defaultValue: id displayName
+      description: 'Fields to return, not comma separated ex.) "id displayName" '
+      name: fields
+    - defaultValue: '10'
+      name: limit
+    - description: the table to query
+      name: table
+      required: true
+    description: queries any table, use graphQL Explorer for queries
+    name: brinqa-query
+    outputs:
+    - contextPath: Brinqa.QueryResults
+    - {}
+  - arguments:
+    - defaultValue: id displayName
+      description: fields to return ex:) id displayName
+      name: fields
+    - description: known as "filter" ex) "displayName CONTAINS <displayName>"
+      name: search
+    - defaultValue: '10'
+      name: limit
+    description: queries vulnerabilities
+    name: brinqa-query-vulnerabilities
+    outputs:
+    - contextPath: Brinqa.Vulnerabilities
+  dockerimage: demisto/python3:3.12.8.3296088
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
