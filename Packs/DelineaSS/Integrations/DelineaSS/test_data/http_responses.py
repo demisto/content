@@ -185,7 +185,11 @@ FOLDER_UPDATE_RAW_RESPONSE = {
     "secretTemplates": "null",
 }
 
-USER_DELETE_RAW_RESPONSE = {"id": 5, "objectType": "User", "responseCodes": []}
+SECRET_SERVER_USER_DELETE_RAW_RESPONSE = {
+    "id": 5,
+    "objectType": "User",
+    "responseCodes": []
+}
 
 SECRET_CREATE_RAW_RESPONSE = {
     "accessRequestWorkflowMapId": -1,
@@ -243,7 +247,7 @@ SECRET_CREATE_RAW_RESPONSE = {
     "siteId": 1,
 }
 
-USER_CREATE_RAW_RESPONSE = {
+SECRET_SERVER_USER_CREATE_RAW_RESPONSE = {
     "adAccountExpires": "0001-01-01T00:00:00",
     "adGuid": "null",
     "created": "2022-06-01T08:31:15.275Z",
@@ -283,7 +287,7 @@ USER_CREATE_RAW_RESPONSE = {
     "verifyEmailSentDate": "0001-01-01T00:00:00",
 }
 
-USER_UPDATE_RAW_RESPONSE = {
+SECRET_SERVER_USER_UPDATE_RAW_RESPONSE = {
     "unixAuthenticationMethod": "Password",
     "enabled": "true",
     "passwordLastChanged": "0001-01-01T00:00:00",
@@ -353,38 +357,38 @@ SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE = {
 }
 
 SECRET_GET_CREDENTIALS_RAW_RESPONSE = {
-    "id": 4,
-    "name": "g1-machine",
-    "secretTemplateId": 6007,
-    "folderId": -1,
-    "active": True,
-    "items": [
+    'id': 4,
+    'name': 'g1-machine',
+    'secretTemplateId': 6007,
+    'folderId': -1,
+    'active': True,
+    'items': [
         {
-            "itemId": 14,
-            "fileAttachmentId": None,
-            "filename": None,
-            "itemValue": "user",
-            "fieldId": 111,
-            "fieldName": "Username",
-            "slug": "username",
-            "fieldDescription": "The Unix Machine Username.",
-            "isFile": False,
-            "isNotes": False,
-            "isPassword": False,
+            'itemId': 14,
+            'fileAttachmentId': None,
+            'filename': None,
+            'itemValue': 'user',
+            'fieldId': 111,
+            'fieldName': 'Username',
+            'slug': 'username',
+            'fieldDescription': 'The Unix Machine Username.',
+            'isFile': False,
+            'isNotes': False,
+            'isPassword': False
         },
         {
-            "itemId": 15,
-            "fileAttachmentId": None,
-            "filename": None,
-            "itemValue": "password",
-            "fieldId": 110,
-            "fieldName": "Password",
-            "slug": "password",
-            "fieldDescription": "The password of the Unix Machine.",
-            "isFile": False,
-            "isNotes": False,
-            "isPassword": True,
-        },
+            'itemId': 15,
+            'fileAttachmentId': None,
+            'filename': None,
+            'itemValue': 'password',
+            'fieldId': 110,
+            'fieldName': 'Password',
+            'slug': 'password',
+            'fieldDescription': 'The password of the Unix Machine.',
+            'isFile': False,
+            'isNotes': False,
+            'isPassword': True
+        }
     ],
     "launcherConnectAsSecretId": -1,
     "checkOutMinutesRemaining": 0,
@@ -569,7 +573,6 @@ SECRET_SEARCH_RAW_RESPONSE = {
     "severity": "None",
 }
 
-
 FOLDER_SEARCH_RAW_RESPONSE = {
     "filter": {
         "searchText": "admin",
@@ -595,8 +598,7 @@ FOLDER_SEARCH_RAW_RESPONSE = {
     "severity": "None",
 }
 
-
-USER_SEARCH_RAW_RESPONSE = {
+SECRET_SERVER_USER_SEARCH_RAW_RESPONSE = {
     "filter": {
         "searchText": None,
         "includeInactive": False,
@@ -637,4 +639,115 @@ USER_SEARCH_RAW_RESPONSE = {
     "sortBy": [{"name": "DomainId", "direction": "Asc", "priority": 0}, {"name": "UserName", "direction": "Asc", "priority": 1}],
     "success": True,
     "severity": "None",
+}
+
+PLATFORM_USER_DELETE_RAW_RESPONSE = {
+    "id": 5,
+    "objectType": "User",
+    "responseCodes": []
+}
+
+PLATFORM_USER_CREATE_RAW_RESPONSE = {
+    "MobileNumber": "null",
+    "AccountExp": "null",
+    "Disabled": False,
+    "SendEmailInvite": True,
+    "Name": "Name",
+    "DisplayName": "XSOAR'",
+    "PasswordNeverExpire": False,
+    "Mail": "example@example.com",
+    "CmaRedirectedUserUuid": "null",
+    "Password": "password",
+    "Groups": "Admins,Developers,Auditors",
+    "OfficeNumber": "null",
+    "ForcePasswordChangeNext": True,
+    "ReportsTo": "null",
+    "ServiceUser": False,
+    "Description": "Automation-created test user",
+    "HomeNumber": "null"
+}
+
+PLATFORM_USER_UPDATE_RAW_RESPONSE = {
+    "MobileNumber": "null",
+    "AccountExp": "null",
+    "Disabled": False,
+    "SendEmailInvite": True,
+    "Name": "Name",
+    "DisplayName": "XSOAR'",
+    "PasswordNeverExpire": False,
+    "Mail": "example@example.com",
+    "CmaRedirectedUserUuid": "null",
+    "Password": "password",
+    "Groups": "Admins,Developers,Auditors",
+    "OfficeNumber": "null",
+    "ForcePasswordChangeNext": True,
+    "ReportsTo": "null",
+    "ServiceUser": False,
+    "Description": "Automation-created test user",
+    "HomeNumber": "null"
+}
+
+PLATFORM_USER_GET_RAW_RESPONSE = {
+    "userUuidOrUpn": "10",
+    "name": "Automation User",
+    "displayName": "Automation User",
+    "mail": "user@example.com",
+    "description": "Test user returned from mocked API",
+    "disabled": False,
+    "serviceUser": False,
+    "mobileNumber": "null",
+    "officeNumber": "null",
+    "homeNumber": "null",
+    "groups": "null",
+    "reportsTo": "null"
+}
+
+PLATFORM_GET_ALL_USERS_RAW_RESPONSE = {
+    "_embedded": {
+        "users": [
+            {
+                "uuid": "user-111",
+                "name": "John Doe",
+                "displayName": "John Doe",
+                "mail": "john@example.com",
+                "description": "Test user 1",
+                "disabled": False,
+                "serviceUser": False
+            },
+            {
+                "uuid": "user-222",
+                "name": "Jane Smith",
+                "displayName": "Jane Smith",
+                "mail": "jane@example.com",
+                "description": "Test user 2",
+                "disabled": False,
+                "serviceUser": False
+            }
+        ]
+    }
+}
+
+PLATFORM_USER_SEARCH_TEXT_RAW_RESPONSE = {
+    "_embedded": {
+        "users": [
+            {
+                "uuid": "user-111",
+                "name": "John Doe",
+                "displayName": "John Doe",
+                "mail": "john@example.com",
+                "description": "Matched by search text",
+                "disabled": False,
+                "serviceUser": False
+            },
+            {
+                "uuid": "user-222",
+                "name": "Jane Smith",
+                "displayName": "Jane Smith",
+                "mail": "jane@example.com",
+                "description": "Test user 2",
+                "disabled": False,
+                "serviceUser": False
+            }
+        ]
+    }
 }

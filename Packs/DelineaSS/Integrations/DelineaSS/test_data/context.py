@@ -214,8 +214,12 @@ FOLDER_UPDATE_CONTEXT = {
     }
 }
 
-USER_DELETE_CONTEXT = {
-    "Delinea.User.Delete(val.user && val.user == obj.user)": {"id": 5, "objectType": "User", "responseCodes": []}
+SECRET_SERVER_USER_DELETE_CONTEXT = {
+    "Delinea.Secret.Server.User.Delete(val.user && val.user == obj.user)": {
+        "id": 5,
+        "objectType": "User",
+        "responseCodes": []
+    }
 }
 
 SECRET_CREATE_CONTEXT = {
@@ -276,8 +280,8 @@ SECRET_CREATE_CONTEXT = {
     }
 }
 
-USER_CREATE_CONTEXT = {
-    "Delinea.User.Create(val.user && val.user == obj.user)": {
+SECRET_SERVER_USER_CREATE_CONTEXT = {
+    "Delinea.Secret.Server.User.Create(val.user && val.user == obj.user)": {
         "adAccountExpires": "0001-01-01T00:00:00",
         "adGuid": "null",
         "created": "2022-06-01T08:31:15.275Z",
@@ -318,8 +322,8 @@ USER_CREATE_CONTEXT = {
     }
 }
 
-USER_UPDATE_CONTEXT = {
-    "Delinea.User.Update(val.user && val.user == obj.user)": {
+SECRET_SERVER_USER_UPDATE_CONTEXT = {
+    "Delinea.Secret.Server.User.Update(val.user && val.user == obj.user)": {
         "unixAuthenticationMethod": "Password",
         "enabled": "true",
         "passwordLastChanged": "0001-01-01T00:00:00",
@@ -399,14 +403,21 @@ SECRET_GET_CREDENTIALS_CONTEXT = {
 
 SECRET_SEARCH_NAME_CONTEXT = {"Delinea.Secret.Id(val.search_id && val.search_id == obj.search_id)": [3564, 3566, 4241]}
 
+SECRET_SEARCH_CONTEXT = {
+    'Delinea.Secret.Secret(val.search_secret && val.search_secret == obj.search_secret)': [
+        967,
+        966
+    ]
+}
 
-SECRET_SEARCH_CONTEXT = {"Delinea.Secret.Secret(val.search_secret && val.search_secret == obj.search_secret)": [967, 966]}
+FOLDER_SEARCH_CONTEXT = {
+    'Delinea.Folder.Id(val.folder_id && val.folder_id == obj.folder_id)': [
+        145
+    ]
+}
 
-
-FOLDER_SEARCH_CONTEXT = {"Delinea.Folder.Id(val.folder_id && val.folder_id == obj.folder_id)": [145]}
-
-USER_SEARCH_CONTEXT = {
-    "Delinea.User.Search(val.user && val.user == obj.user)": [
+SECRET_SERVER_USER_SEARCH_CONTEXT = {
+    'Delinea.Secret.Server.User.Search(val.user && val.user == obj.user)': [
         {
             "id": 236,
             "userName": "adil@jim",
@@ -423,6 +434,121 @@ USER_SEARCH_CONTEXT = {
             "twoFactorMethod": "None",
             "externalUserSource": "Platform",
             "platformIntegrationType": "Native",
+        }
+    ]
+}
+
+PLATFORM_USER_DELETE_CONTEXT = {
+    "Delinea.Platform.User.Delete(val.user && val.user == obj.user)": {
+        "id": 5,
+        "objectType": "User",
+        "responseCodes": []
+    }
+}
+
+PLATFORM_USER_CREATE_CONTEXT = {
+    "Delinea.Platform.User.Create(val.user && val.user == obj.user)": {
+        "MobileNumber": "null",
+        "AccountExp": "null",
+        "Disabled": False,
+        "SendEmailInvite": True,
+        "Name": "Name",
+        "DisplayName": "XSOAR'",
+        "PasswordNeverExpire": False,
+        "Mail": "example@example.com",
+        "CmaRedirectedUserUuid": "null",
+        "Password": "password",
+        "Groups": "Admins,Developers,Auditors",
+        "OfficeNumber": "null",
+        "ForcePasswordChangeNext": True,
+        "ReportsTo": "null",
+        "ServiceUser": False,
+        "Description": "Automation-created test user",
+        "HomeNumber": "null"
+    }
+}
+
+PLATFORM_USER_UPDATE_CONTEXT = {
+    "Delinea.Platform.User.Update(val.user && val.user == obj.user)": {
+        "MobileNumber": "null",
+        "AccountExp": "null",
+        "Disabled": False,
+        "SendEmailInvite": True,
+        "Name": "Name",
+        "DisplayName": "XSOAR'",
+        "PasswordNeverExpire": False,
+        "Mail": "example@example.com",
+        "CmaRedirectedUserUuid": "null",
+        "Password": "password",
+        "Groups": "Admins,Developers,Auditors",
+        "OfficeNumber": "null",
+        "ForcePasswordChangeNext": True,
+        "ReportsTo": "null",
+        "ServiceUser": False,
+        "Description": "Automation-created test user",
+        "HomeNumber": "null"
+    }
+}
+
+PLATFORM_USER_GET_CONTEXT = {
+    "Delinea.Platform.User.Get(val.uuid && val.uuid == obj.uuid)": {
+        "userUuidOrUpn": "10",
+        "name": "Automation User",
+        "displayName": "Automation User",
+        "mail": "user@example.com",
+        "description": "Test user returned from mocked API",
+        "disabled": False,
+        "serviceUser": False,
+        "mobileNumber": "null",
+        "officeNumber": "null",
+        "homeNumber": "null",
+        "groups": "null",
+        "reportsTo": "null"
+    }
+}
+
+PLATFORM_GET_ALL_USERS_CONTEXT = {
+    "Delinea.Platform.Get.All.Users(val.uuid && val.uuid == obj.uuid)": [
+        {
+            "uuid": "user-111",
+            "name": "John Doe",
+            "displayName": "John Doe",
+            "mail": "john@example.com",
+            "description": "Test user 1",
+            "disabled": False,
+            "serviceUser": False
+        },
+        {
+            "uuid": "user-222",
+            "name": "Jane Smith",
+            "displayName": "Jane Smith",
+            "mail": "jane@example.com",
+            "description": "Test user 2",
+            "disabled": False,
+            "serviceUser": False
+        }
+    ]
+}
+
+PLATFORM_USER_SEARCH_TEXT_CONTEXT = {
+    "Delinea.Platform.Get.User.Searchbytext(val.uuid && val.uuid == obj.uuid)": [
+        {
+            "uuid": "user-111",
+            "name": "John Doe",
+            "displayName": "John Doe",
+            "mail": "john@example.com",
+            "description": "Matched by search text",
+            "disabled": False,
+            "serviceUser": False
+        },
+        {
+            "uuid": "user-222",
+            "name": "Jane Smith",
+            "displayName": "Jane Smith",
+            "mail": "jane@example.com",
+            "description": "Test user 2",
+            "disabled": False,
+            "serviceUser": False
         }
     ]
 }
