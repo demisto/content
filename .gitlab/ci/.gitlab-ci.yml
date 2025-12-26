@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: CIAC-15281/trigger-ai-reviewer-from-prs
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: CIAC-15281/trigger-ai-reviewer-from-prs
     project: "${CI_PROJECT_NAMESPACE}/infra"
