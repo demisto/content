@@ -36,7 +36,7 @@ FEDRAMP_HOSTNAME_SUFFIX = "federal.paloaltonetworks.com"
 DEFAULT_API_URL = "https://api.us.cdl.paloaltonetworks.com"
 STANDARD_TOKEN_URL = "https://oproxy.demisto.ninja"  # guardrails-disable-line
 FEDRAMP_TOKEN_URL = (
-    "https://cortex-gateway-federal.paloaltonetworks.com/api/xdr_gateway/external_services/cdl"  # guardrails-disable-line
+    "https://cortex-gateway-dev.paloaltonetworks.com/api/xdr_gateway/external_services/cdl"  # guardrails-disable-line
 )
 
 MINUTES_60 = 60 * 60
@@ -73,7 +73,7 @@ class Client(BaseClient):
         self.refresh_token = refresh_token
         self.enc_key = enc_key
         self.use_ssl = use_ssl
-        self.use_fr_token_headers = bool(FEDRAMP_HOSTNAME_SUFFIX in token_retrieval_url)
+        self.use_fr_token_headers = True
         self.registration_id = registration_id
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
@@ -305,6 +305,49 @@ class Client(BaseClient):
                 extended_results.extend(data)
 
         return extended_results, raw_results
+
+
+    def _get_refresh_token_expiry(self) -> dict:
+        token = get_encrypted(self.refresh_token, self.enc_key)
+        if self.use_fr_token_headers:
+            demisto.debug("Using FedRAMP resource token request headers.")
+            data = {"encrypted_token": token, "registration_id": self.registration_id}
+        else:
+            demisto.debug("Using standard resource token request headers.")
+            data = {"token": token}
+
+        refresh_token_response = self._http_request(
+            "POST",
+            "/get_refresh_token_expiry",
+            json_data=data,
+            timeout=(60 * 3, 60 * 3),
+            retries=3,
+            backoff_factor=10,
+            status_list_to_retry=[400],
+        )
+
+        return refresh_token_response
+
+    def _get_new_refresh_token(self) -> dict:
+        token = get_encrypted(self.refresh_token, self.enc_key)
+        if self.use_fr_token_headers:
+            demisto.debug("Using FedRAMP resource token request headers.")
+            data = {"encrypted_token": token, "registration_id": self.registration_id}
+        else:
+            demisto.debug("Using standard resource token request headers.")
+            data = {"token": token}
+
+        refresh_token_response = self._http_request(
+            "POST",
+            "/get_new_refresh_token",
+            json_data=data,
+            timeout=(60 * 3, 60 * 3),
+            retries=3,
+            backoff_factor=10,
+            status_list_to_retry=[400],
+        )
+
+        return refresh_token_response
 
     def initial_query_service(self) -> QueryService:
         credentials = Credentials(access_token=self.access_token, verify=self.use_ssl)
@@ -1047,6 +1090,7 @@ def is_fedramp_tenant() -> bool:
     Returns:
         bool: True if FedRAMP tenant, False otherwise.
     """
+    return True
     # Try to get from integration context
     integration_context = demisto.getIntegrationContext()
     is_fedramp = integration_context.get(IS_FEDRAMP_CONST)
