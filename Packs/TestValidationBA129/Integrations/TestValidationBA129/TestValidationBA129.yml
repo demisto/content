@@ -1,0 +1,103 @@
+category: Analytics & SIEM
+commonfields:
+  id: TestValidationBA129
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  additionalinfo: The API Key to use for the connection
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Integration to test BA129 validation logic.
+display: TestValidationBA129
+name: TestValidationBA129
+script:
+  commands:
+  # 1. FAIL: Uses 'ip_list' (requires 'IP Blockage') but has no policies.
+  - name: ba129-should-fail-missing-policy
+    arguments:
+    - name: ip_list
+      description: List of IPs to block
+      required: true
+    description: This command should fail BA129 because it uses 'ip_list' without declaring 'IP Blockage'.
+    compliantpolicies: [] 
+    outputs:
+    - contextPath: Test.IP
+      description: The blocked IP
+      type: String
+
+  # 2. PASS: Uses 'ip_list' and correctly declares 'IP Blockage'.
+  - name: ba129-should-pass-valid
+    arguments:
+    - name: ip_list
+      description: List of IPs to block
+      required: true
+    description: This command should pass because it declares the required policy.
+    compliantpolicies: 
+    - IP Blockage
+    outputs: []
+
+  # 3. FAIL: Uses 'username' and 'ip_list'. Declares 'User Soft Remediation' but misses 'IP Blockage'.
+  - name: ba129-should-fail-partial-missing
+    arguments:
+    - name: username
+      description: The username
+      required: true
+    - name: ip_list
+      description: The IP list
+      required: true
+    description: This command should fail BA129 because 'IP Blockage' is missing.
+    compliantpolicies: 
+    - User Soft Remediation
+    outputs: []
+
+  # 4. PASS: Uses multiple arguments and declares all required policies.
+  - name: ba129-should-pass-multi
+    arguments:
+    - name: username
+      description: The username
+      required: true
+    - name: ip_list
+      description: The IP list
+      required: true
+    description: This command should pass because both policies are declared.
+    compliantpolicies: 
+    - User Soft Remediation
+    - IP Blockage
+    outputs: []
+
+  # 5. PASS: Argument 'verbose' is not associated with any policy.
+  - name: ba129-should-pass-no-policy-needed
+    arguments:
+    - name: verbose
+      description: Run in verbose mode
+      required: false
+    description: This command should pass because 'verbose' triggers no policy requirements.
+    compliantpolicies: []
+    outputs: []
+
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
