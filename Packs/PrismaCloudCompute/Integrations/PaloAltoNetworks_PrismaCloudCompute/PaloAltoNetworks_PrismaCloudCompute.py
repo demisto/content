@@ -691,7 +691,7 @@ def is_command_is_fetch():
         return not ctx.get("fetched_incidents_list", [])
 
 
-def fetch_incidents(client):
+def fetch_incidents(client, process_aggregated=False):
     """
     Fetches new alerts from Prisma Cloud Compute and returns them as a list of Demisto incidents
     - A markdown table will be added for alerts with a list object,
@@ -699,6 +699,7 @@ def fetch_incidents(client):
       incident "tableFieldMarkdownTable" representing the markdown table
     Args:
         client: Prisma Compute client
+        process_aggregated: Whether to process aggregated alerts (default: False for backward compatibility)
     Returns:
         list of incidents
     """
@@ -708,7 +709,31 @@ def fetch_incidents(client):
 
         incidents = []
         if alerts:
-            for a in alerts:
+            # Flatten aggregated alerts if the parameter is enabled
+            if process_aggregated:
+                flattened_alerts = []
+                for alert in alerts:
+                    aggregated = alert.pop("aggregatedAlerts", [])
+                    parent_message = alert.get("message", "")
+
+                    if aggregated:
+                        # Process each sub-alert in the aggregated list
+                        for sub_alert in aggregated:
+                            # Prepend parent message if it exists
+                            if parent_message:
+                                sub_alert["message"] = f'{parent_message}\n{sub_alert.get("message", "")}'
+                            flattened_alerts.append(sub_alert)
+                    else:
+                        # Not aggregated, use the alert as-is
+                        flattened_alerts.append(alert)
+
+                alerts_to_process = flattened_alerts
+            else:
+                # Process alerts as-is without flattening
+                alerts_to_process = alerts
+
+            # Process all alerts in a single loop
+            for a in alerts_to_process:
                 alert_type = a.get("kind")
                 name = ALERT_TITLE
                 severity = 0
@@ -2811,6 +2836,7 @@ def main():
     cert = params.get("certificate")
     proxy = params.get("proxy", False)
     reliability = params.get("integration_reliability", "")
+    process_aggregated = params.get("process_aggregated_alerts", False)
 
     # If checked to verify and given a certificate, save the certificate as a temp file
     # and set the path to the requests client
@@ -2839,7 +2865,7 @@ def main():
         elif requested_command == "fetch-incidents":
             # Fetch incidents from Prisma Cloud Compute
             # this method is called periodically when 'fetch incidents' is checked
-            incidents = fetch_incidents(client)
+            incidents = fetch_incidents(client, process_aggregated=process_aggregated)
             demisto.incidents(incidents)
         elif requested_command == "prisma-cloud-compute-profile-host-list":
             return_results(results=get_profile_host_list(client=client, args=demisto.args()))

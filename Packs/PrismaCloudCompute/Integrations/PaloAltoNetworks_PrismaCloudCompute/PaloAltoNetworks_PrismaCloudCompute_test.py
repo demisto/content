@@ -1738,3 +1738,343 @@ def test_remove_custom_ip_feeds(client, requests_mock, initial_ips, ips_arg, exp
         assert custom_ip_put_mock.called is False
     else:
         assert set(custom_ip_put_mock.last_request.json()["feed"]) == set(expected)
+
+
+def test_fetch_incidents_with_aggregated_alerts_disabled(requests_mock):
+    """
+    Given:
+        - Alerts with aggregatedAlerts field
+        - process_aggregated parameter set to False (default behavior)
+    When:
+        - Calling fetch_incidents
+    Then:
+        - Verify that aggregated alerts are NOT flattened
+        - Verify that only the parent alert is processed
+        - Verify backward compatibility is maintained
+    """
+    json_incidents_mock_response = [
+        {
+            "_id": "parent-alert-1",
+            "kind": "audit",
+            "message": "Parent alert message",
+            "time": "2020-01-09T10:49:24.675Z",
+            "type": "incident",
+            "aggregatedAlerts": [
+                {
+                    "_id": "sub-alert-1",
+                    "kind": "audit",
+                    "message": "Sub-alert 1 message",
+                    "time": "2020-01-09T10:49:25.675Z",
+                    "type": "incident",
+                },
+                {
+                    "_id": "sub-alert-2",
+                    "kind": "audit",
+                    "message": "Sub-alert 2 message",
+                    "time": "2020-01-09T10:49:26.675Z",
+                    "type": "incident",
+                },
+            ],
+        }
+    ]
+
+    requests_mock.get("https://test.com/xsoar-alerts", json=json_incidents_mock_response)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify="False", project="", auth=("test", "test"))
+
+    # Call with process_aggregated=False (default)
+    incidents = fetch_incidents(client, process_aggregated=False)
+
+    # Should only create 1 incident (the parent alert)
+    assert len(incidents) == 1
+    assert "Parent alert message" in incidents[0]["rawJSON"]
+
+    # When disabled, the aggregatedAlerts field is still present in the output
+    # (it gets converted to a markdown table by the existing code)
+    incident_data = json.loads(incidents[0]["rawJSON"])
+    assert incident_data["_id"] == "parent-alert-1"
+    assert "aggregatedAlertsMarkdownTable" in incident_data
+
+
+def test_fetch_incidents_with_aggregated_alerts_enabled(requests_mock):
+    """
+    Given:
+        - Alerts with aggregatedAlerts field
+        - process_aggregated parameter set to True
+    When:
+        - Calling fetch_incidents
+    Then:
+        - Verify that aggregated alerts ARE flattened
+        - Verify that each sub-alert creates a separate incident
+        - Verify that parent message is prepended to sub-alert messages
+    """
+    json_incidents_mock_response = [
+        {
+            "_id": "parent-alert-1",
+            "kind": "audit",
+            "category": "customRule",
+            "message": "Parent alert message",
+            "time": "2020-01-09T10:49:24.675Z",
+            "type": "incident",
+            "aggregatedAlerts": [
+                {
+                    "_id": "sub-alert-1",
+                    "kind": "audit",
+                    "category": "customRule",
+                    "message": "Sub-alert 1 message",
+                    "time": "2020-01-09T10:49:25.675Z",
+                    "type": "incident",
+                },
+                {
+                    "_id": "sub-alert-2",
+                    "kind": "audit",
+                    "category": "customRule",
+                    "message": "Sub-alert 2 message",
+                    "time": "2020-01-09T10:49:26.675Z",
+                    "type": "incident",
+                },
+            ],
+        }
+    ]
+
+    requests_mock.get("https://test.com/xsoar-alerts", json=json_incidents_mock_response)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify="False", project="", auth=("test", "test"))
+
+    # Call with process_aggregated=True
+    incidents = fetch_incidents(client, process_aggregated=True)
+
+    # Should create 2 incidents (one for each sub-alert)
+    assert len(incidents) == 2
+
+    # Verify first sub-alert
+    incident_1_data = json.loads(incidents[0]["rawJSON"])
+    assert incident_1_data["message"] == "Parent alert message\nSub-alert 1 message"
+    assert incident_1_data["_id"] == "sub-alert-1"
+
+    # Verify second sub-alert
+    incident_2_data = json.loads(incidents[1]["rawJSON"])
+    assert incident_2_data["message"] == "Parent alert message\nSub-alert 2 message"
+    assert incident_2_data["_id"] == "sub-alert-2"
+
+
+def test_fetch_incidents_with_mixed_alerts(requests_mock):
+    """
+    Given:
+        - Mix of aggregated and non-aggregated alerts
+        - process_aggregated parameter set to True
+    When:
+        - Calling fetch_incidents
+    Then:
+        - Verify that aggregated alerts are flattened
+        - Verify that non-aggregated alerts are processed as-is
+        - Verify correct total number of incidents
+    """
+    json_incidents_mock_response = [
+        {
+            "_id": "regular-alert-1",
+            "kind": "audit",
+            "category": "customRule",
+            "message": "Regular alert message",
+            "time": "2020-01-09T10:49:24.675Z",
+            "type": "incident",
+        },
+        {
+            "_id": "parent-alert-1",
+            "kind": "audit",
+            "category": "customRule",
+            "message": "Parent alert message",
+            "time": "2020-01-09T10:49:25.675Z",
+            "type": "incident",
+            "aggregatedAlerts": [
+                {
+                    "_id": "sub-alert-1",
+                    "kind": "audit",
+                    "category": "customRule",
+                    "message": "Sub-alert 1 message",
+                    "time": "2020-01-09T10:49:26.675Z",
+                    "type": "incident",
+                },
+                {
+                    "_id": "sub-alert-2",
+                    "kind": "audit",
+                    "category": "customRule",
+                    "message": "Sub-alert 2 message",
+                    "time": "2020-01-09T10:49:27.675Z",
+                    "type": "incident",
+                },
+            ],
+        },
+        {
+            "_id": "regular-alert-2",
+            "kind": "audit",
+            "category": "customRule",
+            "message": "Another regular alert",
+            "time": "2020-01-09T10:49:28.675Z",
+            "type": "incident",
+        },
+    ]
+
+    requests_mock.get("https://test.com/xsoar-alerts", json=json_incidents_mock_response)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify="False", project="", auth=("test", "test"))
+
+    # Call with process_aggregated=True
+    incidents = fetch_incidents(client, process_aggregated=True)
+
+    # Should create 4 incidents total (2 regular + 2 from aggregated)
+    assert len(incidents) == 4
+
+    # Verify regular alerts are present
+    incident_ids = [json.loads(inc["rawJSON"])["_id"] for inc in incidents]
+    assert "regular-alert-1" in incident_ids
+    assert "regular-alert-2" in incident_ids
+    assert "sub-alert-1" in incident_ids
+    assert "sub-alert-2" in incident_ids
+
+
+def test_fetch_incidents_with_empty_aggregated_alerts(requests_mock):
+    """
+    Given:
+        - Alert with empty aggregatedAlerts array
+        - process_aggregated parameter set to True
+    When:
+        - Calling fetch_incidents
+    Then:
+        - Verify that the parent alert is processed normally
+        - Verify no errors occur with empty aggregatedAlerts
+    """
+    json_incidents_mock_response = [
+        {
+            "_id": "parent-alert-1",
+            "kind": "audit",
+            "category": "customRule",
+            "message": "Parent alert message",
+            "time": "2020-01-09T10:49:24.675Z",
+            "type": "incident",
+            "aggregatedAlerts": [],
+        }
+    ]
+
+    requests_mock.get("https://test.com/xsoar-alerts", json=json_incidents_mock_response)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify="False", project="", auth=("test", "test"))
+
+    # Call with process_aggregated=True
+    incidents = fetch_incidents(client, process_aggregated=True)
+
+    # Should create 1 incident (the parent alert since aggregatedAlerts is empty)
+    assert len(incidents) == 1
+    incident_data = json.loads(incidents[0]["rawJSON"])
+    assert incident_data["_id"] == "parent-alert-1"
+    assert incident_data["message"] == "Parent alert message"
+
+
+def test_fetch_incidents_with_no_parent_message(requests_mock):
+    """
+    Given:
+        - Aggregated alert with no parent message
+        - process_aggregated parameter set to True
+    When:
+        - Calling fetch_incidents
+    Then:
+        - Verify that sub-alerts are processed without prepending empty parent message
+        - Verify sub-alert messages remain unchanged
+    """
+    json_incidents_mock_response = [
+        {
+            "_id": "parent-alert-1",
+            "kind": "audit",
+            "category": "customRule",
+            "message": "",
+            "time": "2020-01-09T10:49:24.675Z",
+            "type": "incident",
+            "aggregatedAlerts": [
+                {
+                    "_id": "sub-alert-1",
+                    "kind": "audit",
+                    "category": "customRule",
+                    "message": "Sub-alert 1 message",
+                    "time": "2020-01-09T10:49:25.675Z",
+                    "type": "incident",
+                },
+            ],
+        }
+    ]
+
+    requests_mock.get("https://test.com/xsoar-alerts", json=json_incidents_mock_response)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify="False", project="", auth=("test", "test"))
+
+    # Call with process_aggregated=True
+    incidents = fetch_incidents(client, process_aggregated=True)
+
+    # Should create 1 incident
+    assert len(incidents) == 1
+    incident_data = json.loads(incidents[0]["rawJSON"])
+    # Message should not have empty parent message prepended
+    assert incident_data["message"] == "Sub-alert 1 message"
+
+
+def test_fetch_incidents_aggregated_vulnerability_alerts(requests_mock):
+    """
+    Given:
+        - Vulnerability alerts with aggregatedAlerts
+        - process_aggregated parameter set to True
+    When:
+        - Calling fetch_incidents
+    Then:
+        - Verify that vulnerability alerts are properly flattened
+        - Verify severity is calculated correctly for each sub-alert
+    """
+    json_incidents_mock_response = [
+        {
+            "_id": "parent-vuln-1",
+            "kind": "vulnerability",
+            "imageName": "library/alpine:2.6",
+            "message": "Multiple vulnerabilities detected",
+            "time": "2020-01-09T10:53:23.865Z",
+            "aggregatedAlerts": [
+                {
+                    "_id": "vuln-sub-1",
+                    "kind": "vulnerability",
+                    "imageName": "library/alpine:2.6",
+                    "message": "CVE-2019-5747 detected",
+                    "time": "2020-01-09T10:53:24.865Z",
+                    "vulnerabilities": [
+                        {
+                            "cve": "CVE-2019-5747",
+                            "severity": "high",
+                            "packages": "busybox",
+                        }
+                    ],
+                },
+                {
+                    "_id": "vuln-sub-2",
+                    "kind": "vulnerability",
+                    "imageName": "library/alpine:2.6",
+                    "message": "CVE-2017-16544 detected",
+                    "time": "2020-01-09T10:53:25.865Z",
+                    "vulnerabilities": [
+                        {
+                            "cve": "CVE-2017-16544",
+                            "severity": "critical",
+                            "packages": "busybox",
+                        }
+                    ],
+                },
+            ],
+        }
+    ]
+
+    requests_mock.get("https://test.com/xsoar-alerts", json=json_incidents_mock_response)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify="False", project="", auth=("test", "test"))
+
+    # Call with process_aggregated=True
+    incidents = fetch_incidents(client, process_aggregated=True)
+
+    # Should create 2 incidents
+    assert len(incidents) == 2
+
+    # Verify both incidents are vulnerability type
+    assert all("Vulnerabilities" in inc["name"] for inc in incidents)
+
+    # Verify severity is set correctly (high=3, critical=4)
+    severities = [inc["severity"] for inc in incidents]
+    assert 3 in severities  # high
+    assert 4 in severities  # critical
