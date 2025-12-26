@@ -1334,8 +1334,12 @@ def convert_to_demisto_severity(severity: Optional[str]) -> float:
     if severity is None:
         return IncidentSeverity.LOW
 
-    return {"Informational": IncidentSeverity.INFO, "Low": IncidentSeverity.LOW, "Medium": IncidentSeverity.MEDIUM, "High": IncidentSeverity.HIGH}[severity]
-
+    return {
+            "Informational": IncidentSeverity.INFO,
+            "Low": IncidentSeverity.LOW,
+            "Medium": IncidentSeverity.MEDIUM,
+            "High": IncidentSeverity.HIGH,
+        }[severity]
 
 def get_included_severitires(severity: Optional[str]) -> list[str]:
     """Return list of severities that is equal or higher then provided
