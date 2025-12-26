@@ -2,7 +2,7 @@
     "name": "GoogleThreatIntelligence",
     "description": "Analyzes suspicious hashes, URLs, domains, and IP addresses, and fetch incidents as DTM Alerts or ASM Issues from the Google Threat Intelligence platform.",
     "support": "partner",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.1.0",
     "author": "Google",
     "url": "https://www.virustotal.com",
     "email": "contact@virustotal.com",
@@ -11,9 +11,9 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Alerts", 
-        "Attack", 
-        "Threat Intelligence", 
+        "Alerts",
+        "Attack",
+        "Threat Intelligence",
         "Threat Intelligence Management"
     ],
     "useCases": [
@@ -22,20 +22,20 @@
         "Hunting"
     ],
     "keywords": [
-        "Google", 
-        "Threat", 
-        "Intelligence", 
-        "Enrichment", 
-        "Alerting", 
-        "Alerts", 
-        "IOC", 
-        "DTM", 
-        "ASM", 
-        "GTI", 
-        "DTM Alerts", 
-        "ASM Issues", 
-        "Threat Intelligence", 
-        "Issues", 
+        "Google",
+        "Threat",
+        "Intelligence",
+        "Enrichment",
+        "Alerting",
+        "Alerts",
+        "IOC",
+        "DTM",
+        "ASM",
+        "GTI",
+        "DTM Alerts",
+        "ASM Issues",
+        "Threat Intelligence",
+        "Issues",
         "Data"
     ],
     "dependencies": {
@@ -43,9 +43,25 @@
             "mandatory": true,
             "display_name": "Core Alert Fields"
         },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
         "CommonTypes": {
             "mandatory": true,
             "display_name": "Common Types"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "CommonPlaybooks": {
+            "mandatory": false,
+            "display_name": "Common Playbooks"
         }
     },
     "marketplaces": [
@@ -63,7 +79,11 @@
     ],
     "displayedImages": [
         "CoreAlertFields",
-        "CommonTypes"
+        "CommonScripts",
+        "CommonTypes",
+        "ServiceNow",
+        "FiltersAndTransformers",
+        "CommonPlaybooks"
     ],
     "defaultDataSource": "GoogleThreatIntelligenceDTMAlerts"
 }

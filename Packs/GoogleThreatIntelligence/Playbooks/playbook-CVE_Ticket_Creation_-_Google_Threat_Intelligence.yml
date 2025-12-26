@@ -1,0 +1,1270 @@
+id: CVE Ticket Creation - Google Threat Intelligence
+version: -1
+name: CVE Ticket Creation - Google Threat Intelligence
+description: This playbook is used to create a ServiceNow ticket based on enriched CVE data, using the CVE exploitation state, risk rating, and CVSS score.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1adccaea-577c-4772-8f75-8acc197c36f3
+    type: start
+    task:
+      id: 1adccaea-577c-4772-8f75-8acc197c36f3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f0770579-f2c4-4822-8ece-80e6bc274501
+    type: regular
+    task:
+      id: f0770579-f2c4-4822-8ece-80e6bc274501
+      version: -1
+      name: Extract risk rating from CVE data
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: cve_risk_rating
+      value:
+        complex:
+          root: ${inputs.cve_data.attributes
+          accessor: risk_rating}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f6838e47-cf18-4477-80e9-bedcb6d687b8
+    type: regular
+    task:
+      id: f6838e47-cf18-4477-80e9-bedcb6d687b8
+      version: -1
+      name: Extract Exploitation State from CVE data
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: cve_exploitation_state
+      value:
+        complex:
+          root: ${inputs.cve_data.attributes
+          accessor: exploitation_state}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 64b077ac-4541-46e2-88b2-930162a1ca22
+    type: regular
+    task:
+      id: 64b077ac-4541-46e2-88b2-930162a1ca22
+      version: -1
+      name: Extract CVSS 4.0 Score from CVE data
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      force:
+        simple: "true"
+      key:
+        simple: cve_cvss_4_x_score
+      value:
+        complex:
+          root: ${inputs.cve_data.attributes.cvss
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ${inputs.cve_data.attributes.cvss}
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ${inputs.cve_data.attributes.cvss.cvssv4_x}
+                iscontext: true
+          accessor: cvssv4_x.score}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3caab645-39ab-48fb-86d6-c7ce23dcf3f2
+    type: condition
+    task:
+      id: 3caab645-39ab-48fb-86d6-c7ce23dcf3f2
+      version: -1
+      name: Validate conditions for creating a ServiceNow ticket.
+      description: |-
+        This task determines whether to create a ServiceNow ticket based on the enriched CVE information.
+
+        A ServiceNow ticket will be created when any of the following conditions are met:
+
+        - Exploitation State is Confirmed
+        - Risk Rating is High or Critical
+        - CVSS Score is ≥ 7
+
+         If the CVSS Score is between 4 and 7 (4 ≤ CVSS < 7), the incident will be assigned to an analyst instead of creating a ticket.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      4<= CVSS score <7:
+      - "10"
+      CVSS score >=7:
+      - "9"
+      Exploitation state Confirmed:
+      - "8"
+      Risk Rating HIGH or CRITICAL:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: Risk Rating HIGH or CRITICAL
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${cve_risk_rating}
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: ${cve_risk_rating}
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ${cve_risk_rating}
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CRITICAL
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: ${cve_risk_rating}
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+            iscontext: true
+          right:
+            value: {}
+    - label: Exploitation state Confirmed
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${cve_exploitation_state}
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ${cve_exploitation_state}
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Confirmed
+            iscontext: true
+    - label: CVSS score >=7
+      condition:
+      - - operator: isNotEqualNumber
+          left:
+            value:
+              complex:
+                root: ${cve_cvss_score}
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: ${cve_cvss_score}
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "7"
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    - label: 4<= CVSS score <7
+      condition:
+      - - operator: isNotEqualNumber
+          left:
+            value:
+              complex:
+                root: ${cve_cvss_score}
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: ${cve_cvss_score}
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "4"
+                - - operator: lessThan
+                    left:
+                      value:
+                        simple: ${cve_cvss_score}
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "7"
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5055f82c-a164-4e84-8a97-46b185feeda0
+    type: title
+    task:
+      id: 5055f82c-a164-4e84-8a97-46b185feeda0
+      version: -1
+      name: Risk Rating
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5ec1bdef-f157-4496-81a3-8fd394d14103
+    type: title
+    task:
+      id: 5ec1bdef-f157-4496-81a3-8fd394d14103
+      version: -1
+      name: Explotation state
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 24d7b685-bde4-40a4-8f7c-a2b9384c8400
+    type: title
+    task:
+      id: 24d7b685-bde4-40a4-8f7c-a2b9384c8400
+      version: -1
+      name: CVSS Score High
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a75ba396-a70f-467c-82ae-bfd76b322a96
+    type: title
+    task:
+      id: a75ba396-a70f-467c-82ae-bfd76b322a96
+      version: -1
+      name: CVSS Score Less
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: a61aa29a-8531-48ca-83fb-2a9aeed1a5e9
+    type: playbook
+    task:
+      id: a61aa29a-8531-48ca-83fb-2a9aeed1a5e9
+      version: -1
+      name: Create ServiceNow Ticket
+      description: "Create ServiceNow Ticket allows you to open new tickets as a task from a parent playbook.\nWhen creating the ticket, you can decide to update based on on the ticket's state, which will wait for the ticket to resolve or close with StatePolling. \nAlternatively, you can select to mirror the ServiceNow ticket and incident fields. To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options: \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none."
+      playbookName: Create ServiceNow Ticket
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+      - "21"
+      - "22"
+      - "23"
+      - "24"
+      - "25"
+      - "26"
+    scriptarguments:
+      Comment:
+        simple: |-
+          ServiceNow Incident creation from XSOAR automation:
+
+          Incident Summary:
+          This incident was created from XSOAR automation during CVE enrichment and requires analyst review.
+          CVE ID: ${inputs.cve_data.id}
+          Risk Rating: ${cve_risk_rating}
+          CVSS Score: ${cve_cvss_score}
+          Exploitation State: ${cve_exploitation_state}
+      FieldPolling:
+        simple: "false"
+      Impact:
+        complex:
+          root: ${cve_cvss_score}
+          transformers:
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: 7.0-10,4-6.99,0-3.99
+              map_to:
+                value:
+                  simple: 1,2,3
+              sep: {}
+      MirrorCommentTags:
+        simple: comments,work_notes,ForServiceNow
+      MirrorDirection:
+        simple: Both
+      'Severity ':
+        complex:
+          root: ${cve_cvss_score}
+          transformers:
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: 7.0-10,4-6.99,0-3.99
+              map_to:
+                value:
+                  simple: 1,2,3
+              sep: {}
+      ShortDescription:
+        simple: ${inputs.cve_data.attributes.name}
+      SyncTicket:
+        simple: Blank
+      TicketType:
+        simple: incident
+      Urgency:
+        complex:
+          root: ${cve_cvss_score}
+          transformers:
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: 7.0-10,4-6.99,0-3.99
+              map_to:
+                value:
+                  simple: 1,2,3
+              sep: {}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 239564dc-4d13-4bdc-82b1-b5138941bdba
+    type: regular
+    task:
+      id: 239564dc-4d13-4bdc-82b1-b5138941bdba
+      version: -1
+      name: Assign an analyst to the incident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      onCall:
+        complex:
+          root: inputs.OnCall
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 3502c294-62ae-4540-8186-089d4c729433
+    type: title
+    task:
+      id: 3502c294-62ae-4540-8186-089d4c729433
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c3661621-1c4e-49cb-8626-1c53bb1c8316
+    type: regular
+    task:
+      id: c3661621-1c4e-49cb-8626-1c53bb1c8316
+      version: -1
+      name: Extract CVSS 3.0 base score from CVE data
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      force:
+        simple: "true"
+      key:
+        simple: cve_cvss_3_x_score
+      value:
+        complex:
+          root: ${inputs.cve_data.attributes.cvss
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ${inputs.cve_data.attributes.cvss}
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ${inputs.cve_data.attributes.cvss.cvssv3_x}
+                iscontext: true
+          accessor: cvssv3_x.base_score}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: ef1733be-ffe0-458d-87b0-9875811dc482
+    type: regular
+    task:
+      id: ef1733be-ffe0-458d-87b0-9875811dc482
+      version: -1
+      name: Calculate CVSS score
+      description: This task calculates the CVE score based on the CVSS information. It will use the CVSS 4.x score if it is available; otherwise, it will use the CVSS 3.x base score.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: cve_cvss_score
+      value:
+        complex:
+          root: ${cve_cvss_4_x_score}
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: ${cve_cvss_4_x_score}
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ${cve_cvss_4_x_score}
+                iscontext: true
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${cve_cvss_3_x_score}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 7289c293-36e8-4822-8a9d-3709d46b5d45
+    type: regular
+    task:
+      id: 7289c293-36e8-4822-8a9d-3709d46b5d45
+      version: -1
+      name: Extract CVE Priority from CVE data
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: cve_priority
+      value:
+        complex:
+          root: ${inputs.cve_data.attributes
+          accessor: priority}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1220,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: faaa3ba6-caa5-4416-8e3a-c53af4dc40c8
+    type: regular
+    task:
+      id: faaa3ba6-caa5-4416-8e3a-c53af4dc40c8
+      version: -1
+      name: Extract CVE name from CVE data
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: cve_name
+      value:
+        complex:
+          root: ${inputs.cve_data.attributes
+          accessor: name}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: abddb3d4-ddad-4839-86a2-7f57e81962e1
+    type: regular
+    task:
+      id: abddb3d4-ddad-4839-86a2-7f57e81962e1
+      version: -1
+      name: Extract Executive Summary from CVE data
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: cve_executive_summary
+      value:
+        complex:
+          root: ${inputs.cve_data.attributes
+          accessor: executive_summary}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 1e9c5b71-c82a-4dd9-83c1-16b62c537521
+    type: regular
+    task:
+      id: 1e9c5b71-c82a-4dd9-83c1-16b62c537521
+      version: -1
+      name: Extract Description from CVE data
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: cve_description
+      value:
+        complex:
+          root: ${inputs.cve_data.attributes
+          accessor: description}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 143f32cb-ef78-470f-815d-a3403733e50c
+    type: regular
+    task:
+      id: 143f32cb-ef78-470f-815d-a3403733e50c
+      version: -1
+      name: 'Extract CVE 3.0 vector from CVE data '
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: cve_3_0_vector
+      value:
+        complex:
+          root: ${inputs.cve_data.attributes.cvss.cvssv3_x
+          accessor: vector}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: a6b545b8-c6ff-4e1e-87d1-2400c928ec8e
+    type: regular
+    task:
+      id: a6b545b8-c6ff-4e1e-87d1-2400c928ec8e
+      version: -1
+      name: Extract CVE link from CVE data
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: cve_link
+      value:
+        complex:
+          root: ${inputs.cve_data.links
+          accessor: self}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 90808756-d4a1-4b4d-8df2-e4eaa5a991f8
+    type: regular
+    task:
+      id: 90808756-d4a1-4b4d-8df2-e4eaa5a991f8
+      version: -1
+      name: 'Extract CVE 4.0 vector from CVE data '
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: cve_4_0_vector
+      value:
+        complex:
+          root: ${inputs.cve_data.attributes.cvss.cvssv4_x
+          accessor: vector}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 364e583e-d6fa-4624-8bba-67c09afeb5e4
+    type: regular
+    task:
+      id: 364e583e-d6fa-4624-8bba-67c09afeb5e4
+      version: -1
+      name: Update description of ServiceNow ticket
+      description: Updates the specified ticket.
+      script: '|||servicenow-update-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      description:
+        simple: |-
+          ************************************************************
+          CVE Ticket Creation from XSOAR Platform
+          ************************************************************
+
+          The following fields were extracted from the CVE data:
+
+          Name: ${cve_name}
+
+          CVE Link: ${cve_link}
+
+          CVE 3.x Base Score: ${cve_cvss_3_x_score}
+
+          CVE 3.x Vector: ${cve_3_0_vector}
+
+          CVE 4.x Score: ${cve_cvss_4_x_score}
+
+          CVE 4.x Vector: ${cve_4_0_vector}
+
+          CVE ID: ${inputs.cve_data.id}
+
+          Priority: ${cve_priority}
+
+          Risk Rating: ${cve_risk_rating}
+
+          Exploitation State: ${cve_exploitation_state}
+
+          Executive Summary: ${cve_executive_summary}
+
+          Description: ${cve_description}
+      id:
+        complex:
+          root: ${ServiceNow.Ticket
+          accessor: ID}
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 6cacae1f-9466-4e57-877f-b2b189a98e9a
+    type: regular
+    task:
+      id: 6cacae1f-9466-4e57-877f-b2b189a98e9a
+      version: -1
+      name: Clear Previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "4"
+      - "3"
+      - "18"
+    scriptarguments:
+      key:
+        simple: cve_cvss_3_x_score,cve_cvss_4_x_score,cve_exploitation_state,cve_risk_rating,cve_cvss_score,cve_3_0_vector,cve_4_0_vector,cve_link,cve_description,cve_executive_summary,cve_name,cve_priority
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 6c829eec-5b0f-4add-8e8f-749cdfd822dc
+    type: condition
+    task:
+      id: 6c829eec-5b0f-4add-8e8f-749cdfd822dc
+      version: -1
+      name: Is ServiceNow v2 integration enabled?
+      description: Checks whether ServiceNow v2 integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "29_17_#default#": 0.19,
+      "6_10_4\u003c= CVSS score \u003c7": 0.9,
+      "6_17_#default#": 0.33,
+      "6_7_Risk Rating HIGH or CRITICAL": 0.9,
+      "6_8_Exploitation state Confirmed": 0.87,
+      "6_9_CVSS score \u003e=7": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2715,
+        "width": 3110,
+        "x": -1220,
+        "y": -330
+      }
+    }
+  }
+inputs:
+- key: cve_data
+  value: {}
+  required: false
+  description: Enriched CVE information from the main playbook.
+  playbookInputQuery:
+- key: onCall
+  value:
+    simple: "false"
+  required: false
+  description: Set to true to assign only the user that is currently on shift. Default is False.
+  playbookInputQuery:
+outputs: []
+tests:
+- GoogleThreatIntelligence-test
+fromversion: 6.10.0

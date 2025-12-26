@@ -7,6 +7,7 @@ API Documentation:
     https://gtidocs.virustotal.com/reference
 """
 import ipaddress
+import re
 from collections import defaultdict
 from typing import cast
 
@@ -22,6 +23,7 @@ INDICATOR_TYPE = {
     "domain": FeedIndicatorType.Domain,
     "file": FeedIndicatorType.File,
     "url": FeedIndicatorType.URL,
+    "cve": FeedIndicatorType.CVE,
 }
 
 SEVERITY_LEVELS = {
@@ -107,6 +109,7 @@ RELATIONSHIP_TYPE = {
         "referrer_files": EntityRelationship.Relationships.EMBEDDED_IN,
         "referrer_urls": EntityRelationship.Relationships.RELATED_TO,
     },
+    "cve": {"referrer_cve": EntityRelationship.Relationships.RELATED_TO},
 }
 
 
@@ -174,6 +177,23 @@ class Client(BaseClient):
             https://gtidocs.virustotal.com/reference/domain-info
         """
         return self._http_request("GET", f"domains/{domain}?relationships={relationships}", ok_codes=(404, 429, 200))
+
+    def cve(self, cve_id: str) -> dict:
+        """
+        Get CVE (vulnerability) information from Google Threat Intelligence.
+
+        Args:
+            cve_id: CVE identifier (e.g., "CVE-2025-62173")
+
+        Returns:
+            dict: CVE information from the collections endpoint
+
+        See Also:
+            https://gtidocs.virustotal.com/reference/collections
+        """
+        # Format: vulnerability--cve-2025-62173
+        object_id = f"vulnerability--{cve_id.lower()}"
+        return self._http_request("GET", f"collections/{object_id}", ok_codes=(404, 429, 200))
 
     # endregion
 
@@ -817,6 +837,31 @@ class ScoreCalculator:
 
         return score
 
+    def calculate_cve_dbot_score(self, cvss_score) -> int:
+        """Calculates the DBotScore for a CVE based on its CVSS score.
+
+        Args:
+            cvss_score: The CVSS score of the CVE.
+
+        Returns:
+            DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS or
+            Common.DBotScore.GOOD
+        """
+        try:
+            score = float(cvss_score)
+        except ValueError:
+            return Common.DBotScore.NONE
+        if not score:
+            return Common.DBotScore.NONE
+        elif 0.0 <= score <= 3.9:
+            return Common.DBotScore.GOOD
+        elif 3.9 < score <= 7.9:
+            return Common.DBotScore.SUSPICIOUS
+        elif 7.9 < score <= 10.0:
+            return Common.DBotScore.BAD
+        else:
+            return Common.DBotScore.NONE
+
     # endregion
 
 
@@ -862,6 +907,44 @@ def create_relationships(entity_a: str, entity_a_type: str, relationships_respon
                     demisto.info(
                         f"WARNING: Relationships will not be created to entity A {entity_a} with relationship name {name}"
                     )
+    return relationships_list
+
+
+def create_relationships_cve(
+    entity_a: str, entity_a_type: str, relationships_response: dict, reliability
+) -> List[EntityRelationship]:
+    """
+    Create relationships between CVE and related files (MD5 hashes from sources)
+
+    Args:
+        cve_id: The CVE identifier (e.g., "CVE-2025-13796")
+        cve_response: The CVE API response containing sources
+        reliability: The reliability of the source
+
+    Returns:
+        List of EntityRelationship objects
+    """
+    relationships_list: List[EntityRelationship] = []
+
+    # Extract sources from CVE response
+    sources = relationships_response.get("data", {}).get("attributes", {}).get("sources", [])
+
+    for source in sources:
+        md5_hash = source.get("md5")
+
+        if md5_hash:  # Only create relationship if MD5 exists
+            relationships_list.append(
+                EntityRelationship(
+                    entity_a=entity_a,
+                    entity_a_type=entity_a_type,
+                    name=RELATIONSHIP_TYPE.get("cve", {}).get("referrer_cve"),
+                    entity_b=md5_hash,
+                    entity_b_type=FeedIndicatorType.File,
+                    source_reliability=reliability,
+                    brand=INTEGRATION_NAME,
+                )
+            )
+
     return relationships_list
 
 
@@ -922,8 +1005,8 @@ def decrease_data_size(data: Union[dict, list]) -> Union[dict, list]:
 
 def _get_error_result(client: Client, ioc_id: str, ioc_type: str, message: str) -> CommandResults:
     dbot_type = ioc_type.upper()
-    assert dbot_type in ("FILE", "DOMAIN", "IP", "URL")
-    common_type = dbot_type if dbot_type in ("IP", "URL") else dbot_type.capitalize()
+    assert dbot_type in ("FILE", "DOMAIN", "IP", "URL", "CVE")
+    common_type = dbot_type if dbot_type in ("IP", "URL", "CVE") else dbot_type.capitalize()
     desc = f'{common_type} "{ioc_id}" {message}'
     dbot = Common.DBotScore(
         ioc_id, getattr(DBotScoreType, dbot_type), INTEGRATION_NAME, Common.DBotScore.NONE, desc, client.reliability
@@ -932,6 +1015,8 @@ def _get_error_result(client: Client, ioc_id: str, ioc_type: str, message: str) 
     if dbot_type == "FILE":
         if (hash_type := get_hash_type(ioc_id)) != "Unknown":
             options[hash_type] = ioc_id
+    elif dbot_type == "CVE":
+        options.update({"id": ioc_id, "cvss": "0.0", "published": "", "modified": "", "description": desc})
     else:
         options[dbot_type.lower()] = ioc_id
     return CommandResults(indicator=getattr(Common, common_type)(**options), readable_output=desc)
@@ -1004,6 +1089,18 @@ def build_skipped_enrichment_ip_output(client: Client, ip: str) -> CommandResult
     return _get_error_result(
         client, ip, "ip", "was not enriched. Reputation lookups have been disabled for private IP addresses."
     )
+
+
+def build_unknown_cve_output(client: Client, cve_id: str) -> CommandResults:
+    return build_unknown_output(client, cve_id, "cve")
+
+
+def build_quota_exceeded_cve_output(client: Client, cve_id: str) -> CommandResults:
+    return build_quota_exceeded_output(client, cve_id, "cve")
+
+
+def build_error_cve_output(client: Client, cve_id: str, error_msg: str = None) -> CommandResults:
+    return build_error_output(client, cve_id, "cve", error_msg)
 
 
 def _get_domain_indicator(client: Client, score_calculator: ScoreCalculator, domain: str, raw_response: dict):
@@ -1170,6 +1267,132 @@ def _get_file_indicator(client: Client, score_calculator: ScoreCalculator, file_
         ),
         relationships=relationships_list,
     )
+
+
+def _extract_cve_data(raw_response: dict) -> dict:
+    """
+    Extract and process CVE data from API response.
+
+    Args:
+        raw_response: Raw API response from CVE endpoint
+
+    Returns:
+        Dictionary containing processed CVE data
+    """
+    data = raw_response.get("data", {})
+    attributes = data.get("attributes", {})
+
+    # Extract CVE-specific information
+    description = attributes.get("description", "")
+    executive_summary = attributes.get("executive_summary", "")
+
+    # CVSS scores
+    cvss = attributes.get("cvss", {})
+    cvss_v3 = cvss.get("cvssv3_x", {})
+    cvss_v4 = cvss.get("cvssv4_x", {})
+    cvss_v3_score = cvss_v3.get("base_score", 0) if cvss_v3 else 0
+    cvss_v4_score = cvss_v4.get("score", 0) if cvss_v4 else 0
+    cvss_v3_vector = cvss_v3.get("vector", "") if cvss_v3 else ""
+    cvss_v4_vector = cvss_v4.get("vector", "") if cvss_v4 else ""
+
+    # Risk and exploitation information
+    risk_rating = attributes.get("risk_rating", "")
+    exploitation_state = attributes.get("exploitation_state", "")
+    exploit_availability = attributes.get("exploit_availability", "")
+    priority = attributes.get("priority", "")
+
+    # Process dates
+    creation_date = attributes.get("creation_date")
+    date_of_disclosure = attributes.get("date_of_disclosure")
+    last_modification_date = attributes.get("last_modification_date")
+
+    if creation_date:
+        creation_date = timestamp_to_datestring(creation_date * 1000)
+    if last_modification_date:
+        last_modification_date = timestamp_to_datestring(last_modification_date * 1000)
+    if date_of_disclosure:
+        date_of_disclosure = timestamp_to_datestring(date_of_disclosure * 1000)
+
+    # Sources and counters
+    sources = attributes.get("sources", [])
+    tags = attributes.get("tags", [])
+    counters = attributes.get("counters", {})
+
+    extracted_data = {
+        "description": description,
+        "executive_summary": executive_summary,
+        "cvss_v3_score": cvss_v3_score,
+        "cvss_v4_score": cvss_v4_score,
+        "cvss_v3_vector": cvss_v3_vector,
+        "cvss_v4_vector": cvss_v4_vector,
+        "risk_rating": risk_rating,
+        "exploitation_state": exploitation_state,
+        "exploit_availability": exploit_availability,
+        "priority": priority,
+        "creation_date": creation_date,
+        "date_of_disclosure": date_of_disclosure,
+        "last_modification_date": last_modification_date,
+        "sources_count": len(sources),
+        "tags": tags,
+        "files_count": counters.get("files"),
+        "domains_count": counters.get("domains"),
+        "ip_addresses_count": counters.get("ip_addresses"),
+        "urls_count": counters.get("urls"),
+    }
+
+    return extracted_data
+
+
+def _create_cve_indicator(
+    client: Client, score_calculator: ScoreCalculator, cve_id: str, cve_data: dict, raw_response: dict
+) -> tuple[Common.CVE, list]:
+    """
+    Create CVE indicator with relationships and DBot score.
+
+    Args:
+        client: Client instance
+        score_calculator: Score calculator instance
+        cve_id: CVE identifier
+        cve_data: Processed CVE data from _extract_cve_data
+        raw_response: Raw API response
+
+    Returns:
+        Tuple of (CVE indicator, relationships list)
+    """
+    # Calculate DBot score
+    cvss_score = cve_data.get("cvss_v4_score") if cve_data.get("cvss_v4_score") else cve_data.get("cvss_v3_score")
+    score = score_calculator.calculate_cve_dbot_score(cvss_score)
+
+    dbot_score = Common.DBotScore(
+        indicator=cve_id,
+        indicator_type=DBotScoreType.CVE,
+        integration_name=INTEGRATION_NAME,
+        score=score,
+        reliability=client.reliability,
+    )
+
+    # Create relationships
+    relationships = create_relationships_cve(
+        entity_a=cve_id, entity_a_type=FeedIndicatorType.CVE, relationships_response=raw_response, reliability=client.reliability
+    )
+
+    # Create CVE indicator
+    cve_indicator = Common.CVE(
+        id=cve_id,
+        cvss=str(cvss_score) if cvss_score else "0.0",
+        published=cve_data.get("date_of_disclosure", ""),
+        modified=cve_data.get("last_modification_date", ""),
+        description=cve_data.get("description", "No description available"),
+        cvss_vector=cve_data.get("cvss_v4_vector", "")
+        if cve_data.get("cvss_v4_vector", "")
+        else cve_data.get("cvss_v3_vector", ""),
+        dbot_score=dbot_score,
+        relationships=relationships,
+        tags=cve_data.get("tags", ""),
+        stix_id=cve_id,
+    )
+
+    return cve_indicator, relationships
 
 
 def build_domain_output(
@@ -1444,6 +1667,88 @@ def build_file_output(
     )
 
 
+def build_cve_output(client: Client, score_calculator: ScoreCalculator, cve_id: str, raw_response: dict) -> CommandResults:
+    """
+    Build CommandResults for CVE data from collections endpoint.
+
+    Args:
+        client: Client instance
+        score_calculator: Score calculator instance
+        cve_id: CVE identifier
+        raw_response: Raw API response
+
+    Returns:
+        CommandResults with CVE information
+    """
+    # Extract and process CVE data
+    cve_data = _extract_cve_data(raw_response)
+
+    # Create CVE indicator and relationships
+    cve_indicator, relationships = _create_cve_indicator(client, score_calculator, cve_id, cve_data, raw_response)
+
+    context_data = remove_empty_elements(raw_response.get("data", {}))
+
+    # Prepare human-readable output
+    hr_data = {
+        "CVE ID": cve_id,
+        "Description": cve_data.get("description", ""),
+        "Executive Summary": cve_data.get("executive_summary", ""),
+        "Risk Rating": cve_data.get("risk_rating", ""),
+        "Priority": cve_data.get("priority", ""),
+        "CVSS v3.x Score": cve_data.get("cvss_v3_score"),
+        "CVSS v3.x Vector": cve_data.get("cvss_v3_vector"),
+        "CVSS v4.x Score": cve_data.get("cvss_v4_score"),
+        "CVSS v4.x Vector": cve_data.get("cvss_v4_vector"),
+        "Exploitation State": cve_data.get("exploitation_state"),
+        "Exploit Availability": cve_data.get("exploit_availability"),
+        "Date Of Disclosure": cve_data.get("date_of_disclosure", ""),
+        "Creation Date": cve_data.get("creation_date", ""),
+        "Last Modified": cve_data.get("last_modification_date", ""),
+        "Sources": cve_data.get("sources_count"),
+        "Related Files": cve_data.get("files_count"),
+        "Related Domains": cve_data.get("domains_count"),
+        "Related IPs": cve_data.get("ip_addresses_count"),
+        "Related URLs": cve_data.get("urls_count"),
+    }
+
+    hr_for_cve = tableToMarkdown(
+        f"CVE Information: {cve_id}",
+        hr_data,
+        removeNull=True,
+        headers=[
+            "CVE ID",
+            "Risk Rating",
+            "Priority",
+            "Exploitation State",
+            "Exploit Availability",
+            "CVSS v3.x Score",
+            "CVSS v4.x Score",
+            "CVSS v3.x Vector",
+            "CVSS v4.x Vector",
+            "Date Of Disclosure",
+            "Creation Date",
+            "Last Modified",
+            "Sources",
+            "Description",
+            "Related Files",
+            "Related Domains",
+            "Related IPs",
+            "Related URLs",
+            "Executive Summary",
+        ],
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{INTEGRATION_ENTRY_CONTEXT}.CVE",
+        outputs_key_field="id",
+        indicator=cve_indicator,
+        readable_output=hr_for_cve,
+        outputs=context_data,
+        raw_response=raw_response,
+        relationships=relationships,
+    )
+
+
 def build_private_file_output(file_hash: str, raw_response: dict) -> CommandResults:
     data = raw_response.get("data", {})
     attributes = data.get("attributes", {})
@@ -1529,6 +1834,33 @@ def get_file_context(entry_id: str) -> dict:
     if isinstance(context, list):
         return context[0]
     return context
+
+
+def validate_cve_values(cve_ids: list[str]) -> tuple[list[str], list[str]]:
+    """
+    Validate CVE format and return valid/invalid CVE lists.
+
+    Args:
+        cve_ids: List of CVE identifiers to validate
+
+    Returns:
+        Tuple of (valid_cves, invalid_cves)
+    """
+
+    valid_cves = []
+    invalid_cves = []
+
+    # CVE format: CVE-YYYY-NNNNN (where YYYY is year, NNNNN is 4+ digits)
+    cve_pattern = re.compile(r"^CVE-\d{4}-\d{4,}$", re.IGNORECASE)
+
+    for cve_id in cve_ids:
+        normalized_cve = cve_id.upper().strip()
+        if cve_pattern.match(normalized_cve):
+            valid_cves.append(normalized_cve)
+        else:
+            invalid_cves.append(cve_id)
+
+    return valid_cves, invalid_cves
 
 
 def raise_if_ip_not_valid(ip: str):
@@ -1731,6 +2063,61 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
             continue
         execution_metrics.success += 1
         results.append(build_url_output(client, score_calculator, url, raw_response, extended_data))
+    if execution_metrics.is_supported():
+        _metric_results = execution_metrics.metrics
+        metric_results = cast(CommandResults, _metric_results)
+        results.append(metric_results)
+    return results
+
+
+def cve_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> List[CommandResults]:
+    """
+    Get CVE information from Google Threat Intelligence collections endpoint.
+
+    Args:
+        client: Client instance
+        args: Command arguments containing 'cve' parameter
+
+    Returns:
+        List of CommandResults with CVE information
+    """
+    cve_ids = argToList(args.get("cve", []))
+    cve_ids = [cve_id.strip() for cve_id in cve_ids if cve_id.strip()]
+
+    results: List[CommandResults] = []
+    execution_metrics = ExecutionMetrics()
+
+    # Validate CVE format (CVE-YYYY-NNNNN)
+    valid_cves, invalid_cves = validate_cve_values(cve_ids)
+
+    if invalid_cves:
+        return_warning(
+            "The following CVEs were found invalid: {}".format(", ".join(invalid_cves)), exit=len(invalid_cves) == len(cve_ids)
+        )
+
+    for cve_id in valid_cves:
+        # Normalize CVE ID to uppercase
+        cve_id = cve_id.upper().strip()
+
+        try:
+            raw_response = client.cve(cve_id)
+
+            if raw_response.get("error", {}).get("code") == "QuotaExceededError":
+                execution_metrics.quota_error += 1
+                results.append(build_quota_exceeded_cve_output(client, cve_id))
+                continue
+            if raw_response.get("error", {}).get("code") == "NotFoundError":
+                results.append(build_unknown_cve_output(client, cve_id))
+                continue
+        except Exception as exc:
+            # If anything happens, just keep going
+            demisto.debug(f'Could not process CVE: "{cve_id}".\n {exc!s}')
+            execution_metrics.general_error += 1
+            results.append(build_error_cve_output(client, cve_id, str(exc)))
+            continue
+        execution_metrics.success += 1
+        results.append(build_cve_output(client, score_calculator, cve_id, raw_response))
+
     if execution_metrics.is_supported():
         _metric_results = execution_metrics.metrics
         metric_results = cast(CommandResults, _metric_results)
@@ -2747,6 +3134,8 @@ def main(params: dict, args: dict, command: str):
         results = url_command(client, score_calculator, args, url_relationships)
     elif command == "domain":
         results = domain_command(client, score_calculator, args, domain_relationships)
+    elif command == "cve":
+        results = cve_command(client, score_calculator, args)
     elif command == f"{COMMAND_PREFIX}-file-sandbox-report":
         results = file_sandbox_report_command(client, args)
     elif command == f"{COMMAND_PREFIX}-passive-dns-data":
