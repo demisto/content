@@ -52,6 +52,8 @@ args:
   predefined:
   - 'true'
   - 'false'
+  hidden:xsoar: false
+  hidden: true
 - defaultValue: '0.99'
   description: Threshold to consider incident as duplication, number between 0-1.
   name: threshold
