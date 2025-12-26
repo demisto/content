@@ -120,30 +120,31 @@ Get paginated list of tags
  "total": 10}
 ```
 
-### ctix-delete-tag
+### ctix-disable-or-enable-tags
 
 ***
-Delete a tag with given tag_name
+Disable or enable tags in the CTIX platform
 
 #### Base Command
 
-`ctix-delete-tag`
+`ctix-disable-or-enable-tags`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag_name | Name of the tag. | Required |
+| tag_id | ID of the tag(s) to disable or enable. Supports multiple IDs as a comma-separated list. | Required |
+| action | Action to be performed on the tag. Possible values are: enabled, disabled. Default is disabled. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.DeleteTag.result | string | Status |
+| CTIX.TagAction.result | string | Status of the tag action |
 
 #### Command Example
 
-```!ctix-delete-tag tag_name=xsoar_test_trial```
+```!ctix-disable-or-enable-tags tag_id=47662c77-b419-419c-9bcf-420e05b01067 action=disabled```
 
 #### Context Example
 
