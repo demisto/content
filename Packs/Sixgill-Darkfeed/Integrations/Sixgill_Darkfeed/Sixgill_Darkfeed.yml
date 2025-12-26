@@ -121,10 +121,10 @@ script:
       defaultValue: '50'
       description: The maximum number of results to return.
       name: limit
-    description: Fetching Sixgill DarkFeed indicators
+    description: Fetching Sixgill DarkFeed indicators.
     execution: true
     name: sixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.3557591
+  dockerimage: demisto/sixgill:1.0.0.4887903
   feed: true
   runonce: false
   subtype: python3
