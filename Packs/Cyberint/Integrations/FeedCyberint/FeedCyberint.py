@@ -36,9 +36,9 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.10",
+            "X-Integration-Version": "1.1.13",
         }
-        super().__init__(base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url, verify=verify, proxy=proxy, headers=self._headers)
 
     @logger
     def request_daily_feed(
