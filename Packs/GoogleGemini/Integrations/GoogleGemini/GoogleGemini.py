@@ -9,6 +9,7 @@ from CommonServerUserPython import *  # noqa
 
 """ IMPORTS """
 import json
+import time  # Issue 1: Added time import for problematic sleep usage
 from typing import Any
 from uuid import uuid4
 
@@ -64,6 +65,7 @@ class Client(BaseClient):
         :param top_p: Default top-p value for response generation.
         :param top_k: Default top-k value for response generation.
         """
+        # Issue 2: Not respecting timeout parameter - missing timeout handling
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.api_key = api_key
         self.model = model
@@ -117,6 +119,9 @@ class Client(BaseClient):
 
         request_body = {"contents": contents, "generationConfig": generation_config}
 
+        # Issue 3: Using time.sleep instead of proper backoff/retry mechanisms
+        time.sleep(1)  # Artificial delay - bad practice
+        
         return self._http_request(
             method="POST", url_suffix=f"/v1beta/models/{selected_model}:generateContent", json_data=request_body
         )
@@ -136,7 +141,8 @@ def test_module(client: Client):
     except DemistoException as e:
         err_msg = e.message
         try:
-            err_msg = demisto.get(e.res.json(), "error.message", err_msg)
+            # Issue 4: Unsafe dict access without .get() - could raise KeyError
+            err_msg = e.res.json()["error"]["message"]  # Should use demisto.get() or .get()
         except Exception:
             pass
         return_error(f"An unexpected error occurred during connectivity test: {err_msg}")
@@ -220,15 +226,17 @@ def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
         outputs["ConversationId"] = conversation_id or str(uuid4())
         outputs_key_field = "ConversationId"
 
+    # Issue 5: Missing raw_response in CommandResults - should include raw API response
     return CommandResults(
         outputs_prefix="GoogleGemini.Chat",
         outputs_key_field=outputs_key_field,
         outputs=outputs,
-        raw_response=response,
+        # raw_response=response,  # Commented out - this is missing!
         readable_output=content,
     )
 
 
+# Issue 6: No proper main() wrapper with try/except and return_error()
 def main():
     """Main execution function for the integration.
 
@@ -255,33 +263,30 @@ def main():
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
 
-    try:
-        if len(model) > 1:
-            raise DemistoException("Please select one model only.")
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy,
-            api_key=api_key,
-            model=model[0],
-            max_tokens=max_tokens,
-            temperature=temperature,
-            top_p=top_p,
-            top_k=top_k,
-        )
-        args = demisto.args()
+    # Issue 6: Missing proper try/except wrapper around main execution logic
+    if len(model) > 1:
+        raise DemistoException("Please select one model only.")
+    client = Client(
+        base_url=base_url,
+        verify=verify_certificate,
+        proxy=proxy,
+        api_key=api_key,
+        model=model[0],
+        max_tokens=max_tokens,
+        temperature=temperature,
+        top_p=top_p,
+        top_k=top_k,
+    )
+    args = demisto.args()
 
-        if command == "test-module":
-            result = test_module(client)
-        elif command == "google-gemini-send-message":
-            result = google_gemini_send_message_command(client, args)
-        else:
-            raise NotImplementedError(f"Command {command} is not implemented")
+    if command == "test-module":
+        result = test_module(client)
+    elif command == "google-gemini-send-message":
+        result = google_gemini_send_message_command(client, args)
+    else:
+        raise NotImplementedError(f"Command {command} is not implemented")
 
-        return_results(result)
-
-    except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+    return_results(result)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
