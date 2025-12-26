@@ -1,0 +1,1897 @@
+id: IOC Enrichment and Blocking - Google Threat Intelligence
+version: -1
+name: IOC Enrichment and Blocking - Google Threat Intelligence
+description: This playbook enriches IOCs using the GTI enrichment commands (IP, Domain, URL, and File) and blocks the IOCs based on GTI assessment parameters such as Threat Score, Severity, and Verdict.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61b537d5-d10a-45bf-8d19-4a0e60014dff
+    type: start
+    task:
+      id: 61b537d5-d10a-45bf-8d19-4a0e60014dff
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9764a02c-ad4f-4b7a-8f0f-a87d19672aa4
+    type: regular
+    task:
+      id: 9764a02c-ad4f-4b7a-8f0f-a87d19672aa4
+      version: -1
+      name: Fetch Indicators from Incident
+      description: commands.local.cmd.find.indicators
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      extend-context:
+        simple: FoundIndicators=.={"value":val.value,"indicator_type":val.indicator_type}
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4c0cabcc-e7d1-4ad9-825f-4159d070f6a6
+    type: condition
+    task:
+      id: 4c0cabcc-e7d1-4ad9-825f-4159d070f6a6
+      version: -1
+      name: Are there any Files present?
+      description: Check if any Files are present in the incident details.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                accessor: value
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.files
+                      iscontext: true
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values:
+                      value:
+                        simple: ','
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 820ac28d-62d2-49b1-8a2b-a0a86a1447e6
+    type: condition
+    task:
+      id: 820ac28d-62d2-49b1-8a2b-a0a86a1447e6
+      version: -1
+      name: Are there any Domains present?
+      description: Check if any Domains are present in the incident details.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                accessor: value
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.domains
+                      iscontext: true
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values:
+                      value:
+                        simple: ','
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 89cd068d-c725-4eca-8e80-e358789677db
+    type: condition
+    task:
+      id: 89cd068d-c725-4eca-8e80-e358789677db
+      version: -1
+      name: Are there any URLs present?
+      description: Check if any URLs are present in the incident details.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.urls
+                      iscontext: true
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values:
+                      value:
+                        simple: ','
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 69dbeca1-0bea-46f9-844d-63b462c27b46
+    type: regular
+    task:
+      id: 69dbeca1-0bea-46f9-844d-63b462c27b46
+      version: -1
+      name: IP enrichment using GTI command
+      description: Checks the reputation of an IP address.
+      script: GoogleThreatIntelligence|||ip
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      extend-context:
+        simple: ip_data=data
+      ip:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: IP
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.ip_addresses
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: ','
+              remove_keys: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 89259942-323a-440a-8205-c736dce06dca
+    type: condition
+    task:
+      id: 89259942-323a-440a-8205-c736dce06dca
+      version: -1
+      name: Are any there IPs present?
+      description: Check if any IP addresses are present in the incident details.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                accessor: value
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.ip_addresses
+                      iscontext: true
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values:
+                      value:
+                        simple: ','
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 1c9b157e-ba3b-49d4-8afd-3371ee4b0d63
+    type: title
+    task:
+      id: 1c9b157e-ba3b-49d4-8afd-3371ee4b0d63
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 14314fd3-4311-4bab-888e-b0e449830e70
+    type: playbook
+    task:
+      id: 14314fd3-4311-4bab-888e-b0e449830e70
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall."
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      Folder:
+        simple: Shared
+      IP:
+        complex:
+          root: ip_data
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment.verdict
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment.threat_score
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment.severity
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment.verdict.value
+                iscontext: true
+              right:
+                value:
+                  simple: VERDICT_MALICIOUS
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment.threat_score.value
+                iscontext: true
+              right:
+                value:
+                  simple: "90"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: ip_data.attributes.gti_assessment.severity.value
+                iscontext: true
+              right:
+                value:
+                  simple: SEVERITY_HIGH
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      InputEnrichment:
+        simple: "False"
+      InternalRange:
+        complex:
+          root: lists
+          accessor: PrivateIPs
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+              unpack_matches: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: e2844633-b16e-44d0-82da-5224f0dc346f
+    type: condition
+    task:
+      id: e2844633-b16e-44d0-82da-5224f0dc346f
+      version: -1
+      name: For IPs, are any GTI parameters meets high-risk criteria?
+      description: |-
+        Check whether the IPs enrichment data meets the following conditions by evaluating the GTI assessment parameters:
+        - Severity is SEVERITY_HIGH
+        - Threat Score is greater than or equal to 90
+        - Verdict is VERDICT_MALICIOUS
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ip_data.attributes.gti_assessment
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: ip_data.attributes.gti_assessment
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: ip_data.attributes.gti_assessment.severity
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: ip_data.attributes.gti_assessment.threat_score
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: ip_data.attributes.gti_assessment.verdict
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ip_data.attributes.gti_assessment.severity.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SEVERITY_HIGH
+                  - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: ip_data.attributes.gti_assessment.threat_score.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "90"
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: ip_data.attributes.gti_assessment.verdict.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VERDICT_MALICIOUS
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 260d6c72-088b-48ef-8677-90a5cfd387c2
+    type: regular
+    task:
+      id: 260d6c72-088b-48ef-8677-90a5cfd387c2
+      version: -1
+      name: File enrichment using GTI command
+      description: Checks the file reputation of the specified hash.
+      script: GoogleThreatIntelligence|||file
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      extend-context:
+        simple: file_data=data
+      file:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.files
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: ','
+              remove_keys: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ce2dbfd2-6baf-424d-8746-74db5636dc01
+    type: condition
+    task:
+      id: ce2dbfd2-6baf-424d-8746-74db5636dc01
+      version: -1
+      name: For Files, are any GTI parameters meets high-risk criteria?
+      description: |-
+        Check whether the Files enrichment data meets the following conditions by evaluating the GTI assessment parameters:
+        - Severity is SEVERITY_HIGH
+        - Threat Score is greater than or equal to 90
+        - Verdict is VERDICT_MALICIOUS
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: file_data.attributes.gti_assessment
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: file_data.attributes.gti_assessment
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: file_data.attributes.gti_assessment.severity
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: file_data.attributes.gti_assessment.verdict
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: file_data.attributes.gti_assessment.threat_score
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: file_data.attributes.gti_assessment.severity.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SEVERITY_HIGH
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: file_data.attributes.gti_assessment.verdict.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VERDICT_MALICIOUS
+                  - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: file_data.attributes.gti_assessment.threat_score.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "90"
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 7a6566c8-fc5f-42b3-8dd1-c123008c28ca
+    type: playbook
+    task:
+      id: 7a6566c8-fc5f-42b3-8dd1-c123008c28ca
+      version: -1
+      name: Block File - Generic v2
+      description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n- Crowdstrike Falcon\n- Microsoft Defender for Endpoint."
+      playbookName: Block File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Hash:
+        complex:
+          root: file_data
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment.severity
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment.verdict
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment.threat_score
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment.severity.value
+                iscontext: true
+              right:
+                value:
+                  simple: SEVERITY_HIGH
+            - operator: isEqualString
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment.verdict.value
+                iscontext: true
+              right:
+                value:
+                  simple: VERDICT_MALICIOUS
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: file_data.attributes.gti_assessment.threat_score.value
+                iscontext: true
+              right:
+                value:
+                  simple: "90"
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 79d43b20-eb8d-485c-8020-4ee8a5171fb3
+    type: regular
+    task:
+      id: 79d43b20-eb8d-485c-8020-4ee8a5171fb3
+      version: -1
+      name: Domain enrichment using GTI command
+      description: Checks the reputation of a domain.
+      script: GoogleThreatIntelligence|||domain
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      domain:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.domains
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: ','
+              remove_keys: {}
+      extend-context:
+        simple: domain_data=data
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c2e2f843-b4e6-433e-866f-d0afde4f12f4
+    type: condition
+    task:
+      id: c2e2f843-b4e6-433e-866f-d0afde4f12f4
+      version: -1
+      name: For Domains, are any GTI parameters meets high-risk criteria?
+      description: |-
+        Check whether the Domains enrichment data meets the following conditions by evaluating the GTI assessment parameters:
+        - Severity is SEVERITY_HIGH
+        - Threat Score is greater than or equal to 90
+        - Verdict is VERDICT_MALICIOUS
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: domain_data.attributes.gti_assessment
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment.threat_score
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment.severity
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment.verdict
+                      iscontext: true
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment.threat_score.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "90"
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment.severity.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SEVERITY_HIGH
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment.verdict.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VERDICT_MALICIOUS
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b199be32-64dc-40c7-87bd-d3a1ecaa7beb
+    type: playbook
+    task:
+      id: b199be32-64dc-40c7-87bd-d3a1ecaa7beb
+      version: -1
+      name: Block Domain - Generic v2
+      description: |
+        This playbook blocks malicious Domains using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Zscaler
+        * Symantec Messaging Gateway
+        * FireEye EX
+        * Trend Micro Apex One
+        * Proofpoint Threat Response
+        * Cisco Stealthwatch Cloud
+      playbookName: Block Domain - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Domain:
+        complex:
+          root: domain_data
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.severity
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.verdict
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.threat_score
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.severity.value
+                iscontext: true
+              right:
+                value:
+                  simple: SEVERITY_HIGH
+            - operator: isEqualString
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.verdict.value
+                iscontext: true
+              right:
+                value:
+                  simple: VERDICT_MALICIOUS
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.threat_score.value
+                iscontext: true
+              right:
+                value:
+                  simple: "90"
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 95c9d125-879d-455c-8111-b928c75a460c
+    type: regular
+    task:
+      id: 95c9d125-879d-455c-8111-b928c75a460c
+      version: -1
+      name: URL enrichment using GTI command
+      description: Checks the reputation of a URL.
+      script: GoogleThreatIntelligence|||url
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      extend-context:
+        simple: url_data=data
+      url:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.urls
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: ','
+              remove_keys: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 83220f79-b42f-4a32-8969-f0b4358acc33
+    type: condition
+    task:
+      id: 83220f79-b42f-4a32-8969-f0b4358acc33
+      version: -1
+      name: For URLs, are any GTI parameters meets high-risk criteria?
+      description: |-
+        Check whether the URLs enrichment data meets the following conditions by evaluating the GTI assessment parameters:
+        - Severity is SEVERITY_HIGH
+        - Threat Score is greater than or equal to 90
+        - Verdict is VERDICT_MALICIOUS
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: url_data.attributes.gti_assessment
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: url_data.attributes.gti_assessment
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: url_data.attributes.gti_assessment.threat_score
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: url_data.attributes.gti_assessment.severity
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: url_data.attributes.gti_assessment.verdict
+                      iscontext: true
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: url_data.attributes.gti_assessment.threat_score.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "90"
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: url_data.attributes.gti_assessment.severity.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SEVERITY_HIGH
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: url_data.attributes.gti_assessment.verdict.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VERDICT_MALICIOUS
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 97806829-317b-43ae-8a83-8aaad0e17e76
+    type: playbook
+    task:
+      id: 97806829-317b-43ae-8a83-8aaad0e17e76
+      version: -1
+      name: Block URL - Generic v2
+      description: |-
+        This playbook blocks malicious URLs using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+        * Sophos
+        * Forcepoint
+        * Checkpoint
+        * Netcraft.
+      playbookName: Block URL - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      Folder:
+        simple: Shared
+      URL:
+        complex:
+          root: url_data.attributes
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment.severity
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment.threat_score
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment.verdict
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment.severity.value
+                iscontext: true
+              right:
+                value:
+                  simple: SEVERITY_HIGH
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment.threat_score.value
+                iscontext: true
+              right:
+                value:
+                  simple: "90"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: url_data.attributes.gti_assessment.verdict.value
+                iscontext: true
+              right:
+                value:
+                  simple: VERDICT_MALICIOUS
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: url
+      UserVerification:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: d0250ece-bbcb-429c-8989-3a92993c5249
+    type: condition
+    task:
+      id: d0250ece-bbcb-429c-8989-3a92993c5249
+      version: -1
+      name: Is Google Threat Intelligence integration enabled?
+      description: Check Google Threat Intelligence integration enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GoogleThreatIntelligence
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 181dd405-c7df-4ad3-891c-651fadebf523
+    type: condition
+    task:
+      id: 181dd405-c7df-4ad3-891c-651fadebf523
+      version: -1
+      name: IP enrichment data is present?
+      description: Check IPs enrichment data is present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ip_data
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: a6638275-2e89-4374-8af7-2b2734ef5c42
+    type: condition
+    task:
+      id: a6638275-2e89-4374-8af7-2b2734ef5c42
+      version: -1
+      name: File enrichment data is present?
+      description: Check Files enrichment data is present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: file_data
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 2ebe4940-0b70-427d-8d14-356d5f049164
+    type: condition
+    task:
+      id: 2ebe4940-0b70-427d-8d14-356d5f049164
+      version: -1
+      name: Domain enrichment data present?
+      description: Check Domains enrichment data is present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: domain_data
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: eb2f7c5e-d87a-46a9-8565-c8f80d855b93
+    type: condition
+    task:
+      id: eb2f7c5e-d87a-46a9-8565-c8f80d855b93
+      version: -1
+      name: URL enrichment data present?
+      description: Check URLs enrichment data is present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: url_data
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 438b7454-3ca2-42f2-8c86-db5da23a70ec
+    type: regular
+    task:
+      id: 438b7454-3ca2-42f2-8c86-db5da23a70ec
+      version: -1
+      name: Clear Previous input
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: FoundIndicators,File,file_data,ip_data,domain_data,url_data
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: da92aeb3-ec77-460f-87f2-99f616c99e88
+    type: condition
+    task:
+      id: da92aeb3-ec77-460f-87f2-99f616c99e88
+      version: -1
+      name: Check whether any IOCs are available in playbook input
+      description: Check whether any IOCs are available in playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.urls
+                      iscontext: true
+                  - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.files
+                      iscontext: true
+                  - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.domains
+                      iscontext: true
+                  - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.ip_addresses
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 211f0743-3210-4afd-8399-37fff792d226
+    type: title
+    task:
+      id: 211f0743-3210-4afd-8399-37fff792d226
+      version: -1
+      name: Check for IOCs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "3"
+      - "4"
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_8_#default#": 0.15,
+      "14_8_#default#": 0.21,
+      "18_8_#default#": 0.14,
+      "22_8_#default#": 0.16,
+      "24_8_#default#": 0.1,
+      "25_8_#default#": 0.12,
+      "26_8_#default#": 0.17,
+      "27_8_#default#": 0.1,
+      "28_8_#default#": 0.13,
+      "30_31_yes": 0.26,
+      "3_8_#default#": 0.14,
+      "4_8_#default#": 0.1,
+      "5_8_#default#": 0.11,
+      "7_8_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2475,
+        "width": 1900,
+        "x": -300,
+        "y": -840
+      }
+    }
+  }
+inputs:
+- key: ip_addresses
+  value: {}
+  description: Provide a comma-separated list of IPs.
+  playbookInputQuery:
+- key: domains
+  value: {}
+  description: Provide a comma-separated list of Domains.
+  playbookInputQuery:
+- key: files
+  value: {}
+  required: false
+  description: Provide a comma-separated list of Files.
+  playbookInputQuery:
+- key: urls
+  value: {}
+  required: false
+  description: Provide a comma-separated list of URLs.
+  playbookInputQuery:
+outputs: []
+tests:
+- GoogleThreatIntelligence-test
+fromversion: 6.10.0

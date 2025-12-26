@@ -1,0 +1,534 @@
+id: URL Private Scanning - Google Threat Intelligence
+version: -1
+name: URL Private Scanning - Google Threat Intelligence
+description: This playbook performs private URL scanning and analyses the URL based on GTI assessment parameters such as Threat Score, Verdict, and Severity. Based on these parameters, the playbook blocks the URL.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7b669f7e-927f-4068-8672-3160c4dc56b9
+    type: start
+    task:
+      id: 7b669f7e-927f-4068-8672-3160c4dc56b9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9a1ce3a1-bb5e-4df6-88e8-39b71c3b2829
+    type: regular
+    task:
+      id: 9a1ce3a1-bb5e-4df6-88e8-39b71c3b2829
+      version: -1
+      name: Clear Previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: url_data,url_output_list
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6448f099-539f-4868-896b-592739f030aa
+    type: condition
+    task:
+      id: 6448f099-539f-4868-896b-592739f030aa
+      version: -1
+      name: Is Google Threat Intelligence integration enabled ?
+      description: Check Google Threat Intelligence integration is enable or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GoogleThreatIntelligence
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 34d2761b-8522-40cf-8074-5edfa7ced2a9
+    type: condition
+    task:
+      id: 34d2761b-8522-40cf-8074-5edfa7ced2a9
+      version: -1
+      name: Check whether URLs are available in playbook input
+      description: Check whether URLs are available in playbook input or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.url
+                transformers:
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values:
+                      value:
+                        simple: ','
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a83910a5-e3cd-49e7-89fb-20724a7499fa
+    type: regular
+    task:
+      id: a83910a5-e3cd-49e7-89fb-20724a7499fa
+      version: -1
+      name: Fetch Indicators from Incident
+      description: commands.local.cmd.find.indicators
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      extend-context:
+        simple: FoundIndicators=.={"value":val.value,"indicator_type":val.indicator_type}
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 43b99686-1721-4498-8b7a-a7aa5d2c6c73
+    type: condition
+    task:
+      id: 43b99686-1721-4498-8b7a-a7aa5d2c6c73
+      version: -1
+      name: Check URL indicators are present or not
+      description: Check URL indicators are present or not from input or incident extraction.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.url
+                      iscontext: true
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values:
+                      value:
+                        simple: ','
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ceaab0ab-cd4b-4f15-8603-acb71210b2c2
+    type: playbook
+    task:
+      id: ceaab0ab-cd4b-4f15-8603-acb71210b2c2
+      version: -1
+      name: URL Scan - Google Threat Intelligence
+      playbookName: URL Scan - Google Threat Intelligence
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      url:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.url
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: ','
+              remove_keys: {}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 69ceedc6-238b-49c7-82f6-6b8971fb777e
+    type: playbook
+    task:
+      id: 69ceedc6-238b-49c7-82f6-6b8971fb777e
+      version: -1
+      name: Block URL - Generic v2
+      description: |-
+        This playbook blocks malicious URLs using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+        * Sophos
+        * Forcepoint
+        * Checkpoint
+        * Netcraft.
+      playbookName: Block URL - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      Folder:
+        simple: Shared
+      URL:
+        simple: ${url_output_list}
+      UserVerification:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: de8746fe-593b-4c45-8dda-12b0ba85e14d
+    type: condition
+    task:
+      id: de8746fe-593b-4c45-8dda-12b0ba85e14d
+      version: -1
+      name: Check are there any URLs present for block
+      description: Check are there any URLs present for block.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: url_output_list
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f51d59d9-a2b2-489e-871e-cdb93f539a1b
+    type: title
+    task:
+      id: f51d59d9-a2b2-489e-871e-cdb93f539a1b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_9_#default#": 0.12,
+      "5_9_#default#": 0.1,
+      "8_9_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1755,
+        "width": 710,
+        "x": 120,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: url
+  value: {}
+  required: false
+  description: Provide a comma-separated list of URLs.
+  playbookInputQuery:
+outputs: []
+tests:
+- GoogleThreatIntelligence-test
+fromversion: 6.10.0

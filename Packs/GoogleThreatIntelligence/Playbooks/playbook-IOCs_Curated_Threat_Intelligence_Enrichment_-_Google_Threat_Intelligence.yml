@@ -1,0 +1,745 @@
+id: IOCs Curated Threat Intelligence Enrichment - Google Threat Intelligence
+version: -1
+name: IOCs Curated Threat Intelligence Enrichment - Google Threat Intelligence
+description: This playbook extracts IOCs from incident details and enriches the selected IOCs with curated Google Threat Intelligence data, including malware families, campaigns, and threat actors.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b3de08e9-be25-44e1-83f5-76dee6d1f750
+    type: start
+    task:
+      id: b3de08e9-be25-44e1-83f5-76dee6d1f750
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b3e330d2-8571-4c1f-834f-7e08786447d8
+    type: condition
+    task:
+      id: b3e330d2-8571-4c1f-834f-7e08786447d8
+      version: -1
+      name: Is Google Threat Intelligence integration enabled?
+      description: Check Google Threat Intelligence integration is enable or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GoogleThreatIntelligence
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f93a0166-9525-4212-8f96-8950869a7ee4
+    type: regular
+    task:
+      id: f93a0166-9525-4212-8f96-8950869a7ee4
+      version: -1
+      name: Clear previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: FoundIndicators,Select IOCs for Curated Threat Intelligence Enrichment
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 654755c0-9dc7-4095-8d3b-aef5cb86f954
+    type: regular
+    task:
+      id: 654755c0-9dc7-4095-8d3b-aef5cb86f954
+      version: -1
+      name: Found indicators from Incident
+      description: commands.local.cmd.find.indicators
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      extend-context:
+        simple: FoundIndicators=.={"value":val.value,"indicator_type":val.indicator_type}
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e67dc064-5d50-4844-8c43-b671a0751f5b
+    type: collection
+    task:
+      id: e67dc064-5d50-4844-8c43-b671a0751f5b
+      version: -1
+      name: IOCs Selection for Curated Threat Intelligence Enrichment
+      description: Select IOCs (IPs, domains, URLs, and files) for curated enrichment using GTI curated threat intelligence commands.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "8"
+      - "11"
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Select IOCs for Curated Threat Enrichment form Google Threat Intelligence
+      body:
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Extracted Files from Incident
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: FoundIndicators
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: FoundIndicators.indicator_type
+                  iscontext: true
+                right:
+                  value:
+                    simple: File
+            accessor: value
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If a file is not extracted from the incident, this task accepts a manually provided file hash as input.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Extracted URLs from Incident
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: ${FoundIndicators
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: ${FoundIndicators.indicator_type}
+                  iscontext: true
+                right:
+                  value:
+                    simple: URL
+            accessor: value}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If a URL is not extracted from the incident, this task accepts a manually provided URLs as input.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Extracted IPs from Incident
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: ${FoundIndicators
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: ${FoundIndicators.indicator_type}
+                  iscontext: true
+                right:
+                  value:
+                    simple: IP
+            accessor: value}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If IPs are not extracted from the incident, this task accepts manually provided IP addresses as input.
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Extracted Domains from Incident
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: ${FoundIndicators
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: ${FoundIndicators.indicator_type}
+                  iscontext: true
+                right:
+                  value:
+                    simple: Domain
+            accessor: value}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If domains are not extracted from the incident, this task accepts manually provided domain names as input.
+        readonly: false
+      title: Select IOCs for Curated Threat Intelligence Enrichment
+      description: This playbook performs enrichment on the selected IOCs from the above list using curated threat intelligence commands.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: fa8d2330-9221-4c9d-855c-fccae6cdf442
+    type: condition
+    task:
+      id: fa8d2330-9221-4c9d-855c-fccae6cdf442
+      version: -1
+      name: Is IPs are present in selection?
+      description: Check IPs are present in IOCs selection.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Select IOCs for Curated Threat Intelligence Enrichment.Answers
+                accessor: "2"
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9733c66f-a1a2-4872-8759-7f0bfe6126c0
+    type: condition
+    task:
+      id: 9733c66f-a1a2-4872-8759-7f0bfe6126c0
+      version: -1
+      name: Is Domains are present in selection?
+      description: Check Domains are present in IOCs selection.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Select IOCs for Curated Threat Intelligence Enrichment.Answers
+                accessor: "3"
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a5b07a37-6cd2-4ac3-8d5a-c53aff5b1f54
+    type: title
+    task:
+      id: a5b07a37-6cd2-4ac3-8d5a-c53aff5b1f54
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 03fd6e8e-efc0-40e6-89b3-a4059b400cf3
+    type: condition
+    task:
+      id: 03fd6e8e-efc0-40e6-89b3-a4059b400cf3
+      version: -1
+      name: Is URLs are present in selection?
+      description: Check URLs are present in IOCs selection.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Select IOCs for Curated Threat Intelligence Enrichment.Answers
+                accessor: "1"
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 2d6a1e0e-c9fa-49c5-8d2e-6026c11bfcfc
+    type: condition
+    task:
+      id: 2d6a1e0e-c9fa-49c5-8d2e-6026c11bfcfc
+      version: -1
+      name: Is Files are present in selection?
+      description: Check Files are present in IOCs selection.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Select IOCs for Curated Threat Intelligence Enrichment.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ab532379-8efb-4922-88c5-597a1625c44f
+    type: playbook
+    task:
+      id: ab532379-8efb-4922-88c5-597a1625c44f
+      version: -1
+      name: IOC Curated Enrichment - Google Threat Intelligence
+      playbookName: IOC Curated Enrichment - Google Threat Intelligence
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      resource:
+        simple: ${Select IOCs for Curated Threat Intelligence Enrichment.Answers.2}
+      resource_type:
+        simple: ip
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c13149ca-ee50-4a42-83ce-09216f41dc13
+    type: playbook
+    task:
+      id: c13149ca-ee50-4a42-83ce-09216f41dc13
+      version: -1
+      name: IOC Curated Enrichment - Google Threat Intelligence
+      playbookName: IOC Curated Enrichment - Google Threat Intelligence
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      resource:
+        simple: ${Select IOCs for Curated Threat Intelligence Enrichment.Answers.3}
+      resource_type:
+        simple: domain
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 837934e9-b462-43df-8ce6-035bd9add3a6
+    type: playbook
+    task:
+      id: 837934e9-b462-43df-8ce6-035bd9add3a6
+      version: -1
+      name: IOC Curated Enrichment - Google Threat Intelligence
+      playbookName: IOC Curated Enrichment - Google Threat Intelligence
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      resource:
+        simple: ${Select IOCs for Curated Threat Intelligence Enrichment.Answers.1}
+      resource_type:
+        simple: url
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: f07fc4b5-85ea-4d9c-888f-c0841f277c8a
+    type: playbook
+    task:
+      id: f07fc4b5-85ea-4d9c-888f-c0841f277c8a
+      version: -1
+      name: IOC Curated Enrichment - Google Threat Intelligence
+      description: This playbook provides IOC enrichment using curated Google Threat Intelligence data, including malware families, campaigns, and threat actors, and displays the results in the War Room for investigation.
+      playbookName: IOC Curated Enrichment - Google Threat Intelligence
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      resource:
+        simple: ${Select IOCs for Curated Threat Intelligence Enrichment.Answers.0}
+      resource_type:
+        simple: hash
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_10_#default#": 0.3,
+      "12_10_#default#": 0.17,
+      "1_10_#default#": 0.1,
+      "6_10_#default#": 0.1,
+      "8_10_#default#": 0.12
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1585,
+        "width": 1700,
+        "x": -210,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- GoogleThreatIntelligence-test
+fromversion: 6.10.0

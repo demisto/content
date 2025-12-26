@@ -1,0 +1,850 @@
+id: Phishing Triage and Response - Google Threat Intelligence
+version: -1
+name: Phishing Triage and Response - Google Threat Intelligence
+description: This playbook extracts email addresses from phishing alerts, enriches their associated domains using the GTI domain enrichment command, and evaluates the GTI Threat Score, severity, and verdict. Based on these enrichment results, the playbook automatically blocks the malicious or high-risk email addresses to prevent further compromise.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 37fd1a0a-5be4-46cf-89f6-75c9a0859a29
+    type: start
+    task:
+      id: 37fd1a0a-5be4-46cf-89f6-75c9a0859a29
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2294f359-eeb5-4c84-8291-ecfb447adf47
+    type: condition
+    task:
+      id: 2294f359-eeb5-4c84-8291-ecfb447adf47
+      version: -1
+      name: Is Google Threat Intelligence integration enabled?
+      description: Check Google Threat Intelligence integration enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GoogleThreatIntelligence
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3c6d698d-f7de-4eec-8920-e51e583ad259
+    type: regular
+    task:
+      id: 3c6d698d-f7de-4eec-8920-e51e583ad259
+      version: -1
+      name: Clear previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: FoundIndicators,domain_data,domain_list,email_input_list,email_output_list,domain_value
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 125b4235-4838-49a9-875f-edb86fbc428b
+    type: condition
+    task:
+      id: 125b4235-4838-49a9-875f-edb86fbc428b
+      version: -1
+      name: Check whether emails are available in playbook input
+      description: Check whether emails are available in playbook input or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.email_addresses
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5ab84378-1e8f-4d37-8831-fb42d454fe17
+    type: regular
+    task:
+      id: 5ab84378-1e8f-4d37-8831-fb42d454fe17
+      version: -1
+      name: Fetch Indicators from Incident
+      description: commands.local.cmd.find.indicators
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      extend-context:
+        simple: FoundIndicators=.={"value":val.value,"indicator_type":val.indicator_type}
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 12666be1-6a78-4499-8047-d75dc062e005
+    type: title
+    task:
+      id: 12666be1-6a78-4499-8047-d75dc062e005
+      version: -1
+      name: Check for indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ae1f1fac-764c-4f6b-8301-c08375a8ea2d
+    type: condition
+    task:
+      id: ae1f1fac-764c-4f6b-8301-c08375a8ea2d
+      version: -1
+      name: Check that domains are present or not
+      description: Check whether the domains extracted from the emails are present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: domain_list
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: cced6088-bafa-402b-863d-f70439e0a6e1
+    type: regular
+    task:
+      id: cced6088-bafa-402b-863d-f70439e0a6e1
+      version: -1
+      name: Domain Enrichment using GTI command
+      description: Checks the reputation of a domain.
+      script: GoogleThreatIntelligence|||domain
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      domain:
+        simple: ${domain_list}
+      extend-context:
+        simple: domain_data=data
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 121e3b07-e1d1-48d2-836a-ef3940d2830b
+    type: title
+    task:
+      id: 121e3b07-e1d1-48d2-836a-ef3940d2830b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 645ba706-0459-4fb6-8288-2a9a7dbb91bf
+    type: regular
+    task:
+      id: 645ba706-0459-4fb6-8288-2a9a7dbb91bf
+      version: -1
+      name: Extract the domains from input
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      key:
+        simple: domain_list
+      value:
+        complex:
+          root: ${inputs
+          accessor: email_addresses}
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: ','
+              remove_keys: {}
+          - operator: RegexGroups
+            args:
+              flags: {}
+              groups: {}
+              keys: {}
+              regex:
+                value:
+                  simple: '@([^,]+)'
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: ','
+              remove_keys: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: dbfbd00a-6ca7-4d5d-821f-ca6892e00ce1
+    type: regular
+    task:
+      id: dbfbd00a-6ca7-4d5d-821f-ca6892e00ce1
+      version: -1
+      name: Get the domains from Fetch indicators command
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: domain_list
+      value:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Email
+          accessor: value
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: ','
+              remove_keys: {}
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RegexGroups
+            args:
+              flags: {}
+              groups: {}
+              keys: {}
+              regex:
+                value:
+                  simple: '@([^,]+)'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 4427622f-2d15-489c-826e-e6f0f000320e
+    type: condition
+    task:
+      id: 4427622f-2d15-489c-826e-e6f0f000320e
+      version: -1
+      name: For Domains, are any GTI parameters meets high-risk criteria
+      description: |-
+        Check whether the Domains enrichment data meets the following conditions by evaluating the GTI assessment parameters:
+        - Severity is SEVERITY_HIGH
+        - Threat Score is greater than or equal to 90
+        - Verdict is VERDICT_MALICIOUS
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: domain_data
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment.threat_score
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment.severity
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment.verdict
+                      iscontext: true
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment.threat_score.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "90"
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment.severity.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SEVERITY_HIGH
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: domain_data.attributes.gti_assessment.verdict.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VERDICT_MALICIOUS
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 8c19deb0-0be9-48bb-8215-5875fb109dde
+    type: playbook
+    task:
+      id: 8c19deb0-0be9-48bb-8215-5875fb109dde
+      version: -1
+      name: Block Email - Generic v2
+      description: |
+        This playbook will block emails at your mail relay integration.
+
+        Supported integrations for this playbook:
+        * Mimecast
+        * FireEye Email Security (EX)
+        * Cisco Email Security
+        * Symantec Email Security
+      playbookName: Block Email - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      EmailToBlock:
+        simple: ${email_output_list}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 94d08832-6685-47fa-83ee-0e5eca63ae12
+    type: regular
+    task:
+      id: 94d08832-6685-47fa-83ee-0e5eca63ae12
+      version: -1
+      name: Extract Emails from input
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: email_input_list
+      value:
+        complex:
+          root: inputs.email_addresses
+          transformers:
+          - operator: ExtractEmailTransformer
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: e654068d-71ba-4bd4-8aa4-2e97d9e5c427
+    type: regular
+    task:
+      id: e654068d-71ba-4bd4-8aa4-2e97d9e5c427
+      version: -1
+      name: Extract Emails from indicators
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: email_input_list
+      value:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Email
+          accessor: value
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 4e0484b5-4b0b-4185-809b-b357ac5965b1
+    type: playbook
+    task:
+      id: 4e0484b5-4b0b-4185-809b-b357ac5965b1
+      version: -1
+      name: Email Collection by Enriched Domain - Google Threat Intelligence
+      playbookName: Email Collection by Enriched Domain - Google Threat Intelligence
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      domain:
+        complex:
+          root: domain_data
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.verdict
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.severity
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.threat_score
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.verdict.value
+                iscontext: true
+              right:
+                value:
+                  simple: VERDICT_MALICIOUS
+            - operator: isEqualString
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.severity.value
+                iscontext: true
+              right:
+                value:
+                  simple: SEVERITY_HIGH
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: domain_data.attributes.gti_assessment.threat_score.value
+                iscontext: true
+              right:
+                value:
+                  simple: "90"
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_10_#default#": 0.21,
+      "6_10_#default#": 0.21
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2515,
+        "width": 1200,
+        "x": -80,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: email_addresses
+  value: {}
+  required: false
+  description: Provide a comma-separated list of email addresses.
+  playbookInputQuery:
+outputs: []
+tests:
+- GoogleThreatIntelligence-test
+fromversion: 6.10.0

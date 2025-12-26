@@ -1,0 +1,1139 @@
+id: ASM Issue Incident Response - Google Threat Intelligence
+version: -1
+name: ASM Issue Incident Response - Google Threat Intelligence
+description: |
+  This playbook initiates the response for ASM Issues in XSOAR when an incident is investigated. For medium, high, or critical severity, it creates a ServiceNow ticket; otherwise, the incident is assigned to an analyst. The ticket is enriched with GTI ASM Issue details, including entity name, status, confidence, tags, UUID, collection info, and other relevant incident information.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ba35555d-532e-44b4-8bff-b91c95ba5c1a
+    type: start
+    task:
+      id: ba35555d-532e-44b4-8bff-b91c95ba5c1a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 856dc462-a3f4-4717-8b68-d2e230e8c338
+    type: condition
+    task:
+      id: 856dc462-a3f4-4717-8b68-d2e230e8c338
+      version: -1
+      name: Is Google Threat Intelligence - ASM Issue integration enabled?
+      description: |
+        Checks whether Google Threat Intelligence - ASM Issue integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GoogleThreatIntelligenceASMIssues
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: aac78c87-6019-447b-8f6f-cb72784476ab
+    type: title
+    task:
+      id: aac78c87-6019-447b-8f6f-cb72784476ab
+      version: -1
+      name: Extract incident severity and trigger ticket creation task
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1013edb5-a220-45bc-8271-961d319a5e95
+    type: condition
+    task:
+      id: 1013edb5-a220-45bc-8271-961d319a5e95
+      version: -1
+      name: Check for incident severity
+      description: |
+        Check if the incident severity is equal or higher than 2. If true then create a ServiceNow ticket otherwise assign the incident to an analyst.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "4"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: inputs.incident_severity
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    - label: "No"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: inputs.incident_severity
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: aed10b79-a098-4e5a-8b52-a2d7ed12d586
+    type: regular
+    task:
+      id: aed10b79-a098-4e5a-8b52-a2d7ed12d586
+      version: -1
+      name: Assign an analyst to the incident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      onCall:
+        complex:
+          root: inputs.onCall
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8c493455-d2d2-4de7-8794-c2f72097da99
+    type: condition
+    task:
+      id: 8c493455-d2d2-4de7-8794-c2f72097da99
+      version: -1
+      name: Is ServiceNow v2 integration enabled?
+      description: |
+        Checks whether ServiceNow v2 integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e728f2b6-ce75-4508-860e-220542a72d50
+    type: title
+    task:
+      id: e728f2b6-ce75-4508-860e-220542a72d50
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e70e2aa3-fc89-40e6-8842-60f9f9730fa4
+    type: playbook
+    task:
+      id: e70e2aa3-fc89-40e6-8842-60f9f9730fa4
+      version: -1
+      name: Create ServiceNow Ticket
+      description: "Create ServiceNow Ticket allows you to open new tickets as a task from a parent playbook.\nWhen creating the ticket, you can decide to update based on on the ticket's state, which will wait for the ticket to resolve or close with StatePolling. \nAlternatively, you can select to mirror the ServiceNow ticket and incident fields. To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options: \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none."
+      playbookName: Create ServiceNow Ticket
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "10"
+      - "11"
+      - "12"
+      - "13"
+      - "14"
+      - "15"
+      - "16"
+      - "18"
+      - "19"
+    scriptarguments:
+      Comment:
+        simple: |-
+          ASM Issue Incident Creation from XSOAR Automation :
+
+          Incident Summary:
+          issue identified through automated analysis of ASM Issue and requires immediate analyst review.
+          Issue UID: ${inputs.issue_uid}
+          Issue Severity: ${inputs.severity_mapping}
+      FieldPolling:
+        simple: "false"
+      Impact:
+        complex:
+          root: inputs.incident_severity
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 2,3,4
+              mapped_values:
+                value:
+                  simple: 2,1,1
+      MirrorCommentTags:
+        simple: comments,work_notes,ForServiceNow
+      MirrorDirection:
+        simple: Both
+      'Severity ':
+        complex:
+          root: inputs.incident_severity
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 2,3,4
+              mapped_values:
+                value:
+                  simple: 2,1,1
+      ShortDescription:
+        complex:
+          root: incident
+          accessor: name
+      SyncTicket:
+        simple: Blank
+      TicketType:
+        simple: incident
+      Urgency:
+        complex:
+          root: inputs.incident_severity
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 2,3,4
+              mapped_values:
+                value:
+                  simple: 2,1,1
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: eff4ab0c-54a4-48bc-83bb-dd77262ec167
+    type: regular
+    task:
+      id: eff4ab0c-54a4-48bc-83bb-dd77262ec167
+      version: -1
+      name: Extract ASM Issue UUID for Ticket Description
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: issue_uuid
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: ${incident
+          accessor: gtiasmissueuuid}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -970,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 0fa38079-9248-4c43-8be1-e298c55a95fc
+    type: regular
+    task:
+      id: 0fa38079-9248-4c43-8be1-e298c55a95fc
+      version: -1
+      name: Extract ASM Issue confidence for ticket description
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: issue_confidence
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: ${incident
+          accessor: gtiasmissueconfidence}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 599736d3-754b-4c1c-8055-ad542d5793b3
+    type: regular
+    task:
+      id: 599736d3-754b-4c1c-8055-ad542d5793b3
+      version: -1
+      name: Extract ASM Issue description for ticket description
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: issue_description
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: ${incident
+          accessor: description}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 01e8d779-96f4-466e-8ce0-045728a4b51e
+    type: regular
+    task:
+      id: 01e8d779-96f4-466e-8ce0-045728a4b51e
+      version: -1
+      name: Extract ASM Issue entity name for ticket description
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: issue_entity_name
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: ${incident
+          accessor: gtiasmissueentityname}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 6747d1d1-f403-4e36-8d92-4a2407303f77
+    type: regular
+    task:
+      id: 6747d1d1-f403-4e36-8d92-4a2407303f77
+      version: -1
+      name: Extract ASM issue entity ID for ticket description
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: issue_entity_uid
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: ${incident
+          accessor: gtiasmissueentityuid}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 35a39ad8-b0b8-41fa-8a35-0ffb4560dc2f
+    type: regular
+    task:
+      id: 35a39ad8-b0b8-41fa-8a35-0ffb4560dc2f
+      version: -1
+      name: Extract ASM Issue status for ticket description
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: issue_status
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: ${incident
+          accessor: gtiasmissuestatus}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 507f6090-5aa4-41ea-8261-71155ccb0a5d
+    type: regular
+    task:
+      id: 507f6090-5aa4-41ea-8261-71155ccb0a5d
+      version: -1
+      name: Extract ASM Issue link  for ticket description
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: issue_link
+      value:
+        complex:
+          root: ${incident
+          accessor: incidentlink}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: f6683520-0a56-4620-8def-1fa9ac770cd5
+    type: regular
+    task:
+      id: f6683520-0a56-4620-8def-1fa9ac770cd5
+      version: -1
+      name: Extract ASM Issue Tags for ticket description
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: issue_tags
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: ${incident
+          accessor: tags}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1ca5e6bf-ecd0-45ae-8fc1-5783355cd669
+    type: regular
+    task:
+      id: 1ca5e6bf-ecd0-45ae-8fc1-5783355cd669
+      version: -1
+      name: Update description of ServiceNow ticket
+      description: Updates the specified ticket.
+      script: '|||servicenow-update-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      description:
+        simple: |-
+          ************************************************************
+          ASM Issue ticket Creation from XSOAR Platform
+          ************************************************************
+          The following fields were extracted from the ASM Issue:
+
+          XSOAR incident ID: ${incident.id}
+
+          Issue UID: ${inputs.issue_uid}
+
+          Issue UUID: ${issue_uuid}
+
+          Severity: ${inputs.severity_mapping}
+
+          Issue Link: ${issue_link}
+
+          Entity name: ${issue_entity_name}
+
+          Entity UID: ${issue_entity_uid}
+
+          Status: ${issue_status}
+
+          Confidence: ${issue_confidence}
+
+          Description: ${issue_description}
+
+          Collection: ${issue_collection_name}
+
+          Collection UUID: ${issue_collection_uuid}
+
+          Tags: ${issue_tags}
+
+          ********************************************************
+      id:
+        simple: ${ServiceNow.Ticket.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 8d5a5996-25e9-4769-8562-cdf9ab8efd2f
+    type: regular
+    task:
+      id: 8d5a5996-25e9-4769-8562-cdf9ab8efd2f
+      version: -1
+      name: Extract ASM Issue Collection name for Ticket Description
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: issue_collection_name
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: ${incident
+          accessor: gtiasmissuecollection}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1370,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 41dd94d8-71ba-45c4-8956-19ddd57cdd36
+    type: regular
+    task:
+      id: 41dd94d8-71ba-45c4-8956-19ddd57cdd36
+      version: -1
+      name: Extract ASM Issue Collection UUID for Ticket Description
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: issue_collection_uuid
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: ${incident
+          accessor: gtiasmissuecollectionuuid}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2430,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 2b3da966-59b3-46c7-8e03-81fabf84dcc2
+    type: regular
+    task:
+      id: 2b3da966-59b3-46c7-8e03-81fabf84dcc2
+      version: -1
+      name: War Room Entry for created ServiceNow Ticket
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      value:
+        simple: |
+          ### **ASM Issue** ticket Created In **ServiceNow** Platform:
+
+          - **ServiceNow System ID**: ${ServiceNow.Ticket.ID}
+          - **ServiceNow Ticket Numer**: ${ServiceNow.Ticket.Number}
+          - **XSOAR incident ID**: ${incident.id}
+          - **Issue UID**: ${inputs.issue_uid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1550
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 422f874c-19b2-46ca-8dc7-09f03ad2b7fa
+    type: regular
+    task:
+      id: 422f874c-19b2-46ca-8dc7-09f03ad2b7fa
+      version: -1
+      name: Clear previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: issue_collection_name,issue_uuid,issue_confidence,issue_description,issue_entity_name,issue_entity_uid,issue_status,issue_link,issue_tags,issue_collection_uuid,ServiceNow.Ticket
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_7_#default#": 0.23,
+      "6_7_#default#": 0.3,
+      "6_8_yes": 0.45
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2075,
+        "width": 4180,
+        "x": -1370,
+        "y": -210
+      }
+    }
+  }
+inputs:
+- key: issue_uid
+  value:
+    complex:
+      root: incident
+      accessor: gtiasmissueuid
+  required: false
+  description: Collection ASM issue UID from incident.
+  playbookInputQuery:
+- key: incident_severity
+  value:
+    complex:
+      root: incident.severity
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.severity
+            iscontext: true
+  required: false
+  description: Collect incident severity from incident.
+  playbookInputQuery:
+- key: onCall
+  value:
+    simple: "false"
+  required: false
+  description: Set to true to assign only the user that is currently on shift. Default is False.
+  playbookInputQuery:
+- key: severity_mapping
+  value:
+    complex:
+      root: incident.severity
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.severity
+            iscontext: true
+      transformers:
+      - operator: MapValuesTransformer
+        args:
+          input_values:
+            value:
+              simple: 0.5,1,2,3,4
+          mapped_values:
+            value:
+              simple: informational,low,medium,high,critical
+  required: false
+  description: Set the ASM Issue severity as per GTI platform.
+  playbookInputQuery:
+outputs: []
+tests:
+- GoogleThreatIntelligence-test
+fromversion: 6.10.0
