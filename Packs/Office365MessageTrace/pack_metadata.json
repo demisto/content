@@ -1,0 +1,35 @@
+{
+    "name": "Office 365 Message Trace",
+    "description": "Fetches message trace events from Office 365",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Chris Balmer",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Email"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix"
+    ],
+    "devEmail": [
+        "cbalmer@paloaltonetworks.com"
+    ],
+    "githubUser": [
+        "chrisbalmer"
+    ]
+}

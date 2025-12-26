@@ -1,0 +1,17 @@
+{
+  "value": [
+    {
+      "MessageTraceId": "123456-78901-abcdef",
+      "MessageId": "<ABC123@contoso.com>",
+      "Received": "2023-07-01T12:00:00Z",
+      "SenderAddress": "sender@example.com",
+      "RecipientAddress": "recipient@example.com",
+      "Subject": "Test Email",
+      "Status": "Delivered",
+      "FromIP": "192.168.1.1",
+      "ToIP": "10.0.0.1",
+      "Size": 1024,
+      "Organization": "contoso.com"
+    }
+  ]
+}
