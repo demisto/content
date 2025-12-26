@@ -76,6 +76,14 @@ configuration:
   type: 8
   required: false
   section: Connect
+- display: Maximum Number of Audit Logs Per Fetch
+  name: max_fetch  # for fetch-events on XSIAM 
+  defaultvalue: 25000
+  type: 0
+  advanced: true
+  section: Collect
+  hidden:
+    - xsoar
 script:
   script: ''
   commands:
@@ -1782,12 +1790,29 @@ script:
       type: String
   - name: vd-auth-test
     description: Run a connectivity test to verify that the OAuth process worked.
-
-
+  - name: vd-get-events
+    description: Get audit logs from Versa Director. This command is supported in Cortex XSIAM only and is intended for development and debugging purposes, as it may produce duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
+    arguments:
+    - name: from_date
+      description: The start date for the audit logs as a relative time expression (e.g., '3 days ago') or an absolute time in ISO 8601 format (e.g., '2025-09-01T00:00:00Z').
+      defaultValue: "1 hour ago"
+    - name: limit
+      description: The maximum number of audit logs to retrieve.
+      defaultValue: "10"
+    - name: should_push_events
+      description: If true, the command will push the events to the Cortex XSIAM dataset; otherwise, it will only display them. 
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
   runonce: false
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/auth-utils:1.0.0.6111183
+  # Fetch events (XSIAM only)
+  isfetchevents: true
+  isfetchevents:xsoar: false
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
