@@ -1,13 +1,10 @@
-category: Messaging and Conferencing
-sectionorder:
-- Connect
-- Collect
-name: OpenAi ChatGPT v3
-display: OpenAI GPT
-description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging OpenAI GPT models' natural language conversational capabilities.
 commonfields:
   id: OpenAi ChatGPT v3
   version: -1
+category: Messaging and Conferencing
+name: OpenAi ChatGPT v3
+display: OpenAI GPT
+description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging OpenAI GPT models' natural language conversational capabilities.
 configuration:
 - display: Server URL
   name: url
@@ -15,12 +12,12 @@ configuration:
   defaultvalue: https://api.openai.com/
   section: Connect
   type: 0
-- displaypassword: API Key
-  name: apikey
+- name: apikey
+  displaypassword: API Key
+  hiddenusername: true
   type: 9
   required: true
   section: Connect
-  hiddenusername: true
 - display: Model
   additionalinfo: The model that will process the inputs and generate the completion.
   name: model-select
@@ -201,5 +198,8 @@ script:
   subtype: python3
   dockerimage: demisto/parse-emails:1.0.0.4363876
 fromversion: 6.0.0
+sectionorder:
+  - Connect
+  - Collect
 tests:
-- No tests (auto formatted)
+    - No tests (auto formatted)

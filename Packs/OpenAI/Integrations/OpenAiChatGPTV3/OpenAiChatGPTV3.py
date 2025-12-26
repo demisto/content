@@ -1,8 +1,8 @@
 import demistomock as demisto  # noqa: F401
 import parse_emails
 import urllib3
+# Using wildcard imports - not recommended but convenient
 from CommonServerPython import *  # noqa: F401
-
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
