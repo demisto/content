@@ -1873,9 +1873,7 @@ script:
           description: "Filter findings by severity level to prioritize policy actions. Supported values: CRITICAL, HIGH, MEDIUM, LOW."
           isArray: true
         - name: conditions_respect_developer_suppression
-          description: "Controls whether a developer’s manual suppression should be honored. 
-          Set to 'true' to respect developer suppression (evaluate only non-suppressed findings). 
-          Set to 'false' to ignore suppression and always evaluate the finding."
+          description: "Controls whether a developer's manual suppression should be honored. Set to 'true' to respect developer suppression (evaluate only non-suppressed findings). Set to 'false' to ignore suppression and always evaluate the finding."
           auto: PREDEFINED
           predefined:
             - "true"
@@ -2506,10 +2504,6 @@ script:
           predefined:
             - "true"
             - "false"
-        - name: custom_fields
-          description: |
-            A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`). 
-          type: String
       outputs:
         - contextPath: Core.Case.modifiedBy
           description: User who last modified the case.
@@ -2589,6 +2583,26 @@ script:
         - contextPath: Core.Case.tags.tag_name
           description: Tag name associated with the case.
           type: String
+    - name: core-update-case-custom-fields
+      hidden: true
+      description: |-
+        Updates custom fields on a case. This command is designed for AI agents to safely update custom fields with AI-generated content (HTML, markdown, etc.) without risk of overriding system fields.
+        It validates that the fields exist and are custom fields before updating.
+      arguments:
+      - name: case_id
+        required: true
+        description: The ID of the case to update.
+      - name: custom_fields
+        required: true
+        description: |
+          A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
+      outputs:
+      - contextPath: Core.Case.case_id
+        description: The ID of the updated case.
+        type: String
+      - contextPath: Core.Case.CustomFields
+        description: The updated custom fields of the case.
+        type: JSON
     - name: core-run-playbook
       description:  Runs a playbook on specific issue IDs.
       hidden: true
