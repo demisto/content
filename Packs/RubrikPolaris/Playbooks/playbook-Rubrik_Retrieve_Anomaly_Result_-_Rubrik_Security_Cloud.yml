@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 98902e68-4715-465d-87ef-4d17691d804e
+    taskid: 8675aa58-7e77-49e4-835d-975f97135996
     type: start
     task:
-      id: 98902e68-4715-465d-87ef-4d17691d804e
+      id: 8675aa58-7e77-49e4-835d-975f97135996
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 5a7f6a22-06e1-4783-8bef-37c7404f0eea
+    taskid: d6370577-e76f-4054-8809-50e816b3fd86
     type: title
     task:
-      id: 5a7f6a22-06e1-4783-8bef-37c7404f0eea
+      id: d6370577-e76f-4054-8809-50e816b3fd86
       version: -1
       name: Done
       type: title
@@ -52,7 +52,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 2690
+          "y": 3060
         }
       }
     note: false
@@ -64,10 +64,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 07f30e9a-5984-478a-8c9c-fa590ad9e75d
+    taskid: d7e12490-e44e-4dc4-8d76-cfd7a4957c47
     type: condition
     task:
-      id: 07f30e9a-5984-478a-8c9c-fa590ad9e75d
+      id: d7e12490-e44e-4dc4-8d76-cfd7a4957c47
       version: -1
       name: Is Rubrik Polaris integration enabled?
       description: Checks whether Rubrik Polaris integration is enabled or not.
@@ -124,10 +124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: d88d9a58-5cca-4411-8c66-e1c0a08887c2
+    taskid: b1304e3e-711e-4862-804a-330bd2d2ade5
     type: regular
     task:
-      id: d88d9a58-5cca-4411-8c66-e1c0a08887c2
+      id: b1304e3e-711e-4862-804a-330bd2d2ade5
       version: -1
       name: Retrieve anomaly results from RSC using the user-submitted form.
       description: Retrieve the suspicious list of files for a snapshot ID with detected file anomalies.
@@ -136,10 +136,10 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#error#':
-      - "45"
       '#none#':
       - "41"
+      '#error#':
+      - "45"
     scriptarguments:
       extend-context:
         simple: suspicious_file_paths=data.anomalyResultOpt.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.filePath::suspicious_file_paths=data.anomalyResultOpt.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.filePath::anomaly_cluster_info=data.snapshot.cluster::anomaly_object_type=data.snapshot.snappableNew.objectType::anomaly_cdm_id=data.snapshot.cdmId::anomaly_object_id=data.anomalyResultOpt.workloadId::cluster_id=data.snapshot.cluster.id::resolution_status=data.anomalyResultOpt.resolutionStatus::anomaly_type=data.anomalyResultOpt.anomalyType
@@ -156,8 +156,7 @@ tasks:
                   simple: anomaly_snapshot_id
                 iscontext: true
     separatecontext: false
-    continueonerror: true
-    continueonerrortype: errorPath
+    continueonerrortype: "errorPath"
     view: |-
       {
         "position": {
@@ -172,12 +171,31 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerror: true
+    fieldMapping:
+    - incidentfield: Rubrik Suspicious File List
+      output:
+        complex:
+          root: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo
+          accessor: sampleAffectedFilesInfo
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo
+                iscontext: true
+    - incidentfield: Rubrik Suspicious File Count
+      output:
+        complex:
+          root: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo
+          accessor: totalAffectedFiles
   "20":
     id: "20"
-    taskid: c1435e90-551e-4639-810d-b8796624837f
+    taskid: 79c68a52-77e5-4b88-8490-0c980ac8c750
     type: collection
     task:
-      id: c1435e90-551e-4639-810d-b8796624837f
+      id: 79c68a52-77e5-4b88-8490-0c980ac8c750
       version: -1
       name: Collect the anomaly file paths to generate the downloadable links.
       description: Collecting anomaly file paths to generate the downloadable links from RSC.
@@ -193,7 +211,7 @@ tasks:
       {
         "position": {
           "x": 145,
-          "y": 2160
+          "y": 2540
         }
       }
     note: false
@@ -243,10 +261,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: df2d18b5-be13-476b-806a-896f7782ca58
+    taskid: a78c6a84-5f06-4a18-8e04-e0e1ae9d3956
     type: condition
     task:
-      id: df2d18b5-be13-476b-806a-896f7782ca58
+      id: a78c6a84-5f06-4a18-8e04-e0e1ae9d3956
       version: -1
       name: Check whether input file paths are available or not.
       description: Check whether file paths are available or not from the playbook input.
@@ -277,7 +295,7 @@ tasks:
       {
         "position": {
           "x": 32.5,
-          "y": 1980
+          "y": 2360
         }
       }
     note: false
@@ -289,10 +307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 9a7476c6-9c98-4279-8efe-7d92886a3d47
+    taskid: fdfc1671-e181-47f4-86ea-b8d9cdd2afce
     type: collection
     task:
-      id: 9a7476c6-9c98-4279-8efe-7d92886a3d47
+      id: fdfc1671-e181-47f4-86ea-b8d9cdd2afce
       version: -1
       name: Collect the anomaly information.
       description: Collecting Object name, type and the cluster ID to retrieve the anomaly events from RSC.
@@ -384,10 +402,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 7fe1727d-53f3-4370-8c5e-e962d6d6586f
+    taskid: 182fb034-3ae9-4849-8432-a9226fdee5b7
     type: regular
     task:
-      id: 7fe1727d-53f3-4370-8c5e-e962d6d6586f
+      id: 182fb034-3ae9-4849-8432-a9226fdee5b7
       version: -1
       name: Retrieve the Activity Series ID using the meta information of Object retrieved from the user-submitted form.
       description: Retrieve the Activity Series ID using the meta information of Object retrieved from the user-submitted form.
@@ -450,19 +468,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 73f80702-5bd6-4dc4-8874-d11906869f0d
+    taskid: d4f1be2e-7565-46f7-817f-4fd836416dbe
     type: regular
     task:
-      id: 73f80702-5bd6-4dc4-8874-d11906869f0d
+      id: d4f1be2e-7565-46f7-817f-4fd836416dbe
       version: -1
       name: Delete context for the specified keys.
-      description: |-
-        Delete context for the specified keys.
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Delete context for the specified keys.\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -500,10 +512,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 7c42e45c-b66b-4d8a-81e9-ddb89d5f3f9b
+    taskid: 92625aaf-5687-42d8-8b82-72a74430ec5b
     type: condition
     task:
-      id: 7c42e45c-b66b-4d8a-81e9-ddb89d5f3f9b
+      id: 92625aaf-5687-42d8-8b82-72a74430ec5b
       version: -1
       name: Check whether the Snapshot ID is available or not.
       description: Check whether the snapshot ID is available or not from the playbook input.
@@ -546,10 +558,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 656c8564-7746-4b8c-863f-11197ac2ec8c
+    taskid: 75375940-c7fe-4a86-8add-32c0f5b11f71
     type: regular
     task:
-      id: 656c8564-7746-4b8c-863f-11197ac2ec8c
+      id: 75375940-c7fe-4a86-8add-32c0f5b11f71
       version: -1
       name: Generate request ID for the download of the malicious files.
       description: |-
@@ -601,7 +613,7 @@ tasks:
       {
         "position": {
           "x": 32.5,
-          "y": 2330
+          "y": 2710
         }
       }
     note: false
@@ -613,10 +625,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: d2900c9a-3f5e-4871-8a1f-7ebcac176bca
+    taskid: 691325d4-cd8a-425c-8c7c-854bfe35819a
     type: playbook
     task:
-      id: d2900c9a-3f5e-4871-8a1f-7ebcac176bca
+      id: 691325d4-cd8a-425c-8c7c-854bfe35819a
       version: -1
       name: Rubrik Poll Async Result - Rubrik Polaris
       description: Poll async result for any asynchronous request made to rubrik.
@@ -667,7 +679,7 @@ tasks:
       {
         "position": {
           "x": 32.5,
-          "y": 2505
+          "y": 2885
         }
       }
     note: false
@@ -679,10 +691,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 146f3575-38ca-48f5-84e1-0d7642278dc1
+    taskid: 2ad835a9-1d02-4189-8fcd-b5f6a54df7d2
     type: regular
     task:
-      id: 146f3575-38ca-48f5-84e1-0d7642278dc1
+      id: 2ad835a9-1d02-4189-8fcd-b5f6a54df7d2
       version: -1
       name: Set the delete keys.
       description: Set the delete keys in context.
@@ -718,10 +730,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 901c5ebd-1080-4ed6-8181-448112f501ef
+    taskid: de00e1a4-df59-4dd0-8461-8d3ccbed3eb8
     type: condition
     task:
-      id: 901c5ebd-1080-4ed6-8181-448112f501ef
+      id: de00e1a4-df59-4dd0-8461-8d3ccbed3eb8
       version: -1
       name: Check whether the Activity Series ID is available or not.
       description: Check whether the Activity Series ID  is available or not from the command output.
@@ -764,10 +776,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: a5aff64d-9677-4318-8bf7-eb922ef738d0
+    taskid: 29da60b8-c425-406e-86fa-dd8af8a8503a
     type: condition
     task:
-      id: a5aff64d-9677-4318-8bf7-eb922ef738d0
+      id: 29da60b8-c425-406e-86fa-dd8af8a8503a
       version: -1
       name: Check whether suspicious file paths are available or not.
       description: Check whether suspicious file paths are available or not from the command output.
@@ -796,7 +808,7 @@ tasks:
       {
         "position": {
           "x": 105,
-          "y": 1805
+          "y": 2185
         }
       }
     note: false
@@ -808,48 +820,40 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: a07c6d70-e71c-42d2-8e15-4d8bcb0852f8
-    type: regular
+    taskid: 21e7ed3d-5d15-4440-830d-36b364071846
+    type: condition
     task:
-      id: a07c6d70-e71c-42d2-8e15-4d8bcb0852f8
+      id: 21e7ed3d-5d15-4440-830d-36b364071846
       version: -1
-      name: Download the analyzed CSV file for anomaly.
-      description: Request for the analysis and retrieve the download link or directly download file for the Radar CSV analyzed file.
-      script: RubrikPolaris|||rubrik-radar-anomaly-csv-analysis
-      type: regular
-      iscommand: true
-      brand: RubrikPolaris
+      name: Check whether the Download CSV File input parameter is set to True.
+      description: Check whether the Download CSV File input parameter is set to True.
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
-      '#none#':
-      - "39"
-    scriptarguments:
-      cluster_id:
-        complex:
-          root: cluster_id
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: incident.rubrikpolariscdmclusterid
-                iscontext: true
-      download_file:
-        complex:
-          root: inputs.download_csv_file
-      object_id:
-        complex:
-          root: anomaly_object_id
-      snapshot_id:
-        complex:
-          root: anomaly_cdm_id
+      '#default#':
+      - "47"
+      "yes":
+      - "46"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: inputs.download_csv_file
+                transformers:
+                - operator: trim
+            iscontext: true
+          ignorecase: true
     continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -140,
+          "x": -150,
           "y": 1630
         }
       }
@@ -862,10 +866,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 673bbb03-4490-42e8-8bea-8c9873637d8a
+    taskid: 8ae2e2ce-a87e-4b52-8d98-7500df07d6ff
     type: condition
     task:
-      id: 673bbb03-4490-42e8-8bea-8c9873637d8a
+      id: 8ae2e2ce-a87e-4b52-8d98-7500df07d6ff
       version: -1
       name: Is anomaly detection status resolved?
       description: Check whether the status of the anomaly detection is resolved or not.
@@ -908,10 +912,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: daecd40a-dc2c-44cb-8643-b8c044757074
+    taskid: 9a15551c-67f9-483e-80a1-e894a0fed4cb
     type: regular
     task:
-      id: daecd40a-dc2c-44cb-8643-b8c044757074
+      id: 9a15551c-67f9-483e-80a1-e894a0fed4cb
       version: -1
       name: closeInvestigation
       description: Close the current incident
@@ -946,10 +950,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 13549c78-4743-476a-86c7-23c74f5153aa
+    taskid: 8dfc9543-fad9-4454-8d7c-abd5f77c7755
     type: playbook
     task:
-      id: 13549c78-4743-476a-86c7-23c74f5153aa
+      id: 8dfc9543-fad9-4454-8d7c-abd5f77c7755
       version: -1
       name: Rubrik Update Anomaly Status- Rubrik Security Cloud
       description: This playbook updates status of the Anomaly Detection snapshot for the provided anomaly ID (or activity series ID) and workload ID (or Object ID).
@@ -1001,10 +1005,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 8e2d683c-e65d-4db3-8ec5-24d816d6c041
+    taskid: d11caccf-b18c-4149-8891-2e322bc9b25a
     type: condition
     task:
-      id: 8e2d683c-e65d-4db3-8ec5-24d816d6c041
+      id: d11caccf-b18c-4149-8891-2e322bc9b25a
       version: -1
       name: Whether want to resolve Anomaly Detection?
       description: Collect the information to resolve anomaly detection.
@@ -1050,23 +1054,128 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 481b8c48-0bb7-4e3b-81fc-96ebe0bcc180
+    type: regular
+    task:
+      id: 481b8c48-0bb7-4e3b-81fc-96ebe0bcc180
+      version: -1
+      name: Download the analyzed CSV file for anomaly.
+      description: Request for the analysis and directly download the anomaly CSV analyzed file.
+      script: '|||rubrik-anomaly-csv-analysis-v2'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: cluster_id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.rubrikpolariscdmclusterid
+                iscontext: true
+      object_id:
+        complex:
+          root: anomaly_object_id
+      snapshot_id:
+        complex:
+          root: anomaly_cdm_id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 105,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: d8f0892d-78b5-4315-8943-4f6e43d366d5
+    type: condition
+    task:
+      id: d8f0892d-78b5-4315-8943-4f6e43d366d5
+      version: -1
+      name: Whether to Download the analyzed CSV file for anomaly?
+      description: Whether to Download the analyzed CSV file for anomaly?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "39"
+      "Yes":
+      - "46"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Whether to download the analyzed CSV file for the anomaly?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "19_45_#error#": 0.57,
       "38_5_#default#": 0.65,
       "39_21_Available": 0.64,
+      "40_47_#default#": 0.49,
       "41_40_#default#": 0.64,
       "41_42_yes": 0.67,
       "41_45_#default#": 0.57,
       "45_44_Yes": 0.48,
-      "45_5_No": 0.21
+      "45_5_No": 0.21,
+      "47_39_No": 0.21
     },
     "paper": {
       "dimensions": {
-        "height": 2895,
-        "width": 1290,
-        "x": -140,
+        "height": 3265,
+        "width": 1300,
+        "x": -150,
         "y": -140
       }
     }
