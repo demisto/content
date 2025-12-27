@@ -235,7 +235,13 @@ class Client(BaseClient):
 
             # This thread needs to perform the refresh
             demisto.debug(f"Thread {threading.current_thread().name}: Refreshing access token")
-            new_token = self.get_access_token()
+            try:
+                new_token = self.get_access_token()
+            except Exception as e:
+                # Handle gracefully if token refresh fails (e.g., API errors)
+                error_str = str(e)
+                demisto.debug(f"Thread {threading.current_thread().name}: Token refresh failed: {error_str}")
+                raise
 
             # Save to context so other threads can see it
             if self._context_manager:
@@ -267,13 +273,13 @@ class Client(BaseClient):
             is_auth_error = "Invalid access token" in error_str or "401" in error_str or "Unauthorized" in error_str
 
             if is_auth_error:
-                demisto.debug(f"Thread {threading.current_thread().name}: Authentication error detected: {error_str}")
+                safe_debug(f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}")
 
                 # If using context manager, try to get fresh token from context first
                 if self._context_manager:
                     fresh_token = self._context_manager.get_access_token()
                     if fresh_token and fresh_token != self._access_token:
-                        demisto.debug(f"Thread {threading.current_thread().name}: Using refreshed token from context")
+                        safe_debug(f"Thread {threading.current_thread().name}: Using refreshed token from context")
                         self.apply_access_token(fresh_token)
                         # Retry with the fresh token
                         try:
@@ -289,11 +295,16 @@ class Client(BaseClient):
                             if not is_retry_auth_error:
                                 raise retry_e
                             # If we reach here, the token from context was also invalid - proceed to full refresh
+                            safe_debug(f"Thread {threading.current_thread().name}: Context token also invalid, performing full refresh")
 
-                # Perform coordinated token refresh
-                new_token = self.refresh_access_token()
-                self.apply_access_token(new_token)
-                demisto.debug(f"Thread {threading.current_thread().name}: Access token successfully applied")
+                # Perform coordinated token refresh (handles 401 gracefully during refresh)
+                try:
+                    new_token = self.refresh_access_token()
+                    self.apply_access_token(new_token)
+                    safe_debug(f"Thread {threading.current_thread().name}: Access token successfully refreshed and applied")
+                except Exception as refresh_e:
+                    safe_debug(f"Thread {threading.current_thread().name}: Token refresh failed: {str(refresh_e)}")
+                    raise
 
                 # Retry the request with new token
                 raw_response = self._http_request(
