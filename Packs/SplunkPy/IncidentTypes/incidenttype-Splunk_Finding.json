@@ -1,0 +1,41 @@
+{
+    "autorun": false,
+    "color": "#F8E7A5",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Splunk Finding",
+    "playbookId": "Splunk Generic",
+    "layout": "Splunk Finding",
+    "locked": false,
+    "name": "Splunk Finding",
+    "onChangeRepAlg": 0,
+    "readonly": false,
+    "reputationCalc": 2,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
+}
