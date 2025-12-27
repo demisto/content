@@ -2,7 +2,7 @@ commonfields:
   id: Jira V3
   version: -1
 sectionorder:
-- Connect
+- Connect 
 - Collect
 name: Jira V3
 display: Atlassian Jira v3
