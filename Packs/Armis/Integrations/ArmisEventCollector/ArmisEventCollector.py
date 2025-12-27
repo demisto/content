@@ -273,7 +273,9 @@ class Client(BaseClient):
             is_auth_error = "Invalid access token" in error_str or "401" in error_str or "Unauthorized" in error_str
 
             if is_auth_error:
-                safe_debug(f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}")
+                safe_debug(
+                    f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}"
+                )
 
                 # If using context manager, try to get fresh token from context first
                 if self._context_manager:
@@ -295,7 +297,9 @@ class Client(BaseClient):
                             if not is_retry_auth_error:
                                 raise retry_e
                             # If we reach here, the token from context was also invalid - proceed to full refresh
-                            safe_debug(f"Thread {threading.current_thread().name}: Context token also invalid, performing full refresh")
+                            safe_debug(
+                                f"Thread {threading.current_thread().name}: Context token also invalid, performing full refresh"
+                            )
 
                 # Perform coordinated token refresh (handles 401 gracefully during refresh)
                 try:
@@ -467,7 +471,7 @@ def safe_debug(message: str) -> None:
                 demisto.debug(f"[safe_debug] Logging failed: {type(e).__name__}")
             except Exception:
                 # Final fallback - silently continue to prevent cascade failures
-                demisto.debug(f"[safe_debug] Final fallback - silently continue to prevent cascade failures}")
+                demisto.debug("[safe_debug] Final fallback - silently continue to prevent cascade failures")
 
 
 def calculate_fetch_start_time(
