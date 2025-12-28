@@ -3271,7 +3271,6 @@ class ClosureConfig:
     closure_method: Optional[str]  # "closed", "resolved", or None
     custom_close_state: Optional[str]
     user_delta: dict  # Fields from XSOAR (via mapper)
-    integration_params: dict
 
     def is_closing_intended(self) -> bool:
         """Check if this update intends to close the ticket."""
@@ -3281,16 +3280,11 @@ class ClosureConfig:
         """Check if this update customer close the ticket."""
         return self.custom_close_state is not None
 
-    def has_user_provided_field(self, field: str) -> bool:
-        """Check if user provided a specific field."""
-        return field in self.user_delta and self.user_delta[field]
-
 
 @dataclass
 class TicketClosureManager:
     """Manages ticket closure logic with clear separation of concerns."""
     config: ClosureConfig
-
 
     def determine_target_state(self) -> str:
         """
@@ -3419,7 +3413,6 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
             closure_method=get_closure_case(params),
             custom_close_state=params.get("close_custom_state"),
             user_delta=parsed_args.delta,
-            integration_params=params,
         )
 
         closure_mgr = TicketClosureManager(closure_config)
