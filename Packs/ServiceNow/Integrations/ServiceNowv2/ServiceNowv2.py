@@ -92,6 +92,10 @@ TICKET_CLOSURE_STATES = {
         "closed": "3",
         "resolved": "3",
     },
+    "sc_request": {
+        "closed": "3",
+        "resolved": "3",
+    },
 
 }
 
@@ -3332,7 +3336,7 @@ class TicketClosureManager:
         
         # Start with user-provided fields (highest priority)
         fields.update(self.config.user_delta)
-        
+
         # Determine and set the target state
         target_state = self.determine_target_state()
         
