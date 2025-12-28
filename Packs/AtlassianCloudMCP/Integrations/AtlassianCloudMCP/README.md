@@ -11,44 +11,6 @@ Use this integration to connect securely with a Atlassian Cloud Model Context Pr
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### list-tools
-
-***
-Retrieves a list of available tools in the Atlassian Cloud MCP server.
-
-#### Base Command
-
-`list-tools`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
-
-### call-tool
-
-***
-Calls a specific tool on the MCP server with optional input parameters.
-
-#### Base Command
-
-`call-tool`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | The name of the tool to call. | Optional |
-| arguments | Parameters for the tool execution. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
 ### atlassian-cloud-mcp-auth-test
 
 ***
