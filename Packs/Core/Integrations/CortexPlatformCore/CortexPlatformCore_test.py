@@ -7217,7 +7217,7 @@ def test_validate_custom_fields_system_field(mocker):
     assert "custom_field" in valid_fields
     assert "system_field" not in valid_fields
     assert len(error_messages) == 1
-    assert "not valid to set" in error_messages[0]
+    assert "is a system field and cannot be set with this command" in error_messages[0]
 
 
 def test_validate_custom_fields_non_existent_field(mocker):
@@ -7253,6 +7253,7 @@ def test_validate_custom_fields_non_existent_field(mocker):
     assert "non_existent" not in valid_fields
     assert len(error_messages) == 1
     assert "does not exist" in error_messages[0]
+    assert "Available custom fields are:" in error_messages[0]
 
 
 def test_update_case_custom_fields_command_success(mocker):

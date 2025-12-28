@@ -2586,8 +2586,7 @@ script:
     - name: core-update-case-custom-fields
       hidden: true
       description: |-
-        Updates custom fields on a case. This command is designed for AI agents to safely update custom fields with AI-generated content (HTML, markdown, etc.) without risk of overriding system fields.
-        It validates that the fields exist and are custom fields before updating.
+        Updates custom fields of a case.
       arguments:
       - name: case_id
         required: true
