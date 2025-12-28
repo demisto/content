@@ -29,12 +29,10 @@ class CoreClient(BaseClient):
         proxy: bool = False,
         verify: bool = False,
         is_core: bool = False,
-        use_platform_api: bool = False,
     ):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
         self.is_core = is_core
-        self.use_platform_api = use_platform_api
 
     def _http_request(  # type: ignore[override]
         self,
@@ -52,6 +50,7 @@ class CoreClient(BaseClient):
         with_metrics=False,
         resp_type="json",
         response_data_type=None,
+        use_platform_api=False,
     ):
         '''
         """A wrapper for requests lib to send our requests and handle requests and responses.
@@ -132,7 +131,7 @@ class CoreClient(BaseClient):
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
 
-        if self.use_platform_api:
+        if use_platform_api:
             address = full_url or url_suffix  # platform API expects only the path suffix
             response = demisto._platformAPICall(path=address, method=method, params=params, data=data, timeout=timeout)
 

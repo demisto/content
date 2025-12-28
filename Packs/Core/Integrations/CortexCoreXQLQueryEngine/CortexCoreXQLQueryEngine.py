@@ -69,114 +69,124 @@ BUILT_IN_QUERY_COMMANDS = {
 }
 
 
-def get_xql_query_results_platform(client: CoreClient, args: dict) -> dict:
-    """Retrieve results of an executed XQL query API. Returns the query status and the results if the query has been completed.
+def get_xql_query_results_platform(client: CoreClient, execution_id: str) -> dict:
+    """Retrieve results of an executed XQL query using Platform API.
 
     Args:
-        client (Client): The XDR Client.
-        args (dict): The arguments to pass to the API call.
+        client (CoreClient): The XDR Client.
+        execution_id (str): The execution ID of the query to retrieve.
 
     Returns:
-        dict: The query results.
+        dict: The query results including status, execution_id, and results if completed.
     """
-    query_id = args.get("query_id")
-    if not query_id:
-        raise ValueError("query ID is not specified")
-    data = {
-        "query_id": query_id,
+    data: dict[str, Any] = {
+        "query_id": execution_id,
     }
 
     # Call the Client function and get the raw response
     demisto.debug(f"Calling get_query_results with {data=}")
-    response = client._http_request(method="POST", json_data=data, url_suffix="/xql_queries/results/info/", ok_codes=[200])
-    demisto.debug(f"get_query_results returned {response=}")
+    response = client._http_request(
+        method="POST", json_data=data, url_suffix="/xql_queries/results/info/", ok_codes=[200], use_platform_api=True
+    )
 
-    response["execution_id"] = query_id
+    response["execution_id"] = execution_id
     stream_id = response.get("stream_id")
     if response.get("status") != "PENDING" and stream_id:
         data = {
             "stream_id": stream_id,
         }
-        query_data = client._http_request(method="POST", json_data=data, url_suffix="/xql_queries/results/", ok_codes=[200])
-        response["results"] = [json.loads(line) for line in query_data.split("\n") if len(line) > 0]
+        demisto.debug(f"Requesting query results using {data=}")
+        query_data = client._http_request(
+            method="POST", json_data=data, url_suffix="/xql_queries/results/", ok_codes=[200], use_platform_api=True
+        )
+        response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
+
+    if response.get("status") == "FAIL":
+        # Get full error details using PAPI
+        data = {
+            "request_data": {
+                "query_id": execution_id,
+                "pending_flag": True,
+                "format": "json",
+            }
+        }
+        response["error_details"] = client.get_xql_query_results(data).get("error")
 
     return response
 
 
-def get_xql_query_results_platform_polling(client: CoreClient, args: dict) -> dict:
-    """Retrieve results of an executed XQL query API
+def get_xql_query_results_platform_polling(client: CoreClient, execution_id: str, timeout: int) -> dict:
+    """Retrieve results of an executed XQL query using Platform API with polling.
 
     Args:
-        client (Client): The XDR Client.
-        args (dict): The arguments to pass to the API call.
+        client (CoreClient): The XDR Client.
+        execution_id (str): The execution ID of the query to fetch.
+        timeout (int): The polling timeout in seconds.
 
     Returns:
-        Union[CommandResults, dict]: The command results.
+        dict: The query results after polling completes or timeout is reached.
     """
-    # get the query data either from the integration context (if its not the first run) or from the given args.
     interval_in_secs = 10
-    timeout_in_secs = int(args.get("timeout_in_seconds", 180))
 
     # Block execution until the execution status isn't pending or we time out
     polling_start_time = datetime.now()
-    while (datetime.now() - polling_start_time).total_seconds() < timeout_in_secs:
-        outputs = get_xql_query_results_platform(client, args)  # get query results with query_id
+    while (datetime.now() - polling_start_time).total_seconds() < timeout:
+        outputs = get_xql_query_results_platform(client, execution_id)
         if outputs.get("status") != "PENDING":
             break
 
-        demisto.debug(f"Got status 'PENDING' for {args.get('query_id', '')}, checking again in {interval_in_secs} seconds.")
+        demisto.debug(f"Got status 'PENDING' for {execution_id}, checking again in {interval_in_secs} seconds.")
         time.sleep(interval_in_secs)
 
     return outputs
 
 
-def start_xql_query_platform(client: CoreClient, args: Dict[str, Any]) -> str:
-    """Execute an XQL query.
+def start_xql_query_platform(client: CoreClient, query: str, timeframe: dict) -> str:
+    """Execute an XQL query using Platform API.
 
     Args:
-        client (Client): The XDR Client.
-        args (dict): The arguments to pass to the API call.
+        client (CoreClient): The XDR Client.
+        query (str): The XQL query string to execute.
+        timeframe (dict): The timeframe for the query.
 
     Returns:
         str: The query execution ID.
+    """
+    if "limit" not in query:  # Add default limit if no limit was provided
+        query = f"{query} | limit {DEFAULT_LIMIT!s}"
+
+    data: Dict[str, Any] = {
+        "query": query,
+        "timeframe": timeframe,
+    }
+
+    demisto.debug(f"Calling xql_queries/submit with {data=}")
+    res = client._http_request(
+        url_suffix="/xql_queries/submit/", method="POST", json_data=data, ok_codes=[200], use_platform_api=True
+    )
+    return res
+
+
+def xql_query_platform_command(client: CoreClient, args: dict) -> CommandResults:
+    """Execute an XQL query using Platform API and poll for results.
+
+    Args:
+        client (CoreClient): The XDR Client.
+        args (dict): Command arguments including query, timeframe, wait_for_results, and timeout_in_seconds.
+
+    Returns:
+        CommandResults: The command results with execution_id, query_url, and optionally status and results.
     """
     query = args.get("query", "")
     if not query:
         raise ValueError("query is not specified")
 
-    if "limit" not in query:  # if user did not provide a limit in the query, we will use the default one.
-        query = f"{query} | limit {DEFAULT_LIMIT!s}"
+    timeframe = convert_timeframe_string_to_json(args.get("timeframe", "24 hours") or "24 hours")
 
-    timeframe = args.get("timeframe", "24 hours") or "24 hours"
-
-    data: Dict[str, Any] = {
-        "query": query,
-        "timeframe": convert_timeframe_string_to_json(timeframe),
-    }
-
-    demisto.debug(f"Calling xql_queries/submit with {data=}")
-    res = client._http_request(
-        url_suffix="/xql_queries/submit/", method="POST", data=data, ok_codes=[200]
-    )  # TODO: test bad status code error output
-    return res
-
-
-def xql_query_platform_command(client: CoreClient, args: dict) -> Union[CommandResults, list]:
-    """Execute an XQL query using the platform API, then polls until the results are received.
-
-    Args:
-        client (Client): The XDR Client.
-        args (dict): The arguments to pass to the API call.
-
-    Returns:
-        CommandResults: The command results.
-    """
-    execution_id = start_xql_query_platform(client, args)
+    execution_id = start_xql_query_platform(client, query, timeframe)
 
     if not execution_id:
         raise DemistoException("Failed to start query\n")
-
-    args["query_id"] = execution_id
 
     query_url = "/".join([demisto.demistoUrls().get("server", ""), "xql/xql-search", execution_id])
     outputs = {
@@ -184,13 +194,15 @@ def xql_query_platform_command(client: CoreClient, args: dict) -> Union[CommandR
         "query_url": query_url,
     }
 
-    if argToBoolean(args.get("wait_for_results", False)):
+    if argToBoolean(args.get("wait_for_results", True)):
         demisto.debug(f"Polling query execution with {execution_id=}")
-        outputs.update(get_xql_query_results_platform_polling(client, args))
+        timeout_in_secs = int(args.get("timeout_in_seconds", 180))
+        outputs.update(get_xql_query_results_platform_polling(client, execution_id, timeout_in_secs))
 
     return CommandResults(
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
     )
+
 
 GENERIC_QUERY_COMMANDS = {
     "test-module": test_module,
@@ -224,7 +236,6 @@ def main() -> None:
         elif command in BUILT_IN_QUERY_COMMANDS:
             return_results(get_built_in_query_results_polling_command(client, args))
         elif command in PLATFORM_QUERY_COMMANDS:
-            client.use_platform_api = True
             return_results(PLATFORM_QUERY_COMMANDS[command](client, args))
         else:
             raise NotImplementedError(f"Command {command} does not exist.")
