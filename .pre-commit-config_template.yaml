@@ -406,6 +406,7 @@ repos:
       exclude: Packs/ReversingLabs_Titanium_Cloud/Integrations/ReversingLabsTitaniumCloudv2/README\.md
 
 - repo: https://github.com/kraymer/brack
-  rev: main
+  rev: v1.0.0
   hooks:
     - id: brack
+      args: [-r, "^[a-zA-Z0-9_-]{1,}$"]
