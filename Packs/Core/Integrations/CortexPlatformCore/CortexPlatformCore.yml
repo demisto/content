@@ -2856,6 +2856,10 @@ script:
         isArray: true
       name: core-get-endpoint-update-version
       description: Retrieves endpoint update versions for the provided endpoint ID.
+      supportedModules:
+        - cloud_runtime_security
+        - edr
+        - xsiam
       outputs:
       - contextPath: Core.EndpointUpdateVersion.total_count
         description: Total number of endpoints.
@@ -2911,6 +2915,10 @@ script:
         - Friday
         - Saturday
       name: core-update-endpoint-version
+      supportedModules:
+        - cloud_runtime_security
+        - edr
+        - xsiam
       description: Updates the version of the given endpoint to the target version supplied.
       outputs: 
       - contextPath: Core.EndpointUpdate.endpoint_ids
