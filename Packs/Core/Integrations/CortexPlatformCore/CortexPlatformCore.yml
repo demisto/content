@@ -2855,7 +2855,7 @@ script:
         required: true
         isArray: true
       name: core-get-endpoint-update-version
-      description: Retrieves endpoint update versions for the provided endpoint ID.
+      description: Retrieves endpoint update versions for the provided endpoint IDs.
       supportedModules:
         - cloud_runtime_security
         - edr
@@ -2874,13 +2874,13 @@ script:
         description: The version of the endpoint update.
         type: String
       - contextPath: Core.EndpointUpdateVersion.distributions.endpoints_with_higher_version_count
-        description: The account of the given endpoints that are higher than the version.
+        description: The number of endpoints running a version later than the specified update.
         type: String
       - contextPath: Core.EndpointUpdateVersion.distributions.endpoints_with_same_version_count
-        description: The account of the given endpoints that are equal to the version.
+        description: The number of endpoints running the same version as the specified update.
         type: String
       - contextPath: Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count
-        description: The account of the given endpoints that are lower than the version.
+        description: The number of endpoints running a version earlier than the specified update.
         type: String
     - arguments: 
       - description: A comma-separated list of endpoint IDs.
@@ -2898,11 +2898,11 @@ script:
       - description: The target version for updating the endpoints.
         name: version
         required: true
-      - description: From which time to apply the update. In format of "HH:MM". A minimum of two hours is required between the start time and the end time.
+      - description: The start time for the update. Enter the time in a 24-hour format (HH:MM). Ensure that there are at least two hours between the start time and the end time.
         name: start_time
-      - description: Until which time the update may run. In format of "HH:MM".
+      - description: The end time for the update. Enter the time in a 24-hour format (HH:MM).
         name: end_time
-      - description: Comma-separated list of days the update may run.
+      - description: A comma-separated list of days of the week the update may run.
         name: days
         isArray: true
         auto: PREDEFINED
