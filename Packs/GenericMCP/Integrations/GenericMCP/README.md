@@ -1,4 +1,5 @@
-Use this integration to connect securely with an MCP server and access its tools in real time.
+Use this integration to connect to an MCP server and automatically discover its available tools.
+This integration was integrated and tested with version xx of GenericMCP.
 
 ## Configure Generic MCP in Cortex
 
@@ -17,6 +18,7 @@ Use this integration to connect securely with an MCP server and access its tools
 | API Token / API Key | API Token or API Key to access the service REST API. | False |
 | Username | Username &amp;amp; Password to use for basic authentication. | False |
 | Password |  | False |
+| Server Name | The name to use for the server in tool names. If not provided, the default name returned by the server will be used. |  |
 | Trust any certificate (not secure) |  | False |
 
 ## Authentication Type Options
@@ -75,10 +77,7 @@ Retrieves a list of available tools in the MCP server.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ListTools.server_name | String | The name of the MCP server. |
-| ListTools.Tools | Unknown | A list of available tools in the MCP server. |
+There is no context output for this command.
 
 ### call-tool
 
@@ -98,9 +97,7 @@ Calls a specific tool on the MCP server with optional input parameters.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CallTool.Tool | Unknown | The result of calling the specified tool. |
+There is no context output for this command.
 
 ### generic-mcp-auth-test
 

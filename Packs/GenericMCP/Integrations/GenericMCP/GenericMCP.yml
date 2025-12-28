@@ -42,7 +42,6 @@ configuration:
     display: Redirect URI
     type: 0
     advanced: true
-    hidden: true
   - name: custom_headers
     section: Connect
     display: Custom headers 
@@ -55,7 +54,6 @@ configuration:
     section: Connect
     display: Authorization Endpoint
     type: 0
-    hidden: true
     additionalinfo: |
       The URL for the OAuth 2.0 authorization endpoint. If not provided, the default will be the origin of the `base_url` followed by `/oauth2/authorize`.
       For example, if `base_url` is `https://example.com/mcp`, the default `Authorization Endpoint` will be `https://example.com/oauth2/authorize`.
@@ -63,7 +61,6 @@ configuration:
     section: Connect
     display: Token Endpoint
     type: 0
-    hidden: true
     additionalinfo: |
       The URL for the OAuth 2.0 token endpoint. If not provided, the default will be the origin of the `base_url` followed by `/oauth2/token`.
       For example, if `base_url` is `https://example.com/mcp`, the default `Token Endpoint` will be `https://example.com/oauth2/token`.
@@ -72,7 +69,6 @@ configuration:
     display: Scope
     type: 0
     additionalinfo: Space-separated permission identifiers.
-    hidden: true
   - name: token
     type: 9
     displaypassword: API Token / API Key
@@ -98,7 +94,7 @@ configuration:
     type: 8
     required: false
     advanced: true
-description: Use this integration to connect to any MCP server and automatically discover its available tools.
+description: Use this integration to connect to an MCP server and automatically discover its available tools.
 display: Generic MCP
 name: GenericMCP
 script:
