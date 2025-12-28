@@ -1,4 +1,4 @@
-[MODEL: dataset=cisco_asa_raw]
+[MODEL: dataset = cisco_asa_raw]
 alter
         protocol = uppercase(_json -> generalCiscoLog.protocol),
         severity = _json -> severity,
