@@ -1475,8 +1475,7 @@ def get_case_extra_data(client, args):
     """
     demisto.debug(f"Calling core-get-case-extra-data, {args=}")
     # Set the base URL for this API call to use the public API v1 endpoint
-    client._base_url = "api/webapp/public_api/v1"
-    case_extra_data = get_extra_data_for_case_id_command(client, args).outputs
+    case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
     demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
     issue_ids = extract_ids(case_extra_data)
     case_data = case_extra_data.get("case", {})
@@ -3159,6 +3158,51 @@ def get_case_ai_summary_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def init_client(api_type: str) -> Client:
+    """
+    Initializes the Client for a specific API type.
+
+    Args:
+        api_type (str): The category of the API (e.g., 'public', 'webapp', 'data_platform', etc.)
+    """
+    params = demisto.params()
+
+    # Connection parameters
+    proxy = params.get('proxy', False)
+    verify_cert = not params.get('insecure', False)
+
+    try:
+        timeout = int(params.get('timeout', 120))
+    except (ValueError, TypeError):
+        timeout = 120
+
+    # Base URL Mapping logic based on api_type
+    webapp_root = f"/api/webapp"
+
+    url_map = {
+        "webapp": webapp_root,
+        "public": f"{webapp_root}/public_api/v1",
+        "data_platform": f"{webapp_root}/data-platform",
+        "appsec": f"{webapp_root}/public_api/appsec",
+        "xsoar": f"/xsoar"
+    }
+
+    # Fallback to public API if the type isn't recognized
+    client_url = url_map.get(api_type, url_map["public"])
+
+    headers: dict = {
+        "Authorization": params.get('api_key'),
+        "Content-Type": "application/json"
+    }
+
+    return Client(
+        base_url=client_url,
+        proxy=proxy,
+        verify=verify_cert,
+        headers=headers,
+        timeout=timeout,
+    )
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -3169,39 +3213,20 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     remove_nulls_from_dictionary(args)
-    headers: dict = {}
 
-    webapp_api_url = "/api/webapp"
-    public_api_url = f"{webapp_api_url}/public_api/v1"
-    data_platform_api_url = f"{webapp_api_url}/data-platform"
-    appsec_api_url = f"{webapp_api_url}/public_api/appsec"
-    xsoar_api_url = "/xsoar"
-    proxy = demisto.params().get("proxy", False)
-    verify_cert = not demisto.params().get("insecure", False)
-
-    try:
-        timeout = int(demisto.params().get("timeout", 120))
-    except ValueError as e:
-        demisto.debug(f"Failed casting timeout parameter to int, falling back to 120 - {e}")
-        timeout = 120
-
-    client_url = public_api_url
+    # Logic to determine which API type the current command belongs to
     if command in WEBAPP_COMMANDS:
-        client_url = webapp_api_url
+        api_type = "webapp"
     elif command in DATA_PLATFORM_COMMANDS:
-        client_url = data_platform_api_url
+        api_type = "data_platform"
     elif command in APPSEC_COMMANDS:
-        client_url = appsec_api_url
+        api_type = "appsec"
     elif command in XSOAR_COMMANDS:
-        client_url = xsoar_api_url
+        api_type = "xsoar"
+    else:
+        api_type = "public"
 
-    client = Client(
-        base_url=client_url,
-        proxy=proxy,
-        verify=verify_cert,
-        headers=headers,
-        timeout=timeout,
-    )
+    client = init_client(api_type)
 
     try:
         if command == "test-module":
