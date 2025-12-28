@@ -66,6 +66,7 @@ WEBAPP_COMMANDS = [
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
+ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
 XSOAR_COMMANDS = ["core-run-playbook"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -862,6 +863,22 @@ class Client(CoreClient):
             data=policy_payload,
             headers={**self._headers, "content-type": "application/json"},
             url_suffix="/public_api/appsec/v1/policies",
+        )
+
+    def get_endpoint_support_file(self, request_data: dict[str, Any]) -> dict:
+        """
+        Retrieve endpoint support file from Cortex XDR.
+        Args:
+            request_data (dict[str, Any]): The request data containing endpoint information.
+        Returns:
+            dict: The response containing the endpoint support file data.
+        """
+        demisto.debug(f"Endpoint support file request payload: {request_data}")
+        return self._http_request(
+            method="POST",
+            data=request_data,
+            headers=self._headers,
+            url_suffix="/retrieve_endpoint_tsf",
         )
 
     def get_endpoint_update_version(self, request_data):
@@ -2877,6 +2894,37 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
     return appsec_issue
 
 
+def get_endpoint_support_file_command(client: Client, args: dict) -> CommandResults:
+    endpoint_ids = argToList(args.get("endpoint_ids"))
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_ids)
+    request_data = {
+        "request_data": {
+            "filter_data": {"filter": filter_builder.to_dict()},
+            "filter_type": "static",
+        }
+    }
+
+    response = client.get_endpoint_support_file(request_data)
+
+    reply = response.get("reply", {})
+    group_action_id = reply.get("group_action_id")
+
+    if not group_action_id:
+        raise DemistoException("No group_action_id found. Please ensure that valid endpoint IDs are provided.")
+
+    readable_output = f"Endpoint support file request submitted successfully. Group Action ID: {group_action_id}"
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointSupportFile",
+        outputs_key_field="group_action_id",
+        outputs=reply,
+        raw_response=response,
+    )
+
+
 def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves application security issues based on specified filters across multiple issue types.
@@ -3759,6 +3807,7 @@ def main():  # pragma: no cover
     public_api_url = f"{webapp_api_url}/public_api/v1"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
     appsec_api_url = f"{webapp_api_url}/public_api/appsec"
+    agents_api_url = f"{webapp_api_url}/agents"
     xsoar_api_url = "/xsoar"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
@@ -3776,6 +3825,8 @@ def main():  # pragma: no cover
         client_url = data_platform_api_url
     elif command in APPSEC_COMMANDS:
         client_url = appsec_api_url
+    elif command in ENDPOINT_COMMANDS:
+        client_url = agents_api_url
     elif command in XSOAR_COMMANDS:
         client_url = xsoar_api_url
 
@@ -3866,6 +3917,9 @@ def main():  # pragma: no cover
             return_results(list_scripts_command(client, args))
         elif command == "core-run-script-agentix":
             return_results(run_script_agentix_command(client, args))
+
+        elif command == "core-get-endpoint-support-file":
+            return_results(get_endpoint_support_file_command(client, args))
 
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
