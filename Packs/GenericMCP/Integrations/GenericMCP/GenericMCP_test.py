@@ -711,7 +711,6 @@ class TestClient:
         mock_tools = Mock(tools=[mock_tool1, mock_tool2])
         mock_session.list_tools = mocker.AsyncMock(return_value=mock_tools)
 
-        # FIX: Explicitly mock streamablehttp_client context manager return value
         mock_streamable_client = mocker.patch("GenericMCP.streamablehttp_client")
         mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=("r", "w", None))
         mock_streamable_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
@@ -741,7 +740,6 @@ class TestClient:
         mock_session.call_tool.return_value = mock_result
         mock_session.initialize = mocker.AsyncMock()
 
-        # FIX: Explicitly mock streamablehttp_client context manager return value
         mock_streamable_client = mocker.patch("GenericMCP.streamablehttp_client")
         mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=(None, None, None))
         mock_streamable_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
@@ -771,7 +769,6 @@ async def test_generate_login_url_authorization_code(mocker: MockerFixture, mock
     When: generate_login_url is called with authorization endpoint.
     Then: Returns CommandResults with authorization code flow login URL and instructions.
     """
-    # FIX: Patch the method on the real fixture object to assign a return value
     mocker.patch.object(
         mock_oauth_handler,
         "generate_authorization_code_login_url",
