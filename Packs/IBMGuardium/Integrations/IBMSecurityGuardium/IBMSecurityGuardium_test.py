@@ -3,9 +3,9 @@ import json
 from IBMSecurityGuardium import (
     Client,
     extract_field_mapping,
-    find_timestamp_field,
     get_event_hash,
     map_event,
+    validate_timestamp_field,
     deduplicate_events,
     build_ignore_list,
     fetch_events_command,
@@ -122,43 +122,6 @@ class TestExtractFieldMapping:
             extract_field_mapping({"result": {}})
 
 
-class TestFindTimestampField:
-    """Tests for find_timestamp_field function"""
-
-    @pytest.mark.parametrize(
-        "event,expected_field",
-        [
-            ({"timestamp": "2025-06-07 16:52:57.0", "name": "test"}, "timestamp"),
-            ({"created": "2025-06-07T16:52:57Z", "id": "123"}, "created"),
-            ({"date": "2025-06-07", "value": "abc"}, "date"),
-        ],
-    )
-    def test_find_timestamp_field_success(self, event, expected_field):
-        """
-        Given:
-            - Event with various timestamp field formats
-        When:
-            - Calling find_timestamp_field
-        Then:
-            - Ensure the correct timestamp field is identified
-        """
-        result = find_timestamp_field(event)
-        assert result == expected_field
-
-    def test_find_timestamp_field_no_timestamp(self):
-        """
-        Given:
-            - Event without any timestamp-like fields
-        When:
-            - Calling find_timestamp_field
-        Then:
-            - Ensure DemistoException is raised
-        """
-        event = {"name": "test", "count": 5, "status": "active"}
-        with pytest.raises(DemistoException, match="No timestamp field found"):
-            find_timestamp_field(event)
-
-
 class TestGetEventHash:
     """Tests for get_event_hash function"""
 
@@ -238,6 +201,51 @@ class TestMapEvent:
         raw_event = {"1": "10.0.0.1", "2": "test"}
         result = map_event(raw_event, field_mapping)
         assert result == {"ClientIP": "10.0.0.1", "2": "test"}
+
+
+class TestValidateTimestampField:
+    """Tests for validate_timestamp_field function"""
+
+    @pytest.mark.parametrize(
+        "timestamp_field,field_mapping",
+        [
+            ("Session Start Time", {"1": "Session Start Time", "2": "Client IP"}),
+            ("Created Date", {"1": "Created Date", "2": "Modified Date"}),
+            ("Database Name", {"1": "Client IP", "2": "Database Name", "3": "User"}),
+        ],
+    )
+    def test_validate_timestamp_field_success(self, timestamp_field, field_mapping):
+        """
+        Given:
+            - Valid timestamp field names that exist in field mapping
+        When:
+            - Calling validate_timestamp_field
+        Then:
+            - Ensure no exception is raised
+        """
+        # Should not raise any exception
+        validate_timestamp_field(timestamp_field, field_mapping)
+
+    @pytest.mark.parametrize(
+        "timestamp_field,field_mapping,expected_error",
+        [
+            ("", {"1": "Field1"}, "Timestamp Field Name is required"),
+            (None, {"1": "Field1"}, "Timestamp Field Name is required"),
+            ("NonExistent", {"1": "Field1", "2": "Field2"}, "Timestamp field 'NonExistent' not found in report headers"),
+            ("Invalid Field", {"1": "Client IP", "2": "Session Start Time"}, "Timestamp field 'Invalid Field' not found in report headers"),
+        ],
+    )
+    def test_validate_timestamp_field_failures(self, timestamp_field, field_mapping, expected_error):
+        """
+        Given:
+            - Invalid timestamp fields (empty, None, or non-existent)
+        When:
+            - Calling validate_timestamp_field
+        Then:
+            - Ensure DemistoException is raised with appropriate error message
+        """
+        with pytest.raises(DemistoException, match=expected_error):
+            validate_timestamp_field(timestamp_field, field_mapping)
 
 
 class TestDeduplicateEvents:
@@ -405,7 +413,7 @@ class TestTestModule:
 
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
-        result = test_module_command(client, REPORT_ID)
+        result = test_module_command(client, REPORT_ID, is_fetch=False, timestamp_field=None)
         assert result == "ok"
 
     def test_test_module_auth_error(self, client, requests_mock):
@@ -420,7 +428,7 @@ class TestTestModule:
         from IBMSecurityGuardium import test_module_command
 
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", status_code=403, text="Forbidden")
-        result = test_module_command(client, REPORT_ID)
+        result = test_module_command(client, REPORT_ID, is_fetch=False, timestamp_field=None)
         assert "Authorization Error" in result
 
 
@@ -440,11 +448,12 @@ class TestFetchEvents:
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
 
-        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=10, last_run={})
+        events, next_run = fetch_events_command(
+            client, REPORT_ID, max_fetch=10, last_run={}, timestamp_field="Session Start Time"
+        )
 
         assert len(events) == 1
         assert "Session Start Time" in events[0]
-        assert timestamp_field == "Session Start Time"
         assert next_run["last_fetch_time"] == "2025-06-07 16:52:57.0"
         assert len(next_run["fetched_event_hashes"]) == 1
 
@@ -462,7 +471,9 @@ class TestFetchEvents:
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
 
         last_run = {"last_fetch_time": "2025-06-07T15:00:00.000Z"}
-        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=10, last_run=last_run)
+        events, next_run = fetch_events_command(
+            client, REPORT_ID, max_fetch=10, last_run=last_run, timestamp_field="Session Start Time"
+        )
 
         assert len(events) == 0
         assert next_run == last_run
@@ -509,13 +520,14 @@ class TestFetchEvents:
 
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=mock_response)
 
-        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=25, last_run={})
+        events, next_run = fetch_events_command(
+            client, REPORT_ID, max_fetch=25, last_run={}, timestamp_field="Session Start Time"
+        )
 
         # Verify all 25 events were fetched
         assert len(events) == 25
         # Verify 3 API calls were made
         assert call_count == 3
-        assert timestamp_field == "Session Start Time"
 
     def test_fetch_events_stops_when_less_than_batch_size_returned(self, client, requests_mock, monkeypatch):
         """
@@ -549,7 +561,9 @@ class TestFetchEvents:
 
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=mock_response)
 
-        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=100, last_run={})
+        events, next_run = fetch_events_command(
+            client, REPORT_ID, max_fetch=100, last_run={}, timestamp_field="Session Start Time"
+        )
 
         # Verify only 5 events were fetched
         assert len(events) == 5
@@ -573,10 +587,11 @@ class TestFetchEvents:
         response = util_load_json("test_data/no_resources_response.json")
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=json.dumps(response))
 
-        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=100, last_run={})
+        events, next_run = fetch_events_command(
+            client, REPORT_ID, max_fetch=100, last_run={}, timestamp_field="Session Start Time"
+        )
 
         assert len(events) == 0
-        assert timestamp_field == ""
 
     def test_fetch_events_stops_at_max_fetch_mid_batch(self, client, requests_mock, monkeypatch):
         """
@@ -616,7 +631,9 @@ class TestFetchEvents:
 
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=mock_response)
 
-        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=15, last_run={})
+        events, next_run = fetch_events_command(
+            client, REPORT_ID, max_fetch=15, last_run={}, timestamp_field="Session Start Time"
+        )
 
         assert len(events) == 15
         assert call_count == 2
@@ -653,13 +670,14 @@ class TestFetchEvents:
 
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=mock_response)
 
-        events, next_run, timestamp_field = fetch_events_command(client, REPORT_ID, max_fetch=50, last_run={})
+        events, next_run = fetch_events_command(
+            client, REPORT_ID, max_fetch=50, last_run={}, timestamp_field="Session Start Time"
+        )
 
         # Verify events are properly mapped
         assert len(events) == 13  # 10 + 3
         assert "Session Start Time" in events[0]
         assert "Client IP" in events[0]
-        assert timestamp_field == "Session Start Time"
 
 
 class TestGetEventsCommand:
@@ -672,16 +690,16 @@ class TestGetEventsCommand:
         When:
             - Calling get_events_command
         Then:
-            - Ensure empty events list and timestamp_field is None
+            - Ensure empty events list is returned
         """
         response = util_load_json("test_data/no_resources_response.json")
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
 
-        events, results, timestamp_field = get_events_command(client, REPORT_ID, {})
+        events, results, timestamp_field_result = get_events_command(client, REPORT_ID, {}, timestamp_field="Session Start Time")
 
         assert len(events) == 0
-        assert timestamp_field is None
+        assert timestamp_field_result is None
 
     def test_get_events_command_invalid_time_format(self, client):
         """
@@ -694,4 +712,99 @@ class TestGetEventsCommand:
         """
         args = {"start_time": "invalid-date"}
         with pytest.raises(DemistoException, match="Invalid start_time format"):
-            get_events_command(client, REPORT_ID, args)
+            get_events_command(client, REPORT_ID, args, timestamp_field="Session Start Time")
+
+    def test_get_events_command_with_should_push_events_valid_timestamp(self, client, requests_mock):
+        """
+        Given:
+            - should_push_events is True and valid timestamp field is provided
+        When:
+            - Calling get_events_command
+        Then:
+            - Ensure timestamp_field_result is returned for XSIAM push
+        """
+        response = util_load_json("test_data/sample_api_response.json")
+        response_text = json.dumps(response)
+        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
+
+        args = {"should_push_events": "true", "timestamp_field": "Session Start Time"}
+        events, results, timestamp_field_result = get_events_command(client, REPORT_ID, args, timestamp_field="")
+
+        assert len(events) == 1
+        assert timestamp_field_result == "Session Start Time"
+
+    def test_get_events_command_with_should_push_events_uses_config_timestamp(self, client, requests_mock):
+        """
+        Given:
+            - should_push_events is True and no timestamp_field in args (uses config)
+        When:
+            - Calling get_events_command
+        Then:
+            - Ensure timestamp_field from config is used and returned
+        """
+        response = util_load_json("test_data/sample_api_response.json")
+        response_text = json.dumps(response)
+        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
+
+        args = {"should_push_events": "true"}
+        events, results, timestamp_field_result = get_events_command(
+            client, REPORT_ID, args, timestamp_field="Session Start Time"
+        )
+
+        assert len(events) == 1
+        assert timestamp_field_result == "Session Start Time"
+
+    def test_get_events_command_with_should_push_events_invalid_timestamp(self, client, requests_mock):
+        """
+        Given:
+            - should_push_events is True and invalid timestamp field is provided
+        When:
+            - Calling get_events_command
+        Then:
+            - Ensure DemistoException is raised about invalid timestamp field
+        """
+        response = util_load_json("test_data/sample_api_response.json")
+        response_text = json.dumps(response)
+        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
+
+        args = {"should_push_events": "true", "timestamp_field": "Invalid Field"}
+        with pytest.raises(DemistoException, match="Timestamp field 'Invalid Field' not found in report headers"):
+            get_events_command(client, REPORT_ID, args, timestamp_field="")
+
+    def test_get_events_command_with_should_push_events_missing_timestamp(self, client, requests_mock):
+        """
+        Given:
+            - should_push_events is True but no timestamp field is provided (neither in args nor config)
+        When:
+            - Calling get_events_command
+        Then:
+            - Ensure DemistoException is raised about missing timestamp field
+        """
+        response = util_load_json("test_data/sample_api_response.json")
+        response_text = json.dumps(response)
+        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
+
+        args = {"should_push_events": "true"}
+        with pytest.raises(DemistoException, match="Timestamp Field Name is required"):
+            get_events_command(client, REPORT_ID, args, timestamp_field="")
+
+    def test_get_events_command_without_should_push_events(self, client, requests_mock):
+        """
+        Given:
+            - should_push_events is False or not provided
+        When:
+            - Calling get_events_command
+        Then:
+            - Ensure timestamp_field_result is None (no XSIAM push)
+        """
+        response = util_load_json("test_data/sample_api_response.json")
+        response_text = json.dumps(response)
+        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
+
+        args = {"should_push_events": "false"}
+        events, results, timestamp_field_result = get_events_command(
+            client, REPORT_ID, args, timestamp_field="Session Start Time"
+        )
+
+        assert len(events) == 1
+        assert timestamp_field_result is None

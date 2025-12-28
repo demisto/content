@@ -12,7 +12,7 @@ This integration enables the collection of security events from IBM Guardium Dat
 | Report ID | The ID of the report to fetch events from. | True |
 | Fetch events | Whether to automatically fetch events. | False |
 | Maximum number of events to fetch | Maximum number of events to fetch per run. Default is 10000. | False |
-| Timestamp Field Name | The name of the field in the event data that contains the timestamp. This field is used to track which events have been fetched and to add the _time field required by XSIAM. Different reports may have different field names for timestamps, so you must specify the correct field name for your report. Required when "Fetch events" is enabled. | False (Required when Fetch events is enabled) |
+| Timestamp Field Name | The display name of the header in the report that contains the timestamp field, e.g., "Date created (local time)". Required when "Fetch events" is enabled. | False (Required when Fetch events is enabled) |
 | Trust any certificate (not secure) | Trust any certificate (not secure). | False |
 | Use system proxy settings | Use system proxy settings. | False |
 
