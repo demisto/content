@@ -1,5 +1,4 @@
 Use this integration to connect to an MCP server and automatically discover its available tools.
-This integration was integrated and tested with version xx of GenericMCP.
 
 ## Configure Generic MCP in Cortex
 
@@ -61,39 +60,18 @@ This integration was integrated and tested with version xx of GenericMCP.
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### list-tools
+### generic-mcp-generate-login-url
 
 ***
-Retrieves a list of available tools in the MCP server.
+Generate an authentication login URL.
 
 #### Base Command
 
-`list-tools`
+`generic-mcp-generate-login-url`
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
-
-### call-tool
-
-***
-Calls a specific tool on the MCP server with optional input parameters.
-
-#### Base Command
-
-`call-tool`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | The name of the tool to call. | Optional |
-| arguments | Parameters for the tool execution. | Optional |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -107,23 +85,6 @@ Test the authentication configuration with the MCP server.
 #### Base Command
 
 `generic-mcp-auth-test`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-### generic-mcp-generate-login-url
-
-***
-Generate an authentication login URL.
-
-#### Base Command
-
-`generic-mcp-generate-login-url`
 
 #### Input
 
