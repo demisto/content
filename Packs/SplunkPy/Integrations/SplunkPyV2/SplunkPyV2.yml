@@ -690,5 +690,7 @@ script:
   type: python
   runonce: false
 tests:
-- No tests (auto formatted)
+- SplunkPy KV commands
+- SplunkPy parse-raw - Test
+- SplunkPy-Test-V2
 fromversion: 6.0.0
