@@ -14,7 +14,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-08-17T15:22:49.571350145+04:00",
                 "dataType": "incidents",
                 "dateRange": {
@@ -51,10 +50,8 @@
                 "prevName": "Active Incidents - Pie chart",
                 "propagationLabels": [],
                 "query": "-category:job name:Cypho",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "pie"
@@ -73,7 +70,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2025-09-28T02:46:02.491835366+04:00",
                 "dataType": "incidents",
                 "dateRange": {
@@ -111,10 +107,8 @@
                     "all"
                 ],
                 "query": "-category:job  and -status:closed name:Cypho",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "line"
@@ -133,7 +127,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2025-09-28T02:50:05.332227288+04:00",
                 "dataType": "incidents",
                 "dateRange": {
@@ -182,10 +175,8 @@
                     "all"
                 ],
                 "query": "-category:job and -status:closed and owner:\"\" name:Cypho",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "number"
@@ -204,7 +195,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2025-09-28T02:50:58.095428813+04:00",
                 "dataType": "incidents",
                 "dateRange": {
@@ -269,7 +259,6 @@
                     "all"
                 ],
                 "query": "-category:job and -status:closed and owner:\"\" name:Cypho",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "sort": [
                     {
@@ -279,7 +268,6 @@
                     }
                 ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"
@@ -298,7 +286,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2025-09-28T03:04:02.430726138+04:00",
                 "dataType": "incidents",
                 "dateRange": {
@@ -335,10 +322,8 @@
                     "all"
                 ],
                 "query": "-status:Closed and -category:job name:Cypho",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "pie"
@@ -357,7 +342,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2025-09-28T03:18:30.144297911+04:00",
                 "dataType": "metrics",
                 "dateRange": {
@@ -397,10 +381,8 @@
                     "all"
                 ],
                 "query": "type:integration command:*cypho*",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "pie"
@@ -419,7 +401,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2025-09-28T03:21:52.673349953+04:00",
                 "dataType": "metrics",
                 "dateRange": {
@@ -464,10 +445,8 @@
                     "all"
                 ],
                 "query": "type:integration command:*cypho*",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "column"
@@ -486,7 +465,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2025-09-28T02:53:50.670004452+04:00",
                 "dataType": "incidents",
                 "dateRange": {
@@ -523,10 +501,8 @@
                     "all"
                 ],
                 "query": "-category:job and -status:archived and -status:Closed name:Cypho",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 2,
                 "widgetType": "pie"

@@ -1,13 +1,8 @@
 {
   "fromVersion": "6.0.0",
-	"cacheVersn": 0,
-	"close": null,
 	"definitionId": "",
 	"description": "",
-	"detached": false,
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -893,40 +888,15 @@
 				"type": "workPlan"
 			},
 			{
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
-			},
-			{
-				"id": "relatedIncidents",
-				"name": "Related Incidents",
-				"type": "relatedIncidents"
-			},
-			{
 				"id": "canvas",
 				"name": "Canvas",
 				"type": "canvas"
 			}
 		]
 	},
-	"edit": null,
-	"fromServerVersion": "",
 	"group": "incident",
 	"id": "Cypho Thread Intelligence Layout",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
 	"name": "Cypho Thread Intelligence Layout",
-	"packID": "889f9bc8-82b6-4d51-80fa-5e4ad6372f4b",
-	"packName": "Cypho Threat Intelligence",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "",
 	"version": -1
 }

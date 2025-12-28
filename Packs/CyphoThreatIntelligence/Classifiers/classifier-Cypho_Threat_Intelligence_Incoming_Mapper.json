@@ -1,20 +1,10 @@
 {
   "fromVersion": "6.0.0",
-	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "Maps incoming Cypho Threat Intelligence incidents fields.\n",
 	"feed": false,
-	"fromServerVersion": "",
 	"id": "Cypho Threat Intelligence Incoming Mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 34,
 	"mapping": {
 		"Cypho Critical Ports Monitoring": {
 			"dontMapEventToLabels": false,
@@ -1566,17 +1556,6 @@
 		}
 	},
 	"name": "Cypho Threat Intelligence Incoming Mapper",
-	"nameRaw": "Cypho Threat Intelligence Incoming Mapper",
-	"packID": "889f9bc8-82b6-4d51-80fa-5e4ad6372f4b",
-	"packName": "Cypho Threat Intelligence",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
 	"type": "mapping-incoming",
-	"unclassifiedCases": null,
 	"version": -1
 }

@@ -8,11 +8,11 @@ The integration included in this pack allows you to manage and update Cypho inci
 
 The playbook and automations included in this pack help you save time and automate repetitive tasks associated with incident management, such as:
 
-⦁	Assigning incidents to the appropriate user or team.
-⦁	Adding comments to track updates and actions on incidents.
-⦁	Updating incident severity to reflect changing risk levels.
-⦁	Approving or dismissing issues based on their relevance or resolution status.
-⦁	Downloading attachments securely while ensuring only assigned incidents can be accessed.
-⦁	Fetching incidents from Cypho into XSOAR for analysis and monitoring.
+⦁ Assigning incidents to the appropriate user or team.
+⦁ Adding comments to track updates and actions on incidents.
+⦁ Updating incident severity to reflect changing risk levels.
+⦁ Approving or dismissing issues based on their relevance or resolution status.
+⦁ Downloading attachments securely while ensuring only assigned incidents can be accessed.
+⦁ Fetching incidents from Cypho into XSOAR for analysis and monitoring.
 
 This content pack is designed to streamline incident management workflows, reduce manual effort, and improve operational efficiency while maintaining alignment with Cypho incident data.

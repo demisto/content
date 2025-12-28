@@ -17,7 +17,7 @@
     "locked": false,
     "name": "Cypho URL and Domain Analysis Services Monitoring",
     "onChangeRepAlg": 0,
-    "playbookId": "Cypho Default Playbook",
+    "playbookId": "Cypho Default",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

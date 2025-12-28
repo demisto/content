@@ -2,7 +2,6 @@ This integration enables your organization to efficiently collect, analyze, and 
 
 ## Configure Cypho Threat Intelligence in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL (e.g. <https://api.cypho.io/external/v1/>) | True |
@@ -33,7 +32,7 @@ Retrieves the full details of a specific security incident from Cypho using its 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_id | The ticket_id is the unique ID used to identify and manage each incident across automations and integrations. | Optional | 
+| ticket_id | The ticket_id is the unique ID used to identify and manage each incident across automations and integrations. | Optional |
 
 #### Context Output
 
@@ -52,8 +51,8 @@ Assign a Cypho issue to an analyst by constructing their email from the given us
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_id | The ticket_id is the unique ID used to identify and manage each incident across automations and integrations. | Optional | 
-| user_email | The user_email field stores the email address of the user, and it must match the email of a registered user in the Cypho platform to ensure correct user mapping and permission handling. | Optional | 
+| ticket_id | The ticket_id is the unique ID used to identify and manage each incident across automations and integrations. | Optional |
+| user_email | The user_email field stores the email address of the user, and it must match the email of a registered user in the Cypho platform to ensure correct user mapping and permission handling. | Optional |
 
 #### Context Output
 
@@ -72,9 +71,9 @@ This command sends a comment as the status_reason parameter and attributes it to
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_id | The ticket_id is the unique ID used to identify and manage each incident across automations and integrations. | Optional | 
-| status_reason | The status_reason field stores a comment or explanation describing the reason for an incident’s current status, and this note is added directly to the incident record in the Cypho platform. | Optional | 
-| user_email | The user_email field stores the email address of the user, and it must match the email of a registered user in the Cypho platform to ensure correct user mapping and permission handling. | Optional | 
+| ticket_id | The ticket_id is the unique ID used to identify and manage each incident across automations and integrations. | Optional |
+| status_reason | The status_reason field stores a comment or explanation describing the reason for an incident’s current status, and this note is added directly to the incident record in the Cypho platform. | Optional |
+| user_email | The user_email field stores the email address of the user, and it must match the email of a registered user in the Cypho platform to ensure correct user mapping and permission handling. | Optional |
 
 #### Context Output
 
@@ -93,9 +92,9 @@ Updates the severity level of a specific Cypho issue using its unique ticket ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_id | The ticket_id is the unique ID used to identify and manage each incident across automations and integrations. | Optional | 
-| user_email | The user_email field stores the email address of the user, and it must match the email of a registered user in the Cypho platform to ensure correct user mapping and permission handling. | Optional | 
-| severity | The severity field indicates the criticality level of an incident, helping teams prioritize and manage response efforts effectively. | Optional | 
+| ticket_id | The ticket_id is the unique ID used to identify and manage each incident across automations and integrations. | Optional |
+| user_email | The user_email field stores the email address of the user, and it must match the email of a registered user in the Cypho platform to ensure correct user mapping and permission handling. | Optional |
+| severity | The severity field indicates the criticality level of an incident, helping teams prioritize and manage response efforts effectively. | Optional |
 
 #### Context Output
 
@@ -114,7 +113,7 @@ Downloads one or more attachments from a Cypho incident using the incident's uni
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_id | The ticket_id is the unique ID used to identify and manage each incident across automations and integrations. | Optional | 
+| ticket_id | The ticket_id is the unique ID used to identify and manage each incident across automations and integrations. | Optional |
 
 #### Context Output
 
@@ -133,9 +132,9 @@ Approves or dismisses a Cypho issue based on the provided ticket ID, user email,
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_id | The ticket_id is the unique ID used to identify and manage each incident across automations and integrations. | Optional | 
-| user_email | The user_email field stores the email address of the user, and it must match the email of a registered user in the Cypho platform to ensure correct user mapping and permission handling. | Optional | 
-| approve | A boolean argument that, when set to true, approves the issue, and when set to false, dismisses it. Possible values are: True, False. | Optional | 
+| ticket_id | The ticket_id is the unique ID used to identify and manage each incident across automations and integrations. | Optional |
+| user_email | The user_email field stores the email address of the user, and it must match the email of a registered user in the Cypho platform to ensure correct user mapping and permission handling. | Optional |
+| approve | A boolean argument that, when set to true, approves the issue, and when set to false, dismisses it. Possible values are: True, False. | Optional |
 
 #### Context Output
 
