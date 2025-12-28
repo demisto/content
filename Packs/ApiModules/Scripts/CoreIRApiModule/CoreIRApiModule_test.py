@@ -2910,7 +2910,7 @@ class TestGetIssueByFilter:
         request_data_log = mocker.patch.object(demisto, "info")
 
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
-        args = {"alert_source": "first,second"}
+        args = {"issue_source": "first,second"}
 
         response = get_issues_by_filter_command(client, args)
 
