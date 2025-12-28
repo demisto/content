@@ -14,8 +14,11 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
+MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
 AGENTS_TABLE = "AGENTS_TABLE"
+SECONDS_IN_DAY = 86400  # Number of seconds in one day
+MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -52,10 +55,15 @@ WEBAPP_COMMANDS = [
     "core-create-appsec-policy",
     "core-get-appsec-issues",
     "core-update-case",
+    "core-list-scripts",
+    "core-run-script-agentix",
     "core-list-endpoints",
+    "core-get-endpoint-update-version",
+    "core-update-endpoint-version",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
+ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
 XSOAR_COMMANDS = ["core-run-playbook"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -63,6 +71,20 @@ ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
+SCRIPTS_TABLE = "SCRIPTS_TABLE"
+
+
+class ScriptManagement:
+    FIELDS = {
+        "script_name": "NAME",
+        "supported_platforms": "PLATFORM",
+    }
+
+    PLATFORMS = {
+        "windows": "AGENT_OS_WINDOWS",
+        "linux": "AGENT_OS_LINUX",
+        "macos": "AGENT_OS_MAC",
+    }
 
 
 class CaseManagement:
@@ -318,6 +340,17 @@ POLICY_CATEGORY_MAPPING = {
     "CI/CD Pipeline": "CICD_PIPELINE",
     "VCS Collaborator": "VCS_COLLABORATOR",
     "VCS Organization": "VCS_ORGANIZATION",
+}
+
+
+DAYS_MAPPING = {
+    "sunday": 1,
+    "monday": 2,
+    "tuesday": 3,
+    "wednesday": 4,
+    "thursday": 5,
+    "friday": 6,
+    "saturday": 7,
 }
 
 
@@ -828,6 +861,38 @@ class Client(CoreClient):
             headers={**self._headers, "content-type": "application/json"},
             url_suffix="/public_api/appsec/v1/policies",
         )
+
+    def get_endpoint_support_file(self, request_data: dict[str, Any]) -> dict:
+        """
+        Retrieve endpoint support file from Cortex XDR.
+        Args:
+            request_data (dict[str, Any]): The request data containing endpoint information.
+        Returns:
+            dict: The response containing the endpoint support file data.
+        """
+        demisto.debug(f"Endpoint support file request payload: {request_data}")
+        return self._http_request(
+            method="POST",
+            data=request_data,
+            headers=self._headers,
+            url_suffix="/retrieve_endpoint_tsf",
+        )
+
+    def get_endpoint_update_version(self, request_data):
+        reply = self._http_request(
+            method="POST",
+            json_data={"request_data": request_data},
+            url_suffix="/agents/upgrade/details",
+        )
+        return reply
+
+    def update_endpoint_version(self, request_data):
+        reply = self._http_request(
+            method="POST",
+            json_data={"request_data": request_data},
+            url_suffix="/agents/upgrade",
+        )
+        return reply
 
     def update_case(self, case_update_payload, case_id):
         """
@@ -2793,6 +2858,37 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
     return appsec_issue
 
 
+def get_endpoint_support_file_command(client: Client, args: dict) -> CommandResults:
+    endpoint_ids = argToList(args.get("endpoint_ids"))
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_ids)
+    request_data = {
+        "request_data": {
+            "filter_data": {"filter": filter_builder.to_dict()},
+            "filter_type": "static",
+        }
+    }
+
+    response = client.get_endpoint_support_file(request_data)
+
+    reply = response.get("reply", {})
+    group_action_id = reply.get("group_action_id")
+
+    if not group_action_id:
+        raise DemistoException("No group_action_id found. Please ensure that valid endpoint IDs are provided.")
+
+    readable_output = f"Endpoint support file request submitted successfully. Group Action ID: {group_action_id}"
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointSupportFile",
+        outputs_key_field="group_action_id",
+        outputs=reply,
+        raw_response=response,
+    )
+
+
 def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves application security issues based on specified filters across multiple issue types.
@@ -2953,6 +3049,156 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
+def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
+    """
+    Retrieves a list of scripts from the platform with optional filtering.
+    """
+    page_number = arg_to_number(args.get("page_number")) or 0
+    page_size = arg_to_number(args.get("page_size")) or MAX_SCRIPTS_LIMIT
+    start_index = page_number * page_size
+    end_index = start_index + page_size
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field(
+        ScriptManagement.FIELDS["script_name"],
+        FilterType.CONTAINS,
+        argToList(args.get("script_name")),
+    )
+
+    platforms = [ScriptManagement.PLATFORMS[platform] for platform in argToList(args.get("supported_platforms"))]
+    filter_builder.add_field(ScriptManagement.FIELDS["supported_platforms"], FilterType.CONTAINS, platforms)
+
+    request_data = build_webapp_request_data(
+        table_name=SCRIPTS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=end_index,
+        sort_field="MODIFICATION_TIME",
+        start_page=start_index,
+    )
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    mapped_scripts = []
+    for script in data:
+        mapped_script = {
+            "name": script.get("NAME"),
+            "description": script.get("DESCRIPTION"),
+            "windows_supported": "AGENT_OS_WINDOWS" in str(script.get("PLATFORM", "")),
+            "linux_supported": "AGENT_OS_LINUX" in str(script.get("PLATFORM", "")),
+            "macos_supported": "AGENT_OS_MAC" in str(script.get("PLATFORM", "")),
+            "script_uid": script.get("GUID"),
+            "script_id": script.get("ID"),
+            "script_inputs": script.get("ENTRY_POINT_DEFINITION", {}).get("input_params", []),
+        }
+        mapped_scripts.append(mapped_script)
+
+    metadata = {
+        "filtered_count": reply.get("FILTER_COUNT", 0),
+        "returned_count": len(mapped_scripts),
+    }
+
+    command_results = []
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Scripts", mapped_scripts, headerTransform=string_to_table_header),
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Scripts",
+            outputs=mapped_scripts,
+            outputs_key_field="script_id",
+            raw_response=response,
+        )
+    )
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ScriptsMetadata",
+            outputs=metadata,
+        )
+    )
+
+    return command_results
+
+
+def run_script_agentix_command(client: Client, args: dict) -> PollResult:
+    """
+    Executes a script on agents with specified parameters.
+
+    Args:
+        client (Client): The client instance for making API requests.
+        args (dict): Arguments for running the script.
+
+    Returns:
+        CommandResults: Results of the script execution.
+    """
+    script_uid = args.get("script_uid", "")
+    script_name = args.get("script_name", "")
+    endpoint_ids = argToList(args.get("endpoint_ids", ""))
+    endpoint_names = argToList(args.get("endpoint_names", ""))
+    parameters = args.get("parameters", "")
+    if script_uid and script_name:
+        raise ValueError("Please provide either script_uid or script_name, not both.")
+
+    if not script_uid and not script_name:
+        raise ValueError("You must specify either script_uid or script_name.")
+
+    if endpoint_ids and endpoint_names:
+        raise ValueError("Please provide either endpoint_ids or endpoint_names, not both.")
+
+    if not endpoint_ids and not endpoint_names:
+        raise ValueError("You must specify either endpoint_ids or endpoint_names.")
+
+    if script_name:
+        scripts_results = list_scripts_command(client, {"script_name": script_name})
+        scripts = scripts_results[0].outputs.get("Scripts", [])  # type: ignore
+        number_of_returned_scripts = len(scripts)
+        demisto.debug(f"Scripts results: {scripts}")
+        if number_of_returned_scripts > 1:
+            error_message = (
+                "Multiple scripts found. Please specify the exact script by providing one of the following script_uid:\n\n"
+            )
+            for script in scripts:
+                error_message += (
+                    f"Script UID: {script['script_uid']}\n"
+                    f"Description: {script['description']}\n"
+                    f"Name: {script['name']}\n"
+                    f"Supported Platforms: Windows: {script['windows_supported']}, "
+                    f"Linux: {script['linux_supported']}, "
+                    f"MacOS: {script['macos_supported']}\n"
+                    f"Script Inputs: {script['script_inputs']}\n\n"
+                )
+            raise ValueError(error_message)
+
+        # If exactly one script is found, use its script_uid
+        elif number_of_returned_scripts == 1:
+            script = scripts[0]
+            script_uid = script["script_uid"]
+            script_inputs = script["script_inputs"]
+            script_inputs_names = [input_param.get("name") for input_param in script_inputs]
+            if script["script_inputs"] and not parameters:
+                raise ValueError(
+                    f"Script '{script_name}' requires the following input parameters: {', '.join(script_inputs_names)}, "
+                    "but none were provided."
+                )
+
+        # If no scripts found, raise an error
+        else:
+            raise ValueError(f"No scripts found with the name: {script_name}")
+
+    if endpoint_names:
+        endpoint_results = core_list_endpoints_command(client, {"endpoint_name": endpoint_names})
+        endpoints = endpoint_results.outputs or []
+        demisto.debug(f"Endpoint results: {endpoints}")
+        endpoint_ids = [endpoint["endpoint_id"] for endpoint in endpoints]  # type: ignore
+
+    if not endpoint_ids:
+        raise ValueError(f"No endpoints found with the specified names: {', '.join(endpoint_names)}")
+
+    client._base_url = "/api/webapp/public_api/v1"
+    return script_run_polling_command(
+        {"endpoint_ids": endpoint_ids, "script_uid": script_uid, "parameters": parameters, "is_core": True}, client
+    )
+
+
 def map_endpoint_format(endpoint_list: list) -> list:
     """
     Maps and prepares endpoints data for consistent output formatting.
@@ -3101,6 +3347,148 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def validate_start_end_times(start_time, end_time):
+    """
+    Validate that start_time and end_time are provided correctly and represent
+    a time range of at least two hours.
+
+    Args:
+        start_time (str | None): Start time in "HH:MM" format.
+        end_time (str | None): End time in "HH:MM" format.
+
+    Raises:
+        DemistoException: If only one of the times is provided or the time range is less than two hours.
+    """
+    if (start_time and not end_time) or (end_time and not start_time):
+        raise DemistoException("Both start_time and end_time must be provided together.")
+
+    if start_time and end_time:
+        start_dt = datetime.strptime(start_time, "%H:%M")
+        end_dt = datetime.strptime(end_time, "%H:%M")
+        diff = (end_dt - start_dt).total_seconds()
+        if diff < 0:
+            diff += SECONDS_IN_DAY
+
+        if diff < MIN_DIFF_SECONDS:
+            raise DemistoException("Start and end times must be at least two hours apart (midnight crossing is supported).")
+
+
+def transform_distributions(response):
+    """
+    Takes the full API response and replaces `distributions` dict
+    with a single flattened list while keeping everything else the same.
+    """
+    flattened = []
+    distributions = response.get("distributions", {})
+    total_count = arg_to_number(response.get("total_count"))
+
+    for platform, items in distributions.items():
+        for item in items:
+            unsupported_os = arg_to_number(item.get("unsupported_os"))
+            if item.get("is_beta") or item.get("less") == 0 or (unsupported_os != 0 and unsupported_os == total_count):
+                continue
+
+            new_item = remove_empty_elements(
+                {
+                    "platform": platform,
+                    "endpoints_with_lower_version_count": item.get("less"),
+                    "endpoints_with_higher_version_count": item.get("greater"),
+                    "endpoints_with_same_version_count": item.get("equal"),
+                    "version": item.get("version"),
+                }
+            )
+            flattened.append(new_item)
+
+    new_response = {"platform_count": response.get("platform_count"), "total_count": total_count, "distributions": flattened}
+    return new_response
+
+
+def get_endpoint_update_version_command(client, args):
+    """
+    Get the endpoint update version for specified endpoints.
+
+    Args:
+        client (Client): Integration client.
+        args (dict): Command arguments containing endpoint list.
+
+    Returns:
+        CommandResults: Formatted results of endpoint update versions.
+    """
+    filter_builder = FilterBuilder()
+    endpoint_ids = argToList(args.get("endpoint_ids", ""))
+    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_ids)
+    filter_data = {
+        "filter": filter_builder.to_dict(),
+    }
+    request_data = {"filter_data": filter_data, "filter_type": "static"}
+    demisto.debug(f"{request_data=}")
+    response = client.get_endpoint_update_version(request_data)
+    flattened_response = transform_distributions(response)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Endpoint Update Versions", flattened_response.get("distributions"), headerTransform=string_to_table_header
+        ),
+        outputs=flattened_response,
+        outputs_prefix="Core.EndpointUpdateVersion",
+    )
+
+
+def update_endpoint_version_command(client, args):
+    """
+    Update the agent version on one or more endpoints, optionally scheduling
+    the update by days and time window.
+
+    Args:
+        client: API client used to communicate with the backend service.
+        args (dict): Command arguments provided by the user.
+
+    Returns:
+        CommandResults: Object containing a human-readable summary and outputs
+        with the endpoint IDs and the resulting group action ID (if created).
+    """
+    filter_builder = FilterBuilder()
+    endpoint_ids = argToList(args.get("endpoint_ids", ""))
+    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_ids)
+    versions = {args.get("platform"): args.get("version")}
+    days_arg = argToList(args.get("days", ""))
+
+    if days_arg:
+        days = [DAYS_MAPPING.get(day.lower()) for day in days_arg]
+        if any(d is None for d in days):
+            raise DemistoException("Please provide valid days.")
+    else:
+        days = None
+
+    start_time = args.get("start_time")
+    end_time = args.get("end_time")
+    validate_start_end_times(start_time, end_time)
+
+    filter_data = {
+        "filter": filter_builder.to_dict(),
+    }
+    request_data = {
+        "filter_data": filter_data,
+        "filter_type": "static",
+        "versions": versions,
+        "upgrade_to_pkg_manager": False,
+        "schedule_data": {"START_TIME": start_time, "END_TIME": end_time, "DAYS": days},
+    }
+    demisto.debug(f"Request data of the command core-update-endpoint-version: {request_data}")
+    response = client.update_endpoint_version(request_data)
+    demisto.debug(f"Response of the command core-update-endpoint-version: {response}")
+    group_action_id = response.get("reply", {}).get("group_action_id")
+    if not group_action_id:
+        summary = "The update to the target versions was unsuccessful."
+    else:
+        summary = f"The update to the target versions was successful. Action ID: {group_action_id}"
+
+    return CommandResults(
+        readable_output=summary,
+        outputs={"endpoint_ids": endpoint_ids, "action_id": group_action_id},
+        outputs_prefix="Core.EndpointUpdate",
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -3117,6 +3505,7 @@ def main():  # pragma: no cover
     public_api_url = f"{webapp_api_url}/public_api/v1"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
     appsec_api_url = f"{webapp_api_url}/public_api/appsec"
+    agents_api_url = f"{webapp_api_url}/agents"
     xsoar_api_url = "/xsoar"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
@@ -3134,6 +3523,8 @@ def main():  # pragma: no cover
         client_url = data_platform_api_url
     elif command in APPSEC_COMMANDS:
         client_url = appsec_api_url
+    elif command in ENDPOINT_COMMANDS:
+        client_url = agents_api_url
     elif command in XSOAR_COMMANDS:
         client_url = xsoar_api_url
 
@@ -3220,9 +3611,22 @@ def main():  # pragma: no cover
             return_results(update_case_command(client, args))
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
+        elif command == "core-list-scripts":
+            return_results(list_scripts_command(client, args))
+        elif command == "core-run-script-agentix":
+            return_results(run_script_agentix_command(client, args))
+
+        elif command == "core-get-endpoint-support-file":
+            return_results(get_endpoint_support_file_command(client, args))
 
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
+
+        elif command == "core-get-endpoint-update-version":
+            return_results(get_endpoint_update_version_command(client, args))
+
+        elif command == "core-update-endpoint-version":
+            return_results(update_endpoint_version_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
