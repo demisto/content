@@ -300,6 +300,7 @@ repos:
     args:check_private_packs:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
+    - --ignore=GR110
     pass_filenames: false
     language: system
     require_serial: true
@@ -403,3 +404,9 @@ repos:
       files: "^(.*/)?README\\.md$"
       args: [ "--config", ".markdownlint-cli2.jsonc" ]
       exclude: Packs/ReversingLabs_Titanium_Cloud/Integrations/ReversingLabsTitaniumCloudv2/README\.md
+
+- repo: https://github.com/kraymer/brack
+  rev: v1.0.0
+  hooks:
+    - id: brack
+      args: [-r, '^[_0-9A-Za-z/\\-][_0-9A-Za-z/\\-]*$' ]
