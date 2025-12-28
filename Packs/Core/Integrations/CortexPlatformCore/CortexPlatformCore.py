@@ -334,6 +334,11 @@ COVERAGE_API_FIELDS_MAPPING = {
     "vendor_name": "asset_provider",
     "asset_provider": "unified_provider",
 }
+
+EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING = {
+    "legacy_agent_exceptions": LEGACY_AGENT_EXCEPTIONS_TABLE,
+    "disable_prevention_rules": DISABLE_PREVENTION_RULES_TABLE,
+}
 # Policy finding type mapping
 POLICY_FINDING_TYPE_MAPPING = {
     "CI/CD Risk": "CAS_CI_CD_RISK_SCANNER",
@@ -355,6 +360,8 @@ POLICY_CATEGORY_MAPPING = {
     "VCS Collaborator": "VCS_COLLABORATOR",
     "VCS Organization": "VCS_ORGANIZATION",
 }
+
+EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP = {"MODULES", "PROFILE_IDS"}
 
 
 DAYS_MAPPING = {
@@ -398,6 +405,7 @@ class FilterBuilder:
         IS_EMPTY = ("IS_EMPTY", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
         ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
+        RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
 
     AND = "AND"
     OR = "OR"
@@ -473,7 +481,7 @@ class FilterBuilder:
             end_time (str | None): The end time of the range.
         """
         start, end = self._prepare_time_range(start_time, end_time)
-        if start and end:
+        if start is not None and end is not None:
             self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
 
     def to_dict(self) -> dict[str, list]:
@@ -797,6 +805,13 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def get_webapp_view_def(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="GET",
+            url_suffix="/get_view_def",
+            json_data=request_data,
+        )
+
     def get_webapp_histograms(self, request_data: dict) -> dict:
         return self._http_request(
             method="POST",
@@ -920,7 +935,6 @@ class Client(CoreClient):
             dict: Response from the API for the case update.
         """
         request_data = {"request_data": {"newIncidentInterface": True, "case_id": case_id, **case_update_payload}}
-        demisto.debug(f"{request_data=}")
         return self._http_request(
             method="POST",
             url_suffix="/case/set_data",
@@ -3106,6 +3120,7 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
     if not custom_fields:
         return {}, ["No custom fields are defined in the system."]
 
+    demisto.debug(f"Available custom fields: {custom_fields=}")
     valid_fields, error_messages = {}, []
     for field_name, field_value in fields_to_validate.items():
         if field_name in system_fields:
@@ -3882,7 +3897,6 @@ def main():  # pragma: no cover
     xsoar_api_url = "/xsoar"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
-
     try:
         timeout = int(demisto.params().get("timeout", 120))
     except ValueError as e:
