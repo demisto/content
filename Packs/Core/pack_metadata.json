@@ -16,7 +16,7 @@
         },
         "Jira": {
             "mandatory": true,
-            "display_name": "Jira"
+            "display_name": "Atlassian Jira"
         }
     },
     "excludedDependencies": [
