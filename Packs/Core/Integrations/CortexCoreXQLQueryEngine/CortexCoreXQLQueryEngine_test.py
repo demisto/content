@@ -1325,6 +1325,34 @@ def test_get_xql_query_results_platform_failure(mocker):
     assert response["error_details"] == "Query execution failed"
 
 
+def test_get_xql_query_results_platform_polling_success(mocker):
+    """
+    Given:
+    - An execution_id for a query that completes successfully.
+
+    When:
+    - Calling get_xql_query_results_platform_polling function.
+
+    Then:
+    - Ensure results are returned after polling.
+    """
+    execution_id = "test_exec_id"
+    timeout = 60
+    mock_results = {
+        "status": "SUCCESS",
+        "execution_id": execution_id,
+        "results": [{"data": "test"}],
+    }
+
+    mocker.patch.object(CortexCoreXQLQueryEngine, "get_xql_query_results_platform", return_value=mock_results)
+
+    response = CortexCoreXQLQueryEngine.get_xql_query_results_platform_polling(CLIENT, execution_id, timeout)
+
+    assert response["status"] == "SUCCESS"
+    assert response["execution_id"] == execution_id
+    assert len(response["results"]) == 1
+
+
 def test_xql_query_platform_command_no_wait(mocker):
     """
     Given:
