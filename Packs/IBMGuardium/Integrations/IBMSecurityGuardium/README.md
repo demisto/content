@@ -6,12 +6,13 @@ This integration enables the collection of security events from IBM Guardium Dat
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The URL of your IBM Guardium server (e.g., https://guardium.security.ibm.com) | True |
+| Server URL | The URL of your IBM Guardium instance. The default value is an example - replace it with your specific instance URL. | True |
 | API Key | The API Key for authentication | True |
 | API Secret | The API Secret for authentication | True |
 | Report ID | The ID of the report to fetch events from. | True |
 | Fetch events | Whether to automatically fetch events. | False |
 | Maximum number of events to fetch | Maximum number of events to fetch per run. Default is 10000. | False |
+| Timestamp Field Name | The name of the field in the event data that contains the timestamp. This field is used to track which events have been fetched and to add the _time field required by XSIAM. Different reports may have different field names for timestamps, so you must specify the correct field name for your report. Required when "Fetch events" is enabled. | False (Required when Fetch events is enabled) |
 | Trust any certificate (not secure) | Trust any certificate (not secure). | False |
 | Use system proxy settings | Use system proxy settings. | False |
 
@@ -34,6 +35,7 @@ Manual command to fetch and display events.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command creates events; otherwise, it only displays them. Possible values are: true, false. Default is false. | Required |
+| timestamp_field | The name of the field in the event data that contains the timestamp. Required when should_push_events is true. If not provided, uses the value from integration configuration. | Optional (Required when should_push_events is true) |
 | limit | Maximum number of results to return. Max is 1000. Default is 50. | Optional |
 | start_time | Start time for fetching events. Supports ISO format ("2023-01-01T00:00:00") or natural language ("7 days ago", "yesterday", "1 week ago"). Defaults to 1 hour ago if not provided. | Optional |
 | end_time | End time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now"). If not provided, defaults to now. | Optional |

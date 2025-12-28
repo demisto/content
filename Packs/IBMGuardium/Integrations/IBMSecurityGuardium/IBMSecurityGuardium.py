@@ -131,32 +131,6 @@ def extract_field_mapping(response: dict[str, Any]) -> dict[str, str]:
         raise DemistoException(f"Failed to extract field mapping from API response: {e}")
 
 
-def find_timestamp_field(event: dict[str, Any]) -> str:
-    """
-    Find the timestamp field in an event by looking for date-like values.
-
-    Args:
-        event: Event dictionary
-
-    Returns:
-        Name of the timestamp field
-
-    Raises:
-        DemistoException: If no timestamp field is found in the event
-    """
-    for key, value in event.items():
-        if isinstance(value, str) and any(char in value for char in ["-", ":"]) and len(value) >= 10:
-            try:
-                # Try to parse as date to verify it's a valid timestamp
-                dateparser.parse(value)
-                demisto.debug(f"Found timestamp field by value pattern: {key} = {value}")
-                return key
-            except Exception:
-                continue
-
-    raise DemistoException("No timestamp field found in event. Unable to process events without a timestamp field.")
-
-
 def get_event_hash(event: dict[str, Any]) -> str:
     """
     Generate a SHA-256 hash for an event.
@@ -183,6 +157,32 @@ def map_event(raw_event: dict[str, Any], field_mapping: dict[str, str]) -> dict[
         Event with readable field names
     """
     return {field_mapping.get(key, key): value for key, value in raw_event.items()}
+
+
+def validate_timestamp_field(timestamp_field: str | None, field_mapping: dict[str, str]) -> None:
+    """
+    Validate that the timestamp field exists in the report headers.
+
+    Args:
+        timestamp_field: Name of the timestamp field to validate
+        field_mapping: Dictionary mapping field IDs to field names from report headers
+
+    Raises:
+        DemistoException: If timestamp field is empty/None or not found in available fields
+    """
+    if not timestamp_field:
+        raise DemistoException(
+            "Timestamp Field Name is required. "
+            "Provide it as a command argument or configure it in the integration settings."
+        )
+    
+    available_fields = list(field_mapping.values())
+    if timestamp_field not in available_fields:
+        raise DemistoException(
+            f"Timestamp field '{timestamp_field}' not found in report headers. "
+            f"Available fields: {', '.join(available_fields)}"
+        )
+    demisto.debug(f"Validated timestamp field '{timestamp_field}' exists in report headers")
 
 
 def send_events_to_xsiam_with_time(events: list[dict[str, Any]], timestamp_field: str) -> None:
@@ -312,13 +312,16 @@ def build_ignore_list(events: list[dict[str, Any]], timestamp_field: str) -> set
 """ COMMAND FUNCTIONS """
 
 
-def test_module_command(client: Client, report_id: str) -> str:
+def test_module_command(client: Client, report_id: str, is_fetch: bool, timestamp_field: str | None) -> str:
     """
     Test API connectivity and authentication.
+    If fetch is enabled, also validates that the timestamp field exists in the response.
 
     Args:
         client: IBM Guardium client
         report_id: Report ID to test with
+        is_fetch: Whether fetch events is enabled
+        timestamp_field: Name of the timestamp field (required if is_fetch is True)
 
     Returns:
         'ok' if successful, error message otherwise
@@ -329,7 +332,14 @@ def test_module_command(client: Client, report_id: str) -> str:
         to_date = now.strftime(API_DATE_FORMAT)
 
         demisto.debug(f"Testing connectivity: fetching 1 event from {from_date} to {to_date}")
-        client.run_report(report_id, fetch_size=1, offset=0, from_date=from_date, to_date=to_date)
+        response = client.run_report(report_id, fetch_size=1, offset=0, from_date=from_date, to_date=to_date)
+        
+        # If fetch is enabled, validate timestamp field exists in response headers
+        if is_fetch:
+            # Extract field mapping (headers) and validate timestamp field
+            field_mapping = extract_field_mapping(response)
+            validate_timestamp_field(timestamp_field, field_mapping)
+        
         return "ok"
     except DemistoException as e:
         error_str = str(e)
@@ -349,8 +359,8 @@ def test_module_command(client: Client, report_id: str) -> str:
 
 
 def fetch_events_command(
-    client: Client, report_id: str, max_fetch: int, last_run: dict[str, Any]
-) -> tuple[list[dict[str, Any]], dict[str, Any], str]:
+    client: Client, report_id: str, max_fetch: int, last_run: dict[str, Any], timestamp_field: str
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """
     Fetch events from IBM Guardium with deduplication.
     The API returns events in descending order (newest first).
@@ -360,9 +370,10 @@ def fetch_events_command(
         report_id: Report ID to fetch events from
         max_fetch: Maximum number of events to fetch (capped at 10000)
         last_run: Last run context with last_fetch_time and fetched_event_hashes
+        timestamp_field: Name of the timestamp field to use for deduplication and _time
 
     Returns:
-        Tuple of (deduplicated events list in descending order, next run context, timestamp field name)
+        Tuple of (deduplicated events list in descending order, next run context)
     """
     demisto.debug(f"Starting fetch_events with last_run: {last_run}, max_fetch: {max_fetch}")
     last_fetch_time_str = last_run.get("last_fetch_time")
@@ -386,7 +397,6 @@ def fetch_events_command(
     events: list[dict[str, Any]] = []
     offset = 0
     field_mapping: dict[str, str] = {}
-    timestamp_field: str = ""
     final_result = False
     iteration = 0
 
@@ -402,13 +412,11 @@ def fetch_events_command(
             report_id=report_id, fetch_size=batch_size, offset=offset, from_date=from_date, to_date=to_date
         )
 
-        # Extract field mapping and timestamp field only on first batch (offset == 0)
+        # Extract field mapping only on first batch (offset == 0)
         if offset == 0:
             field_mapping = extract_field_mapping(response)
-            raw_events_temp = response.get("result", {}).get("data", [])
-            if raw_events_temp:
-                first_event = map_event(raw_events_temp[0]["results"], field_mapping)
-                timestamp_field = find_timestamp_field(first_event)
+            # Validate timestamp field exists in report headers
+            validate_timestamp_field(timestamp_field, field_mapping)
 
         raw_events = response.get("result", {}).get("data", [])
         demisto.debug(f"Raw events count: {len(raw_events)}")
@@ -471,11 +479,11 @@ def fetch_events_command(
     demisto.debug(
         f"Fetch completed. Total events: {len(events)}, Deduplicated: {len(deduplicated_events)}. " f"Next run: {next_run}"
     )
-    return deduplicated_events, next_run, timestamp_field
+    return deduplicated_events, next_run
 
 
 def get_events_command(
-    client: Client, report_id: str, args: dict[str, Any]
+    client: Client, report_id: str, args: dict[str, Any], timestamp_field: str
 ) -> tuple[list[dict[str, Any]], CommandResults, str | None]:
     """
     Manual command to fetch events within a specified time range.
@@ -483,10 +491,11 @@ def get_events_command(
     Args:
         client: IBM Guardium client
         report_id: Report ID to fetch events from
-        args: Command arguments (limit, start_time, end_time, should_push_events)
+        args: Command arguments (limit, start_time, end_time, should_push_events, timestamp_field)
+        timestamp_field: Timestamp field from integration configuration
 
     Returns:
-        Tuple of (events list, CommandResults, timestamp field name or None if no events)
+        Tuple of (events list, CommandResults, timestamp_field to use for XSIAM or None)
     """
     demisto.debug(f"Executing get_events_command with args: {args}")
     limit = min(arg_to_number(args.get("limit", 50)) or 50, 1000)
@@ -518,16 +527,24 @@ def get_events_command(
     events = [map_event(raw_event["results"], field_mapping) for raw_event in raw_events]
     demisto.debug(f"Got {len(events)} events")
 
-    # Find timestamp field from first event if events exist
-    timestamp_field = find_timestamp_field(events[0]) if events else None
     headers = list(field_mapping.values()) if field_mapping else []
+    
+    # Determine timestamp field for XSIAM if should_push_events is true
+    timestamp_field_result = None
+    if argToBoolean(args.get("should_push_events", False)):
+        # Get timestamp_field from command argument or fall back to config parameter
+        cmd_timestamp_field = args.get("timestamp_field") or timestamp_field
+        
+        # Validate timestamp field (checks for None/empty and existence in headers)
+        validate_timestamp_field(cmd_timestamp_field, field_mapping)
+        timestamp_field_result = cmd_timestamp_field
 
     return (
         events,
         CommandResults(
             readable_output=tableToMarkdown("IBM Guardium Events", events, headers=headers, removeNull=True),
         ),
-        timestamp_field,
+        timestamp_field_result,
     )
 
 
@@ -545,6 +562,8 @@ def main() -> None:
     report_id = str(params.get("report_id", ""))
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+    is_fetch = params.get("isFetchEvents", False)
+    timestamp_field = params.get("timestamp_field", "")
 
     try:
         client = Client(base_url=base_url, auth=(api_key, api_secret), verify=verify_certificate, proxy=proxy)
@@ -552,25 +571,25 @@ def main() -> None:
         demisto.debug(f"Executing command: {command}")
 
         if command == "test-module":
-            return_results(test_module_command(client, report_id))
+            return_results(test_module_command(client, report_id, is_fetch, timestamp_field))
 
         elif command == "fetch-events":
             max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
             last_run = demisto.getLastRun()
-            events, next_run, timestamp_field = fetch_events_command(client, report_id, max_fetch, last_run)
+            events, next_run = fetch_events_command(client, report_id, max_fetch, last_run, timestamp_field)
 
             send_events_to_xsiam_with_time(events, timestamp_field)
             demisto.setLastRun(next_run)
             demisto.debug(f"Successfully sent {len(events)} events to XSIAM and set last run to: {next_run}")
 
         elif command == "ibm-guardium-get-events":
-            events, results, timestamp_field_result = get_events_command(client, report_id, args)
-
+            events, results, timestamp_field_result = get_events_command(client, report_id, args, timestamp_field)
+            
             if argToBoolean(args.get("should_push_events", False)) and timestamp_field_result:
                 send_events_to_xsiam_with_time(events, timestamp_field_result)
                 demisto.debug(f"Successfully sent {len(events)} events to XSIAM")
                 return_results(f"Sent {len(events)} events to XSIAM")
-
+            
             return_results(results)
 
     except Exception as e:
