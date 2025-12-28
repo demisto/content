@@ -2440,6 +2440,22 @@ script:
         - contextPath: Core.AppsecIssue.backlog_status
           description: The backlog status of the issue.
           type: String
+    - name: core-get-endpoint-support-file
+      description: "Retrieves endpoint support files based on specified endpoint IDs."
+      hidden: true
+      arguments:
+        - name: endpoint_ids
+          description: "List of endpoint IDs to retrieve support files for."
+          required: true
+          isArray: true
+      outputs:
+        - contextPath: Core.EndpointSupportFile.group_action_id
+          description: "The unique group action identifier for the support file."
+          type: String
+      supportedModules:
+      - cloud_runtime_security
+      - xsiam
+      - edr
     - name: core-update-case
       hidden: true
       description: Updates the properties of a case.
