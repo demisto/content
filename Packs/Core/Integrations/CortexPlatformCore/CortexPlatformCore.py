@@ -17,6 +17,8 @@ MAX_GET_CASES_LIMIT = 100
 MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
 AGENTS_TABLE = "AGENTS_TABLE"
+SECONDS_IN_DAY = 86400  # Number of seconds in one day
+MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -56,6 +58,8 @@ WEBAPP_COMMANDS = [
     "core-list-scripts",
     "core-run-script-agentix",
     "core-list-endpoints",
+    "core-get-endpoint-update-version",
+    "core-update-endpoint-version",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -336,6 +340,17 @@ POLICY_CATEGORY_MAPPING = {
     "CI/CD Pipeline": "CICD_PIPELINE",
     "VCS Collaborator": "VCS_COLLABORATOR",
     "VCS Organization": "VCS_ORGANIZATION",
+}
+
+
+DAYS_MAPPING = {
+    "sunday": 1,
+    "monday": 2,
+    "tuesday": 3,
+    "wednesday": 4,
+    "thursday": 5,
+    "friday": 6,
+    "saturday": 7,
 }
 
 
@@ -862,6 +877,22 @@ class Client(CoreClient):
             headers=self._headers,
             url_suffix="/retrieve_endpoint_tsf",
         )
+
+    def get_endpoint_update_version(self, request_data):
+        reply = self._http_request(
+            method="POST",
+            json_data={"request_data": request_data},
+            url_suffix="/agents/upgrade/details",
+        )
+        return reply
+
+    def update_endpoint_version(self, request_data):
+        reply = self._http_request(
+            method="POST",
+            json_data={"request_data": request_data},
+            url_suffix="/agents/upgrade",
+        )
+        return reply
 
     def update_case(self, case_update_payload, case_id):
         """
@@ -3301,6 +3332,148 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def validate_start_end_times(start_time, end_time):
+    """
+    Validate that start_time and end_time are provided correctly and represent
+    a time range of at least two hours.
+
+    Args:
+        start_time (str | None): Start time in "HH:MM" format.
+        end_time (str | None): End time in "HH:MM" format.
+
+    Raises:
+        DemistoException: If only one of the times is provided or the time range is less than two hours.
+    """
+    if (start_time and not end_time) or (end_time and not start_time):
+        raise DemistoException("Both start_time and end_time must be provided together.")
+
+    if start_time and end_time:
+        start_dt = datetime.strptime(start_time, "%H:%M")
+        end_dt = datetime.strptime(end_time, "%H:%M")
+        diff = (end_dt - start_dt).total_seconds()
+        if diff < 0:
+            diff += SECONDS_IN_DAY
+
+        if diff < MIN_DIFF_SECONDS:
+            raise DemistoException("Start and end times must be at least two hours apart (midnight crossing is supported).")
+
+
+def transform_distributions(response):
+    """
+    Takes the full API response and replaces `distributions` dict
+    with a single flattened list while keeping everything else the same.
+    """
+    flattened = []
+    distributions = response.get("distributions", {})
+    total_count = arg_to_number(response.get("total_count"))
+
+    for platform, items in distributions.items():
+        for item in items:
+            unsupported_os = arg_to_number(item.get("unsupported_os"))
+            if item.get("is_beta") or item.get("less") == 0 or (unsupported_os != 0 and unsupported_os == total_count):
+                continue
+
+            new_item = remove_empty_elements(
+                {
+                    "platform": platform,
+                    "endpoints_with_lower_version_count": item.get("less"),
+                    "endpoints_with_higher_version_count": item.get("greater"),
+                    "endpoints_with_same_version_count": item.get("equal"),
+                    "version": item.get("version"),
+                }
+            )
+            flattened.append(new_item)
+
+    new_response = {"platform_count": response.get("platform_count"), "total_count": total_count, "distributions": flattened}
+    return new_response
+
+
+def get_endpoint_update_version_command(client, args):
+    """
+    Get the endpoint update version for specified endpoints.
+
+    Args:
+        client (Client): Integration client.
+        args (dict): Command arguments containing endpoint list.
+
+    Returns:
+        CommandResults: Formatted results of endpoint update versions.
+    """
+    filter_builder = FilterBuilder()
+    endpoint_ids = argToList(args.get("endpoint_ids", ""))
+    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_ids)
+    filter_data = {
+        "filter": filter_builder.to_dict(),
+    }
+    request_data = {"filter_data": filter_data, "filter_type": "static"}
+    demisto.debug(f"{request_data=}")
+    response = client.get_endpoint_update_version(request_data)
+    flattened_response = transform_distributions(response)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Endpoint Update Versions", flattened_response.get("distributions"), headerTransform=string_to_table_header
+        ),
+        outputs=flattened_response,
+        outputs_prefix="Core.EndpointUpdateVersion",
+    )
+
+
+def update_endpoint_version_command(client, args):
+    """
+    Update the agent version on one or more endpoints, optionally scheduling
+    the update by days and time window.
+
+    Args:
+        client: API client used to communicate with the backend service.
+        args (dict): Command arguments provided by the user.
+
+    Returns:
+        CommandResults: Object containing a human-readable summary and outputs
+        with the endpoint IDs and the resulting group action ID (if created).
+    """
+    filter_builder = FilterBuilder()
+    endpoint_ids = argToList(args.get("endpoint_ids", ""))
+    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_ids)
+    versions = {args.get("platform"): args.get("version")}
+    days_arg = argToList(args.get("days", ""))
+
+    if days_arg:
+        days = [DAYS_MAPPING.get(day.lower()) for day in days_arg]
+        if any(d is None for d in days):
+            raise DemistoException("Please provide valid days.")
+    else:
+        days = None
+
+    start_time = args.get("start_time")
+    end_time = args.get("end_time")
+    validate_start_end_times(start_time, end_time)
+
+    filter_data = {
+        "filter": filter_builder.to_dict(),
+    }
+    request_data = {
+        "filter_data": filter_data,
+        "filter_type": "static",
+        "versions": versions,
+        "upgrade_to_pkg_manager": False,
+        "schedule_data": {"START_TIME": start_time, "END_TIME": end_time, "DAYS": days},
+    }
+    demisto.debug(f"Request data of the command core-update-endpoint-version: {request_data}")
+    response = client.update_endpoint_version(request_data)
+    demisto.debug(f"Response of the command core-update-endpoint-version: {response}")
+    group_action_id = response.get("reply", {}).get("group_action_id")
+    if not group_action_id:
+        summary = "The update to the target versions was unsuccessful."
+    else:
+        summary = f"The update to the target versions was successful. Action ID: {group_action_id}"
+
+    return CommandResults(
+        readable_output=summary,
+        outputs={"endpoint_ids": endpoint_ids, "action_id": group_action_id},
+        outputs_prefix="Core.EndpointUpdate",
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -3433,6 +3606,12 @@ def main():  # pragma: no cover
 
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
+
+        elif command == "core-get-endpoint-update-version":
+            return_results(get_endpoint_update_version_command(client, args))
+
+        elif command == "core-update-endpoint-version":
+            return_results(update_endpoint_version_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
