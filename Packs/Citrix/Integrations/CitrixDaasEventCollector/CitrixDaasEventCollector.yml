@@ -27,7 +27,6 @@ configuration:
   name: customer_id
   required: true
   type: 0
-  defaultvalue: 'masproductio'
   section: Connect
 - display: Site Name
   name: site_name

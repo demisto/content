@@ -273,13 +273,13 @@ def test_days_since():
     "events, last_fetched_ids, expected_count, expected_ids",
     [
         # Test case 1: First run (no previous IDs)
-        ([{"id": "event1"}, {"id": "event2"}], [], 2, ["event1", "event2"]),
+        ([{"Id": "event1"}, {"Id": "event2"}], [], 2, ["event1", "event2"]),
         # Test case 2: No duplicates
-        ([{"id": "event3"}, {"id": "event4"}], ["event1", "event2"], 2, ["event3", "event4"]),
+        ([{"Id": "event3"}, {"Id": "event4"}], ["event1", "event2"], 2, ["event3", "event4"]),
         # Test case 3: Some duplicates
-        ([{"id": "event1"}, {"id": "event3"}], ["event1", "event2"], 1, ["event3"]),
+        ([{"Id": "event1"}, {"Id": "event3"}], ["event1", "event2"], 1, ["event3"]),
         # Test case 4: All duplicates
-        ([{"id": "event1"}, {"id": "event2"}], ["event1", "event2"], 0, []),
+        ([{"Id": "event1"}, {"Id": "event2"}], ["event1", "event2"], 0, []),
     ],
 )
 def test_deduplicate_events(mocker, events, last_fetched_ids, expected_count, expected_ids):
@@ -300,5 +300,5 @@ def test_deduplicate_events(mocker, events, last_fetched_ids, expected_count, ex
     assert len(result) == expected_count, f"Expected {expected_count} events, got {len(result)}"
 
     # Check that the IDs match what we expect
-    result_ids = [event.get("id") for event in result]
+    result_ids = [event.get("Id") for event in result]
     assert sorted(result_ids) == sorted(expected_ids), f"Expected IDs {expected_ids}, got {result_ids}"

@@ -14,7 +14,6 @@ PRODUCT = "DaaS"
 RECORDS_REQUEST_LIMIT = 1000
 ACCESS_TOKEN_CONST = "access_token"
 SITE_ID_CONST = "site_id"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 API_RES_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
@@ -86,8 +85,8 @@ class Client(BaseClient):
             site_id = next((site.get("id") for site in sites if site.get("displayName") == self.site_name), None)
             if not site_id:
                 raise DemistoException(f"Failed to obtain site with the name {self.site_name} from Citrix DaaS response.")
-
-        demisto.setIntegrationContext({SITE_ID_CONST: site_id})
+        integration_context[SITE_ID_CONST] = site_id
+        demisto.setIntegrationContext(integration_context)
         demisto.debug(f"Site id is {site_id}")
         return site_id
 
@@ -263,7 +262,7 @@ def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]
     fetched_ids_set = set(last_fetched_ids)
 
     # Filter out events that were already fetched
-    new_events = [event for event in events if event.get("id") not in fetched_ids_set]
+    new_events = [event for event in events if event.get("Id") not in fetched_ids_set]
 
     skipped_count = len(events) - len(new_events)
     if skipped_count > 0:
@@ -276,7 +275,7 @@ def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
     last_run_date = last_run.get("LastRun")
-    last_fetched_ids = last_run.get("LastFechedIds", [])
+    last_fetched_ids = last_run.get("LastFetchedIds", [])
     last_operation_id = last_fetched_ids[-1] if last_fetched_ids else None
 
     if not last_run_date:
@@ -304,7 +303,7 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
             operation.get("Id") for operation in operations if operation.get("_time") == new_last_run and operation.get("Id")
         ]
 
-        last_run = {"LastRun": new_last_run, "LastFechedIds": ids_at_last_timestamp}
+        last_run = {"LastRun": new_last_run, "LastFetchedIds": ids_at_last_timestamp}
 
     return operations, last_run
 
