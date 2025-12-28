@@ -2704,7 +2704,7 @@ script:
           description: A comma-separated list of endpoint names. Either this field or endpoint_ids must be provided.
           isArray: true
         - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
-          name: parameters  
+          name: parameters
       outputs:
       - contextPath: CoreApiModule.ScriptResult.action_id
         description: ID of the action initiated.
@@ -2878,7 +2878,7 @@ script:
       - contextPath: Core.Endpoint.cloud_region
         description: The cloud region of the endpoint.
         type: String
-    - arguments: 
+    - arguments:
       - description: A comma-separated list of endpoint IDs.
         name: endpoint_ids
         required: true
@@ -2911,7 +2911,7 @@ script:
       - contextPath: Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count
         description: The number of endpoints running a version earlier than the specified update.
         type: String
-    - arguments: 
+    - arguments:
       - description: A comma-separated list of endpoint IDs.
         name: endpoint_ids
         required: true
@@ -2949,13 +2949,200 @@ script:
         - edr
         - xsiam
       description: Updates the version of the given endpoint to the target version supplied.
-      outputs: 
+      outputs:
       - contextPath: Core.EndpointUpdate.endpoint_ids
         description: The IDs of the endpoints on which the update run.
         type: String
       - contextPath: Core.EndpointUpdate.action_id
         description: The ID of the update action. 0 means that the action failed.
         type: String
+    - arguments:
+        - description: The unique ID of the exception rule. Accepts a comma-separated list.
+          name: id
+          isArray: true
+        - description: The name of the exception rule. Accepts a comma-separated list.
+          name: rule_name
+          isArray: true
+        - description: The platform the rule applies to. Accepts a comma-separated list.
+          isArray: true
+          name: platform
+          auto: PREDEFINED
+          predefined:
+            - AGENT_OS_WINDOWS
+            - AGENT_OS_MAC
+            - AGENT_OS_LINUX
+            - AGENT_OS_ANDROID
+            - AGENT_OS_IOS
+            - AGENT_OS_CAAS_LINUX
+            - AGENT_OS_SERVERLESS
+        - description: The conditions defined in the rule. Accepts a comma-separated list.
+          isArray: true
+          name: conditions
+        - description: The user who created the rule. Accepts a comma-separated list.
+          isArray: true
+          name: created_by
+        - description: The email of the user associated with the rule. Accepts a comma-separated list.
+          isArray: true
+          name: user_email
+        - description: "The start time for filtering according to rule modification time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+          name: start_modification_time
+        - description: "The end time for filtering according to rule modification time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+          name: end_modification_time
+        - description: The status of the exception rule.
+          name: status
+          auto: PREDEFINED
+          predefined:
+            - ENABLED
+            - DISABLED
+        - auto: PREDEFINED
+          description: The type of the disable prevention rule. Accepts a comma-separated list.
+          isArray: true
+          name: rule_type
+          predefined:
+            - XDR
+            - WAAS
+        - description: The type of the exception rule. If not specified, both are returned.
+          name: type
+          auto: PREDEFINED
+          predefined:
+            - legacy_agent_exceptions
+            - disable_prevention_rules
+        - auto: PREDEFINED
+          defaultValue: MODIFICATION_TIME
+          description: The field by which to sort the results.
+          name: sort_field
+          predefined:
+            - MODIFICATION_TIME
+        - auto: PREDEFINED
+          defaultValue: DESC
+          description: The order in which to sort the results.
+          name: sort_order
+          predefined:
+            - DESC
+            - ASC
+        - defaultValue: "100"
+          description: Number of exception rules to return. Ignored if 'retrieve_all' is set to true.
+          name: page_size
+        - defaultValue: "0"
+          description: Page number to return. Ignored if 'retrieve_all' is set to true.
+          name: page
+        - auto: PREDEFINED
+          defaultValue: "false"
+          description: Return all exception rules.
+          name: retrieve_all
+          predefined:
+            - "true"
+            - "false"
+      name: core-list-exception-rules
+      hidden: true
+      description: "Returns a list of exception rules and their metadata, which you can filter by built-in arguments. Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      outputs:
+        - contextPath: Core.ExceptionRules.ID
+          description: The unique identifier for the exception rule.
+          type: String
+        - contextPath: Core.ExceptionRules.NAME
+          description: The user-defined name of the exception rule.
+          type: String
+        - contextPath: Core.ExceptionRules.DESCRIPTION
+          description: The detailed description of the exception rule.
+          type: String
+        - contextPath: Core.ExceptionRules.TYPE
+          description: The general type of the rule (e.g., DISABLE_PREVENTION).
+          type: String
+        - contextPath: Core.ExceptionRules.RULE_TYPE
+          description: The specific rule category (e.g., XDR).
+          type: String
+        - contextPath: Core.ExceptionRules.STATUS
+          description: The current status of the rule (e.g., DISABLED).
+          type: String
+        - contextPath: Core.ExceptionRules.PLATFORM
+          description: The operating system platform the rule targets (e.g., AGENT_OS_MAC).
+          type: String
+        - contextPath: Core.ExceptionRules.SCOPE
+          description: The scope of the rule (e.g., GLOBAL).
+          type: String
+        - contextPath: Core.ExceptionRules.EFFECT
+          description: The effect of the rule.
+          type: String
+        - contextPath: Core.ExceptionRules.USER_EMAIL
+          description: The email address of the user associated with the rule.
+          type: String
+        - contextPath: Core.ExceptionRules.CREATED_BY
+          description: The display name of the user who created the rule.
+          type: String
+        - contextPath: Core.ExceptionRules.CREATION_TIME
+          description: The creation time of the rule (ISO 8601 string).
+          type: String
+        - contextPath: Core.ExceptionRules.CREATION_TIMESTAMP
+          description: The creation time of the rule in milliseconds.
+          type: Number
+        - contextPath: Core.ExceptionRules.MODIFICATION_TIME
+          description: The last modification time of the rule (ISO 8601 string).
+          type: String
+        - contextPath: Core.ExceptionRules.MODIFICATION_TIMESTAMP
+          description: The last modification time of the rule in milliseconds.
+          type: Number
+        - contextPath: Core.ExceptionRules.GENERATING_ALERT_ID
+          description: The ID of the alert that generated this rule.
+          type: String
+        - contextPath: Core.ExceptionRules.TRIGGER_ALERTS
+          description: The alerts triggered by this rule.
+          type: String
+        - contextPath: Core.ExceptionRules.IS_IN_USER_SCOPE
+          description: Boolean indicating if the rule is within the current user's scope.
+          type: Boolean
+        - contextPath: Core.ExceptionRules.PROFILE_TYPE
+          description: The type of profile the rule belongs to.
+          type: String
+        - contextPath: Core.ExceptionRules.CONDITIONS
+          description: The rule conditions (e.g., "Signer = ...").
+          type: String
+        - contextPath: Core.ExceptionRules.PROFILE_IDS
+          description: A specific profile name the rule is associated with.
+          type: String
+        - contextPath: Core.ExceptionRules.MODULES
+          description: A specific security component/module the rule applies to.
+          type: String
+        - contextPath: Core.ExceptionRules.ASSOCIATED_TARGETS
+          description: A specific target (e.g., endpoint, group) the rule is applied to.
+          type: String
+        - contextPath: Core.ExceptionRulesMetadata.returned_count
+          description: The actual number of exception rules that match all filter criteria and returned in this specific response.
+          type: String
+        - contextPath: Core.ExceptionRulesMetadata.filtered_count
+          description: The total number of exception rules in the system that match all filter criteria.
+    - arguments:
+        - description: The email of the user. Accepts a comma-separated list.
+          isArray: true
+          name: email
+      name: core-list-system-users
+      description: "Returns a list users and their core properties within the system. Results are limited to 50."
+      hidden: true
+      outputs:
+        - contextPath: Core.User.user_email
+          description: The user's email address.
+          type: String
+        - contextPath: Core.User.user_first_name
+          description: The user's first name.
+          type: String
+        - contextPath: Core.User.user_last_name
+          description: The user's last name.
+          type: String
+        - contextPath: Core.User.role_name
+          description: The specific role assigned to the user within this instance (e.g., Instance Administrator).
+          type: String
+        - contextPath: Core.User.user_type
+          description: The identity provider or source of the user account (e.g., CSP / SSO).
+          type: String
+        - contextPath: Core.User.last_logged_in
+          description: The last time the user successfully logged in, represented as a Unix epoch timestamp in milliseconds.
+          type: Number
+        - contextPath: Core.User.scope
+          description: The user's defined access scope or permissions structure within the instance.
+          type: String
+        - contextPath: Core.User.groups
+          description: A specific name of a group the user belongs to within this instance.
+          type: String
   runonce: false
   script: "-"
   subtype: python3
