@@ -10,7 +10,7 @@
 
     **Important:** After you close the Create API key page, you cannot access the information on the page.
 
-5.  Use the **Copy icon** to copy the API key and hte Secret API key. Store these credentials securely, as they will not be accessible after closing the page.
+5.  Use the **Copy icon** to copy the API key and the Secret API key. Store these credentials securely, as they will not be accessible after closing the page.
 6.  Click **Done** to close the dialog and return to the settings page. 
    For more information, see [Calling APIs](https://www.ibm.com/docs/en/gdsc/saas?topic=api-calling-apis).
 
