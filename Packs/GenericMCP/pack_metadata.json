@@ -15,10 +15,5 @@
     "keywords": [],
     "marketplaces": [
         "platform"
-    ],
-    "supportedModules": [
-        "agentix",
-        "cloud_posture",
-        "xsiam"
     ]
 }
