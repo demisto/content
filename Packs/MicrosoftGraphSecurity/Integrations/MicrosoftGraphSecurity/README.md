@@ -21,14 +21,14 @@ When using the `Authorization Code flow` for this integration, you should log in
 
 ## Important Notes
 
-- Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
+* Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
 For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
-- When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
-- The header *include-unknown-enum-members* is used in the fetch-incidents functionality. It ensures that fields with unknown values are correctly mapped to the appropriate service. [Learn More](https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the).
-- As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration.
-- When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
-- When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
-  - For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
+* When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
+* The header *include-unknown-enum-members* is used in the fetch-incidents functionality. It ensures that fields with unknown values are correctly mapped to the appropriate service. [Learn More](https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the).
+* As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration.
+* When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
+* When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
+  * For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
 
   | **Operation** | **Limit per tenant** | **Limit per resource (email, URL, file)** |
     | --- | --- | --- |
@@ -347,8 +347,8 @@ Get details for a specific alert.
 
 >### Customer Provided Comments for Alert
 
->- comment
->- comment
+>* comment
+>* comment
 
 >### File Security States for Alert
 
@@ -1720,17 +1720,17 @@ Create and retrieve a mail threat assessment.
 
 Note:
 
-- The message given in the command's argument *message_id* has to contain *X-MS-Exchange-Organization-Network-Message-Id* header in the message or in the *X-MS-Office365-Filtering-Correlation-Id* header in quarantined messages.
-- Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to access the mail received by the user (recipient email and message user), which means that if the authenticated user is different from the user specified in the recipient_email and message_user, then *Read and manage permissions* on behalf of the given user need to be added for the authenticated user via [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
+* The message given in the command's argument *message_id* has to contain *X-MS-Exchange-Organization-Network-Message-Id* header in the message or in the *X-MS-Office365-Filtering-Correlation-Id* header in quarantined messages.
+* Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to access the mail received by the user (recipient email and message user), which means that if the authenticated user is different from the user specified in the recipient_email and message_user, then *Read and manage permissions* on behalf of the given user need to be added for the authenticated user via [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
 
-  - Go to [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
-  - Choose the user email which will be provided in the command's arguments.
-  - Click on *Manage product licenses*.
-  - Go to *Mail*.
-  - Under *Mailbox permissions*, click on *Read and manage permissions*.
-  - click on *Add permissions*.
-  - Choose the authenticated user email from the list of given users.
-  - Click on *add*.
+  * Go to [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
+  * Choose the user email which will be provided in the command's arguments.
+  * Click on *Manage product licenses*.
+  * Go to *Mail*.
+  * Under *Mailbox permissions*, click on *Read and manage permissions*.
+  * click on *Add permissions*.
+  * Choose the authenticated user email from the list of given users.
+  * Click on *add*.
 
 #### Base Command
 
