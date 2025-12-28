@@ -1346,6 +1346,9 @@ script:
       - X3
       - X5
       - ENT_PLUS
+      - cloud_runtime_security
+      - xsiam
+      - edr
     polling: true
     outputs:
     - contextPath: Core.endpointScan.actionId
