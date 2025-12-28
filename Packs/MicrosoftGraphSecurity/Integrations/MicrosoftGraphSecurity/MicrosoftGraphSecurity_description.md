@@ -1,6 +1,6 @@
 ## ⚠️ Important: Microsoft Graph Security Legacy Alerts Deprecation
 
-> **Note:** Microsoft has announced the deprecation of the **Legacy Alerts** API.
+> **Note:** Microsoft has announced the deprecation of the **Legacy Alerts** API on **April 10, 2026**..
 
 According to [Microsoft documentation](https://learn.microsoft.com/fi-fi/graph/api/resources/alert?view=graph-rest-beta), the Legacy Alerts option will be fully deprecated on **April 10, 2026**.
 
