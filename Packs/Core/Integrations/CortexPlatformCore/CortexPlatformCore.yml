@@ -2944,10 +2944,6 @@ script:
       - contextPath: Core.ComplianceStandardsMetadata.filtered_count
         description: The total number of compliance standards in the system that match all filter criteria.
         type: Number
-
-        
-        
-        
     - arguments: 
       - description: A comma-separated list of endpoint IDs.
         name: endpoint_ids
