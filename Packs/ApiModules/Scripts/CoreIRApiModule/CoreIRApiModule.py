@@ -4076,7 +4076,7 @@ def build_webapp_request_data(
 def create_issues_filter(args) -> dict:
     """Build filter dictionary for alerts based on provided arguments."""
     filter_builder = FilterBuilder()
-    if args.get("time_frame") != "custom":
+    if args.get("time_frame") and args.get("time_frame") != "custom":
         filter_builder.add_time_range_field(
             ISSUE_FIELDS["start_time"], start_time=args.get("time_frame"), end_time=args.get("end_time")
         )
@@ -4106,13 +4106,17 @@ def create_issues_filter(args) -> dict:
     filter_builder.add_field(ISSUE_FIELDS["agent_id"], FilterType.EQ, argToList(args.get("agent_id")))
     filter_builder.add_field(ISSUE_FIELDS["Identity_type"], FilterType.EQ, argToList(args.get("Identity_type")))
     filter_builder.add_field(
-        ISSUE_FIELDS["action_process_image_command_line"], FilterType.CONTAINS, argToList(args.get("action_process_image_command_line"))
+        ISSUE_FIELDS["action_process_image_command_line"],
+        FilterType.CONTAINS,
+        argToList(args.get("action_process_image_command_line")),
     )
     filter_builder.add_field(
         ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("actor_process_image_sha256"))
     )
     filter_builder.add_field(
-        ISSUE_FIELDS["causality_actor_process_image_sha256"], FilterType.EQ, argToList(args.get("causality_actor_process_image_sha256"))
+        ISSUE_FIELDS["causality_actor_process_image_sha256"],
+        FilterType.EQ,
+        argToList(args.get("causality_actor_process_image_sha256")),
     )
     filter_builder.add_field(
         ISSUE_FIELDS["action_process_image_sha256"], FilterType.EQ, argToList(args.get("action_process_image_sha256"))
@@ -4251,7 +4255,7 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
 
     filtered_count = int(reply.get("FILTER_COUNT", "0"))
     returned_count = len(data)
-    
+
     for issue in data:
         if "alert_action_status" in issue:
             action_status = issue.get("alert_action_status")
@@ -4275,21 +4279,23 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
         for alert in data
     ]
     command_results = []
-    command_results.append(CommandResults(
-        outputs_prefix=f"{prefix}.Issue",
-        outputs_key_field="internal_id",
-        outputs=data,
-        readable_output=tableToMarkdown("Issue", human_readable),
-        raw_response=data,
-    ))
-    
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{prefix}.Issue",
+            outputs_key_field="internal_id",
+            outputs=data,
+            readable_output=tableToMarkdown("Issue", human_readable),
+            raw_response=data,
+        )
+    )
+
     command_results.append(
         CommandResults(
             outputs_prefix=f"{prefix}.IssueMetadata",
             outputs={"filtered_count": filtered_count, "returned_count": returned_count},
         )
     )
-    
+
     return command_results
 
 

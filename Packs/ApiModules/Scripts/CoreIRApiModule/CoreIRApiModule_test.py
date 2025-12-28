@@ -2857,7 +2857,7 @@ class TestGetIssueByFilter:
             "limit": "2",
         }
         response = get_issues_by_filter_command(client, args)
-        assert response.outputs[0].get("internal_id", {}) == 33333
+        assert response[0].outputs[0].get("internal_id", {}) == 33333
 
     def test_get_issues_by_alert_action_status_filter(self, requests_mock, mocker):
         """
@@ -2881,9 +2881,9 @@ class TestGetIssueByFilter:
 
         response = get_issues_by_filter_command(client, args)
 
-        assert response.outputs[0].get("internal_id", {}) == 33333
-        assert response.outputs[0].get("alert_action_status", {}) == "SCANNED"
-        assert response.outputs[0].get("alert_action_status_readable", {}) == "detected (scanned)"
+        assert response[0].outputs[0].get("internal_id", {}) == 33333
+        assert response[0].outputs[0].get("alert_action_status", {}) == "SCANNED"
+        assert response[0].outputs[0].get("alert_action_status_readable", {}) == "detected (scanned)"
 
         # Verify the request data was logged and contains the correct filter
         assert request_data_log.call_count > 0
@@ -2946,7 +2946,7 @@ class TestGetIssueByFilter:
 
         response = get_issues_by_filter_command(client, args)
 
-        assert response.outputs[0].get("internal_id", {}) == 33333
+        assert response[0].outputs[0].get("internal_id", {}) == 33333
 
         # Verify the request data was logged and contains the correct filter
         assert request_data_log.call_count > 0
@@ -5312,7 +5312,7 @@ def test_get_issues_by_filter_custom_filter_valid_json(requests_mock):
     args = {"custom_filter": custom_filter}
 
     response = get_issues_by_filter_command(client, args)
-    assert response.outputs[0].get("internal_id", {}) == 33333
+    assert response[0].outputs[0].get("internal_id", {}) == 33333
 
 
 def test_get_issues_by_filter_custom_filter_malformed_json_fixed(requests_mock):
@@ -5336,4 +5336,4 @@ def test_get_issues_by_filter_custom_filter_malformed_json_fixed(requests_mock):
     args = {"custom_filter": custom_filter}
 
     response = get_issues_by_filter_command(client, args)
-    assert response.outputs[0].get("internal_id", {}) == 33333
+    assert response[0].outputs[0].get("internal_id", {}) == 33333

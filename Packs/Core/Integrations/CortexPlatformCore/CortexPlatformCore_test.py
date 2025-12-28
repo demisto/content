@@ -6270,6 +6270,8 @@ class TestUpdateCaseCommand:
         assert payload["status"] == 1
         assert payload["userSeverity"] == 2
         assert payload["assignedUser"] == "user@example.com"
+
+
 def test_run_script_agentix_command_both_script_uid_and_name_provided():
     """
     Given:
