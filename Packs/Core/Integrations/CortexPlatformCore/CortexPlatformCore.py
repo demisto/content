@@ -14,6 +14,7 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
+MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
 AGENTS_TABLE = "AGENTS_TABLE"
 
@@ -52,6 +53,8 @@ WEBAPP_COMMANDS = [
     "core-create-appsec-policy",
     "core-get-appsec-issues",
     "core-update-case",
+    "core-list-scripts",
+    "core-run-script-agentix",
     "core-update-case-custom-fields",
     "core-list-endpoints",
 ]
@@ -64,6 +67,20 @@ ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
+SCRIPTS_TABLE = "SCRIPTS_TABLE"
+
+
+class ScriptManagement:
+    FIELDS = {
+        "script_name": "NAME",
+        "supported_platforms": "PLATFORM",
+    }
+
+    PLATFORMS = {
+        "windows": "AGENT_OS_WINDOWS",
+        "linux": "AGENT_OS_LINUX",
+        "macos": "AGENT_OS_MAC",
+    }
 CUSTOM_FIELDS_TABLE = "CUSTOM_FIELDS_CASE_TABLE"
 
 
@@ -3060,6 +3077,156 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
+def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
+    """
+    Retrieves a list of scripts from the platform with optional filtering.
+    """
+    page_number = arg_to_number(args.get("page_number")) or 0
+    page_size = arg_to_number(args.get("page_size")) or MAX_SCRIPTS_LIMIT
+    start_index = page_number * page_size
+    end_index = start_index + page_size
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field(
+        ScriptManagement.FIELDS["script_name"],
+        FilterType.CONTAINS,
+        argToList(args.get("script_name")),
+    )
+
+    platforms = [ScriptManagement.PLATFORMS[platform] for platform in argToList(args.get("supported_platforms"))]
+    filter_builder.add_field(ScriptManagement.FIELDS["supported_platforms"], FilterType.CONTAINS, platforms)
+
+    request_data = build_webapp_request_data(
+        table_name=SCRIPTS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=end_index,
+        sort_field="MODIFICATION_TIME",
+        start_page=start_index,
+    )
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    mapped_scripts = []
+    for script in data:
+        mapped_script = {
+            "name": script.get("NAME"),
+            "description": script.get("DESCRIPTION"),
+            "windows_supported": "AGENT_OS_WINDOWS" in str(script.get("PLATFORM", "")),
+            "linux_supported": "AGENT_OS_LINUX" in str(script.get("PLATFORM", "")),
+            "macos_supported": "AGENT_OS_MAC" in str(script.get("PLATFORM", "")),
+            "script_uid": script.get("GUID"),
+            "script_id": script.get("ID"),
+            "script_inputs": script.get("ENTRY_POINT_DEFINITION", {}).get("input_params", []),
+        }
+        mapped_scripts.append(mapped_script)
+
+    metadata = {
+        "filtered_count": reply.get("FILTER_COUNT", 0),
+        "returned_count": len(mapped_scripts),
+    }
+
+    command_results = []
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Scripts", mapped_scripts, headerTransform=string_to_table_header),
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Scripts",
+            outputs=mapped_scripts,
+            outputs_key_field="script_id",
+            raw_response=response,
+        )
+    )
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ScriptsMetadata",
+            outputs=metadata,
+        )
+    )
+
+    return command_results
+
+
+def run_script_agentix_command(client: Client, args: dict) -> PollResult:
+    """
+    Executes a script on agents with specified parameters.
+
+    Args:
+        client (Client): The client instance for making API requests.
+        args (dict): Arguments for running the script.
+
+    Returns:
+        CommandResults: Results of the script execution.
+    """
+    script_uid = args.get("script_uid", "")
+    script_name = args.get("script_name", "")
+    endpoint_ids = argToList(args.get("endpoint_ids", ""))
+    endpoint_names = argToList(args.get("endpoint_names", ""))
+    parameters = args.get("parameters", "")
+    if script_uid and script_name:
+        raise ValueError("Please provide either script_uid or script_name, not both.")
+
+    if not script_uid and not script_name:
+        raise ValueError("You must specify either script_uid or script_name.")
+
+    if endpoint_ids and endpoint_names:
+        raise ValueError("Please provide either endpoint_ids or endpoint_names, not both.")
+
+    if not endpoint_ids and not endpoint_names:
+        raise ValueError("You must specify either endpoint_ids or endpoint_names.")
+
+    if script_name:
+        scripts_results = list_scripts_command(client, {"script_name": script_name})
+        scripts = scripts_results[0].outputs.get("Scripts", [])  # type: ignore
+        number_of_returned_scripts = len(scripts)
+        demisto.debug(f"Scripts results: {scripts}")
+        if number_of_returned_scripts > 1:
+            error_message = (
+                "Multiple scripts found. Please specify the exact script by providing one of the following script_uid:\n\n"
+            )
+            for script in scripts:
+                error_message += (
+                    f"Script UID: {script['script_uid']}\n"
+                    f"Description: {script['description']}\n"
+                    f"Name: {script['name']}\n"
+                    f"Supported Platforms: Windows: {script['windows_supported']}, "
+                    f"Linux: {script['linux_supported']}, "
+                    f"MacOS: {script['macos_supported']}\n"
+                    f"Script Inputs: {script['script_inputs']}\n\n"
+                )
+            raise ValueError(error_message)
+
+        # If exactly one script is found, use its script_uid
+        elif number_of_returned_scripts == 1:
+            script = scripts[0]
+            script_uid = script["script_uid"]
+            script_inputs = script["script_inputs"]
+            script_inputs_names = [input_param.get("name") for input_param in script_inputs]
+            if script["script_inputs"] and not parameters:
+                raise ValueError(
+                    f"Script '{script_name}' requires the following input parameters: {', '.join(script_inputs_names)}, "
+                    "but none were provided."
+                )
+
+        # If no scripts found, raise an error
+        else:
+            raise ValueError(f"No scripts found with the name: {script_name}")
+
+    if endpoint_names:
+        endpoint_results = core_list_endpoints_command(client, {"endpoint_name": endpoint_names})
+        endpoints = endpoint_results.outputs or []
+        demisto.debug(f"Endpoint results: {endpoints}")
+        endpoint_ids = [endpoint["endpoint_id"] for endpoint in endpoints]  # type: ignore
+
+    if not endpoint_ids:
+        raise ValueError(f"No endpoints found with the specified names: {', '.join(endpoint_names)}")
+
+    client._base_url = "/api/webapp/public_api/v1"
+    return script_run_polling_command(
+        {"endpoint_ids": endpoint_ids, "script_uid": script_uid, "parameters": parameters, "is_core": True}, client
+    )
+
+
 def map_endpoint_format(endpoint_list: list) -> list:
     """
     Maps and prepares endpoints data for consistent output formatting.
@@ -3329,6 +3496,10 @@ def main():  # pragma: no cover
             return_results(update_case_custom_fields_command(client, args))
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
+        elif command == "core-list-scripts":
+            return_results(list_scripts_command(client, args))
+        elif command == "core-run-script-agentix":
+            return_results(run_script_agentix_command(client, args))
 
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
