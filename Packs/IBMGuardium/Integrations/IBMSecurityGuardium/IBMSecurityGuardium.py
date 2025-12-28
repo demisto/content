@@ -71,15 +71,15 @@ class Client(BaseClient):
         try:
             parsed_response = json.loads(lines[0])
             demisto.debug(f"Parsed first line successfully. Keys: {list(parsed_response.keys())}")
-            
+
             # Validate expected structure in first line
             if "result" not in parsed_response:
                 raise DemistoException("First line missing expected 'result' key")
-            
+
             result_data = parsed_response.get("result", {})
             if "report_layout" not in result_data or "data" not in result_data:
                 demisto.debug(f"Warning: First line result keys: {list(result_data.keys())}")
-                
+
         except json.JSONDecodeError as e:
             raise DemistoException(f"Failed to parse first line as JSON: {e}")
 
@@ -88,7 +88,7 @@ class Client(BaseClient):
             try:
                 pagination_data = json.loads(lines[1])
                 demisto.debug(f"Parsed second line successfully. Keys: {list(pagination_data.keys())}")
-                
+
                 # Merge pagination metadata into the main response
                 if "result" in pagination_data:
                     parsed_response.setdefault("result", {}).update(pagination_data["result"])
@@ -172,10 +172,9 @@ def validate_timestamp_field(timestamp_field: str | None, field_mapping: dict[st
     """
     if not timestamp_field:
         raise DemistoException(
-            "Timestamp Field Name is required. "
-            "Provide it as a command argument or configure it in the integration settings."
+            "Timestamp Field Name is required. " "Provide it as a command argument or configure it in the integration settings."
         )
-    
+
     available_fields = list(field_mapping.values())
     if timestamp_field not in available_fields:
         raise DemistoException(
@@ -333,13 +332,13 @@ def test_module_command(client: Client, report_id: str, is_fetch: bool, timestam
 
         demisto.debug(f"Testing connectivity: fetching 1 event from {from_date} to {to_date}")
         response = client.run_report(report_id, fetch_size=1, offset=0, from_date=from_date, to_date=to_date)
-        
+
         # If fetch is enabled, validate timestamp field exists in response headers
         if is_fetch:
             # Extract field mapping (headers) and validate timestamp field
             field_mapping = extract_field_mapping(response)
             validate_timestamp_field(timestamp_field, field_mapping)
-        
+
         return "ok"
     except DemistoException as e:
         error_str = str(e)
@@ -528,13 +527,13 @@ def get_events_command(
     demisto.debug(f"Got {len(events)} events")
 
     headers = list(field_mapping.values()) if field_mapping else []
-    
+
     # Determine timestamp field for XSIAM if should_push_events is true
     timestamp_field_result = None
     if argToBoolean(args.get("should_push_events", False)):
         # Get timestamp_field from command argument or fall back to config parameter
         cmd_timestamp_field = args.get("timestamp_field") or timestamp_field
-        
+
         # Validate timestamp field (checks for None/empty and existence in headers)
         validate_timestamp_field(cmd_timestamp_field, field_mapping)
         timestamp_field_result = cmd_timestamp_field
@@ -584,12 +583,12 @@ def main() -> None:
 
         elif command == "ibm-guardium-get-events":
             events, results, timestamp_field_result = get_events_command(client, report_id, args, timestamp_field)
-            
+
             if argToBoolean(args.get("should_push_events", False)) and timestamp_field_result:
                 send_events_to_xsiam_with_time(events, timestamp_field_result)
                 demisto.debug(f"Successfully sent {len(events)} events to XSIAM")
                 return_results(f"Sent {len(events)} events to XSIAM")
-            
+
             return_results(results)
 
     except Exception as e:

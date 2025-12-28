@@ -232,7 +232,11 @@ class TestValidateTimestampField:
             ("", {"1": "Field1"}, "Timestamp Field Name is required"),
             (None, {"1": "Field1"}, "Timestamp Field Name is required"),
             ("NonExistent", {"1": "Field1", "2": "Field2"}, "Timestamp field 'NonExistent' not found in report headers"),
-            ("Invalid Field", {"1": "Client IP", "2": "Session Start Time"}, "Timestamp field 'Invalid Field' not found in report headers"),
+            (
+                "Invalid Field",
+                {"1": "Client IP", "2": "Session Start Time"},
+                "Timestamp field 'Invalid Field' not found in report headers",
+            ),
         ],
     )
     def test_validate_timestamp_field_failures(self, timestamp_field, field_mapping, expected_error):
