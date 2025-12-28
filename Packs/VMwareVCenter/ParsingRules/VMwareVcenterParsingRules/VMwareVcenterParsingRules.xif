@@ -1,4 +1,15 @@
 [INGEST:vendor="vmware", product="vcenter", target_dataset="vmware_vcenter_raw", no_hit=keep]
+filter _raw_log ~= "vcsa-audit"
+| alter
+    tmp_keys = regextract(_raw_log, "([a-zA-Z0-9_]+)=(?:\"[^\"]*\"|\S+)"),
+    tmp_values = regextract(_raw_log, "(?:[a-zA-Z0-9_]+)=(\"[^\"]*\"|\S+)")
+| alter
+    tmp_obj_struct = arraystring(arraymap(tmp_keys, concat("(?P<", "@element", ">[^\|]+)")), ",")
+| alter 
+    tmp_values = replex(to_json_string(tmp_values), "\"", "")
+| alter
+    parsed_fields = regexcapture(tmp_values, tmp_obj_struct);
+
 // Support only date time of format: yyyy-MM-ddThh:mm:ss.nnnnnn[+|-]nn:nn. For example: 2022-01-01T10:00:00.012345+00:00
 filter _raw_log ~= "^[a-zA-Z0-9\W]{0,10}\s\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d+[+|-]\d+:\d+"
 | alter
