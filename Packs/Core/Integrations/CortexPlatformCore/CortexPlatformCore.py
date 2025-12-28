@@ -1739,25 +1739,25 @@ def get_cases_command(client, args):
                 entry_type=4,
             )
         )
-        enrichment_requested = False
+        enhanced_requested = False
 
     if isinstance(data, dict):
         data = [data]
-    if enrichment_requested:
-        enriched_data = data.copy()
+    if enhanced_requested:
+        enhanced_data = data.copy()
 
         if get_enriched_case_data:
-            enriched_data = add_cases_extra_data(client, enriched_data)
+            enhanced_data = add_cases_extra_data(client, enhanced_data)
 
         if ai_generated_description:
-            enriched_data = add_cases_ai_summary(client, enriched_data)
+            enhanced_data = add_cases_ai_summary(client, enhanced_data)
 
         command_results.append(
             CommandResults(
-                readable_output=tableToMarkdown("Cases", enriched_data, headerTransform=string_to_table_header),
+                readable_output=tableToMarkdown("Cases", enhanced_data, headerTransform=string_to_table_header),
                 outputs_prefix="Core.Case",
                 outputs_key_field="case_id",
-                outputs=enriched_data,
+                outputs=enhanced_data,
                 raw_response=data,
             )
         )
