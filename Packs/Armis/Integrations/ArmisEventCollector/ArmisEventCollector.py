@@ -239,8 +239,7 @@ class Client(BaseClient):
                 new_token = self.get_access_token()
             except Exception as e:
                 # Handle gracefully if token refresh fails (e.g., API errors)
-                error_str = str(e)
-                demisto.debug(f"Thread {threading.current_thread().name}: Token refresh failed: {error_str}")
+                demisto.debug(f"Thread {threading.current_thread().name}: Token refresh failed: {str(e)}")
                 raise
 
             # Save to context so other threads can see it
