@@ -3156,19 +3156,25 @@ def parse_frequency(day: str, time: str) -> str:
 
     if day.lower() not in DAY_MAP:
         raise ValueError(f"Invalid day. Must be one of {list(DAY_MAP.keys())}.")
-    
+
     try:
         hours, minutes = map(int, time.split(":"))
         if not (0 <= hours < 24 and 0 <= minutes < 60):
             raise ValueError("Invalid time format. Use HH:MM in 24-hour format.")
         return f"{minutes} {hours} * * {DAY_MAP[day]}"
-    
+
     except ValueError:
         raise ValueError("Invalid time format. Use HH:MM.")
 
 
 def create_assessment_profile_payload(
-    name: str, description: str, standard_id: str, asset_group_id: str, day: str = "sunday", time: str = "12:00", report_type: str = "ALL"
+    name: str,
+    description: str,
+    standard_id: str,
+    asset_group_id: str,
+    day: str = "sunday",
+    time: str = "12:00",
+    report_type: str = "ALL",
 ) -> Dict[str, Any]:
     """
     Prepare assessment profile payload
@@ -3263,7 +3269,7 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
     asset_group_name = args.get("asset_group_name", "")
     day = args.get("day", "sunday")
     time = args.get("time", "12:00")
-    
+
     payload = list_compliance_standards_payload(
         name=standard_name,
     )
@@ -3326,10 +3332,11 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
         raw_response=reply,
     )
 
+
 def core_list_compliance_standards_command(client: Client, args: dict) -> list[CommandResults]:
     """
     Lists compliance standards with optional filtering.
-    
+
     Args:
         client (Client): The client instance for API communication.
         args (dict): Command arguments containing optional filters:
@@ -3338,7 +3345,7 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> list[C
             - labels (list): Filter by labels (converts "Alibaba Cloud" to "alibaba_cloud" and "On Prem" to "on_prem")
             - page (int): Page number for pagination (default: 0)
             - page_size (int): Number of results per page (default: MAX_COMPLIANCE_STANDARDS)
-    
+
     Returns:
         list[CommandResults]: List containing:
             - CommandResults with filtered compliance standards data and metadata
