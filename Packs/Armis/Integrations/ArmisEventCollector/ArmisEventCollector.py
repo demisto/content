@@ -1,6 +1,7 @@
 import copy
 import itertools
 import threading
+import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
@@ -16,7 +17,7 @@ urllib3.disable_warnings()
 EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
-MAX_PAGINATION_DURATION_SECONDS = 180
+MAX_PAGINATION_DURATION_SECONDS = 120
 
 
 class EVENT_TYPE:
@@ -234,7 +235,12 @@ class Client(BaseClient):
 
             # This thread needs to perform the refresh
             demisto.debug(f"Thread {threading.current_thread().name}: Refreshing access token")
-            new_token = self.get_access_token()
+            try:
+                new_token = self.get_access_token()
+            except Exception as e:
+                # Handle gracefully if token refresh fails (e.g., API errors)
+                demisto.debug(f"Thread {threading.current_thread().name}: Token refresh failed: {str(e)}")
+                raise
 
             # Save to context so other threads can see it
             if self._context_manager:
@@ -266,13 +272,15 @@ class Client(BaseClient):
             is_auth_error = "Invalid access token" in error_str or "401" in error_str or "Unauthorized" in error_str
 
             if is_auth_error:
-                demisto.debug(f"Thread {threading.current_thread().name}: Authentication error detected: {error_str}")
+                safe_debug(
+                    f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}"
+                )
 
                 # If using context manager, try to get fresh token from context first
                 if self._context_manager:
                     fresh_token = self._context_manager.get_access_token()
                     if fresh_token and fresh_token != self._access_token:
-                        demisto.debug(f"Thread {threading.current_thread().name}: Using refreshed token from context")
+                        safe_debug(f"Thread {threading.current_thread().name}: Using refreshed token from context")
                         self.apply_access_token(fresh_token)
                         # Retry with the fresh token
                         try:
@@ -288,11 +296,18 @@ class Client(BaseClient):
                             if not is_retry_auth_error:
                                 raise retry_e
                             # If we reach here, the token from context was also invalid - proceed to full refresh
+                            safe_debug(
+                                f"Thread {threading.current_thread().name}: Context token also invalid, performing full refresh"
+                            )
 
-                # Perform coordinated token refresh
-                new_token = self.refresh_access_token()
-                self.apply_access_token(new_token)
-                demisto.debug(f"Thread {threading.current_thread().name}: Access token successfully applied")
+                # Perform coordinated token refresh (handles 401 gracefully during refresh)
+                try:
+                    new_token = self.refresh_access_token()
+                    self.apply_access_token(new_token)
+                    safe_debug(f"Thread {threading.current_thread().name}: Access token successfully refreshed and applied")
+                except Exception as refresh_e:
+                    safe_debug(f"Thread {threading.current_thread().name}: Token refresh failed: {str(refresh_e)}")
+                    raise
 
                 # Retry the request with new token
                 raw_response = self._http_request(
@@ -437,6 +452,25 @@ def test_module(client: Client) -> str:
 
 
 """ HELPER FUNCTIONS """
+
+
+def safe_debug(message: str) -> None:
+    """Safely log debug messages, handling JSON serialization errors.
+
+    Args:
+        message (str): The message to log.
+    """
+    try:
+        demisto.debug(message)
+    except Exception as e:
+        try:
+            demisto.debug(f"[safe_debug] Error: {type(e).__name__}\nTraceback:\n{traceback.format_exc()}")
+        except Exception:
+            try:
+                demisto.debug(f"[safe_debug] Logging failed: {type(e).__name__}")
+            except Exception:
+                # Final fallback - silently continue to prevent cascade failures
+                demisto.debug("[safe_debug] Final fallback - silently continue to prevent cascade failures")
 
 
 def calculate_fetch_start_time(
@@ -687,7 +721,7 @@ def fetch_event_type_worker(
         tuple[str, dict, dict]: Event type name, fetched events dict, and next_run state.
     """
     thread_id = threading.current_thread().name
-    demisto.debug(f"[{thread_id}] Starting fetch for {event_type_name}")
+    safe_debug(f"[{thread_id}] Starting fetch for {event_type_name}")
 
     events: dict[str, list[dict]] = {}
     next_run: dict[str, list | str | None] = {}
@@ -699,14 +733,14 @@ def fetch_event_type_worker(
         context_manager.update_event_type_state(next_run)
 
         event_count = len(events.get(event_type.dataset_name, []))
-        demisto.debug(f"[{thread_id}] Completed fetch for {event_type_name}: {event_count} events")
+        safe_debug(f"[{thread_id}] Completed fetch for {event_type_name}: {event_count} events")
 
         return event_type_name, events, next_run
 
     except Exception as e:
         # Use repr() for JSON errors to avoid serialization issues in logging
         error_msg = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
-        demisto.error(f"[{thread_id}] Error fetching {event_type_name}: {error_msg}")
+        safe_debug(f"[{thread_id}] Error fetching {event_type_name}: {error_msg}")
         raise
 
 
@@ -739,58 +773,58 @@ def fetch_events(
         (list[dict], dict) : List of fetched events and next run dictionary.
     """
     fetch_start = datetime.now()
-    demisto.debug(f"=== Starting fetch_events cycle at {fetch_start.strftime('%Y-%m-%d %H:%M:%S')} ===")
-    demisto.debug(f"Event types requested: {event_types_to_fetch}")
-    demisto.debug(f"Multithreading enabled: {use_multithreading}")
-    demisto.debug(f"Max fetch - Alerts/Activities: {max_fetch}, Devices: {devices_max_fetch}")
+    safe_debug(f"=== Starting fetch_events cycle at {fetch_start.strftime('%Y-%m-%d %H:%M:%S')} ===")
+    safe_debug(f"Event types requested: {event_types_to_fetch}")
+    safe_debug(f"Multithreading enabled: {use_multithreading}")
+    safe_debug(f"Max fetch - Alerts/Activities: {max_fetch}, Devices: {devices_max_fetch}")
 
     events: dict[str, list[dict]] = {}
     next_run: dict[str, list | str | None] = {}
 
     # Filter out Devices if not ready
     if "Devices" in event_types_to_fetch and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()):
-        demisto.debug("Skipping Devices fetch - interval not reached")
+        safe_debug("Skipping Devices fetch - interval not reached")
         event_types_to_fetch.remove("Devices")
 
-    demisto.debug(f"Event types after filtering: {event_types_to_fetch}")
+    safe_debug(f"Event types after filtering: {event_types_to_fetch}")
 
     # Handle Alerts specially (needs sequential processing for activities/devices)
     if "Alerts" in event_types_to_fetch:
-        demisto.debug("Processing Alerts sequentially (requires fetching related activities/devices)")
+        safe_debug("Processing Alerts sequentially (requires fetching related activities/devices)")
         alerts_start = datetime.now()
         fetch_by_event_type(
             client, EVENT_TYPES["Alerts"], events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay
         )
         alerts_count = len(events.get(EVENT_TYPE_ALERTS, []))
-        demisto.debug(f"Fetched {alerts_count} alerts in {(datetime.now() - alerts_start).total_seconds():.2f}s")
+        safe_debug(f"Fetched {alerts_count} alerts in {(datetime.now() - alerts_start).total_seconds():.2f}s")
 
         if events and events.get(EVENT_TYPE_ALERTS):
-            demisto.debug(f"Fetching related activities and devices for {alerts_count} alerts")
+            safe_debug(f"Fetching related activities and devices for {alerts_count} alerts")
             for idx, alert in enumerate(events[EVENT_TYPE_ALERTS], 1):
                 alert_id = alert.get("alertId")
                 aql_with_alerts_id = f"alert:(alertId:({alert_id}))"  # noqa: E231
                 fetch_events_for_specific_alert_ids(client, alert, aql_with_alerts_id)
                 if idx % 10 == 0:  # Log every 10 alerts
-                    demisto.debug(f"Processed {idx}/{alerts_count} alerts for related data")
+                    safe_debug(f"Processed {idx}/{alerts_count} alerts for related data")
         event_types_to_fetch.remove("Alerts")
 
     # Process remaining event types
     if not event_types_to_fetch:
-        demisto.debug("No remaining event types to fetch")
+        safe_debug("No remaining event types to fetch")
         next_run["access_token"] = client._access_token
         fetch_duration = (datetime.now() - fetch_start).total_seconds()
         total_events = sum(len(event_list) for event_list in events.values())
-        demisto.debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s - Total events: {total_events} ===")
+        safe_debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s - Total events: {total_events} ===")
         return events, next_run
 
     # Use multithreading only if enabled and there are multiple event types
     if not use_multithreading or len(event_types_to_fetch) == 1 or not context_manager:
         # Fallback to sequential processing
-        demisto.debug(f"Using sequential processing for {len(event_types_to_fetch)} event type(s): {event_types_to_fetch}")
+        safe_debug(f"Using sequential processing for {len(event_types_to_fetch)} event type(s): {event_types_to_fetch}")
         for event_type in event_types_to_fetch:
             event_max_fetch = max_fetch if event_type != "Devices" else devices_max_fetch
             type_start = datetime.now()
-            demisto.debug(f"Starting sequential fetch for {event_type} (max: {event_max_fetch})")
+            safe_debug(f"Starting sequential fetch for {event_type} (max: {event_max_fetch})")
 
             fetch_by_event_type(
                 client,
@@ -805,13 +839,13 @@ def fetch_events(
 
             type_duration = (datetime.now() - type_start).total_seconds()
             type_count = len(events.get(EVENT_TYPES[event_type].dataset_name, []))
-            demisto.debug(f"Completed {event_type} fetch: {type_count} events in {type_duration:.2f}s")
+            safe_debug(f"Completed {event_type} fetch: {type_count} events in {type_duration:.2f}s")
     else:
         # Parallel processing with ThreadPoolExecutor
         max_workers = min(len(event_types_to_fetch), len(EVENT_TYPES))
         parallel_start = datetime.now()
-        demisto.debug(f"=== Starting parallel processing with {max_workers} worker(s) ===")
-        demisto.debug(f"Event types for parallel fetch: {event_types_to_fetch}")
+        safe_debug(f"=== Starting parallel processing with {max_workers} worker(s) ===")
+        safe_debug(f"Event types for parallel fetch: {event_types_to_fetch}")
 
         with ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="ArmisWorker") as executor:
             submitted_tasks = {}
@@ -820,7 +854,7 @@ def fetch_events(
             for event_type_name in event_types_to_fetch:
                 worker_num += 1
                 event_max_fetch = max_fetch if event_type_name != "Devices" else devices_max_fetch
-                demisto.debug(f"[Worker-{worker_num}:{event_type_name}] Submitting task (max: {event_max_fetch})")
+                safe_debug(f"[Worker-{worker_num}:{event_type_name}] Submitting task (max: {event_max_fetch})")
 
                 task = executor.submit(
                     fetch_event_type_worker,
@@ -835,7 +869,7 @@ def fetch_events(
                 )
                 submitted_tasks[task] = event_type_name
 
-            demisto.debug(f"All {len(submitted_tasks)} worker tasks submitted, waiting for completion...")
+            safe_debug(f"All {len(submitted_tasks)} worker tasks submitted, waiting for completion...")
             completed_count = 0
 
             # Collect results as they complete
@@ -854,7 +888,7 @@ def fetch_events(
                     # Merge next_run (already updated in context by worker)
                     next_run.update(thread_next_run)
 
-                    demisto.debug(
+                    safe_debug(
                         f"[Worker:{event_type_name}] Completed ({completed_count}/{len(submitted_tasks)}) - "
                         f"{events_merged} events merged"
                     )
@@ -862,11 +896,11 @@ def fetch_events(
                 except Exception as e:
                     # Safely log the error without causing JSON parsing issues
                     error_msg = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
-                    demisto.error(f"[Worker:{event_type_name}] Failed: {error_msg}")
-                    demisto.debug(f"Continuing with remaining workers ({completed_count}/{len(submitted_tasks)} completed)")
+                    safe_debug(f"[Worker:{event_type_name}] Failed: {error_msg}")
+                    safe_debug(f"Continuing with remaining workers ({completed_count}/{len(submitted_tasks)} completed)")
 
             parallel_duration = (datetime.now() - parallel_start).total_seconds()
-            demisto.debug(f"=== Parallel processing completed in {parallel_duration:.2f}s ===")
+            safe_debug(f"=== Parallel processing completed in {parallel_duration:.2f}s ===")
 
     next_run["access_token"] = client._access_token
 
@@ -874,9 +908,9 @@ def fetch_events(
     fetch_duration = (datetime.now() - fetch_start).total_seconds()
     total_events = sum(len(event_list) for event_list in events.values())
     events_by_type = {dataset: len(event_list) for dataset, event_list in events.items()}
-    demisto.debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s ===")
-    demisto.debug(f"Total events fetched: {total_events}")
-    demisto.debug(f"Events by type: {events_by_type}")
+    safe_debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s ===")
+    safe_debug(f"Total events fetched: {total_events}")
+    safe_debug(f"Events by type: {events_by_type}")
 
     return events, next_run
 
