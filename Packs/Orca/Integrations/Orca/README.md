@@ -48,7 +48,7 @@ Get the alerts on cloud assets
 ### orca-get-asset
 
 ***
-Get Description of An asset
+Get Description of An asset (Deprecated)
 
 #### Base Command
 

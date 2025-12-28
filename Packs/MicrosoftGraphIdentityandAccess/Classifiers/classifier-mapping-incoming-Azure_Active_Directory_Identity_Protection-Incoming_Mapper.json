@@ -18,6 +18,14 @@
                     "complex": null,
                     "simple": "location.city"
                 },
+                "Country Code Number": {
+                    "complex": null,
+                    "simple": "location.countryOrRegion"
+                },
+                "Event ID": {
+                    "complex": null,
+                    "simple": "requestId"
+                },
                 "Microsoft Graph Identity and Access Alert Type": {
                     "complex": null,
                     "simple": "riskEventType"
@@ -55,9 +63,9 @@
                     "complex": null,
                     "simple": "location.countryOrRegion"
                 },
-                "Country Code Number": {
+                "Original Alert ID": {
                     "complex": null,
-                    "simple": "location.countryOrRegion"
+                    "simple": "id"
                 },
                 "Risk Rating": {
                     "complex": null,
