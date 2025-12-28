@@ -3229,7 +3229,7 @@ def update_incident_closure_fields(
     parsed_args: UpdateRemoteSystemArgs, fields: dict, ticket_type: str, is_custom_close: bool
 ) -> dict:
     """
-    Handle closing fields of an incident.
+    Handle closing fields of an incident
 
     If the ticket type is not incident and the closing state is "7 - Closed" and no custom state is given,
     convert the closing state to the right one to close the ticket/incident via XSOAR.
