@@ -524,14 +524,91 @@ def build_submission_info(
 
 
 def build_detail_markdown(result: dict[str, Any], report_section: dict[str, Any]) -> str:
-    """Create markdown blocks for inline detail previews."""
-    detail_blocks: list[str] = []
+    """Create an inline detail table (single table, no per-section headings)."""
+
+    def _summarize_section_data(section_title: str, section_data: Any) -> str | None:
+        if section_data in (None, "", [], {}):
+            return None
+
+        if section_title == "Indicators":
+            if isinstance(section_data, list):
+                names = [str(item.get("name")).strip() for item in section_data if isinstance(item, dict) and item.get("name")]
+                return ", ".join(names) if names else None
+            return str(section_data)
+
+        if section_title == "Indicators of Compromise":
+            if isinstance(section_data, dict):
+                preferred_keys = ("url", "domain", "email", "ip", "URL", "DOMAIN", "EMAIL", "IP")
+                ordered_keys = [key for key in preferred_keys if key in section_data]
+                ordered_keys.extend(sorted((key for key in section_data if key not in ordered_keys), key=str))
+
+                entries: list[str] = []
+                seen_normalized: set[str] = set()
+                for key in ordered_keys:
+                    raw_value = section_data.get(key)
+                    if raw_value in (None, "", [], {}):
+                        continue
+                    normalized_key = str(key).lower()
+                    if normalized_key in seen_normalized:
+                        continue
+                    seen_normalized.add(normalized_key)
+
+                    value_items = raw_value if isinstance(raw_value, list) else [raw_value]
+                    values = [str(item).strip() for item in value_items if item not in (None, "")]
+                    if values:
+                        entries.append(f"{normalized_key}: {', '.join(values)}")
+
+                return ", ".join(entries) if entries else None
+
+            return str(section_data)
+
+        if section_title == "Matched YARA Rules":
+            if isinstance(section_data, list):
+                rules = [str(item.get("rule")).strip() for item in section_data if isinstance(item, dict) and item.get("rule")]
+                return ", ".join(rules) if rules else None
+            return str(section_data)
+
+        if section_title == "Analysis Artifacts":
+            if isinstance(section_data, list):
+                paths = [
+                    str(item.get("path") or item.get("name")).strip()
+                    for item in section_data
+                    if isinstance(item, dict) and (item.get("path") or item.get("name"))
+                ]
+                return ", ".join(paths) if paths else None
+            return str(section_data)
+
+        if section_title == "Extracted Configurations":
+            if isinstance(section_data, list):
+                rendered: list[str] = []
+                for item in section_data:
+                    if isinstance(item, dict):
+                        parts = [f"{key}: {value}" for key, value in item.items()]
+                        if parts:
+                            rendered.append(", ".join(parts))
+                    elif item not in (None, ""):
+                        rendered.append(str(item))
+                return "; ".join(rendered) if rendered else None
+            if isinstance(section_data, dict):
+                parts = [f"{key}: {value}" for key, value in section_data.items()]
+                return ", ".join(parts) if parts else None
+            return str(section_data)
+
+        return str(section_data)
+
+    detail_rows: list[dict[str, str]] = []
     for title, top_level_key, report_key in DETAIL_SECTIONS:
         section_data = result.get(top_level_key)
         if section_data is None and isinstance(report_section, dict):
             section_data = report_section.get(report_key)
-        detail_blocks.append(render_section_markdown(title, section_data))
-    return "\n".join(detail_blocks)
+        summary = _summarize_section_data(title, section_data)
+        if summary:
+            detail_rows.append({"DETAILS": title.upper(), "VALUE": summary})
+
+    if not detail_rows:
+        return ""
+
+    return tableToMarkdown("Details", detail_rows, headers=["DETAILS", "VALUE"], removeNull=True)
 
 
 def build_section_command_results(uuid: str, prefix: str, title: str, data: Any) -> CommandResults:
@@ -606,10 +683,10 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> list[CommandR
         except (TypeError, ValueError):
             status_key = None
 
-    status_readable = status_labels.get(
-        status_key,
-        f"Status {status_key}" if status_key is not None else "Unknown",
-    )
+    if status_key is None:
+        status_readable = "Unknown"
+    else:
+        status_readable = status_labels.get(status_key, f"Status {status_key}")
     analysis_type_label = "URL Analysis" if report_type == "urlAnalysis" else report_type
 
     summary_info = build_submission_info(report_type, report_section, private_flag, file_name, analyzed_url)
