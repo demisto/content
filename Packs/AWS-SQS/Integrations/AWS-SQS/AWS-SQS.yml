@@ -7,6 +7,7 @@ sectionorder:
 name: AWS - SQS
 display: AWS - SQS
 category: IT Services
+provider: Amazon
 description: Amazon Web Services Simple Queuing Service (SQS).
 configuration:
 - display: AWS Default Region

@@ -1,4 +1,5 @@
 category: IT Services
+provider: Amazon
 commonfields:
   id: AWS - Route53
   version: -1

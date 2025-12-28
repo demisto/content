@@ -4,6 +4,7 @@ commonfields:
 name: Aella Star Light
 display: Aella Star Light
 category: Data Enrichment & Threat Intelligence
+provider: AellaData
 description: Aella Star Light Integration
 configuration:
 - display: Server URL (e.g. https://starlight.companyname.com:8889)

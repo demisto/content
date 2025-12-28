@@ -4,6 +4,7 @@ commonfields:
 name: AlphaSOC Wisdom
 display: AlphaSOC Wisdom
 category: Data Enrichment & Threat Intelligence
+provider: AlphaSOC
 description: DNS and IP threat intelligence via the AlphaSOC platform
 configuration:
 - display: AlphaSOC Wisdom API Key
