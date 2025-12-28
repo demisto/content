@@ -7,6 +7,7 @@ import asyncio
 
 GITHUB_BASE_URL = "https://api.githubcopilot.com/mcp"
 GITHUB_AUTH_TYPE = AuthMethods.BEARER.value
+SERVER_NAME = "GitHub MCP"
 
 
 """ MAIN FUNCTION """
@@ -41,7 +42,7 @@ async def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command == "list-tools":
-            result = await client.list_tools()
+            result = await client.list_tools(SERVER_NAME)
             return_results(result)
 
         elif command == "call-tool":
