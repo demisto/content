@@ -404,3 +404,8 @@ repos:
       files: "^(.*/)?README\\.md$"
       args: [ "--config", ".markdownlint-cli2.jsonc" ]
       exclude: Packs/ReversingLabs_Titanium_Cloud/Integrations/ReversingLabsTitaniumCloudv2/README\.md
+
+- repo: https://github.com/kraymer/brack
+  rev: main
+  hooks:
+    - id: brack
