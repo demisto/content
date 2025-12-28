@@ -1,3 +1,14 @@
+## ⚠️ Important: Microsoft Graph Security Legacy Alerts Deprecation
+
+> **Note:** Microsoft has announced the deprecation of the **Legacy Alerts** API.
+
+According to [Microsoft documentation](https://learn.microsoft.com/fi-fi/graph/api/resources/alert?view=graph-rest-beta), the Legacy Alerts option will be fully deprecated on **April 10, 2026**.
+
+* **Impact:** After this date, configuring this integration to use the "Legacy Alerts" option will stop returning data.
+* **Action Required:** Users currently utilizing Legacy Alerts must migrate to the new **Alerts v2** API option to ensure continued data ingestion.
+
+__________________________________________________________________________________________________
+
 Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 This integration was integrated and tested with version 1.0 of Microsoft Graph.
 
