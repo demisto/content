@@ -19,49 +19,7 @@ script:
     description: Retrieves a list of available tools in the Atlassian Cloud MCP server.
     name: list-tools
     hidden: true
-    outputs:
-    - contextPath: ListTools.Tools.annotations
-      description: The annotations of the tool.
-      type: Unknown
-    - contextPath: ListTools.Tools.description
-      description: The description of the tool.
-      type: String
-    - contextPath: ListTools.Tools.icons
-      description: The icons associated with the tool.
-      type: Unknown
-    - contextPath: ListTools.Tools.inputSchema.properties
-      description: The properties of the input schema for each tool.
-      type: Unknown
-    - contextPath: ListTools.Tools.inputSchema.required
-      description: The required input parameters.
-      type: String
-    - contextPath: ListTools.Tools.inputSchema.title
-      description: The title of the input schema.
-      type: String
-    - contextPath: ListTools.Tools.inputSchema.type
-      description: The type of the input schema.
-      type: String
-    - contextPath: ListTools.Tools.meta
-      description: Metadata about the tool.
-      type: Unknown
-    - contextPath: ListTools.Tools.name
-      description: The name of the tool.
-      type: String
-    - contextPath: ListTools.Tools.outputSchema.properties.result
-      description: The result of the tool execution.
-      type: Unknown
-    - contextPath: ListTools.Tools.outputSchema.required
-      description: The required fields in the output schema.
-      type: String
-    - contextPath: ListTools.Tools.outputSchema.title
-      description: The title of the output schema.
-      type: String
-    - contextPath: ListTools.Tools.outputSchema.type
-      description: The type of the output schema.
-      type: String
-    - contextPath: ListTools.Tools.title
-      description: The title of the tool.
-      type: String
+    outputs: []
   - arguments:
     - name: name
       description: The name of the tool to call.
@@ -70,43 +28,7 @@ script:
     description: Calls a specific tool on the MCP server with optional input parameters.
     name: call-tool
     hidden: true
-    outputs:
-    - contextPath: CallTool.Tool.type
-      description: The type of the tool output.
-      type: String
-    - contextPath: CallTool.Tool.text
-      description: The text content of the tool output.
-      type: String
-    - contextPath: CallTool.Tool.annotations.audience
-      description: The audience for the tool output annotations.
-      type: Unknown
-    - contextPath: CallTool.Tool.annotations.priority
-      description: The priority of the tool output annotations.
-      type: Unknown
-    - contextPath: CallTool.Tool.meta
-      description: Metadata associated with the tool output.
-      type: Unknown
-    - contextPath: CallTool.Tool.data
-      description: The data content of the tool output.
-      type: Unknown
-    - contextPath: CallTool.Tool.mimeType
-      description: The MIME type of the tool output.
-      type: String
-    - contextPath: CallTool.Tool.resource.uri
-      description: The URI of the resource in the tool output.
-      type: String
-    - contextPath: CallTool.Tool.resource.mimeType
-      description: The MIME type of the resource in the tool output.
-      type: String
-    - contextPath: CallTool.Tool.resource.meta
-      description: Metadata of the resource in the tool output.
-      type: Unknown
-    - contextPath: CallTool.Tool.resource.text
-      description: The text content of the resource in the tool output.
-      type: String
-    - contextPath: CallTool.Tool.resource.blob
-      description: The blob content of the resource in the tool output.
-      type: Unknown
+    outputs: []
   - description: Test the authentication configuration with the MCP server.
     name: atlassian-cloud-mcp-auth-test
   - description: Generate an authentication login URL.

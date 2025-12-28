@@ -27,22 +27,7 @@ Retrieves a list of available tools in the Atlassian Cloud MCP server.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ListTools.Tools.annotations | Unknown | The annotations of the tool. |
-| ListTools.Tools.description | String | The description of the tool. |
-| ListTools.Tools.icons | Unknown | The icons associated with the tool. |
-| ListTools.Tools.inputSchema.properties | Unknown | The properties of the input schema for each tool. |
-| ListTools.Tools.inputSchema.required | String | The required input parameters. |
-| ListTools.Tools.inputSchema.title | String | The title of the input schema. |
-| ListTools.Tools.inputSchema.type | String | The type of the input schema. |
-| ListTools.Tools.meta | Unknown | Metadata about the tool. |
-| ListTools.Tools.name | String | The name of the tool. |
-| ListTools.Tools.outputSchema.properties.result | Unknown | The result of the tool execution. |
-| ListTools.Tools.outputSchema.required | String | The required fields in the output schema. |
-| ListTools.Tools.outputSchema.title | String | The title of the output schema. |
-| ListTools.Tools.outputSchema.type | String | The type of the output schema. |
-| ListTools.Tools.title | String | The title of the tool. |
+There is no context output for this command.
 
 ### call-tool
 
@@ -62,20 +47,7 @@ Calls a specific tool on the MCP server with optional input parameters.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CallTool.Tool.type | String | The type of the tool output. |
-| CallTool.Tool.text | String | The text content of the tool output. |
-| CallTool.Tool.annotations.audience | Unknown | The audience for the tool output annotations. |
-| CallTool.Tool.annotations.priority | Unknown | The priority of the tool output annotations. |
-| CallTool.Tool.meta | Unknown | Metadata associated with the tool output. |
-| CallTool.Tool.data | Unknown | The data content of the tool output. |
-| CallTool.Tool.mimeType | String | The MIME type of the tool output. |
-| CallTool.Tool.resource.uri | String | The URI of the resource in the tool output. |
-| CallTool.Tool.resource.mimeType | String | The MIME type of the resource in the tool output. |
-| CallTool.Tool.resource.meta | Unknown | Metadata of the resource in the tool output. |
-| CallTool.Tool.resource.text | String | The text content of the resource in the tool output. |
-| CallTool.Tool.resource.blob | Unknown | The blob content of the resource in the tool output. |
+There is no context output for this command.
 
 ### atlassian-cloud-mcp-auth-test
 
@@ -102,23 +74,6 @@ Generate an authentication login URL.
 #### Base Command
 
 `atlassian-cloud-mcp-generate-login-url`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-### atlassian-cloud-mcp-auth-reset
-
-***
-Reset the authentication configuration for the MCP server.
-
-#### Base Command
-
-`atlassian-cloud-mcp-auth-reset`
 
 #### Input
 

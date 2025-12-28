@@ -12,6 +12,7 @@ ATLASSIAN_BASE_URL = "https://mcp.atlassian.com/v1/mcp"
 ATLASSIAN_REDIRECT_URI = "http://127.0.0.1:8000/callback"
 ATLASSIAN_AUTH_TYPE = AuthMethods.DYNAMIC_CLIENT_REGISTRATION.value
 COMMAND_PREFIX = "atlassian-cloud-mcp"
+SERVER_NAME = "Atlassian Cloud MCP"
 
 
 async def main() -> None:  # pragma: no cover
@@ -39,7 +40,7 @@ async def main() -> None:  # pragma: no cover
             )
 
         elif command == "list-tools":
-            result = await client.list_tools()
+            result = await client.list_tools(SERVER_NAME)
             return_results(result)
 
         elif command == "call-tool":
