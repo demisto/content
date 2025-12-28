@@ -7226,15 +7226,15 @@ class TestValidateStartEndTimes:
 
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("10:00", "11:30")  # 1.5 hours
-        assert "A minimum of two hours is required" in str(exc_info.value)
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
 
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("10:00", "11:59")  # 1 hour 59 minutes
-        assert "A minimum of two hours is required" in str(exc_info.value)
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
 
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("14:30", "15:45")  # 1 hour 15 minutes
-        assert "A minimum of two hours is required" in str(exc_info.value)
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
 
     def test_validate_start_end_times_insufficient_gap_cross_day(self):
         """Test with insufficient gap crossing midnight"""
@@ -7242,11 +7242,11 @@ class TestValidateStartEndTimes:
 
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("23:30", "00:30")  # 1 hour
-        assert "A minimum of two hours is required" in str(exc_info.value)
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
 
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("23:15", "01:00")  # 1 hour 45 minutes
-        assert "A minimum of two hours is required" in str(exc_info.value)
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
 
     def test_validate_start_end_times_same_time(self):
         """Test with identical start and end times"""
@@ -7254,7 +7254,7 @@ class TestValidateStartEndTimes:
 
         with pytest.raises(DemistoException) as exc_info:
             validate_start_end_times("10:00", "10:00")
-        assert "A minimum of two hours is required" in str(exc_info.value)
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
 
     def test_validate_start_end_times_invalid_time_format(self):
         """Test with invalid time formats - should raise ValueError"""
@@ -7564,7 +7564,7 @@ class TestUpdateEndpointVersionCommand:
         mock_client.update_endpoint_version.assert_called_once_with(expected_request_data)
 
         assert isinstance(result, CommandResults)
-        assert "Successfully updated" in result.readable_output
+        assert "The update to the target versions was successful. Action ID: action123" in result.readable_output
         assert "action123" in result.readable_output
         assert result.outputs["action_id"] == "action123"
         assert result.outputs["endpoint_ids"] == ["endpoint1", "endpoint2"]
@@ -7590,7 +7590,7 @@ class TestUpdateEndpointVersionCommand:
 
         result = update_endpoint_version_command(mock_client, args)
 
-        assert "Failed to update" in result.readable_output
+        assert "The update to the target versions was unsuccessful." in result.readable_output
         assert result.outputs["action_id"] == 0
 
     @patch("CortexPlatformCore.FilterBuilder")
@@ -7706,7 +7706,7 @@ class TestEndpointUpdateVersionIntegration:
             update_result = update_endpoint_version_command(mock_client, update_args)
 
         assert isinstance(update_result, CommandResults)
-        assert "Successfully updated" in update_result.readable_output
+        assert "The update to the target versions was successful. Action ID: action123" in update_result.readable_output
         assert update_result.outputs["action_id"] == "action123"
 
 

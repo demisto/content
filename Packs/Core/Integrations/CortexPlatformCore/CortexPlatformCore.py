@@ -18,7 +18,7 @@ MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
 AGENTS_TABLE = "AGENTS_TABLE"
 SECONDS_IN_DAY = 86400  # Number of seconds in one day
-MIN_DIFF_SECONDS = 2 * 3600 # Minimum allowed difference = 2 hours
+MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -3307,9 +3307,7 @@ def validate_start_end_times(start_time, end_time):
             diff += SECONDS_IN_DAY
 
         if diff < MIN_DIFF_SECONDS:
-            raise DemistoException(
-                "Start and end times must be at least two hours apart (midnight crossing is supported)."
-            )
+            raise DemistoException("Start and end times must be at least two hours apart (midnight crossing is supported).")
 
 
 def transform_distributions(response):
