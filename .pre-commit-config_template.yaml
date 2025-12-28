@@ -409,4 +409,4 @@ repos:
   rev: v1.0.0
   hooks:
     - id: brack
-      args: [-r, "^[a-zA-Z0-9_\-\\/]{1,}$" ]
+      args: [-r, '^[_0-9A-Za-z/\\-][_0-9A-Za-z/\\-]*$' ]
