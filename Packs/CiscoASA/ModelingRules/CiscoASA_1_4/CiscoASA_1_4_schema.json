@@ -3,6 +3,10 @@
         "_raw_log": {
           "type": "string",
           "is_array": false
+        },
+        "_json": {
+          "type": "string",
+          "is_array": false
         }
     }
   }
