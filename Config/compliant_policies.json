@@ -57,6 +57,23 @@
             ]
         },
         {
+            "name": "Group Management",
+            "category": "IAM",
+            "arguments": [
+                "dn",
+                "team",
+                "group_id",
+                "groupId",
+                "groupname",
+                "groupName",
+                "group-cn",
+                "users",
+                "member_name",
+                "userId"
+
+            ]
+        },
+        {
             "name": "IP Blockage",
             "category": "EndPoint",
             "arguments": [
