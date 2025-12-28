@@ -2914,7 +2914,7 @@ class TestGetIssueByFilter:
 
         response = get_issues_by_filter_command(client, args)
 
-        assert response.outputs[0].get("internal_id", {}) == 33333
+        assert response[0].outputs[0].get("internal_id", {}) == 33333
         # Verify the request data was logged and contains the correct filter
         assert request_data_log.call_count > 0
         logged_request = request_data_log.call_args[0][0]
@@ -2942,7 +2942,7 @@ class TestGetIssueByFilter:
         request_data_log = mocker.patch.object(demisto, "info")
 
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
-        args = {"alert_source": "first,second", "user_name": "N/A"}
+        args = {"issue_source": "first,second", "user_name": "N/A"}
 
         response = get_issues_by_filter_command(client, args)
 
