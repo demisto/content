@@ -2849,6 +2849,84 @@ script:
       - contextPath: Core.Endpoint.cloud_region
         description: The cloud region of the endpoint.
         type: String
+    - arguments: 
+      - description: A comma-separated list of endpoint IDs.
+        name: endpoint_ids
+        required: true
+        isArray: true
+      name: core-get-endpoint-update-version
+      description: Retrieves endpoint update versions for the provided endpoint IDs.
+      supportedModules:
+        - cloud_runtime_security
+        - edr
+        - xsiam
+      outputs:
+      - contextPath: Core.EndpointUpdateVersion.total_count
+        description: Total number of endpoints.
+        type: String
+      - contextPath: Core.EndpointUpdateVersion.platform_count
+        description: Number of endpoints per platform.
+        type: String
+      - contextPath: Core.EndpointUpdateVersion.distributions.platform
+        description: The platform of the endpoint update.
+        type: String
+      - contextPath: Core.EndpointUpdateVersion.distributions.version
+        description: The version of the endpoint update.
+        type: String
+      - contextPath: Core.EndpointUpdateVersion.distributions.endpoints_with_higher_version_count
+        description: The number of endpoints running a version later than the specified update.
+        type: String
+      - contextPath: Core.EndpointUpdateVersion.distributions.endpoints_with_same_version_count
+        description: The number of endpoints running the same version as the specified update.
+        type: String
+      - contextPath: Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count
+        description: The number of endpoints running a version earlier than the specified update.
+        type: String
+    - arguments: 
+      - description: A comma-separated list of endpoint IDs.
+        name: endpoint_ids
+        required: true
+        isArray: true
+      - description: The platform of the endpoints.
+        name: platform
+        required: true
+        auto: PREDEFINED
+        predefined:
+        - windows
+        - macos
+        - linux
+      - description: The target version for updating the endpoints.
+        name: version
+        required: true
+      - description: The start time for the update. Enter the time in a 24-hour format (HH:MM). Ensure that there are at least two hours between the start time and the end time.
+        name: start_time
+      - description: The end time for the update. Enter the time in a 24-hour format (HH:MM).
+        name: end_time
+      - description: A comma-separated list of days of the week the update may run.
+        name: days
+        isArray: true
+        auto: PREDEFINED
+        predefined:
+        - Sunday
+        - Monday
+        - Tuesday
+        - Wednesday
+        - Thursday
+        - Friday
+        - Saturday
+      name: core-update-endpoint-version
+      supportedModules:
+        - cloud_runtime_security
+        - edr
+        - xsiam
+      description: Updates the version of the given endpoint to the target version supplied.
+      outputs: 
+      - contextPath: Core.EndpointUpdate.endpoint_ids
+        description: The IDs of the endpoints on which the update run.
+        type: String
+      - contextPath: Core.EndpointUpdate.action_id
+        description: The ID of the update action. 0 means that the action failed.
+        type: String
   runonce: false
   script: "-"
   subtype: python3
