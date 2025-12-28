@@ -370,14 +370,7 @@ call vmware_vcenter_virtualization_classification
 | call vmware_vcenter_common_fields
 | call vmware_vcenter_vcsa_audit_format;
 
-
-
-
-///proceed model - old version
-
-
-
-
+/// end Virtualization
 
 // sps (Storage management service) events 
 call vmware_vcenter_virtualization_classification
