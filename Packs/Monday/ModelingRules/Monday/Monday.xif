@@ -1,0 +1,38 @@
+[MODEL: dataset=monday_monday_raw]
+//Target resources extractions
+alter
+    extract_resource_board_name = activity_metadata -> board_name,
+    extract_resource_value = data -> value{},
+    extract_resource_previous_value = data -> previous_value{},
+    extract_resource_asset_id = activity_metadata -> asset_id,
+    extract_resource_board_id = activity_metadata -> board_id,
+    extract_resource_asset_holder_id = activity_metadata -> asset_holder_id,
+    extract_resource_pulse_name = data -> pulse_name,
+    extract_resource_column_title = data -> column_title,
+    extract_resource_group_title = data -> group_title
+| alter
+    all_resources_id = if(len(extract_resource_asset_id) > 0 and len(extract_resource_board_id) > 0 and len(extract_resource_asset_holder_id) > 0, concat(extract_resource_asset_id , " ,", extract_resource_board_id , " ,", extract_resource_asset_holder_id),null), // Check if asset_id, board_id and asset_holder_id exist .
+    asset_and_board_id = if(len(extract_resource_asset_id) > 0 and len(extract_resource_board_id) > 0 and len(extract_resource_asset_holder_id) < 0, concat(extract_resource_asset_id , " ,", extract_resource_board_id),null), // Check if only asset_id and board_id exist.
+    asset_and_holder_id = if(len(extract_resource_asset_id) > 0 and len(extract_resource_board_id) < 0 and len(extract_resource_asset_holder_id) > 0, concat(extract_resource_asset_id , " ,", extract_resource_asset_holder_id),null), // Check if only asset_id and asset_holder_id exist.
+    board_and_holder_id = if(len(extract_resource_asset_id) < 0 and len(extract_resource_board_id) > 0 and len(extract_resource_asset_holder_id) > 0, concat(extract_resource_board_id, " ,", extract_resource_asset_holder_id),null), // Check if only board_id and asset_holder_id exist.
+    extract_resource_previous_value = if(extract_resource_previous_value = "{}",null,extract_resource_previous_value) // Check if there is an empty "{}" string and remove it.
+/* XDM Fields mapping
+Activity Logs: https://developer.monday.com/api-reference/reference/activity-logs
+Audit Logs: https://developer.monday.com/api-reference/reference/audit-logs
+*/
+| alter
+    xdm.source.user.identifier = to_string(user_id),
+    xdm.event.operation = if(event = "login", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, event contains "delete", XDM_CONST.OPERATION_TYPE_DELETE, event contains "create", XDM_CONST.OPERATION_TYPE_CREATE, event contains "update", XDM_CONST.OPERATION_TYPE_UPDATE),
+    xdm.event.original_event_type = event,
+    xdm.source.ipv4 = if(is_ipv4(ip_address) = TRUE ,ip_address),
+    xdm.source.ipv6 = if(is_ipv6(ip_address) = TRUE, ip_address),
+    xdm.source.user_agent = user_agent,
+    xdm.source.host.os = concat(os_name , " " , os_version),
+    xdm.source.host.os_family = if(lowercase(os_name) = "mac os", XDM_CONST.OS_FAMILY_MACOS, lowercase(os_name) = "windows", XDM_CONST.OS_FAMILY_WINDOWS, os_name),
+    xdm.target.resource.name = coalesce(extract_resource_board_name,extract_resource_column_title,extract_resource_group_title,extract_resource_pulse_name),
+    xdm.target.resource.value = extract_resource_value,
+    xdm.target.resource_before.value = extract_resource_previous_value,
+    xdm.target.file.filename = activity_metadata -> asset_file_name,
+    xdm.event.type = event_type,
+    xdm.target.resource.id = coalesce(all_resources_id,asset_and_board_id,asset_and_holder_id,board_and_holder_id,extract_resource_asset_id, extract_resource_board_id, extract_resource_asset_holder_id);
+    
