@@ -556,6 +556,10 @@ Retrieves asset from the Cortex platform using optional filter criteria.
 | asset_providers | Comma-separated list of asset providers to search for. (e.g., "provider1,provider2"). | Optional |
 | asset_realms | Comma-separated list of asset realms to search for. (e.g., "realm1,realm2"). | Optional |
 | asset_groups | A JSON encoded string representing a list of asset groups to search for. (e.g., `["group1", "group2"]`).<br/>. | Optional |
+| asset_categories | A Comma-separated list of asset categories to search for. (e.g., "category1,category2"). | Optional |
+| asset_classes | A comma-separated list of asset classes to search for. Possible values are: AI, API, Application, Code, Compute, Data, Device, External Surface, Identity, Management, Network, Organization, Other, Security Services. | Optional |
+| software_package_versions | A comma-separated list of software package versions to search for. (e.g., "0.23.0,5.2.0"). | Optional |
+| kubernetes_cluster_versions | A comma-separated list of Kubernetes cluster versions to search for. (e.g., "1.22,1.3"). | Optional |
 
 #### Context Output
 
@@ -580,6 +584,8 @@ Retrieves asset from the Cortex platform using optional filter criteria.
 | Core.Asset.cloud.region | unknown | The cloud region of the asset. |
 | Core.Asset.related_cases.cases_breakdown | unknown | The related cases breakdown of the asset. |
 | Core.Asset.provider | unknown | The asset provider. |
+| Core.Asset.kubernetes.cluster.version | unknown | The Kubernetes cluster version of the asset. |
+| Core.Asset.software_package.version | unknown | The software package version of the asset. |
 
 ### core-get-issue-recommendations
 
