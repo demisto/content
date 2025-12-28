@@ -116,6 +116,14 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Search-after cache duration hours
+  additionalinfo: Defines how many hours the search-after values is kept in cache so pagination can be faster.
+  name: cache_duration_hours
+  required: true
+  type: 0
+  section: Collect
+  advanced: true
+  defaultvalue: "48"
 description: This integration provides TAXII2 Services for system indicators (Outbound feed).
 display: TAXII2 Server
 name: TAXII2 Server

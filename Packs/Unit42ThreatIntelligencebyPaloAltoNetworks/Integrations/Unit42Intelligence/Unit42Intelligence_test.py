@@ -201,7 +201,11 @@ def test_file_command_malicious(client, mocker):
         "sources": ["wildfire", "source2"],
         "counts": [],
         "threat_object_associations": [
-            {"name": "Zeus", "threat_object_class": "malware_family", "aliases": ["Zbot"]},
+            {
+                "name": "Zeus",
+                "threat_object_class": "malware_family",
+                "aliases": ["Zbot"],
+            },
             {"name": "APT28", "threat_object_class": "actor"},
         ],
     }
@@ -382,7 +386,10 @@ def test_create_dbot_score_malicious():
         - Returns DBotScore with BAD score and malicious description
     """
     dbot_score = create_dbot_score(
-        indicator="1.2.3.4", indicator_type="ip", verdict="malicious", reliability="A - Completely reliable"
+        indicator="1.2.3.4",
+        indicator_type="ip",
+        verdict="malicious",
+        reliability="A - Completely reliable",
     )
 
     assert dbot_score.indicator == "1.2.3.4"
@@ -402,7 +409,10 @@ def test_create_dbot_score_benign():
         - Returns DBotScore with GOOD score and no malicious description
     """
     dbot_score = create_dbot_score(
-        indicator="example.com", indicator_type="domain", verdict="benign", reliability="A - Completely reliable"
+        indicator="example.com",
+        indicator_type="domain",
+        verdict="benign",
+        reliability="A - Completely reliable",
     )
 
     assert dbot_score.indicator == "example.com"
@@ -422,7 +432,10 @@ def test_create_dbot_score_suspicious():
         - Returns DBotScore with SUSPICIOUS score and no malicious description
     """
     dbot_score = create_dbot_score(
-        indicator="suspicious.com", indicator_type="domain", verdict="suspicious", reliability="A - Completely reliable"
+        indicator="suspicious.com",
+        indicator_type="domain",
+        verdict="suspicious",
+        reliability="A - Completely reliable",
     )
 
     assert dbot_score.indicator == "suspicious.com"
@@ -445,7 +458,10 @@ def test_create_dbot_score_unknown():
         - Reliability is correctly assigned
     """
     dbot_score = create_dbot_score(
-        indicator="unknown.com", indicator_type="domain", verdict="unknown", reliability="A - Completely reliable"
+        indicator="unknown.com",
+        indicator_type="domain",
+        verdict="unknown",
+        reliability="A - Completely reliable",
     )
 
     assert dbot_score.indicator == "unknown.com"
@@ -723,10 +739,19 @@ def test_create_relationships_mitre_technique_prefix_removal():
         - Creates relationships with clean technique names
     """
     threat_objects = [
-        {"name": "T1590 - Gather Victim Network Information", "threat_object_class": "attack pattern"},
+        {
+            "name": "T1590 - Gather Victim Network Information",
+            "threat_object_class": "attack pattern",
+        },
         {"name": "T1566 - Phishing", "threat_object_class": "technique"},
-        {"name": "Regular Attack Pattern", "threat_object_class": "malicious_behavior"},  # No prefix
-        {"name": "T123 - Invalid Format", "threat_object_class": "attack pattern"},  # Invalid format (not digit after T)
+        {
+            "name": "Regular Attack Pattern",
+            "threat_object_class": "malicious_behavior",
+        },  # No prefix
+        {
+            "name": "T123 - Invalid Format",
+            "threat_object_class": "attack pattern",
+        },  # Invalid format (not digit after T)
     ]
 
     relationships = create_relationships("1.2.3.4", FeedIndicatorType.IP, threat_objects, True)
@@ -779,7 +804,11 @@ def test_file_hash_detection():
     mock_response_obj.json.return_value = mock_response
 
     with unittest.mock.patch.object(client, "lookup_indicator", return_value=mock_response_obj):
-        args = {"file": sha256_hash, "create_relationships": True, "create_threat_object_indicators": False}
+        args = {
+            "file": sha256_hash,
+            "create_relationships": True,
+            "create_threat_object_indicators": False,
+        }
         result = file_command(client, args)
         assert result.indicator.sha256 == sha256_hash
         # MD5 and SHA1 are empty strings, not None
@@ -952,10 +981,12 @@ def test_create_threat_object_indicators():
             "aliases": ["Cozy Bear"],
             "publications": [{"title": "APT29 Report", "url": "http://example.com"}],
         },
-        {"name": "Cobalt Strike", "threat_object_class": "malware_family", "source": "Unit42"},
         {
-            "threat_object_class": "actor"  # Missing name, should be skipped
+            "name": "Cobalt Strike",
+            "threat_object_class": "malware_family",
+            "source": "Unit42",
         },
+        {"threat_object_class": "actor"},  # Missing name, should be skipped
     ]
 
     indicators = create_threat_object_indicators(threat_objects, "A - Completely reliable")
@@ -1138,7 +1169,12 @@ def test_create_publications():
         - Uses default source when not provided
     """
     publications_data = [
-        {"created": "2023-01-01T00:00:00Z", "title": "Threat Report 1", "url": "https://example.com/report1", "source": "Unit42"},
+        {
+            "created": "2023-01-01T00:00:00Z",
+            "title": "Threat Report 1",
+            "url": "https://example.com/report1",
+            "source": "Unit42",
+        },
         {
             "created": "2023-02-01T00:00:00Z",
             "title": "Threat Report 2",
@@ -1230,7 +1266,12 @@ def test_create_campaigns_relationships():
     """
     threat_obj = {
         "battlecard_details": {
-            "campaigns": ["Campaign Alpha", "Campaign Beta", "", "  "]  # Include empty/whitespace
+            "campaigns": [
+                "Campaign Alpha",
+                "Campaign Beta",
+                "",
+                "  ",
+            ]  # Include empty/whitespace
         }
     }
 
@@ -1254,8 +1295,14 @@ def test_create_attack_patterns_relationships():
         "battlecard_details": {
             "attack_patterns": [
                 {"mitreid": "T1566", "name": "Phishing (enterprise)"},
-                {"mitreid": "T1566.001", "name": "Spear Phishing"},  # Should be skipped (has dot)
-                {"mitreid": "T1059", "name": "Command and Scripting Interpreter (enterprise)"},
+                {
+                    "mitreid": "T1566.001",
+                    "name": "Spear Phishing",
+                },  # Should be skipped (has dot)
+                {
+                    "mitreid": "T1059",
+                    "name": "Command and Scripting Interpreter (enterprise)",
+                },
             ]
         }
     }
@@ -1363,7 +1410,10 @@ def test_create_actor_relationships():
         "battlecard_details": {
             "malware_family_details": {
                 "actor_associations": [
-                    {"aliases": ["Actor Alias 1", "Actor Alias 2"], "name": "Actor Name"},
+                    {
+                        "aliases": ["Actor Alias 1", "Actor Alias 2"],
+                        "name": "Actor Name",
+                    },
                     {"name": "Solo Actor"},  # No aliases
                     {"aliases": []},  # Empty aliases, should use name
                 ]
@@ -1484,3 +1534,102 @@ def test_unit42_error_handler_with_request_id(mocker):
     demisto.debug.assert_called_once_with(
         f"{INTEGRATION_NAME} API Error - X-Request-ID: test-request-id-123, Status: 500, URL: https://example.com/api"
     )
+
+
+def test_url_command_with_special_characters(client, mocker):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A URL containing special characters like < and >
+    When:
+        - Running url_command
+    Then:
+        - The URL is properly double-encoded before being sent to the API
+        - The lookup_indicator method is called with the correctly encoded URL
+        - Returns CommandResults with proper verdict
+    """
+
+    # URL with < and > characters
+    test_url = "https://example.com/?token=<REDACTED>"
+
+    mock_response = {
+        "indicator_value": test_url,
+        "indicator_type": "url",
+        "verdict": "malicious",
+        "verdict_categories": [{"value": "phishing"}],
+        "first_seen": "2023-01-01T00:00:00Z",
+        "last_seen": "2023-12-31T23:59:59Z",
+        "sources": ["source1"],
+        "counts": [],
+        "threat_object_associations": [],
+    }
+
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 200
+    mock_response_obj.json.return_value = mock_response
+
+    # Spy on the lookup_indicator method to verify the encoding
+    mock_lookup = mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
+
+    args = {"url": test_url, "create_relationships": True}
+    result = url_command(client, args)
+
+    # Verify the command executed successfully
+    assert result.outputs["Value"] == test_url
+    assert result.outputs["Verdict"] == "Malicious"
+
+    # Verify lookup_indicator was called with the original URL
+    # The encoding happens inside lookup_indicator
+    mock_lookup.assert_called_once_with("url", test_url)
+
+    # Verify the result indicator
+    assert result.indicator.url == test_url
+    assert result.indicator.dbot_score.score == Common.DBotScore.BAD
+
+
+def test_client_lookup_indicator_url_encoding(client, mocker):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A URL containing special characters < and >
+    When:
+        - Calling client.lookup_indicator with indicator_type='url'
+    Then:
+        - The URL is double-encoded correctly:
+          1. Query parameters with < and > are encoded first (< becomes %3C, > becomes %3E)
+          2. The entire URL is then encoded again for the API path
+        - The final encoded URL should have %253C and %253E (double-encoded < and >)
+    """
+    import urllib.parse
+
+    # URL with < and > in query parameter
+    test_url = "https://example.com/search?query=<test>"
+
+    # Mock the _http_request to capture what URL is actually sent
+    mock_http_request = mocker.patch.object(client, "_http_request")
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_http_request.return_value = mock_response
+
+    # Call lookup_indicator
+    client.lookup_indicator("url", test_url)
+
+    # Verify _http_request was called
+    assert mock_http_request.called
+
+    # Get the url_suffix that was passed to _http_request
+    call_args = mock_http_request.call_args
+    url_suffix = call_args[1]["url_suffix"]
+
+    # The URL should be double-encoded:
+    # Step 1: query=<test> becomes query=%3Ctest%3E
+    # Step 2: https://example.com/search?query=%3Ctest%3E becomes
+    #         https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E
+
+    # Verify the URL contains double-encoded special characters
+    assert "%253C" in url_suffix  # Double-encoded <
+    assert "%253E" in url_suffix  # Double-encoded >
+
+    # Verify the full expected encoding
+    expected_encoded_url = urllib.parse.quote("https://example.com/search?query=%3Ctest%3E", safe="")
+    assert expected_encoded_url in url_suffix
