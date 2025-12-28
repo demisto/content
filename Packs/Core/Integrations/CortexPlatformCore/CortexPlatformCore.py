@@ -81,6 +81,8 @@ class ScriptManagement:
         "linux": "AGENT_OS_LINUX",
         "macos": "AGENT_OS_MAC",
     }
+
+
 CUSTOM_FIELDS_TABLE = "CUSTOM_FIELDS_CASE_TABLE"
 
 
