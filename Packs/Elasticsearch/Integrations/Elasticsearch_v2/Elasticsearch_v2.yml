@@ -436,7 +436,7 @@ script:
     outputs:
     - contextPath: Elasticsearch.ESQLSearch
       description: ES|QL search result.
-  dockerimage: demisto/elasticsearch:1.0.0.2640600
+  dockerimage: demisto/elasticsearch:1.0.0.4861252
   isfetch: true
   runonce: false
   script: '-'

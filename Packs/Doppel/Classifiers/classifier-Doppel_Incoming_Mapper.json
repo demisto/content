@@ -71,6 +71,9 @@
 				},
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
+				},
+				"Doppel Screenshot URL": {
+					"simple": "doppelscreenshoturl"
 				}
 			}
 		},
@@ -164,6 +167,9 @@
 				},
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
+				}, 
+				"Doppel Screenshot URL": {
+					"simple": "doppelscreenshoturl"
 				}
 			}
 		},
@@ -235,6 +241,9 @@
 				},
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
+				},
+				"Doppel Screenshot URL": {
+					"simple": "doppelscreenshoturl"
 				}
 			}
 		},
@@ -328,6 +337,9 @@
 				},
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
+				},
+				"Doppel Screenshot URL": {
+					"simple": "doppelscreenshoturl"
 				}
 			}
 		},
@@ -399,6 +411,9 @@
 				},
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
+				},
+				"Doppel Screenshot URL": {
+					"simple": "doppelscreenshoturl"
 				}
 			}
 		},
@@ -492,6 +507,9 @@
 				},
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
+				},
+				"Doppel Screenshot URL": {
+					"simple": "doppelscreenshoturl"
 				}
 			}
 		},
@@ -563,6 +581,9 @@
 				},
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
+				},
+				"Doppel Screenshot URL": {
+					"simple": "doppelscreenshoturl"
 				}
 			}
 		},
@@ -631,6 +652,9 @@
 				},
 				"severity": {
 					"simple": "severity"
+				},
+				"Doppel Screenshot URL": {
+					"simple": "doppelscreenshoturl"
 				}
 			}
 		}

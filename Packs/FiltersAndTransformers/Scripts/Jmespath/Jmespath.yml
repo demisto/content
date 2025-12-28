@@ -19,7 +19,7 @@ args:
 scripttarget: 0
 isllm: false
 subtype: python3
-dockerimage: demisto/py3-tools:1.0.0.114656
+dockerimage: demisto/py3-tools:1.0.0.5475267
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

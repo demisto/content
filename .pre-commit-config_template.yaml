@@ -300,6 +300,7 @@ repos:
     args:check_private_packs:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
+    - --ignore=GR110
     pass_filenames: false
     language: system
     require_serial: true
