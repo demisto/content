@@ -17,6 +17,11 @@ from CortexPlatformCore import (
     Client,
     CommandResults,
     DemistoException,
+    validate_start_end_times,
+    transform_distributions,
+    get_endpoint_update_version_command,
+    update_endpoint_version_command,
+    FilterType,
 )
 
 MAX_GET_INCIDENTS_LIMIT = 100
@@ -4935,6 +4940,106 @@ def test_run_playbook_command_client_call_parameters():
     mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
 
 
+def test_get_endpoint_support_file_command_success(mocker):
+    """
+    Given: A client and valid endpoint IDs to retrieve support files for.
+    When: The get_endpoint_support_file_command is called with valid parameters.
+    Then: It should return a CommandResults object with the correct group_action_id and readable output.
+    """
+    from CortexPlatformCore import get_endpoint_support_file_command, Client
+
+    # Mock the client and its method
+    mock_client = mocker.Mock(spec=Client)
+    mock_response = {
+        "reply": {
+            "group_action_id": "test-group-123",
+        }
+    }
+    mock_client.get_endpoint_support_file.return_value = mock_response
+
+    # Test arguments
+    args = {"endpoint_ids": ["endpoint1", "endpoint2", "endpoint3"]}
+
+    # Execute the command
+    result = get_endpoint_support_file_command(mock_client, args)
+
+    # Verify the client was called with correct parameters
+    expected_request_data = {
+        "request_data": {
+            "filter_data": {
+                "filter": {
+                    "AND": [
+                        {
+                            "OR": [
+                                {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint1"},
+                                {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint2"},
+                                {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint3"},
+                            ]
+                        }
+                    ]
+                }
+            },
+            "filter_type": "static",
+        }
+    }
+
+    mock_client.get_endpoint_support_file.assert_called_once_with(expected_request_data)
+
+    # Verify the result
+    assert result.readable_output == "Endpoint support file request submitted successfully. Group Action ID: test-group-123"
+    assert result.outputs_prefix == "Core.EndpointSupportFile"
+    assert result.outputs_key_field == "group_action_id"
+    assert result.outputs == mock_response["reply"]
+    assert result.raw_response == mock_response
+
+
+def test_get_endpoint_support_file_command_single_endpoint(mocker):
+    """
+    Given: A client and a single endpoint ID as a string to retrieve support file for.
+    When: The get_endpoint_support_file_command is called with a single endpoint ID.
+    Then: It should correctly convert the single ID to a list and process the request successfully.
+    """
+    from CortexPlatformCore import get_endpoint_support_file_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_response = {"reply": {"group_action_id": "single-endpoint-456"}}
+    mock_client.get_endpoint_support_file.return_value = mock_response
+
+    args = {"endpoint_ids": "single-endpoint"}
+
+    result = get_endpoint_support_file_command(mock_client, args)
+
+    # Verify single endpoint was converted to list in the filter
+    expected_request_data = {
+        "request_data": {
+            "filter_data": {
+                "filter": {"AND": [{"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "single-endpoint"}]}
+            },
+            "filter_type": "static",
+        }
+    }
+    mock_client.get_endpoint_support_file.assert_called_once_with(expected_request_data)
+    assert result.outputs["group_action_id"] == "single-endpoint-456"
+
+
+def test_get_endpoint_support_file_command_missing_group_action_id(mocker):
+    """
+    Given: A client that returns a response without a group_action_id in the reply.
+    When: The get_endpoint_support_file_command is called and the group_action_id is zero.
+    Then: It should raise a DemistoException indicating the missing group_action_id.
+    """
+    from CortexPlatformCore import get_endpoint_support_file_command, DemistoException
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_response = {"reply": {"group_action_id": 0}}
+    mock_client.get_endpoint_support_file.return_value = mock_response
+
+    args = {"endpoint_ids": ["endpoint1"]}
+
+    with pytest.raises(DemistoException, match="No group_action_id found. Please ensure that valid endpoint IDs are provided."):
+        get_endpoint_support_file_command(mock_client, args)
+
+
 def test_update_issue_command_link_cases_success(mocker: MockerFixture):
     """
     GIVEN:
@@ -7153,189 +7258,656 @@ def test_run_script_agentix_command_script_with_inputs_and_parameters_provided(m
     assert result == expected_result
 
 
-def test_validate_custom_fields_success(mocker):
-    """
-    GIVEN:
-        Valid custom fields and client with metadata.
-    WHEN:
-        validate_custom_fields is called.
-    THEN:
-        All fields are returned as valid and no error messages.
-    """
-    from CortexPlatformCore import validate_custom_fields, Client
+class TestValidateStartEndTimes:
+    def test_validate_start_end_times_both_none(self):
+        """Test with both start_time and end_time as None - should pass"""
+        # Should not raise any exception
+        validate_start_end_times(None, None)
 
-    client = Client(base_url="", headers={})
+    def test_validate_start_end_times_both_empty_strings(self):
+        """Test with both start_time and end_time as empty strings - should pass"""
+        # Should not raise any exception
+        validate_start_end_times("", "")
 
-    # Mock metadata response
-    metadata_response = {
-        "reply": {
-            "DATA": [
-                {"CUSTOM_FIELD_NAME": "field1", "CUSTOM_FIELD_PRETTY_NAME": "Field 1", "CUSTOM_FIELD_IS_SYSTEM": False},
-                {"CUSTOM_FIELD_NAME": "field2", "CUSTOM_FIELD_PRETTY_NAME": "Field 2", "CUSTOM_FIELD_IS_SYSTEM": False},
-            ]
+    def test_validate_start_end_times_both_falsy(self):
+        """Test with both start_time and end_time as falsy values - should pass"""
+        # Should not raise any exception
+        validate_start_end_times(None, "")
+        validate_start_end_times("", None)
+
+    def test_validate_start_end_times_only_start_provided(self):
+        """Test with only start_time provided - should raise exception"""
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("10:00", None)
+        assert "Both start_time and end_time must be provided together." in str(exc_info.value)
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("10:00", "")
+        assert "Both start_time and end_time must be provided together." in str(exc_info.value)
+
+    def test_validate_start_end_times_only_end_provided(self):
+        """Test with only end_time provided - should raise exception"""
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times(None, "15:00")
+        assert "Both start_time and end_time must be provided together." in str(exc_info.value)
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("", "15:00")
+        assert "Both start_time and end_time must be provided together." in str(exc_info.value)
+
+    def test_validate_start_end_times_valid_same_day_sufficient_gap(self):
+        """Test with valid times on same day with sufficient gap (>= 2 hours)"""
+        # Exactly 2 hours apart - should pass
+        validate_start_end_times("10:00", "12:00")
+
+        # More than 2 hours apart - should pass
+        validate_start_end_times("09:00", "14:00")
+        validate_start_end_times("08:30", "11:15")
+        validate_start_end_times("00:00", "02:00")
+
+    def test_validate_start_end_times_valid_cross_day_sufficient_gap(self):
+        """Test with times crossing midnight with sufficient gap"""
+        # 23:00 to 01:00 next day = 2 hours - should pass
+        validate_start_end_times("23:00", "01:00")
+
+        # 22:00 to 02:00 next day = 4 hours - should pass
+        validate_start_end_times("22:00", "02:00")
+
+        # 20:00 to 01:00 next day = 5 hours - should pass
+        validate_start_end_times("20:00", "01:00")
+
+    def test_validate_start_end_times_insufficient_gap_same_day(self):
+        """Test with insufficient gap between times on same day"""
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("10:00", "11:30")  # 1.5 hours
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("10:00", "11:59")  # 1 hour 59 minutes
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("14:30", "15:45")  # 1 hour 15 minutes
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
+
+    def test_validate_start_end_times_insufficient_gap_cross_day(self):
+        """Test with insufficient gap crossing midnight"""
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("23:30", "00:30")  # 1 hour
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("23:15", "01:00")  # 1 hour 45 minutes
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
+
+    def test_validate_start_end_times_same_time(self):
+        """Test with identical start and end times"""
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("10:00", "10:00")
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
+
+    def test_validate_start_end_times_invalid_time_format(self):
+        """Test with invalid time formats - should raise ValueError"""
+        with pytest.raises(ValueError):
+            validate_start_end_times("25:00", "12:00")  # Invalid hour
+
+        with pytest.raises(ValueError):
+            validate_start_end_times("10:70", "12:00")  # Invalid minute
+
+        with pytest.raises(ValueError):
+            validate_start_end_times("invalid", "12:00")  # Invalid format
+
+        with pytest.raises(ValueError):
+            validate_start_end_times("10:00", "not-a-time")  # Invalid format
+
+        with pytest.raises(ValueError):
+            validate_start_end_times("10", "12:00")  # Incomplete format
+
+    def test_validate_start_end_times_edge_cases_valid(self):
+        """Test edge cases that should be valid"""
+        # Midnight to 2 AM
+        validate_start_end_times("00:00", "02:00")
+
+        # 10 PM to midnight next day (2 hours)
+        validate_start_end_times("22:00", "00:00")
+
+        # Almost full day (22 hours)
+        validate_start_end_times("01:00", "23:00")
+
+    def test_validate_start_end_times_edge_cases_invalid(self):
+        """Test edge cases that should be invalid"""
+        from CommonServerPython import DemistoException
+
+        # 1 minute gap
+        with pytest.raises(DemistoException):
+            validate_start_end_times("10:00", "10:01")
+
+        # 1 hour 59 minutes 59 seconds would round to 1 hour 59 minutes in strptime
+        with pytest.raises(DemistoException):
+            validate_start_end_times("10:00", "11:59")
+
+    def test_validate_start_end_times_boundary_conditions(self):
+        """Test boundary conditions around the 2-hour requirement"""
+        from CommonServerPython import DemistoException
+
+        # Exactly 2 hours - should pass
+        validate_start_end_times("10:00", "12:00")
+
+        # 1 minute less than 2 hours - should fail
+        with pytest.raises(DemistoException):
+            validate_start_end_times("10:00", "11:59")
+
+        # 1 minute more than 2 hours - should pass
+        validate_start_end_times("10:00", "12:01")
+
+    def test_validate_start_end_times_cross_midnight_boundary(self):
+        """Test the cross-midnight calculation boundary"""
+        from CommonServerPython import DemistoException
+
+        # 22:00 to 00:00 next day = exactly 2 hours - should pass
+        validate_start_end_times("22:00", "00:00")
+
+        # 22:01 to 00:00 next day = 1 hour 59 minutes - should fail
+        with pytest.raises(DemistoException):
+            validate_start_end_times("22:01", "00:00")
+
+        # 21:59 to 00:00 next day = 2 hours 1 minute - should pass
+        validate_start_end_times("21:59", "00:00")
+
+    def test_validate_start_end_times_various_time_formats(self):
+        """Test with various valid time formats"""
+        # Single digit hours and minutes
+        validate_start_end_times("9:00", "11:00")
+        validate_start_end_times("09:0", "11:0")  # This might fail depending on strptime behavior
+
+    def test_validate_start_end_times_whitespace_handling(self):
+        """Test with whitespace in time strings"""
+        # Note: strptime might be sensitive to whitespace
+        validate_start_end_times("10:00", "12:00")
+
+        # Test with potential whitespace (these might raise ValueError)
+        with pytest.raises(ValueError):
+            validate_start_end_times(" 10:00 ", "12:00")
+
+
+class TestTransformDistributions:
+    """Test cases for transform_distributions function."""
+
+    def test_transform_distributions_basic(self):
+        """Test basic transformation of distributions."""
+        response = {
+            "platform_count": 2,
+            "total_count": 100,
+            "distributions": {
+                "windows": [{"less": 10, "greater": 20, "equal": 70, "version": "1.0.0", "is_beta": False, "unsupported_os": 0}],
+                "linux": [{"less": 5, "greater": 15, "equal": 80, "version": "2.0.0", "is_beta": False, "unsupported_os": 0}],
+            },
         }
-    }
-    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
 
-    fields_to_validate = {"field1": "value1", "field2": "value2"}
-    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+        result = transform_distributions(response)
 
-    assert valid_fields == fields_to_validate
-    assert len(error_messages) == 0
-
-
-def test_validate_custom_fields_system_field(mocker):
-    """
-    GIVEN:
-        Custom fields containing a system field.
-    WHEN:
-        validate_custom_fields is called.
-    THEN:
-        System field is excluded and error message is returned.
-    """
-    from CortexPlatformCore import validate_custom_fields, Client
-
-    client = Client(base_url="", headers={})
-
-    metadata_response = {
-        "reply": {
-            "DATA": [
-                {"CUSTOM_FIELD_NAME": "system_field", "CUSTOM_FIELD_PRETTY_NAME": "System Field", "CUSTOM_FIELD_IS_SYSTEM": True},
+        expected = {
+            "platform_count": 2,
+            "total_count": 100,
+            "distributions": [
                 {
-                    "CUSTOM_FIELD_NAME": "custom_field",
-                    "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
-                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "platform": "windows",
+                    "endpoints_with_lower_version_count": 10,
+                    "endpoints_with_higher_version_count": 20,
+                    "endpoints_with_same_version_count": 70,
+                    "version": "1.0.0",
                 },
-            ]
-        }
-    }
-    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
-
-    fields_to_validate = {"system_field": "value1", "custom_field": "value2"}
-    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
-
-    assert "custom_field" in valid_fields
-    assert "system_field" not in valid_fields
-    assert len(error_messages) == 1
-    assert "is a system field and cannot be set with this command" in error_messages[0]
-
-
-def test_validate_custom_fields_non_existent_field(mocker):
-    """
-    GIVEN:
-        Custom fields containing a non-existent field.
-    WHEN:
-        validate_custom_fields is called.
-    THEN:
-        Non-existent field is excluded and error message is returned.
-    """
-    from CortexPlatformCore import validate_custom_fields, Client
-
-    client = Client(base_url="", headers={})
-
-    metadata_response = {
-        "reply": {
-            "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "existing_field",
-                    "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
-                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "platform": "linux",
+                    "endpoints_with_lower_version_count": 5,
+                    "endpoints_with_higher_version_count": 15,
+                    "endpoints_with_same_version_count": 80,
+                    "version": "2.0.0",
                 },
-            ]
+            ],
         }
+
+        assert result == expected
+
+    def test_transform_distributions_filters_beta(self):
+        """Test that beta versions are filtered out."""
+        response = {
+            "platform_count": 1,
+            "total_count": 100,
+            "distributions": {
+                "windows": [
+                    {"less": 10, "greater": 20, "equal": 70, "version": "1.0.0", "is_beta": True, "unsupported_os": 0},
+                    {"less": 5, "greater": 15, "equal": 80, "version": "2.0.0", "is_beta": False, "unsupported_os": 0},
+                ]
+            },
+        }
+
+        result = transform_distributions(response)
+
+        assert len(result["distributions"]) == 1
+        assert result["distributions"][0]["version"] == "2.0.0"
+
+    def test_transform_distributions_filters_zero_less(self):
+        """Test that items with less=0 are filtered out."""
+        response = {
+            "platform_count": 1,
+            "total_count": 100,
+            "distributions": {
+                "windows": [
+                    {"less": 0, "greater": 20, "equal": 80, "version": "1.0.0", "is_beta": False, "unsupported_os": 0},
+                    {"less": 10, "greater": 20, "equal": 70, "version": "2.0.0", "is_beta": False, "unsupported_os": 0},
+                ]
+            },
+        }
+
+        result = transform_distributions(response)
+
+        assert len(result["distributions"]) == 1
+        assert result["distributions"][0]["version"] == "2.0.0"
+
+    def test_transform_distributions_filters_unsupported_os(self):
+        """Test that items where unsupported_os equals total_count are filtered out."""
+        response = {
+            "platform_count": 1,
+            "total_count": 100,
+            "distributions": {
+                "windows": [
+                    {"less": 10, "greater": 20, "equal": 70, "version": "1.0.0", "is_beta": False, "unsupported_os": 100},
+                    {"less": 5, "greater": 15, "equal": 80, "version": "2.0.0", "is_beta": False, "unsupported_os": 50},
+                ]
+            },
+        }
+
+        result = transform_distributions(response)
+
+        assert len(result["distributions"]) == 1
+        assert result["distributions"][0]["version"] == "2.0.0"
+
+    def test_transform_distributions_empty_distributions(self):
+        """Test handling of empty distributions."""
+        response = {"platform_count": 0, "total_count": 0, "distributions": {}}
+
+        result = transform_distributions(response)
+
+        expected = {"platform_count": 0, "total_count": 0, "distributions": []}
+
+        assert result == expected
+
+    def test_transform_distributions_missing_fields(self):
+        """Test handling of missing optional fields."""
+        response = {
+            "platform_count": 1,
+            "total_count": 100,
+            "distributions": {
+                "windows": [
+                    {
+                        "version": "1.0.0"
+                        # Missing other fields
+                    }
+                ]
+            },
+        }
+
+        result = transform_distributions(response)
+
+        expected_item = {"platform": "windows", "version": "1.0.0"}
+
+        assert len(result["distributions"]) == 1
+        assert result["distributions"][0] == expected_item
+
+    def test_transform_distributions_none_total_count(self):
+        """Test handling when total_count is None."""
+        response = {
+            "platform_count": 1,
+            "total_count": None,
+            "distributions": {
+                "windows": [{"less": 10, "greater": 20, "equal": 70, "version": "1.0.0", "is_beta": False, "unsupported_os": 0}]
+            },
+        }
+
+        result = transform_distributions(response)
+
+        assert result["total_count"] is None
+        assert len(result["distributions"]) == 1
+
+
+class TestGetEndpointUpdateVersionCommand:
+    """Test cases for get_endpoint_update_version_command function."""
+
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.transform_distributions")
+    @patch("CortexPlatformCore.tableToMarkdown")
+    def test_get_endpoint_update_version_command_success(self, mock_table_to_markdown, mock_transform, mock_filter_builder):
+        """Test successful endpoint update version retrieval."""
+        # Setup mocks
+        mock_client = Mock()
+        mock_filter_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_instance
+        mock_filter_instance.to_dict.return_value = {"test": "filter"}
+
+        api_response = {"distributions": {"windows": []}, "total_count": 100}
+        transformed_response = {"distributions": [{"platform": "windows"}], "total_count": 100}
+
+        mock_client.get_endpoint_update_version.return_value = api_response
+        mock_transform.return_value = transformed_response
+        mock_table_to_markdown.return_value = "Test Table"
+
+        args = {"endpoint_ids": "endpoint1,endpoint2"}
+
+        result = get_endpoint_update_version_command(mock_client, args)
+
+        # Assertions
+        mock_filter_instance.add_field.assert_called_once_with("AGENT_ID", FilterType.EQ, ["endpoint1", "endpoint2"])
+        mock_client.get_endpoint_update_version.assert_called_once()
+        mock_transform.assert_called_once_with(api_response)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs == transformed_response
+        assert result.outputs_prefix == "Core.EndpointUpdateVersion"
+
+
+class TestUpdateEndpointVersionCommand:
+    """Test cases for update_endpoint_version_command function."""
+
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.validate_start_end_times")
+    @patch("CortexPlatformCore.argToList")
+    def test_update_endpoint_version_command_success(self, mock_arg_to_list, mock_validate_times, mock_filter_builder):
+        """Test successful endpoint version update."""
+        # Setup mocks
+        mock_client = Mock()
+        mock_filter_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_instance
+        mock_filter_instance.to_dict.return_value = {"test": "filter"}
+
+        mock_arg_to_list.side_effect = [
+            ["endpoint1", "endpoint2"],  # endpoint_ids
+            ["monday", "tuesday"],  # days
+        ]
+
+        mock_client.update_endpoint_version.return_value = {"reply": {"group_action_id": "action123"}}
+
+        args = {
+            "endpoint_ids": "endpoint1,endpoint2",
+            "platform": "windows",
+            "version": "1.0.0",
+            "days": "monday,tuesday",
+            "start_time": "2023-01-01",
+            "end_time": "2023-01-02",
+        }
+
+        with patch("CortexPlatformCore.DAYS_MAPPING", {"monday": 1, "tuesday": 2}):
+            result = update_endpoint_version_command(mock_client, args)
+
+        # Assertions
+        mock_validate_times.assert_called_once_with("2023-01-01", "2023-01-02")
+        mock_filter_instance.add_field.assert_called_once_with("AGENT_ID", FilterType.EQ, ["endpoint1", "endpoint2"])
+
+        expected_request_data = {
+            "filter_data": {"filter": {"test": "filter"}},
+            "filter_type": "static",
+            "versions": {"windows": "1.0.0"},
+            "upgrade_to_pkg_manager": False,
+            "schedule_data": {"START_TIME": "2023-01-01", "END_TIME": "2023-01-02", "DAYS": [1, 2]},
+        }
+
+        mock_client.update_endpoint_version.assert_called_once_with(expected_request_data)
+
+        assert isinstance(result, CommandResults)
+        assert "The update to the target versions was successful. Action ID: action123" in result.readable_output
+        assert "action123" in result.readable_output
+        assert result.outputs["action_id"] == "action123"
+        assert result.outputs["endpoint_ids"] == ["endpoint1", "endpoint2"]
+
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.validate_start_end_times")
+    @patch("CortexPlatformCore.argToList")
+    def test_update_endpoint_version_command_no_action_id(self, mock_arg_to_list, mock_validate_times, mock_filter_builder):
+        """Test when no group_action_id is returned."""
+        mock_client = Mock()
+        mock_filter_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_instance
+        mock_filter_instance.to_dict.return_value = {"test": "filter"}
+
+        mock_arg_to_list.side_effect = [
+            ["endpoint1"],  # endpoint_ids
+            [],  # days (empty)
+        ]
+
+        mock_client.update_endpoint_version.return_value = {"reply": {"group_action_id": 0}}
+
+        args = {"endpoint_ids": "endpoint1", "platform": "linux", "version": "2.0.0"}
+
+        result = update_endpoint_version_command(mock_client, args)
+
+        assert "The update to the target versions was unsuccessful." in result.readable_output
+        assert result.outputs["action_id"] == 0
+
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.validate_start_end_times")
+    @patch("CortexPlatformCore.argToList")
+    def test_update_endpoint_version_command_no_days(self, mock_arg_to_list, mock_validate_times, mock_filter_builder):
+        """Test with no days specified."""
+        mock_client = Mock()
+        mock_filter_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_instance
+        mock_filter_instance.to_dict.return_value = {"test": "filter"}
+
+        mock_arg_to_list.side_effect = [
+            ["endpoint1"],  # endpoint_ids
+            [],  # days (empty)
+        ]
+
+        mock_client.update_endpoint_version.return_value = {"reply": {"group_action_id": "action123"}}
+
+        args = {"endpoint_ids": "endpoint1", "platform": "windows", "version": "1.0.0"}
+
+        update_endpoint_version_command(mock_client, args)
+
+        # Verify that DAYS is set to None when no days are provided
+        call_args = mock_client.update_endpoint_version.call_args[0][0]
+        assert call_args["schedule_data"]["DAYS"] is None
+
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.validate_start_end_times")
+    @patch("CortexPlatformCore.argToList")
+    def test_update_endpoint_version_command_all_invalid_days(self, mock_arg_to_list, mock_validate_times, mock_filter_builder):
+        """Test when all day names are invalid."""
+        mock_client = Mock()
+        mock_filter_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_instance
+        mock_filter_instance.to_dict.return_value = {"test": "filter"}
+
+        mock_arg_to_list.side_effect = [
+            ["endpoint1"],  # endpoint_ids
+            ["invalidday1", "invalidday2"],  # all invalid days
+        ]
+
+        mock_client.update_endpoint_version.return_value = {"reply": {"group_action_id": "action123"}}
+
+        args = {"endpoint_ids": "endpoint1", "platform": "windows", "version": "1.0.0", "days": "invalidday1,invalidday2"}
+
+        with pytest.raises(DemistoException, match="Please provide valid days."):
+            update_endpoint_version_command(mock_client, args)
+
+        mock_arg_to_list.side_effect = [
+            ["endpoint1"],  # endpoint_ids
+            ["monday", "invalidday2"],  # all invalid days
+        ]
+
+        mock_client.update_endpoint_version.return_value = {"reply": {"group_action_id": "action123"}}
+
+        args = {"endpoint_ids": "endpoint1", "platform": "windows", "version": "1.0.0", "days": "monday,invalidday2"}
+
+        with pytest.raises(DemistoException, match="Please provide valid days."):
+            update_endpoint_version_command(mock_client, args)
+
+
+class TestEndpointUpdateVersionIntegration:
+    """Integration tests that test the functions working together."""
+
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.validate_start_end_times")
+    @patch("CortexPlatformCore.argToList")
+    @patch("CortexPlatformCore.tableToMarkdown")
+    def test_full_endpoint_update_workflow(
+        self, mock_table_to_markdown, mock_arg_to_list, mock_validate_times, mock_filter_builder
+    ):
+        """Test a complete workflow of getting and updating endpoint versions."""
+        mock_client = Mock()
+        mock_filter_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_instance
+        mock_filter_instance.to_dict.return_value = {"AGENT_ID": {"EQ": ["endpoint1"]}}
+
+        # Mock the get endpoint version response
+        get_response = {
+            "platform_count": 1,
+            "total_count": 100,
+            "distributions": {
+                "windows": [{"less": 10, "greater": 20, "equal": 70, "version": "1.0.0", "is_beta": False, "unsupported_os": 0}]
+            },
+        }
+
+        # Mock the update response
+        update_response = {"reply": {"group_action_id": "action123"}}
+
+        mock_client.get_endpoint_update_version.return_value = get_response
+        mock_client.update_endpoint_version.return_value = update_response
+        mock_table_to_markdown.return_value = "Test Table"
+
+        # Test get endpoint version
+        get_args = {"endpoint_ids": "endpoint1"}
+        get_result = get_endpoint_update_version_command(mock_client, get_args)
+
+        assert isinstance(get_result, CommandResults)
+        assert get_result.outputs["total_count"] == 100
+        assert len(get_result.outputs["distributions"]) == 1
+        assert get_result.outputs["distributions"][0]["platform"] == "windows"
+
+        # Test update endpoint version
+        mock_arg_to_list.side_effect = [
+            ["endpoint1"],  # endpoint_ids
+            ["monday"],  # days
+        ]
+
+        update_args = {"endpoint_ids": "endpoint1", "platform": "windows", "version": "2.0.0", "days": "monday"}
+
+        with patch("CortexPlatformCore.DAYS_MAPPING", {"monday": 1}):
+            update_result = update_endpoint_version_command(mock_client, update_args)
+
+        assert isinstance(update_result, CommandResults)
+        assert "The update to the target versions was successful. Action ID: action123" in update_result.readable_output
+        assert update_result.outputs["action_id"] == "action123"
+
+
+# Test fixtures and utilities
+@pytest.fixture
+def sample_distributions_response():
+    """Fixture providing sample distributions response."""
+    return {
+        "platform_count": 3,
+        "total_count": 500,
+        "distributions": {
+            "windows": [
+                {"less": 50, "greater": 100, "equal": 200, "version": "1.0.0", "is_beta": False, "unsupported_os": 0},
+                {
+                    "less": 25,
+                    "greater": 75,
+                    "equal": 150,
+                    "version": "1.1.0",
+                    "is_beta": True,  # Should be filtered out
+                    "unsupported_os": 0,
+                },
+            ],
+            "linux": [
+                {
+                    "less": 0,  # Should be filtered out
+                    "greater": 50,
+                    "equal": 100,
+                    "version": "2.0.0",
+                    "is_beta": False,
+                    "unsupported_os": 0,
+                },
+                {
+                    "less": 30,
+                    "greater": 70,
+                    "equal": 100,
+                    "version": "2.1.0",
+                    "is_beta": False,
+                    "unsupported_os": 500,  # Should be filtered out (equals total_count)
+                },
+            ],
+            "macos": [{"less": 10, "greater": 20, "equal": 30, "version": "3.0.0", "is_beta": False, "unsupported_os": 5}],
+        },
     }
-    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
-
-    fields_to_validate = {"existing_field": "value1", "non_existent": "value2"}
-    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
-
-    assert "existing_field" in valid_fields
-    assert "non_existent" not in valid_fields
-    assert len(error_messages) == 1
-    assert "does not exist" in error_messages[0]
 
 
-def test_update_case_custom_fields_command_success(mocker):
-    """
-    GIVEN:
-        Valid case ID and custom fields.
-    WHEN:
-        update_case_custom_fields_command is called.
-    THEN:
-        Case is updated successfully and success result is returned.
-    """
-    from CortexPlatformCore import update_case_custom_fields_command, Client
+def test_transform_distributions_with_fixture(sample_distributions_response):
+    """Test transform_distributions using the fixture."""
+    result = transform_distributions(sample_distributions_response)
 
-    client = Client(base_url="", headers={})
+    # Only windows 1.0.0 and macos 3.0.0 should remain after filtering
+    assert len(result["distributions"]) == 2
+    assert result["platform_count"] == 3
+    assert result["total_count"] == 500
 
-    # Mock dependencies
-    mocker.patch("CortexPlatformCore.parse_custom_fields", return_value={"field1": "value1"})
-    mocker.patch("CortexPlatformCore.validate_custom_fields", return_value=({"field1": "value1"}, []))
+    platforms = [item["platform"] for item in result["distributions"]]
+    versions = [item["version"] for item in result["distributions"]]
 
-    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"case_id": "123"}})
-    mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123"})
-
-    args = {"case_id": "123", "custom_fields": '[{"field1": "value1"}]'}
-    result = update_case_custom_fields_command(client, args)
-
-    assert result.outputs["CustomFields"] == {"field1": "value1"}
-    assert "Successfully updated" in result.readable_output
-    mock_update_case.assert_called_once()
+    assert "windows" in platforms
+    assert "macos" in platforms
+    assert "1.0.0" in versions
+    assert "3.0.0" in versions
+    assert "1.1.0" not in versions  # Filtered out (beta)
+    assert "2.0.0" not in versions  # Filtered out (less=0)
+    assert "2.1.0" not in versions  # Filtered out (unsupported_os=total_count)
 
 
-def test_update_case_custom_fields_command_partial_success(mocker):
-    """
-    GIVEN:
-        Custom fields with mixed validity (some valid, some invalid).
-    WHEN:
-        update_case_custom_fields_command is called.
-    THEN:
-        Valid fields are updated, invalid ones reported, and result entry_type is 4 (warning).
-    """
-    from CortexPlatformCore import update_case_custom_fields_command, Client
+# Edge case tests
+class TestEdgeCases:
+    """Test edge cases and error conditions."""
 
-    client = Client(base_url="", headers={})
+    def test_transform_distributions_string_numbers(self):
+        """Test that string numbers are handled properly."""
+        response = {
+            "platform_count": "2",
+            "total_count": "100",
+            "distributions": {
+                "windows": [
+                    {"less": "10", "greater": "20", "equal": "70", "version": "1.0.0", "is_beta": False, "unsupported_os": "0"}
+                ]
+            },
+        }
 
-    # Mock dependencies
-    mocker.patch("CortexPlatformCore.parse_custom_fields", return_value={"valid": "val", "invalid": "val"})
-    mocker.patch("CortexPlatformCore.validate_custom_fields", return_value=({"valid": "val"}, ["Invalid field error"]))
+        result = transform_distributions(response)
 
-    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"case_id": "123"}})
-    mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123"})
+        assert result["total_count"] == 100  # Should be converted to int
+        assert len(result["distributions"]) == 1
 
-    args = {"case_id": "123", "custom_fields": "..."}
-    result = update_case_custom_fields_command(client, args)
+    def test_get_endpoint_update_version_command_malformed_response(self):
+        """Test handling of malformed API response."""
+        mock_client = Mock()
+        mock_client.get_endpoint_update_version.return_value = None
 
-    assert result.outputs["CustomFields"] == {"valid": "val"}
-    assert "Unsuccessful Fields" in result.readable_output
-    assert "Successful Fields" in result.readable_output
-    assert result.entry_type == 4
-    mock_update_case.assert_called_once()
+        args = {"endpoint_ids": "endpoint1"}
 
+        with (
+            patch("CortexPlatformCore.FilterBuilder"),
+            patch("CortexPlatformCore.transform_distributions") as mock_transform,
+            patch("CortexPlatformCore.tableToMarkdown"),
+        ):
+            mock_transform.return_value = {"distributions": []}
+            result = get_endpoint_update_version_command(mock_client, args)
 
-def test_update_case_custom_fields_command_all_failed(mocker):
-    """
-    GIVEN:
-        All custom fields are invalid.
-    WHEN:
-        update_case_custom_fields_command is called.
-    THEN:
-        return_error is called with error messages.
-    """
-    from CortexPlatformCore import update_case_custom_fields_command, Client
-
-    client = Client(base_url="", headers={})
-
-    # Mock dependencies
-    mocker.patch("CortexPlatformCore.parse_custom_fields", return_value={"invalid": "val"})
-    mocker.patch("CortexPlatformCore.validate_custom_fields", return_value=({}, ["Invalid field error"]))
-
-    mock_return_error = mocker.patch("CortexPlatformCore.return_error", side_effect=SystemExit)
-    mock_update_case = mocker.patch.object(client, "update_case")
-
-    args = {"case_id": "123", "custom_fields": "..."}
-    with pytest.raises(SystemExit):
-        update_case_custom_fields_command(client, args)
-
-    mock_return_error.assert_called_once()
-    mock_update_case.assert_not_called()
+            mock_transform.assert_called_once_with(None)
+            assert isinstance(result, CommandResults)
