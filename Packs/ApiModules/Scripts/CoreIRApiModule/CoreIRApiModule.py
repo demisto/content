@@ -4076,6 +4076,10 @@ def build_webapp_request_data(
 def create_issues_filter(args) -> dict:
     """Build filter dictionary for alerts based on provided arguments."""
     filter_builder = FilterBuilder()
+    if args.get("time_frame") != "custom":
+        filter_builder.add_time_range_field(
+            ISSUE_FIELDS["start_time"], start_time=args.get("time_frame"), end_time=args.get("end_time")
+        )
     filter_builder.add_time_range_field(
         ISSUE_FIELDS["start_time"], start_time=args.get("start_time"), end_time=args.get("end_time")
     )
@@ -4223,8 +4227,8 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
         else:
             filter_dict["AND"].append(custom_filter)
 
-    page = arg_to_number(args.get("page")) or 0
-    page_size = arg_to_number(args.get("page_size")) or MAX_GET_ISSUES_LIMIT
+    page = arg_to_number(args.get("offset")) or arg_to_number(args.get("page")) or 0
+    page_size = arg_to_number(args.get("limit")) or arg_to_number(args.get("page_size")) or MAX_GET_ISSUES_LIMIT
     start_index = page * page_size
     end_index = start_index + page_size
 
