@@ -18,7 +18,6 @@
     ],
     "supportedModules": [
         "agentix",
-        "cloud_posture",
         "xsiam"
     ]
 }

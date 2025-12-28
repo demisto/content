@@ -12,6 +12,7 @@ CLOUDFLARE_BASE_URL = "https://{server}.mcp.cloudflare.com/mcp"
 CLOUDFLARE_AUTH_TYPE = AuthMethods.DYNAMIC_CLIENT_REGISTRATION.value
 COMMAND_PREFIX = "cloudflare-mcp"
 SERVERS_NO_AUTHORIZATION = ["docs"]
+SERVER_NAME = "Cloudflare MCP"
 
 
 async def main() -> None:  # pragma: no cover
@@ -47,7 +48,7 @@ async def main() -> None:  # pragma: no cover
                 )
 
         elif command == "list-tools":
-            result = await client.list_tools()
+            result = await client.list_tools(SERVER_NAME)
             return_results(result)
 
         elif command == "call-tool":
