@@ -1,7 +1,388 @@
+
+[RULE: vmware_vcenter_login_format]
+alter
+	xdm.event.type = "Login"
+| alter 
+	is_sso_login = if(_raw_log ~= "vmware.sso.Login"),
+	is_session = if(event_type_name in ("vim.event.BadUsernameSessionEvent", "vim.event.UserLoginSessionEvent", "vim.event.UserLogoutSessionEvent"));
+
+[RULE: vmware_vcenter_login_format_session_event]
+alter
+    description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
+    username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5),
+    target_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6),
+    event_id = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 0),
+    event_type_name = arrayindex(regextract(syslog_msg, "\[([\.a-zA-Z]+)\]"), 0),
+    process_id = arrayindex(regextract(_raw_log, "^\S+\s+\S+\S+\s+\S+\s+\S+\s+([^\s]+)"), 0),
+    process_name = arrayindex(regextract(_raw_log, "^\S+\s+\S+\S+\s+\S+\s+([^\s]+)"), 0)
+| alter
+	target_ip = arrayindex(regextract(description, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0),
+	user_agent = arrayindex(regextract(description, "logged in as (.*)"), 0)
+| alter 
+    xdm.observer.name = syslog_hostname,
+	xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+	xdm.event.description = syslog_msg,
+	xdm.event.original_event_type = event_type_name,
+	xdm.event.outcome_reason = description,
+	xdm.event.outcome = if(description ~= "response code 200", XDM_CONST.OUTCOME_SUCCESS, 
+						   description ~= "Cannot login", XDM_CONST.OUTCOME_FAILED),
+	xdm.event.id = event_id,
+	xdm.source.user.username = username,
+	xdm.source.ipv4 = if(is_ipv4(target_ip), target_ip),
+	xdm.source.host.ipv4_public_addresses = if(
+        target_ip = null, null,
+        incidr(target_ip, "10.0.0.0/8"), null,
+        incidr(target_ip, "192.168.0.0/16"), null,
+        incidr(target_ip, "172.16.0.0/12"), null, arraycreate(target_ip)),
+	xdm.source.user_agent = user_agent,
+	xdm.source.process.identifier = process_id,
+	xdm.source.process.name = process_name,
+    xdm.target.host.hostname = target_hostname;
+
+
+[RULE: vmware_vcenter_login_format_sso_login]
+alter
+    target_hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d?\s?[^\s]+\d{2}:\d{2}:\d{2}[^\s]*\s+(\S+)"), 0),
+    event_type_name = arrayindex(regextract(syslog_msg, "type\":\"([^\"]+)"), 0),
+    description = arrayindex(regextract(syslog_msg, "description\":\"([^\"]+)"), 0),
+    username = arrayindex(regextract(syslog_msg, "user\":\"([^\"]+)"), 0),
+    target_ip = arrayindex(regextract(syslog_msg, "client\":\"([^\"]+)"), 0),
+    response_code = arrayindex(regextract(syslog_msg, "response code (\d{1,3})"), 0),
+    auth_method = arrayindex(regextract(_raw_log, "^\S+\s+\S+\s+\S+\s+([^\s]+)"), 0)
+| alter
+	xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+	xdm.observer.name = syslog_hostname,
+	xdm.event.description = syslog_msg,
+	xdm.event.original_event_type = event_type_name,
+	xdm.event.outcome_reason = description,
+	xdm.event.outcome = if(event_type_name ~= "Success", XDM_CONST.OUTCOME_SUCCESS,
+						   event_type_name ~= "Fail", XDM_CONST.OUTCOME_FAILED), 
+	xdm.target.user.username = if (username ~= "@", arrayindex(regextract(username, "([^\@]+)"), 0), username),
+	xdm.target.ipv4 = if(is_ipv4(target_ip), target_ip),
+	xdm.target.host.hostname = target_hostname,
+	xdm.target.user.upn = if(username ~= "@", username),
+	xdm.target.user.domain = if(username ~= "@", arrayindex(regextract(username, "@([^\s]+)"), 0)),
+	xdm.auth.auth_method = auth_method,
+	xdm.network.http.response_code = if(response_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, response_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, response_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, response_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, response_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, response_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, response_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, response_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, response_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, response_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, response_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, response_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, response_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, response_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, response_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, response_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, response_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, response_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, response_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, response_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, response_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, response_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, response_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, response_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, response_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, response_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, response_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, response_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, response_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, response_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, response_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, response_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, response_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, response_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, response_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, response_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, response_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, response_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, response_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, response_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, response_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, response_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, response_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, response_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, response_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, response_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, response_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, response_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, response_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, response_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, response_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, response_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, response_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, response_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, response_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, response_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, response_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, response_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, response_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, response_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, response_code);
+
+[RULE: vmware_vcenter_account_operations_format]
+alter
+    process_id = arrayindex(regextract(_raw_log, "^\S+\s+\S+\S+\s+\S+\s+\S+\s+([^\s]+)"), 0),
+    process_name = arrayindex(regextract(_raw_log, "^\S+\s+\S+\S+\s+\S+\s+([^\s]+)"), 0),
+    source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6),
+    description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
+    source_username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5)
+| alter
+    target_hostname = if(description ~= "on host", arrayindex(regextract(description, "\s+on host\s+([^\s+|\]]+)"), 0),
+                         description ~= "on", arrayindex(regextract(description, "\s+on\s+([^\s+]+)"), 0)),
+    target_username = if(description ~= "^Account", arrayindex(regextract(description, "^Account ([^\s]+)"), 0),
+                         description ~= "Permission", arrayindex(regextract(description, "for ([^\s]+)"), 0)),
+    role_name = arrayindex(regextract(description, "new role ([^\s]+) created"), 0)
+| alter
+	xdm.observer.name = syslog_hostname,
+	xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+	xdm.event.description = syslog_msg,
+    xdm.event.type = "Account Operations",
+    xdm.event.original_event_type = event_type_name,
+    xdm.event.outcome_reason = description,
+	xdm.event.outcome = if(description !~= "Fail", XDM_CONST.OUTCOME_SUCCESS),
+	xdm.source.host.hostname = source_hostname,
+	xdm.source.user.username = source_username,
+    xdm.target.process.identifier = process_id,
+	xdm.target.process.name = process_name,
+    xdm.target.host.hostname = target_hostname,
+    xdm.target.user.username = target_username,
+    xdm.target.resource.name = if(role_name != null, role_name);
+
+[RULE: vmware_vcenter_file_or_datastore_format]
+alter
+    description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8)     
+| alter 
+    source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6),
+    target_hostname = coalesce(arrayindex(regextract(description, "on ([^\s]+) in"), 0),
+        					   arrayindex(regextract(description, "from ([^\s]+) was initiated"), 0)),
+    datastore_name = coalesce(arrayindex(regextract(description, "Created VMFS datastore ([^\s]+)"), 0),
+        					  arrayindex(regextract(description, "Discovered datastore ([^\s]+) on"), 0),
+     					      arrayindex(regextract(description, "\[([^\]]+)\]"), 0)),
+    datastore_uuid = arrayindex(regextract(description, "\((ds:\/\/[^\)]+)\)"), 0),
+    file_path = arrayindex(regextract(description, "\]\s+(.*?)\s+from"), 0), 
+    initiator_str = arrayindex(regextract(description, "initiated from ([^\s]+)"), 0),
+    outcome_str = arrayindex(regextract(description, "completed with status ([^\s]+)"), 0)
+| alter
+    xdm.observer.name = syslog_hostname,
+    xdm.event.type = "File/Datastore Event",
+    xdm.event.description = syslog_msg,
+    xdm.event.original_event_type = event_type_name,
+    xdm.event.outcome_reason = description,
+    xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+    xdm.event.outcome = if(description contains "Fail" or outcome_str = "failure", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.operation = if(
+        description contains "Created", XDM_CONST.OPERATION_TYPE_CREATE,
+        description contains "Discovered", XDM_CONST.OPERATION_TYPE_READ,
+        description contains "Deletion", XDM_CONST.OPERATION_TYPE_DELETE),
+    xdm.source.host.hostname = source_hostname,
+    xdm.source.user_agent = arrayindex(split(initiator_str, "@"), 0),
+    xdm.source.ipv4 = if(is_ipv4(arrayindex(split(initiator_str, "@"), 1)), arrayindex(split(initiator_str, "@"), 1), null),
+    xdm.target.host.hostname = target_hostname,
+    xdm.target.resource.name = datastore_name,
+    xdm.target.resource.id = datastore_uuid,
+    xdm.target.file.path = file_path,
+    xdm.target.file.filename = if(file_path != null, arrayindex(regextract(file_path, "[\\/]([^\\/]+)$"), 0), null);
+
+[RULE: vmware_vcenter_vm_operation_format]
+alter
+    description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
+    source_username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5),
+    source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6)
+| alter
+    vm_name = coalesce(
+        arrayindex(regextract(description, "Guest OS (?:reboot|shut down) for ([^\s]+) on"), 0),
+        arrayindex(regextract(description, "Virtual machine ([^\s]+)"), 0),
+        arrayindex(regextract(description, "Creating ([^\s]+) on"), 0),
+        arrayindex(regextract(description, "cloned to ([^\s]+) on"), 0),
+        arrayindex(regextract(description, "Created virtual machine ([^\s]+) on"), 0),
+        arrayindex(regextract(description, "Template (.+?)\s"), 0),
+        arrayindex(regextract(description, "Removed\s([^\s]+)"), 0),
+        arrayindex(regextract(description, "Registered\s([^\s]+)"), 0),
+        arrayindex(regextract(description, "Renamed\s([^\s]+)"), 0),
+        arrayindex(regextract(description, "^([^\s]+) - "), 0),
+        arrayindex(regextract(description, "^([^\s]+) on \S+\s+in "), 0)),
+    target_hostname = coalesce(
+        arrayindex(regextract(description, " to ([^\s]+)"), 0),
+        arrayindex(regextract(description, "on ([^\s]+)"), 0))
+| alter
+    xdm.observer.name = syslog_hostname,
+    xdm.event.type = "VM Operations",
+    xdm.event.description = syslog_msg,
+    xdm.event.original_event_type = event_type_name,
+    xdm.event.outcome_reason = description,
+    xdm.event.outcome = if(description contains "Fail", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+    xdm.event.operation = if(description in("*Creating*", "*Created*", "*cloned*", "*deployed*", "*Registered*"), XDM_CONST.OPERATION_TYPE_CREATE,
+        					 description in("*migrated*", "*Removed*", "*Renamed*"), XDM_CONST.OPERATION_TYPE_UPDATE,
+        					 description in("*reboot*", "*shut down*", "*powered*", "*reset*"), XDM_CONST.OPERATION_TYPE_EXECUTION),
+    xdm.source.host.hostname = source_hostname,
+    xdm.source.user.username = source_username,
+    xdm.target.host.hostname = target_hostname,
+    xdm.target.resource.name = vm_name;
+
+
+[RULE: vmware_vcenter_vsphere_task_format]
+alter
+    description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
+    source_username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5),
+    source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6)
+| alter
+    xdm.observer.name = syslog_hostname,
+    xdm.event.type = "vSphere Task Event",
+    xdm.event.description = syslog_msg,
+    xdm.event.original_event_type = event_type_name,
+    xdm.event.outcome_reason = description,
+    xdm.event.outcome = if(description contains "Fail", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+    xdm.source.host.hostname = source_hostname,
+    xdm.source.user.username = source_username;
+
+[RULE: vmware_vcenter_host_event_format]
+alter
+    description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
+    source_username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5),
+    source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6)
+| alter
+    target_hostname = coalesce(
+        arrayindex(regextract(description, "Host ([^\s]+) in"), 0),
+        arrayindex(regextract(description, "Connected to ([^\s]+) in"), 0),
+        arrayindex(regextract(description, "Disconnected from ([^\s]+) in"), 0),
+        arrayindex(regextract(description, "Added ([^\s]+) to"), 0),
+        arrayindex(regextract(description, "Removed host ([^\s]+) in"), 0))
+| alter
+    xdm.observer.name = syslog_hostname,
+    xdm.event.type = "Host Events",
+    xdm.event.description = syslog_msg,
+    xdm.event.original_event_type = event_type_name,
+    xdm.event.outcome_reason = description,
+    xdm.event.outcome = if(description contains "Fail" or description contains "not responding", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+    xdm.source.host.hostname = source_hostname,
+    xdm.source.user.username = source_username,
+    xdm.target.host.hostname = target_hostname;    
+
+[RULE: vmware_vcenter_scheduled_task_format]
+alter
+    description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
+    source_username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5),
+    source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6)
+| alter
+    target_task_name = arrayindex(regextract(description, "Created task (.+?) on "), 0),
+    target_vm_name = arrayindex(regextract(description, " on ([^\s]+) in datacenter"), 0)
+| alter
+    xdm.observer.name = syslog_hostname,
+    xdm.event.type = "Scheduled Task Event",
+    xdm.event.description = syslog_msg,
+    xdm.event.original_event_type = event_type_name,
+    xdm.event.outcome_reason = description,
+    xdm.event.outcome = if(description contains "Fail", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.operation = if(
+        description contains "Created", XDM_CONST.OPERATION_TYPE_CREATE,
+        description contains "Removed", XDM_CONST.OPERATION_TYPE_DELETE,
+        description contains "Updated", XDM_CONST.OPERATION_TYPE_UPDATE),
+    xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+    xdm.source.host.hostname = source_hostname,
+    xdm.source.user.username = source_username,
+    xdm.target.host.hostname = target_vm_name,
+    xdm.target.resource.name = target_task_name;
+
+[RULE: vmware_vcenter_vcsa_audit_format]
+alter
+    event_name_clean = trim(parsed_fields -> type, "["),
+    syscall_id = to_integer(parsed_fields -> syscall),
+    pid = parsed_fields -> pid,
+    ppid = parsed_fields -> ppid,
+    uid = parsed_fields -> uid,
+    success = parsed_fields -> success,
+    res = parsed_fields -> res   
+| alter
+    xdm.observer.name = syslog_hostname,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+    xdm.event.type = "vcsa-audit",
+    xdm.alert.name = event_name_clean,
+    xdm.alert.description = parsed_fields -> msg,
+    xdm.event.operation_sub_type = coalesce(to_string(syscall_id), event_name_clean),
+    xdm.session_context_id = parsed_fields -> ses,
+    xdm.event.outcome = if(success = "yes" or res = "1", XDM_CONST.OUTCOME_SUCCESS,
+                           success = "no" or res = "0", XDM_CONST.OUTCOME_FAILED,
+                           XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = parsed_fields -> exit,
+    xdm.source.user.identifier = uid,
+    xdm.source.user.username = parsed_fields -> subj,
+    xdm.event.operation = if(syscall_id in (0, 17, 19, 295, 89, 267), XDM_CONST.OPERATION_TYPE_READ, 
+                             syscall_id in (1, 18, 20, 296), XDM_CONST.OPERATION_TYPE_FILE_WRITE,
+                             syscall_id in (2, 85, 257, 22, 292), XDM_CONST.OPERATION_TYPE_FILE_CREATE,
+                             syscall_id in (87, 263, 84), XDM_CONST.OPERATION_TYPE_FILE_REMOVE,
+                             syscall_id in (82, 264), XDM_CONST.OPERATION_TYPE_FILE_RENAME,
+                             syscall_id in (90, 91, 268), XDM_CONST.OPERATION_TYPE_FILE_CHANGE_MODE,
+                             syscall_id in (92, 93, 260), XDM_CONST.OPERATION_TYPE_FILE_CHANGE_OWNER,
+                             syscall_id in (83, 258), XDM_CONST.OPERATION_TYPE_DIR_CREATE,
+                             syscall_id = 59 or event_name_clean = "EXECVE", XDM_CONST.OPERATION_TYPE_EXECUTION,
+                             event_name_clean = "LOGIN", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN),
+    xdm.source.process.pid = to_number(pid),
+    xdm.source.process.parent_id = ppid,
+    xdm.source.process.name = parsed_fields -> comm,
+    xdm.source.process.executable.path = parsed_fields -> exe,
+    xdm.source.process.command_line = if(event_name_clean = "EXECVE", concat(parsed_fields -> a0, " ", coalesce(parsed_fields -> a1, "")),
+                                         parsed_fields -> proctitle),
+
+    xdm.target.file.path = if(event_name_clean = "PATH", parsed_fields -> name,
+                              parsed_fields -> key);
+
+[RULE: vmware_vcenter_common_fields]
+alter
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\d?"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d?\s?[^\s]+\d{2}:\d{2}:\d{2}[^\s]*\s+(\S+)"), 0),
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0);
+
+[RULE: vmware_vcenter_virtualization_classification]
+alter
+    event_type_name = arrayindex(regextract(_raw_log, "\[([\.a-zA-Z]+)\]"), 0)
+| alter 
+    is_login_event = if(event_type_name in ("vim.event.BadUsernameSessionEvent", "vim.event.UserLoginSessionEvent", "vim.event.UserLogoutSessionEvent") or _raw_log ~= "vmware.sso.Login"),
+    is_account_operation_event = if(event_type_name in ("vim.event.AccountCreatedEvent", "vim.event.AccountUpdatedEvent", "vim.event.PermissionAddedEvent", "vim.event.PermissionRemovedEvent", "vim.event.PermissionUpdatedEvent", "vim.event.RoleAddedEvent")),
+    is_file_or_datastore_event = if(event_type_name in ("vim.event.VMFSDatastoreCreatedEvent", "vim.event.DatastoreDiscoveredEvent", "vim.event.DatastoreFileDeletedEvent")),
+    is_vm_operations_event = if(event_type_name in ("vim.event.VmGuestRebootEvent", "vim.event.VmGuestShutdownEvent", "vim.event.VmMigratedEvent", "vim.event.VmBeingCreatedEvent", "vim.event.VmClonedEvent", "vim.event.VmCreatedEvent", "vim.event.VmDeployedEvent", "vim.event.VmPoweredOffEvent", "vim.event.VmPoweredOnEvent", "vim.event.VmReconfiguredEvent", "vim.event.VmRelocatedEvent", "vim.event.VmRemovedEvent", "vim.event.VmRenamedEvent", "vim.event.VmResettingEvent", "vim.event.VmSuspendedEvent", "vim.event.VmRegisteredEvent")),
+    is_vsphere_task_event = if(event_type_name in ("vim.event.TaskEvent")),
+    is_host_event = if(event_type_name in ("vim.event.HostConnectionLostEvent", "vim.event.HostConnectedEvent", "vim.event.HostDisconnectedEvent", "vim.event.HostAddedEvent", "vim.event.HostRemovedEvent")),
+    is_scheduled_task_event = if(event_type_name in ("vim.event.ScheduledTaskCreatedEvent")),
+    is_vcsa_audit = if(_raw_log ~= "vcsa-audit")
+| alter 
+    is_virtualization = if (is_login_event
+                            or is_account_operation_event  
+                            or is_file_or_datastore_event 
+                            or is_vm_operations_event 
+                            or is_vsphere_task_event 
+                            or is_host_event
+                            or is_scheduled_task_event
+                            or is_vcsa_audit);
+
 [MODEL: dataset = "vmware_vcenter_raw"]
+//Virtualization - Format: Login Session
+call vmware_vcenter_virtualization_classification
+| filter is_virtualization
+| call vmware_vcenter_login_format 
+| filter is_session and not is_sso_login
+| call vmware_vcenter_common_fields
+| call vmware_vcenter_login_format_session_event;
+
+//Virtualization - Format: Login SSO
+call vmware_vcenter_virtualization_classification
+| filter is_virtualization
+| call vmware_vcenter_login_format
+| filter is_sso_login and not is_session
+| call vmware_vcenter_common_fields
+| call vmware_vcenter_login_format_sso_login;
+
+//Virtualization - Fomrat: Account Operations
+call vmware_vcenter_virtualization_classification
+| filter is_virtualization
+| filter is_account_operation_event
+| call vmware_vcenter_common_fields
+| call vmware_vcenter_account_operations_format;
+
+//Virtualization - Fomrat: File \ Datastore
+call vmware_vcenter_virtualization_classification
+| filter is_virtualization
+| filter is_file_or_datastore_event
+| call vmware_vcenter_common_fields
+| call vmware_vcenter_file_or_datastore_format;
+
+//Virtualization - Fomrat: VM Operations
+call vmware_vcenter_virtualization_classification
+| filter is_virtualization
+| filter is_vm_operations_event
+| call vmware_vcenter_common_fields
+| call vmware_vcenter_vm_operation_format;
+
+//Virtualization - Fomrat: vSphere Task events
+call vmware_vcenter_virtualization_classification
+| filter is_virtualization
+| filter is_vsphere_task_event
+| call vmware_vcenter_common_fields
+| call vmware_vcenter_vsphere_task_format;
+
+//Virtualization - Fomrat: Host Events
+call vmware_vcenter_virtualization_classification
+| filter is_virtualization
+| filter is_host_event
+| call vmware_vcenter_common_fields
+| call vmware_vcenter_host_event_format;
+
+//Virtualization - Fomrat: Scheduled Task
+call vmware_vcenter_virtualization_classification
+| filter is_virtualization
+| filter is_scheduled_task_event
+| call vmware_vcenter_common_fields
+| call vmware_vcenter_scheduled_task_format;
+
+//Virtualization - Fomrat: vcsa-audit
+call vmware_vcenter_virtualization_classification
+| filter is_virtualization
+| filter is_vcsa_audit
+| call vmware_vcenter_common_fields
+| call vmware_vcenter_vcsa_audit_format;
+
+
+
+
+///proceed model - old version
+
+
+
+
+
 // sps (Storage management service) events 
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "sps"
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "sps" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -40,8 +421,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.resource.value = datastore;
 
 // vpxd-svcs-perf events 
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "vpxd-svcs-perf"
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vpxd-svcs-perf" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -74,8 +456,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // vpxd-main (VMware vCenter-Services), vsan-health-main (virtual storage area network health service) & vum-vmacore (vSphere Update Manager) events 
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type in( "vsan-health-main", "vpxd-main", "vum-vmacore", "StatsMonitor", "vdtc-main")
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type in( "vsan-health-main", "vpxd-main", "vum-vmacore", "StatsMonitor", "vdtc-main") and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -112,8 +495,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // dnsmasq events 
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "dnsmasq"
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "dnsmasq" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -156,8 +540,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // analytics events 
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "analytics"
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "analytics" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -201,8 +586,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.resource.value = trust_store_path;
 
 // eam-access (VMware ESX Agent Manager Access) events 
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "eam-access"
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "eam-access" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -239,8 +625,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.ipv4 = server_local_address;
 
 // envoy-access events 
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "envoy-access"
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "envoy-access" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -294,8 +681,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.host.ipv4_addresses = arraycreate(server_ip);
 
 //  trustmanagement-gc 
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "trustmanagement-gc"
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "trustmanagement-gc" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -312,8 +700,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // trustmanagement-svcs
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "trustmanagement-svcs"
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "trustmanagement-svcs" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -350,8 +739,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // eam-api
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "eam-api" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "eam-api" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -380,8 +770,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // wcpsvc
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "wcpsvc" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "wcpsvc" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -409,8 +800,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.host.ipv4_addresses = target_hosts;
 
 // ui-threadmonitor
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "ui-threadmonitor" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "ui-threadmonitor" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -431,8 +823,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // ssoadminserver 
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "ssoadminserver" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "ssoadminserver" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -471,8 +864,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // ui-main 
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "ui-main" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "ui-main" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -504,8 +898,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // procstate
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "procstate" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "procstate" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -521,8 +916,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // content-library
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "content-library" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "content-library" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -560,8 +956,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.resource.type = if(target_service != null, "Service Name", wsdl_name != null, "WSDL Name");
 
 // vpxd-svcs-access
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "vpxd-svcs-access" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vpxd-svcs-access" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -593,8 +990,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.resource.value = uri;
 
 // sso-tomcat & lookupsvc-localhost_access events 
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type in ("sso-tomcat", "lookupsvc-localhost_access")
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type in ("sso-tomcat", "lookupsvc-localhost_access") and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -641,8 +1039,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.port = server_port;
 
 // vmon
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "vmon" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vmon" and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -679,8 +1078,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // rhttpproxy-main
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "rhttpproxy-main" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "rhttpproxy-main" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -702,8 +1102,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // sudo
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "sudo" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "sudo" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -735,8 +1136,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // sca-vmon.std
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "sca-vmon.std" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "sca-vmon.std" and not is_virtualization 
 | alter
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -770,8 +1172,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // applmgmt
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "applmgmt" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "applmgmt" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -804,8 +1207,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.file.filename = file; 
 
 // vstats
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "vstats" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vstats" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -828,8 +1232,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.resource.value = resource_value;
 
 // vmafdd
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "vmafdd" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vmafdd" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -848,8 +1253,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // certificatemanagement-svcs
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "certificatemanagement-svcs" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "certificatemanagement-svcs" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -879,8 +1285,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // cis-license
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "cis-license" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "cis-license" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -913,8 +1320,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // vdtc-main
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "vdtc-main" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vdtc-main" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -936,8 +1344,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // applmgmt-audit
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "applmgmt-audit" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "applmgmt-audit" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -976,8 +1385,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 // vapi-endpoint-access
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "vapi-endpoint-access" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vapi-endpoint-access" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -1016,8 +1426,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.application.name = service;
 
 // crond
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "crond" 
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "crond" and not is_virtualization 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
@@ -1043,8 +1454,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.host.hostname = syslog_hostname;
 
 //vpxd
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "vpxd"
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vpxd" and not is_virtualization
 | alter
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0),
@@ -1083,8 +1495,9 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.user_agent = arrayindex(regextract(syslog_msg, "(?:\[[^\]]*\]\s){8}\[.*?\suser agent:\s([^\)]+)"), 0);
 
 // general fallback mapping for all other event types which are currently not mapped explicitly 
-alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type NOT IN ("analytics", "applmgmt", "applmgmt-audit", "certificatemanagement-svcs", "cis-license", "content-library", "crond", "dnsmasq", "eam-access", "eam-api", "envoy-access", "lookupsvc-localhost_access", "procstate", "rhttpproxy-main", "sca-vmon.std", "sps", "sso-tomcat", "ssoadminserver", "StatsMonitor", "sudo", "trustmanagement-gc", "trustmanagement-svcs", "ui-main", "ui-threadmonitor", "vapi-endpoint-access", "vdtc-main", "vmafdd", "vmon", "vpxd-main", "vpxd-svcs-access", "vpxd-svcs-perf", "vsan-health-main", "vstats", "vum-vmacore", "vum-vmacore", "wcpsvc", "vpxd")
+call vmware_vcenter_virtualization_classification
+| alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type NOT IN ("analytics", "applmgmt", "applmgmt-audit", "certificatemanagement-svcs", "cis-license", "content-library", "crond", "dnsmasq", "eam-access", "eam-api", "envoy-access", "lookupsvc-localhost_access", "procstate", "rhttpproxy-main", "sca-vmon.std", "sps", "sso-tomcat", "ssoadminserver", "StatsMonitor", "sudo", "trustmanagement-gc", "trustmanagement-svcs", "ui-main", "ui-threadmonitor", "vapi-endpoint-access", "vdtc-main", "vmafdd", "vmon", "vpxd-main", "vpxd-svcs-access", "vpxd-svcs-perf", "vsan-health-main", "vstats", "vum-vmacore", "vum-vmacore", "wcpsvc", "vpxd") and not is_virtualization
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "\<\d{1,3}\>\S+\s+\S+\s+(\S+)"), 0), 
