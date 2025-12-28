@@ -52,7 +52,7 @@ def util_create_batch_response(
             {
                 "results": {
                     "1": "8.8.8.8",
-                    "2": "admin",
+                    "2": "test",
                     "3": "sqlcmd",
                     "4": "10.130.17.21",
                     "5": "MS SQL SERVER",
@@ -221,9 +221,9 @@ class TestMapEvent:
             - Ensure event fields are mapped to readable names
         """
         field_mapping = {"1": "ClientIP", "2": "UserName", "3": "Action"}
-        raw_event = {"1": "10.0.0.1", "2": "admin", "3": "login"}
+        raw_event = {"1": "10.0.0.1", "2": "test", "3": "login"}
         result = map_event(raw_event, field_mapping)
-        assert result == {"ClientIP": "10.0.0.1", "UserName": "admin", "Action": "login"}
+        assert result == {"ClientIP": "10.0.0.1", "UserName": "test", "Action": "login"}
 
     def test_map_event_unmapped_fields(self):
         """
@@ -235,9 +235,9 @@ class TestMapEvent:
             - Ensure unmapped fields keep their original keys
         """
         field_mapping = {"1": "ClientIP"}
-        raw_event = {"1": "10.0.0.1", "2": "admin"}
+        raw_event = {"1": "10.0.0.1", "2": "test"}
         result = map_event(raw_event, field_mapping)
-        assert result == {"ClientIP": "10.0.0.1", "2": "admin"}
+        assert result == {"ClientIP": "10.0.0.1", "2": "test"}
 
 
 class TestDeduplicateEvents:

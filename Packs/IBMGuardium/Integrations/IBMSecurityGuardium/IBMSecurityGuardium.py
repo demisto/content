@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # Format for dates sent in API requests
 VENDOR = "IBM"
 PRODUCT = "Guardium"
 DEFAULT_MAX_FETCH = 10000
@@ -60,6 +60,7 @@ class Client(BaseClient):
         # The API returns multiple JSON objects separated by newlines
         # First line: report data with report_layout and data array
         # Second line (optional): pagination metadata with limit_reached, total_number_of_rows, final_result
+        # If the second line doesn't exist, the metadata is included in the first line
         lines = response.strip().split("\n")
         demisto.debug(f"Received {len(lines)} JSON response line(s)")
 
@@ -67,18 +68,35 @@ class Client(BaseClient):
             raise DemistoException("Empty response from API")
 
         # Parse first line containing report data
-        parsed_response = json.loads(lines[0])
+        try:
+            parsed_response = json.loads(lines[0])
+            demisto.debug(f"Parsed first line successfully. Keys: {list(parsed_response.keys())}")
+            
+            # Validate expected structure in first line
+            if "result" not in parsed_response:
+                raise DemistoException("First line missing expected 'result' key")
+            
+            result_data = parsed_response.get("result", {})
+            if "report_layout" not in result_data or "data" not in result_data:
+                demisto.debug(f"Warning: First line result keys: {list(result_data.keys())}")
+                
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"Failed to parse first line as JSON: {e}")
 
         # Parse second line if present and merge pagination metadata
         if len(lines) > 1:
             try:
                 pagination_data = json.loads(lines[1])
+                demisto.debug(f"Parsed second line successfully. Keys: {list(pagination_data.keys())}")
+                
                 # Merge pagination metadata into the main response
                 if "result" in pagination_data:
                     parsed_response.setdefault("result", {}).update(pagination_data["result"])
                     demisto.debug(f"Merged pagination metadata: {pagination_data['result']}")
+                else:
+                    demisto.debug(f"Warning: Second line missing 'result' key. Available keys: {list(pagination_data.keys())}")
             except json.JSONDecodeError as e:
-                raise DemistoException(f"Failed to parse pagination data: {e}")
+                raise DemistoException(f"Failed to parse pagination data (second line): {e}")
 
         return parsed_response
 
@@ -171,6 +189,7 @@ def send_events_to_xsiam_with_time(events: list[dict[str, Any]], timestamp_field
     """
     Add _time field to events and send them to XSIAM.
     The _time field is required by XSIAM for event ingestion.
+    If timestamp field is missing, uses None as fallback.
 
     Args:
         events: List of events to send to XSIAM
@@ -187,7 +206,12 @@ def send_events_to_xsiam_with_time(events: list[dict[str, Any]], timestamp_field
         if timestamp_field in event:
             event["_time"] = event[timestamp_field]
         else:
-            raise DemistoException(f"Timestamp field '{timestamp_field}' not found in event")
+            # Log error and use None as fallback to avoid failing the entire fetch
+            demisto.error(
+                f"Timestamp field '{timestamp_field}' not found in event. Using None as fallback. "
+                f"Event keys: {list(event.keys())}"
+            )
+            event["_time"] = None
 
     # Send events to XSIAM
     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
@@ -301,8 +325,8 @@ def test_module_command(client: Client, report_id: str) -> str:
     """
     try:
         now = datetime.utcnow()
-        from_date = (now - timedelta(hours=5)).strftime(DATE_FORMAT)
-        to_date = now.strftime(DATE_FORMAT)
+        from_date = (now - timedelta(hours=5)).strftime(API_DATE_FORMAT)
+        to_date = now.strftime(API_DATE_FORMAT)
 
         demisto.debug(f"Testing connectivity: fetching 1 event from {from_date} to {to_date}")
         client.run_report(report_id, fetch_size=1, offset=0, from_date=from_date, to_date=to_date)
@@ -355,8 +379,8 @@ def fetch_events_command(
         last_fetch_time = now - timedelta(hours=1)
         demisto.debug("No last_fetch_time found, using default: 1 hour ago")
 
-    from_date = last_fetch_time.strftime(DATE_FORMAT)
-    to_date = now.strftime(DATE_FORMAT)
+    from_date = last_fetch_time.strftime(API_DATE_FORMAT)
+    to_date = now.strftime(API_DATE_FORMAT)
     demisto.debug(f"Fetching events from {from_date} to {to_date}")
 
     events: list[dict[str, Any]] = []
@@ -465,7 +489,7 @@ def get_events_command(
         Tuple of (events list, CommandResults, timestamp field name or None if no events)
     """
     demisto.debug(f"Executing get_events_command with args: {args}")
-    limit = arg_to_number(args.get("limit", 50)) or 50
+    limit = min(arg_to_number(args.get("limit", 50)) or 50, 1000)
     now = datetime.utcnow()
 
     if args.get("start_time"):
@@ -482,8 +506,8 @@ def get_events_command(
     else:
         end_time = now
 
-    from_date = start_time.strftime(DATE_FORMAT)
-    to_date = end_time.strftime(DATE_FORMAT)
+    from_date = start_time.strftime(API_DATE_FORMAT)
+    to_date = end_time.strftime(API_DATE_FORMAT)
 
     demisto.debug(f"Getting events from {from_date} to {to_date} with limit {limit}")
 

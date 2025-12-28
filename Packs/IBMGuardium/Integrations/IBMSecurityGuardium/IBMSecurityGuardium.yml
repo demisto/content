@@ -8,6 +8,7 @@ commonfields:
 configuration:
 - display: Server URL
   defaultvalue: https://guardium.security.ibm.com
+  additionalinfo: The URL of your IBM Guardium instance. The default value is an example - replace it with your specific instance URL.
   name: url
   required: true
   type: 0

@@ -1,19 +1,19 @@
-IBM Security Guardium is a comprehensive data security platform that provides visibility and protection for sensitive data across databases, data warehouses, big data platforms, and cloud environments. This integration enables the collection of security events from IBM Guardium Data Security Center.
+IBM Security Guardium is a comprehensive data security platform that provides visibility and protection for sensitive data across databases, data warehouses, big data platforms, and cloud environments.
 
-This integration is used to gather security events from IBM Guardium.
+This integration enables the collection of security events from IBM Guardium Data Security Center.
 
 ## Configure IBM Security Guardium in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The URL of your IBM Guardium server (e.g., https://guardium.security.ibm.com) | True |
-| API Key | API Key for authentication | True |
-| API Secret | API Secret for authentication | True |
-| Report ID | The ID of the report to fetch events from | True |
-| Fetch events | Whether to fetch events automatically | False |
-| Maximum number of events to fetch | Maximum number of events to fetch per run (default: 10000) | False |
-| Trust any certificate (not secure) | Trust any certificate (not secure) | False |
-| Use system proxy settings | Use system proxy settings | False |
+| API Key | The API Key for authentication | True |
+| API Secret | The API Secret for authentication | True |
+| Report ID | The ID of the report to fetch events from. | True |
+| Fetch events | Whether to automatically fetch events. | False |
+| Maximum number of events to fetch | Maximum number of events to fetch per run. Default is 10000. | False |
+| Trust any certificate (not secure) | Trust any certificate (not secure). | False |
+| Use system proxy settings | Use system proxy settings. | False |
 
 ## Commands
 
