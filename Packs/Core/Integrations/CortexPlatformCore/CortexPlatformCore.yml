@@ -1718,7 +1718,7 @@ script:
           description: The finding sources that originally generated the security finding of the vulnerability.
           type: String
         - contextPath: Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_COVERAGE
-          description: The coverage status of detected compensating controls, mirroring the input parameter enum values.
+          description: The coverage status of detected compensating controls.
           type: String
         - contextPath: Core.VulnerabilityIssue.CORTEX_VULNERABILITY_RISK_SCORE
           description: The risk score assigned to the vulnerability.
