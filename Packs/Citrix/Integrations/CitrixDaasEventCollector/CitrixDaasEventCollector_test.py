@@ -82,7 +82,7 @@ def test_get_site_id_one_site(mocker):
 
     site_id = client.get_site_id()
     assert site_id == "site123"
-    demisto.setIntegrationContext.assert_called_once_with({"site_id": "site123"})
+    demisto.setIntegrationContext.assert_called_once_with({"site_id": "site123", "access_token": "token123"})
 
 
 def test_get_site_id_site_name_parameter(mocker):
@@ -107,7 +107,7 @@ def test_get_site_id_site_name_parameter(mocker):
 
     site_id = client.get_site_id()
     assert site_id == "site_2"
-    demisto.setIntegrationContext.assert_called_once_with({"site_id": "site_2"})
+    demisto.setIntegrationContext.assert_called_once_with({"site_id": "site_2", "access_token": "token123"})
 
 
 def test_get_operations(mocker):
@@ -212,7 +212,7 @@ def test_fetch_events_command_first_run(mocker):
     assert len(events) == 2
     assert "LastRun" in last_run
     assert last_run["LastRun"] == "2024-01-02T00:00:00Z"
-    assert last_run["LastFechedIds"] == ["id2"]
+    assert last_run["LastFetchedIds"] == ["id2"]
     assert get_operations_mocker.call_args.kwargs["search_date_option"] == "LastMinute"
     assert get_operations_mocker.call_args.kwargs["last_operation_id"] is None
 
