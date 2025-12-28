@@ -3154,12 +3154,21 @@ def parse_frequency(day: str, time: str) -> str:
     :return: Cron-style frequency string
     """
 
-    hours, minutes = time.split(":")
-    return f"{minutes} {hours} * * {DAY_MAP[day]}"
+    if day.lower() not in DAY_MAP:
+        raise ValueError(f"Invalid day. Must be one of {list(DAY_MAP.keys())}.")
+    
+    try:
+        hours, minutes = map(int, time.split(":"))
+        if not (0 <= hours < 24 and 0 <= minutes < 60):
+            raise ValueError("Invalid time format. Use HH:MM in 24-hour format.")
+        return f"{minutes} {hours} * * {DAY_MAP[day]}"
+    
+    except ValueError:
+        raise ValueError("Invalid time format. Use HH:MM.")
 
 
 def create_assessment_profile_payload(
-    name: str, description: str, standard_id: str, asset_group_id: str, day: str, time: str, report_type: str = "ALL"
+    name: str, description: str, standard_id: str, asset_group_id: str, day: str = "sunday", time: str = "12:00", report_type: str = "ALL"
 ) -> Dict[str, Any]:
     """
     Prepare assessment profile payload
@@ -3174,10 +3183,8 @@ def create_assessment_profile_payload(
     :return: Assessment profile payload
     """
 
-    # Parse frequency
     report_frequency = parse_frequency(day, time)
 
-    # Construct payload matching the example structure
     payload = {
         "request_data": {
             "profile_name": name,
@@ -3254,9 +3261,13 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
     profile_description = args.get("profile_description", "")
     standard_name = args.get("standard_name", "")
     asset_group_name = args.get("asset_group_name", "")
+    day = args.get("day", "sunday")
+    time = args.get("time", "12:00")
+    
     payload = list_compliance_standards_payload(
         name=standard_name,
     )
+    demisto.debug(f"Listing compliance standards with payload: {payload}")
     response = client.list_compliance_standards_command(payload)
     reply = response.get("reply", {})
     standards = reply.get("standards")
@@ -3293,8 +3304,6 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
         )
     demisto.debug(f"{group_ids=}")
     asset_group_id = group_ids[0]
-    day = args.get("day", "sunday")
-    time = args.get("time", "12:00")
 
     payload = create_assessment_profile_payload(
         name=profile_name,
@@ -3305,6 +3314,7 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
         time=time,
         report_type="ALL",
     )
+    demisto.debug(f"Creating assessment profile with payload: {payload}")
 
     reply = client.add_assessment_profile(payload)
     assessment_profile_id = reply.get("assessment_profile_id")
@@ -3316,23 +3326,24 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
         raw_response=reply,
     )
 
-
-def assessment_profile_results_payload(standards):
-    labels = set()
-    for s in standards:
-        standard_labels = s.get("labels", [])
-        if isinstance(standard_labels, list):
-            labels.update(standard_labels)
-
-    payload: dict = {"request_data": {"filters": []}}
-
-    for label in labels:
-        payload["request_data"]["filters"].append({"field": "labels", "operator": "contains", "value": label})
-
-    return payload
-
-
 def core_list_compliance_standards_command(client: Client, args: dict) -> list[CommandResults]:
+    """
+    Lists compliance standards with optional filtering.
+    
+    Args:
+        client (Client): The client instance for API communication.
+        args (dict): Command arguments containing optional filters:
+            - name (str): Filter by standard name
+            - created_by (str): Filter by creator
+            - labels (list): Filter by labels (converts "Alibaba Cloud" to "alibaba_cloud" and "On Prem" to "on_prem")
+            - page (int): Page number for pagination (default: 0)
+            - page_size (int): Number of results per page (default: MAX_COMPLIANCE_STANDARDS)
+    
+    Returns:
+        list[CommandResults]: List containing:
+            - CommandResults with filtered compliance standards data and metadata
+            - CommandResults with pagination metadata (filtered_count, returned_count)
+    """
     name = args.get("name", "")
     created_by = args.get("created_by", "")
     labels = argToList(args.get("labels", ""))
@@ -3351,6 +3362,7 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> list[C
     response = client.list_compliance_standards_command(payload)
     reply = response.get("reply", {})
     standards = reply.get("standards")
+    demisto.debug(f"{standards=}")
     filtered_count = reply.get("result_count")
     returned_count = len(standards)
 
@@ -3366,6 +3378,7 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> list[C
         for s in standards
     ]
 
+    demisto.debug(f"{filtered_standards=}")
     command_results = []
     command_results.append(
         CommandResults(
