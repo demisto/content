@@ -3665,7 +3665,8 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug(f"CrowdStrikeFalconMsg: Current Recon Notifications last_run object: {recon_last_run}")
 
         fetched_recon_notifications, recon_last_run = fetch_recon_incidents(recon_last_run)
-        items.extend(fetched_recon_notifications)
+        # dont push the Recom incident to the machin
+        # items.extend(fetched_recon_notifications)
 
     # Assign each sub last_run info per type at its proper index
     set_last_run_per_type(last_run, index=LastRunIndex.DETECTIONS, data=detections_last_run, is_fetch_events=is_fetch_events)
@@ -4176,7 +4177,7 @@ def fetch_recon_incidents(recon_last_run: Dict[str, Any]) -> tuple[List[Dict], D
         filter=filter,
         recon_offset=arg_to_number(recon_offset)
     )
-    demisto.debug(f"Fetched the following Recon notification IDs: {', '.join(ids)}")
+    demisto.debug(f"Fetched the following Recon notification IDs: [{', '.join(ids)}]")
     
     recon_incidents, fetched_ids, new_created_ts = parse_ioa_iom_incidents(
         fetched_data=notifications_detailed,
