@@ -1314,15 +1314,17 @@ def qradar_set_integration_context(context_data):
         demisto.info("LAST_FETCH_KEY not found in context")
 
 
-def set_is_opp():
+def set_is_opp_var():
     global IS_OPP
 
-    if IS_OPP == None:
+    try:
         res = demisto.internalHttpRequest("GET", "/about")
         if res and res.get('body') and json.loads(res.get('body', '{}')):
             deployment_mode = json.loads(res.get('body', '{}')).get('deploymentMode').lower()
             IS_OPP = True if deployment_mode == 'opp' else False
             demisto.info(f"set IS_OPP value to {IS_OPP}")
+    except Exception as e:
+        demisto.error(f"Failed to get deploymentMode value: {str(e)}")
     return IS_OPP
 
 def safely_update_context_data_partial(
@@ -5550,7 +5552,7 @@ def main() -> None:  # pragma: no cover
     credentials = params.get("credentials")
     timeout = arg_to_number(params.get("timeout"))
 
-    set_is_opp()
+    set_is_opp_var()
 
     try:
         client = Client(
