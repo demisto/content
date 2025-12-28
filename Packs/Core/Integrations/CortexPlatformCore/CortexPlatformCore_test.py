@@ -6698,3 +6698,191 @@ def test_normalize_key_without_prefix():
     # Field names that contain 'xdm' but don't start with it
     assert normalize_key("field.xdm.name") == "field.xdm.name"
     assert normalize_key("some_xdm_field") == "some_xdm_field"
+
+
+def test_validate_custom_fields_success(mocker):
+    """
+    GIVEN:
+        Valid custom fields and client with metadata.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        All fields are returned as valid and no error messages.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    # Mock metadata response
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {"CUSTOM_FIELD_NAME": "field1", "CUSTOM_FIELD_PRETTY_NAME": "Field 1", "CUSTOM_FIELD_IS_SYSTEM": False},
+                {"CUSTOM_FIELD_NAME": "field2", "CUSTOM_FIELD_PRETTY_NAME": "Field 2", "CUSTOM_FIELD_IS_SYSTEM": False},
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"field1": "value1", "field2": "value2"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert valid_fields == fields_to_validate
+    assert len(error_messages) == 0
+
+
+def test_validate_custom_fields_system_field(mocker):
+    """
+    GIVEN:
+        Custom fields containing a system field.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        System field is excluded and error message is returned.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {"CUSTOM_FIELD_NAME": "system_field", "CUSTOM_FIELD_PRETTY_NAME": "System Field", "CUSTOM_FIELD_IS_SYSTEM": True},
+                {
+                    "CUSTOM_FIELD_NAME": "custom_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"system_field": "value1", "custom_field": "value2"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "custom_field" in valid_fields
+    assert "system_field" not in valid_fields
+    assert len(error_messages) == 1
+    assert "not valid to set" in error_messages[0]
+
+
+def test_validate_custom_fields_non_existent_field(mocker):
+    """
+    GIVEN:
+        Custom fields containing a non-existent field.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        Non-existent field is excluded and error message is returned.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "existing_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"existing_field": "value1", "non_existent": "value2"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "existing_field" in valid_fields
+    assert "non_existent" not in valid_fields
+    assert len(error_messages) == 1
+    assert "does not exist" in error_messages[0]
+
+
+def test_update_case_custom_fields_command_success(mocker):
+    """
+    GIVEN:
+        Valid case ID and custom fields.
+    WHEN:
+        update_case_custom_fields_command is called.
+    THEN:
+        Case is updated successfully and success result is returned.
+    """
+    from CortexPlatformCore import update_case_custom_fields_command, Client
+
+    client = Client(base_url="", headers={})
+
+    # Mock dependencies
+    mocker.patch("CortexPlatformCore.parse_custom_fields", return_value={"field1": "value1"})
+    mocker.patch("CortexPlatformCore.validate_custom_fields", return_value=({"field1": "value1"}, []))
+
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"case_id": "123"}})
+    mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123"})
+
+    args = {"case_id": "123", "custom_fields": '[{"field1": "value1"}]'}
+    result = update_case_custom_fields_command(client, args)
+
+    assert result.outputs["CustomFields"] == {"field1": "value1"}
+    assert "Successfully updated" in result.readable_output
+    mock_update_case.assert_called_once()
+
+
+def test_update_case_custom_fields_command_partial_success(mocker):
+    """
+    GIVEN:
+        Custom fields with mixed validity (some valid, some invalid).
+    WHEN:
+        update_case_custom_fields_command is called.
+    THEN:
+        Valid fields are updated, invalid ones reported, and result entry_type is 4 (warning).
+    """
+    from CortexPlatformCore import update_case_custom_fields_command, Client
+
+    client = Client(base_url="", headers={})
+
+    # Mock dependencies
+    mocker.patch("CortexPlatformCore.parse_custom_fields", return_value={"valid": "val", "invalid": "val"})
+    mocker.patch("CortexPlatformCore.validate_custom_fields", return_value=({"valid": "val"}, ["Invalid field error"]))
+
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"case_id": "123"}})
+    mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123"})
+
+    args = {"case_id": "123", "custom_fields": "..."}
+    result = update_case_custom_fields_command(client, args)
+
+    assert result.outputs["CustomFields"] == {"valid": "val"}
+    assert "Unsuccessful Fields" in result.readable_output
+    assert "Successful Fields" in result.readable_output
+    assert result.entry_type == 4
+    mock_update_case.assert_called_once()
+
+
+def test_update_case_custom_fields_command_all_failed(mocker):
+    """
+    GIVEN:
+        All custom fields are invalid.
+    WHEN:
+        update_case_custom_fields_command is called.
+    THEN:
+        return_error is called with error messages.
+    """
+    from CortexPlatformCore import update_case_custom_fields_command, Client
+
+    client = Client(base_url="", headers={})
+
+    # Mock dependencies
+    mocker.patch("CortexPlatformCore.parse_custom_fields", return_value={"invalid": "val"})
+    mocker.patch("CortexPlatformCore.validate_custom_fields", return_value=({}, ["Invalid field error"]))
+
+    mock_return_error = mocker.patch("CortexPlatformCore.return_error", side_effect=SystemExit)
+    mock_update_case = mocker.patch.object(client, "update_case")
+
+    args = {"case_id": "123", "custom_fields": "..."}
+    with pytest.raises(SystemExit):
+        update_case_custom_fields_command(client, args)
+
+    mock_return_error.assert_called_once()
+    mock_update_case.assert_not_called()
