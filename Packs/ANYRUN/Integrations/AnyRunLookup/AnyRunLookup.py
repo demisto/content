@@ -203,15 +203,10 @@ def parse_results(report: dict, reliability: str, indicator_value: str, indicato
 
     if industries := report.get("industries", {}):
         output_context["Industries"] = ",".join(
-            [
-                industry.get('industryName') for industry in
-                sorted(industries, key=lambda x: x.get('confidence', 0), reverse=True)
-            ]
+            [industry.get("industryName") for industry in sorted(industries, key=lambda x: x.get("confidence", 0), reverse=True)]
         )
 
-    output_context["Verdict"] = VERDICT_RESOLVER.get(
-        report.get("summary", {}).get("threatLevel", 0), "No info"
-    )
+    output_context["Verdict"] = VERDICT_RESOLVER.get(report.get("summary", {}).get("threatLevel", 0), "No info")
 
     return_results(
         CommandResults(

@@ -204,7 +204,7 @@ def create_indicators(report: dict, task_uuid: str) -> None:  # pragma: no cover
     :param report: Analysis report
     """
     output: list[dict[str, str]] = []
-    indicators:  list[dict] = []
+    indicators: list[dict] = []
 
     for indicator in report:
         reputation = indicator.get("reputation")
@@ -229,13 +229,11 @@ def create_indicators(report: dict, task_uuid: str) -> None:  # pragma: no cover
                     "vendor": "ANY.RUN",
                     "service": "ANY.RUN Cloud Sandbox",
                     "description": f"https://app.any.run/tasks/{task_uuid}",
-                }
+                },
             }
         )
 
-        output.append(
-            {"type": indicator_type, "value": indicator.get("ioc"), "verdict": SCORE_TO_VERDICT.get(reputation, "")}
-        )
+        output.append({"type": indicator_type, "value": indicator.get("ioc"), "verdict": SCORE_TO_VERDICT.get(reputation, "")})
 
     demisto.createIndicators(indicators)
 
@@ -272,7 +270,7 @@ def get_analysis_report(params: dict, args: dict) -> None:  # pragma: no cover
                 CommandResults(
                     outputs_prefix="ANYRUN.IOCs",
                     outputs=",".join(indicator.get("ioc") for indicator in report) if report else "",
-                    ignore_auto_extract=True
+                    ignore_auto_extract=True,
                 )
             )
 
