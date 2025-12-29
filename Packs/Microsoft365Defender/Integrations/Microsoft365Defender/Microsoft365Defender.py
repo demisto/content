@@ -77,9 +77,8 @@ class Client:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        auth_flow = get_auth_type_flow(auth_flow)
-        grant_type = auth_flow or (CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE)
-        self.client_credentials = (grant_type == CLIENT_CREDENTIALS)
+        auth_type = get_auth_type_flow(auth_flow)
+        grant_type = auth_type or (CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE)
         client_args = assign_params(
             base_url=base_url,
             verify=verify,
@@ -92,8 +91,8 @@ class Client:
             auth_id=app_id,
             grant_type=grant_type,
             # used for device code flow
-            resource="https://api.security.microsoft.com" if not self.client_credentials else None,
-            token_retrieval_url="https://login.windows.net/organizations/oauth2/v2.0/token" if not client_credentials else None,
+            resource="https://api.security.microsoft.com" if not (grant_type == CLIENT_CREDENTIALS) else None,
+            token_retrieval_url="https://login.windows.net/organizations/oauth2/v2.0/token" if not (grant_type == CLIENT_CREDENTIALS) else None,
             # used for client credentials flow
             tenant_id=tenant_id,
             enc_key=enc_key,
