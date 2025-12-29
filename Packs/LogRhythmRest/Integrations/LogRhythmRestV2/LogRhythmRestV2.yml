@@ -2116,7 +2116,7 @@ script:
       description: 'The user last name.'
       type: String
     - contextPath: LogRhythm.User.userType
-      description: 'The user type'
+      description: 'The user type.'
       type: String
     - contextPath: LogRhythm.User.fullName
       description: 'The user full name.'
@@ -3997,7 +3997,7 @@ script:
       description: 'The network threat level.'
       type: String
     - contextPath: LogRhythm.Network.threatLevelComment
-      description: 'The threat level comments'
+      description: 'The threat level comments.'
       type: String
     - contextPath: LogRhythm.Network.recordStatusName
       description: 'The network record status name.'

@@ -25,7 +25,7 @@ configuration:
   name: token
   required: true
   type: 4
-description: create and update issues in MantisBT,MantisBT is a popular free web-based bug tracking system
+description: create and update issues in MantisBT,MantisBT is a popular free web-based bug tracking system.
 display: Mantis
 name: Mantis
 script:
@@ -38,22 +38,22 @@ script:
     name: mantis-get-issue-by-id
     outputs:
     - contextPath: Mantis.Issue.id
-      description: id ofthe issue created
+      description: id ofthe issue created.
       type: String
     - contextPath: Mantis.Issue.project
-      description: project under which issue is created
+      description: project under which issue is created.
       type: Unknown
     - contextPath: Mantis.Issue.category
-      description: category under which issue is created
+      description: category under which issue is created.
       type: Unknown
     - contextPath: Mantis.Issue.reporter
-      description: reporter of the issue
+      description: reporter of the issue.
       type: Unknown
     - contextPath: Mantis.Issue.status
-      description: status of the issues created
+      description: status of the issues created.
       type: Unknown
     - contextPath: Mantis.Issue.created_at
-      description: time  at which issue created
+      description: time  at which issue created.
       type: Unknown
   - arguments:
     - description: project name to  create issue under
@@ -88,7 +88,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: public
-      description: select view_state defailt is public
+      description: select view_state defailt is public.
       name: view_state
       predefined:
       - public

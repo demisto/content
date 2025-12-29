@@ -5,7 +5,7 @@ name: NTT Cyber Threat Sensor
 display: NTT Cyber Threat Sensor
 category: Network Security
 provider: NTT Group
-description: Retrieve alerts and recommendations from NTT CTS
+description: Retrieve alerts and recommendations from NTT CTS.
 configuration:
 - display: 'The API key for accessing CTS over AWS '
   name: APIKEY
@@ -71,7 +71,7 @@ script:
       description: ID of the incident.
       type: string
     - contextPath: CTS.Blob.Status
-      description: hold to wait and release to run.
+      description: Hold to wait and release to run.
       type: string
     description: Check if blobs is available
     execution: true
