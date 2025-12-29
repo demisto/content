@@ -39,6 +39,7 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, em
 
     return single_reply
 
+
 def rewrite_img_src(html: str, account_name: str) -> str:
     """
     Replace:
@@ -68,8 +69,6 @@ def html_cleanup(full_thread_html, account_name=None):
 
     # Place needed HTML tags in their appropriate locations
     final_html_result = f"<!DOCTYPE html>\n<html>\n<body>\n{full_thread_html}\n</body>\n</html>"
-
-
 
     if account_name:
         final_html_result = rewrite_img_src(final_html_result, account_name)
