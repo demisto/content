@@ -229,15 +229,15 @@ script:
       description: Filtering value of the `filter-by` field
     outputs:
     - contextPath: MAR.Services.Name
-      description: Service name
+      description: Service name.
     - contextPath: MAR.Services.Description
-      description: Service description
+      description: Service description.
     - contextPath: MAR.Services.Status
-      description: Service status
+      description: Service status.
     - contextPath: MAR.Services.Startuptype
-      description: Service startup type
+      description: Service startup type.
     - contextPath: MAR.Services.User
-      description: Service user
+      description: Service user.
     description: Gets services information from McAfee Active Response
   - name: mar-search-processes
     arguments:
@@ -261,29 +261,29 @@ script:
       description: Filtering value of the `filter-by` field
     outputs:
     - contextPath: MAR.Processes.Name
-      description: Process name
+      description: Process name.
     - contextPath: MAR.Processes.Id
       description: Process id
     - contextPath: MAR.Processes.Parentname
-      description: Process parent name
+      description: Process parent name.
     - contextPath: MAR.Processes.Size
-      description: Process size
+      description: Process size.
     - contextPath: MAR.Processes.Md5
       description: Process md5
     - contextPath: MAR.Processes.Sha1
       description: Process sha1
     - contextPath: MAR.Processes.Cmdline
-      description: Process command line
+      description: Process command line.
     - contextPath: MAR.Processes.Imagepath
-      description: Process image path
+      description: Process image path.
     - contextPath: MAR.Processes.Kerneltime
-      description: Process kernel time
+      description: Process kernel time.
     - contextPath: MAR.Processes.Usertime
-      description: Process user time
+      description: Process user time.
     - contextPath: MAR.Processes.Uptime
       description: Process up time
     - contextPath: MAR.Processes.User
-      description: Process user
+      description: Process user.
     - contextPath: MAR.Processes.User_id
       description: Process user id
     description: Gets processes information from McAfee Active Response
@@ -339,13 +339,13 @@ script:
       description: Filtering value of the `filter-by` field
     outputs:
     - contextPath: MAR.Files.Name
-      description: File name
+      description: File name.
     - contextPath: MAR.Files.Dir
-      description: File directory
+      description: File directory.
     - contextPath: MAR.Files.Full_name
-      description: File full name
+      description: File full name.
     - contextPath: MAR.Files.Size
-      description: File size
+      description: File size.
     - contextPath: MAR.Files.Last_write
       description: File last write
     - contextPath: MAR.Files.Md5

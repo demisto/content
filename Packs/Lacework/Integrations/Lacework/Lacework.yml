@@ -148,7 +148,7 @@ script:
       description: The ID of the recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.CATEGORY
-      description: The category of the recommendation
+      description: The category of the recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.SERVICE
       description: The service associated with the recommendation.
@@ -282,7 +282,7 @@ script:
       description: The ID of the recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.CATEGORY
-      description: The category of the recommendation
+      description: The category of the recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.SERVICE
       description: The service associated with the recommendation.

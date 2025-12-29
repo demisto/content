@@ -156,7 +156,7 @@ script:
       required: true
     - description: Description of the look.
       name: look_description
-    - description: ID of the space that will contain the look
+    - description: ID of the space that will contain the look.
       name: look_space_id
       required: true
     description: Creates a look from a query.

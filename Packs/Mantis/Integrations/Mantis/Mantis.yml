@@ -75,7 +75,7 @@ script:
       description: The number of issues to return per page. Default is 50 but overridable by configuration.
       name: page_size
     - defaultValue: '1'
-      description: The page number
+      description: The page number.
       name: page
     description: get a list of mantis issues
     name: mantis-get-issues
