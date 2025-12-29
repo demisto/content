@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa: F401
 
 host_type = "local"
 
-# MAIN FUNCTION
+#  MAIN FUNCTION
 
 
 def main() -> None:
