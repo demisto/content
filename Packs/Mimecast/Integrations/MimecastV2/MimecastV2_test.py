@@ -1533,3 +1533,731 @@ def test_get_message_command_with_mailbox(mocker):
 
     # Verify get_message_body_content_request was called with mailbox
     get_message_body_mock.assert_called_once_with("test_message_id", "DELIVERED", "html", "user@example.com")
+
+
+# URL Logs Pagination Tests
+def test_fetch_url_logs_next_token(mocker):
+    """
+    Given:
+    - response from mimecast api indicates there is more results than limit (a next token is returned)
+
+    When:
+    - The fetch_url_logs method is called.
+
+    Then:
+    - Next token is returned.
+    - Dedup for next run is returned
+    - next fetch time is returned
+    """
+    last_fetch_url_date_time = "2025-03-13T15:30:00+0000"
+    time_url_for_next_page = "2025-03-13T15:30:00+0000"
+    last_fetch_url = datetime(2025, 3, 13, 15, 30, second=00)
+    current_fetch_url = last_fetch_url
+    dedup_url_logs = []
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [{"url": "http://example.com", "date": "2025-03-13T15:31:00+0000"}],
+        "meta": {"pagination": {"next": "test_next_token"}},
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_url_logs(
+        last_fetch_url_date_time,
+        time_url_for_next_page,
+        last_fetch_url,
+        current_fetch_url,
+        dedup_url_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("test_next_token", ["http://example.com_2025-03-13T15:31:00+0000"], datetime(2025, 3, 13, 15, 31))
+
+
+def test_fetch_url_logs_prev_dedup(mocker):
+    """
+    Given:
+    - dedup incidents exists
+    - response from mimecast api indicates there is more results than limit (a next token is returned)
+
+    When:
+    - The fetch_url_logs method is called.
+
+    Then:
+    - Next token is returned.
+    - Dedup for next run is returned (added to the prev dedup array)
+    - next fetch time is returned
+    """
+    last_fetch_url_date_time = "2025-03-13T15:30:00+0000"
+    time_url_for_next_page = "2025-03-11T15:30:00+0000"
+    last_fetch_url = datetime(2025, 3, 11, 15, 30, second=00)
+    current_fetch_url = last_fetch_url
+    dedup_url_logs = ["prev_dedup"]
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [{"url": "http://example.com", "date": "2025-03-11T15:30:00+0000"}],
+        "meta": {"pagination": {"next": "test_next"}},
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_url_logs(
+        last_fetch_url_date_time,
+        time_url_for_next_page,
+        last_fetch_url,
+        current_fetch_url,
+        dedup_url_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("test_next", ["prev_dedup", "http://example.com_2025-03-11T15:30:00+0000"], datetime(2025, 3, 11, 15, 30))
+
+
+def test_fetch_url_logs_no_next_token(mocker):
+    """
+    Given:
+    - response from mimecast api indicates there is no more results than limit (a next token is not returned)
+
+    When:
+    - The fetch_url_logs method is called.
+
+    Then:
+    - Next token is not returned.
+    - Dedup for next run is returned (added to the prev dedup array)
+    - next fetch time is returned
+    """
+    last_fetch_url_date_time = "2025-03-13T15:30:00+0000"
+    time_url_for_next_page = "2025-03-11T15:30:00+0000"
+    last_fetch_url = datetime(2025, 3, 11, 15, 30, second=00)
+    current_fetch_url = last_fetch_url
+    dedup_url_logs = ["prev_dedup"]
+    current_next_page = ""
+    incidents = []
+    mock_response = {"data": [{"url": "http://example.com", "date": "2025-03-11T15:31:00+0000"}]}
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_url_logs(
+        last_fetch_url_date_time,
+        time_url_for_next_page,
+        last_fetch_url,
+        current_fetch_url,
+        dedup_url_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("", ["http://example.com_2025-03-11T15:31:00+0000"], datetime(2025, 3, 11, 15, 31))
+
+
+def test_fetch_url_logs_has_prev_next_token(mocker):
+    """
+    Given:
+    - next token is provided to keep on fetching from prev state
+    - dedup incidents exists
+    - response from mimecast api indicates there is more results than limit (a next token is returned)
+
+    When:
+    - The fetch_url_logs method is called.
+
+    Then:
+    - Next token is returned.
+    - Dedup for next run is returned (added to the prev dedup array)
+    - next fetch time is returned
+    """
+    url_logs = [{"url": "http://example.com", "date": "2025-03-11T15:31:00+0000"}]
+    fetch_url_logs_with_pagination = mocker.patch.object(
+        MimecastV2, "fetch_url_logs_with_pagination", return_value=(url_logs, 1, "")
+    )
+    last_fetch_url_date_time = "2025-03-13T15:31:00+0000"
+    time_url_for_next_page = "2025-03-11T15:30:00+0000"
+    last_fetch_url = datetime(2025, 3, 11, 15, 30, second=00)
+    current_fetch_url = last_fetch_url
+    dedup_url_logs = []
+    current_next_page = ["current_next_page"]
+    incidents = []
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_url_logs(
+        last_fetch_url_date_time,
+        time_url_for_next_page,
+        last_fetch_url,
+        current_fetch_url,
+        dedup_url_logs,
+        current_next_page,
+        incidents,
+    )
+    fetch_url_logs_with_pagination.assert_called_with(
+        api_endpoint="/api/ttp/url/get-logs",
+        data=[{"from": "2025-03-11T15:30:00+0000", "route": "all", "to": "2025-03-13T15:31:00+0000"}],
+        limit=1,
+        dedup_messages=[],
+        current_next_page=["current_next_page"],
+    )
+    assert result == ("", ["http://example.com_2025-03-11T15:31:00+0000"], datetime(2025, 3, 11, 15, 31))
+
+
+def test_fetch_url_logs_first_fetch(mocker):
+    """
+    Given:
+    - First fetch scenario with no previous dedup data
+
+    When:
+    - The fetch_url_logs method is called.
+
+    Then:
+    - Incidents are created correctly
+    - Dedup list is populated
+    - Correct timestamp is returned
+    """
+    last_fetch_url_date_time = "2025-03-13T15:30:00+0000"
+    time_url_for_next_page = "2025-03-13T15:30:00+0000"
+    last_fetch_url = datetime(2025, 3, 13, 15, 30, second=00)
+    current_fetch_url = last_fetch_url
+    dedup_url_logs = []
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [{"url": "http://example.com", "date": "2025-03-13T15:31:00+0000", "action": "block"}],
+        "meta": {"pagination": {}},
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_url_logs(
+        last_fetch_url_date_time,
+        time_url_for_next_page,
+        last_fetch_url,
+        current_fetch_url,
+        dedup_url_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("", ["http://example.com_2025-03-13T15:31:00+0000"], datetime(2025, 3, 13, 15, 31))
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "Mimecast malicious URL: http://example.com"
+
+
+def test_fetch_url_logs_dedup(mocker):
+    """
+    Given:
+    - URL log that has already been processed (exists in dedup list)
+
+    When:
+    - The fetch_url_logs method is called.
+
+    Then:
+    - The duplicate URL log is not added to incidents
+    - Dedup list remains unchanged
+    """
+    last_fetch_url_date_time = "2025-03-13T15:30:00+0000"
+    time_url_for_next_page = "2025-03-13T15:30:00+0000"
+    last_fetch_url = datetime(2025, 3, 13, 15, 30, second=00)
+    current_fetch_url = last_fetch_url
+    dedup_url_logs = ["http://example.com_2025-03-13T15:31:00+0000"]
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [{"url": "http://example.com", "date": "2025-03-13T15:31:00+0000"}],
+        "meta": {"pagination": {}},
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_url_logs(
+        last_fetch_url_date_time,
+        time_url_for_next_page,
+        last_fetch_url,
+        current_fetch_url,
+        dedup_url_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("", ["http://example.com_2025-03-13T15:31:00+0000"], datetime(2025, 3, 13, 15, 31))
+    assert len(incidents) == 0
+
+
+# Attachment Logs Pagination Tests
+def test_fetch_attachment_logs_next_token(mocker):
+    """
+    Given:
+    - response from mimecast api indicates there is more results than limit (a next token is returned)
+
+    When:
+    - The fetch_attachment_logs method is called.
+
+    Then:
+    - Next token is returned.
+    - Dedup for next run is returned
+    - next fetch time is returned
+    """
+    last_fetch_attachment_date_time = "2025-03-13T15:30:00+0000"
+    time_attachment_for_next_page = "2025-03-13T15:30:00+0000"
+    last_fetch_attachment = datetime(2025, 3, 13, 15, 30, second=00)
+    current_fetch_attachment = last_fetch_attachment
+    dedup_attachment_logs = []
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [{"fileName": "malware.exe", "date": "2025-03-13T15:31:00+0000", "senderAddress": "sender@example.com"}],
+        "meta": {"pagination": {"next": "test_next_token"}},
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_attachment_logs(
+        last_fetch_attachment_date_time,
+        time_attachment_for_next_page,
+        last_fetch_attachment,
+        current_fetch_attachment,
+        dedup_attachment_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == (
+        "test_next_token",
+        ["malware.exe_2025-03-13T15:31:00+0000_sender@example.com"],
+        datetime(2025, 3, 13, 15, 31),
+    )
+
+
+def test_fetch_attachment_logs_prev_dedup(mocker):
+    """
+    Given:
+    - dedup incidents exists
+    - response from mimecast api indicates there is more results than limit (a next token is returned)
+
+    When:
+    - The fetch_attachment_logs method is called.
+
+    Then:
+    - Next token is returned.
+    - Dedup for next run is returned (added to the prev dedup array)
+    - next fetch time is returned
+    """
+    last_fetch_attachment_date_time = "2025-03-13T15:30:00+0000"
+    time_attachment_for_next_page = "2025-03-11T15:30:00+0000"
+    last_fetch_attachment = datetime(2025, 3, 11, 15, 30, second=00)
+    current_fetch_attachment = last_fetch_attachment
+    dedup_attachment_logs = ["prev_dedup"]
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [{"fileName": "malware.exe", "date": "2025-03-11T15:30:00+0000", "senderAddress": "sender@example.com"}],
+        "meta": {"pagination": {"next": "test_next"}},
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_attachment_logs(
+        last_fetch_attachment_date_time,
+        time_attachment_for_next_page,
+        last_fetch_attachment,
+        current_fetch_attachment,
+        dedup_attachment_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == (
+        "test_next",
+        ["prev_dedup", "malware.exe_2025-03-11T15:30:00+0000_sender@example.com"],
+        datetime(2025, 3, 11, 15, 30),
+    )
+
+
+def test_fetch_attachment_logs_no_next_token(mocker):
+    """
+    Given:
+    - response from mimecast api indicates there is no more results than limit (a next token is not returned)
+
+    When:
+    - The fetch_attachment_logs method is called.
+
+    Then:
+    - Next token is not returned.
+    - Dedup for next run is returned (added to the prev dedup array)
+    - next fetch time is returned
+    """
+    last_fetch_attachment_date_time = "2025-03-13T15:30:00+0000"
+    time_attachment_for_next_page = "2025-03-11T15:30:00+0000"
+    last_fetch_attachment = datetime(2025, 3, 11, 15, 30, second=00)
+    current_fetch_attachment = last_fetch_attachment
+    dedup_attachment_logs = ["prev_dedup"]
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [{"fileName": "malware.exe", "date": "2025-03-11T15:31:00+0000", "senderAddress": "sender@example.com"}]
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_attachment_logs(
+        last_fetch_attachment_date_time,
+        time_attachment_for_next_page,
+        last_fetch_attachment,
+        current_fetch_attachment,
+        dedup_attachment_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("", ["malware.exe_2025-03-11T15:31:00+0000_sender@example.com"], datetime(2025, 3, 11, 15, 31))
+
+
+def test_fetch_attachment_logs_has_prev_next_token(mocker):
+    """
+    Given:
+    - next token is provided to keep on fetching from prev state
+    - dedup incidents exists
+    - response from mimecast api indicates there is more results than limit (a next token is returned)
+
+    When:
+    - The fetch_attachment_logs method is called.
+
+    Then:
+    - Next token is returned.
+    - Dedup for next run is returned (added to the prev dedup array)
+    - next fetch time is returned
+    """
+    attachment_logs = [{"fileName": "malware.exe", "date": "2025-03-11T15:31:00+0000", "senderAddress": "sender@example.com"}]
+    fetch_attachment_logs_with_pagination = mocker.patch.object(
+        MimecastV2, "fetch_attachment_logs_with_pagination", return_value=(attachment_logs, 1, "")
+    )
+    last_fetch_attachment_date_time = "2025-03-13T15:31:00+0000"
+    time_attachment_for_next_page = "2025-03-11T15:30:00+0000"
+    last_fetch_attachment = datetime(2025, 3, 11, 15, 30, second=00)
+    current_fetch_attachment = last_fetch_attachment
+    dedup_attachment_logs = []
+    current_next_page = ["current_next_page"]
+    incidents = []
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_attachment_logs(
+        last_fetch_attachment_date_time,
+        time_attachment_for_next_page,
+        last_fetch_attachment,
+        current_fetch_attachment,
+        dedup_attachment_logs,
+        current_next_page,
+        incidents,
+    )
+    fetch_attachment_logs_with_pagination.assert_called_with(
+        api_endpoint="/api/ttp/attachment/get-logs",
+        data=[{"from": "2025-03-11T15:30:00+0000", "route": "all", "to": "2025-03-13T15:31:00+0000"}],
+        limit=1,
+        dedup_messages=[],
+        current_next_page=["current_next_page"],
+    )
+    assert result == ("", ["malware.exe_2025-03-11T15:31:00+0000_sender@example.com"], datetime(2025, 3, 11, 15, 31))
+
+
+def test_fetch_attachment_logs_first_fetch(mocker):
+    """
+    Given:
+    - First fetch scenario with no previous dedup data
+
+    When:
+    - The fetch_attachment_logs method is called.
+
+    Then:
+    - Incidents are created correctly
+    - Dedup list is populated
+    - Correct timestamp is returned
+    """
+    last_fetch_attachment_date_time = "2025-03-13T15:30:00+0000"
+    time_attachment_for_next_page = "2025-03-13T15:30:00+0000"
+    last_fetch_attachment = datetime(2025, 3, 13, 15, 30, second=00)
+    current_fetch_attachment = last_fetch_attachment
+    dedup_attachment_logs = []
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [
+            {
+                "fileName": "malware.exe",
+                "date": "2025-03-13T15:31:00+0000",
+                "senderAddress": "sender@example.com",
+                "result": "virus",
+            }
+        ],
+        "meta": {"pagination": {}},
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_attachment_logs(
+        last_fetch_attachment_date_time,
+        time_attachment_for_next_page,
+        last_fetch_attachment,
+        current_fetch_attachment,
+        dedup_attachment_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("", ["malware.exe_2025-03-13T15:31:00+0000_sender@example.com"], datetime(2025, 3, 13, 15, 31))
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "Mimecast malicious attachment: malware.exe"
+
+
+def test_fetch_attachment_logs_dedup(mocker):
+    """
+    Given:
+    - Attachment log that has already been processed (exists in dedup list)
+
+    When:
+    - The fetch_attachment_logs method is called.
+
+    Then:
+    - The duplicate attachment log is not added to incidents
+    - Dedup list remains unchanged
+    """
+    last_fetch_attachment_date_time = "2025-03-13T15:30:00+0000"
+    time_attachment_for_next_page = "2025-03-13T15:30:00+0000"
+    last_fetch_attachment = datetime(2025, 3, 13, 15, 30, second=00)
+    current_fetch_attachment = last_fetch_attachment
+    dedup_attachment_logs = ["malware.exe_2025-03-13T15:31:00+0000_sender@example.com"]
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [{"fileName": "malware.exe", "date": "2025-03-13T15:31:00+0000", "senderAddress": "sender@example.com"}],
+        "meta": {"pagination": {}},
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_attachment_logs(
+        last_fetch_attachment_date_time,
+        time_attachment_for_next_page,
+        last_fetch_attachment,
+        current_fetch_attachment,
+        dedup_attachment_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("", ["malware.exe_2025-03-13T15:31:00+0000_sender@example.com"], datetime(2025, 3, 13, 15, 31))
+    assert len(incidents) == 0
+
+
+# Impersonation Logs Pagination Tests
+def test_fetch_impersonation_logs_next_token(mocker):
+    """
+    Given:
+    - response from mimecast api indicates there is more results than limit (a next token is returned)
+
+    When:
+    - The fetch_impersonation_logs method is called.
+
+    Then:
+    - Next token is returned.
+    - Dedup for next run is returned
+    - next fetch time is returned
+    """
+    last_fetch_impersonation_date_time = "2025-03-13T15:30:00+0000"
+    time_impersonation_for_next_page = "2025-03-13T15:30:00+0000"
+    last_fetch_impersonation = datetime(2025, 3, 13, 15, 30, second=00)
+    current_fetch_impersonation = last_fetch_impersonation
+    dedup_impersonation_logs = []
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [{"id": "imp123", "eventTime": "2025-03-13T15:31:00+0000"}],
+        "meta": {"pagination": {"next": "test_next_token"}},
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_impersonation_logs(
+        last_fetch_impersonation_date_time,
+        time_impersonation_for_next_page,
+        last_fetch_impersonation,
+        current_fetch_impersonation,
+        dedup_impersonation_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("test_next_token", ["imp123"], datetime(2025, 3, 13, 15, 31))
+
+
+def test_fetch_impersonation_logs_prev_dedup(mocker):
+    """
+    Given:
+    - dedup incidents exists
+    - response from mimecast api indicates there is more results than limit (a next token is returned)
+
+    When:
+    - The fetch_impersonation_logs method is called.
+
+    Then:
+    - Next token is returned.
+    - Dedup for next run is returned (added to the prev dedup array)
+    - next fetch time is returned
+    """
+    last_fetch_impersonation_date_time = "2025-03-13T15:30:00+0000"
+    time_impersonation_for_next_page = "2025-03-11T15:30:00+0000"
+    last_fetch_impersonation = datetime(2025, 3, 11, 15, 30, second=00)
+    current_fetch_impersonation = last_fetch_impersonation
+    dedup_impersonation_logs = ["prev_dedup"]
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [{"id": "imp123", "eventTime": "2025-03-11T15:30:00+0000"}],
+        "meta": {"pagination": {"next": "test_next"}},
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_impersonation_logs(
+        last_fetch_impersonation_date_time,
+        time_impersonation_for_next_page,
+        last_fetch_impersonation,
+        current_fetch_impersonation,
+        dedup_impersonation_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("test_next", ["prev_dedup", "imp123"], datetime(2025, 3, 11, 15, 30))
+
+
+def test_fetch_impersonation_logs_no_next_token(mocker):
+    """
+    Given:
+    - response from mimecast api indicates there is no more results than limit (a next token is not returned)
+
+    When:
+    - The fetch_impersonation_logs method is called.
+
+    Then:
+    - Next token is not returned.
+    - Dedup for next run is returned (added to the prev dedup array)
+    - next fetch time is returned
+    """
+    last_fetch_impersonation_date_time = "2025-03-13T15:30:00+0000"
+    time_impersonation_for_next_page = "2025-03-11T15:30:00+0000"
+    last_fetch_impersonation = datetime(2025, 3, 11, 15, 30, second=00)
+    current_fetch_impersonation = last_fetch_impersonation
+    dedup_impersonation_logs = ["prev_dedup"]
+    current_next_page = ""
+    incidents = []
+    mock_response = {"data": [{"id": "imp123", "eventTime": "2025-03-11T15:31:00+0000"}]}
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_impersonation_logs(
+        last_fetch_impersonation_date_time,
+        time_impersonation_for_next_page,
+        last_fetch_impersonation,
+        current_fetch_impersonation,
+        dedup_impersonation_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("", ["imp123"], datetime(2025, 3, 11, 15, 31))
+
+
+def test_fetch_impersonation_logs_has_prev_next_token(mocker):
+    """
+    Given:
+    - next token is provided to keep on fetching from prev state
+    - dedup incidents exists
+    - response from mimecast api indicates there is more results than limit (a next token is returned)
+
+    When:
+    - The fetch_impersonation_logs method is called.
+
+    Then:
+    - Next token is returned.
+    - Dedup for next run is returned (added to the prev dedup array)
+    - next fetch time is returned
+    """
+    impersonation_logs = [{"id": "imp123", "eventTime": "2025-03-11T15:31:00+0000"}]
+    fetch_impersonation_logs_with_pagination = mocker.patch.object(
+        MimecastV2, "fetch_impersonation_logs_with_pagination", return_value=(impersonation_logs, 1, "")
+    )
+    last_fetch_impersonation_date_time = "2025-03-13T15:31:00+0000"
+    time_impersonation_for_next_page = "2025-03-11T15:30:00+0000"
+    last_fetch_impersonation = datetime(2025, 3, 11, 15, 30, second=00)
+    current_fetch_impersonation = last_fetch_impersonation
+    dedup_impersonation_logs = []
+    current_next_page = ["current_next_page"]
+    incidents = []
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_impersonation_logs(
+        last_fetch_impersonation_date_time,
+        time_impersonation_for_next_page,
+        last_fetch_impersonation,
+        current_fetch_impersonation,
+        dedup_impersonation_logs,
+        current_next_page,
+        incidents,
+    )
+    fetch_impersonation_logs_with_pagination.assert_called_with(
+        api_endpoint="/api/ttp/impersonation/get-logs",
+        data=[{"from": "2025-03-11T15:30:00+0000", "to": "2025-03-13T15:31:00+0000"}],
+        limit=1,
+        dedup_messages=[],
+        current_next_page=["current_next_page"],
+    )
+    assert result == ("", ["imp123"], datetime(2025, 3, 11, 15, 31))
+
+
+def test_fetch_impersonation_logs_first_fetch(mocker):
+    """
+    Given:
+    - First fetch scenario with no previous dedup data
+
+    When:
+    - The fetch_impersonation_logs method is called.
+
+    Then:
+    - Incidents are created correctly
+    - Dedup list is populated
+    - Correct timestamp is returned
+    """
+    last_fetch_impersonation_date_time = "2025-03-13T15:30:00+0000"
+    time_impersonation_for_next_page = "2025-03-13T15:30:00+0000"
+    last_fetch_impersonation = datetime(2025, 3, 13, 15, 30, second=00)
+    current_fetch_impersonation = last_fetch_impersonation
+    dedup_impersonation_logs = []
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [{"id": "imp123", "eventTime": "2025-03-13T15:31:00+0000", "impersonationResults": [{"checkerResult": "hit"}]}],
+        "meta": {"pagination": {}},
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_impersonation_logs(
+        last_fetch_impersonation_date_time,
+        time_impersonation_for_next_page,
+        last_fetch_impersonation,
+        current_fetch_impersonation,
+        dedup_impersonation_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("", ["imp123"], datetime(2025, 3, 13, 15, 31))
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "Mimecast impersonation protection: imp123"
+
+
+def test_fetch_impersonation_logs_dedup(mocker):
+    """
+    Given:
+    - Impersonation log that has already been processed (exists in dedup list)
+
+    When:
+    - The fetch_impersonation_logs method is called.
+
+    Then:
+    - The duplicate impersonation log is not added to incidents
+    - Dedup list remains unchanged
+    """
+    last_fetch_impersonation_date_time = "2025-03-13T15:30:00+0000"
+    time_impersonation_for_next_page = "2025-03-13T15:30:00+0000"
+    last_fetch_impersonation = datetime(2025, 3, 13, 15, 30, second=00)
+    current_fetch_impersonation = last_fetch_impersonation
+    dedup_impersonation_logs = ["imp123"]
+    current_next_page = ""
+    incidents = []
+    mock_response = {
+        "data": [{"id": "imp123", "eventTime": "2025-03-13T15:31:00+0000"}],
+        "meta": {"pagination": {}},
+    }
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_impersonation_logs(
+        last_fetch_impersonation_date_time,
+        time_impersonation_for_next_page,
+        last_fetch_impersonation,
+        current_fetch_impersonation,
+        dedup_impersonation_logs,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("", ["imp123"], datetime(2025, 3, 13, 15, 31))
+    assert len(incidents) == 0
