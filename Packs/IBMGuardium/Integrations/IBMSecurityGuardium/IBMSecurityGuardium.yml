@@ -87,17 +87,11 @@ script:
   script: "-"
   subtype: python3
   type: python
-triggers:
-  - conditions:
-      - name: isFetchEvents
-        operator: exists
-    effects:
-      - name: timestamp_field
-        action:
-          required: true
 marketplaces:
   - marketplacev2
   - platform
 fromversion: 6.10.0
+supportedModules:
+- xsiam
 tests:
   - No tests (auto formatted)
