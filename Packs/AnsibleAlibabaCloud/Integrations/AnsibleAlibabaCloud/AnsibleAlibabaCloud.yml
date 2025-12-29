@@ -126,7 +126,7 @@ script:
       predefined:
       - 'Yes'
       - 'No'
-    - description: A hash/dictionaries of instance tags, to add to the new instance or for starting/stopping instance by tag. `{"key":"value"}`
+    - description: A hash/dictionaries of instance tags, to add to the new instance or for starting/stopping instance by tag. `{"key":"value"}`.
       name: instance_tags
     - description: The name of key pair which is used to access ECS instance in SSH.
       name: key_name
@@ -136,10 +136,10 @@ script:
     name: ali-instance
     outputs:
     - contextPath: AlibabaCloud.AliInstance.instances
-      description: List of ECS instances
+      description: List of ECS instances.
       type: unknown
     - contextPath: AlibabaCloud.AliInstance.ids
-      description: List of ECS instance IDs
+      description: List of ECS instance IDs.
       type: unknown
   - arguments:
     - description: Aliyun availability zone ID in which to launch the instance.
@@ -154,10 +154,10 @@ script:
     name: ali-instance-info
     outputs:
     - contextPath: AlibabaCloud.AliInstanceInfo.instances
-      description: List of ECS instances
+      description: List of ECS instances.
       type: unknown
     - contextPath: AlibabaCloud.AliInstanceInfo.ids
-      description: List of ECS instance IDs
+      description: List of ECS instance IDs.
       type: unknown
   dockerimage: demisto/ansible-runner:1.0.0.3262406
   script: ''
