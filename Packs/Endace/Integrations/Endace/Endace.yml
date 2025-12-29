@@ -77,13 +77,13 @@ script:
     name: endace-create-search
     outputs:
     - contextPath: Endace.Search.Task.JobID
-      description: Search Job ID
+      description: Search Job ID.
       type: String
     - contextPath: Endace.Search.Task.Status
-      description: Status of Search Task
+      description: Status of Search Task.
       type: String
     - contextPath: Endace.Search.Task.Error
-      description: Search Error
+      description: Search Error.
       type: String
   - arguments:
     - description: This is the job ID returned by endace-create-search command
@@ -93,7 +93,7 @@ script:
     name: endace-get-search-status
     outputs:
     - contextPath: Endace.Search.Response.JobID
-      description: This is the job ID of search query which we polled to get search status
+      description: This is the job ID of search query which we polled to get search status.
       type: String
     - contextPath: Endace.Search.Response.JobProgress
       description: 'Progress of this search Job '
@@ -105,10 +105,10 @@ script:
       description: Total data matching this search across all Data Sources.
       type: String
     - contextPath: Endace.Search.Response.Status
-      description: Task Status
+      description: Task Status.
       type: String
     - contextPath: Endace.Search.Response.Error
-      description: 'Search response error '
+      description: 'Search response error.'
       type: String
   - arguments:
     - description: Job ID obtained from endace-create-search command
@@ -118,10 +118,10 @@ script:
     name: endace-delete-search-task
     outputs:
     - contextPath: Endace.Search.Delete.JobID
-      description: JobID of the task that needs to be deleted
+      description: JobID of the task that needs to be deleted.
       type: String
     - contextPath: Endace.Search.Delete.Error
-      description: 'Error message '
+      description: 'Error message.'
       type: String
     - contextPath: Endace.Search.Delete.Status
       description: Delete status, queryNotFound indicates that the search query has already expired before this operation, which is expected as EndaceProbe purges inactive tasks after api timer expire. Deleted indicates an active search query is now deleted.
@@ -171,19 +171,19 @@ script:
     name: endace-create-archive
     outputs:
     - contextPath: Endace.Archive.Task.FileName
-      description: Name of the archived File
+      description: Name of the archived File.
       type: String
     - contextPath: Endace.Archive.Task.P2Vurl
       description: Endace Pivot to Vision URL to archived packets that links to an Investigation Dashboard on EndaceProbe. This enables an analyst to utilize tools available on EndaceProbe for further drill down on packets of interests without needing to download a PCAP.
       type: String
     - contextPath: Endace.Archive.Task.Status
-      description: Status of archived task
+      description: Status of archived task.
       type: String
     - contextPath: Endace.Archive.Task.Error
-      description: Archive error
+      description: Archive error.
       type: String
     - contextPath: Endace.Archive.Task.JobID
-      description: Archive Task Job ID
+      description: Archive Task Job ID.
       type: String
   - arguments:
     - description: Get status of this archived file
@@ -193,16 +193,16 @@ script:
     name: endace-get-archive-status
     outputs:
     - contextPath: Endace.Archive.Response.FileName
-      description: Archived File Name
+      description: Archived File Name.
       type: String
     - contextPath: Endace.Archive.Response.FileSize
-      description: Archived File Size
+      description: Archived File Size.
       type: String
     - contextPath: Endace.Archive.Response.Status
-      description: Status of the archive process
+      description: Status of the archive process.
       type: String
     - contextPath: Endace.Archive.Response.Error
-      description: Archive response error
+      description: Archive response error.
       type: String
   - arguments:
     - description: Job ID of archive task
@@ -211,13 +211,13 @@ script:
     name: endace-delete-archive-task
     outputs:
     - contextPath: Endace.Archive.Delete.Status
-      description: Status of delete task
+      description: Status of delete task.
       type: String
     - contextPath: Endace.Archive.Delete.Error
-      description: Delete task error
+      description: Delete task error.
       type: String
     - contextPath: Endace.Archive.Delete.JobID
-      description: Delete Task ID
+      description: Delete Task ID.
       type: String
   - arguments:
     - description: 'Name of the file (without extension) to download from EndaceProbe. Text, numbers, underscore or dash is supported. '
@@ -231,10 +231,10 @@ script:
     name: endace-download-pcap
     outputs:
     - contextPath: Endace.Download.PCAP.FileName
-      description: Name of the File to download from EndaceProbe
+      description: Name of the File to download from EndaceProbe.
       type: String
     - contextPath: Endace.Download.PCAP.FileSize
-      description: File size in MegaBytes
+      description: File size in MegaBytes.
       type: String
     - contextPath: Endace.Download.PCAP.FileType
       description: The file downloaded from EndaceProbe is either a Rotation File or Archive.
@@ -249,7 +249,7 @@ script:
       description: Download status of the PCAP file.
       type: String
     - contextPath: Endace.Download.PCAP.Error
-      description: Error occured during downloading of this file
+      description: Error occured during downloading of this file.
       type: String
   - arguments:
     - description: Base name of the archived file to be deleted on EndaceProbe. Filename must be without any extension. Refer to Endace.Archive.Response.FileName field
@@ -262,14 +262,16 @@ script:
       description: Filename of the deleted archived file
       type: String
     - contextPath: Endace.ArchivedFile.Delete.Status
-      description: Archived File Delete task status
+      description: Archived File Delete task status.
       type: String
     - contextPath: Endace.ArchivedFile.Delete.Error
-      description: Delete Error
+      description: Delete Error.
       type: String
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3
   type: python
+tests:
+- No tests
 fromversion: 5.0.0

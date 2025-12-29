@@ -63,7 +63,7 @@ script:
     name: edgescan-host-get-hosts
     outputs:
     - contextPath: Edgescan.HostGetHosts
-      description: List of all hosts
+      description: List of all hosts.
       type: Unknown
   - arguments:
     - description: The host id
@@ -73,12 +73,12 @@ script:
     name: edgescan-host-get
     outputs:
     - contextPath: Edgescan.HostGet
-      description: Detailed host information
+      description: Detailed host information.
       type: Unknown
   - arguments:
     - auto: PREDEFINED
       defaultValue: json
-      description: The file format to export
+      description: The file format to export.
       name: format
       predefined:
       - json
@@ -89,7 +89,7 @@ script:
     name: edgescan-host-get-export
     outputs:
     - contextPath: InfoFile
-      description: Export host information
+      description: Export host information.
       type: Unknown
   - arguments:
     - description: The asset ID
@@ -106,7 +106,7 @@ script:
     name: edgescan-host-get-query
     outputs:
     - contextPath: Edgescan.HostGetQuery
-      description: The result of a host query
+      description: The result of a host query.
       type: Unknown
   - arguments:
     - description: The host label
@@ -118,7 +118,7 @@ script:
     name: edgescan-host-update
     outputs:
     - contextPath: Edgescan.HostUpdate
-      description: Information returned after host update
+      description: Information returned after host update.
       type: Unknown
   - arguments:
     - description: The detail level of the metadata
@@ -127,7 +127,7 @@ script:
     name: edgescan-asset-get-assets
     outputs:
     - contextPath: Edgescan.AssetGetAssets
-      description: List of all assets
+      description: List of all assets.
       type: Unknown
   - arguments:
     - description: The asset ID
@@ -137,7 +137,7 @@ script:
     name: edgescan-asset-get
     outputs:
     - contextPath: Edgescan.AssetGet
-      description: Detailed information about an asset
+      description: Detailed information about an asset.
       type: Unknown
   - arguments:
     - description: The asset ID
@@ -184,7 +184,7 @@ script:
     name: edgescan-asset-get-query
     outputs:
     - contextPath: Edgescan.AssetGetQuery
-      description: Output of an asset query
+      description: Output of an asset query.
       type: Unknown
   - arguments:
     - description: Asset ID
@@ -205,7 +205,7 @@ script:
     name: edgescan-asset-create
     outputs:
     - contextPath: Edgescan.AssetCreate
-      description: Information about asset creation
+      description: Information about asset creation.
       type: Unknown
   - arguments:
     - description: Asset name
@@ -227,7 +227,7 @@ script:
     name: edgescan-asset-update
     outputs:
     - contextPath: Edgescan.AssetUpdate
-      description: Information about asset update
+      description: Information about asset update.
       type: Unknown
   - arguments:
     - description: Asset name
@@ -249,13 +249,13 @@ script:
     name: edgescan-asset-delete
     outputs:
     - contextPath: Edgescan.AssetDelete
-      description: Information about asset deletion
+      description: Information about asset deletion.
       type: Unknown
   - description: Get the full user list
     name: edgescan-user-get-users
     outputs:
     - contextPath: Edgescan.UserGetusers
-      description: The list of all users
+      description: The list of all users.
       type: Unknown
   - arguments:
     - description: The user ID to get
@@ -265,7 +265,7 @@ script:
     name: edgescan-user-get
     outputs:
     - contextPath: Edgescan.UserGet
-      description: Detailed user information
+      description: Detailed user information.
       type: Unknown
   - arguments:
     - description: User ID
@@ -310,7 +310,7 @@ script:
     name: edgescan-user-get-query
     outputs:
     - contextPath: Edgescan.UserGetQuery
-      description: Result of a user query
+      description: Result of a user query.
       type: Unknown
   - arguments:
     - description: The username
@@ -333,7 +333,7 @@ script:
     name: edgescan-user-create
     outputs:
     - contextPath: Edgescan.UserCreate
-      description: Information about a created user
+      description: Information about a created user.
       type: Unknown
   - arguments:
     - description: The user id to delete
@@ -343,7 +343,7 @@ script:
     name: edgescan-user-delete
     outputs:
     - contextPath: Edgescan.UserDelete
-      description: Information about a deleted user
+      description: Information about a deleted user.
       type: Unknown
   - arguments:
     - description: The user id to reset the password for
@@ -353,7 +353,7 @@ script:
     name: edgescan-user-reset-password
     outputs:
     - contextPath: Edgescan.UserResetPassword
-      description: Information about User password reset
+      description: Information about User password reset.
       type: Unknown
   - arguments:
     - description: The user id to reset the email for
@@ -373,7 +373,7 @@ script:
     name: edgescan-user-lock-account
     outputs:
     - contextPath: Edgescan.UserLockAccount
-      description: Information about the User lock
+      description: Information about the User lock.
       type: Unknown
   - arguments:
     - description: The user id to unlock
@@ -383,7 +383,7 @@ script:
     name: edgescan-user-unlock-account
     outputs:
     - contextPath: Edgescan.UserUnlockAccount
-      description: Information about user unlock status
+      description: Information about user unlock status.
       type: Unknown
   - arguments:
     - description: The user id to get the permissions for
@@ -393,18 +393,18 @@ script:
     name: edgescan-user-get-permissions
     outputs:
     - contextPath: Edgescan.UserGetPermissions
-      description: The user permissions
+      description: The user permissions.
       type: Unknown
   - description: Get the full list of vulnerabilities
     name: edgescan-vulnerabilities-get
     outputs:
     - contextPath: EdgeScan.VulnerabilitiesGet
-      description: The list of all Vulnerabilities
+      description: The list of all Vulnerabilities.
       type: Unknown
   - arguments:
     - auto: PREDEFINED
       defaultValue: json
-      description: The file format to export
+      description: The file format to export.
       name: format
       predefined:
       - json
@@ -415,7 +415,7 @@ script:
     name: edgescan-vulnerabilities-get-export
     outputs:
     - contextPath: InfoFile
-      description: The vulnerabilities export list
+      description: The vulnerabilities export list.
       type: Unknown
   - arguments:
     - description: The vulnerability details to get details for
@@ -427,7 +427,7 @@ script:
     name: edgescan-vulnerabilities-get-details
     outputs:
     - contextPath: Edgescan.VulnerabilitiesGetDetails
-      description: The vulnerability details
+      description: The vulnerability details.
       type: Unknown
   - arguments:
     - description: Is asset tagged with any.
@@ -488,7 +488,7 @@ script:
     name: edgescan-vulnerabilities-get-query
     outputs:
     - contextPath: Edgescan.VulnerabilitiesGetQuery
-      description: The result of a vulnerability query
+      description: The result of a vulnerability query.
       type: Unknown
   - arguments:
     - description: The vulnerability id to retest
@@ -498,11 +498,11 @@ script:
     name: edgescan-vulnerabilities-retest
     outputs:
     - contextPath: Edgescan.VulnerabilitiesRetest
-      description: The Vulnerability retest result
+      description: The Vulnerability retest result.
       type: Unknown
   - arguments:
     - defaultValue: 'true'
-      description: The risk accept value
+      description: The risk accept value.
       name: value
     - description: The vulnerability id to risk accept
       name: id
@@ -511,7 +511,7 @@ script:
     name: edgescan-vulnerabilities-risk-accept
     outputs:
     - contextPath: Edgescan.VulnerabilitiesRiskAccept
-      description: The vulnerability retest result
+      description: The vulnerability retest result.
       type: Unknown
   - arguments:
     - description: The ID of the vulnerability to add the annotation to
@@ -524,22 +524,22 @@ script:
     name: edgescan-vulnerabilities-add-annotation
     outputs:
     - contextPath: Edgescan.AnnotationAdd.id
-      description: The ID of the added annotation
+      description: The ID of the added annotation.
       type: Number
     - contextPath: Edgescan.AnnotationAdd.category
-      description: The category of the added annotation
+      description: The category of the added annotation.
       type: String
     - contextPath: Edgescan.AnnotationAdd.text
-      description: The text of the added annotation
+      description: The text of the added annotation.
       type: String
     - contextPath: Edgescan.AnnotationAdd.user
-      description: The user that has added the annotation
+      description: The user that has added the annotation.
       type: String
     - contextPath: Edgescan.AnnotationAdd.user_id
-      description: The user ID of the added annotation
+      description: The user ID of the added annotation.
       type: Number
     - contextPath: Edgescan.AnnotationAdd.created_at
-      description: The date when the annoation was added
+      description: The date when the annoation was added.
       type: Date
   dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true

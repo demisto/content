@@ -20,7 +20,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Manages F5 firewall
+description: Manages F5 firewall.
 display: F5 Application Security Manager (WAF)
 name: F5 ASM
 script:
@@ -118,7 +118,7 @@ script:
       description: The creation time of the policy.
       type: String
     - contextPath: f5.Policy.selfLink
-      description: Policy self link
+      description: Policy self link.
       type: String
   - arguments:
     - description: Link to the policy to apply.
@@ -2231,7 +2231,7 @@ script:
     name: f5-asm-policy-xml-profiles-list
     outputs:
     - contextPath: f5.XMLProfile.id
-      description: The ID of the XML profile
+      description: The ID of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.name
       description: The display name of the XML profile.
