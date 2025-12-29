@@ -187,7 +187,7 @@ script:
       description: The account information, as retrieved from the ACME server.
       type: unknown
     - contextPath: ACME.AcmeAccountInfo.orders
-      description: 'The list of orders. If `retrieve_orders` is `url_list`, this will be a list of URLs. If `retrieve_orders` is `object_list`, this will be a list of objects.'.
+      description: 'The list of orders. If `retrieve_orders` is `url_list`, this will be a list of URLs. If `retrieve_orders` is `object_list`, this will be a list of objects.'
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -294,13 +294,13 @@ script:
       description: The number of days the certificate remains valid.
       type: number
     - contextPath: ACME.AcmeCertificate.challenge_data
-      description: 'Per identifier / challenge type challenge data. Since Ansible 2.8.5, only challenges which are not yet valid are returned.'.
+      description: 'Per identifier / challenge type challenge data. Since Ansible 2.8.5, only challenges which are not yet valid are returned.'
       type: unknown
     - contextPath: ACME.AcmeCertificate.challenge_data_dns
-      description: 'List of TXT values per DNS record, in case challenge is `dns-01`. Since Ansible 2.8.5, only challenges which are not yet valid are returned.'.
+      description: 'List of TXT values per DNS record, in case challenge is `dns-01`. Since Ansible 2.8.5, only challenges which are not yet valid are returned.'
       type: unknown
     - contextPath: ACME.AcmeCertificate.authorizations
-      description: 'ACME authorization data. Maps an identifier to ACME authorization objects. See `https://tools.ietf.org/html/rfc8555#section-7.1.4`.'.
+      description: 'ACME authorization data. Maps an identifier to ACME authorization objects. See `https://tools.ietf.org/html/rfc8555#section-7.1.4`.'
       type: unknown
     - contextPath: ACME.AcmeCertificate.order_uri
       description: ACME order URI.
@@ -312,7 +312,7 @@ script:
       description: ACME account URI.
       type: string
     - contextPath: ACME.AcmeCertificate.all_chains
-      description: 'When `retrieve_all_alternates` is set to `yes`, the module will query the ACME server for alternate chains. This return value will contain a list of all chains returned, the first entry being the main chain returned by the server. See `Section 7.4.2 of RFC8555,https://tools.ietf.org/html/rfc8555#section-7.4.2` for details.'.
+      description: 'When `retrieve_all_alternates` is set to `yes`, the module will query the ACME server for alternate chains. This return value will contain a list of all chains returned, the first entry being the main chain returned by the server. See `Section 7.4.2 of RFC8555,https://tools.ietf.org/html/rfc8555#section-7.4.2` for details.'
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -397,7 +397,7 @@ script:
       description: The challenge certificate in PEM format.
       type: string
     - contextPath: ACME.AcmeChallengeCertHelper.regular_certificate
-      description: 'A self-signed certificate for the challenge domain. If no existing certificate exists, can be used to set-up https in the first place if that is needed for providing the challenge.'.
+      description: 'A self-signed certificate for the challenge domain. If no existing certificate exists, can be used to set-up https in the first place if that is needed for providing the challenge.'
       type: string
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -458,16 +458,16 @@ script:
     name: acme-inspect
     outputs:
     - contextPath: ACME.AcmeInspect.directory
-      description: The ACME directory's content.
+      description: The ACME directory's content
       type: unknown
     - contextPath: ACME.AcmeInspect.headers
-      description: The request's HTTP headers (with lowercase keys).
+      description: The request's HTTP headers (with lowercase keys)
       type: unknown
     - contextPath: ACME.AcmeInspect.output_text
-      description: The raw text output.
+      description: The raw text output
       type: string
     - contextPath: ACME.AcmeInspect.output_json
-      description: The output parsed as JSON.
+      description: The output parsed as JSON
       type: unknown
   dockerimage: demisto/ansible-runner:1.0.0.3262406
   script: ''

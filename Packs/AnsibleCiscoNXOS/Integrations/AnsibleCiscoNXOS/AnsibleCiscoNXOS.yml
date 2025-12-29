@@ -68,7 +68,7 @@ script:
     name: nxos-aaa-server
     outputs:
     - contextPath: CiscoNXOS.NxosAaaServer.commands
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -112,19 +112,19 @@ script:
     name: nxos-aaa-server-host
     outputs:
     - contextPath: CiscoNXOS.NxosAaaServerHost.proposed
-      description: k/v pairs of parameters passed into module.
+      description: k/v pairs of parameters passed into module
       type: unknown
     - contextPath: CiscoNXOS.NxosAaaServerHost.existing
-      description: k/v pairs of existing configuration.
+      description: k/v pairs of existing configuration
       type: unknown
     - contextPath: CiscoNXOS.NxosAaaServerHost.end_state
-      description: k/v pairs of configuration after module execution.
+      description: k/v pairs of configuration after module execution
       type: unknown
     - contextPath: CiscoNXOS.NxosAaaServerHost.updates
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
     - contextPath: CiscoNXOS.NxosAaaServerHost.changed
-      description: check to see if a change was made on the device.
+      description: check to see if a change was made on the device
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -275,7 +275,7 @@ script:
     name: nxos-acl
     outputs:
     - contextPath: CiscoNXOS.NxosAcl.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -306,10 +306,10 @@ script:
     name: nxos-acl-interface
     outputs:
     - contextPath: CiscoNXOS.NxosAclInterface.acl_applied_to
-      description: list of interfaces the ACL is applied to.
+      description: list of interfaces the ACL is applied to
       type: unknown
     - contextPath: CiscoNXOS.NxosAclInterface.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -336,7 +336,7 @@ script:
     name: nxos-banner
     outputs:
     - contextPath: CiscoNXOS.NxosBanner.commands
-      description: The list of configuration mode commands to send to the device.
+      description: The list of configuration mode commands to send to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -379,7 +379,7 @@ script:
     name: nxos-bfd-global
     outputs:
     - contextPath: CiscoNXOS.NxosBfdGlobal.cmds
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -533,7 +533,7 @@ script:
     name: nxos-bgp
     outputs:
     - contextPath: CiscoNXOS.NxosBgp.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -629,7 +629,7 @@ script:
     name: nxos-bgp-af
     outputs:
     - contextPath: CiscoNXOS.NxosBgpAf.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -716,7 +716,7 @@ script:
     name: nxos-bgp-neighbor
     outputs:
     - contextPath: CiscoNXOS.NxosBgpNeighbor.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -841,7 +841,7 @@ script:
     name: nxos-bgp-neighbor-af
     outputs:
     - contextPath: CiscoNXOS.NxosBgpNeighborAf.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -866,13 +866,13 @@ script:
     name: nxos-command
     outputs:
     - contextPath: CiscoNXOS.NxosCommand.stdout
-      description: The set of responses from the commands.
+      description: The set of responses from the commands
       type: unknown
     - contextPath: CiscoNXOS.NxosCommand.stdout_lines
-      description: The value of stdout split into a list.
+      description: The value of stdout split into a list
       type: unknown
     - contextPath: CiscoNXOS.NxosCommand.failed_conditions
-      description: The list of conditionals that have failed.
+      description: The list of conditionals that have failed
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -944,25 +944,25 @@ script:
     name: nxos-config
     outputs:
     - contextPath: CiscoNXOS.NxosConfig.commands
-      description: The set of commands that will be pushed to the remote device.
+      description: The set of commands that will be pushed to the remote device
       type: unknown
     - contextPath: CiscoNXOS.NxosConfig.updates
-      description: The set of commands that will be pushed to the remote device.
+      description: The set of commands that will be pushed to the remote device
       type: unknown
     - contextPath: CiscoNXOS.NxosConfig.backup_path
-      description: The full path to the backup file.
+      description: The full path to the backup file
       type: string
     - contextPath: CiscoNXOS.NxosConfig.filename
-      description: The name of the backup file.
+      description: The name of the backup file
       type: string
     - contextPath: CiscoNXOS.NxosConfig.shortname
-      description: The full path to the backup file excluding the timestamp.
+      description: The full path to the backup file excluding the timestamp
       type: string
     - contextPath: CiscoNXOS.NxosConfig.date
-      description: The date extracted from the backup file name.
+      description: The date extracted from the backup file name
       type: string
     - contextPath: CiscoNXOS.NxosConfig.time
-      description: The time extracted from the backup file name.
+      description: The time extracted from the backup file name
       type: string
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -976,7 +976,7 @@ script:
     name: nxos-evpn-global
     outputs:
     - contextPath: CiscoNXOS.NxosEvpnGlobal.commands
-      description: The set of commands to be sent to the remote device.
+      description: The set of commands to be sent to the remote device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1006,7 +1006,7 @@ script:
     name: nxos-evpn-vni
     outputs:
     - contextPath: CiscoNXOS.NxosEvpnVni.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1022,82 +1022,82 @@ script:
     name: nxos-facts
     outputs:
     - contextPath: CiscoNXOS.NxosFacts.net_gather_subset
-      description: The list of fact subsets collected from the device.
+      description: The list of fact subsets collected from the device
       type: unknown
     - contextPath: CiscoNXOS.NxosFacts.net_gather_network_resources
-      description: The list of fact for network resource subsets collected from the device.
+      description: The list of fact for network resource subsets collected from the device
       type: unknown
     - contextPath: CiscoNXOS.NxosFacts.net_model
-      description: The model name returned from the device.
+      description: The model name returned from the device
       type: string
     - contextPath: CiscoNXOS.NxosFacts.net_serialnum
-      description: The serial number of the remote device.
+      description: The serial number of the remote device
       type: string
     - contextPath: CiscoNXOS.NxosFacts.net_version
-      description: The operating system version running on the remote device.
+      description: The operating system version running on the remote device
       type: string
     - contextPath: CiscoNXOS.NxosFacts.net_hostname
-      description: The configured hostname of the device.
+      description: The configured hostname of the device
       type: string
     - contextPath: CiscoNXOS.NxosFacts.net_image
-      description: The image file the device is running.
+      description: The image file the device is running
       type: string
     - contextPath: CiscoNXOS.NxosFacts.net_api
-      description: The name of the transport.
+      description: The name of the transport
       type: string
     - contextPath: CiscoNXOS.NxosFacts.net_license_hostid
-      description: The License host id of the device.
+      description: The License host id of the device
       type: string
     - contextPath: CiscoNXOS.NxosFacts.net_python_version
-      description: The Python version Ansible controller is using.
+      description: The Python version Ansible controller is using
       type: string
     - contextPath: CiscoNXOS.NxosFacts.net_filesystems
-      description: All file system names available on the device.
+      description: All file system names available on the device
       type: unknown
     - contextPath: CiscoNXOS.NxosFacts.net_memfree_mb
-      description: The available free memory on the remote device in Mb.
+      description: The available free memory on the remote device in Mb
       type: number
     - contextPath: CiscoNXOS.NxosFacts.net_memtotal_mb
-      description: The total memory on the remote device in Mb.
+      description: The total memory on the remote device in Mb
       type: number
     - contextPath: CiscoNXOS.NxosFacts.net_config
-      description: The current active config from the device.
+      description: The current active config from the device
       type: string
     - contextPath: CiscoNXOS.NxosFacts.net_all_ipv4_addresses
-      description: All IPv4 addresses configured on the device.
+      description: All IPv4 addresses configured on the device
       type: unknown
     - contextPath: CiscoNXOS.NxosFacts.net_all_ipv6_addresses
-      description: All IPv6 addresses configured on the device.
+      description: All IPv6 addresses configured on the device
       type: unknown
     - contextPath: CiscoNXOS.NxosFacts.net_interfaces
-      description: A hash of all interfaces running on the system.
+      description: A hash of all interfaces running on the system
       type: unknown
     - contextPath: CiscoNXOS.NxosFacts.net_neighbors
       description: The list of LLDP and CDP neighbors from the device. If both, CDP and LLDP neighbor data is present on one port, CDP is preferred.
       type: unknown
     - contextPath: CiscoNXOS.NxosFacts.fan_info
-      description: A hash of facts about fans in the remote device.
+      description: A hash of facts about fans in the remote device
       type: unknown
     - contextPath: CiscoNXOS.NxosFacts.hostname
-      description: The configured hostname of the remote device.
+      description: The configured hostname of the remote device
       type: unknown
     - contextPath: CiscoNXOS.NxosFacts.interfaces_list
-      description: The list of interface names on the remote device.
+      description: The list of interface names on the remote device
       type: unknown
     - contextPath: CiscoNXOS.NxosFacts.kickstart
-      description: The software version used to boot the system.
+      description: The software version used to boot the system
       type: string
     - contextPath: CiscoNXOS.NxosFacts.module
-      description: A hash of facts about the modules in a remote device.
+      description: A hash of facts about the modules in a remote device
       type: unknown
     - contextPath: CiscoNXOS.NxosFacts.platform
-      description: The hardware platform reported by the remote device.
+      description: The hardware platform reported by the remote device
       type: string
     - contextPath: CiscoNXOS.NxosFacts.power_supply_info
-      description: A hash of facts about the power supplies in the remote device.
+      description: A hash of facts about the power supplies in the remote device
       type: string
     - contextPath: CiscoNXOS.NxosFacts.vlan_list
-      description: The list of VLAN IDs configured on the remote device.
+      description: The list of VLAN IDs configured on the remote device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1118,7 +1118,7 @@ script:
     name: nxos-feature
     outputs:
     - contextPath: CiscoNXOS.NxosFeature.commands
-      description: The set of commands to be sent to the remote device.
+      description: The set of commands to be sent to the remote device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1159,13 +1159,13 @@ script:
     name: nxos-gir
     outputs:
     - contextPath: CiscoNXOS.NxosGir.final_system_mode
-      description: describe the last system mode.
+      description: describe the last system mode
       type: string
     - contextPath: CiscoNXOS.NxosGir.updates
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
     - contextPath: CiscoNXOS.NxosGir.changed
-      description: check to see if a change was made on the device.
+      description: check to see if a change was made on the device
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1201,10 +1201,10 @@ script:
       description: list of profile entries after module execution.
       type: unknown
     - contextPath: CiscoNXOS.NxosGirProfileManagement.updates
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
     - contextPath: CiscoNXOS.NxosGirProfileManagement.changed
-      description: check to see if a change was made on the device.
+      description: check to see if a change was made on the device
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1253,7 +1253,7 @@ script:
     name: nxos-hsrp
     outputs:
     - contextPath: CiscoNXOS.NxosHsrp.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1277,7 +1277,7 @@ script:
     name: nxos-igmp
     outputs:
     - contextPath: CiscoNXOS.NxosIgmp.updates
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1343,19 +1343,19 @@ script:
     name: nxos-igmp-interface
     outputs:
     - contextPath: CiscoNXOS.NxosIgmpInterface.proposed
-      description: k/v pairs of parameters passed into module.
+      description: k/v pairs of parameters passed into module
       type: unknown
     - contextPath: CiscoNXOS.NxosIgmpInterface.existing
-      description: k/v pairs of existing igmp_interface configuration.
+      description: k/v pairs of existing igmp_interface configuration
       type: unknown
     - contextPath: CiscoNXOS.NxosIgmpInterface.end_state
-      description: k/v pairs of igmp interface configuration after module execution.
+      description: k/v pairs of igmp interface configuration after module execution
       type: unknown
     - contextPath: CiscoNXOS.NxosIgmpInterface.updates
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
     - contextPath: CiscoNXOS.NxosIgmpInterface.changed
-      description: check to see if a change was made on the device.
+      description: check to see if a change was made on the device
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1383,7 +1383,7 @@ script:
     name: nxos-igmp-snooping
     outputs:
     - contextPath: CiscoNXOS.NxosIgmpSnooping.commands
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1475,7 +1475,7 @@ script:
     name: nxos-interface-ospf
     outputs:
     - contextPath: CiscoNXOS.NxosInterfaceOspf.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1666,7 +1666,7 @@ script:
     name: nxos-lldp
     outputs:
     - contextPath: CiscoNXOS.NxosLldp.commands
-      description: The list of configuration mode commands to send to the device.
+      description: The list of configuration mode commands to send to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1774,7 +1774,7 @@ script:
     name: nxos-logging
     outputs:
     - contextPath: CiscoNXOS.NxosLogging.commands
-      description: The list of configuration mode commands to send to the device.
+      description: The list of configuration mode commands to send to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1810,19 +1810,19 @@ script:
     name: nxos-ntp
     outputs:
     - contextPath: CiscoNXOS.NxosNtp.proposed
-      description: k/v pairs of parameters passed into module.
+      description: k/v pairs of parameters passed into module
       type: unknown
     - contextPath: CiscoNXOS.NxosNtp.existing
-      description: k/v pairs of existing ntp server/peer.
+      description: k/v pairs of existing ntp server/peer
       type: unknown
     - contextPath: CiscoNXOS.NxosNtp.end_state
-      description: k/v pairs of ntp info after module execution.
+      description: k/v pairs of ntp info after module execution
       type: unknown
     - contextPath: CiscoNXOS.NxosNtp.updates
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
     - contextPath: CiscoNXOS.NxosNtp.changed
-      description: check to see if a change was made on the device.
+      description: check to see if a change was made on the device
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1864,7 +1864,7 @@ script:
     name: nxos-ntp-auth
     outputs:
     - contextPath: CiscoNXOS.NxosNtpAuth.commands
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1888,7 +1888,7 @@ script:
     name: nxos-ntp-options
     outputs:
     - contextPath: CiscoNXOS.NxosNtpOptions.updates
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1961,7 +1961,7 @@ script:
     name: nxos-nxapi
     outputs:
     - contextPath: CiscoNXOS.NxosNxapi.updates
-      description: Returns the list of commands that need to be pushed into the remote device to satisfy the arguments.
+      description: Returns the list of commands that need to be pushed into the remote device to satisfy the arguments
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1982,7 +1982,7 @@ script:
     name: nxos-ospf
     outputs:
     - contextPath: CiscoNXOS.NxosOspf.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2039,7 +2039,7 @@ script:
     name: nxos-ospf-vrf
     outputs:
     - contextPath: CiscoNXOS.NxosOspfVrf.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2053,7 +2053,7 @@ script:
     name: nxos-overlay-global
     outputs:
     - contextPath: CiscoNXOS.NxosOverlayGlobal.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2073,7 +2073,7 @@ script:
     name: nxos-pim
     outputs:
     - contextPath: CiscoNXOS.NxosPim.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2145,7 +2145,7 @@ script:
     name: nxos-pim-interface
     outputs:
     - contextPath: CiscoNXOS.NxosPimInterface.commands
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2176,7 +2176,7 @@ script:
     name: nxos-pim-rp-address
     outputs:
     - contextPath: CiscoNXOS.NxosPimRpAddress.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2204,19 +2204,19 @@ script:
     name: nxos-ping
     outputs:
     - contextPath: CiscoNXOS.NxosPing.commands
-      description: Show the command sent.
+      description: Show the command sent
       type: unknown
     - contextPath: CiscoNXOS.NxosPing.rtt
-      description: Show RTT stats.
+      description: Show RTT stats
       type: unknown
     - contextPath: CiscoNXOS.NxosPing.packets_rx
-      description: Packets successfully received.
+      description: Packets successfully received
       type: number
     - contextPath: CiscoNXOS.NxosPing.packets_tx
-      description: Packets successfully transmitted.
+      description: Packets successfully transmitted
       type: number
     - contextPath: CiscoNXOS.NxosPing.packet_loss
-      description: Percentage of packets lost.
+      description: Percentage of packets lost
       type: string
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2278,7 +2278,7 @@ script:
     name: nxos-rpm
     outputs:
     - contextPath: CiscoNXOS.NxosRpm.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2294,7 +2294,7 @@ script:
     name: nxos-smu
     outputs:
     - contextPath: CiscoNXOS.NxosSmu.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2348,7 +2348,7 @@ script:
     name: nxos-snapshot
     outputs:
     - contextPath: CiscoNXOS.NxosSnapshot.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2379,7 +2379,7 @@ script:
     name: nxos-snmp-community
     outputs:
     - contextPath: CiscoNXOS.NxosSnmpCommunity.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2401,7 +2401,7 @@ script:
     name: nxos-snmp-contact
     outputs:
     - contextPath: CiscoNXOS.NxosSnmpContact.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2453,7 +2453,7 @@ script:
     name: nxos-snmp-host
     outputs:
     - contextPath: CiscoNXOS.NxosSnmpHost.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2474,7 +2474,7 @@ script:
     name: nxos-snmp-location
     outputs:
     - contextPath: CiscoNXOS.NxosSnmpLocation.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2527,7 +2527,7 @@ script:
     name: nxos-snmp-traps
     outputs:
     - contextPath: CiscoNXOS.NxosSnmpTraps.commands
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2562,7 +2562,7 @@ script:
     name: nxos-snmp-user
     outputs:
     - contextPath: CiscoNXOS.NxosSnmpUser.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2599,7 +2599,7 @@ script:
     name: nxos-static-route
     outputs:
     - contextPath: CiscoNXOS.NxosStaticRoute.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2629,7 +2629,7 @@ script:
     name: nxos-system
     outputs:
     - contextPath: CiscoNXOS.NxosSystem.commands
-      description: The list of configuration mode commands to send to the device.
+      description: The list of configuration mode commands to send to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2686,19 +2686,19 @@ script:
     name: nxos-udld
     outputs:
     - contextPath: CiscoNXOS.NxosUdld.proposed
-      description: k/v pairs of parameters passed into module.
+      description: k/v pairs of parameters passed into module
       type: unknown
     - contextPath: CiscoNXOS.NxosUdld.existing
-      description: k/v pairs of existing udld configuration.
+      description: k/v pairs of existing udld configuration
       type: unknown
     - contextPath: CiscoNXOS.NxosUdld.end_state
-      description: k/v pairs of udld configuration after module execution.
+      description: k/v pairs of udld configuration after module execution
       type: unknown
     - contextPath: CiscoNXOS.NxosUdld.updates
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
     - contextPath: CiscoNXOS.NxosUdld.changed
-      description: check to see if a change was made on the device.
+      description: check to see if a change was made on the device
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2727,19 +2727,19 @@ script:
     name: nxos-udld-interface
     outputs:
     - contextPath: CiscoNXOS.NxosUdldInterface.proposed
-      description: k/v pairs of parameters passed into module.
+      description: k/v pairs of parameters passed into module
       type: unknown
     - contextPath: CiscoNXOS.NxosUdldInterface.existing
-      description: k/v pairs of existing configuration.
+      description: k/v pairs of existing configuration
       type: unknown
     - contextPath: CiscoNXOS.NxosUdldInterface.end_state
-      description: k/v pairs of configuration after module execution.
+      description: k/v pairs of configuration after module execution
       type: unknown
     - contextPath: CiscoNXOS.NxosUdldInterface.updates
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
     - contextPath: CiscoNXOS.NxosUdldInterface.changed
-      description: check to see if a change was made on the device.
+      description: check to see if a change was made on the device
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2777,16 +2777,16 @@ script:
     name: nxos-user
     outputs:
     - contextPath: CiscoNXOS.NxosUser.commands
-      description: The list of configuration mode commands to send to the device.
+      description: The list of configuration mode commands to send to the device
       type: unknown
     - contextPath: CiscoNXOS.NxosUser.start
-      description: The time the job started.
+      description: The time the job started
       type: string
     - contextPath: CiscoNXOS.NxosUser.end
-      description: The time the job ended.
+      description: The time the job ended
       type: string
     - contextPath: CiscoNXOS.NxosUser.delta
-      description: The time elapsed to perform all operations.
+      description: The time elapsed to perform all operations
       type: string
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2859,7 +2859,7 @@ script:
     name: nxos-vpc
     outputs:
     - contextPath: CiscoNXOS.NxosVpc.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2885,7 +2885,7 @@ script:
     name: nxos-vpc-interface
     outputs:
     - contextPath: CiscoNXOS.NxosVpcInterface.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2931,7 +2931,7 @@ script:
     name: nxos-vrf
     outputs:
     - contextPath: CiscoNXOS.NxosVrf.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2961,7 +2961,7 @@ script:
     name: nxos-vrf-af
     outputs:
     - contextPath: CiscoNXOS.NxosVrfAf.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2985,7 +2985,7 @@ script:
     name: nxos-vrf-interface
     outputs:
     - contextPath: CiscoNXOS.NxosVrfInterface.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3030,7 +3030,7 @@ script:
     name: nxos-vrrp
     outputs:
     - contextPath: CiscoNXOS.NxosVrrp.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3044,19 +3044,19 @@ script:
     name: nxos-vtp-domain
     outputs:
     - contextPath: CiscoNXOS.NxosVtpDomain.proposed
-      description: k/v pairs of parameters passed into module.
+      description: k/v pairs of parameters passed into module
       type: unknown
     - contextPath: CiscoNXOS.NxosVtpDomain.existing
-      description: k/v pairs of existing vtp domain.
+      description: k/v pairs of existing vtp domain
       type: unknown
     - contextPath: CiscoNXOS.NxosVtpDomain.end_state
-      description: k/v pairs of vtp domain after module execution.
+      description: k/v pairs of vtp domain after module execution
       type: unknown
     - contextPath: CiscoNXOS.NxosVtpDomain.updates
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
     - contextPath: CiscoNXOS.NxosVtpDomain.changed
-      description: check to see if a change was made on the device.
+      description: check to see if a change was made on the device
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3076,19 +3076,19 @@ script:
     name: nxos-vtp-password
     outputs:
     - contextPath: CiscoNXOS.NxosVtpPassword.proposed
-      description: k/v pairs of parameters passed into module.
+      description: k/v pairs of parameters passed into module
       type: unknown
     - contextPath: CiscoNXOS.NxosVtpPassword.existing
-      description: k/v pairs of existing vtp.
+      description: k/v pairs of existing vtp
       type: unknown
     - contextPath: CiscoNXOS.NxosVtpPassword.end_state
-      description: k/v pairs of vtp after module execution.
+      description: k/v pairs of vtp after module execution
       type: unknown
     - contextPath: CiscoNXOS.NxosVtpPassword.updates
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
     - contextPath: CiscoNXOS.NxosVtpPassword.changed
-      description: check to see if a change was made on the device.
+      description: check to see if a change was made on the device
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3106,19 +3106,19 @@ script:
     name: nxos-vtp-version
     outputs:
     - contextPath: CiscoNXOS.NxosVtpVersion.proposed
-      description: k/v pairs of parameters passed into module.
+      description: k/v pairs of parameters passed into module
       type: unknown
     - contextPath: CiscoNXOS.NxosVtpVersion.existing
-      description: k/v pairs of existing vtp.
+      description: k/v pairs of existing vtp
       type: unknown
     - contextPath: CiscoNXOS.NxosVtpVersion.end_state
-      description: k/v pairs of vtp after module execution.
+      description: k/v pairs of vtp after module execution
       type: unknown
     - contextPath: CiscoNXOS.NxosVtpVersion.updates
-      description: command sent to the device.
+      description: command sent to the device
       type: unknown
     - contextPath: CiscoNXOS.NxosVtpVersion.changed
-      description: check to see if a change was made on the device.
+      description: check to see if a change was made on the device
       type: boolean
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3157,7 +3157,7 @@ script:
     name: nxos-vxlan-vtep
     outputs:
     - contextPath: CiscoNXOS.NxosVxlanVtep.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3198,7 +3198,7 @@ script:
     name: nxos-vxlan-vtep-vni
     outputs:
     - contextPath: CiscoNXOS.NxosVxlanVtepVni.commands
-      description: commands sent to the device.
+      description: commands sent to the device
       type: unknown
   dockerimage: demisto/ansible-runner:1.0.0.3262406
   script: ''
