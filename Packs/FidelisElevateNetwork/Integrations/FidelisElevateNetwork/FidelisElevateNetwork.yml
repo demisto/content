@@ -361,7 +361,7 @@ script:
       description: MD5 hash of the file.
       type: String
   - arguments:
-    - description: Today,Yesterday,Last 7 Days,Last Hour,Last 24 Hours,Last 48 Hours,Last 30 Days,Custom
+    - description: Today,Yesterday,Last 7 Days,Last Hour,Last 24 Hours,Last 48 Hours,Last 30 Days,Custom.
       name: time_frame
     - description: If the time_frame value is Custom, specify the start time for the time range, for example, 2017-06-01T12:48:16.734.
       name: start_time
@@ -844,7 +844,7 @@ script:
     - description: The alert conclusion ID.
       name: conclusion_id
       required: true
-    - description: Add a comment to the alert
+    - description: Add a comment to the alert.
       name: comment
     - description: The user to assign.
       name: assign_user
