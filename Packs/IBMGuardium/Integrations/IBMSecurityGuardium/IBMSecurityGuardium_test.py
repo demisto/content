@@ -413,7 +413,7 @@ class TestTestModule:
         """
         from IBMSecurityGuardium import test_module_command
 
-        response = util_load_json("test_data/no_resources_response.json")
+        response = util_load_json("test_data/no_data_response.json")
 
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
@@ -470,13 +470,13 @@ class TestFetchEvents:
         Then:
             - Ensure empty events list and unchanged last_run
         """
-        response = util_load_json("test_data/no_resources_response.json")
+        response = util_load_json("test_data/no_data_response.json")
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
 
         last_run = {"last_fetch_time": "2025-06-07T15:00:00.000Z"}
         events, next_run = fetch_events_command(
-            client, REPORT_ID, max_fetch=10, last_run=last_run, timestamp_field="Session Start Time"
+            client, REPORT_ID, max_fetch=10, last_run=last_run, timestamp_field="Date created (local time)"
         )
 
         assert len(events) == 0
@@ -588,11 +588,11 @@ class TestFetchEvents:
 
         monkeypatch.setattr(IBMSecurityGuardium, "MAX_BATCH_SIZE", 10)
 
-        response = util_load_json("test_data/no_resources_response.json")
+        response = util_load_json("test_data/no_data_response.json")
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=json.dumps(response))
 
         events, next_run = fetch_events_command(
-            client, REPORT_ID, max_fetch=100, last_run={}, timestamp_field="Session Start Time"
+            client, REPORT_ID, max_fetch=100, last_run={}, timestamp_field="Date created (local time)"
         )
 
         assert len(events) == 0
@@ -696,11 +696,11 @@ class TestGetEventsCommand:
         Then:
             - Ensure empty events list is returned
         """
-        response = util_load_json("test_data/no_resources_response.json")
+        response = util_load_json("test_data/no_data_response.json")
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
 
-        events, results, timestamp_field_result = get_events_command(client, REPORT_ID, {}, timestamp_field="Session Start Time")
+        events, results, timestamp_field_result = get_events_command(client, REPORT_ID, {}, timestamp_field="Date created (local time)")
 
         assert len(events) == 0
         assert timestamp_field_result is None
