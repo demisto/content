@@ -30,7 +30,7 @@ script:
       name: self_link
     - description: A unique type identifier.
       name: kind
-    - description: items
+    - description: Items.
       name: items
     description: Lists all F5 Application Security Manager (ASM) policies.
     name: f5-asm-policy-list

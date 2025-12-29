@@ -66,7 +66,7 @@ script:
       description: List of all hosts.
       type: Unknown
   - arguments:
-    - description: The host id
+    - description: The host id.
       name: id
       required: true
     description: Get detailed information about a host.
@@ -92,15 +92,15 @@ script:
       description: Export host information.
       type: Unknown
   - arguments:
-    - description: The asset ID
+    - description: The asset ID.
       name: asset_id
-    - description: The Operating System name
+    - description: The Operating System name.
       name: os_name
-    - description: The asset label
+    - description: The asset label.
       name: label
-    - description: The asset status
+    - description: The asset status.
       name: status
-    - description: The host id
+    - description: The host id.
       name: id
     description: Get a list of hosts by query
     name: edgescan-host-get-query
@@ -109,9 +109,9 @@ script:
       description: The result of a host query.
       type: Unknown
   - arguments:
-    - description: The host label
+    - description: The host label.
       name: label
-    - description: The host id to update
+    - description: The host id to update.
       name: id
       required: true
     description: Update a host
@@ -121,7 +121,7 @@ script:
       description: Information returned after host update.
       type: Unknown
   - arguments:
-    - description: The detail level of the metadata
+    - description: The detail level of the metadata.
       name: detail_level
     description: Get the full list of assets
     name: edgescan-asset-get-assets
@@ -130,7 +130,7 @@ script:
       description: List of all assets.
       type: Unknown
   - arguments:
-    - description: The asset ID
+    - description: The asset ID.
       name: id
       required: true
     description: Get asset details
@@ -418,7 +418,7 @@ script:
       description: The vulnerabilities export list.
       type: Unknown
   - arguments:
-    - description: The vulnerability details to get details for
+    - description: The vulnerability details to get details for.
       name: id
       predefined:
       - ''

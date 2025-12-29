@@ -39,7 +39,7 @@ name: Fidelis Elevate Network
 script:
   commands:
   - arguments:
-    - description: Alert ID
+    - description: Alert ID.
       name: alert_id
       required: true
     description: Gets alert details from Fidelis Elevate.
@@ -482,7 +482,7 @@ script:
       description: MD5 hash of the file.
       type: String
   - arguments:
-    - description: Alert ID
+    - description: Alert ID.
       name: alert_id
       required: true
     description: Return the session information related to an alert.
@@ -579,7 +579,7 @@ script:
       description: The server domain name.
       type: String
   - arguments:
-    - description: Alert ID
+    - description: Alert ID.
       name: alert_id
       required: true
     description: Get the exectution forensics for an alert.
@@ -689,7 +689,7 @@ script:
       description: The alert's forensic text.
       type: String
   - arguments:
-    - description: Alert ID
+    - description: Alert ID.
       name: alert_id
       required: true
     description: Get the alert's decoding path.
@@ -720,7 +720,7 @@ script:
       description: The attribute map highlights.
       type: Unknown
   - arguments:
-    - description: Alert ID
+    - description: Alert ID.
       name: alert_id
       required: true
     - auto: PREDEFINED
@@ -832,10 +832,10 @@ script:
       description: The alert ID.
       type: Number
   - arguments:
-    - description: Alert ID
+    - description: Alert ID.
       name: alert_id
       required: true
-    - description: comment
+    - description: comment.
       name: comment
       required: true
     description: Adds a comment to an alert.

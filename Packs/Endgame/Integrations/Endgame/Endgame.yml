@@ -98,9 +98,9 @@ script:
     - contextPath: EndGame.Endpoints.Status
       description: Status of hte machine.
     - contextPath: EndGame.Endpoints.IpAddress
-      description: IP address of the machine
+      description: IP address of the machine.
     - contextPath: EndGame.Endpoints.UpdatedAt
-      description: Last updates time
+      description: Last updates time.
     - contextPath: EndGame.Endpoints.ID
       description: Endpoint ID.
     description: Get all unmanaged endpoint details
@@ -118,11 +118,11 @@ script:
     - contextPath: EndGame.Endpoints.MachineId
       description: Endgame id of the machine.
     - contextPath: EndGame.Endpoints.CoreOs
-      description: Core OS of the machine
+      description: Core OS of the machine.
     - contextPath: EndGame.Endpoints.Name
-      description: Name of the machine
+      description: Name of the machine.
     - contextPath: EndGame.Endpoints.Status
-      description: Status of hte machine
+      description: Status of hte machine.
     - contextPath: EndGame.Endpoints.IpAddress
       description: IP address of the machine.
     - contextPath: EndGame.Endpoints.UpdatedAt
@@ -179,7 +179,7 @@ script:
     - name: endpoints
       description: Names of machines to investigate. Overridden by sensors argument.
     - name: assign_to
-      description: Default is the username given in the instance credentials
+      description: Default is the username given in the instance credentials.
     - name: network_local_ip
       description: local ip address for network search.
     - name: network_protocol
@@ -230,44 +230,44 @@ script:
       description: ID of sensor profile.
     outputs:
     - contextPath: EndGame.SensorProfiles.Config
-      description: Sensor profile configuration details
+      description: Sensor profile configuration details.
     - contextPath: EndGame.SensorProfiles.ApiKey
-      description: API key of sesnor profile
+      description: API key of sesnor profile.
     - contextPath: EndGame.SensorProfiles.AccountId
-      description: Account ID
+      description: Account ID.
     - contextPath: EndGame.SensorProfiles.Name
-      description: Name of sensor profile
+      description: Name of sensor profile.
     - contextPath: EndGame.SensorProfiles.UpdatedAt
-      description: Date and time sensor was last changed
+      description: Date and time sensor was last changed.
     - contextPath: EndGame.SensorProfiles.Receiver
-      description: Receiver of sensor profile
+      description: Receiver of sensor profile.
     - contextPath: EndGame.SensorProfiles.SensorDirectory
-      description: Directory of sensor profile
+      description: Directory of sensor profile.
     - contextPath: EndGame.SensorProfiles.Deleted
-      description: Is sensor profile deleted
+      description: Is sensor profile deleted.
     - contextPath: EndGame.SensorProfiles.CreatedAt
-      description: Date and time sensor profile was created
+      description: Date and time sensor profile was created.
     - contextPath: EndGame.SensorProfiles.Id
-      description: Id of sensor
+      description: Id of sensor.
     - contextPath: EndGame.SensorProfiles.SensorVersion
-      description: Version of given sensor
+      description: Version of given sensor.
     description: Get sensor data by id
   - name: endgame-investigation-results
     description: Get investigation results by id
     arguments:
     - name: investigation_id
-      description: Id of investigation
+      description: Id of investigation.
     outputs:
     - contextPath: EndGame.InvestigationResults.Files
-      description: File investigation results
+      description: File investigation results.
     - contextPath: EndGame.InvestigationResults.Usernames
-      description: Username investigation results
+      description: Username investigation results.
     - contextPath: EndGame.InvestigationResults.Processes
-      description: Processes investigation results
+      description: Processes investigation results.
     - contextPath: EndGame.InvestigationResults.Registries
-      description: Registries investigation results
+      description: Registries investigation results.
     - contextPath: EndGame.InvestigationResults.Networks
-      description: Networks investigation results
+      description: Networks investigation results.
   - name: endgame-investigation-status
     arguments:
     - name: investigation_id
@@ -275,9 +275,9 @@ script:
       description: Id of investigation.
     outputs:
     - contextPath: EndGame.Investigations.Id
-      description: Endgame ID of investigation
+      description: Endgame ID of investigation.
     - contextPath: EndGame.Investigations.Status
-      description: Endgame investigation status
+      description: Endgame investigation status.
     description: Returns the current investigation status
 tests:
 - No test - no instance
