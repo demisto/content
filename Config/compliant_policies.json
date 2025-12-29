@@ -57,23 +57,6 @@
             ]
         },
         {
-            "name": "Group Management",
-            "category": "IAM",
-            "arguments": [
-                "dn",
-                "team",
-                "group_id",
-                "groupId",
-                "groupname",
-                "groupName",
-                "group-cn",
-                "users",
-                "member_name",
-                "userId"
-
-            ]
-        },
-        {
             "name": "IP Blockage",
             "category": "EndPoint",
             "arguments": [
@@ -140,6 +123,81 @@
                 "account_ids",
                 "recipient",
                 "sender"
+            ]
+        },
+        {
+            "name": "URL Blockage",
+            "category": "Network",
+            "arguments": [
+                "url",
+                "blacklist_url",
+                "destination_url",
+                "device_group",
+                "value"
+            ]
+        },
+        {
+            "name": "File Block",
+            "category": "File",
+            "arguments": [
+                "value",
+                "file_path",
+                "file_hash",
+                "hash_list",
+                "hash",
+                "indicator_title",
+                "indicator_value",
+                "multiple_indicators_json",
+                "rbac_group_names",
+                "endpoint_id_list"
+            ]
+        },
+        {
+            "name": "Role Management",
+            "category": "Application",
+            "arguments": [
+                "roleName",
+                "roleArn",
+                "role_id"
+            ]
+        },
+        {
+            "name": "Policy Updates",
+            "category": "Application",
+            "arguments": [
+                "policyName",
+                "policyArn",
+                "policy_id"
+            ]
+        },
+        {
+            "name": "Resource Configuration",
+            "category": "Cloud",
+            "arguments": [
+                "entryID",
+                "entry_id",
+                "instanceId",
+                "file_entry_id",
+                "bucket",
+                "bucket_name",
+                "blob_name",
+                "object_name",
+                "container_name",
+                "key",
+                "tag",
+                "tags",
+                "table_name",
+                "policyName"
+
+            ]
+        },
+        {
+            "name": "Cloud Compute Operations",
+            "category": "Cloud",
+            "arguments": [
+                "account_id",
+                "instanceIds"
+
             ]
         }
     ]
