@@ -816,7 +816,7 @@ script:
       description: The type of the reporter.
       type: String
     - contextPath: Bitbucket.Issue.reporter.uuid
-      description: The unique ID of the reporter
+      description: The unique ID of the reporter.
       type: String
     - contextPath: Bitbucket.Issue.reporter.account_id
       description: The account ID of the reporter.
@@ -1129,7 +1129,7 @@ script:
       description: Links with information about the author of the pull request.
       type: String
     - contextPath: Bitbucket.PullRequest.author.type
-      description: The type of the author
+      description: The type of the author.
       type: String
     - contextPath: Bitbucket.PullRequest.author.uuid
       description: The unique universal ID of the author.
