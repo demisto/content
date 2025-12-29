@@ -1,4 +1,5 @@
-from typing import Callable
+from collections.abc import Callable
+import threading
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
@@ -7,6 +8,7 @@ from collections import defaultdict
 import asyncio
 from dataclasses import dataclass
 from base64 import b64encode
+from enum import Enum
 
 """ IMPORTS """
 import ipaddress
@@ -620,13 +622,7 @@ class PrismaCloudComputeAsyncClient(AsyncClient):
             self._verify = verify
 
     def _http_request(  # type: ignore[override]
-        self,
-        method,
-        url_suffix,
-        headers={},
-        json_data=None,
-        params=None,
-        timeout=30
+        self, method, url_suffix, headers={}, json_data=None, params=None, timeout=30
     ):
         """
         Extends the _http_request method of BaseClient.
@@ -639,20 +635,20 @@ class PrismaCloudComputeAsyncClient(AsyncClient):
         headers.update(self.auth_header)
 
         return super()._http_request(
-            method=method,
-            endpoint=url_suffix,
-            headers=headers,
-            payload=json_data,
-            params=params,
-            timeout=timeout
+            method=method, endpoint=url_suffix, headers=headers, payload=json_data, params=params, timeout=timeout
         )
 
 
+class AssetType(Enum):
+    TAS_DROPLET = "Tas Droplet"
+    RUNTIME_IMAGE = "Runtime Image"
+    HOST = "Host"
+    
 @dataclass
 class AssetTypeRelatedData:
     endpoint: str
     product: str
-    type: str
+    asset_type: AssetType
     process_result_func: Callable
     offset: int = 0
     limit: int = MAX_API_LIMIT
@@ -662,10 +658,21 @@ class AssetTypeRelatedData:
 
     def next_page(self):
         self.offset += self.limit
-        
-    def write_debug_log(self, msg: str):
-        demisto.debug(f"[{self.type}] {msg}")
 
+    def write_debug_log(self, msg: str):
+        demisto.debug(f"[{self.asset_type.value}] {msg}")
+        
+    def safe_update_integration_context(self, ctx_lock):
+        with ctx_lock:
+            ctx = get_integration_context()
+            ctx[self.asset_type.value] = {"offset": self.offset, "total_count": self.total_count, "snapshot_id": self.snapshot_id}
+            set_integration_context(ctx)
+            
+    def remove_related_data_from_ctx(self, ctx_lock):
+        with ctx_lock:
+            ctx = get_integration_context()
+            ctx.pop(self.asset_type.value)
+            set_integration_context(ctx)
 
 def format_context(context):
     """
@@ -2910,143 +2917,185 @@ async def fetch_assets_long_running_command(client: PrismaCloudComputeAsyncClien
             remaining_time_seconds = TWELVE_HOURS_AS_SECONDS - duration_seconds
             demisto.debug(f"Will sleep for {remaining_time_seconds} seconds.")
             await asyncio.sleep(remaining_time_seconds)
+            
+
+def init_asset_type_related_data(endpoint: str, product: str, asset_type: AssetType, process_result_func: Callable) -> AssetTypeRelatedData:
+    """Attempts to check if there's exiting information related to the asset type in the context.
+    If there is such data, will create a new AssetTypeRelatedData from that data.
+    Otherwise, will create from scratch. In that case, AssetTypeRelatedData will assign default values to some of the fields.
+
+    Args:
+        endpoint (str): The endpoint to request the asset from.
+        product (str): The product to assign to the asset type when sending data to xsiam.
+        asset_type (AssetType): The type of the asset.
+        process_result_func (Callable): The function that flow should use to process the incoming results.
+
+    Returns:
+        AssetTypeRelatedData: The initialized AssetTypeRelatedData object.
+    """
+    ctx = get_integration_context() or {}
+    if type in ctx:
+        offset = int(ctx.get("offset", 0))
+        total_count = int(ctx.get("total_count", 0))
+        snapshot_id = ctx.get("snapshot_id", str(round(time.time() * 1000)))
+        return AssetTypeRelatedData(
+            endpoint=endpoint,
+            product=product,
+            asset_type=asset_type,
+            process_result_func=process_result_func,
+            offset=offset,
+            total_count=total_count,
+            snapshot_id=snapshot_id
+        )
+    else:
+        return AssetTypeRelatedData(
+            endpoint=endpoint,
+            product=product,
+            asset_type=asset_type,
+            process_result_func=process_result_func
+        )
 
 
-async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncClient):        
-    tas_droplets_related_data = AssetTypeRelatedData(
-        endpoint="/tas-droplets",
-        product="Tas_Droplets",
-        type="Tas Droplet",
-        process_result_func=process_tas_droplet_results
+async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncClient):
+    ctx_lock = threading.Lock()
+    tas_droplets_related_data = init_asset_type_related_data(
+        endpoint="/tas-droplets", product="Tas_Droplets", asset_type=AssetType.TAS_DROPLET, process_result_func=process_tas_droplet_results
     )
-    host_scan_related_data = AssetTypeRelatedData(
-        endpoint="/hosts",
-        product="Hosts",
-        type="Host",
-        process_result_func=process_host_results
+    host_scan_related_data = init_asset_type_related_data(
+        endpoint="/hosts", product="Hosts", asset_type=AssetType.HOST, process_result_func=process_host_results
     )
-    image_scan_related_data = AssetTypeRelatedData(
-        endpoint="/images",
-        product="Runtime_images",
-        type="Runtime Image",
-        process_result_func=process_runtime_image_results
+    image_scan_related_data = init_asset_type_related_data(
+        endpoint="/images", product="Runtime_images", asset_type=AssetType.RUNTIME_IMAGE, process_result_func=process_runtime_image_results
     )
     tasks = [
-        collect_assets_and_sent_to_xsiam(client, tas_droplets_related_data),
-        collect_assets_and_sent_to_xsiam(client, host_scan_related_data),
-        collect_assets_and_sent_to_xsiam(client, image_scan_related_data)
+        collect_assets_and_sent_to_xsiam(client, tas_droplets_related_data, ctx_lock),
+        collect_assets_and_sent_to_xsiam(client, host_scan_related_data, ctx_lock),
+        collect_assets_and_sent_to_xsiam(client, image_scan_related_data, ctx_lock),
     ]
     await asyncio.gather(*tasks)
     total = tas_droplets_related_data.total_count + host_scan_related_data.total_count + image_scan_related_data.total_count
-    demisto.debug(f"Finished sending all assets to XSIAM. Fetch {tas_droplets_related_data.total_count} Tas Droplets," \
-        f"{host_scan_related_data.total_count} Hosts, and {image_scan_related_data.total_count} Runtime images.")
+    demisto.debug(
+        f"Finished sending all assets to XSIAM. Fetch {tas_droplets_related_data.total_count} Tas Droplets,"
+        f"{host_scan_related_data.total_count} Hosts, and {image_scan_related_data.total_count} Runtime images."
+    )
     demisto.updateModuleHealth({"assetsPulled": total})
 
 
-async def collect_assets_and_sent_to_xsiam(client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData):
-    asset_type_related_data.write_debug_log("starting execution.")
+async def collect_assets_and_sent_to_xsiam(client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData, ctx_lock: Lock):
+    """Implement the main log, sending requests to Prisma to fetch assets, process the assets and then send them to xsiam.
+    Saving the current advancement between intervals.
+
+    Args:
+        client (PrismaCloudComputeAsyncClient): The Prisma cloud compute client.
+        asset_type_related_data (AssetTypeRelatedData): The object that contains that data related to the specific asset type.
+        ctx_lock (Lock): The lock to use when writing to the context.
+    """
+    asset_type_related_data.write_debug_log(f"starting execution with snapshot = {asset_type_related_data.snapshot_id}.")
     while True:
-        params = assign_params(
-            limit=asset_type_related_data.limit,
-            offset=asset_type_related_data.offset,
-            sort = "scanTime"
-        )
-        asset_type_related_data.write_debug_log("sending request.")
-        response = await client._http_request(
-            "GET", url_suffix=asset_type_related_data.endpoint, params=params, timeout=300
-        )
-        asset_type_related_data.write_debug_log(f"got response with {response=}.")
-        asset_type_related_data.write_debug_log(f"got response with {response.headers.get('Total-Count')=}.")
-        asset_type_related_data.total_count = int(response.headers.get("Total-Count", 0))
-        data = await response.json()
-        await response.release()
-        asset_type_related_data.write_debug_log(f"got response with {data=}.")
-        if not data:
-            asset_type_related_data.write_debug_log("No more data to fetch, breaking.")
-            break
-        processed_data = asset_type_related_data.process_result_func(data)
-        send_data_to_xsiam_tasks = async_send_data_to_xsiam(
-            data=processed_data,
-            vendor=asset_type_related_data.vendor,
-            product=asset_type_related_data.product,
-            num_of_attempts=3,
-            chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
-            data_type=ASSETS,
-            add_proxy_to_request=False,
-            snapshot_id=asset_type_related_data.snapshot_id,
-            data_size_expected_to_split_evenly=False,
-            url_key="address",
-            items_count=asset_type_related_data.total_count
-        )
-        await asyncio.gather(*send_data_to_xsiam_tasks)
-        # update_integration_context_by_event_type(
-        #     event_type,
-        #     {"last_sent_line": total_lines_after_batch_raw, "total_records_ingested": new_total_records},
-        #)
-        asset_type_related_data.next_page()
+        try:
+            params = assign_params(limit=asset_type_related_data.limit, offset=asset_type_related_data.offset, sort="scanTime")
+            asset_type_related_data.write_debug_log("sending request.")
+            response = await client._http_request("GET", url_suffix=asset_type_related_data.endpoint, params=params, timeout=300)
+            asset_type_related_data.write_debug_log(f"got response with {response=}.")
+            asset_type_related_data.write_debug_log(f"got response with {response.headers.get('Total-Count')=}.")
+            asset_type_related_data.total_count = int(response.headers.get("Total-Count", 0))
+            data = await response.json()
+            await response.release()
+            asset_type_related_data.write_debug_log(f"got response with {data=}.")
+            if not data:
+                asset_type_related_data.write_debug_log("No more data to fetch, breaking.")
+                break
+            processed_data = asset_type_related_data.process_result_func(data)
+            send_data_to_xsiam_tasks = async_send_data_to_xsiam(
+                data=processed_data,
+                vendor=asset_type_related_data.vendor,
+                product=asset_type_related_data.product,
+                num_of_attempts=3,
+                chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
+                data_type=ASSETS,
+                add_proxy_to_request=False,
+                snapshot_id=asset_type_related_data.snapshot_id,
+                data_size_expected_to_split_evenly=False,
+                url_key="address",
+                items_count=asset_type_related_data.total_count,
+            )
+            demisto.info(f"[test] got the following list: {send_data_to_xsiam_tasks}, {type(send_data_to_xsiam_tasks)=}")
+            await asyncio.gather(*send_data_to_xsiam_tasks)
+            demisto.info("[test] gathered tasks")
+            asset_type_related_data.next_page()
+            asset_type_related_data.safe_update_integration_context(ctx_lock)
+        except Exception as e:
+            demisto.debug(f"Got error {e}")
     asset_type_related_data.write_debug_log("Finished obtaining and sending all assets to xsiam.")
+    asset_type_related_data.remove_related_data_from_ctx(ctx_lock)
 
 
 def process_host_results(data_list):
     processed_results_list = []
     for data in data_list:
-        processed_results_list.append({
-            "Name": data.get("cloudMetadata", {}).get("name", ""),
-            "Provider": data.get("cloudMetadata", {}).get("provider", ""),
-            "Type": "TBD",
-            "Category": "TBD",
-            "Class": "Compute",
-            "Region": data.get("cloudMetadata", {}).get("region", ""),
-            "Zone": None,
-            "Realm": data.get("cloudMetadata", {}).get("accountID", ""),
-            "Tags": data.get("tags", []) + data.get("labels", []),
-            "Internal IP": None,
-            "External IP": None,
-            "FQDN": None,
-            "Strong ID": data.get("hostname", "")
-         })
+        processed_results_list.append(
+            {
+                "Name": data.get("cloudMetadata", {}).get("name", ""),
+                "Provider": data.get("cloudMetadata", {}).get("provider", ""),
+                "Type": "TBD",
+                "Category": "TBD",
+                "Class": "Compute",
+                "Region": data.get("cloudMetadata", {}).get("region", ""),
+                "Zone": None,
+                "Realm": data.get("cloudMetadata", {}).get("accountID", ""),
+                "Tags": data.get("tags", []) + data.get("labels", []),
+                "Internal IP": None,
+                "External IP": None,
+                "FQDN": None,
+                "Strong ID": data.get("hostname", ""),
+            }
+        )
     return processed_results_list
 
 
 def process_tas_droplet_results(data_list):
     processed_results_list = []
     for data in data_list:
-        processed_results_list.append({
-            "Name": data.get("name", ""),
-            "Provider": data.get("provider", "VMWare"),
-            "Type": "Runtime Image",
-            "Category": "Container Image",
-            "Class": "Compute",
-            "Region": data.get("region", ""),
-            "Zone": None,
-            "Realm": data.get("accountID", ""),
-            "Tags": data.get("tags", []) + data.get("labels", []),
-            "Internal IP": None,
-            "External IP": None,
-            "FQDN": data.get("cloudControllerAddress", ""),
-            "Strong ID": data.get("id", "")
-         })
+        processed_results_list.append(
+            {
+                "Name": data.get("name", ""),
+                "Provider": data.get("provider", "VMWare"),
+                "Type": "Runtime Image",
+                "Category": "Container Image",
+                "Class": "Compute",
+                "Region": data.get("region", ""),
+                "Zone": None,
+                "Realm": data.get("accountID", ""),
+                "Tags": data.get("tags", []) + data.get("labels", []),
+                "Internal IP": None,
+                "External IP": None,
+                "FQDN": data.get("cloudControllerAddress", ""),
+                "Strong ID": data.get("id", ""),
+            }
+        )
     return processed_results_list
 
 
 def process_runtime_image_results(data_list):
     processed_results_list = []
     for data in data_list:
-        processed_results_list.append({
-            "Name": data.get("cloudMetadata", {}).get("name", ""),
-            "Provider": data.get("cloudMetadata", {}).get("provider", ""),
-            "Type": "Runtime Image",
-            "Category": "Container Image",
-            "Class": "Compute",
-            "Region": data.get("cloudMetadata", {}).get("region", ""),
-            "Zone": None,
-            "Realm": data.get("cloudMetadata", {}).get("accountID", ""),
-            "Tags": data.get("tags", []) + data.get("labels", []),
-            "Internal IP": None,
-            "External IP": None,
-            "FQDN": None,
-            "Strong ID": data.get("id", "")
-         })
+        processed_results_list.append(
+            {
+                "Name": data.get("cloudMetadata", {}).get("name", ""),
+                "Provider": data.get("cloudMetadata", {}).get("provider", ""),
+                "Type": "Runtime Image",
+                "Category": "Container Image",
+                "Class": "Compute",
+                "Region": data.get("cloudMetadata", {}).get("region", ""),
+                "Zone": None,
+                "Realm": data.get("cloudMetadata", {}).get("accountID", ""),
+                "Tags": data.get("tags", []) + data.get("labels", []),
+                "Internal IP": None,
+                "External IP": None,
+                "FQDN": None,
+                "Strong ID": data.get("id", ""),
+            }
+        )
     return processed_results_list
 
 
@@ -3083,7 +3132,12 @@ def main():
         # Init the client
         if requested_command == "long-running-execution":
             client = PrismaCloudComputeAsyncClient(
-                base_url=urljoin(base_url, "api/v1/"), verify=verify, username=username, password=password, proxy=proxy, project=project
+                base_url=urljoin(base_url, "api/v1/"),
+                verify=verify,
+                username=username,
+                password=password,
+                proxy=proxy,
+                project=project,
             )
         else:
             client = PrismaCloudComputeClient(

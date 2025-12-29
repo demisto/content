@@ -13036,17 +13036,17 @@ def async_send_data_to_xsiam(
         chunk_size = len(data_chunk)
         data_chunk = "\n".join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode("utf-8"))  # type: ignore[AttributeError,attr-defined]
-        _ = await xsiam_api_call_async_with_retries(
-            client = client,
-            xsiam_url=xsiam_url,
-            zipped_data=zipped_data,
-            headers=headers,
-            num_of_attempts=num_of_attempts,
-            data_type=data_type,
-            error_handler=data_error_handler,
-            error_msg=header_msg,
-            is_json_response=True
-        )
+        async with client:
+            _ = await xsiam_api_call_async_with_retries(
+                client = client,
+                zipped_data=zipped_data,
+                headers=headers,
+                num_of_attempts=num_of_attempts,
+                data_type=data_type,
+                error_handler=data_error_handler,
+                error_msg=header_msg,
+                is_json_response=True
+            )
         
         return chunk_size
 
@@ -13136,7 +13136,6 @@ async def xsiam_api_call_async_with_retries(
             headers=headers,
             error_handler=error_handler,
             ok_codes=ok_codes,
-            resp_type='response'
         )
         status_code = response.status_code
         demisto.debug('received status code: {status_code}'.format(status_code=status_code))
@@ -13144,6 +13143,7 @@ async def xsiam_api_call_async_with_retries(
             time.sleep(1)
         attempt_num += 1
     if is_json_response and response:
+        demisto.debug(f"[test] in condition, {response=}")
         response = response.json()
         if response.get('error', '').lower() != 'false':
             raise DemistoException(error_msg + response.get('error'))
