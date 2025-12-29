@@ -15,7 +15,7 @@ configuration:
   name: alicloud_region
   required: true
   type: 0
-description: Manage Alibaba Cloud Elastic Compute Instances
+description: Manage Alibaba Cloud Elastic Compute Instances.
 display: Ansible Alibaba Cloud
 fromversion: 6.0.0
 name: AnsibleAlibabaCloud
