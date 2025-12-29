@@ -120,7 +120,7 @@ script:
     - name: group_id
       description: Group UUID to import the secret into.
     - name: metadata
-      description: List of key-value pairs
+      description: List of key-value pairs.
       type: keyValue
     outputs:
     - contextPath: Fortanix.Secret
@@ -135,7 +135,7 @@ script:
       required: true
       description: Sensitive value of the secret.
     - name: metadata
-      description: List of key-value pairs
+      description: List of key-value pairs.
       type: keyValue
     outputs:
     - contextPath: Fortanix.Secret

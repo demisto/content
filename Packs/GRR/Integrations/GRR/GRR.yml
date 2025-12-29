@@ -39,12 +39,12 @@ script:
     - name: client_id
       required: true
       default: true
-      description: The ID of the client
+      description: The ID of the client.
     - name: flow
       required: true
-      description: JSON string of the flow to set
+      description: JSON string of the flow to set.
     - name: headers
-      description: The headers to show
+      description: The headers to show.
     description: Starts a flow on a given client with given parameters
     outputs:
     - contextPath: Flow
