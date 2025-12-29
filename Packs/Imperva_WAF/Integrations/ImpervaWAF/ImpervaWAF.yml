@@ -333,7 +333,7 @@ script:
       predefined:
       - atLeastOne
       - excludeAll
-    - description: 'List of match criteria in JSON format, e.g., [{"type": "sourceIpAddresses","operation": "atLeastOne","userDefined": ["1.2.3.4"]}]'
+    - description: 'List of match criteria in JSON format, e.g., [{"type": "sourceIpAddresses","operation": "atLeastOne","userDefined": ["1.2.3.4"]}].'
       name: match-criteria-json
     description: Create a web service custom policy.
     name: imperva-waf-web-service-custom-policy-create
