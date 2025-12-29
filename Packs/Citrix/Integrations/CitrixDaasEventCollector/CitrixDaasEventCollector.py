@@ -276,6 +276,7 @@ def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
     last_run_date = last_run.get("LastRun")
     last_fetched_ids = last_run.get("LastFetchedIds", [])
+    # assuming the sending order is ascending
     last_operation_id = last_fetched_ids[-1] if last_fetched_ids else None
 
     if not last_run_date:
