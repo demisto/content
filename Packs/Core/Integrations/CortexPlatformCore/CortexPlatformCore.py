@@ -3108,6 +3108,9 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
     Returns:
         Tuple of (valid_fields_dict, error_messages_str).
     """
+    if not fields_to_validate:
+        return {}, ""
+
     fields_data = client.get_custom_fields_metadata().get("reply", {}).get("DATA", [])
 
     if not fields_data:
