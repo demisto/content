@@ -108,7 +108,7 @@ script:
       description: Product name of the endpoint OS.
       type: string
     - contextPath: CounterTack.Endpoint.ImpactLevel
-      description: Threat level of the endpoint.(LOW, MEDIUM, HIGH, CRITICAL)
+      description: Threat level of the endpoint.(LOW, MEDIUM, HIGH, CRITICAL).
       type: string
     - contextPath: CounterTack.Endpoint.Ips
       description: IP addresses associated with the endpoint.
@@ -123,7 +123,7 @@ script:
       description: Time kernel module collection last engaged.
       type: date
     - contextPath: CounterTack.Endpoint.Mac
-      description: The endpoint MAC address
+      description: The endpoint MAC address.
       type: string
     - contextPath: CounterTack.Endpoint.EventStartTime
       description: The time that the event was captured.
@@ -132,7 +132,7 @@ script:
       description: Bit length of the CPU architecture.
       type: string
     - contextPath: CounterTack.Endpoint.Status
-      description: Collection status of the endpoint (ON, PAUSE, OFF, INIT)
+      description: Collection status of the endpoint (ON, PAUSE, OFF, INIT).
       type: string
     - contextPath: CounterTack.Endpoint.OsType
       description: The OS type.
@@ -459,10 +459,10 @@ script:
       description: The tags of the behavior.
       type: string
   - arguments:
-    - description: The behavior ID
+    - description: The behavior ID.
       name: behaviour_id
       required: true
-    - description: Tags to delete from a behavior. To delete more then one, separate the tags with a comma. (e.g test1,test2)
+    - description: Tags to delete from a behavior. To delete more then one, separate the tags with a comma. (e.g test1,test2).
       isArray: true
       name: tags
       required: true
@@ -942,7 +942,7 @@ script:
       description: The time at which the client requested the command.
       type: date
   - arguments:
-    - description: The CQL expression to be used for the search (e.g hashes.type = md5)
+    - description: The CQL expression to be used for the search (e.g hashes.type = md5).
       name: expression
       required: true
     description: Searches for hashes using CQL expressions (Contextual Query Language) to represent queries.
@@ -973,7 +973,7 @@ script:
       description: The ssdeep of the file.
       type: string
   - arguments:
-    - description: The CQL expression to be used for the search. (e.g endpoints.status=on)
+    - description: The CQL expression to be used for the search. (e.g endpoints.status=on).
       name: expression
       required: true
     description: Request for endpoints search using CQL expression (Contextual Query Language) to represent queries.
@@ -1064,7 +1064,7 @@ script:
       description: Number of behaviors detected.
       type: Number
     - contextPath: CounterTack.Endpoint.ImpactLevel
-      description: Threat level of the endpoint.(LOW, MEDIUM, HIGH, CRITICAL)
+      description: Threat level of the endpoint.(LOW, MEDIUM, HIGH, CRITICAL).
       type: String
     - contextPath: CounterTack.Endpoint.OsType
       description: The OS type.
@@ -1097,7 +1097,7 @@ script:
       description: The ID of the Endpoints.
       type: String
   - arguments:
-    - description: The CQL expression to be used for the search(e.g behaviors.event_count<60)
+    - description: The CQL expression to be used for the search(e.g behaviors.event_count<60).
       name: expression
       required: true
     description: Request for behaviors search using CQL expression (Contextual Query Language) to represent queries.

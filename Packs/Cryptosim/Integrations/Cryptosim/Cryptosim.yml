@@ -48,10 +48,10 @@ name: Cryptosim
 script:
   commands:
   - arguments:
-    - description: 'This denotes the start date of the search period. It must be used in all API fields. E.g.: “startDate”: “2021-04-24T12:00:00”'
+    - description: 'This denotes the start date of the search period. It must be used in all API fields. E.g.: "startDate": "2021-04-24T12:00:00".'
       name: startDate
       required: true
-    - description: 'This denotes the end date of the search period. It must be used in all API fields. E.g.: endDate: “2021-04-24T24:00:00”'
+    - description: 'This denotes the end date of the search period. It must be used in all API fields. E.g.: endDate: "2021-04-24T24:00:00".'
       name: endDate
       required: true
     - defaultValue:
@@ -61,7 +61,7 @@ script:
       description: 'If user want to take specific correlation, can take it when ID of correlation is given as parameter.'
       name: crrPluginId
     - default:
-      description: 'This is used to search for a word specified in the request. (Contains String) E.g.: “containStr”: “Unsuccessful”'
+      description: 'This is used to search for a word specified in the request. (Contains String) E.g.: "containStr": "Unsuccessful".'
       name: containStr
     - defaultValue:
       description: 'The risk level of correlation rules to filter. Default: -1. Default get all.'

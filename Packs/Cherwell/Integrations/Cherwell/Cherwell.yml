@@ -302,7 +302,7 @@ script:
     - description: ' Business object type, for example: "Incident". '
       name: type
       required: true
-    - description: Field property to search by (Name, DIsplay Name or Field id)
+    - description: Field property to search by (Name, DIsplay Name or Field id).
       name: field_property
       required: true
     description: Gets information for a field, by one of its properties (Name, Display Name, or id).
@@ -321,7 +321,7 @@ script:
     - description: Business object association ID for the saved search.
       name: association_id
       required: true
-    - description: Scope name or ID for the saved search
+    - description: Scope name or ID for the saved search.
       name: scope
       required: true
     - description: Scope owner ID for the saved search. Use "(None)" when no scope owner exists.

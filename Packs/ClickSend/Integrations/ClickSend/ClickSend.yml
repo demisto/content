@@ -20,10 +20,10 @@ name: ClickSend
 script:
   commands:
   - arguments:
-    - description: 'Phone Number  Example: +972501234567'
+    - description: 'Phone Number  Example: +972501234567.'
       name: phoneNumber
       required: true
-    - description: Message Body
+    - description: Message Body.
       name: Message
       required: true
     - auto: PREDEFINED

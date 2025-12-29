@@ -64,3 +64,5 @@ script:
     description: Creates a screenshot of the specified URL.
   dockerimage: demisto/vendors-sdk:1.0.0.115493
 fromversion: 5.0.0
+tests:
+- No tests
