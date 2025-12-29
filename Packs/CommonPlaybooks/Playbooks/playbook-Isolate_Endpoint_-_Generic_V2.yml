@@ -341,15 +341,14 @@ tests:
 - Isolate and unisolate endpoint - test
 fromversion: 5.5.0
 toversion: 6.7.9
-supportedModules: [
-        "C3",
-        "X0",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
-        "cloud",
-        "cloud_runtime_security",
-        "xsiam",
-        "edr"
-    ]
+supportedModules:
+- C3
+- X0
+- X1
+- X3
+- X5
+- ENT_PLUS
+- cloud
+- cloud_runtime_security
+- xsiam
+- edr
