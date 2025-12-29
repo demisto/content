@@ -861,7 +861,7 @@ class AzureClient:
 
     def storage_container_create_blob_request(
         self, container_name: str, account_name: str, file_entry_id: str, blob_name: str, system_file_path: str
-    ) -> requests.Response | dict[str, Any]:  # noqa: E501
+    ) -> None:  # noqa: E501
         """
         Create or update Blob under the specified Container.
 
@@ -889,7 +889,6 @@ class AzureClient:
                 self.http_request(method="PUT", full_url=full_url, data=file_data, resp_type="response")  # type: ignore
         except Exception as e:
             raise DemistoException(f"Unable to read file with id {file_entry_id}", e)
-
 
     def storage_container_blob_get_request(
         self, container_name: str, blob_name: str, account_name: str
@@ -2863,9 +2862,7 @@ def storage_container_blob_create_command(client: AzureClient, params: dict, arg
     system_file_path = file_data["path"]
     file_name = blob_name if blob_name else file_data["name"]
 
-    client.storage_container_create_blob_request(
-        container_name, account_name, file_entry_id, file_name, system_file_path
-    )
+    client.storage_container_create_blob_request(container_name, account_name, file_entry_id, file_name, system_file_path)
 
     command_results = CommandResults(readable_output=f"Blob {file_name} successfully created.")
 
