@@ -53,7 +53,7 @@ def rewrite_img_src(html: str, account_name: str) -> str:
     return re.sub(pattern, replacement, html)
 
 
-def html_cleanup(full_thread_html, account_name):
+def html_cleanup(full_thread_html, account_name=None):
     """
         Moves various HTML tags so the final output is a single HTML document
     Args:
@@ -70,7 +70,6 @@ def html_cleanup(full_thread_html, account_name):
     final_html_result = f"<!DOCTYPE html>\n<html>\n<body>\n{full_thread_html}\n</body>\n</html>"
 
 
-    account_name = get_tenant_account_name()
 
     if account_name:
         final_html_result = rewrite_img_src(final_html_result, account_name)
