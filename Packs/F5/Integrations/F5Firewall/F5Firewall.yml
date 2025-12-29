@@ -4,6 +4,7 @@ commonfields:
 name: F5 firewall
 display: F5 firewall
 category: Network Security
+provider: F5
 description: Manages F5 firewall rules
 configuration:
 - display: URL
