@@ -486,3 +486,5 @@ script:
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   subtype: python3
+tests:
+- No tests

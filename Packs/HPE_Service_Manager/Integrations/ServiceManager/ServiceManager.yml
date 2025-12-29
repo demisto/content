@@ -633,4 +633,6 @@ script:
     - contextPath: HPSM.ServiceRequest.Title
       description: Incident title.
     description: Creates a new service request.
+tests:
+- No tests
 fromversion: 5.0.0
