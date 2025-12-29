@@ -937,6 +937,14 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def bulk_update_case(self, case_update_payload, case_ids):
+        request_data = {"request_data":{"filter_data":{"filter":{"OR":[{"SEARCH_FIELD":"CASE_ID","SEARCH_TYPE":"IN","SEARCH_VALUE": case_ids }]}},"update_attrs":case_update_payload}}
+        return self._http_request(
+            method="POST",
+            url_suffix="/case/bulk_update_cases",
+            json_data=request_data,
+        )
+        
     def run_playbook(self, issue_ids: list, playbook_id: str) -> dict:
         """
         Runs a specific playbook for a given investigation.
@@ -3002,6 +3010,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     resolved_comment = args.get("resolved_comment", "")
     resolve_all_alerts = args.get("resolve_all_alerts", "")
     custom_fields = parse_custom_fields(args.get("custom_fields", []))
+    
     if assignee == "unassigned":
         for case_id in case_ids:
             client.unassign_case(case_id)
@@ -3044,7 +3053,20 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
         raise ValueError("No valid update parameters provided for case update.")
 
+    def is_bulk_update_allowed(case_update_payload: dict) -> bool:
+        # Bulk update supports only those fields
+        allowed_bulk_fields = {"user_defined_severity", "status", "starred", "assignee"}
+        
+        for field_name, field_value in case_update_payload.items():
+            if field_name == "status" and field_value == CaseManagement.STATUS["resolved"] or field_name not in allowed_bulk_fields:
+                return False
+        return True
+    
     demisto.info(f"Executing case update for cases {case_ids} with request data: {case_update_payload}")
+    if is_bulk_update_allowed(case_update_payload):
+        client.bulk_update_case(case_update_payload, case_ids)
+        # LIST THE CASES AND RETURN THEM IN THE RESPONSE
+    
     responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
     replies = []
     for resp in responses:
