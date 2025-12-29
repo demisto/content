@@ -7230,6 +7230,8 @@ class TestCoreListComplianceStandardsCommand:
         assert result[0].outputs[1]["id"] == "std2"
         assert result[0].outputs[1]["controls_count"] == 1
         assert result[1].outputs["returned_count"] == 2
+
+
 def test_run_script_agentix_command_both_script_uid_and_name_provided():
     """
     Given:

@@ -3381,6 +3381,8 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
         outputs=data,
         raw_response=data,
     )
+
+
 def parse_frequency(day: str, time: str) -> str:
     """
     Convert day and time to cron-style frequency string
@@ -3648,6 +3650,7 @@ def core_list_compliance_standards_command(client: Client, args: dict) -> list[C
     )
 
     return command_results
+
 
 def validate_start_end_times(start_time, end_time):
     """
