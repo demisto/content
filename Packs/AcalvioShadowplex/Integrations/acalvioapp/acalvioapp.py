@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-""" CONSTANTS """
+""" CONSTANTS  """
 OK_HTTP_CODES = (200, 201)
 
 
