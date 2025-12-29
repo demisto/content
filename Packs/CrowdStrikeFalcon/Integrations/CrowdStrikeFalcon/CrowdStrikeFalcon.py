@@ -1832,6 +1832,9 @@ def get_incidents_entities(incidents_ids: list):
     return response
 
 
+def get_full_entities(incidents_ids: list[str], url_suffix: str="/alerts/entities/alerts/v2", id_field:str="composite_ids"):
+    pass
+
 def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
     full_cases = []
 
@@ -2881,9 +2884,11 @@ def get_modified_remote_data_command(args: dict[str, Any]):
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'ngsiem'"
         ).get("resources", [])
     if NGSIEM_INCIDENT_FETCH_TYPE in fetch_types:
+        demisto.debug("fetching ngsiem incident ids")
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'xdr'"
         ).get("resources", [])
+        demisto.debug(f"new {raw_ids=}")
     if NGSIEM_AUTOMATED_LEADS_FETCH_TYPE in fetch_types:
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'automated-lead'"
