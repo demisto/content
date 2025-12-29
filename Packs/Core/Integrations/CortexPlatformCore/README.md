@@ -929,3 +929,57 @@ Retrieves application security issues based on specified filters.
 | Core.AppsecIssue.collaborator | String | The collaborator associated with the issue. |
 | Core.AppsecIssue.has_kev | Boolean | Whether the issue is part of the Known Exploited Vulnerabilities catalog \(KEV\). |
 | Core.AppsecIssue.backlog_status | String | The backlog status of the issue. |
+
+### core-update-endpoint-version
+
+***
+Updates the version of the given endpoint to the target version supplied.
+
+#### Base Command
+
+`core-update-endpoint-version`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | A comma-separated list of endpoint IDs. | Required |
+| platform | The platform of the endpoints. Possible values are: windows, macos, linux. | Required |
+| version | The target version for updating the endpoints. | Required |
+| start_time | The start time for the update. Enter the time in a 24-hour format (HH:MM). Ensure that there are at least two hours between the start time and the end time. | Optional |
+| end_time | The end time for the update. Enter the time in a 24-hour format (HH:MM). | Optional |
+| days | A comma-separated list of days of the week the update may run. Possible values are: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.EndpointUpdate.endpoint_ids | String | The IDs of the endpoints on which the update run. |
+| Core.EndpointUpdate.action_id | String | The ID of the update action. 0 means that the action failed. |
+
+### core-get-endpoint-update-version
+
+***
+Retrieves endpoint update versions for the provided endpoint IDs.
+
+#### Base Command
+
+`core-get-endpoint-update-version`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | A comma-separated list of endpoint IDs. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.EndpointUpdateVersion.total_count | String | Total number of endpoints. |
+| Core.EndpointUpdateVersion.platform_count | String | Number of endpoints per platform. |
+| Core.EndpointUpdateVersion.distributions.platform | String | The platform of the endpoint update. |
+| Core.EndpointUpdateVersion.distributions.version | String | The version of the endpoint update. |
+| Core.EndpointUpdateVersion.distributions.endpoints_with_higher_version_count | String | The number of endpoints running a version later than the specified update. |
+| Core.EndpointUpdateVersion.distributions.endpoints_with_same_version_count | String | The number of endpoints running the same version as the specified update. |
+| Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count | String | The number of endpoints running a version earlier than the specified update. |
