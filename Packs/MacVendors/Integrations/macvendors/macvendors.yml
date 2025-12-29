@@ -16,6 +16,7 @@ detaileddescription: >-
 
   ---
 category: Utilities
+provider: Nivel Technologies
 configuration:
 - name: apiKey
   display: API Key
