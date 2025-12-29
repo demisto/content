@@ -53,7 +53,7 @@ def rewrite_img_src(html: str, account_name: str) -> str:
     return re.sub(pattern, replacement, html)
 
 
-def html_cleanup(full_thread_html):
+def html_cleanup(full_thread_html, account_name):
     """
         Moves various HTML tags so the final output is a single HTML document
     Args:
@@ -110,7 +110,9 @@ def remove_color_from_html_text(html_message):
 
 
 def main():
+    args = demisto.args()
     incident = demisto.incident()
+    account_name = args.get("account_name", "")
     custom_fields = incident.get("CustomFields")
     thread_number = custom_fields.get("emailselectedthread", 0)
     incident_context = demisto.context()
@@ -156,7 +158,7 @@ def main():
             )
             full_thread_html += email_reply
 
-        final_html_result = html_cleanup(full_thread_html)
+        final_html_result = html_cleanup(full_thread_html, account_name)
         return_results({"ContentsFormat": EntryFormat.HTML, "Type": EntryType.NOTE, "Contents": final_html_result})
     else:
         return_error(f"An email thread of {thread_number} was not found. Please make sure this thread number is correct.")
