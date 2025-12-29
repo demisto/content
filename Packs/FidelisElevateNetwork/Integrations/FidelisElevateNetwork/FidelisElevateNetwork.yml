@@ -408,7 +408,7 @@ script:
       description: Alert ID.
       type: Number
     - contextPath: Fidelis.Alert.SourceCountry
-      description: Alert source country
+      description: Alert source country.
       type: String
   - arguments:
     - description: ID of the alert from which to download the file.
@@ -464,7 +464,7 @@ script:
       description: Name of the file.
       type: String
     - contextPath: File.Size
-      description: File size
+      description: File size.
       type: Number
     - contextPath: File.Type
       description: File type.
@@ -835,7 +835,7 @@ script:
     - description: Alert ID.
       name: alert_id
       required: true
-    - description: comment.
+    - description: Comment.
       name: comment
       required: true
     description: Adds a comment to an alert.

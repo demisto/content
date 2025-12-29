@@ -66,7 +66,7 @@ script:
       description: Configuration partition.
       type: String
   - arguments:
-    - description: Pool Name
+    - description: Pool Name.
       name: pool_name
       required: true
     - description: The administrative partition name.
@@ -156,7 +156,7 @@ script:
       description: Pool slow ramp time.
       type: Number
   - arguments:
-    - description: Pool Name
+    - description: Pool Name.
       name: pool_name
       required: true
     - description: The administrative partition name.
@@ -243,7 +243,7 @@ script:
       description: Node checking state.
       type: String
   - arguments:
-    - description: Node Name
+    - description: Node Name.
       name: node_name
       required: true
     - description: The administrative partition name.
@@ -312,7 +312,7 @@ script:
       description: Pool node checking state.
       type: String
   - arguments:
-    - description: Node to disable
+    - description: Node to disable.
       name: node_name
       required: true
     - description: The administrative partition name.
@@ -381,7 +381,7 @@ script:
       description: Pool node checking state.
       type: String
   - arguments:
-    - description: Node to enable
+    - description: Node to enable.
       name: node_name
       required: true
     - description: The administrative partition name.
@@ -450,10 +450,10 @@ script:
       description: Pool node checking state.
       type: String
   - arguments:
-    - description: Pool to get its stats
+    - description: Pool to get its stats.
       name: pool_name
       required: true
-    - description: Member to get its stats
+    - description: Member to get its stats.
       name: member_name
       required: true
     - description: The administrative partition name.
@@ -471,7 +471,7 @@ script:
       description: The pool member status.
       type: String
   - arguments:
-    - description: Node To Query
+    - description: Node To Query.
       name: node_name
       required: true
     - description: The administrative partition name.
@@ -489,7 +489,7 @@ script:
       description: The node status.
       type: String
   - arguments:
-    - description: IP address of the node
+    - description: IP address of the node.
       name: ip_address
       required: true
     - description: The administrative partition name.
@@ -504,7 +504,7 @@ script:
       description: The node address.
       type: String
   - arguments:
-    - description: Node name
+    - description: Node name.
       name: node_name
       required: true
     - description: The administrative partition name.

@@ -1355,7 +1355,7 @@ script:
     - defaultValue: None
       description: The ID of the IP address. The ID or display name must be filled. Default is "None".
       name: ip_id
-    - description: IP address
+    - description: IP address.
       name: ip_address
       required: true
     - auto: PREDEFINED
@@ -1441,7 +1441,7 @@ script:
     - defaultValue: None
       description: The ID of the IP address. The ID or display name must be filled. Default is "None".
       name: ip_id
-    - description: IP address
+    - description: IP address.
       name: ip_address
       required: true
     description: Deletes an existing IP address on allow list from a policy.
@@ -2109,7 +2109,7 @@ script:
     - description: The display name of the JSON profile. The ID or display name must be filled.
       name: json_name
       required: true
-    - description: Optional description for the JSON profile
+    - description: Optional description for the JSON profile.
       name: description
     - defaultValue: any
       description: The maximum total length of JSON data. Default is "any".
