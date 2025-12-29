@@ -56,7 +56,7 @@ script:
       description: The URL for which to take a screenshot.
     outputs:
     - contextPath: CloakenScreenshot.Url
-      description: Url
+      description: Url.
       type: string
     - contextPath: CloakenScreenshot.Status
       description: Status of the screenshot.

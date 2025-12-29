@@ -14,7 +14,7 @@ configuration:
   name: username
   required: true
   type: 0
-description: This is the ClickSend integration for make a phonecall from XSOAR  made by Trustnet
+description: This is the ClickSend integration for make a phonecall from XSOAR  made by Trustnet.
 display: ClickSend
 name: ClickSend
 script:
@@ -34,7 +34,7 @@ script:
       - "True"
       required: true
     - auto: PREDEFINED
-      description: You Can choose either Male or Female
+      description: You Can choose either Male or Female.
       name: voice
       predefined:
       - male
@@ -44,17 +44,17 @@ script:
     name: clicksend-text-to-voice
     outputs:
     - contextPath: Voice.MSG.id
-      description: Message ID
+      description: Message ID.
     - contextPath: Voice.MSG.responseCode
-      description: Response Code
+      description: Response Code.
     - contextPath: Voice.MSG.responseMsg
-      description: Response MSG
+      description: Response MSG.
   - arguments: []
     description: 'Your calls history Example: !voice-history'
     name: clicksend-voice-history
     outputs:
     - contextPath: Voice.History
-      description: Your Calls History
+      description: Your Calls History.
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''

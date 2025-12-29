@@ -55,7 +55,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-description: Cloud-based IT service management solution
+description: Cloud-based IT service management solution.
 display: Cherwell
 name: Cherwell
 script:
@@ -177,7 +177,7 @@ script:
     name: cherwell-upload-attachment
     outputs:
     - contextPath: Cherwell.UploadedAttachments.AttachmentFileId
-      description: AttachmentFileId to use to get information about the attachment. attachment
+      description: AttachmentFileId to use to get information about the attachment.
       type: String
     - contextPath: Cherwell.UploadedAttachments.BusinessObjectType
       description: ' Business object type, for example: "Incident". '
