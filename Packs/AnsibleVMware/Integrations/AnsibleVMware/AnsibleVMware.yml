@@ -41,7 +41,7 @@ script:
     name: vmware-about-info
     outputs:
     - contextPath: VMware.VmwareAboutInfo.about_info
-      description: dict about VMware server
+      description: dict about VMware server.
       type: string
   - arguments:
     - description: The name of category to manage.
@@ -77,7 +77,7 @@ script:
     name: vmware-category
     outputs:
     - contextPath: VMware.VmwareCategory.category_results
-      description: dictionary of category metadata
+      description: dictionary of category metadata.
       type: unknown
   - arguments:
     - auto: PREDEFINED
@@ -91,7 +91,7 @@ script:
     name: vmware-category-info
     outputs:
     - contextPath: VMware.VmwareCategoryInfo.tag_category_info
-      description: metadata of tag categories
+      description: metadata of tag categories.
       type: unknown
   - arguments:
     - description: Name of ESXi server. This is required only if authentication against a vCenter is done.
@@ -111,7 +111,7 @@ script:
     name: vmware-cfg-backup
     outputs:
     - contextPath: VMware.VmwareCfgBackup.dest_file
-      description: The full path of where the file holding the ESXi configurations was stored
+      description: The full path of where the file holding the ESXi configurations was stored.
       type: string
   - arguments:
     - description: The name of the cluster to be managed.
@@ -346,7 +346,7 @@ script:
     name: vmware-cluster-info
     outputs:
     - contextPath: VMware.VmwareClusterInfo.clusters
-      description: metadata about the available clusters
+      description: metadata about the available clusters.
       type: unknown
   - arguments:
     - description: The name of the cluster to be managed.
@@ -409,7 +409,7 @@ script:
     name: vmware-content-deploy-template
     outputs:
     - contextPath: VMware.VmwareContentDeployTemplate.vm_deploy_info
-      description: Virtual machine deployment message and vm_id
+      description: Virtual machine deployment message and vm_id.
       type: unknown
   - arguments:
     - description: content library id for which details needs to be fetched.
@@ -425,10 +425,10 @@ script:
     name: vmware-content-library-info
     outputs:
     - contextPath: VMware.VmwareContentLibraryInfo.content_lib_details
-      description: list of content library metadata
+      description: list of content library metadata.
       type: unknown
     - contextPath: VMware.VmwareContentLibraryInfo.content_libs
-      description: list of content libraries
+      description: list of content libraries.
       type: unknown
   - arguments:
     - description: The name of VMware content library to manage.
@@ -464,7 +464,7 @@ script:
     name: vmware-content-library-manager
     outputs:
     - contextPath: VMware.VmwareContentLibraryManager.content_library_info
-      description: library creation success and library_id
+      description: library creation success and library_id.
       type: unknown
   - arguments:
     - description: The name of the datacenter the cluster will be created in.
@@ -499,7 +499,7 @@ script:
     name: vmware-datastore-cluster
     outputs:
     - contextPath: VMware.VmwareDatastoreCluster.result
-      description: information about datastore cluster operation
+      description: information about datastore cluster operation.
       type: string
   - arguments:
     - description: 'Name of the datastore to match. If set, information of specific datastores are returned.'
@@ -526,7 +526,7 @@ script:
     name: vmware-datastore-info
     outputs:
     - contextPath: VMware.VmwareDatastoreInfo.datastores
-      description: metadata about the available datastores
+      description: metadata about the available datastores.
       type: unknown
   - arguments:
     - description: 'Name of datastore to manage. If `datastore_cluster` or `cluster_name` are not set, this parameter is required.'
@@ -546,7 +546,7 @@ script:
     name: vmware-datastore-maintenancemode
     outputs:
     - contextPath: VMware.VmwareDatastoreMaintenancemode.results
-      description: Action taken for datastore
+      description: Action taken for datastore.
       type: unknown
   - arguments:
     - description: The hostname that an ESXi host should be changed to.
@@ -589,7 +589,7 @@ script:
     name: vmware-drs-group
     outputs:
     - contextPath: VMware.VmwareDrsGroup.drs_group_facts
-      description: Metadata about DRS group created
+      description: Metadata about DRS group created.
       type: unknown
   - arguments:
     - description: 'Cluster to search for VM/Host groups. If set, information of DRS groups belonging this cluster will be returned. Not needed if `datacenter` is set.'
@@ -601,7 +601,7 @@ script:
     name: vmware-drs-group-info
     outputs:
     - contextPath: VMware.VmwareDrsGroupInfo.drs_group_info
-      description: Metadata about DRS group from given cluster / datacenter
+      description: Metadata about DRS group from given cluster / datacenter.
       type: unknown
   - arguments:
     - description: 'Name of the cluster. DRS information for the given cluster will be returned. This is required parameter if `datacenter` parameter is not provided.'
@@ -612,7 +612,7 @@ script:
     name: vmware-drs-rule-info
     outputs:
     - contextPath: VMware.VmwareDrsRuleInfo.drs_rule_info
-      description: metadata about DRS rule from given cluster / datacenter
+      description: metadata about DRS rule from given cluster / datacenter.
       type: unknown
   - arguments:
     - description: The ESXi hostname.
@@ -707,7 +707,7 @@ script:
     name: vmware-dvs-portgroup-find
     outputs:
     - contextPath: VMware.VmwareDvsPortgroupFind.dvs_portgroups
-      description: basic details of portgroups found
+      description: basic details of portgroups found.
       type: unknown
   - arguments:
     - description: Name of the datacenter.
@@ -747,7 +747,7 @@ script:
     name: vmware-dvs-portgroup-info
     outputs:
     - contextPath: VMware.VmwareDvsPortgroupInfo.dvs_portgroup_info
-      description: metadata about DVS portgroup configuration
+      description: metadata about DVS portgroup configuration.
       type: unknown
   - arguments:
     - description: 'The name of the datacenter that will contain the Distributed Switch. This parameter is optional, if `folder` is provided. Mutually exclusive with `folder` parameter.'
@@ -818,7 +818,7 @@ script:
     name: vmware-dvswitch
     outputs:
     - contextPath: VMware.VmwareDvswitch.result
-      description: information about performed operation
+      description: information about performed operation.
       type: string
   - arguments:
     - description: The name of the Distributed Switch to manage.
@@ -838,7 +838,7 @@ script:
     name: vmware-dvswitch-lacp
     outputs:
     - contextPath: VMware.VmwareDvswitchLacp.result
-      description: information about performed operation
+      description: information about performed operation.
       type: string
   - arguments:
     - description: The name of the distributed switch.
@@ -864,10 +864,10 @@ script:
     name: vmware-dvswitch-nioc
     outputs:
     - contextPath: VMware.VmwareDvswitchNioc.dvswitch_nioc_status
-      description: result of the changes
+      description: result of the changes.
       type: string
     - contextPath: VMware.VmwareDvswitchNioc.resources_changed
-      description: list of resources which were changed
+      description: list of resources which were changed.
       type: unknown
   - arguments:
     - description: The name of the Distributed Switch.
@@ -883,7 +883,7 @@ script:
     name: vmware-dvswitch-pvlans
     outputs:
     - contextPath: VMware.VmwareDvswitchPvlans.result
-      description: information about performed operation
+      description: information about performed operation.
       type: string
   - arguments:
     - description: The name of the Distributed Switch.
@@ -923,7 +923,7 @@ script:
     name: vmware-dvswitch-uplink-pg
     outputs:
     - contextPath: VMware.VmwareDvswitchUplinkPg.result
-      description: information about performed operation
+      description: information about performed operation.
       type: string
   - arguments:
     - description: The name of the datacenter the cluster belongs to that you want to enable or disable EVC mode on.
@@ -946,7 +946,7 @@ script:
     name: vmware-evc-mode
     outputs:
     - contextPath: VMware.VmwareEvcMode.result
-      description: information about performed operation
+      description: information about performed operation.
       type: string
   - arguments:
     - description: Name of the datacenter.
@@ -956,7 +956,7 @@ script:
     name: vmware-folder-info
     outputs:
     - contextPath: VMware.VmwareFolderInfo.folder_info
-      description: dict about folders
+      description: dict about folders.
       type: string
   - arguments:
     - auto: PREDEFINED
@@ -1057,7 +1057,7 @@ script:
     name: vmware-guest
     outputs:
     - contextPath: VMware.VmwareGuest.instance
-      description: metadata about the new virtual machine
+      description: metadata about the new virtual machine.
       type: unknown
   - arguments:
     - description: 'Name of the VM to work with. This is required if `uuid` or `moid` parameter is not supplied.'
@@ -1084,7 +1084,7 @@ script:
     name: vmware-guest-boot-info
     outputs:
     - contextPath: VMware.VmwareGuestBootInfo.vm_boot_info
-      description: metadata about boot order of virtual machine
+      description: metadata about boot order of virtual machine.
       type: unknown
   - arguments:
     - description: 'Name of the VM to work with. This is required if `uuid` or `moid` parameter is not supplied.'
@@ -1147,7 +1147,7 @@ script:
     name: vmware-guest-boot-manager
     outputs:
     - contextPath: VMware.VmwareGuestBootManager.vm_boot_status
-      description: metadata about boot order of virtual machine
+      description: metadata about boot order of virtual machine.
       type: unknown
   - arguments:
     - description: 'Name of the custom attribute definition. This is required parameter, if `state` is set to `present` or `absent`.'
@@ -1164,7 +1164,7 @@ script:
     name: vmware-guest-custom-attribute-defs
     outputs:
     - contextPath: VMware.VmwareGuestCustomAttributeDefs.custom_attribute_defs
-      description: list of all current attribute definitions
+      description: list of all current attribute definitions.
       type: unknown
   - arguments:
     - description: 'Name of the virtual machine to work with. This is required parameter, if `uuid` or `moid` is not supplied.'
@@ -1200,7 +1200,7 @@ script:
     name: vmware-guest-custom-attributes
     outputs:
     - contextPath: VMware.VmwareGuestCustomAttributes.custom_attributes
-      description: metadata about the virtual machine attributes
+      description: metadata about the virtual machine attributes.
       type: unknown
   - arguments:
     - description: Name of customization specification to find.
@@ -1209,7 +1209,7 @@ script:
     name: vmware-guest-customization-info
     outputs:
     - contextPath: VMware.VmwareGuestCustomizationInfo.custom_spec_info
-      description: metadata about the customization specification
+      description: metadata about the customization specification.
       type: unknown
   - arguments:
     - description: 'Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.'
@@ -1237,7 +1237,7 @@ script:
     name: vmware-guest-disk
     outputs:
     - contextPath: VMware.VmwareGuestDisk.disk_status
-      description: metadata about the virtual machine's disks after managing them
+      description: metadata about the virtual machine's disks after managing them.
       type: unknown
   - arguments:
     - description: 'Name of the virtual machine. This is required parameter, if parameter `uuid` or `moid` is not supplied.'
@@ -1262,7 +1262,7 @@ script:
     name: vmware-guest-disk-info
     outputs:
     - contextPath: VMware.VmwareGuestDiskInfo.guest_disk_info
-      description: metadata about the virtual machine's disks
+      description: metadata about the virtual machine's disks.
       type: unknown
   - arguments:
     - description: 'Name of the VM to work with. This is required if `uuid` parameter is not supplied.'
@@ -1282,7 +1282,7 @@ script:
     name: vmware-guest-find
     outputs:
     - contextPath: VMware.VmwareGuestFind.folders
-      description: List of folders for user specified virtual machine
+      description: List of folders for user specified virtual machine.
       type: unknown
   - arguments:
     - description: 'Name of the VM to work with This is required if `uuid` or `moid` is not supplied.'
@@ -1327,7 +1327,7 @@ script:
     name: vmware-guest-info
     outputs:
     - contextPath: VMware.VmwareGuestInfo.instance
-      description: metadata about the virtual machine
+      description: metadata about the virtual machine.
       type: unknown
   - arguments:
     - description: 'Name of the existing virtual machine to move. This is required if `uuid` or `moid` is not supplied.'
@@ -1360,7 +1360,7 @@ script:
     name: vmware-guest-move
     outputs:
     - contextPath: VMware.VmwareGuestMove.instance
-      description: metadata about the virtual machine
+      description: metadata about the virtual machine.
       type: unknown
   - arguments:
     - description: 'Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.'
@@ -1392,7 +1392,7 @@ script:
     name: vmware-guest-network
     outputs:
     - contextPath: VMware.VmwareGuestNetwork.network_data
-      description: metadata about the virtual machine's network adapter after managing them
+      description: metadata about the virtual machine's network adapter after managing them.
       type: unknown
   - arguments:
     - auto: PREDEFINED
@@ -1476,7 +1476,7 @@ script:
     name: vmware-guest-screenshot
     outputs:
     - contextPath: VMware.VmwareGuestScreenshot.screenshot_info
-      description: display the facts of captured virtual machine screenshot file
+      description: display the facts of captured virtual machine screenshot file.
       type: unknown
   - arguments:
     - description: 'Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.'
@@ -1502,7 +1502,7 @@ script:
     name: vmware-guest-sendkey
     outputs:
     - contextPath: VMware.VmwareGuestSendkey.sendkey_info
-      description: display the keys and the number of keys sent to the virtual machine
+      description: display the keys and the number of keys sent to the virtual machine.
       type: unknown
   - arguments:
     - auto: PREDEFINED
@@ -1574,7 +1574,7 @@ script:
     name: vmware-guest-snapshot
     outputs:
     - contextPath: VMware.VmwareGuestSnapshot.snapshot_results
-      description: metadata about the virtual machine snapshots
+      description: metadata about the virtual machine snapshots.
       type: unknown
   - arguments:
     - description: 'Name of the VM to work with. This is required if `uuid` or `moid` is not supplied.'
@@ -1599,7 +1599,7 @@ script:
     name: vmware-guest-snapshot-info
     outputs:
     - contextPath: VMware.VmwareGuestSnapshotInfo.guest_snapshots
-      description: metadata about the snapshot information
+      description: metadata about the snapshot information.
       type: unknown
   - arguments:
     - description: 'Name of the virtual machine to work with. This is required if `uuid` or `moid` is not supplied.'
@@ -1650,7 +1650,7 @@ script:
     name: vmware-guest-tools-wait
     outputs:
     - contextPath: VMware.VmwareGuestToolsWait.instance
-      description: metadata about the virtual machine
+      description: metadata about the virtual machine.
       type: unknown
   - arguments:
     - description: 'Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.'
@@ -1688,7 +1688,7 @@ script:
     name: vmware-guest-video
     outputs:
     - contextPath: VMware.VmwareGuestVideo.video_status
-      description: metadata about the virtual machine's video card after managing them
+      description: metadata about the virtual machine's video card after managing them.
       type: unknown
   - arguments:
     - defaultValue: ha-datacenter
@@ -1796,7 +1796,7 @@ script:
     name: vmware-host
     outputs:
     - contextPath: VMware.VmwareHost.result
-      description: metadata about the new host system added
+      description: metadata about the new host system added.
       type: string
   - arguments:
     - description: 'Name of the cluster. Acceptance level of all ESXi host system in the given cluster will be managed. If `esxi_hostname` is not given, this parameter is required.'
@@ -1822,7 +1822,7 @@ script:
     name: vmware-host-acceptance
     outputs:
     - contextPath: VMware.VmwareHostAcceptance.facts
-      description: dict with hostname as key and dict with acceptance level facts, error as value
+      description: dict with hostname as key and dict with acceptance level facts, error as value.
       type: unknown
   - arguments:
     - description: AD Domain to join.
@@ -1846,7 +1846,7 @@ script:
     name: vmware-host-active-directory
     outputs:
     - contextPath: VMware.VmwareHostActiveDirectory.results
-      description: metadata about host system's AD domain join state
+      description: metadata about host system's AD domain join state.
       type: unknown
   - arguments:
     - description: 'Name of the cluster from all host systems to be used for information gathering. If `esxi_hostname` is not given, this parameter is required.'
@@ -1857,7 +1857,7 @@ script:
     name: vmware-host-capability-info
     outputs:
     - contextPath: VMware.VmwareHostCapabilityInfo.hosts_capability_info
-      description: metadata about host's capability info
+      description: metadata about host's capability info.
       type: unknown
   - arguments:
     - description: 'Name of the cluster from which the ESXi host belong to. If `esxi_hostname` is not given, this parameter is required.'
@@ -1868,7 +1868,7 @@ script:
     name: vmware-host-config-info
     outputs:
     - contextPath: VMware.VmwareHostConfigInfo.hosts_info
-      description: dict with hostname as key and dict with host config information
+      description: dict with hostname as key and dict with host config information.
       type: unknown
   - arguments:
     - description: 'Name of the cluster. Settings are applied to every ESXi host in given cluster. If `esxi_hostname` is not given, this parameter is required.'
@@ -1931,7 +1931,7 @@ script:
     name: vmware-host-dns-info
     outputs:
     - contextPath: VMware.VmwareHostDnsInfo.hosts_dns_info
-      description: metadata about DNS config from given cluster / host system
+      description: metadata about DNS config from given cluster / host system.
       type: unknown
   - arguments:
     - description: 'ESXi hostname. Host facts about the specified ESXi server will be returned. By specifying this option, you can select which ESXi hostsystem is returned if connecting to a vCenter.'
@@ -1947,7 +1947,7 @@ script:
     name: vmware-host-facts
     outputs:
     - contextPath: VMware.VmwareHostFacts.facts
-      description: system info about the host machine
+      description: system info about the host machine.
       type: unknown
   - arguments:
     - description: 'Name of the cluster from all host systems to be used for information gathering. If `esxi_hostname` is not given, this parameter is required.'
@@ -1958,7 +1958,7 @@ script:
     name: vmware-host-feature-info
     outputs:
     - contextPath: VMware.VmwareHostFeatureInfo.hosts_feature_info
-      description: metadata about host's feature capability information
+      description: metadata about host's feature capability information.
       type: unknown
   - arguments:
     - description: 'Name of the cluster from which the ESXi host belong to. If `esxi_hostname` is not given, this parameter is required.'
@@ -1969,7 +1969,7 @@ script:
     name: vmware-host-firewall-info
     outputs:
     - contextPath: VMware.VmwareHostFirewallInfo.hosts_firewall_info
-      description: metadata about host's firewall configuration
+      description: metadata about host's firewall configuration.
       type: unknown
   - arguments:
     - description: 'Name of the cluster. Firewall settings are applied to every ESXi host system in given cluster. If `esxi_hostname` is not given, this parameter is required.'
@@ -1983,7 +1983,7 @@ script:
     name: vmware-host-firewall-manager
     outputs:
     - contextPath: VMware.VmwareHostFirewallManager.rule_set_state
-      description: dict with hostname as key and dict with firewall rule set facts as value
+      description: dict with hostname as key and dict with firewall rule set facts as value.
       type: unknown
   - arguments:
     - auto: PREDEFINED
@@ -2001,7 +2001,7 @@ script:
     name: vmware-host-hyperthreading
     outputs:
     - contextPath: VMware.VmwareHostHyperthreading.results
-      description: metadata about host system's Hyperthreading configuration
+      description: metadata about host system's Hyperthreading configuration.
       type: unknown
   - arguments:
     - auto: PREDEFINED
@@ -2019,7 +2019,7 @@ script:
     name: vmware-host-ipv6
     outputs:
     - contextPath: VMware.VmwareHostIpv6.result
-      description: metadata about host system's IPv6 configuration
+      description: metadata about host system's IPv6 configuration.
       type: unknown
   - arguments:
     - description: 'Name of the ESXi host to work on. This parameter is required if `cluster_name` is not specified.'
@@ -2055,7 +2055,7 @@ script:
     name: vmware-host-lockdown
     outputs:
     - contextPath: VMware.VmwareHostLockdown.results
-      description: metadata about state of Host system lock down
+      description: metadata about state of Host system lock down.
       type: unknown
   - arguments:
     - description: 'Name of the host system to work with. This parameter is required if `cluster_name` is not specified.'
@@ -2083,7 +2083,7 @@ script:
     name: vmware-host-ntp
     outputs:
     - contextPath: VMware.VmwareHostNtp.results
-      description: metadata about host system's NTP configuration
+      description: metadata about host system's NTP configuration.
       type: unknown
   - arguments:
     - description: 'Name of the cluster. NTP config information about each ESXi server will be returned for the given cluster. If `esxi_hostname` is not given, this parameter is required.'
@@ -2094,7 +2094,7 @@ script:
     name: vmware-host-ntp-info
     outputs:
     - contextPath: VMware.VmwareHostNtpInfo.hosts_ntp_info
-      description: dict with hostname as key and dict with NTP infos as value
+      description: dict with hostname as key and dict with NTP infos as value.
       type: unknown
   - arguments:
     - description: 'Name of the cluster. Package information about each ESXi server will be returned for given cluster. If `esxi_hostname` is not given, this parameter is required.'
@@ -2105,7 +2105,7 @@ script:
     name: vmware-host-package-info
     outputs:
     - contextPath: VMware.VmwareHostPackageInfo.hosts_package_info
-      description: dict with hostname as key and dict with package information as value
+      description: dict with hostname as key and dict with package information as value.
       type: unknown
   - arguments:
     - auto: PREDEFINED
@@ -2125,7 +2125,7 @@ script:
     name: vmware-host-powermgmt-policy
     outputs:
     - contextPath: VMware.VmwareHostPowermgmtPolicy.result
-      description: metadata about host system's Power Management Policy
+      description: metadata about host system's Power Management Policy.
       type: unknown
   - arguments:
     - auto: PREDEFINED
@@ -2155,7 +2155,7 @@ script:
     name: vmware-host-powerstate
     outputs:
     - contextPath: VMware.VmwareHostPowerstate.result
-      description: metadata about host system's state
+      description: metadata about host system's state.
       type: unknown
   - arguments:
     - description: ESXi hostname to Rescan the storage subsystem on.
@@ -2173,7 +2173,7 @@ script:
     name: vmware-host-scanhba
     outputs:
     - contextPath: VMware.VmwareHostScanhba.result
-      description: return confirmation of requested host and updated / refreshed storage system
+      description: return confirmation of requested host and updated / refreshed storage system.
       type: unknown
   - arguments:
     - description: 'Name of the cluster. Service information about each ESXi server will be returned for given cluster. If `esxi_hostname` is not given, this parameter is required.'
@@ -2184,7 +2184,7 @@ script:
     name: vmware-host-service-info
     outputs:
     - contextPath: VMware.VmwareHostServiceInfo.host_service_info
-      description: dict with hostname as key and dict with host service config information
+      description: dict with hostname as key and dict with host service config information.
       type: unknown
   - arguments:
     - description: 'Name of the cluster. Service settings are applied to every ESXi host system/s in given cluster. If `esxi_hostname` is not given, this parameter is required.'
@@ -2262,7 +2262,7 @@ script:
     name: vmware-host-snmp
     outputs:
     - contextPath: VMware.VmwareHostSnmp.results
-      description: metadata about host system's SNMP configuration
+      description: metadata about host system's SNMP configuration.
       type: unknown
   - arguments:
     - description: 'Name of the cluster. SSL thumbprint information about all ESXi host system in the given cluster will be reported. If `esxi_hostname` is not given, this parameter is required.'
@@ -2273,7 +2273,7 @@ script:
     name: vmware-host-ssl-info
     outputs:
     - contextPath: VMware.VmwareHostSslInfo.host_ssl_info
-      description: dict with hostname as key and dict with SSL thumbprint related info
+      description: dict with hostname as key and dict with SSL thumbprint related info.
       type: unknown
   - arguments:
     - description: 'Name of the host system to work with. Vmhba information about this ESXi server will be returned. This parameter is required if `cluster_name` is not specified.'
@@ -2316,14 +2316,14 @@ script:
     name: vmware-host-vmnic-info
     outputs:
     - contextPath: VMware.VmwareHostVmnicInfo.hosts_vmnics_info
-      description: 'dict with hostname as key and dict with vmnics information as value. for `num_vmnics`, only NICs starting with vmnic are counted. NICs like vusb* are not counted. details about vswitch and dvswitch was added in version 2.7. details about vmnics was added in version 2.8.'
+      description: 'dict with hostname as key and dict with vmnics information as value. for `num_vmnics`, only NICs starting with vmnic are counted. NICs like vusb* are not counted. details about vswitch and dvswitch was added in version 2.7. details about vmnics was added in version 2.8.'.
       type: unknown
   - arguments: []
     description: "Gather info about local roles on an ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_local_role_info_module.html"
     name: vmware-local-role-info
     outputs:
     - contextPath: VMware.VmwareLocalRoleInfo.local_role_info
-      description: Info about role present on ESXi host
+      description: Info about role present on ESXi host.
       type: unknown
   - arguments:
     - description: The local role name to be managed.
@@ -2358,32 +2358,32 @@ script:
     name: vmware-local-role-manager
     outputs:
     - contextPath: VMware.VmwareLocalRoleManager.role_name
-      description: Name of local role
+      description: Name of local role.
       type: string
     - contextPath: VMware.VmwareLocalRoleManager.role_id
-      description: ESXi generated local role id
+      description: ESXi generated local role id.
       type: number
     - contextPath: VMware.VmwareLocalRoleManager.privileges
-      description: List of privileges
+      description: List of privileges.
       type: unknown
     - contextPath: VMware.VmwareLocalRoleManager.privileges_previous
-      description: List of privileges of role before the update
+      description: List of privileges of role before the update.
       type: unknown
     - contextPath: VMware.VmwareLocalRoleManager.local_role_name
-      description: Name of local role
+      description: Name of local role.
       type: string
     - contextPath: VMware.VmwareLocalRoleManager.new_privileges
-      description: List of privileges
+      description: List of privileges.
       type: unknown
     - contextPath: VMware.VmwareLocalRoleManager.old_privileges
-      description: List of privileges of role before the update
+      description: List of privileges of role before the update.
       type: unknown
   - arguments: []
     description: "Gather info about users on the given ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_local_user_info_module.html"
     name: vmware-local-user-info
     outputs:
     - contextPath: VMware.VmwareLocalUserInfo.local_user_info
-      description: metadata about all local users
+      description: metadata about all local users.
       type: unknown
   - arguments:
     - description: The local user name to be changed.
@@ -2435,13 +2435,13 @@ script:
     name: vmware-maintenancemode
     outputs:
     - contextPath: VMware.VmwareMaintenancemode.hostsystem
-      description: Name of vim reference
+      description: Name of vim reference.
       type: string
     - contextPath: VMware.VmwareMaintenancemode.hostname
-      description: Name of host in vCenter
+      description: Name of host in vCenter.
       type: string
     - contextPath: VMware.VmwareMaintenancemode.status
-      description: Action taken
+      description: Action taken.
       type: string
   - arguments:
     - description: ESXi hostname to be managed
@@ -2509,7 +2509,7 @@ script:
     name: vmware-object-role-permission
     outputs:
     - contextPath: VMware.VmwareObjectRolePermission.changed
-      description: whether or not a change was made to the object's role
+      description: whether or not a change was made to the object's role.
       type: boolean
   - arguments:
     - description: vSwitch to modify.
@@ -2546,7 +2546,7 @@ script:
     name: vmware-portgroup
     outputs:
     - contextPath: VMware.VmwarePortgroup.result
-      description: metadata about the portgroup
+      description: metadata about the portgroup.
       type: unknown
   - arguments:
     - auto: PREDEFINED
@@ -2564,7 +2564,7 @@ script:
     name: vmware-portgroup-info
     outputs:
     - contextPath: VMware.VmwarePortgroupInfo.hosts_portgroup_info
-      description: metadata about host's portgroup configuration
+      description: metadata about host's portgroup configuration.
       type: unknown
   - arguments:
     - description: Name of the datacenter to add the host.
@@ -2631,14 +2631,14 @@ script:
     name: vmware-resource-pool
     outputs:
     - contextPath: VMware.VmwareResourcePool.instance
-      description: metadata about the new resource pool
+      description: metadata about the new resource pool.
       type: unknown
   - arguments: []
     description: "Gathers info about resource pool information\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_resource_pool_info_module.html"
     name: vmware-resource-pool-info
     outputs:
     - contextPath: VMware.VmwareResourcePoolInfo.resource_pool_info
-      description: metadata about resource pool configuration
+      description: metadata about resource pool configuration.
       type: unknown
   - arguments:
     - description: The name of tag to manage.
@@ -2667,7 +2667,7 @@ script:
     name: vmware-tag
     outputs:
     - contextPath: VMware.VmwareTag.results
-      description: dictionary of tag metadata
+      description: dictionary of tag metadata.
       type: unknown
   - arguments:
     - auto: PREDEFINED
@@ -2681,7 +2681,7 @@ script:
     name: vmware-tag-info
     outputs:
     - contextPath: VMware.VmwareTagInfo.results
-      description: dictionary of tag metadata
+      description: dictionary of tag metadata.
       type: unknown
   - arguments:
     - description: 'List of tag(s) to be managed. You can also specify category name by specifying colon separated value. For example, "category_name:tag_name". You can skip category name if you have unique tag names.'
@@ -2723,7 +2723,7 @@ script:
     name: vmware-tag-manager
     outputs:
     - contextPath: VMware.VmwareTagManager.tag_status
-      description: metadata about tags related to object configuration
+      description: metadata about tags related to object configuration.
       type: unknown
   - arguments:
     - description: 'The target id based on order of scsi device. version 2.6 onwards, this parameter is optional.'
@@ -2736,10 +2736,10 @@ script:
     name: vmware-target-canonical-info
     outputs:
     - contextPath: VMware.VmwareTargetCanonicalInfo.canonical
-      description: metadata about SCSI Target device
+      description: metadata about SCSI Target device.
       type: string
     - contextPath: VMware.VmwareTargetCanonicalInfo.scsi_tgt_info
-      description: metadata about all SCSI Target devices
+      description: metadata about all SCSI Target devices.
       type: unknown
   - arguments:
     - defaultValue: '{''max_connections'': 50, ''task_cleanup'': True, ''task_retention'': 30, ''event_cleanup'': True, ''event_retention'': 30}'
@@ -2779,7 +2779,7 @@ script:
     name: vmware-vcenter-settings
     outputs:
     - contextPath: VMware.VmwareVcenterSettings.results
-      description: metadata about vCenter settings
+      description: metadata about vCenter settings.
       type: unknown
   - arguments:
     - description: 'Settings for vCenter server past day statistic collection. Valid attributes are: - `enabled` (bool): Past day statistics collection enabled. (default: True) - `interval_minutes` (int): Interval duration (minutes). (choices: [1, 2, 3, 4, 5]) (default: 5) - `save_for_days` (int): Save for (days). (choices: [1, 2, 3, 4, 5]) (default: 1) - `level` (int): Statistics level. (choices: [1, 2, 3, 4]) (default: 1)'
@@ -2798,7 +2798,7 @@ script:
     name: vmware-vcenter-statistics
     outputs:
     - contextPath: VMware.VmwareVcenterStatistics.results
-      description: metadata about vCenter statistics settings
+      description: metadata about vCenter statistics settings.
       type: unknown
   - arguments:
     - auto: PREDEFINED
@@ -2876,7 +2876,7 @@ script:
     name: vmware-vm-info
     outputs:
     - contextPath: VMware.VmwareVmInfo.virtual_machines
-      description: list of dictionary of virtual machines and their information
+      description: list of dictionary of virtual machines and their information.
       type: unknown
   - arguments:
     - description: 'The datacenter hosting the virtual machine. If set, it will help to speed up virtual machine search.'
@@ -2929,14 +2929,14 @@ script:
     name: vmware-vm-shell
     outputs:
     - contextPath: VMware.VmwareVmShell.results
-      description: metadata about the new process after completion with wait_for_process
+      description: metadata about the new process after completion with wait_for_process.
       type: unknown
   - arguments: []
     description: "Gather information about vSphere storage profile defined storage policy information.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_storage_policy_info_module.html"
     name: vmware-vm-storage-policy-info
     outputs:
     - contextPath: VMware.VmwareVmStoragePolicyInfo.spbm_profiles
-      description: list of dictionary of SPBM info
+      description: list of dictionary of SPBM info.
       type: unknown
   - arguments:
     - description: Desired cluster name where virtual machines are present for the DRS rule.
@@ -2980,7 +2980,7 @@ script:
     name: vmware-vm-vm-drs-rule
     outputs:
     - contextPath: VMware.VmwareVmVmDrsRule.result
-      description: metadata about DRS VM and VM rule
+      description: metadata about DRS VM and VM rule.
       type: unknown
   - arguments:
     - description: Name of the virtual machine to migrate to a dvSwitch
@@ -3041,7 +3041,7 @@ script:
     name: vmware-vmkernel
     outputs:
     - contextPath: VMware.VmwareVmkernel.result
-      description: metadata about VMKernel name
+      description: metadata about VMKernel name.
       type: unknown
   - arguments:
     - description: 'Name of the cluster. VMKernel information about each ESXi server will be returned for the given cluster. If `esxi_hostname` is not given, this parameter is required.'
@@ -3052,7 +3052,7 @@ script:
     name: vmware-vmkernel-info
     outputs:
     - contextPath: VMware.VmwareVmkernelInfo.host_vmk_info
-      description: metadata about VMKernel present on given host system
+      description: metadata about VMKernel present on given host system.
       type: unknown
   - arguments:
     - description: VMkernel interface name
@@ -3089,7 +3089,7 @@ script:
     name: vmware-vmotion
     outputs:
     - contextPath: VMware.VmwareVmotion.running_host
-      description: List the host the virtual machine is registered to
+      description: List the host the virtual machine is registered to.
       type: string
   - arguments:
     - description: Desired cluster UUID
@@ -3183,7 +3183,7 @@ script:
     name: vmware-vswitch
     outputs:
     - contextPath: VMware.VmwareVswitch.result
-      description: information about performed operation
+      description: information about performed operation.
       type: string
   - arguments:
     - description: 'Name of the cluster. Info about vswitch belonging to every ESXi host systems under this cluster will be returned. If `esxi_hostname` is not given, this parameter is required.'
@@ -3194,7 +3194,7 @@ script:
     name: vmware-vswitch-info
     outputs:
     - contextPath: VMware.VmwareVswitchInfo.hosts_vswitch_info
-      description: metadata about host's vswitch configuration
+      description: metadata about host's vswitch configuration.
       type: unknown
   - arguments:
     - description: The vCenter server on which the datastore is available.
@@ -3267,14 +3267,14 @@ script:
     name: vmware-vcenter-extension
     outputs:
     - contextPath: VMware.VcenterExtension.result
-      description: information about performed operation
+      description: information about performed operation.
       type: string
   - arguments: []
     description: "Gather info vCenter extensions\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vcenter_extension_info_module.html"
     name: vmware-vcenter-extension-info
     outputs:
     - contextPath: VMware.VcenterExtensionInfo.extension_info
-      description: List of extensions
+      description: List of extensions.
       type: unknown
   - arguments:
     - description: Name of the datacenter.
@@ -3305,7 +3305,7 @@ script:
     name: vmware-vcenter-folder
     outputs:
     - contextPath: VMware.VcenterFolder.result
-      description: The detail about the new folder
+      description: The detail about the new folder.
       type: unknown
   - arguments:
     - defaultValue: '{''source'': ''ansible''}'
@@ -3332,7 +3332,7 @@ script:
     name: vmware-vcenter-license
     outputs:
     - contextPath: VMware.VcenterLicense.licenses
-      description: list of license keys after module executed
+      description: list of license keys after module executed.
       type: unknown
   dockerimage: demisto/ansible-runner:1.0.0.3262406
   script: ''

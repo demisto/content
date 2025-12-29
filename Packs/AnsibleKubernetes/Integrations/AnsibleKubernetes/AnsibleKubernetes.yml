@@ -115,7 +115,7 @@ script:
     name: k8s-info
     outputs:
     - contextPath: Kubernetes.K8sInfo.resources
-      description: The object(s) that exists
+      description: The object(s) that exists.
       type: unknown
   - arguments:
     - defaultValue: v1

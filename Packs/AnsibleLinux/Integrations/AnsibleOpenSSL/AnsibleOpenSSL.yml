@@ -310,7 +310,7 @@ script:
     name: openssl-certificate
     outputs:
     - contextPath: OpenSSL.OpensslCertificate.filename
-      description: Path to the generated Certificate
+      description: Path to the generated Certificate.
       type: string
     - contextPath: OpenSSL.OpensslCertificate.backup_file
       description: Name of backup file created.
@@ -338,7 +338,7 @@ script:
     name: openssl-certificate-info
     outputs:
     - contextPath: OpenSSL.OpensslCertificateInfo.expired
-      description: Whether the certificate is expired (i.e. `notAfter` is in the past)
+      description: Whether the certificate is expired (i.e. `notAfter` is in the past).
       type: boolean
     - contextPath: OpenSSL.OpensslCertificateInfo.basic_constraints
       description: Entries in the `basic_constraints` extension, or `none` if extension is not present.
@@ -353,7 +353,7 @@ script:
       description: Whether the `extended_key_usage` extension is critical.
       type: boolean
     - contextPath: OpenSSL.OpensslCertificateInfo.extensions_by_oid
-      description: Returns a dictionary for every extension OID
+      description: Returns a dictionary for every extension OID.
       type: unknown
     - contextPath: OpenSSL.OpensslCertificateInfo.key_usage
       description: Entries in the `key_usage` extension, or `none` if extension is not present.
@@ -368,34 +368,34 @@ script:
       description: Whether the `subject_alt_name` extension is critical.
       type: boolean
     - contextPath: OpenSSL.OpensslCertificateInfo.ocsp_must_staple
-      description: '`yes` if the OCSP Must Staple extension is present, `none` otherwise.'
+      description: '`yes` if the OCSP Must Staple extension is present, `none` otherwise.'.
       type: boolean
     - contextPath: OpenSSL.OpensslCertificateInfo.ocsp_must_staple_critical
       description: Whether the `ocsp_must_staple` extension is critical.
       type: boolean
     - contextPath: OpenSSL.OpensslCertificateInfo.issuer
-      description: 'The certificate''s issuer. Note that for repeated values, only the last one will be returned.'
+      description: 'The certificate''s issuer. Note that for repeated values, only the last one will be returned.'.
       type: unknown
     - contextPath: OpenSSL.OpensslCertificateInfo.issuer_ordered
       description: The certificate's issuer as an ordered list of tuples.
       type: unknown
     - contextPath: OpenSSL.OpensslCertificateInfo.subject
-      description: 'The certificate''s subject as a dictionary. Note that for repeated values, only the last one will be returned.'
+      description: 'The certificate''s subject as a dictionary. Note that for repeated values, only the last one will be returned.'.
       type: unknown
     - contextPath: OpenSSL.OpensslCertificateInfo.subject_ordered
       description: The certificate's subject as an ordered list of tuples.
       type: unknown
     - contextPath: OpenSSL.OpensslCertificateInfo.not_after
-      description: '`notAfter` date as ASN.1 TIME'
+      description: '`notAfter` date as ASN.1 TIME'.
       type: string
     - contextPath: OpenSSL.OpensslCertificateInfo.not_before
-      description: '`notBefore` date as ASN.1 TIME'
+      description: '`notBefore` date as ASN.1 TIME'.
       type: string
     - contextPath: OpenSSL.OpensslCertificateInfo.public_key
-      description: Certificate's public key in PEM format
+      description: Certificate's public key in PEM format.
       type: string
     - contextPath: OpenSSL.OpensslCertificateInfo.public_key_fingerprints
-      description: 'Fingerprints of certificate''s public key. For every hash algorithm available, the fingerprint is computed.'
+      description: 'Fingerprints of certificate''s public key. For every hash algorithm available, the fingerprint is computed.'.
       type: unknown
     - contextPath: OpenSSL.OpensslCertificateInfo.signature_algorithm
       description: The signature algorithm used to sign the certificate.
@@ -410,16 +410,16 @@ script:
       description: For every time stamp provided in the `valid_at` option, a boolean whether the certificate is valid at that point in time or not.
       type: unknown
     - contextPath: OpenSSL.OpensslCertificateInfo.subject_key_identifier
-      description: 'The certificate''s subject key identifier. The identifier is returned in hexadecimal, with `:` used to separate bytes. Is `none` if the `SubjectKeyIdentifier` extension is not present.'
+      description: 'The certificate''s subject key identifier. The identifier is returned in hexadecimal, with `:` used to separate bytes. Is `none` if the `SubjectKeyIdentifier` extension is not present.'.
       type: string
     - contextPath: OpenSSL.OpensslCertificateInfo.authority_key_identifier
-      description: 'The certificate''s authority key identifier. The identifier is returned in hexadecimal, with `:` used to separate bytes. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'
+      description: 'The certificate''s authority key identifier. The identifier is returned in hexadecimal, with `:` used to separate bytes. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'.
       type: string
     - contextPath: OpenSSL.OpensslCertificateInfo.authority_cert_issuer
-      description: 'The certificate''s authority cert issuer as a list of general names. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'
+      description: 'The certificate''s authority cert issuer as a list of general names. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'.
       type: unknown
     - contextPath: OpenSSL.OpensslCertificateInfo.authority_cert_serial_number
-      description: 'The certificate''s authority cert serial number. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'
+      description: 'The certificate''s authority cert serial number. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'.
       type: number
     - contextPath: OpenSSL.OpensslCertificateInfo.ocsp_uri
       description: The OCSP responder URI, if included in the certificate. Will be `none` if no OCSP responder URI is included.
@@ -563,28 +563,28 @@ script:
     name: openssl-csr
     outputs:
     - contextPath: OpenSSL.OpensslCsr.privatekey
-      description: Path to the TLS/SSL private key the CSR was generated for
+      description: Path to the TLS/SSL private key the CSR was generated for.
       type: string
     - contextPath: OpenSSL.OpensslCsr.filename
-      description: Path to the generated Certificate Signing Request
+      description: Path to the generated Certificate Signing Request.
       type: string
     - contextPath: OpenSSL.OpensslCsr.subject
-      description: A list of the subject tuples attached to the CSR
+      description: A list of the subject tuples attached to the CSR.
       type: unknown
     - contextPath: OpenSSL.OpensslCsr.subjectAltName
-      description: The alternative names this CSR is valid for
+      description: The alternative names this CSR is valid for.
       type: unknown
     - contextPath: OpenSSL.OpensslCsr.keyUsage
-      description: Purpose for which the public key may be used
+      description: Purpose for which the public key may be used.
       type: unknown
     - contextPath: OpenSSL.OpensslCsr.extendedKeyUsage
-      description: Additional restriction on the public key purposes
+      description: Additional restriction on the public key purposes.
       type: unknown
     - contextPath: OpenSSL.OpensslCsr.basicConstraints
-      description: Indicates if the certificate belongs to a CA
+      description: Indicates if the certificate belongs to a CA.
       type: unknown
     - contextPath: OpenSSL.OpensslCsr.ocsp_must_staple
-      description: Indicates whether the certificate has the OCSP Must Staple feature enabled
+      description: Indicates whether the certificate has the OCSP Must Staple feature enabled.
       type: boolean
     - contextPath: OpenSSL.OpensslCsr.backup_file
       description: Name of backup file created.
@@ -609,7 +609,7 @@ script:
     name: openssl-csr-info
     outputs:
     - contextPath: OpenSSL.OpensslCsrInfo.signature_valid
-      description: 'Whether the CSR''s signature is valid. In case the check returns `no`, the module will fail.'
+      description: 'Whether the CSR''s signature is valid. In case the check returns `no`, the module will fail.'.
       type: boolean
     - contextPath: OpenSSL.OpensslCsrInfo.basic_constraints
       description: Entries in the `basic_constraints` extension, or `none` if extension is not present.
@@ -624,7 +624,7 @@ script:
       description: Whether the `extended_key_usage` extension is critical.
       type: boolean
     - contextPath: OpenSSL.OpensslCsrInfo.extensions_by_oid
-      description: Returns a dictionary for every extension OID
+      description: Returns a dictionary for every extension OID.
       type: unknown
     - contextPath: OpenSSL.OpensslCsrInfo.key_usage
       description: Entries in the `key_usage` extension, or `none` if extension is not present.
@@ -639,34 +639,34 @@ script:
       description: Whether the `subject_alt_name` extension is critical.
       type: boolean
     - contextPath: OpenSSL.OpensslCsrInfo.ocsp_must_staple
-      description: '`yes` if the OCSP Must Staple extension is present, `none` otherwise.'
+      description: '`yes` if the OCSP Must Staple extension is present, `none` otherwise.'.
       type: boolean
     - contextPath: OpenSSL.OpensslCsrInfo.ocsp_must_staple_critical
       description: Whether the `ocsp_must_staple` extension is critical.
       type: boolean
     - contextPath: OpenSSL.OpensslCsrInfo.subject
-      description: 'The CSR''s subject as a dictionary. Note that for repeated values, only the last one will be returned.'
+      description: 'The CSR''s subject as a dictionary. Note that for repeated values, only the last one will be returned.'.
       type: unknown
     - contextPath: OpenSSL.OpensslCsrInfo.subject_ordered
       description: The CSR's subject as an ordered list of tuples.
       type: unknown
     - contextPath: OpenSSL.OpensslCsrInfo.public_key
-      description: CSR's public key in PEM format
+      description: CSR's public key in PEM format.
       type: string
     - contextPath: OpenSSL.OpensslCsrInfo.public_key_fingerprints
-      description: 'Fingerprints of CSR''s public key. For every hash algorithm available, the fingerprint is computed.'
+      description: 'Fingerprints of CSR''s public key. For every hash algorithm available, the fingerprint is computed.'.
       type: unknown
     - contextPath: OpenSSL.OpensslCsrInfo.subject_key_identifier
-      description: 'The CSR''s subject key identifier. The identifier is returned in hexadecimal, with `:` used to separate bytes. Is `none` if the `SubjectKeyIdentifier` extension is not present.'
+      description: 'The CSR''s subject key identifier. The identifier is returned in hexadecimal, with `:` used to separate bytes. Is `none` if the `SubjectKeyIdentifier` extension is not present.'.
       type: string
     - contextPath: OpenSSL.OpensslCsrInfo.authority_key_identifier
-      description: 'The CSR''s authority key identifier. The identifier is returned in hexadecimal, with `:` used to separate bytes. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'
+      description: 'The CSR''s authority key identifier. The identifier is returned in hexadecimal, with `:` used to separate bytes. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'.
       type: string
     - contextPath: OpenSSL.OpensslCsrInfo.authority_cert_issuer
-      description: 'The CSR''s authority cert issuer as a list of general names. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'
+      description: 'The CSR''s authority cert issuer as a list of general names. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'.
       type: unknown
     - contextPath: OpenSSL.OpensslCsrInfo.authority_cert_serial_number
-      description: 'The CSR''s authority cert serial number. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'
+      description: 'The CSR''s authority cert serial number. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'.
       type: number
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -948,7 +948,7 @@ script:
       description: Path to the generated TLS/SSL private key file.
       type: string
     - contextPath: OpenSSL.OpensslPrivatekey.fingerprint
-      description: 'The fingerprint of the public key. Fingerprint will be generated for each `hashlib.algorithms` available. The PyOpenSSL backend requires PyOpenSSL >= 16.0 for meaningful output.'
+      description: 'The fingerprint of the public key. Fingerprint will be generated for each `hashlib.algorithms` available. The PyOpenSSL backend requires PyOpenSSL >= 16.0 for meaningful output.'.
       type: unknown
     - contextPath: OpenSSL.OpensslPrivatekey.backup_file
       description: Name of backup file created.
@@ -982,22 +982,22 @@ script:
     name: openssl-privatekey-info
     outputs:
     - contextPath: OpenSSL.OpensslPrivatekeyInfo.can_load_key
-      description: Whether the module was able to load the private key from disk
+      description: Whether the module was able to load the private key from disk.
       type: boolean
     - contextPath: OpenSSL.OpensslPrivatekeyInfo.can_parse_key
-      description: Whether the module was able to parse the private key
+      description: Whether the module was able to parse the private key.
       type: boolean
     - contextPath: OpenSSL.OpensslPrivatekeyInfo.key_is_consistent
-      description: 'Whether the key is consistent. Can also return `none` next to `yes` and `no`, to indicate that consistency couldn''t be checked. In case the check returns `no`, the module will fail.'
+      description: 'Whether the key is consistent. Can also return `none` next to `yes` and `no`, to indicate that consistency couldn''t be checked. In case the check returns `no`, the module will fail.'.
       type: boolean
     - contextPath: OpenSSL.OpensslPrivatekeyInfo.public_key
-      description: Private key's public key in PEM format
+      description: Private key's public key in PEM format.
       type: string
     - contextPath: OpenSSL.OpensslPrivatekeyInfo.public_key_fingerprints
-      description: 'Fingerprints of private key''s public key. For every hash algorithm available, the fingerprint is computed.'
+      description: 'Fingerprints of private key''s public key. For every hash algorithm available, the fingerprint is computed.'.
       type: unknown
     - contextPath: OpenSSL.OpensslPrivatekeyInfo.type
-      description: 'The key''s type. One of `RSA`, `DSA`, `ECC`, `Ed25519`, `X25519`, `Ed448`, or `X448`. Will start with `unknown` if the key type cannot be determined.'
+      description: 'The key''s type. One of `RSA`, `DSA`, `ECC`, `Ed25519`, `X25519`, `Ed448`, or `X448`. Will start with `unknown` if the key type cannot be determined.'.
       type: string
     - contextPath: OpenSSL.OpensslPrivatekeyInfo.public_data
       description: Public key data. Depends on key type.
@@ -1090,7 +1090,7 @@ script:
       description: Path to the generated TLS/SSL public key file.
       type: string
     - contextPath: OpenSSL.OpensslPublickey.fingerprint
-      description: 'The fingerprint of the public key. Fingerprint will be generated for each hashlib.algorithms available. Requires PyOpenSSL >= 16.0 for meaningful output.'
+      description: 'The fingerprint of the public key. Fingerprint will be generated for each hashlib.algorithms available. Requires PyOpenSSL >= 16.0 for meaningful output.'.
       type: unknown
     - contextPath: OpenSSL.OpensslPublickey.backup_file
       description: Name of backup file created.
@@ -1117,10 +1117,10 @@ script:
       description: The root certificate in PEM format.
       type: string
     - contextPath: OpenSSL.CertificateCompleteChain.chain
-      description: 'The chain added to the given input chain. Includes the root certificate. Returned as a list of PEM certificates.'
+      description: 'The chain added to the given input chain. Includes the root certificate. Returned as a list of PEM certificates.'.
       type: unknown
     - contextPath: OpenSSL.CertificateCompleteChain.complete_chain
-      description: 'The completed chain, including leaf, all intermediates, and root. Returned as a list of PEM certificates.'
+      description: 'The completed chain, including leaf, all intermediates, and root. Returned as a list of PEM certificates.'.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1155,34 +1155,34 @@ script:
     name: openssl-get-certificate
     outputs:
     - contextPath: OpenSSL.GetCertificate.cert
-      description: The certificate retrieved from the port
+      description: The certificate retrieved from the port.
       type: string
     - contextPath: OpenSSL.GetCertificate.expired
-      description: Boolean indicating if the cert is expired
+      description: Boolean indicating if the cert is expired.
       type: boolean
     - contextPath: OpenSSL.GetCertificate.extensions
-      description: Extensions applied to the cert
+      description: Extensions applied to the cert.
       type: unknown
     - contextPath: OpenSSL.GetCertificate.issuer
-      description: Information about the issuer of the cert
+      description: Information about the issuer of the cert.
       type: unknown
     - contextPath: OpenSSL.GetCertificate.not_after
-      description: Expiration date of the cert
+      description: Expiration date of the cert.
       type: string
     - contextPath: OpenSSL.GetCertificate.not_before
-      description: Issue date of the cert
+      description: Issue date of the cert.
       type: string
     - contextPath: OpenSSL.GetCertificate.serial_number
-      description: The serial number of the cert
+      description: The serial number of the cert.
       type: string
     - contextPath: OpenSSL.GetCertificate.signature_algorithm
-      description: The algorithm used to sign the cert
+      description: The algorithm used to sign the cert.
       type: string
     - contextPath: OpenSSL.GetCertificate.subject
-      description: Information about the subject of the cert (OU, CN, etc)
+      description: Information about the subject of the cert (OU, CN, etc).
       type: unknown
     - contextPath: OpenSSL.GetCertificate.version
-      description: The version number of the certificate
+      description: The version number of the certificate.
       type: string
   dockerimage: demisto/ansible-runner:1.0.0.3262406
   script: ''

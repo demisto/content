@@ -187,16 +187,16 @@ script:
       description: Whether this module managed the directory of the authorized key file.
       type: boolean
     - contextPath: Linux.AuthorizedKey.path
-      description: Alternate path to the authorized_keys file
+      description: Alternate path to the authorized_keys file.
       type: string
     - contextPath: Linux.AuthorizedKey.state
-      description: Whether the given key (with the given key_options) should or should not be in the file
+      description: Whether the given key (with the given key_options) should or should not be in the file.
       type: string
     - contextPath: Linux.AuthorizedKey.unique
-      description: Whether the key is unique
+      description: Whether the key is unique.
       type: boolean
     - contextPath: Linux.AuthorizedKey.user
-      description: The username on the remote host whose authorized_keys file will be modified
+      description: The username on the remote host whose authorized_keys file will be modified.
       type: string
     - contextPath: Linux.AuthorizedKey.validate_certs
       description: This only applies if using a https url as the source of the keys. If set to `no`, the SSL certificates will not be validated.
@@ -360,7 +360,7 @@ script:
     name: linux-dconf
     outputs:
     - contextPath: Linux.Dconf.value
-      description: value associated with the requested key
+      description: value associated with the requested key.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -528,13 +528,13 @@ script:
     name: linux-gconftool2
     outputs:
     - contextPath: Linux.Gconftool2.key
-      description: The key specified in the module parameters
+      description: The key specified in the module parameters.
       type: string
     - contextPath: Linux.Gconftool2.value_type
-      description: The type of the value that was changed
+      description: The type of the value that was changed.
       type: string
     - contextPath: Linux.Gconftool2.value
-      description: The value of the preference key after executing the module
+      description: The value of the preference key after executing the module.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -677,10 +677,10 @@ script:
     name: linux-interfaces-file
     outputs:
     - contextPath: Linux.InterfacesFile.dest
-      description: destination file/path
+      description: destination file/path.
       type: string
     - contextPath: Linux.InterfacesFile.ifaces
-      description: interfaces dictionary
+      description: interfaces dictionary.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -914,10 +914,10 @@ script:
       description: Output from stdout of keytool/openssl command after execution of given command or an error.
       type: string
     - contextPath: Linux.JavaKeystore.rc
-      description: keytool/openssl command execution return value
+      description: keytool/openssl command execution return value.
       type: number
     - contextPath: Linux.JavaKeystore.cmd
-      description: Executed command to get action done
+      description: Executed command to get action done.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -974,7 +974,7 @@ script:
     name: linux-listen-ports-facts
     outputs:
     - contextPath: Linux.ListenPortsFacts.facts
-      description: Dictionary containing details of TCP and UDP ports with listening servers
+      description: Dictionary containing details of TCP and UDP ports with listening servers.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1235,7 +1235,7 @@ script:
       description: The rule(s) that was/were changed.  This is only available in Ansible 2.4 and was removed in Ansible 2.5.
       type: string
     - contextPath: Linux.Pamd.action
-      description: 'That action that was taken and is one of: update_rule, insert_before_rule, insert_after_rule, args_present, args_absent, absent. This was available in Ansible 2.4 and removed in Ansible 2.8'
+      description: 'That action that was taken and is one of: update_rule, insert_before_rule, insert_after_rule, args_present, args_absent, absent. This was available in Ansible 2.4 and removed in Ansible 2.8'.
       type: string
     - contextPath: Linux.Pamd.dest
       description: Path to pam.d service that was changed.  This is only available in Ansible 2.3 and was removed in Ansible 2.4.
@@ -1327,7 +1327,7 @@ script:
     name: linux-parted
     outputs:
     - contextPath: Linux.Parted.partition_info
-      description: Current partition information
+      description: Current partition information.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1341,7 +1341,7 @@ script:
     name: linux-pids
     outputs:
     - contextPath: Linux.Pids.pids
-      description: Process IDs of the given process
+      description: Process IDs of the given process.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1355,7 +1355,7 @@ script:
     name: linux-ping
     outputs:
     - contextPath: Linux.Ping.ping
-      description: value provided with the data parameter
+      description: value provided with the data parameter.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1368,22 +1368,22 @@ script:
     name: linux-python-requirements-info
     outputs:
     - contextPath: Linux.PythonRequirementsInfo.python
-      description: path to python version used
+      description: path to python version used.
       type: string
     - contextPath: Linux.PythonRequirementsInfo.python_version
-      description: version of python
+      description: version of python.
       type: string
     - contextPath: Linux.PythonRequirementsInfo.python_system_path
-      description: List of paths python is looking for modules in
+      description: List of paths python is looking for modules in.
       type: unknown
     - contextPath: Linux.PythonRequirementsInfo.valid
-      description: A dictionary of dependencies that matched their desired versions. If no version was specified, then `desired` will be null
+      description: A dictionary of dependencies that matched their desired versions. If no version was specified, then `desired` will be null.
       type: unknown
     - contextPath: Linux.PythonRequirementsInfo.mismatched
-      description: A dictionary of dependencies that did not satisfy the desired version
+      description: A dictionary of dependencies that did not satisfy the desired version.
       type: unknown
     - contextPath: Linux.PythonRequirementsInfo.not_found
-      description: A list of packages that could not be imported at all, and are not installed
+      description: A list of packages that could not be imported at all, and are not installed.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1414,7 +1414,7 @@ script:
     name: linux-reboot
     outputs:
     - contextPath: Linux.Reboot.rebooted
-      description: true if the machine was rebooted
+      description: true if the machine was rebooted.
       type: boolean
     - contextPath: Linux.Reboot.elapsed
       description: The number of seconds that elapsed waiting for the system to be rebooted.
@@ -1679,7 +1679,7 @@ script:
     name: linux-service-facts
     outputs:
     - contextPath: Linux.ServiceFacts.facts
-      description: Facts to add to facts about the services on the system
+      description: Facts to add to facts about the services on the system.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1793,7 +1793,7 @@ script:
     name: linux-systemd
     outputs:
     - contextPath: Linux.Systemd.status
-      description: A dictionary with the key=value pairs returned from `systemctl show`
+      description: A dictionary with the key=value pairs returned from `systemctl show`.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1833,7 +1833,7 @@ script:
     name: linux-sysvinit
     outputs:
     - contextPath: Linux.Sysvinit.results
-      description: results from actions taken
+      description: results from actions taken.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2085,61 +2085,61 @@ script:
     name: linux-user
     outputs:
     - contextPath: Linux.User.append
-      description: Whether or not to append the user to groups
+      description: Whether or not to append the user to groups.
       type: boolean
     - contextPath: Linux.User.comment
-      description: Comment section from passwd file, usually the user name
+      description: Comment section from passwd file, usually the user name.
       type: string
     - contextPath: Linux.User.create_home
-      description: Whether or not to create the home directory
+      description: Whether or not to create the home directory.
       type: boolean
     - contextPath: Linux.User.force
-      description: Whether or not a user account was forcibly deleted
+      description: Whether or not a user account was forcibly deleted.
       type: boolean
     - contextPath: Linux.User.group
-      description: Primary user group ID
+      description: Primary user group ID.
       type: number
     - contextPath: Linux.User.groups
-      description: List of groups of which the user is a member
+      description: List of groups of which the user is a member.
       type: string
     - contextPath: Linux.User.home
-      description: Path to user's home directory
+      description: Path to user's home directory.
       type: string
     - contextPath: Linux.User.move_home
-      description: Whether or not to move an existing home directory
+      description: Whether or not to move an existing home directory.
       type: boolean
     - contextPath: Linux.User.name
-      description: User account name
+      description: User account name.
       type: string
     - contextPath: Linux.User.password
-      description: Masked value of the password
+      description: Masked value of the password.
       type: string
     - contextPath: Linux.User.remove
-      description: Whether or not to remove the user account
+      description: Whether or not to remove the user account.
       type: boolean
     - contextPath: Linux.User.shell
-      description: User login shell
+      description: User login shell.
       type: string
     - contextPath: Linux.User.ssh_fingerprint
-      description: Fingerprint of generated SSH key
+      description: Fingerprint of generated SSH key.
       type: string
     - contextPath: Linux.User.ssh_key_file
-      description: Path to generated SSH private key file
+      description: Path to generated SSH private key file.
       type: string
     - contextPath: Linux.User.ssh_public_key
-      description: Generated SSH public key file
+      description: Generated SSH public key file.
       type: string
     - contextPath: Linux.User.stderr
-      description: Standard error from running commands
+      description: Standard error from running commands.
       type: string
     - contextPath: Linux.User.stdout
-      description: Standard output from running commands
+      description: Standard output from running commands.
       type: string
     - contextPath: Linux.User.system
-      description: Whether or not the account is a system account
+      description: Whether or not the account is a system account.
       type: boolean
     - contextPath: Linux.User.uid
-      description: User ID of the user account
+      description: User ID of the user account.
       type: number
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2182,22 +2182,22 @@ script:
     name: linux-xfs-quota
     outputs:
     - contextPath: Linux.XfsQuota.bhard
-      description: the current bhard setting in bytes
+      description: the current bhard setting in bytes.
       type: number
     - contextPath: Linux.XfsQuota.bsoft
-      description: the current bsoft setting in bytes
+      description: the current bsoft setting in bytes.
       type: number
     - contextPath: Linux.XfsQuota.ihard
-      description: the current ihard setting in bytes
+      description: the current ihard setting in bytes.
       type: number
     - contextPath: Linux.XfsQuota.isoft
-      description: the current isoft setting in bytes
+      description: the current isoft setting in bytes.
       type: number
     - contextPath: Linux.XfsQuota.rtbhard
-      description: the current rtbhard setting in bytes
+      description: the current rtbhard setting in bytes.
       type: number
     - contextPath: Linux.XfsQuota.rtbsoft
-      description: the current rtbsoft setting in bytes
+      description: the current rtbsoft setting in bytes.
       type: number
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2368,10 +2368,10 @@ script:
     name: linux-openssh-cert
     outputs:
     - contextPath: Linux.OpensshCert.type
-      description: type of the certificate (host or user)
+      description: type of the certificate (host or user).
       type: string
     - contextPath: Linux.OpensshCert.filename
-      description: path to the certificate
+      description: path to the certificate.
       type: string
     - contextPath: Linux.OpensshCert.info
       description: Information about the certificate. Output of `ssh-keygen -L -f`.
@@ -2440,22 +2440,22 @@ script:
     name: linux-openssh-keypair
     outputs:
     - contextPath: Linux.OpensshKeypair.size
-      description: Size (in bits) of the SSH private key
+      description: Size (in bits) of the SSH private key.
       type: number
     - contextPath: Linux.OpensshKeypair.type
-      description: Algorithm used to generate the SSH private key
+      description: Algorithm used to generate the SSH private key.
       type: string
     - contextPath: Linux.OpensshKeypair.filename
-      description: Path to the generated SSH private key file
+      description: Path to the generated SSH private key file.
       type: string
     - contextPath: Linux.OpensshKeypair.fingerprint
       description: The fingerprint of the key.
       type: string
     - contextPath: Linux.OpensshKeypair.public_key
-      description: The public key of the generated SSH private key
+      description: The public key of the generated SSH private key.
       type: string
     - contextPath: Linux.OpensshKeypair.comment
-      description: The comment of the generated key
+      description: The comment of the generated key.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2527,7 +2527,7 @@ script:
     name: linux-acl
     outputs:
     - contextPath: Linux.Acl.acl
-      description: Current ACL on provided path (after changes, if any)
+      description: Current ACL on provided path (after changes, if any).
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2925,13 +2925,13 @@ script:
     name: linux-find
     outputs:
     - contextPath: Linux.Find.files
-      description: All matches found with the specified criteria (see stat module for full output of each dictionary)
+      description: All matches found with the specified criteria (see stat module for full output of each dictionary).
       type: unknown
     - contextPath: Linux.Find.matched
-      description: Number of matches
+      description: Number of matches.
       type: number
     - contextPath: Linux.Find.examined
-      description: Number of filesystem objects looked at
+      description: Number of filesystem objects looked at.
       type: number
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3238,7 +3238,7 @@ script:
     name: linux-stat
     outputs:
     - contextPath: Linux.Stat.stat
-      description: dictionary containing all the stat data, some platforms might add additional fields
+      description: dictionary containing all the stat data, some platforms might add additional fields.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3389,7 +3389,7 @@ script:
     name: linux-tempfile
     outputs:
     - contextPath: Linux.Tempfile.path
-      description: Path to created file or directory
+      description: Path to created file or directory.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3582,7 +3582,7 @@ script:
       description: A dictionary with the original xpath, namespaces and state.
       type: unknown
     - contextPath: Linux.Xml.backup_file
-      description: The name of the backup file that was created
+      description: The name of the backup file that was created.
       type: string
     - contextPath: Linux.Xml.count
       description: The count of xpath matches.
@@ -4098,19 +4098,19 @@ script:
     name: linux-pip
     outputs:
     - contextPath: Linux.Pip.cmd
-      description: pip command used by the module
+      description: pip command used by the module.
       type: string
     - contextPath: Linux.Pip.name
-      description: list of python modules targetted by pip
+      description: list of python modules targetted by pip.
       type: unknown
     - contextPath: Linux.Pip.requirements
-      description: Path to the requirements file
+      description: Path to the requirements file.
       type: string
     - contextPath: Linux.Pip.version
-      description: Version of the package specified in 'name'
+      description: Version of the package specified in 'name'.
       type: string
     - contextPath: Linux.Pip.virtualenv
-      description: Path to the virtualenv
+      description: Path to the virtualenv.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4125,7 +4125,7 @@ script:
     name: linux-pip-package-info
     outputs:
     - contextPath: Linux.PipPackageInfo.packages
-      description: a dictionary of installed package data
+      description: a dictionary of installed package data.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4175,13 +4175,13 @@ script:
     name: linux-yarn
     outputs:
     - contextPath: Linux.Yarn.changed
-      description: Whether Yarn changed any package data
+      description: Whether Yarn changed any package data.
       type: boolean
     - contextPath: Linux.Yarn.msg
-      description: Provides an error message if Yarn syntax was incorrect
+      description: Provides an error message if Yarn syntax was incorrect.
       type: string
     - contextPath: Linux.Yarn.invocation
-      description: Parameters and values used during execution
+      description: Parameters and values used during execution.
       type: unknown
     - contextPath: Linux.Yarn.out
       description: Output generated from Yarn with emojis removed.
@@ -4216,7 +4216,7 @@ script:
     name: linux-apk
     outputs:
     - contextPath: Linux.Apk.packages
-      description: a list of packages that have been changed
+      description: a list of packages that have been changed.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4286,16 +4286,16 @@ script:
     name: linux-apt
     outputs:
     - contextPath: Linux.Apt.cache_updated
-      description: if the cache was updated or not
+      description: if the cache was updated or not.
       type: boolean
     - contextPath: Linux.Apt.cache_update_time
-      description: time of the last cache update (0 if unknown)
+      description: time of the last cache update (0 if unknown).
       type: number
     - contextPath: Linux.Apt.stdout
-      description: output from apt
+      description: output from apt.
       type: string
     - contextPath: Linux.Apt.stderr
-      description: error output from apt
+      description: error output from apt.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4455,19 +4455,19 @@ script:
     name: linux-flatpak
     outputs:
     - contextPath: Linux.Flatpak.command
-      description: The exact flatpak command that was executed
+      description: The exact flatpak command that was executed.
       type: string
     - contextPath: Linux.Flatpak.msg
-      description: Module error message
+      description: Module error message.
       type: string
     - contextPath: Linux.Flatpak.rc
-      description: Return code from flatpak binary
+      description: Return code from flatpak binary.
       type: number
     - contextPath: Linux.Flatpak.stderr
-      description: Error output from flatpak binary
+      description: Error output from flatpak binary.
       type: string
     - contextPath: Linux.Flatpak.stdout
-      description: Output from flatpak binary
+      description: Output from flatpak binary.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4500,19 +4500,19 @@ script:
     name: linux-flatpak-remote
     outputs:
     - contextPath: Linux.FlatpakRemote.command
-      description: The exact flatpak command that was executed
+      description: The exact flatpak command that was executed.
       type: string
     - contextPath: Linux.FlatpakRemote.msg
-      description: Module error message
+      description: Module error message.
       type: string
     - contextPath: Linux.FlatpakRemote.rc
-      description: Return code from flatpak binary
+      description: Return code from flatpak binary.
       type: number
     - contextPath: Linux.FlatpakRemote.stderr
-      description: Error output from flatpak binary
+      description: Error output from flatpak binary.
       type: string
     - contextPath: Linux.FlatpakRemote.stdout
-      description: Output from flatpak binary
+      description: Output from flatpak binary.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4675,7 +4675,7 @@ script:
     name: linux-package-facts
     outputs:
     - contextPath: Linux.PackageFacts.facts
-      description: facts to add to facts
+      description: facts to add to facts.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4952,10 +4952,10 @@ script:
     name: linux-yum-repository
     outputs:
     - contextPath: Linux.YumRepository.repo
-      description: repository name
+      description: repository name.
       type: string
     - contextPath: Linux.YumRepository.state
-      description: state of the target, after execution
+      description: state of the target, after execution.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -5077,19 +5077,19 @@ script:
     name: linux-snap
     outputs:
     - contextPath: Linux.Snap.classic
-      description: Whether or not the snaps were installed with the classic confinement
+      description: Whether or not the snaps were installed with the classic confinement.
       type: boolean
     - contextPath: Linux.Snap.channel
-      description: The channel the snaps were installed from
+      description: The channel the snaps were installed from.
       type: string
     - contextPath: Linux.Snap.cmd
-      description: The command that was executed on the host
+      description: The command that was executed on the host.
       type: string
     - contextPath: Linux.Snap.snaps_installed
-      description: The list of actually installed snaps
+      description: The list of actually installed snaps.
       type: unknown
     - contextPath: Linux.Snap.snaps_removed
-      description: The list of actually removed snaps
+      description: The list of actually removed snaps.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -5155,7 +5155,7 @@ script:
     name: linux-redhat-subscription
     outputs:
     - contextPath: Linux.RedhatSubscription.subscribed_pool_ids
-      description: List of pool IDs to which system is now subscribed
+      description: List of pool IDs to which system is now subscribed.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -5241,7 +5241,7 @@ script:
     name: linux-rhsm-release
     outputs:
     - contextPath: Linux.RhsmRelease.current_release
-      description: The current RHSM release version value
+      description: The current RHSM release version value.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -5272,7 +5272,7 @@ script:
     name: linux-rhsm-repository
     outputs:
     - contextPath: Linux.RhsmRepository.repositories
-      description: 'The list of RHSM repositories with their states. When this module is used to change the repository states, this list contains the updated states after the changes.'
+      description: 'The list of RHSM repositories with their states. When this module is used to change the repository states, this list contains the updated states after the changes.'.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -5395,58 +5395,58 @@ script:
     name: linux-get-url
     outputs:
     - contextPath: Linux.GetUrl.backup_file
-      description: name of backup file created after download
+      description: name of backup file created after download.
       type: string
     - contextPath: Linux.GetUrl.checksum_dest
-      description: sha1 checksum of the file after copy
+      description: sha1 checksum of the file after copy.
       type: string
     - contextPath: Linux.GetUrl.checksum_src
-      description: sha1 checksum of the file
+      description: sha1 checksum of the file.
       type: string
     - contextPath: Linux.GetUrl.dest
-      description: destination file/path
+      description: destination file/path.
       type: string
     - contextPath: Linux.GetUrl.elapsed
-      description: The number of seconds that elapsed while performing the download
+      description: The number of seconds that elapsed while performing the download.
       type: number
     - contextPath: Linux.GetUrl.gid
-      description: group id of the file
+      description: group id of the file.
       type: number
     - contextPath: Linux.GetUrl.group
-      description: group of the file
+      description: group of the file.
       type: string
     - contextPath: Linux.GetUrl.md5sum
-      description: md5 checksum of the file after download
+      description: md5 checksum of the file after download.
       type: string
     - contextPath: Linux.GetUrl.mode
-      description: permissions of the target
+      description: permissions of the target.
       type: string
     - contextPath: Linux.GetUrl.msg
-      description: the HTTP message from the request
+      description: the HTTP message from the request.
       type: string
     - contextPath: Linux.GetUrl.owner
-      description: owner of the file
+      description: owner of the file.
       type: string
     - contextPath: Linux.GetUrl.secontext
-      description: the SELinux security context of the file
+      description: the SELinux security context of the file.
       type: string
     - contextPath: Linux.GetUrl.size
-      description: size of the target
+      description: size of the target.
       type: number
     - contextPath: Linux.GetUrl.src
-      description: source file used after download
+      description: source file used after download.
       type: string
     - contextPath: Linux.GetUrl.state
-      description: state of the target
+      description: state of the target.
       type: string
     - contextPath: Linux.GetUrl.status_code
-      description: the HTTP status code from the request
+      description: the HTTP status code from the request.
       type: number
     - contextPath: Linux.GetUrl.uid
-      description: owner id of the file, after execution
+      description: owner id of the file, after execution.
       type: number
     - contextPath: Linux.GetUrl.url
-      description: the actual URL used for the request
+      description: the actual URL used for the request.
       type: string
   dockerimage: demisto/ansible-runner:1.0.0.3262406
   script: ''
