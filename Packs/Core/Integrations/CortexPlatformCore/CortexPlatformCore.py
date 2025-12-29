@@ -1,3 +1,5 @@
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
@@ -20,6 +22,8 @@ MAX_COMPLIANCE_STANDARDS = 100
 AGENTS_TABLE = "AGENTS_TABLE"
 SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
+MAX_GET_SYSTEM_USERS_LIMIT = 50
+MAX_GET_EXCEPTION_RULES_LIMIT = 100
 
 DAY_MAP = {"sunday": 0, "monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6}
 
@@ -61,6 +65,8 @@ WEBAPP_COMMANDS = [
     "core-list-scripts",
     "core-run-script-agentix",
     "core-list-endpoints",
+    "core-list-exception-rules",
+    "core-update-case",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
 ]
@@ -88,6 +94,10 @@ class ScriptManagement:
         "linux": "AGENT_OS_LINUX",
         "macos": "AGENT_OS_MAC",
     }
+
+
+DISABLE_PREVENTION_RULES_TABLE = "AGENT_EXCEPTION_RULES_TABLE_ADVANCED"
+LEGACY_AGENT_EXCEPTIONS_TABLE = "AGENT_EXCEPTION_RULES_TABLE_LEGACY"
 
 
 class CaseManagement:
@@ -323,6 +333,11 @@ COVERAGE_API_FIELDS_MAPPING = {
     "vendor_name": "asset_provider",
     "asset_provider": "unified_provider",
 }
+
+EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING = {
+    "legacy_agent_exceptions": LEGACY_AGENT_EXCEPTIONS_TABLE,
+    "disable_prevention_rules": DISABLE_PREVENTION_RULES_TABLE,
+}
 # Policy finding type mapping
 POLICY_FINDING_TYPE_MAPPING = {
     "CI/CD Risk": "CAS_CI_CD_RISK_SCANNER",
@@ -344,6 +359,8 @@ POLICY_CATEGORY_MAPPING = {
     "VCS Collaborator": "VCS_COLLABORATOR",
     "VCS Organization": "VCS_ORGANIZATION",
 }
+
+EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP = {"MODULES", "PROFILE_IDS"}
 
 
 DAYS_MAPPING = {
@@ -387,6 +404,7 @@ class FilterBuilder:
         IS_EMPTY = ("IS_EMPTY", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
         ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
+        RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
 
     AND = "AND"
     OR = "OR"
@@ -462,7 +480,7 @@ class FilterBuilder:
             end_time (str | None): The end time of the range.
         """
         start, end = self._prepare_time_range(start_time, end_time)
-        if start and end:
+        if start is not None and end is not None:
             self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
 
     def to_dict(self) -> dict[str, list]:
@@ -786,6 +804,13 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def get_webapp_view_def(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="GET",
+            url_suffix="/get_view_def",
+            json_data=request_data,
+        )
+
     def get_webapp_histograms(self, request_data: dict) -> dict:
         return self._http_request(
             method="POST",
@@ -990,21 +1015,15 @@ class Client(CoreClient):
             json_data=payload,
         )
 
-    def get_assessment_profile_results(self, payload: dict) -> dict:
-        """
-        Get assessment profile results from Cortex XDR.
-
-        Args:
-            payload (dict): The request payload for retrieving assessment results.
-
-        Returns:
-            dict: The response from the API containing assessment profile results.
-        """
-        return self._http_request(
+    def get_users(self):
+        reply = self._http_request(
             method="POST",
-            url_suffix="/compliance/get_assessment_results",
-            json_data=payload,
+            json_data={},
+            headers=self._headers,
+            url_suffix="/rbac/get_users",
         )
+
+        return reply
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -2332,6 +2351,28 @@ def build_asset_coverage_filter(args: dict) -> FilterBuilder:
     filter_builder.add_field("unified_provider", FilterType.EQ, argToList(args.get("asset_provider")))
     filter_builder.add_field("asset_provider", FilterType.EQ, argToList(args.get("vendor_name")))
 
+    return filter_builder
+
+
+def build_exception_rules_filter(args: dict) -> FilterBuilder:
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("ID", FilterType.CONTAINS, argToList(args.get("id")))
+    filter_builder.add_field("NAME", FilterType.CONTAINS, argToList(args.get("rule_name")))
+    filter_builder.add_field("PLATFORM", FilterType.EQ, argToList(args.get("platform")))
+    filter_builder.add_field("CONDITIONS_PRETTY", FilterType.CONTAINS, argToList(args.get("conditions")))
+    filter_builder.add_field("CREATED_BY", FilterType.CONTAINS, argToList(args.get("created_by")))
+    filter_builder.add_field("USER_EMAIL", FilterType.CONTAINS, argToList(args.get("user_email")))
+    start_modification_time_str, end_modification_time_str = (
+        args.get("start_modification_time"),
+        args.get("end_modification_time"),
+    )
+    if end_modification_time_str and not start_modification_time_str:
+        start_modification_time_str = (
+            "1970-01-01"  # The standard "beginning of time" for most systems - beginning_of_unix = datetime.fromtimestamp(0)
+        )
+    filter_builder.add_time_range_field("MODIFICATION_TIME", start_modification_time_str, end_modification_time_str)
+    filter_builder.add_field("STATUS", FilterType.EQ, argToList(args.get("status")))
+    filter_builder.add_field("SUBTYPE", FilterType.EQ, argToList(args.get("rule_type")))
     return filter_builder
 
 
@@ -3794,6 +3835,229 @@ def update_endpoint_version_command(client, args):
     )
 
 
+def build_column_mapping(column):
+    """
+    Extracts the mapping of module NAME (ugly name)
+    to PRETTY_NAME from the column definitions metadata.
+    """
+    mapping = {}
+    enum_values = column.get("FILTER_PARAMS", {}).get("ENUM_VALUES", [])
+    for enum in enum_values:
+        mapping[enum.get("NAME")] = enum.get("PRETTY_NAME")
+    return mapping
+
+
+def extract_mappings_from_view_def(view_def: dict, columns_to_map: set[str]):
+    """
+    Extracts the mapping of module listed in columns_to_map NAME (ugly name)
+    to PRETTY_NAME from the column definitions metadata.
+    """
+    mapping = {}
+    column_definitions = view_def.get("COLUMN_DEFINITIONS", [])
+    for column in column_definitions:
+        column_name = column.get("FIELD_NAME")
+        if column_name in columns_to_map:
+            mapping[column_name] = build_column_mapping(column)
+    return mapping
+
+
+def combine_pretty_names(list_of_criteria: list[list[dict[str, Any]]]) -> list[str]:
+    """
+    Takes a list of criteria (where each criterion is a list of dictionaries)
+    and combines the 'pretty_name' values from the dictionaries in each criterion
+    into a single string.
+
+    Args:
+        list_of_criteria: A list of lists, where the inner list contains
+                          dictionaries with a 'pretty_name' key.
+
+    Returns:
+        A list of strings, where each string is the concatenation of the
+        'pretty_name' values for one inner list.
+    """
+    result_strings = []
+    for criterion in list_of_criteria:
+        if isinstance(criterion, list):
+            combined_string = "".join(item.get("pretty_name", "") for item in criterion)
+            result_strings.append(combined_string)
+        else:
+            result_strings.append(criterion)
+    return result_strings
+
+
+def postprocess_exception_rules_response(view_def, data):
+    view_def_data = view_def[0]
+    mappings = extract_mappings_from_view_def(view_def_data, EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP)
+    for record in data:
+        for field in EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP:
+            record[field] = [mappings.get(field, {}).get(val, val) for val in record.get(field, [])]
+        record["ASSOCIATED_TARGETS"] = combine_pretty_names(record.get("ASSOCIATED_TARGETS", []))
+        record["CONDITIONS"] = record.get("CONDITIONS_PRETTY")
+        record["RULE_TYPE"] = record.get("SUBTYPE")
+        record["CREATION_TIMESTAMP"] = record.get("CREATION_TIME")
+        record["MODIFICATION_TIMESTAMP"] = record.get("MODIFICATION_TIME")
+        record["MODIFICATION_TIME"] = timestamp_to_datestring(record["MODIFICATION_TIMESTAMP"])
+        record["CREATION_TIME"] = timestamp_to_datestring(record["CREATION_TIMESTAMP"])
+        record.pop("CONDITIONS_PRETTY", None)
+        record.pop("SUBTYPE", None)
+
+    readable_output = tableToMarkdown(
+        view_def_data.get("TABLE_NAME"),
+        data,
+        headerTransform=string_to_table_header,
+        sort_headers=False,
+    )
+    return readable_output
+
+
+def get_webapp_data(
+    client,
+    table_name: str,
+    filter_dict: Any,
+    sort_field: str,
+    sort_order: str,
+    retrieve_all: bool,
+    base_limit: int,
+    max_limit: int,
+    offset: int = 0,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], int]:
+    """
+    Helper function to iteratively fetch records for a single table with optional pagination.
+    """
+    all_records = []
+    raw_responses = []
+
+    limit = max_limit if retrieve_all else base_limit
+    paging_from = offset
+    paging_to = offset + limit
+    filter_count = 0
+    while True:
+        demisto.debug(f"get_webapp_data pagination: {paging_from}, {paging_to}")
+        request_data = build_webapp_request_data(
+            table_name=table_name,
+            filter_dict=filter_dict.to_dict(),
+            sort_field=sort_field,
+            sort_order=sort_order,
+            limit=paging_to,
+            start_page=paging_from,
+        )
+        response = client.get_webapp_data(request_data)
+        raw_responses.append(copy.deepcopy(response))
+
+        reply = response.get("reply", {})
+        data = reply.get("DATA", [])
+        filter_count = int(reply.get("FILTER_COUNT", "0"))
+        all_records.extend(data)
+
+        if not retrieve_all or len(data) < limit:
+            break
+
+        paging_from += limit
+        paging_to += limit
+
+    return all_records, raw_responses, filter_count
+
+
+def list_exception_rules_command(client, args: dict[str, Any]) -> list[CommandResults]:
+    """
+    Retrieves Disable Prevention Rules and Legacy Agent Exceptions using the
+    generic /api/webapp/get_data endpoint, handling pagination.
+    """
+
+    exception_rule_type = args.get("type")
+    sort_field = args.get("sort_field", "MODIFICATION_TIME")
+    sort_order = args.get("sort_order", "DESC")
+
+    default_limit = arg_to_number(args.get("page_size")) or MAX_GET_EXCEPTION_RULES_LIMIT
+    page_number = arg_to_number(args.get("page", 0)) or 0
+    offset = page_number * default_limit if args.get("page") else 0
+    retrieve_all = argToBoolean(args.get("retrieve_all", False))
+
+    base_limit = MAX_GET_EXCEPTION_RULES_LIMIT if retrieve_all else default_limit
+
+    exception_rule_filter = build_exception_rules_filter(args)
+
+    if exception_rule_type in EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING:
+        table_names = [EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING.get(exception_rule_type)]
+    else:
+        table_names = [LEGACY_AGENT_EXCEPTIONS_TABLE, DISABLE_PREVENTION_RULES_TABLE]
+
+    all_outputs = []
+    all_raw_responses = []
+    readable_output_lines = []
+    total_filter_count = 0
+
+    for table_name in table_names:
+        demisto.debug(f"Retrieving {table_name}")
+        records, raw_responses, filter_count = get_webapp_data(
+            client=client,
+            table_name=str(table_name),
+            filter_dict=exception_rule_filter,
+            sort_field=sort_field,
+            sort_order=sort_order,
+            retrieve_all=retrieve_all,
+            base_limit=base_limit,
+            max_limit=MAX_GET_EXCEPTION_RULES_LIMIT,
+            offset=offset,
+        )
+
+        all_raw_responses.extend(raw_responses)
+        total_filter_count += filter_count
+
+        demisto.debug(f"Retrieved {len(records)} records")
+        if records:
+            view_def = client.get_webapp_view_def({"table_name": table_name})
+            hr_output = postprocess_exception_rules_response(view_def, records)
+            all_outputs.extend(records)
+            readable_output_lines.append(hr_output)
+        else:
+            readable_output_lines.append(f"No data found for {table_name} matching the filter.")
+
+    final_readable_output = "\n".join(readable_output_lines)
+
+    return [
+        CommandResults(
+            readable_output=final_readable_output,
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ExceptionRules",
+            outputs_key_field="ID",
+            outputs=all_outputs,
+            raw_response=all_raw_responses,
+        ),
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ExceptionRulesMetadata",
+            outputs={"filter_count": total_filter_count, "returned_count": len(all_outputs)},
+        ),
+    ]
+
+
+def list_system_users_command(client, args):
+    """
+    Retrieves system user optionally filtered by email using the public api ep /public_api/v1/rbac/get_users
+    This function calls the client to fetch all available system users. If specific
+    emails are provided via the 'email' argument, it filters the results. If no
+    emails are provided, it limits the results to 50.
+    """
+    emails = argToList(args.get("email", ""))
+    if len(emails) > MAX_GET_SYSTEM_USERS_LIMIT:
+        raise DemistoException("The maximum number of emails allowed is 50.")
+
+    response = client.get_users()
+    data = response.get("reply", {})
+    if emails:
+        data = [user for user in data if user.get("user_email") in emails]
+
+    if len(data) > MAX_GET_SYSTEM_USERS_LIMIT:
+        data = data[:MAX_GET_SYSTEM_USERS_LIMIT]
+
+    return CommandResults(
+        readable_output=tableToMarkdown("System Users", data, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.User",
+        outputs_key_field="user_email",
+        outputs=data,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -3814,7 +4078,6 @@ def main():  # pragma: no cover
     xsoar_api_url = "/xsoar"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
-
     try:
         timeout = int(demisto.params().get("timeout", 120))
     except ValueError as e:
@@ -3924,6 +4187,10 @@ def main():  # pragma: no cover
         elif command == "core-get-endpoint-support-file":
             return_results(get_endpoint_support_file_command(client, args))
 
+        elif command == "core-list-exception-rules":
+            return_results(list_exception_rules_command(client, args))
+        elif command == "core-list-system-users":
+            return_results(list_system_users_command(client, args))
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
         elif command == "core-add-assessment-profile":
