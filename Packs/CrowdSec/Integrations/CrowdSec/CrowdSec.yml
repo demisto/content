@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: CrowdSec
 commonfields:
   id: CrowdSec
   version: -1
