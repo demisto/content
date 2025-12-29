@@ -12,7 +12,7 @@ This integration enables the collection of security events from IBM Guardium Dat
 | Report ID | The ID of the report to fetch events from. | True |
 | Fetch events | Whether to automatically fetch events. | False |
 | Maximum number of events to fetch | Maximum number of events to fetch per run. Default is 10000. | False |
-| Timestamp Field Name | The display name of the header in the report that contains the timestamp field, e.g., "Date created (local time)". Required when "Fetch events" is enabled. | False (Required when Fetch events is enabled) |
+| Timestamp Field Name | The display name of the header in the report that contains the timestamp field, e.g., "Date created (local time)".<br> Note: This field name varies between different reports. | False (Required when Fetch events is enabled) |
 | Trust any certificate (not secure) | Trust any certificate (not secure). | False |
 | Use system proxy settings | Use system proxy settings. | False |
 
@@ -35,7 +35,7 @@ Manual command to fetch and display events.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command creates events; otherwise, it only displays them. Possible values are: true, false. Default is false. | Required |
-| timestamp_field | The name of the field in the event data that contains the timestamp. Required when should_push_events is true. If not provided, uses the value from integration configuration. | Optional (Required when should_push_events is true) |
+| timestamp_field | The name of the field in the event data that contains the timestamp. <br>Note: This field name varies between different reports. If not provided, uses the value from integration configuration. | Optional (Required when should_push_events is true) |
 | limit | Maximum number of results to return. Max is 1000. Default is 50. | Optional |
 | start_time | Start time for fetching events. Supports ISO format ("2023-01-01T00:00:00") or natural language ("7 days ago", "yesterday", "1 week ago"). Defaults to 1 hour ago if not provided. | Optional |
 | end_time | End time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now"). If not provided, defaults to now. | Optional |

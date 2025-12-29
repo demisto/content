@@ -159,27 +159,29 @@ def map_event(raw_event: dict[str, Any], field_mapping: dict[str, str]) -> dict[
     return {field_mapping.get(key, key): value for key, value in raw_event.items()}
 
 
-def validate_timestamp_field(timestamp_field: str | None, field_mapping: dict[str, str]) -> None:
+def validate_timestamp_field(timestamp_field: str | None, field_mapping: dict[str, str], is_fetch_flow: bool = True) -> None:
     """
     Validate that the timestamp field exists in the report headers.
 
     Args:
         timestamp_field: Name of the timestamp field to validate
         field_mapping: Dictionary mapping field IDs to field names from report headers
+        is_fetch_flow: True if called from fetch-events, False if called from get-events with should_push_events
 
     Raises:
         DemistoException: If timestamp field is empty/None or not found in available fields
     """
     if not timestamp_field:
-        raise DemistoException(
-            "Timestamp Field Name is required. " "Provide it as a command argument or configure it in the integration settings."
-        )
+        if is_fetch_flow:
+            raise DemistoException("Timestamp Field Name is required when using fetch events.")
+        else:
+            raise DemistoException("Timestamp Field Name is required when should_push_events=true.")
 
     available_fields = list(field_mapping.values())
     if timestamp_field not in available_fields:
         raise DemistoException(
-            f"Timestamp field '{timestamp_field}' not found in report headers. "
-            f"Available fields: {', '.join(available_fields)}"
+            f"Timestamp field '{timestamp_field}' not found in this report's headers. "
+            f"Available fields in this report: {', '.join(available_fields)}"
         )
     demisto.debug(f"Validated timestamp field '{timestamp_field}' exists in report headers")
 
@@ -337,7 +339,7 @@ def test_module_command(client: Client, report_id: str, is_fetch: bool, timestam
         if is_fetch:
             # Extract field mapping (headers) and validate timestamp field
             field_mapping = extract_field_mapping(response)
-            validate_timestamp_field(timestamp_field, field_mapping)
+            validate_timestamp_field(timestamp_field, field_mapping, is_fetch_flow=True)
 
         return "ok"
     except DemistoException as e:
@@ -415,7 +417,7 @@ def fetch_events_command(
         if offset == 0:
             field_mapping = extract_field_mapping(response)
             # Validate timestamp field exists in report headers
-            validate_timestamp_field(timestamp_field, field_mapping)
+            validate_timestamp_field(timestamp_field, field_mapping, is_fetch_flow=True)
 
         raw_events = response.get("result", {}).get("data", [])
         demisto.debug(f"Raw events count: {len(raw_events)}")
@@ -535,7 +537,7 @@ def get_events_command(
         cmd_timestamp_field = args.get("timestamp_field") or timestamp_field
 
         # Validate timestamp field (checks for None/empty and existence in headers)
-        validate_timestamp_field(cmd_timestamp_field, field_mapping)
+        validate_timestamp_field(cmd_timestamp_field, field_mapping, is_fetch_flow=False)
         timestamp_field_result = cmd_timestamp_field
 
     return (

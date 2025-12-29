@@ -207,49 +207,58 @@ class TestValidateTimestampField:
     """Tests for validate_timestamp_field function"""
 
     @pytest.mark.parametrize(
-        "timestamp_field,field_mapping",
+        "timestamp_field,field_mapping,is_fetch_flow",
         [
-            ("Session Start Time", {"1": "Session Start Time", "2": "Client IP"}),
-            ("Created Date", {"1": "Created Date", "2": "Modified Date"}),
-            ("Database Name", {"1": "Client IP", "2": "Database Name", "3": "User"}),
+            ("Session Start Time", {"1": "Session Start Time", "2": "Client IP"}, True),
+            ("Created Date", {"1": "Created Date", "2": "Modified Date"}, False),
+            ("Database Name", {"1": "Client IP", "2": "Database Name", "3": "User"}, True),
         ],
     )
-    def test_validate_timestamp_field_success(self, timestamp_field, field_mapping):
+    def test_validate_timestamp_field_success(self, timestamp_field, field_mapping, is_fetch_flow):
         """
         Given:
             - Valid timestamp field names that exist in field mapping
         When:
-            - Calling validate_timestamp_field
+            - Calling validate_timestamp_field with different flow contexts
         Then:
             - Ensure no exception is raised
         """
         # Should not raise any exception
-        validate_timestamp_field(timestamp_field, field_mapping)
+        validate_timestamp_field(timestamp_field, field_mapping, is_fetch_flow)
 
     @pytest.mark.parametrize(
-        "timestamp_field,field_mapping,expected_error",
+        "timestamp_field,field_mapping,is_fetch_flow,expected_error",
         [
-            ("", {"1": "Field1"}, "Timestamp Field Name is required"),
-            (None, {"1": "Field1"}, "Timestamp Field Name is required"),
-            ("NonExistent", {"1": "Field1", "2": "Field2"}, "Timestamp field 'NonExistent' not found in report headers"),
+            ("", {"1": "Field1"}, True, "Timestamp Field Name is required when using fetch events"),
+            (None, {"1": "Field1"}, True, "Timestamp Field Name is required when using fetch events"),
+            ("", {"1": "Field1"}, False, "Timestamp Field Name is required when should_push_events=true"),
+            (None, {"1": "Field1"}, False, "Timestamp Field Name is required when should_push_events=true"),
+            (
+                "NonExistent",
+                {"1": "Field1", "2": "Field2"},
+                True,
+                "Timestamp field 'NonExistent' not found in this report's headers",
+            ),
             (
                 "Invalid Field",
                 {"1": "Client IP", "2": "Session Start Time"},
-                "Timestamp field 'Invalid Field' not found in report headers",
+                False,
+                "Timestamp field 'Invalid Field' not found in this report's headers",
             ),
         ],
     )
-    def test_validate_timestamp_field_failures(self, timestamp_field, field_mapping, expected_error):
+    def test_validate_timestamp_field_failures(self, timestamp_field, field_mapping, is_fetch_flow, expected_error):
         """
         Given:
             - Invalid timestamp fields (empty, None, or non-existent)
+            - Different flow contexts (fetch-events vs get-events with should_push_events)
         When:
             - Calling validate_timestamp_field
         Then:
-            - Ensure DemistoException is raised with appropriate error message
+            - Ensure DemistoException is raised with context-appropriate error message
         """
         with pytest.raises(DemistoException, match=expected_error):
-            validate_timestamp_field(timestamp_field, field_mapping)
+            validate_timestamp_field(timestamp_field, field_mapping, is_fetch_flow)
 
 
 class TestDeduplicateEvents:
@@ -700,7 +709,9 @@ class TestGetEventsCommand:
         response_text = json.dumps(response)
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
 
-        events, results, timestamp_field_result = get_events_command(client, REPORT_ID, {}, timestamp_field="Date created (local time)")
+        events, results, timestamp_field_result = get_events_command(
+            client, REPORT_ID, {}, timestamp_field="Date created (local time)"
+        )
 
         assert len(events) == 0
         assert timestamp_field_result is None
@@ -772,7 +783,7 @@ class TestGetEventsCommand:
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
 
         args = {"should_push_events": "true", "timestamp_field": "Invalid Field"}
-        with pytest.raises(DemistoException, match="Timestamp field 'Invalid Field' not found in report headers"):
+        with pytest.raises(DemistoException, match="Timestamp field 'Invalid Field' not found in this report's headers"):
             get_events_command(client, REPORT_ID, args, timestamp_field="")
 
     def test_get_events_command_with_should_push_events_missing_timestamp(self, client, requests_mock):
@@ -789,7 +800,7 @@ class TestGetEventsCommand:
         requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
 
         args = {"should_push_events": "true"}
-        with pytest.raises(DemistoException, match="Timestamp Field Name is required"):
+        with pytest.raises(DemistoException, match="Timestamp Field Name is required when should_push_events=true"):
             get_events_command(client, REPORT_ID, args, timestamp_field="")
 
     def test_get_events_command_without_should_push_events(self, client, requests_mock):
