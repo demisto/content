@@ -886,11 +886,10 @@ class AzureClient:
                 }
                 self.storage_container_set_headers(headers)
 
-                response = self.http_request(method="PUT", full_url=full_url, data=file_data, resp_type="response")  # type: ignore
-
-                return response
+                self.http_request(method="PUT", full_url=full_url, data=file_data, resp_type="response")  # type: ignore
         except Exception as e:
             raise DemistoException(f"Unable to read file with id {file_entry_id}", e)
+
 
     def storage_container_blob_get_request(
         self, container_name: str, blob_name: str, account_name: str
@@ -2864,11 +2863,11 @@ def storage_container_blob_create_command(client: AzureClient, params: dict, arg
     system_file_path = file_data["path"]
     file_name = blob_name if blob_name else file_data["name"]
 
-    response = client.storage_container_create_blob_request(
+    client.storage_container_create_blob_request(
         container_name, account_name, file_entry_id, file_name, system_file_path
-    )  # noqa: E501
+    )
 
-    command_results = CommandResults(readable_output=f"Blob {file_name} successfully created.", raw_response=response)
+    command_results = CommandResults(readable_output=f"Blob {file_name} successfully created.")
 
     return command_results
 
