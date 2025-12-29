@@ -27,7 +27,7 @@ name: Acalvio ShadowPlex
 script:
   commands:
   - arguments:
-    - description: Hostname or IP Address of Endpoint
+    - description: Hostname or IP Address of Endpoint.
       name: host
       required: true
     description: Check for a Deception Host
@@ -43,10 +43,10 @@ script:
       description: Date including Time.
       type: String
   - arguments:
-    - description: Username of the Domain User
+    - description: Username of the Domain User.
       name: username
       required: true
-    - description: AD Domain Name to which User belongs to
+    - description: AD Domain Name to which User belongs to.
       name: domain
     description: Check for a Deception User
     name: acalvio-is-deception-user
@@ -64,10 +64,10 @@ script:
       description: Date including Time.
       type: String
   - arguments:
-    - description: Hostname or IP Address of Endpoint where file resides
+    - description: Hostname or IP Address of Endpoint where file resides.
       name: endpoint
       required: true
-    - description: Name of the file to be checked
+    - description: Name of the file to be checked.
       name: filename
       required: true
     description: Check for a Deception File on the Endpoint
@@ -86,7 +86,7 @@ script:
       description: Date including Time.
       type: String
   - arguments:
-    - description: Hostname or IP Address of Deception Host
+    - description: Hostname or IP Address of Deception Host.
       name: host
       required: true
     description: Mute a Deception Host
@@ -102,7 +102,7 @@ script:
       description: Date including Time.
       type: String
   - arguments:
-    - description: Hostname or IP Address of Deception Host
+    - description: Hostname or IP Address of Deception Host.
       name: host
       required: true
     description: Unmute a Deception Host
@@ -118,7 +118,7 @@ script:
       description: Date including Time.
       type: String
   - arguments:
-    - description: Hostname or IP Address of Endpoint
+    - description: Hostname or IP Address of Endpoint.
       name: endpoint
       required: true
     description: Mute a Deception on Endpoint
@@ -134,7 +134,7 @@ script:
       description: Date including Time.
       type: String
   - arguments:
-    - description: Hostname or IP Address of Endpoint
+    - description: Hostname or IP Address of Endpoint.
       name: endpoint
       required: true
     description: Unmute a Deception on Endpoint

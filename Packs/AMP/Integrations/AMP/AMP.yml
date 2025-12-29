@@ -185,7 +185,7 @@ script:
     - name: file_list_guid
       required: true
       default: true
-      description: The file_list_guid to retrieve information about a particular file_list
+      description: The file_list_guid to retrieve information about a particular file_list.
     - name: sha256
       required: true
       description: SHA256 hash.

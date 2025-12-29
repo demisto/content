@@ -142,13 +142,13 @@ script:
       description: List of ECS instance IDs
       type: unknown
   - arguments:
-    - description: Aliyun availability zone ID in which to launch the instance
+    - description: Aliyun availability zone ID in which to launch the instance.
       name: availability_zone
     - description: A list of ECS instance names.
       name: instance_names
     - description: A list of ECS instance ids.
       name: instance_ids
-    - description: A hash/dictionaries of instance tags. `{"key":"value"}`
+    - description: A hash/dictionaries of instance tags. `{"key":"value"}`.
       name: instance_tags
     description: "Gather information on instances of Alibaba Cloud ECS.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_info_module.html"
     name: ali-instance-info
