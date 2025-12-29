@@ -8652,7 +8652,7 @@ def test_validate_custom_fields_success(mocker):
     valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
 
     assert valid_fields == fields_to_validate
-    assert len(error_messages) == 0
+    assert not error_messages
 
 
 def test_validate_custom_fields_system_field(mocker):
@@ -8687,8 +8687,8 @@ def test_validate_custom_fields_system_field(mocker):
 
     assert "custom_field" in valid_fields
     assert "system_field" not in valid_fields
-    assert len(error_messages) == 1
-    assert "is a system field and cannot be set with this command" in error_messages[0]
+    assert error_messages
+    assert "is a system field" in error_messages
 
 
 def test_validate_custom_fields_non_existent_field(mocker):
@@ -8722,91 +8722,5 @@ def test_validate_custom_fields_non_existent_field(mocker):
 
     assert "existing_field" in valid_fields
     assert "non_existent" not in valid_fields
-    assert len(error_messages) == 1
-    assert "does not exist" in error_messages[0]
-
-
-def test_update_case_custom_fields_command_success(mocker):
-    """
-    GIVEN:
-        Valid case ID and custom fields.
-    WHEN:
-        update_case_custom_fields_command is called.
-    THEN:
-        Case is updated successfully and success result is returned.
-    """
-    from CortexPlatformCore import update_case_custom_fields_command, Client
-
-    client = Client(base_url="", headers={})
-
-    # Mock dependencies
-    mocker.patch("CortexPlatformCore.parse_custom_fields", return_value={"field1": "value1"})
-    mocker.patch("CortexPlatformCore.validate_custom_fields", return_value=({"field1": "value1"}, []))
-
-    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"case_id": "123"}})
-    mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123"})
-
-    args = {"case_id": "123", "custom_fields": '[{"field1": "value1"}]'}
-    result = update_case_custom_fields_command(client, args)
-
-    assert result.outputs["CustomFields"] == {"field1": "value1"}
-    assert "Successfully updated" in result.readable_output
-    mock_update_case.assert_called_once()
-
-
-def test_update_case_custom_fields_command_partial_success(mocker):
-    """
-    GIVEN:
-        Custom fields with mixed validity (some valid, some invalid).
-    WHEN:
-        update_case_custom_fields_command is called.
-    THEN:
-        Valid fields are updated, invalid ones reported, and result entry_type is 4 (warning).
-    """
-    from CortexPlatformCore import update_case_custom_fields_command, Client
-
-    client = Client(base_url="", headers={})
-
-    # Mock dependencies
-    mocker.patch("CortexPlatformCore.parse_custom_fields", return_value={"valid": "val", "invalid": "val"})
-    mocker.patch("CortexPlatformCore.validate_custom_fields", return_value=({"valid": "val"}, ["Invalid field error"]))
-
-    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"case_id": "123"}})
-    mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123"})
-
-    args = {"case_id": "123", "custom_fields": "..."}
-    result = update_case_custom_fields_command(client, args)
-
-    assert result.outputs["CustomFields"] == {"valid": "val"}
-    assert "Unsuccessful Fields" in result.readable_output
-    assert "Successful Fields" in result.readable_output
-    assert result.entry_type == 4
-    mock_update_case.assert_called_once()
-
-
-def test_update_case_custom_fields_command_all_failed(mocker):
-    """
-    GIVEN:
-        All custom fields are invalid.
-    WHEN:
-        update_case_custom_fields_command is called.
-    THEN:
-        return_error is called with error messages.
-    """
-    from CortexPlatformCore import update_case_custom_fields_command, Client
-
-    client = Client(base_url="", headers={})
-
-    # Mock dependencies
-    mocker.patch("CortexPlatformCore.parse_custom_fields", return_value={"invalid": "val"})
-    mocker.patch("CortexPlatformCore.validate_custom_fields", return_value=({}, ["Invalid field error"]))
-
-    mock_return_error = mocker.patch("CortexPlatformCore.return_error", side_effect=SystemExit)
-    mock_update_case = mocker.patch.object(client, "update_case")
-
-    args = {"case_id": "123", "custom_fields": "..."}
-    with pytest.raises(SystemExit):
-        update_case_custom_fields_command(client, args)
-
-    mock_return_error.assert_called_once()
-    mock_update_case.assert_not_called()
+    assert error_messages
+    assert "does not exist" in error_messages

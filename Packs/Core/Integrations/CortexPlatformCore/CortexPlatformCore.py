@@ -61,7 +61,6 @@ WEBAPP_COMMANDS = [
     "core-update-case",
     "core-list-scripts",
     "core-run-script-agentix",
-    "core-update-case-custom-fields",
     "core-list-endpoints",
     "core-list-exception-rules",
     "core-update-case",
@@ -3034,6 +3033,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     resolve_reason = args.get("resolve_reason", "")
     resolved_comment = args.get("resolved_comment", "")
     resolve_all_alerts = args.get("resolve_all_alerts", "")
+    custom_fields = parse_custom_fields(args.get("custom_fields", []))
     if assignee == "unassigned":
         for case_id in case_ids:
             client.unassign_case(case_id)
@@ -3057,6 +3057,8 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
             f"{list(CaseManagement.SEVERITY.keys())}"
         )
 
+    valid_fields_to_update, error_messages = validate_custom_fields(custom_fields, client)
+
     # Build request_data with mapped and filtered values
     case_update_payload = {
         "caseName": case_name if case_name else None,
@@ -3069,28 +3071,33 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
         "caseResolvedComment": resolved_comment if resolved_comment else None,
         "resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None,
+        "CustomFields": valid_fields_to_update if valid_fields_to_update else None,
     }
     remove_nulls_from_dictionary(case_update_payload)
 
     if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
-        raise ValueError("No valid update parameters provided for case update.")
+        raise ValueError(f"No valid update parameters provided.\n{error_messages}")
 
-    demisto.info(f"Executing case update for cases {case_ids} with request data: {case_update_payload}")
     responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
-    replies = []
-    for resp in responses:
-        replies.append(process_case_response(resp))
+    replies = [process_case_response(resp) for resp in responses]
+    readable_output = tableToMarkdown("Cases", replies, headerTransform=string_to_table_header)
+    entry_type = entryTypes["note"]
+    if error_messages:  # If some fields failed, we use the error entry type
+        entry_type = entryTypes["error"]
+        unsuccessful_section = f"### Partial Update Warning\n{error_messages}"
+        readable_output = f"{unsuccessful_section}\n\n{readable_output}"
 
     return CommandResults(
-        readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
+        readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
         outputs_key_field="case_id",
         outputs=replies,
         raw_response=replies,
+        entry_type=entry_type,
     )
 
 
-def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[dict, list[str]]:
+def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[dict, str]:
     """
     Validates custom fields against system metadata.
 
@@ -3099,12 +3106,12 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         client: Client instance for API calls.
 
     Returns:
-        Tuple of (valid_fields_dict, error_messages_list).
+        Tuple of (valid_fields_dict, error_messages_str).
     """
     fields_data = client.get_custom_fields_metadata().get("reply", {}).get("DATA", [])
 
     if not fields_data:
-        return {}, ["No Fields are defined in the system."]
+        return {}, "No Fields are defined in the system."
 
     system_fields = {
         f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
@@ -3118,68 +3125,22 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
     }
 
     if not custom_fields:
-        return {}, ["No custom fields are defined in the system."]
+        return {}, "No custom fields are defined in the system."
 
     demisto.debug(f"Available custom fields: {custom_fields=}")
     valid_fields, error_messages = {}, []
     for field_name, field_value in fields_to_validate.items():
         if field_name in system_fields:
             error_messages.append(
-                f"Field '{field_name}' ({system_fields[field_name]}) is a system field and cannot be set with this command."
+                f"Field '{field_name}' ({system_fields[field_name]}) is a system field and cannot"
+                f" be set with custom_fields argument."
             )
         elif field_name in custom_fields:
             valid_fields[field_name] = field_value
         else:
             error_messages.append(f"Field '{field_name}' does not exist.")
 
-    return valid_fields, error_messages
-
-
-def update_case_custom_fields_command(client: Client, args: dict) -> CommandResults | None:
-    """
-    Update custom fields on a case with validation.
-    Supports both single field update (field_name, field_value) and bulk update (custom_fields).
-    """
-    case_id = args.get("case_id")
-    custom_fields_input = args.get("custom_fields", "")
-    fields_to_update = parse_custom_fields(custom_fields_input)
-
-    valid_fields_to_update, error_messages = validate_custom_fields(fields_to_update, client)
-
-    if error_messages and not valid_fields_to_update:
-        error_msg = "Encountered issues with some fields:\n" + "\n".join(f"- {e}" for e in error_messages)
-        return_error(error_msg)
-
-    case_update_payload = {"CustomFields": valid_fields_to_update}
-    response = client.update_case(case_update_payload, case_id)
-    reply = process_case_response(response)
-    reply["CustomFields"] = valid_fields_to_update
-
-    successful_fields = ", ".join(valid_fields_to_update.keys())
-    if error_messages:
-        unsuccessful_section = "### Unsuccessful Fields\n" + "\n".join(f"- {e}" for e in error_messages)
-        successful_section = f"### Successful Fields\nSuccessfully updated: {successful_fields}"
-        success_table = tableToMarkdown(f"Updated case {case_id}", reply, headerTransform=string_to_table_header)
-        readable_output = f"{unsuccessful_section}\n\n{successful_section}\n\n{success_table}"
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
-            outputs_key_field="case_id",
-            outputs=reply,
-            raw_response=reply,
-            entry_type=entryTypes["error"],
-        )
-
-    success_msg = f"Successfully updated {len(valid_fields_to_update)} custom field(s) on case {case_id}: {successful_fields}"
-    readable_output = tableToMarkdown(success_msg, reply, headerTransform=string_to_table_header)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
-        outputs_key_field="case_id",
-        outputs=reply,
-        raw_response=reply,
-    )
+    return valid_fields, "\n".join(f"- {e}" for e in error_messages)
 
 
 def run_playbook_command(client: Client, args: dict) -> CommandResults:
@@ -3996,8 +3957,6 @@ def main():  # pragma: no cover
             return_results(get_appsec_issues_command(client, args))
         elif command == "core-update-case":
             return_results(update_case_command(client, args))
-        elif command == "core-update-case-custom-fields":
-            return_results(update_case_custom_fields_command(client, args))
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
         elif command == "core-list-scripts":

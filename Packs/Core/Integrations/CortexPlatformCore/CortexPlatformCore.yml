@@ -2520,6 +2520,10 @@ script:
           predefined:
             - "true"
             - "false"
+        - name: custom_fields
+          description: |
+            A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
+          type: String
       outputs:
         - contextPath: Core.Case.modifiedBy
           description: User who last modified the case.
@@ -2599,25 +2603,6 @@ script:
         - contextPath: Core.Case.tags.tag_name
           description: Tag name associated with the case.
           type: String
-    - name: core-update-case-custom-fields
-      hidden: true
-      description: |-
-        Updates custom fields of a case.
-      arguments:
-      - name: case_id
-        required: true
-        description: The ID of the case to update.
-      - name: custom_fields
-        required: true
-        description: |
-          A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
-      outputs:
-      - contextPath: Core.Case.case_id
-        description: The ID of the updated case.
-        type: String
-      - contextPath: Core.Case.CustomFields
-        description: The updated custom fields of the case.
-        type: JSON
     - name: core-run-playbook
       description:  Runs a playbook on specific issue IDs.
       hidden: true
