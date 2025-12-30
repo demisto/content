@@ -18,7 +18,7 @@ from CybleThreatIntel import (
 #   CLIENT INITIALIZATION
 # -------------------------------------------------------------------
 def test_client_initialization():
-    params = {"base_url": "https://api.example.com/", "access_token": {"password": "XYZ"}}
+    params = {"base_url": "https://api.example.com/", "credentials": {"password": "XYZ"}}
     c = Client(params)
 
     assert c.base_url == "https://api.example.com"
@@ -36,7 +36,7 @@ def test_http_post_success(mock_post):
     resp.json.return_value = {"ok": True}
     mock_post.return_value = resp
 
-    client = Client({"base_url": "https://example.com", "access_token": {"password": "a"}})
+    client = Client({"base_url": "https://example.com", "credentials": {"password": "a"}})
     r = client.http_post("/y/iocs", {"x": 1})
 
     assert r == {"ok": True}
@@ -54,7 +54,7 @@ def test_http_post_failure(mock_post):
     resp.text = "error"
     mock_post.return_value = resp
 
-    client = Client({"base_url": "https://example.com", "access_token": {"password": "a"}})
+    client = Client({"base_url": "https://example.com", "credentials": {"password": "a"}})
 
     with pytest.raises(Exception):
         client.http_post("/y/iocs", {})
@@ -115,7 +115,7 @@ def test_calculate_verdict_values(risk, conf, expected):
 def test_ioc_lookup_no_results(mock_lookup, mock_return):
     mock_lookup.return_value = {"data": {"iocs": []}}
 
-    c = Client({"base_url": "x", "access_token": {"password": "a"}})
+    c = Client({"base_url": "x", "credentials": {"password": "a"}})
     result = cyble_ioc_lookup_command(c, {"ioc": "1.1.1.1"})
 
     assert "No results found" in result.readable_output
@@ -130,7 +130,7 @@ def test_ioc_lookup_no_results(mock_lookup, mock_return):
 def test_ioc_lookup_success(mock_lookup):
     mock_lookup.return_value = {"data": {"iocs": [{"ioc": "SAMPLE_IOC", "ioc_type": "custom", "first_seen": 1700000000}]}}
 
-    c = Client({"base_url": "x", "access_token": {"password": "a"}})
+    c = Client({"base_url": "x", "credentials": {"password": "a"}})
     result = cyble_ioc_lookup_command(c, {"ioc": "SAMPLE_IOC"})
 
     assert result.outputs["IOC"] == "SAMPLE_IOC"
@@ -149,7 +149,7 @@ def test_fetch_indicators_retry_fail(mock_demisto):
     mock_demisto.args.return_value = {}
     mock_demisto.getLastRun.return_value = {}
 
-    client = Client({"base_url": "x", "access_token": {"password": "a"}})
+    client = Client({"base_url": "x", "credentials": {"password": "a"}})
 
     client.fetch_iocs = MagicMock(side_effect=Exception("fail"))
 
@@ -187,7 +187,7 @@ def test_client_init_empty(mocker):
 
 
 def test_client_http_post_failure(mocker):
-    client = Client({"base_url": "http://test.com", "access_token": {"password": "token"}})
+    client = Client({"base_url": "http://test.com", "credentials": {"password": "token"}})
     mock_resp = mocker.Mock()
     mock_resp.status_code = 400
     mock_resp.text = "Bad request"
@@ -211,7 +211,7 @@ def test_fmt_date_none_and_invalid():
 
 def test_client_init_edge_case(mocker):
     # edge case: empty access_token dict and trailing slash in URL
-    client = Client({"base_url": "https://api.test.com/", "access_token": {"password": ""}})
+    client = Client({"base_url": "https://api.test.com/", "credentials": {"password": ""}})
     assert client.base_url == "https://api.test.com"
     assert client.access_token == ""
 
