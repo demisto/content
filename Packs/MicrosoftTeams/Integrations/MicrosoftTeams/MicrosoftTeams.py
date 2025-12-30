@@ -1875,7 +1875,7 @@ def chat_message_list_command():
         messages_list_response: dict = cast(dict[str, Any], http_request("GET", next_link))
     else:
         messages_list_response = get_messages_list(
-            chat_id=chat_id, odata_params={"$orderBy": args.get("order_by") + " desc", "$top": top}
+            chat_id=chat_id, odata_params={"$orderBy": args.get("order_by", "lastModifiedDateTime") + " desc", "$top": top}
         )
     messages_data, next_link = pages_puller(messages_list_response, limit)
 
@@ -3609,7 +3609,6 @@ def main():  # pragma: no cover
 
     """ EXECUTION """
     command: str = demisto.command()
-
     if command != "test-module":  # skipping test-module since it doesn't have integration context
         auth_type_switch_handling()  # handles auth type switch cases
 
