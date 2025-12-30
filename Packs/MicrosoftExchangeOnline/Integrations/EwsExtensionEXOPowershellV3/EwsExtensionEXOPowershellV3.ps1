@@ -2245,7 +2245,7 @@ function EXOExportQuarantineMessageCommand
 function EXOGetQuarantineMessageCommand {
     [CmdletBinding()]
     Param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [Parameter(Mandatory)]$client,
         [hashtable]$kwargs
     )
 
