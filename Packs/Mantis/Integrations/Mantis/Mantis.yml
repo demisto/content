@@ -31,7 +31,7 @@ name: Mantis
 script:
   commands:
   - arguments:
-    - description: Mantis issue to get details of
+    - description: Mantis issue to get details of.
       name: id
       required: true
     description: get details of the mantis issue
@@ -56,16 +56,16 @@ script:
       description: time  at which issue created.
       type: Unknown
   - arguments:
-    - description: project name to  create issue under
+    - description: project name to  create issue under.
       name: project
       required: true
-    - description: category name for the issue
+    - description: category name for the issue.
       name: category
       required: true
-    - description: summary of the issue
+    - description: summary of the issue.
       name: summary
       required: true
-    - description: Description for the issue
+    - description: Description for the issue.
       name: description
       required: true
     description: create a Mantis issue
@@ -80,10 +80,10 @@ script:
     description: get a list of mantis issues
     name: mantis-get-issues
   - arguments:
-    - description: Mantis issue to add a Note
+    - description: Mantis issue to add a Note.
       name: id
       required: true
-    - description: note text
+    - description: note text.
       name: text
       required: true
     - auto: PREDEFINED
@@ -97,7 +97,7 @@ script:
     description: add Note to a Mantis issue
     name: mantis-add-note
   - arguments:
-    - description: Mantis issue Id to close
+    - description: Mantis issue Id to close.
       name: id
       required: true
     description: close a Mantis issue

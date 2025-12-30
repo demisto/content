@@ -2047,7 +2047,7 @@ script:
       description: 'The host threat level.'
     - type: String
       contextPath: LogRhythm.Host.threatLevelComments
-      description: 'The threat level comments'
+      description: 'The threat level comments.'
     - type: String
       contextPath: LogRhythm.Host.recordStatusName
       description: 'The host record status name.'

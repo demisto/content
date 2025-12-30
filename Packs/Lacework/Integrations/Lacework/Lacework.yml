@@ -697,9 +697,9 @@ script:
       description: The time the report completed.
       type: String
   - arguments:
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z").
       name: start_time
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z").
       name: end_time
     - description: An array of objects to add information to refine your search results.
       name: filters
@@ -786,9 +786,9 @@ script:
       description: A unique hash of all data contained in the vulnerability.
       type: String
   - arguments:
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z").
       name: start_time
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z").
       name: end_time
     - description: An array of objects to add information to refine your search results.
       name: filters
