@@ -431,6 +431,7 @@ class IncidentType(Enum):
     THIRD_PARTY = ":thirdparty:"
     NGSIEM_DETECTION = ":ngsiem:"
     NGSIEM_AUTOMATED_LEAD = ":automated-lead:"
+    NGSIEM_CASE = ":case:"
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get("mirror_direction"))
@@ -2648,6 +2649,10 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.NGSIEM_DETECTION
     if IncidentType.THIRD_PARTY.value in remote_incident_id:
         return IncidentType.THIRD_PARTY
+    if IncidentType.NGSIEM_AUTOMATED_LEAD.value in remote_incident_id:
+        return IncidentType.NGSIEM_AUTOMATED_LEAD
+    if IncidentType.NGSIEM_CASE.value in remote_incident_id:
+        return IncidentType.NGSIEM_CASE
     demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
     return None
 
@@ -2897,6 +2902,13 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'thirdparty'"
         ).get("resources", [])
+    if NGSIEM_CASES_FETCH_TYPE in fetch_types:
+        _, case_ids = get_cases_data(
+            url_filter=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}",
+            limit=INCIDENTS_PER_FETCH,
+            offset=0
+        )
+        raw_ids += [f"{IncidentType.NGSIEM_CASE}:{case_id}" for case_id in case_ids]
 
     modified_ids_to_mirror = list(map(str, raw_ids))
     demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
