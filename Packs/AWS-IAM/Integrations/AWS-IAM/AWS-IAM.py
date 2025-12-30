@@ -135,13 +135,28 @@ def delete_user(args, client):  # pragma: no cover
 
 
 def update_login_profile(args, client):  # pragma: no cover
-    response = client.update_login_profile(
-        Password=args.get("newPassword"),
-        UserName=args.get("userName"),
-        PasswordResetRequired=args.get("passwordResetRequired") == "True",
-    )
-    if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
-        demisto.results("The user {} Password was changed".format(args.get("userName")))
+    user = args.get("userName")
+    password = args.get("newPassword")
+    reset_required = args.get("passwordResetRequired") == "True"
+
+    request_params = {
+        "UserName": user,
+        "PasswordResetRequired": reset_required,
+    }
+    # Verify if a new password was given
+    if password:
+        request_params["Password"] = password
+
+    response = client.update_login_profile(**request_params)
+
+    # Determine success message
+    if password:
+        success_message = f"The user {user} password was changed"
+    else:
+        success_message = f"The user {user} will be required to change his password."
+
+    if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
+        demisto.results(success_message)
 
 
 def create_group(args, client):  # pragma: no cover

@@ -965,7 +965,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1770,
           "y": 2210
         }
       }
@@ -1139,7 +1139,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1340,
           "y": 2210
         }
       }
@@ -1234,7 +1234,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 910,
           "y": 2210
         }
       }
@@ -1274,7 +1274,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 50,
           "y": 2210
         }
       }
@@ -2552,12 +2552,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: a840fd36-4264-4b8c-8be2-6f11b4d0b2fb
+    taskid: b818dc49-fe43-493f-b473-59a813a10d4a
     type: condition
     task:
-      id: a840fd36-4264-4b8c-8be2-6f11b4d0b2fb
+      id: b818dc49-fe43-493f-b473-59a813a10d4a
       version: -1
-      name: Invalid Input not exists
+      name: Invalid Entry exists
       type: condition
       iscommand: false
       brand: ""
@@ -2570,7 +2570,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotExists
+      - - operator: isExists
           left:
             value:
               complex:
@@ -2585,6 +2585,44 @@ tasks:
                       value:
                         simple: aa
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: aa
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: Error
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: aa
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Invalid
     continueonerrortype: ""
     view: |-
       {
@@ -3108,6 +3146,8 @@ tasks:
     nexttasks:
       '#error#':
       - "52"
+      '#none#':
+      - "56"
     scriptarguments:
       file_hash:
         simple: aa
@@ -3181,7 +3221,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 705,
           "y": 5465
         }
       }
@@ -3223,7 +3263,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 705,
           "y": 5635
         }
       }
@@ -3254,6 +3294,8 @@ tasks:
     nexttasks:
       '#error#':
       - "55"
+      '#none#':
+      - "56"
     scriptarguments:
       brands:
         simple: aa
@@ -3265,7 +3307,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 705,
           "y": 5820
         }
       }
@@ -3294,7 +3336,47 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
+          "y": 6012.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 0e4f5e10-8c55-4469-8bec-23d5cbcc6f34
+    type: condition
+    task:
+      id: 0e4f5e10-8c55-4469-8bec-23d5cbcc6f34
+      version: -1
+      name: failure
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "1"
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
           "y": 6005
         }
       }
@@ -3310,7 +3392,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6015,
+        "height": 6030,
         "width": 2100,
         "x": 50,
         "y": 50
