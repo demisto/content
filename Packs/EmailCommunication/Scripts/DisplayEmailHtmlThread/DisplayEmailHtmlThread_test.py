@@ -197,7 +197,7 @@ def test_rewrites_single_img_src():
       correctly inserted into the image src path.
     """
     from DisplayEmailHtmlThread import rewrite_img_src
+
     html = '<img src="xsoar/entry/download/12345">'
     result = rewrite_img_src(html, "myaccount")
     assert result == '<img src="xsoar/myaccount/entry/download/12345">'
-
