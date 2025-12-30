@@ -20,5 +20,5 @@ script:
     arguments:
     - name: magic-word
       default: true
-      description: yep
+      description: yep.
     description: try me
