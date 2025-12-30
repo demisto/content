@@ -5,6 +5,7 @@ name: Pipl
 fromversion: 5.0.0
 display: Pipl
 category: Data Enrichment & Threat Intelligence
+provider: Pipl
 description: Get contact, social, and professional information about people.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
