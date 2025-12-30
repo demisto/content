@@ -2871,7 +2871,6 @@ script:
         required: true
       - name: profile_description
         description: The description of the assessment profile to create.
-        required: true
       - name: standard_name
         description: The name of the compliance standard to associate with the profile.
         required: true
