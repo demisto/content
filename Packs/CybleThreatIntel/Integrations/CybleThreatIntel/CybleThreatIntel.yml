@@ -11,124 +11,125 @@ description: >
 
 
 
-params:
-
-  # --------------------------
-  # Feed Parameters (Cannot be hidden, cannot be deprecated)
-  # --------------------------
-
-  - display: Traffic Light Protocol Color
-    name: tlp_color
-    type: 15
-    options:
-      - RED
-      - AMBER
-      - GREEN
-      - WHITE
-    required: false
-    section: Collect
-
-
-  - display: Source Reliability
-    name: feedReliability
-    type: 15
-    required: true
-    defaultvalue: A - Completely reliable
-    additionalinfo: Reliability of the source providing the intelligence data.
-    options:
-      - A - Completely reliable
-      - B - Usually reliable
-      - C - Fairly reliable
-      - D - Not usually reliable
-      - E - Unreliable
-      - F - Reliability cannot be judged
-    section: Collect
-
-  - display: Indicator Reputation
-    name: feedReputation
-    type: 18
-    defaultvalue: None
-    options:
-      - None
-      - Good
-      - Suspicious
-      - Bad
-    required: false
-    additionalinfo: Indicators from this integration instance will be marked with this reputation
-    section: Collect
-
-  - display: Tags
-    name: feedTags
-    type: 0
-    required: false
-    additionalinfo: Supports CSV values.
-    section: Collect
-
-  - display: Feed Expiration Policy
-    name: feedExpirationPolicy
-    type: 17
-    options:
-      - never
-      - interval
-      - indicatorType
-      - suddenDeath
-    required: false
-    section: Collect
-
-  - display: Feed Expiration Interval (days)
-    name: feedExpirationInterval
-    type: 1
-    required: false
-    section: Collect
-
-  - display: Bypass exclusion list
-    name: feedBypassExclusionList
-    type: 8
-    required: false
-    section: Collect
-
-  # --------------------------
-  # Main Connect Params
-  # --------------------------
-
-  - display: Base URL
-    name: base_url
-    type: 0
-    required: false      # ← Not required for BC compliance
-    section: Connect
-
-  - displaypassword: Access Token
-    name: access_token
-    type: 9
-    hiddenusername: true
-    required: false      # ← Not required for BC compliance
-    section: Connect
-
-  # --------------------------
-  # Fetch params
-  # --------------------------
-  - display: First Fetch Time (hours)
-    name: first_fetch
-    type: 0
-    defaultvalue: 1
-    required: true
-    additionalinfo: "How many hours back to fetch IOCs on first run. Max 3 hours."
-    section: Collect
-
-  - display: Maximum Indicators Per Fetch
-    name: max_fetch
-    type: 0
-    required: true
-    defaultvalue: '100'
-    additionalinfo: Maximum number of indicators to fetch per execution.
-    section: Collect
-
 configuration:
   sections:
     - name: Connect
       isHidden: false
     - name: Collect
       isHidden: false
+
+  parameters:
+    # --------------------------
+    # Feed Parameters
+    # --------------------------
+
+    - display: Traffic Light Protocol Color
+      name: tlp_color
+      type: 15
+      options:
+        - RED
+        - AMBER
+        - GREEN
+        - WHITE
+      required: false
+      section: Collect
+
+    - display: Source Reliability
+      name: feedReliability
+      type: 15
+      required: true
+      defaultvalue: A - Completely reliable
+      additionalinfo: Reliability of the source providing the intelligence data.
+      options:
+        - A - Completely reliable
+        - B - Usually reliable
+        - C - Fairly reliable
+        - D - Not usually reliable
+        - E - Unreliable
+        - F - Reliability cannot be judged
+      section: Collect
+
+    - display: Indicator Reputation
+      name: feedReputation
+      type: 18
+      defaultvalue: None
+      options:
+        - None
+        - Good
+        - Suspicious
+        - Bad
+      required: false
+      additionalinfo: Indicators from this integration instance will be marked with
+        this reputation.
+      section: Collect
+
+    - display: Tags
+      name: feedTags
+      type: 0
+      required: false
+      additionalinfo: Supports CSV values.
+      section: Collect
+
+    - display: Feed Expiration Policy
+      name: feedExpirationPolicy
+      type: 17
+      options:
+        - never
+        - interval
+        - indicatorType
+        - suddenDeath
+      required: false
+      section: Collect
+
+    - display: Feed Expiration Interval (days)
+      name: feedExpirationInterval
+      type: 1
+      required: false
+      section: Collect
+
+    - display: Bypass exclusion list
+      name: feedBypassExclusionList
+      type: 8
+      required: false
+      section: Collect
+
+    # --------------------------
+    # Connect Parameters
+    # --------------------------
+
+    - display: Base URL
+      name: base_url
+      type: 0
+      required: false
+      section: Connect
+
+    - display: Access Token
+      name: access_token
+      type: 9
+      hiddenusername: true
+      required: false
+      section: Connect
+
+    # --------------------------
+    # Fetch Parameters
+    # --------------------------
+
+    - display: First Fetch Time (hours)
+      name: first_fetch
+      type: 0
+      defaultvalue: 1
+      required: true
+      additionalinfo: How many hours back to fetch IOCs on first run.
+        Max 3 hours.
+      section: Collect
+
+    - display: Maximum Indicators Per Fetch
+      name: max_fetch
+      type: 0
+      required: true
+      defaultvalue: '100'
+      additionalinfo: Maximum number of indicators to fetch per execution.
+      section: Collect
 
 
 script:
