@@ -34,7 +34,7 @@ script:
   type: python
   commands:
   - arguments:
-    - description: The IP address to get the reputation of
+    - description: The IP address to get the reputation of.
       name: ip
       required: true
     description: Gets the simulated reputation of the IP address.
@@ -62,7 +62,7 @@ script:
       description: The indicator that was tested.
       type: String
   - arguments:
-    - description: The URL to get the reputation of
+    - description: The URL to get the reputation of.
       name: url
       required: true
     description: Gets the simulated reputation of the URL address.
@@ -90,7 +90,7 @@ script:
       description: The indicator that was tested.
       type: String
   - arguments:
-    - description: The domain to get the reputation of
+    - description: The domain to get the reputation of.
       name: domain
       required: true
     description: Gets the simulated reputation of the domain.
@@ -118,7 +118,7 @@ script:
       description: The indicator that was tested.
       type: String
   - arguments:
-    - description: The file hash to get the reputation of
+    - description: The file hash to get the reputation of.
       name: file
       required: true
     description: Gets the simulated reputation of the file hash.
@@ -155,7 +155,7 @@ script:
       description: The indicator that was tested.
       type: String
   - arguments:
-    - description: The email address to get the reputation of
+    - description: The email address to get the reputation of.
       name: email
       required: true
     description: Gets the simulated reputation of the email address.

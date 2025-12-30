@@ -129,3 +129,5 @@ script:
       type: String
       description: Reliability of the source providing the intelligence data.
     description: Searches for information regarding given email address.
+tests:
+- No tests
