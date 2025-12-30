@@ -154,7 +154,7 @@
         },
         {
             "name": "Role Management",
-            "category": "Application",
+            "category": "Cloud",
             "arguments": [
                 "roleName",
                 "roleArn",
@@ -163,7 +163,7 @@
         },
         {
             "name": "Policy Updates",
-            "category": "Application",
+            "category": "Cloud",
             "arguments": [
                 "policyName",
                 "policyArn",
