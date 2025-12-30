@@ -176,6 +176,20 @@ def test_validate_configuration_parameters_with_invalid_credentials():
         validate_configuration_parameters(integration_params, "test-module")
 
 
+@pytest.mark.parametrize("project_number", ["invalid", "-123", "0"])
+def test_validate_configuration_parameters_with_invalid_project_number(capfd, project_number):
+    """Test case scenario for validating the configuration parameters with invalid project number."""
+    integration_params = GENERIC_INTEGRATION_PARAMS.copy()
+    integration_params["use_v1_alpha"] = True
+    integration_params["project_instance_id"] = "test_instance"
+    integration_params["project_number"] = project_number
+    capfd.close()
+    with pytest.raises(ValueError) as e:
+        validate_configuration_parameters(integration_params, "test-module")
+
+    assert str(e.value) == "Google SecOps Project Number should be a positive number."
+
+
 def test_parse_error_message_with_invalid_json(capfd):
     """Test case scenario for parsing error message with invalid json."""
     capfd.close()
@@ -538,6 +552,46 @@ def test_stream_detection_alerts_in_retry_loop_with_v1_alpha(mocker, mock_client
             stream_detection_alerts_in_retry_loop(mock_client_v1_alpha, arg_to_datetime("now"), test_mode=True)
             == stream_detection_outputs
         )
+
+
+@pytest.mark.parametrize(
+    "severity,expected_severity",
+    [("", 0), ("Unspecified", 0), ("Informational", 0.5), ("Low", 1), ("Medium", 2), ("High", 3), ("Critical", 4)],
+)
+def test_stream_detection_alerts_severity_only_with_v1_alpha(mocker, mock_client_v1_alpha, capfd, severity, expected_severity):
+    """
+    Test case scenario for validating incident severity in stream_detection_alerts_in_retry_loop with v1 alpha.
+
+    Given:
+       - mocked client for v1 alpha
+    When:
+       - Calling `stream_detection_alerts_in_retry_loop` function.
+    Then:
+       - Assert only the incident severity values.
+    """
+    mock_response = MockResponse()
+
+    with open(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/v1_alpha_stream_detections_missing_fields.txt")
+    ) as f:
+        mock_response.iter_lines = lambda **_: f.readlines()
+
+        stream_response = StreamResponse
+        stream_response.mock_response = mock_response
+        mock_response.post = StreamResponse
+        mock_response.encoding = None
+        mocker.patch.object(auth_requests, "AuthorizedSession", return_value=mock_response)
+        mocker.patch.object(time, "sleep", return_value=lambda **_: None)
+        mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+        mocker.patch.object(demisto, "params", return_value={"default_severity": severity})
+        capfd.close()
+
+        result = stream_detection_alerts_in_retry_loop(mock_client_v1_alpha, arg_to_datetime("now"), test_mode=True)
+
+        sample_events = json.loads(result.get("sample_events", "[]"))
+
+        for event in sample_events:
+            assert event.get("severity") == expected_severity
 
 
 def test_stream_detection_alerts_in_retry_loop_with_continuation_time_error_backstory(mocker, mock_client, capfd):

@@ -2,7 +2,7 @@
     "name": "Bitsight",
     "description": "The BitSight integration provides visibility into BitSight findings, enabling remediation within your security program",
     "support": "partner",
-    "currentVersion": "1.2.2",
+    "currentVersion": "1.3.0",
     "author": "Bitsight",
     "url": "https://service.bitsighttech.com/",
     "email": "support@bitsight.com",

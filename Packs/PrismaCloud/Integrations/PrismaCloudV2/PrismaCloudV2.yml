@@ -844,6 +844,13 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: 'Enable heuristic search optimization for faster results. Default is true.'
+      name: heuristic_search
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
     name: prisma-cloud-config-search
     outputs:
