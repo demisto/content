@@ -77,7 +77,7 @@ script:
       description: Hostname of the alert's source.
       type: string
   - arguments:
-    - description: The id of the alert for update
+    - description: The id of the alert for update.
       name: alertID
       required: true
     - auto: PREDEFINED
