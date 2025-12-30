@@ -1,0 +1,78 @@
+{
+    "id": "incident_rubriksuspiciousfilelist",
+    "version": -1,
+    "modified": "2025-09-30T13:04:12.454117457+05:30",
+    "name": "Rubrik Suspicious File List",
+    "ownerOnly": false,
+    "description": "The list of suspicious files.",
+    "cliName": "rubriksuspiciousfilelist",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Rubrik Radar"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "filePath",
+            "displayName": "File Path",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 450,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "lastModified",
+            "displayName": "Last Modified Time",
+            "type": "date",
+            "orgType": "date",
+            "required": false,
+            "script": "",
+            "width": 250,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "fileSizeBytes",
+            "displayName": "File Size in Bytes",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}
