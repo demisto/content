@@ -5,7 +5,7 @@ name: McAfeeDAM
 display: McAfee DAM
 category: Database
 provider: STG
-description: McAfee Database Activity Monitoring
+description: McAfee Database Activity Monitoring.
 configuration:
 - display: URL
   name: url
@@ -104,7 +104,7 @@ script:
       description: DAM sensor.
     - contentPath: rules
       contextPath: rules
-      description: DAM Rules
+      description: DAM Rules.
     description: Gets the latest DAM alerts by rule name.
   isfetch: true
 tests:
