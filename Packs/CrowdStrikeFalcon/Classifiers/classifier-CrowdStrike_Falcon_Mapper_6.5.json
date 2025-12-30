@@ -1623,6 +1623,18 @@
                 },
                 "name": {
                     "simple": "id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
                 }
 			}
 		},
@@ -1676,7 +1688,19 @@
 				},
 				"MITRE Technique Name": {
 					"simple": "mitre_attack.technique"
-				}
+				},
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "composite_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                }
             }
         },
         "CrowdStrike Falcon NGSIEM Incident": {
@@ -1732,7 +1756,19 @@
 				},
 				"severity": {
 					"simple": "severity"
-				}
+				},
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "composite_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                }
 			}
 		}
     },
