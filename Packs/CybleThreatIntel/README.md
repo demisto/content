@@ -1,6 +1,7 @@
 # Cyble Threat Intelligence – Cortex XSOAR Integration
 
-This integration enables Cortex XSOAR to ingest and query Indicators of Compromise (IOCs) from the **Cyble Vision API**.
+This integration enables Cortex XSOAR to ingest and query Indicators of
+Compromise (IOCs) from the **Cyble Vision API**.
 It supports two capabilities:
 
 1. **IOC Lookup (Interactive command for analysts)**
@@ -10,12 +11,15 @@ It supports two capabilities:
 
 ## Overview
 
-The Cyble Vision platform provides enriched, high-fidelity threat intelligence including malware associations, threat actor links, behaviour tags, risk scoring, and more.
+The Cyble Vision platform provides enriched, high-fidelity threat
+intelligence including malware associations, threat actor links,
+behaviour tags, risk scoring, and more.
 This integration allows XSOAR to:
 
 * Pull fresh IOCs at scheduled intervals
 * Tag, score, and store indicators in the Cortex XSOAR indicator store
-* Support analyst lookups for a single IOC via the command line or playbooks
+* Support analyst lookups for a single IOC via the command line or
+  playbooks
 
 ---
 
@@ -23,20 +27,23 @@ This integration allows XSOAR to:
 
 ### Required Parameters
 
-| Parameter                  | Description                                                        | Example                                  |
-| -------------------------- | ------------------------------------------------------------------ | ---------------------------------------- |
+| Parameter                  | Description                                                        | Example                              |
+| -------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
 | **Base URL**               | Cyble Vision API endpoint                                          | `https://api.cyble.ai/engine/api/v4` |
-| **API Key (Access Token)** | Cyble Vision API Bearer token                                      | *(stored securely in XSOAR)*             |
-| **First Fetch (hours)**    | Number of hours to fetch backward on first run (1–3 hours allowed) | `2`                                      |
-| **Max Fetch**              | Maximum indicators per API page                                    | `100`                                    |
+| **API Key (Access Token)** | Cyble Vision API Bearer token                                      | *(stored securely in XSOAR)*         |
+| **First Fetch (hours)**    | Number of hours to fetch backward on first run                     | `2`                                  |
+|                            | (1–3 hours allowed)                                                |                                      |
+| **Max Fetch**              | Maximum indicators per API page                                    | `100`                                |
 
 ### Fetch Behavior
 
 * Fetch is performed **in 1-hour chunks** until the full range is covered.
-* Each page of IOCs is inserted immediately using `demisto.createIndicators`.
+* Each page of IOCs is inserted immediately using
+  `demisto.createIndicators`.
 * Fetch uses a retry mechanism (up to 5 attempts per page).
 * `last_run` is updated after every chunk.
-* Supported fetch window: **1–3 hours** (anything outside is automatically corrected).
+* Supported fetch window: **1–3 hours** (anything outside is
+  automatically corrected).
 
 ---
 
@@ -48,7 +55,7 @@ Lookup a single IOC using the Cyble Vision API.
 
 ### **Command**
 
-```
+```text
 !cyble-vision-ioc-lookup ioc=<IOC_VALUE>
 ```
 
@@ -65,13 +72,13 @@ Prefix: `CybleIntel.IOCLookup`
 | Field                 | Description               |
 | --------------------- | ------------------------- |
 | IOC                   | IOC value                 |
-| IOC Type              | Type (IP/Domain/URL/Hash) |
+| IOC Type              | Type (IP / Domain / URL / Hash) |
 | First Seen            | UTC timestamp             |
 | Last Seen             | UTC timestamp             |
 | Risk Score            | 0–100                     |
 | Sources               | Reporting sources         |
 | Behaviour Tags        | Tags assigned by Cyble    |
-| Confidence Rating     | Low/Medium/High           |
+| Confidence Rating     | Low / Medium / High       |
 | Target Countries      | Target geography          |
 | Target Regions        | Regions affected          |
 | Target Industries     | Target verticals          |
@@ -80,8 +87,9 @@ Prefix: `CybleIntel.IOCLookup`
 
 ### **Example**
 
-```
+```text
 !cyble-vision-ioc-lookup ioc=45.67.23.9
+
 ```
 
 ---
@@ -110,14 +118,14 @@ It is used by the XSOAR engine when *Fetches Indicators* is enabled.
   * `cybletargetindustries`
   * `cyblerelatedmalware`
   * `cyblerelatedthreatactors`
+
 * Automatically maps each IOC into XSOAR Indicator fields.
 * Updates `last_run` after each successful chunk.
 
-
 ## Known Limitations
 
-* Fetching supports **hours only (days not supported)**.
-* Maximum initial backfill: **3 hours**.
+* Fetching supports **hours only** (days are not supported).
+* Maximum initial backfill is **3 hours**.
 
 ---
 

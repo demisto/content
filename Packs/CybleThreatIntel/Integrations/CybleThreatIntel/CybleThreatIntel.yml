@@ -9,7 +9,7 @@ description: >
   Cyble Threat Intelligence integration for Vision Users.
   Provides IOC lookup and an IOC feed from the Cyble Vision API.
 
-configuration:
+params:
 
   # --------------------------
   # Feed Parameters (Cannot be hidden, cannot be deprecated)
