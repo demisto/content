@@ -159,7 +159,7 @@ def test_disable_or_enable_tag(requests_mock):
 
 
 def test_disable_or_enable_tag_no_inputs(requests_mock):
-    requests_mock.post(f"{BASE_URL}ingestion/tags/bulk-actions/", json=[])
+    requests_mock.post(f"{BASE_URL}ingestion/tags/bulk-actions/", json={})
 
     client = Client(
         base_url=BASE_URL,

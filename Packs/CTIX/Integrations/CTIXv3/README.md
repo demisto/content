@@ -133,7 +133,7 @@ Disable or enable tags in the CTIX platform
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag_id | ID of the tag(s) to disable or enable. Supports multiple IDs as a comma-separated list. | Required |
+| tag_ids | ID of the tag(s) to disable or enable. Supports multiple IDs as a comma-separated list. | Required |
 | action | Action to be performed on the tag. Possible values are: enabled, disabled. Default is disabled. | Optional |
 
 #### Context Output
@@ -144,7 +144,7 @@ Disable or enable tags in the CTIX platform
 
 #### Command Example
 
-```!ctix-disable-or-enable-tags tag_id=47662c77-b419-419c-9bcf-420e05b01067 action=disabled```
+```!ctix-disable-or-enable-tags tag_ids=47662c77-b419-419c-9bcf-420e05b01067 action=disabled```
 
 #### Context Example
 

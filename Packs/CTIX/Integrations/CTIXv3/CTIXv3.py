@@ -327,8 +327,8 @@ class Client(BaseClient):
 
     def disable_or_enable_tag(self, tag_ids: list, action: str):
         """Enables or Disables a tag from the ctix instance
-        :type tag_id: ``list``
-        :param tag_id: id of the tag to be disabled or enabled
+        :type tag_ids: ``list``
+        :param tag_ids: id of the tag to be disabled or enabled
         :type action: ``str``
         :param action: Action to be performed. Possible values are 'enabled' and 'disabled'
         """
@@ -977,8 +977,8 @@ def disable_or_enable_tags_command(client: Client, args: dict[str, Any]) -> Comm
     :param Dict[str, Any] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
     """
-    tag_ids = argToList(args.get("tag_id"))
-    action = args.get("action") or "disabled"
+    tag_ids = argToList(args.get("tag_ids"))
+    action = args.get("action") or "enabled"
     response = client.disable_or_enable_tag(tag_ids=tag_ids, action=action.lower())
     final_result = response.get("data", {})
     final_result = no_result_found(final_result)

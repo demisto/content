@@ -1870,10 +1870,10 @@ script:
       type: Number
   - name: ctix-disable-or-enable-tags
     arguments:
-    - name: tag_id
+    - name: tag_ids
       required: true
       description: ID of the tag.
-      type: textArea
+      type: 0
     - name: action
       required: true
       auto: PREDEFINED
@@ -1882,12 +1882,12 @@ script:
       - enabled
       description: Choose to Enable or Disable the tag.
       defaultValue: enabled
-      type: textArea
+      type: 15
     outputs:
     - contextPath: CTIX.TagAction.result
       description: Status.
-      type: unknown
-    description: Disable or Enables a tag with given tag_name.
+      type: String
+    description: Disables or enables one or more tags based on their IDs.
   dockerimage: demisto/python3:3.12.12.6204436
   subtype: python3
 tests:
