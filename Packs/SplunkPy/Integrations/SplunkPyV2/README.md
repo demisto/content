@@ -134,6 +134,7 @@ For more info about enrichment types see [Enriching Finding Events](#enriching-f
 | Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |
 | Advanced: Time type to use when fetching events | Defines which timestamp will be used to filter the events:<br/>- creation time: Filters based on when the event actually occurred.<br/>- index time \(Beta\): \*Beta feature\* – Filters based on when the event was ingested into Splunk.  <br/>  This option is still in testing and may not behave as expected in all scenarios.  <br/>  When using this mode, the parameter "Fetch backwards window for the events occurrence time \(minutes\)" should be set to \`0\`\`, as indexing time ensures there are no delay-based gaps.<br/>  The default is "creation time".<br/> |  |
 | Advanced: Fetch backwards window for the events occurrence time (minutes) | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment. | False |
+| Advanced: Unique ID Fields | A comma-separated list of additional fields to use when generating unique incident IDs for events that are not findings \(i.e., queries without the \`notable\` macro\). By default, the integration uses: _cd, index,_time, _indextime,_raw. If these fields do not provide unique values in your environment, specify additional fields here to ensure incident uniqueness. Example: source,host,unique_field | False |
 | Enable user mapping | Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py\#configure-user-mapping-between-splunk-and-cortex-xsoar | False |
 | Users Lookup table name | The name of the lookup table in Splunk, containing the username's mapping data. | False |
 | XSOAR user key | The name of the lookup column containing the Cortex XSOAR username. | False |
@@ -243,7 +244,7 @@ You can use Splunk to define a user lookup table and then configure the SplunkPy
 
 **Important Notes**
 
-- Mirroring-in is not supported when multiple Splunk integration instances are connected to the same Splunk server.
+- Mirroring-in is not supported when multiple Splunk integration instances are connected to the same Splunk server, meaning only one instance per Splunk server can be configured to perform mirroring-in.
 - This feature is available from Cortex XSOAR version 6.0.0.
 - This feature is supported by Splunk Enterprise Security only.
 - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
@@ -252,7 +253,7 @@ You can use Splunk to define a user lookup table and then configure the SplunkPy
 
 #### Splunk Notes Mirroring
 
-- **Splunk Notes Updates/Deletions** - Editing or deleting existing Finding notes will NOT trigger mirroring to XSOAR on their own. Notes changes will only appear in the *Splunk Notes* field when a "real" change occurs in another finding field (such as status, owner, urgency, etc.), which triggers the mirror-in process.
+- **Splunk Notes Updates/Deletions** - Editing or deleting existing Finding notes will NOT trigger mirroring to XSOAR on their own. Notes changes will only appear in the *Splunk Notes* field when a "real" change occurs in another finding field (such as status, owner, urgency, etc.), which triggers the mirror-in process. However, these changes will NOT update War Room notes. War Room notes from Splunk will NOT be deleted or updated.
 - **Notes Display Behavior** - The *Splunk Notes* field will display notes from the past week only. However, all notes that were mirrored via mirror-in will appear in the War Room notes.
 - **Notes Time** - Note timestamps will display the same time as shown in Splunk for the user who created the authentication token. The timezone offset is based on the timezone configured for that user in Splunk.
 
