@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "IT",
+        "Security"
+    ],
+    "useCases": [
+        "Asset Management"
+    ],
+    "keywords": [
+        "vmware",
+        "vcenter"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
