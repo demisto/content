@@ -1582,6 +1582,7 @@ script:
       required: true
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
       name: timeframe
+      defaultValue: "24 hours"
     - description: Whether to poll and return the query results instead of only returning a link to the query in the query center.
       name: wait_for_results
       auto: PREDEFINED
@@ -1608,7 +1609,7 @@ script:
       description: Error information in case of a failed query.
       type: String
     - contextPath: GenericXQLQuery.query_url
-      description: Pivot URL to view the query in the Query Center.
+      description: URL to view the complete query results in the Query Center.
       type: String
     - contextPath: GenericXQLQuery.number_of_results
       description: Integer representing the number of results returned.

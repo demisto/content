@@ -1266,7 +1266,7 @@ def test_get_xql_query_results_platform_success(mocker):
         "stream_id": "test_stream_id",
         "number_of_results": 2,
     }
-    mock_results_data = '{"field1": "value1"}\n{"field2": "value2"}'
+    mock_results_data = '{"field1": "value1", "field2": "value3"}\n{"field2": "value2"}'
 
     mocker.patch.object(CLIENT, "_http_request", side_effect=[mock_info_response, mock_results_data])
 
@@ -1276,6 +1276,8 @@ def test_get_xql_query_results_platform_success(mocker):
     assert response["execution_id"] == "test_query_id"
     assert len(response["results"]) == 2
     assert response["results"][0]["field1"] == "value1"
+    assert response["results"][0]["field2"] == "value3"
+    assert response["results"][1]["field2"] == "value2"
 
 
 def test_get_xql_query_results_platform_pending(mocker):

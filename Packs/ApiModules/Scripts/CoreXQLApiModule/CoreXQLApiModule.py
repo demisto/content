@@ -132,7 +132,7 @@ class CoreClient(BaseClient):
         data = json.dumps(json_data) if json_data else data
 
         if use_platform_api:
-            address = full_url or url_suffix  # platform API expects only the path suffix
+            address = url_suffix  # platform API expects only the path suffix
             response = demisto._platformAPICall(path=address, method=method, params=params, data=data, timeout=timeout)
 
         else:

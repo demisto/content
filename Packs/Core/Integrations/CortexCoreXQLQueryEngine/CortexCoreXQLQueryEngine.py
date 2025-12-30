@@ -135,8 +135,11 @@ def get_xql_query_results_platform_polling(client: CoreClient, execution_id: str
         if outputs.get("status") != "PENDING":
             break
 
-        demisto.debug(f"Got status 'PENDING' for {execution_id}, checking again in {interval_in_secs} seconds.")
-        time.sleep(interval_in_secs)
+        t_to_timeout = (datetime.now() - polling_start_time).total_seconds()
+        demisto.debug(
+            f"Got status 'PENDING' for {execution_id}, next poll in {interval_in_secs} seconds. Timeout in {t_to_timeout}"
+        )
+        time.sleep(interval_in_secs)  # pylint: disable=E9003
 
     return outputs
 
