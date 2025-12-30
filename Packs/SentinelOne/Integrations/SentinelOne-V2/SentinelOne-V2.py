@@ -4805,50 +4805,55 @@ def to_incident(type, data):
 
     elif type == "UAM Alert":
         node = data.get("node", {})
-        account_info = node.get("realTime", {}).get("scope", {}).get("account", {})
-        group_info = node.get("realTime", {}).get("scope", {}).get("group", {})
-        site_info = node.get("realTime", {}).get("scope", {}).get("site", {})
         raw_severity = node.get("severity", "")
-        cloud_info = node.get("detectionTime", {}).get("cloud") or {}
-        kubernetes_info = node.get("detectionTime", {}).get("kubernetes") or {}
-        asset_info = node.get("asset", {}) or {}
 
         incident["name"] = f'Sentinel One {type}: {node.get("name")}'
         incident["occurred"] = node.get("createdAt")
         incident["severity"] = UAM_SEVERITY_MAPPING.get(raw_severity, 0)  # type: ignore[assignment]
-        incident["CustomFields"] = {  # type: ignore[assignment]
-            "sentineloneaccountid": account_info.get("id", ""),
-            "sentineloneaccountname": account_info.get("name", ""),
-            "sentinelonegroupid": group_info.get("id", ""),
-            "sentinelonegroupname": group_info.get("name", ""),
-            "sentinelonesiteid": site_info.get("id", ""),
-            "sentinelonesitename": site_info.get("name", ""),
-            "sentineloneclassificationsource": node.get("classification", ""),
-            "sentinelonecloudprovider": cloud_info.get("cloudProvider", ""),
-            "sentinelonecloudprovideraccount": cloud_info.get("accountId", ""),
-            "sentinelonecloudproviderimage": cloud_info.get("image", ""),
-            "sentinelonecloudproviderinstanceid": cloud_info.get("instanceId", ""),
-            "sentinelonecloudproviderinstancesize": cloud_info.get("instanceSize", ""),
-            "sentinelonecloudproviderlocation": cloud_info.get("location", ""),
-            "sentinelonecloudprovidernetwork": cloud_info.get("network", ""),
-            "sentinelonecloudprovidertags": cloud_info.get("tags", []),
-            "sentinelonekubernetescluster": kubernetes_info.get("clusterName", ""),
-            "sentinelonekubernetescontrollerkind": kubernetes_info.get("controllerType", ""),
-            "sentinelonekubernetescontrollerlabels": kubernetes_info.get("controllerLabels", []),
-            "sentinelonekubernetescontrollername": kubernetes_info.get("controllerName", ""),
-            "sentinelonekubernetesnamespacelabels": kubernetes_info.get("namespaceLabels", []),
-            "sentinelonekubernetesnamespace": kubernetes_info.get("namespaceName", ""),
-            "sentinelonekubernetesnodelabels": kubernetes_info.get("nodeLabels", []),
-            "sentinelonekubernetesnode": kubernetes_info.get("nodeName", ""),
-            "sentinelonekubernetespodlabels": kubernetes_info.get("podLabels", []),
-            "sentinelonekubernetespod": kubernetes_info.get("podName", ""),
-            "deviceosversion": asset_info.get("osVersion", ""),
-            "deviceosname": asset_info.get("osType", ""),
-            "agentversion": asset_info.get("agentVersion", ""),
-            "deviceid": asset_info.get("agentUuid", ""),
-        }
+        incident["CustomFields"] = build_uam_custom_fields(node)  # type: ignore[assignment]
 
     return incident
+
+
+def build_uam_custom_fields(node):
+    account_info = node.get("realTime", {}).get("scope", {}).get("account", {})
+    group_info = node.get("realTime", {}).get("scope", {}).get("group", {})
+    site_info = node.get("realTime", {}).get("scope", {}).get("site", {})
+    cloud_info = node.get("detectionTime", {}).get("cloud") or {}
+    kubernetes_info = node.get("detectionTime", {}).get("kubernetes") or {}
+    asset_info = node.get("asset", {}) or {}
+
+    return {
+        "sentineloneaccountid": account_info.get("id", ""),
+        "sentineloneaccountname": account_info.get("name", ""),
+        "sentinelonegroupid": group_info.get("id", ""),
+        "sentinelonegroupname": group_info.get("name", ""),
+        "sentinelonesiteid": site_info.get("id", ""),
+        "sentinelonesitename": site_info.get("name", ""),
+        "sentineloneclassificationsource": node.get("classification", ""),
+        "sentinelonecloudprovider": cloud_info.get("cloudProvider", ""),
+        "sentinelonecloudprovideraccount": cloud_info.get("accountId", ""),
+        "sentinelonecloudproviderimage": cloud_info.get("image", ""),
+        "sentinelonecloudproviderinstanceid": cloud_info.get("instanceId", ""),
+        "sentinelonecloudproviderinstancesize": cloud_info.get("instanceSize", ""),
+        "sentinelonecloudproviderlocation": cloud_info.get("location", ""),
+        "sentinelonecloudprovidernetwork": cloud_info.get("network", ""),
+        "sentinelonecloudprovidertags": cloud_info.get("tags", []),
+        "sentinelonekubernetescluster": kubernetes_info.get("clusterName", ""),
+        "sentinelonekubernetescontrollerkind": kubernetes_info.get("controllerType", ""),
+        "sentinelonekubernetescontrollerlabels": kubernetes_info.get("controllerLabels", []),
+        "sentinelonekubernetescontrollername": kubernetes_info.get("controllerName", ""),
+        "sentinelonekubernetesnamespacelabels": kubernetes_info.get("namespaceLabels", []),
+        "sentinelonekubernetesnamespace": kubernetes_info.get("namespaceName", ""),
+        "sentinelonekubernetesnodelabels": kubernetes_info.get("nodeLabels", []),
+        "sentinelonekubernetesnode": kubernetes_info.get("nodeName", ""),
+        "sentinelonekubernetespodlabels": kubernetes_info.get("podLabels", []),
+        "sentinelonekubernetespod": kubernetes_info.get("podName", ""),
+        "deviceosversion": asset_info.get("osVersion", ""),
+        "deviceosname": asset_info.get("osType", ""),
+        "agentversion": asset_info.get("agentVersion", ""),
+        "deviceid": asset_info.get("agentUuid", ""),
+    }
 
 
 def main():
