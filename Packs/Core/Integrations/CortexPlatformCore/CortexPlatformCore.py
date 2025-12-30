@@ -3084,8 +3084,8 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     entry_type = entryTypes["note"]
     if error_messages:  # If some fields failed, we use the error entry type
         entry_type = entryTypes["error"]
-        unsuccessful_section = f"### Partial Update Warning\n{error_messages}"
-        readable_output = f"{unsuccessful_section}\n\n{readable_output}"
+        unsuccessful_section = f"Case updated successfully. The following fields could not be updated:\n" f"{error_messages}"
+        readable_output = f"{readable_output}\n\n{unsuccessful_section}"
 
     return CommandResults(
         readable_output=readable_output,
