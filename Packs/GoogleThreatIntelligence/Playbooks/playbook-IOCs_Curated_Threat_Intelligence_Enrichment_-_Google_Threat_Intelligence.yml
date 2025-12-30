@@ -61,7 +61,7 @@ tasks:
               complex:
                 root: modules
                 filters:
-                - - operator: containsGeneral
+                - - operator: isEqualString
                     left:
                       value:
                         simple: modules.brand

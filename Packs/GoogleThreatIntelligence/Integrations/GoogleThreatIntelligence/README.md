@@ -998,8 +998,8 @@ Retrieves CVE information from Google Threat Intelligence.
 | CVE.CVSS.Vector | String | CVSS vector string representing attack metrics and impact. |
 | CVE.Description | String | Full textual description of the CVE, including affected components and exploitation details. |
 | CVE.ID | String | Unique identifier for the CVE \(e.g., CVE-2025-14205\). |
-| CVE.Modified | Date | Timestamp when the CVE record was last modified. |
-| CVE.Published | Date | Timestamp when the CVE was originally published. |
+| CVE.Modified | Date | Timestamp when the CVE record was last modified \(e.g., 1766963614\). |
+| CVE.Published | Date | Timestamp when the CVE was originally published \(e.g., 1766963614\).|
 | CVE.Relationships.EntityA | String | First entity in the relationship \(usually the CVE ID\). |
 | CVE.Relationships.EntityAType | String | Type of the first entity \(e.g., CVE\). |
 | CVE.Relationships.EntityB | String | Second entity in the relationship \(e.g., file, IP, domain\). |
@@ -1030,7 +1030,6 @@ Retrieves CVE information from Google Threat Intelligence.
 | GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv3_x.temporal_score | Number | CVSS v3 temporal score from the source. |
 | GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv3_x.vector | String | CVSS v3 vector string. |
 | GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv4_x.score | Number | CVSS v4 base score from the source. |
-| GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv4_x.supplemental | Unknown | Additional CVSS v4 supplemental metrics. |
 | GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv4_x.vector | String | CVSS v4 vector string. |
 | GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv4_x.threat.exploit_maturity | String | Threat metrics associated with CVSS v4. |
 | GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv3_x_translated.temporal_score | Number | Machine-translated CVSS v3 metrics. |
@@ -1099,8 +1098,8 @@ Retrieves CVE information from Google Threat Intelligence.
 | GoogleThreatIntelligence.CVE.attributes.targeted_industries | List | Industries targeted by exploitation of this CVE. |
 | GoogleThreatIntelligence.CVE.attributes.cwe.title | String | Title of the mapped CWE \(root cause\). |
 | GoogleThreatIntelligence.CVE.attributes.cwe.id | String | CWE identifier linked to the CVE. |
-| GoogleThreatIntelligence.CVE.attributes.affected_systems | Unknown | Systems or platforms affected by the vulnerability. |
-| GoogleThreatIntelligence.CVE.attributes.tags_details | Unknown | Detailed metadata for GTI tags. |
+| GoogleThreatIntelligence.CVE.attributes.affected_systems | List | Systems or platforms affected by the vulnerability. |
+| GoogleThreatIntelligence.CVE.attributes.tags_details | List | Detailed metadata for GTI tags. |
 | GoogleThreatIntelligence.CVE.attributes.executive_summary | String | High-level summary of the vulnerability impact. |
 | GoogleThreatIntelligence.CVE.attributes.priority | String | GTI-assigned priority score/category. |
 | GoogleThreatIntelligence.CVE.attributes.alt_names_details | List | Additional details about alternate CVE names. |
@@ -1113,7 +1112,7 @@ Retrieves CVE information from Google Threat Intelligence.
 | GoogleThreatIntelligence.CVE.attributes.status | String | Current vulnerability status \(e.g., Active, Resolved\). |
 | GoogleThreatIntelligence.CVE.attributes.intended_effects | List | Intent or malicious outcomes achieved by exploiting the CVE. |
 | GoogleThreatIntelligence.CVE.attributes.private | Boolean | Whether the CVE entry is private in GTI. |
-| GoogleThreatIntelligence.CVE.attributes.targeted_informations | :List | Types of information targeted by attackers. |
+| GoogleThreatIntelligence.CVE.attributes.targeted_informations | List | Types of information targeted by attackers. |
 | GoogleThreatIntelligence.CVE.attributes.ip_addresses_count | Number | Number of IPs related to the vulnerability. |
 | GoogleThreatIntelligence.CVE.attributes.mati_genids_dict.report_id | String | MATI report ID linked to the CVE. |
 | GoogleThreatIntelligence.CVE.attributes.mati_genids_dict.cve_id | String | CVE ID mapped within MATI dataset. |
@@ -1196,7 +1195,7 @@ Retrieves CVE information from Google Threat Intelligence.
                 "self": "https://www.virustotal.com/api/v3/collections/vulnerability--cve-2022-30190"
             },
             "attributes": {
-                "description": "google has provided the follow description:  \n*A remote code execution vulnerability exists when MSDT is called using the URL protocol from a calling application such as Word.",
+                "description": "google has provided the following description:  \n*A remote code execution vulnerability exists when MSDT is called using the URL protocol from a calling application such as Word.",
                 "risk_factors": [
                     "User Interaction Required"
                 ],
@@ -1409,7 +1408,7 @@ Retrieves CVE information from Google Threat Intelligence.
 
 >|CVE ID|Risk Rating|Priority|Exploitation State|Exploit Availability|CVSS v3.x Score|CVSS v4.x Score|CVSS v3.x Vector|Date Of Disclosure|Creation Date|Last Modified|Sources|Description|Related Files|Related Domains|Related IPs|Related URLs|Executive Summary|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| CVE-2022-30190 | MEDIUM | P1 | Confirmed | Publicly Available | 7.8 | 0 | CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H/E:F/RL:O/RC:C | 2022-05-27T00:00:00.000Z | 2022-05-30T16:20:32.000Z | 2025-10-29T18:46:49.000Z | 2 | google has provided the follow description:  <br>*A remote code execution vulnerability exists when MSDT is called using the URL protocol from a calling application such as Word. | 2 | 0 | 0 | 0 | * An Improper Control of Generation of Code ('Code Injection') vulnerability exists that, when exploited, allows a remote attacker to execute arbitrary code. |
+>| CVE-2022-30190 | MEDIUM | P1 | Confirmed | Publicly Available | 7.8 | 0 | CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H/E:F/RL:O/RC:C | 2022-05-27T00:00:00.000Z | 2022-05-30T16:20:32.000Z | 2025-10-29T18:46:49.000Z | 2 | google has provided the following description:  <br>*A remote code execution vulnerability exists when MSDT is called using the URL protocol from a calling application such as Word. | 2 | 0 | 0 | 0 | * An Improper Control of Generation of Code ('Code Injection') vulnerability exists that, when exploited, allows a remote attacker to execute arbitrary code. |
 
 ### url-scan
 

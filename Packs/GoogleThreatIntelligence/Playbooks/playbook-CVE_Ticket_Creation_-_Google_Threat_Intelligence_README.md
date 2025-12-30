@@ -1,4 +1,4 @@
-This playbook is used to create a ServiceNow ticket based on enriched CVE data, using the CVE exploitation state, risk rating, and CVSS score.
+This playbook creates a ServiceNow ticket using the "ServiceNow v2" integration based on enriched CVE data, leveraging the CVE exploitation state, risk rating, and CVSS score.
 
 ## Dependencies
 
@@ -30,7 +30,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | cve_data | Enriched CVE information from the main playbook. |  | Optional |
-| onCall | Set to true to assign only the user that is currently on shift. Default is False. | false | Optional |
+| onCall | Set to true to assign only the user that is currently on shift. Default is False. |  | Optional |
 
 ## Playbook Outputs
 

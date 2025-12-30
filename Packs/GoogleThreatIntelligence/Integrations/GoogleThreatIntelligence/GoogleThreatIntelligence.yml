@@ -890,7 +890,6 @@ script:
     arguments:
     - name: cve
       required: true
-      default: true
       description: Provide CVE ID. Supports comma-separated values.
       isArray: true
     outputs:
@@ -907,10 +906,10 @@ script:
       description: Unique identifier for the CVE (e.g., CVE-2025-14205).
       type: String
     - contextPath: CVE.Modified
-      description: Timestamp when the CVE record was last modified.
+      description: Timestamp when the CVE record was last modified (e.g., 1766963614).
       type: Date
     - contextPath: CVE.Published
-      description: Timestamp when the CVE was originally published.
+      description: Timestamp when the CVE was originally published (e.g., 1766963614).
       type: Date
     - contextPath: CVE.Relationships.EntityA
       description: First entity in the relationship (usually the CVE ID).
@@ -1002,9 +1001,6 @@ script:
     - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv4_x.score
       description: CVSS v4 base score from the source.
       type: Number
-    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv4_x.supplemental
-      description: Additional CVSS v4 supplemental metrics.
-      type: Unknown
     - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv4_x.vector
       description: CVSS v4 vector string.
       type: String
@@ -1211,10 +1207,10 @@ script:
       type: String
     - contextPath: GoogleThreatIntelligence.CVE.attributes.affected_systems
       description: Systems or platforms affected by the vulnerability.
-      type: Unknown
+      type: List
     - contextPath: GoogleThreatIntelligence.CVE.attributes.tags_details
       description: Detailed metadata for GTI tags.
-      type: Unknown
+      type: List
     - contextPath: GoogleThreatIntelligence.CVE.attributes.executive_summary
       description: High-level summary of the vulnerability impact.
       type: String
@@ -1253,7 +1249,7 @@ script:
       type: Boolean
     - contextPath: GoogleThreatIntelligence.CVE.attributes.targeted_informations
       description: Types of information targeted by attackers.
-      type: :List
+      type: List
     - contextPath: GoogleThreatIntelligence.CVE.attributes.ip_addresses_count
       description: Number of IPs related to the vulnerability.
       type: Number

@@ -1654,7 +1654,7 @@ def test_cve_command(mocker, requests_mock):
     assert results[0].indicator.dbot_score.integration_name == "GoogleThreatIntelligence"
     assert results[0].indicator.dbot_score.score == 2
     assert results[0].indicator.dbot_score.reliability == "A - Completely reliable"
-    assert "google has provided the follow description" in results[0].indicator.description
+    assert "google has provided the following description" in results[0].indicator.description
     assert results[0].indicator.published == "2022-05-27T00:00:00.000Z"
 
     # Validate CVE relationships (CVE to File MD5 hashes from sources)

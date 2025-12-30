@@ -1,4 +1,4 @@
-This playbook submits a file for private scanning, retrieves and evaluates the analysis verdict, and automatically creates a ServiceNow ticket when the file is determined to be malicious.
+This playbook submits a file for private scanning, retrieves and evaluates the analysis verdict, and automatically creates a ServiceNow ticket using the "ServiceNow v2" integration when the file is determined to be malicious.
 
 ## Dependencies
 

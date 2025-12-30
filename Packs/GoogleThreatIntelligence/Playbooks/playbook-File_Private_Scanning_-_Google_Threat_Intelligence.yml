@@ -1,7 +1,7 @@
 id: File Private Scanning - Google Threat Intelligence
 version: -1
 name: File Private Scanning - Google Threat Intelligence
-description: This playbook submits a file for private scanning, retrieves and evaluates the analysis verdict, and automatically creates a ServiceNow ticket when the file is determined to be malicious.
+description: This playbook submits a file for private scanning, retrieves and evaluates the analysis verdict, and automatically creates a ServiceNow ticket using the "ServiceNow v2" integration when the file is determined to be malicious.
 starttaskid: "0"
 tasks:
   "0":
@@ -62,7 +62,7 @@ tasks:
               complex:
                 root: modules
                 filters:
-                - - operator: containsGeneral
+                - - operator: isEqualString
                     left:
                       value:
                         simple: modules.brand

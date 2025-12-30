@@ -306,10 +306,10 @@ tasks:
       version: -1
       name: Domain Enrichment using GTI command
       description: Checks the reputation of a domain.
-      script: GoogleThreatIntelligence|||domain
+      script: '|||domain'
       type: regular
       iscommand: true
-      brand: GoogleThreatIntelligence
+      brand: ""
     nexttasks:
       '#none#':
       - "14"

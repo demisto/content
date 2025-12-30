@@ -1,4 +1,4 @@
-This playbook initiates the response for DTM Alerts in XSOAR when an incident is investigated. For medium or higher severity, it creates a ServiceNow ticket; otherwise, the incident is assigned to an analyst. The ticket is enriched with GTI DTM Alert details, including alert type, status, monitor information, summary, AI Doc summary, and tags.
+This playbook initiates the response for DTM Alerts in XSOAR when an incident is investigated. For medium or higher severity, it creates a ServiceNow ticket using the "ServiceNow v2" integration; otherwise, the incident is assigned to an analyst. The ticket is enriched with GTI DTM Alert details, including alert type, status, monitor information, summary, AI Doc summary, and tags.
 
 ## Dependencies
 

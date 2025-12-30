@@ -5,7 +5,7 @@
         "self": "https://www.virustotal.com/api/v3/collections/vulnerability--cve-2022-30190"
     },
     "attributes": {
-        "description": "google has provided the follow description:  \n*A remote code execution vulnerability exists when MSDT is called using the URL protocol from a calling application such as Word. An attacker who successfully exploits this vulnerability can run arbitrary code with the privileges of the calling application. The attacker can then install programs, view, change, or delete data, or create new accounts in the context allowed by the user's rights.*",
+        "description": "google has provided the following description:  \n*A remote code execution vulnerability exists when MSDT is called using the URL protocol from a calling application such as Word. An attacker who successfully exploits this vulnerability can run arbitrary code with the privileges of the calling application. The attacker can then install programs, view, change, or delete data, or create new accounts in the context allowed by the user's rights.*",
         "risk_factors": [
             "User Interaction Required"
         ],

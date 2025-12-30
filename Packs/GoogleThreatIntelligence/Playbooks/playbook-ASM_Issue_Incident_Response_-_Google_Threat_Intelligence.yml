@@ -2,7 +2,7 @@ id: ASM Issue Incident Response - Google Threat Intelligence
 version: -1
 name: ASM Issue Incident Response - Google Threat Intelligence
 description: |
-  This playbook initiates the response for ASM Issues in XSOAR when an incident is investigated. For medium, high, or critical severity, it creates a ServiceNow ticket; otherwise, the incident is assigned to an analyst. The ticket is enriched with GTI ASM Issue details, including entity name, status, confidence, tags, UUID, collection info, and other relevant incident information.
+  This playbook initiates the response for ASM Issues in XSOAR when an incident is investigated. For medium, high, or critical severity, it creates a ServiceNow ticket using the "ServiceNow v2" integration; otherwise, the incident is assigned to an analyst. The ticket is enriched with GTI ASM Issue details, including entity name, status, confidence, tags, UUID, collection info, and other relevant incident information.
 starttaskid: "0"
 tasks:
   "0":
@@ -18,7 +18,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "21"
+      - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -52,7 +52,7 @@ tasks:
       '#default#':
       - "7"
       "yes":
-      - "2"
+      - "21"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -88,7 +88,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 140
+          "y": -30
         }
       }
     note: false
@@ -1047,7 +1047,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     scriptarguments:
       key:
         simple: issue_collection_name,issue_uuid,issue_confidence,issue_description,issue_entity_name,issue_entity_uid,issue_status,issue_link,issue_tags,issue_collection_uuid,ServiceNow.Ticket
@@ -1057,7 +1057,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -50
+          "y": 185
         }
       }
     note: false

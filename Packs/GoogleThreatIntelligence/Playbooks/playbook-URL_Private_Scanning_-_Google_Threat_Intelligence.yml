@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -49,7 +49,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     scriptarguments:
       key:
         simple: url_data,url_output_list
@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 180
+          "y": 390
         }
       }
     note: false
@@ -85,7 +85,7 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "3"
+      - "1"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -96,7 +96,7 @@ tasks:
               complex:
                 root: modules
                 filters:
-                - - operator: containsGeneral
+                - - operator: isEqualString
                     left:
                       value:
                         simple: modules.brand
@@ -121,7 +121,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 350
+          "y": 190
         }
       }
     note: false

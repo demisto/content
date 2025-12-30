@@ -11,12 +11,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* GoogleThreatIntelligence
+This playbook does not use any integrations.
 
 ### Scripts
 
 * DeleteContext
-* Set
 * SetAndHandleEmpty
 
 ### Commands

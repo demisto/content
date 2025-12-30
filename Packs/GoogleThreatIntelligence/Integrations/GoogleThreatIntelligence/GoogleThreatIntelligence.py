@@ -917,12 +917,13 @@ def create_relationships_cve(
     Create relationships between CVE and related files (MD5 hashes from sources)
 
     Args:
-        cve_id: The CVE identifier (e.g., "CVE-2025-13796")
-        cve_response: The CVE API response containing sources
-        reliability: The reliability of the source
+        entity_a (str): The source of the relationship
+        entity_a_type (str): The type of the source of the relationship
+        relationships_response (dict): The relationship response from the api
+        reliability (_type_): The reliability of the source.
 
     Returns:
-        List of EntityRelationship objects
+        List[EntityRelationship]: List of EntityRelationship objects
     """
     relationships_list: List[EntityRelationship] = []
 

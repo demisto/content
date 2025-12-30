@@ -43,4 +43,3 @@ This playbook does not use any commands.
 ---
 
 ![Email Collection by Enriched Domain - Google Threat Intelligence](../doc_files/Email_Collection_by_Enriched_Domain_-_Google_Threat_Intelligence.png)
-

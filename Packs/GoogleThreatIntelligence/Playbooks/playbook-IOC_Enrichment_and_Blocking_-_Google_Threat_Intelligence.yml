@@ -17,14 +17,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "29"
+      - "24"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 460,
-          "y": -840
+          "y": -780
         }
       }
     note: false
@@ -309,10 +309,10 @@ tasks:
       version: -1
       name: IP enrichment using GTI command
       description: Checks the reputation of an IP address.
-      script: GoogleThreatIntelligence|||ip
+      script: '|||ip'
       type: regular
       iscommand: true
-      brand: GoogleThreatIntelligence
+      brand: ""
     nexttasks:
       '#none#':
       - "25"
@@ -702,10 +702,10 @@ tasks:
       version: -1
       name: File enrichment using GTI command
       description: Checks the file reputation of the specified hash.
-      script: GoogleThreatIntelligence|||file
+      script: '|||file'
       type: regular
       iscommand: true
-      brand: GoogleThreatIntelligence
+      brand: ""
     nexttasks:
       '#none#':
       - "26"
@@ -955,10 +955,10 @@ tasks:
       version: -1
       name: Domain enrichment using GTI command
       description: Checks the reputation of a domain.
-      script: GoogleThreatIntelligence|||domain
+      script: '|||domain'
       type: regular
       iscommand: true
-      brand: GoogleThreatIntelligence
+      brand: ""
     nexttasks:
       '#none#':
       - "27"
@@ -1217,10 +1217,10 @@ tasks:
       version: -1
       name: URL enrichment using GTI command
       description: Checks the reputation of a URL.
-      script: GoogleThreatIntelligence|||url
+      script: '|||url'
       type: regular
       iscommand: true
-      brand: GoogleThreatIntelligence
+      brand: ""
     nexttasks:
       '#none#':
       - "28"
@@ -1493,7 +1493,7 @@ tasks:
       '#default#':
       - "8"
       "yes":
-      - "30"
+      - "29"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1504,7 +1504,7 @@ tasks:
               complex:
                 root: modules
                 filters:
-                - - operator: containsGeneral
+                - - operator: isEqualString
                     left:
                       value:
                         simple: modules.brand
@@ -1529,7 +1529,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -460
+          "y": -630
         }
       }
     note: false
@@ -1726,7 +1726,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
+      - "30"
     scriptarguments:
       key:
         simple: FoundIndicators,File,file_data,ip_data,domain_data,url_data
@@ -1736,7 +1736,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -630
+          "y": -430
         }
       }
     note: false
@@ -1865,10 +1865,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2475,
+        "height": 2415,
         "width": 1900,
         "x": -300,
-        "y": -840
+        "y": -780
       }
     }
   }
