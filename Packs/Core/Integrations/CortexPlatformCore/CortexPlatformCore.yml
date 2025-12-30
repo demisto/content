@@ -2880,22 +2880,24 @@ script:
         required: true
       - auto: PREDEFINED
         name: day
-        description: The day of the week to schedule the assessment.
-        defaultValue: "sunday"
+        description: The day of the week to schedule the assessment. If left empty, assessment runs daily.
         predefined:
-          - "sunday"
-          - "monday"
-          - "tuesday"
-          - "wednesday"
-          - "thursday"
-          - "friday"
-          - "saturday"
+          - "Sunday"
+          - "Monday"
+          - "Tuesday"
+          - "Wednesday"
+          - "Thursday"
+          - "Friday"
+          - "Saturday"
       - name: time
         description: The time of day to run the assessment in HH:MM format.
         defaultValue: "12:00"
       name: core-add-assessment-profile
       description: Create new assessment profile.
       hidden: true
+      supportedModules:
+        - cloud_runtime_security
+        - cloud_posture
       outputs:
       - contextPath: Core.AssessmentProfile.assessment_profile_id
         description: The unique identifier of the newly created assessment profile.
@@ -2935,6 +2937,9 @@ script:
       name: core-list-compliance-standards
       description: Create new assessment profile.
       hidden: true
+      supportedModules:
+        - cloud_runtime_security
+        - cloud_posture
       outputs:
       - contextPath: Core.ComplianceStandards.id
         description: The unique identifier of the standard.

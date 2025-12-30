@@ -7105,7 +7105,7 @@ class TestCoreAddAssessmentProfileCommand:
             description="Test Description",
             standard_id="std-123",
             asset_group_id="group-456",
-            day="sunday",
+            day=None,
             time="12:00",
             report_type="ALL",
         )

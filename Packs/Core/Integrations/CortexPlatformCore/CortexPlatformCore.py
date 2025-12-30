@@ -25,7 +25,6 @@ MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 MAX_GET_SYSTEM_USERS_LIMIT = 50
 MAX_GET_EXCEPTION_RULES_LIMIT = 100
 
-DAY_MAP = {"sunday": 0, "monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6}
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -3424,7 +3423,7 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def parse_frequency(day: str, time: str) -> str:
+def parse_frequency(day: str | None, time: str | None) -> str:
     """
     Convert day and time to cron-style frequency string
 
@@ -3440,18 +3439,27 @@ def parse_frequency(day: str, time: str) -> str:
     :param time: Time in HH:MM format
     :return: Cron-style frequency string
     """
+    DAY_MAP = {"sunday": 0, "monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6}
 
-    if day.lower() not in DAY_MAP:
-        raise ValueError(f"Invalid day. Must be one of {list(DAY_MAP.keys())}.")
-
+    target_time = time if time else "12:00"
     try:
-        hours, minutes = map(int, time.split(":"))
+        hours, minutes = map(int, target_time.split(":"))
         if not (0 <= hours < 24 and 0 <= minutes < 60):
             raise ValueError("Invalid time format. Use HH:MM in 24-hour format.")
-        return f"{minutes} {hours} * * {DAY_MAP[day]}"
-
     except ValueError:
         raise ValueError("Invalid time format. Use HH:MM.")
+
+    if day is None:
+        # If no day is provided -> Daily (represented by * in cron)
+        cron_day = "*"
+    else:
+        # If day is provided -> Weekly (look up the day index)
+        day_key = day.lower()
+        if day_key not in DAY_MAP:
+            raise ValueError(f"Invalid day. Must be one of {list(DAY_MAP.keys())}.")
+        cron_day = str(DAY_MAP[day_key])
+
+    return f"{minutes} {hours} * * {cron_day}"
 
 
 def create_assessment_profile_payload(
@@ -3459,8 +3467,8 @@ def create_assessment_profile_payload(
     description: str,
     standard_id: str,
     asset_group_id: str,
-    day: str = "sunday",
-    time: str = "12:00",
+    day: str | None,
+    time: str | None,
     report_type: str = "ALL",
 ) -> Dict[str, Any]:
     """
@@ -3494,9 +3502,9 @@ def create_assessment_profile_payload(
 
 
 def list_compliance_standards_payload(
-    name: str = None,
-    created_by: str = None,
-    labels: list = None,
+    name: str | None = None,
+    created_by: str | None = None,
+    labels: list[str] | None = None,
     page=0,
     page_size=MAX_COMPLIANCE_STANDARDS,
 ) -> Dict[str, Any]:
@@ -3554,7 +3562,7 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
     profile_description = args.get("profile_description", "")
     standard_name = args.get("standard_name", "")
     asset_group_name = args.get("asset_group_name", "")
-    day = args.get("day", "sunday")
+    day = args.get("day")
     time = args.get("time", "12:00")
 
     payload = list_compliance_standards_payload(
