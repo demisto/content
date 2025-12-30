@@ -2746,7 +2746,7 @@ script:
       description: 'The database settings for vCenter server. Valid attributes are: - `max_connections` (int): Maximum connections. (default: 50) - `task_cleanup` (bool): Task cleanup. (default: true) - `task_retention` (int): Task retention (days). (default: 30) - `event_cleanup` (bool): Event cleanup. (default: true) - `event_retention` (int): Event retention (days). (default: 30).'
       isArray: true
       name: database
-    - description: 'The unique runtime settings for vCenter server. Valid attributes are: - `unique_id` (int): vCenter server unique ID. - `managed_address` (str): vCenter server managed address. - `vcenter_server_name` (str): vCenter server name. (default: FQDN)'
+    - description: 'The unique runtime settings for vCenter server. Valid attributes are: - `unique_id` (int): vCenter server unique ID. - `managed_address` (str): vCenter server managed address. - `vcenter_server_name` (str): vCenter server name. (default: FQDN).'
       isArray: true
       name: runtime_settings
     - defaultValue: '{''timeout'': 60, ''query_limit'': True, ''query_limit_size'': 5000, ''validation'': True, ''validation_period'': 1440}'
