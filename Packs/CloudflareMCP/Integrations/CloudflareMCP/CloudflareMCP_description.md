@@ -12,7 +12,7 @@ To obtain the Authorization code, follow these steps:
 1. Save the integration instance.
 2. Run the integration command `!cloudflare-mcp-generate-login-url`from the Playground and follow its instructions.
 3. Copy the generated Authorization code into the integration instance and save the integration instance.
-4. Then run the integration command `!cloudflare-mcp-auth-test` from the Playground to verify that everything is configured correctly.
+4. Run the integration command `!cloudflare-mcp-auth-test` from the Playground to verify that everything is configured correctly.
 
 ## Redirect URI
 
