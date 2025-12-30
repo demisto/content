@@ -20,10 +20,13 @@ The integration uses OAuth2 Client Credentials flow with API key authentication.
    - **Settings tab**: In the **Application ID** field, enter a name for this web app (e.g., `xsiamapp`). This will be your **Web App ID**.
    - **Tokens tab**: In the **Token Type** field, select **jwtRS256**. Under **Auth methods**, ensure that the **Client Creds** authentication method is selected.
    - **Scope tab**: Click **Add**, copy and paste the following text in the **Name** field, and then click **Save**:
+
      ```
      isp.audit.events:read
      ```
+
    - **Advanced tab**: Copy and paste the following script:
+
      ```javascript
      setClaim('tenant_id', TenantData.Get("CybrTenantID"));
      setClaim('aud', 'cyberark.isp.audit');

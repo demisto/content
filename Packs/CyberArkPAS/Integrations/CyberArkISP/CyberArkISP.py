@@ -29,7 +29,7 @@ class Config:
     """Global static configuration."""
 
     VENDOR = "CyberArk"
-    PRODUCT = "Identity Security Platform"
+    PRODUCT = "ISP"
 
     # CyberArk ISP date format
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
