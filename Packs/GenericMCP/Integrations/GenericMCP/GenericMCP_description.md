@@ -17,7 +17,7 @@ This integration allows you to connect securely with any MCP server and access i
     * **Bearer**: Uses a Bearer token for authentication.
         * **API Token / API Key**: Provide the Bearer Token to access the service REST API.
 
-    * **Api-Key**: Uses an API key for authentication.
+    * **Api Key**: Uses an API key for authentication.
         * **API Token / API Key**: Provide the API Key to access the service REST API.
 
     * **RawToken**: Uses a raw token for authentication.
