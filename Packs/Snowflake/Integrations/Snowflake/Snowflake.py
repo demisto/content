@@ -9,7 +9,7 @@ from datetime import date, datetime, timedelta
 from datetime import time as dttime
 from decimal import Decimal
 
-import snowflake.connector  # pylint: disable=E0401,E0611
+import snowflake.connector  # pylint:  disable=E0401,E0611
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
