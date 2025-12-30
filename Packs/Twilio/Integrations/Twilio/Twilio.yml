@@ -4,6 +4,7 @@ commonfields:
 name: Twilio
 display: Twilio
 category: Messaging and Conferencing
+provider: Twilio
 description: Send SMS notifications
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
