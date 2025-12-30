@@ -40,13 +40,15 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, em
     return single_reply
 
 
-def rewrite_img_src(html: str, account_name: str) -> str:
+def rewrite_img_src(html: str, account_name: str = None) -> str:
     """
     Replace:
       src="xsoar/entry/download/<id>"
     With:
       src="xsoar/<account_name>/entry/download/<id>"
     """
+    if not account_name:
+        return html
 
     pattern = r'src="xsoar/entry/download/([^"]+)"'
     replacement = rf'src="xsoar/{account_name}/entry/download/\1"'
@@ -90,7 +92,7 @@ def remove_color_from_html_text(html_message):
         if "style" in tag.attrs and tag.attrs["style"] and "color" in tag.attrs["style"]:
             demisto.debug(f"The original style att {tag.attrs['style']=}")
             new_style = ""
-            style_attr = tag.attrs["style"].split(";")
+            style_attr = str(tag.attrs["style"]).split(";")
             for attr in style_attr:
                 if "color" not in attr:
                     new_style += f"{attr};"

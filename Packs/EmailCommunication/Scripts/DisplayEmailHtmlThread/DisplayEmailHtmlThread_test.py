@@ -201,3 +201,20 @@ def test_rewrites_single_img_src():
     html = '<img src="xsoar/entry/download/12345">'
     result = rewrite_img_src(html, "myaccount")
     assert result == '<img src="xsoar/myaccount/entry/download/12345">'
+
+
+def test_rewrites_single_img_src_without_account():
+    """
+    Given
+    - HTML contains image tag with src values in the form:
+      src="xsoar/entry/download/<id>"
+    When
+    - The rewrite_img_src function is executed with no account name
+    Then
+    - Validate that the function returns the HTML input with no changes
+    """
+    from DisplayEmailHtmlThread import rewrite_img_src
+
+    html = '<img src="xsoar/entry/download/12345">'
+    result = rewrite_img_src(html)
+    assert result == html
