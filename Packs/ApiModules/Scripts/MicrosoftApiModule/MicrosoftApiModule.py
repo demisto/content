@@ -936,10 +936,11 @@ class MicrosoftClient(BaseClient):
                     raise DemistoException(f"{message_prefix} enter {field.replace('_', ' ').title()}.")
 
         if self.auth_type == OPROXY_AUTH_TYPE:
-            demisto.debug("Got into the OPROXY_AUTH_TYPE check")
+            demisto.debug("Running test-module for OPROXY_AUTH_TYPE auth type.")
             self.get_access_token()
             return "ok"
         elif self.grant_type == MANAGED_IDENTITIES:
+            demisto.debug("Running test-module for MANAGED_IDENTITIES grant type.")
             try:
                 self.get_access_token()
             except Exception as e:
@@ -954,6 +955,7 @@ class MicrosoftClient(BaseClient):
             return "ok"
 
         elif self.grant_type == CLIENT_CREDENTIALS:
+            demisto.debug("Running test-module for CLIENT_CREDENTIALS grant type.")
             require_fields(
                 fields=["tenant_id", "client_secret", "client_id"], message_prefix="When using Client Credentials flow you must "
             )
@@ -961,6 +963,7 @@ class MicrosoftClient(BaseClient):
             return "ok"
 
         elif self.grant_type == DEVICE_CODE:
+            demisto.debug("Running test-module for DEVICE_CODE grant type.")
             require_fields(fields=["client_id"], message_prefix="When using Device Code flow you must ")
             raise DemistoException(
                 f"The *Test* button is not available for the Device Code Flow. "
@@ -970,6 +973,7 @@ class MicrosoftClient(BaseClient):
             )
 
         elif self.grant_type == AUTHORIZATION_CODE:
+            demisto.debug("Running test-module for DEVICE_CODE grant type.")
             if not demisto.params().get("redirect_uri"):  # this is taken from demisto.params because we have a default
                 # value for this parameter in MicrosoftClient class
                 raise DemistoException(

@@ -2029,8 +2029,7 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
 
 
 def test_module(client: MsGraphClient):
-    raise DemistoException("This is for testing")
-    # return client.ms_client.main_test_module()
+    return client.ms_client.main_test_module()
 
 
 def main():
@@ -2162,7 +2161,7 @@ def main():
                 return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as err:
-        return_error(f"Failed to execute {command} command.\nError:\n{err}\nTraceback:{traceback.format_exc()}")
+        return_error(f"Failed to execute {command} command.\nError:\n{err}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

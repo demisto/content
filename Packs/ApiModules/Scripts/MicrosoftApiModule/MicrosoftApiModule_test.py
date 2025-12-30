@@ -248,6 +248,48 @@ def test_raise_authentication_error(mocker):
         client._raise_authentication_error(err)
 
 
+@pytest.mark.parametrize("input_flow, expected_result", [
+    ("Cortex App", OPROXY_AUTH_TYPE),
+    ("Azure Managed Identities", MANAGED_IDENTITIES),
+    ("Client Credentials", CLIENT_CREDENTIALS),
+    ("Authorization Code", AUTHORIZATION_CODE),
+    ("Device Code", DEVICE_CODE),
+    ("Not Selected", None),
+    ("Unknown Flow", None),
+    ("", None),
+])
+def test_get_auth_type_flow_scenarios(input_flow, expected_result):
+    """
+    Tests get_auth_type_flow with various inputs to ensure correct
+    constants are returned and invalid inputs are handled gracefully.
+    """
+    assert get_auth_type_flow(input_flow) == expected_result
+
+
+@pytest.mark.parametrize("input_flow, expected_result", [
+    ("Device Code", True),
+    ("Authorization Code", True),
+    ("Client Credentials", True),
+    ("Azure Managed Identities", True),
+    (DEVICE_CODE, True),
+    (AUTHORIZATION_CODE, True),
+    (CLIENT_CREDENTIALS, True),
+    (MANAGED_IDENTITIES, True),
+
+    ("Cortex App", False),
+    ("Not Selected", False),
+    ("Random String", False),
+    ("", False),
+])
+def test_is_self_deployed_flow(input_flow, expected_result):
+    """
+    Verifies that is_self_deployed_flow returns True for both
+    human-readable names and internal constant values,
+    and False for everything else.
+    """
+    assert is_self_deployed_flow(input_flow) is expected_result
+
+
 def test_page_not_found_error(mocker):
     """
     Given:
