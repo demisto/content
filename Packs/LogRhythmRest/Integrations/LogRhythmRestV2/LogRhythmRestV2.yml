@@ -3891,7 +3891,7 @@ script:
       description: 'The host name.'
     - type: String
       contextPath: LogRhythm.Host.riskLevel
-      description: 'The host risk level'
+      description: 'The host risk level.'
     - type: String
       contextPath: LogRhythm.Host.threatLevel
       description: 'The host threat level.'
