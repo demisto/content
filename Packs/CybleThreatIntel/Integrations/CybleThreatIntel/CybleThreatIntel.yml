@@ -1,17 +1,11 @@
 commonfields:
   id: CybleThreatIntel
   version: -1
-
 name: CybleThreatIntel
 display: Cyble Threat Intel
 category: Data Enrichment & Threat Intelligence
-description: >
-  Cyble Threat Intelligence integration for Vision Users.
-  Provides IOC lookup and an IOC feed from the Cyble Vision API.
-
-
-
-params:
+description: Cyble Threat Intelligence integration for Vision Users. Provides IOC lookup and an IOC feed from the Cyble Vision API.
+configuration:
   - display: Traffic Light Protocol Color
     name: tlp_color
     type: 15
@@ -110,15 +104,6 @@ params:
     defaultvalue: '100'
     additionalinfo: Maximum number of indicators to fetch per execution.
     section: Collect
-
-configuration:
-  sections:
-    - name: Connect
-      isHidden: false
-    - name: Collect
-      isHidden: false
-
-
 script:
   type: python
   subtype: python3
@@ -127,9 +112,7 @@ script:
   feed: true
   runonce: false
   ismappable: true
-
   commands:
-
     - name: cyble-vision-ioc-lookup
       description: Lookup a single IOC using the Cyble Vision API.
       arguments:
@@ -163,12 +146,9 @@ script:
         - contextPath: CybleIntel.collection.names
           description: Backward compatibility placeholder
           type: String
-
 fromversion: 6.2.0
-
 tests:
-  - No tests (auto formatted)
-
+- No tests (auto formatted)
 sectionorder:
   - Connect
   - Collect
