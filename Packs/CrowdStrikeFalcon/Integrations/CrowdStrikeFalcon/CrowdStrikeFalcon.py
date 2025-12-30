@@ -3143,7 +3143,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
 
     fetch_query = demisto.params().get("fetch_query")
     if fetch_query:
-        fetch_query = f"created_timestamp:>'{start_fetch_time}'+{fetch_query}"
+        fetch_query = f"(created_timestamp:>'{start_fetch_time}')+({fetch_query})"
         response = get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit, offset=detections_offset)
     else:
         response = get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit, offset=detections_offset)
@@ -3840,7 +3840,7 @@ def fetch_detections_by_product_type(
         filter = filter.replace("product:", "type:")
 
     if fetch_query:
-        filter += f"+{fetch_query}"
+        filter = f"({filter})+({fetch_query})"
     response = get_detections_ids(filter_arg=filter, limit=fetch_limit, offset=offset, product_type=product_type)
     detections_ids: list[dict] = demisto.get(response, "resources", [])
     demisto.debug(f"CrowdStrikeFalconMsg: Total fetched detections: {len(detections_ids)}")
