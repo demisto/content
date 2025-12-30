@@ -2856,7 +2856,7 @@ script:
       - '0'
     - description: A comma-separated list of users who this rule will apply to.
       name: user_names
-    - description: 'A comma-separated list of CCL names. REQUIRED: when ccl_rule_enabled is ON'
+    - description: 'A comma-separated list of CCL names. REQUIRED: when ccl_rule_enabled is ON.'
       name: ccl_names
     - auto: PREDEFINED
       description: 'Whether to enable the CCL rule. Possible values: "0" and "1". IMPORTANT: If enabled, ccl_name is required.'
