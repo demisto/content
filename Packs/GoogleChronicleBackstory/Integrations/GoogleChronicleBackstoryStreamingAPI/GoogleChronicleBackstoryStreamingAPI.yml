@@ -121,10 +121,11 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: Select the severity of detections to be considered for Fetch Incidents. Available options are 'High', 'Medium', 'Low', 'Informational' and 'Unspecified' (If not selected, fetches all detections).
+- additionalinfo: Select the severity of detections to be considered for Fetch Incidents. Available options are 'Critical', 'High', 'Medium', 'Low', 'Informational' and 'Unspecified' (If not selected, fetches all detections).
   display: Severity of Detection
   name: detection_severity
   options:
+  - Critical
   - High
   - Medium
   - Low
@@ -159,6 +160,21 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
+- additionalinfo: Select the default severity for incident when detection does not specify a severity. Available options are 'Critical', 'High', 'Medium', 'Low', 'Informational' and 'Unspecified' (If not selected, defaults to Unspecified).
+  display: Default Severity of Incident
+  name: default_severity
+  type: 15
+  section: Collect
+  defaultvalue: Unspecified
+  advanced: true
+  options:
+  - Critical
+  - High
+  - Medium
+  - Low
+  - Informational
+  - Unspecified
   required: false
 - display: Trust any certificate (not secure)
   name: insecure

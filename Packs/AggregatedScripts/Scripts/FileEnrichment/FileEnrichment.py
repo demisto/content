@@ -58,9 +58,10 @@ def file_enrichment_script(
         CommandResults: The result of the command.
     """
     demisto.debug("Extracting indicators")
-    file_list = extract_indicators(file_list, "file")
+    file_instances, extract_verbose = create_and_extract_indicators(file_list, "file")
+    valid_inputs = [file_instance.extracted_value for file_instance in file_instances if file_instance.extracted_value]
 
-    file_indicator = Indicator(
+    file_indicator_schema = IndicatorSchema(
         type="file",
         value_field=FILE_HASH_TYPES,
         context_path_prefix="File",
@@ -71,7 +72,7 @@ def file_enrichment_script(
     command_batch1: list[Command] = [
         Command(
             name="CreateNewIndicatorsOnly",
-            args={"indicator_values": file_list, "type": "File"},
+            args={"indicator_values": valid_inputs, "type": "File"},
             command_type=CommandType.BUILTIN,
             context_output_mapping=None,
             ignore_using_brand=True,
@@ -82,7 +83,7 @@ def file_enrichment_script(
     command_batch2: list[Command] = [
         Command(
             name="enrichIndicators",
-            args={"indicatorsValues": file_list},
+            args={"indicatorsValues": valid_inputs},
             command_type=CommandType.EXTERNAL,
         ),
     ] + [
@@ -93,7 +94,7 @@ def file_enrichment_script(
             command_type=CommandType.INTERNAL,
             context_output_mapping={},
         )
-        for file in file_list
+        for file in valid_inputs
         if get_hash_type(file) == "sha256"
     ]
 
@@ -113,8 +114,9 @@ def file_enrichment_script(
         external_enrichment=external_enrichment,
         final_context_path="FileEnrichment",
         args=args,
-        data=file_list,
-        indicator=file_indicator,
+        indicator_instances=file_instances,
+        indicator_schema=file_indicator_schema,
+        verbose_outputs=[extract_verbose],
     )
     return file_reputation.run()
 
