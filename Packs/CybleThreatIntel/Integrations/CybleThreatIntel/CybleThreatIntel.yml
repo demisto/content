@@ -9,6 +9,8 @@ description: >
   Cyble Threat Intelligence integration for Vision Users.
   Provides IOC lookup and an IOC feed from the Cyble Vision API.
 
+
+
 params:
 
   # --------------------------
@@ -120,6 +122,14 @@ params:
     defaultvalue: '100'
     additionalinfo: Maximum number of indicators to fetch per execution.
     section: Collect
+
+configuration:
+  sections:
+    - name: Connect
+      isHidden: false
+    - name: Collect
+      isHidden: false
+
 
 script:
   type: python
