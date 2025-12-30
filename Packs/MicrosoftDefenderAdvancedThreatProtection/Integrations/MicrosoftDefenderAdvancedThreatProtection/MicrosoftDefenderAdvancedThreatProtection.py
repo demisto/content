@@ -6334,7 +6334,7 @@ def main():  # pragma: no cover
     self_deployed: bool = (
         is_self_deployed_flow(auth_type) or params.get("self_deployed", False) or managed_identities_client_id is not None
     )
-    demisto.debug(f"{self_deployed=}")
+    demisto.debug(f"Using flow {grant_type=} which is {self_deployed=}")
     certificate_thumbprint = params.get("creds_certificate", {}).get("identifier") or params.get("certificate_thumbprint")
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password")) or params.get("private_key")
     alert_detectionsource_to_fetch = params.get("fetch_detectionsource")
