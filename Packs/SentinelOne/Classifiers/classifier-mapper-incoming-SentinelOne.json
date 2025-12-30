@@ -515,6 +515,9 @@
 				"SentinelOne UAM Alert Attack Surfaces": {
 					"simple": "node.attackSurfaces"
 				},
+				"SentinelOne UAM Alert External Id": {
+					"simple": "node.externalId"
+				},
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"
 				},

@@ -1710,6 +1710,15 @@
 								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentineloneuamalertexternalid",
+								"height": 22,
+								"id": "5fe0b3f4-6bda-4372-b71f-f6acf4f9cf3f",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
