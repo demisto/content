@@ -37,12 +37,11 @@ alter
 	xdm.source.user_agent = user_agent,
 	xdm.source.process.identifier = process_id,
 	xdm.source.process.name = process_name,
-    xdm.target.host.hostname = target_hostname;
+    xdm.target.virtualization.vm.hostname = target_hostname;
 
 
 [RULE: vmware_vcenter_login_format_sso_login]
 alter
-    target_hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d?\s?[^\s]+\d{2}:\d{2}:\d{2}[^\s]*\s+(\S+)"), 0),
     event_type_name = arrayindex(regextract(syslog_msg, "type\":\"([^\"]+)"), 0),
     description = arrayindex(regextract(syslog_msg, "description\":\"([^\"]+)"), 0),
     username = arrayindex(regextract(syslog_msg, "user\":\"([^\"]+)"), 0),
@@ -59,7 +58,6 @@ alter
 						   event_type_name ~= "Fail", XDM_CONST.OUTCOME_FAILED), 
 	xdm.target.user.username = if (username ~= "@", arrayindex(regextract(username, "([^\@]+)"), 0), username),
 	xdm.target.ipv4 = if(is_ipv4(target_ip), target_ip),
-	xdm.target.host.hostname = target_hostname,
 	xdm.target.user.upn = if(username ~= "@", username),
 	xdm.target.user.domain = if(username ~= "@", arrayindex(regextract(username, "@([^\s]+)"), 0)),
 	xdm.auth.auth_method = auth_method,
@@ -73,10 +71,18 @@ alter
     description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
     source_username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5)
 | alter
+    template_name = if(description ~= "^Template\s+", arrayindex(regextract(description, "^Template\s+([^\s]+)"), 0)),
+    vm_name = if(description ~= " for ", arrayindex(regextract(description, " for ([^\s]+)"), 0),
+                 description ~= "^Creating", arrayindex(regextract(description, "Creating ([^\s]+)"), 0),
+                 description ~= "^([^\s]+)\s+on", arrayindex(regextract(description, "^([^\s]+)\s+on"), 0),
+                 description ~= "^Reconfigured ", arrayindex(regextract(description, "Reconfigured ([^\s]+)"), 0),
+                 description ~= "^Created virtual machine ", arrayindex(regextract(description, "Created virtual machine ([^\s]+)"), 0),
+                 description ~= "^\S+\s+cloned", arrayindex(regextract(description, "^([^\s]+)\s+cloned"), 0)),
     target_hostname = if(description ~= "on host", arrayindex(regextract(description, "\s+on host\s+([^\s+|\]]+)"), 0),
                          description ~= "on", arrayindex(regextract(description, "\s+on\s+([^\s+]+)"), 0)),
     target_username = if(description ~= "^Account", arrayindex(regextract(description, "^Account ([^\s]+)"), 0),
                          description ~= "Permission", arrayindex(regextract(description, "for ([^\s]+)"), 0)),
+    target_datacenter = if(description ~= " in ", arrayindex(regextract(description, " in ([^\s]+)"), 1)),                 
     role_name = arrayindex(regextract(description, "new role ([^\s]+) created"), 0)
 | alter
 	xdm.observer.name = syslog_hostname,
@@ -86,7 +92,10 @@ alter
     xdm.event.original_event_type = event_type_name,
     xdm.event.outcome_reason = description,
 	xdm.event.outcome = if(description !~= "Fail", XDM_CONST.OUTCOME_SUCCESS),
-	xdm.source.host.hostname = source_hostname,
+    xdm.target.virtualization.data_center.name = target_datacenter,
+    xdm.target.virtualization.vm.template_name = template_name,
+    xdm.source.virtualization.vm.hostname = vm_name,
+	xdm.source.virtualization.data_center.name = source_hostname,
 	xdm.source.user.username = source_username,
     xdm.target.process.identifier = process_id,
 	xdm.target.process.name = process_name,
@@ -124,8 +133,8 @@ alter
     xdm.source.user_agent = arrayindex(split(initiator_str, "@"), 0),
     xdm.source.ipv4 = if(is_ipv4(arrayindex(split(initiator_str, "@"), 1)), arrayindex(split(initiator_str, "@"), 1), null),
     xdm.target.host.hostname = target_hostname,
-    xdm.target.resource.name = datastore_name,
-    xdm.target.resource.id = datastore_uuid,
+    xdm.source.virtualization.data_store.name = datastore_name,
+    xdm.target.virtualization.data_store.uuid = datastore_uuid,
     xdm.target.file.path = file_path,
     xdm.target.file.filename = if(file_path != null, arrayindex(regextract(file_path, "[\\/]([^\\/]+)$"), 0), null);
 
@@ -149,7 +158,9 @@ alter
         arrayindex(regextract(description, "^([^\s]+) on \S+\s+in "), 0)),
     target_hostname = coalesce(
         arrayindex(regextract(description, " to ([^\s]+)"), 0),
-        arrayindex(regextract(description, "on ([^\s]+)"), 0))
+        arrayindex(regextract(description, "on ([^\s]+) in"), 0)),
+    new_vm_name = if(description ~= "deployed to", arrayindex(regextract(description, "deployed to ([^\s]+)"), 0),
+                     description ~= "from\s\S+\sto\s+\S+\s+in\s", arrayindex(regextract(description, "from\s\S+\sto\s+([^\s]+)"), 0))
 | alter
     xdm.observer.name = syslog_hostname,
     xdm.event.type = "VM Operations",
@@ -164,7 +175,8 @@ alter
     xdm.source.host.hostname = source_hostname,
     xdm.source.user.username = source_username,
     xdm.target.host.hostname = target_hostname,
-    xdm.target.resource.name = vm_name;
+    xdm.target.resource.name = new_vm_name,
+    xdm.source.virtualization.vm.hostname = vm_name;
 
 
 [RULE: vmware_vcenter_vsphere_task_format]
@@ -214,7 +226,7 @@ alter
     source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6)
 | alter
     target_task_name = arrayindex(regextract(description, "Created task (.+?) on "), 0),
-    target_vm_name = arrayindex(regextract(description, " on ([^\s]+) in datacenter"), 0)
+    vm_name = arrayindex(regextract(description, " on ([^\s]+) in datacenter"), 0)
 | alter
     xdm.observer.name = syslog_hostname,
     xdm.event.type = "Scheduled Task Event",
@@ -229,7 +241,7 @@ alter
     xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
     xdm.source.host.hostname = source_hostname,
     xdm.source.user.username = source_username,
-    xdm.target.host.hostname = target_vm_name,
+    xdm.source.virtualization.vm.hostname = vm_name,
     xdm.target.resource.name = target_task_name;
 
 [RULE: vmware_vcenter_vcsa_audit_format]
