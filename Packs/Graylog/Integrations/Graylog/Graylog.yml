@@ -120,7 +120,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      description: Run decorators on search result (default True)
+      description: Run decorators on search result (default True).
     outputs:
     - contextPath: Graylog.Search
       description: Search results.
@@ -183,7 +183,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      description: Run decorators on search result
+      description: Run decorators on search result.
     outputs:
     - contextPath: Graylog.SearchAbsolute
       description: Search results of Absolute search.

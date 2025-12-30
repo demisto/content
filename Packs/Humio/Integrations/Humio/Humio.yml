@@ -91,7 +91,7 @@ script:
       description: Additional arguments.
     outputs:
     - contextPath: Humio.Query
-      description: Query output
+      description: Query output.
       type: Unknown
     description: Query the data from Humio
   - name: humio-query-job
