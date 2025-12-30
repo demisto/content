@@ -1935,82 +1935,26 @@ class ExchangeOnlinePowershellV3Client
     }
 }
 
-function Test-IsEmptyValue {
-    param($value)
-
-    <#
-        .SYNOPSIS
-        Checks if a value is null, an empty string, or an empty collection.
-        .DESCRIPTION
-        This helper function is used by Remove-EmptyItems to determine if a property value should be considered empty and therefore removed.
-        .PARAMETER value
-        The value to check.
-        .EXAMPLE
-        Test-IsEmptyValue $null # returns true
-        Test-IsEmptyValue "" # returns true
-        Test-IsEmptyValue @() # returns true
-        Test-IsEmptyValue "hello" # returns false
-        .OUTPUTS
-        Boolean.
-    #>
-
-    # value is null
-    if ($null -eq $value) {
-        return $true
-    }
-    
-    # value is a string and is empty or whitespace
-    if ($value -is [string] -and [string]::IsNullOrWhiteSpace($value)) {
-        return $true
-    }
-    
-    # value is an empty collection
-    if ($value -is [System.Collections.IEnumerable] -and -not ($value -is [string]) -and
-        (($value | Measure-Object).Count -eq 0 -or $value.Count -eq 0)) {
-        return $true
-    }
-
-    return $false
-}
-
 function Remove-EmptyItems {
     param (
         [PSObject]$inputObject
     )
-    <#
-        .SYNOPSIS
-        Removes empty, null, or whitespace properties from a PSObject or Hashtable.
-        .DESCRIPTION
-        Takes a PSObject or Hashtable and returns a new Hashtable with all properties that have null, empty string, or empty collection values removed.
-        .PARAMETER inputObject
-        The PSObject or Hashtable to process.
-        .EXAMPLE
-        $obj = [PSCustomObject]@{ a = 1; b = ""; c = $null; d = @() }
-        Remove-EmptyItems $obj # returns a hashtable with only property 'a'.
-        .OUTPUTS
-        Hashtable.
-    #>
+
     $newDict = @{}
-    
-    # Normalize the input object (PSObject or Hashtable) into a collection of objects with Name and Value properties
-    $properties = if ($inputObject -is [hashtable]) {
-        $inputObject.GetEnumerator() | ForEach-Object { [PSCustomObject]@{ Name = $_.Key; Value = $_.Value } }
-    } else {
-        $inputObject.PSObject.Properties
-    }
 
-    foreach ($property in $properties) {
-        $key = $property.Name
+    foreach ($property in $inputObject.PSObject.Properties) {
         $value = $property.Value
-        $Demisto.Debug("Looking at key '$key' with value: '$value'")
 
-        if (Test-IsEmptyValue -value $value) {
-            $Demisto.Debug("Skipping empty value for key '$key'")
-            continue
+        # Check if the value is not null, whitespace, or an empty collection
+        if (-not [string]::IsNullOrWhiteSpace($value)) {
+            # Check if it's an IEnumerable (like array or list) and if the collection is not empty
+            if ($value -is [System.Collections.IEnumerable] -and -not ($value -is [string]) -and $value.Count -eq 0) {
+                continue
+            }
+
+            # If it's not an empty collection, add it to the new dictionary
+            $newDict[$property.Name] = $value
         }
-        
-        $newDict[$key] = $value
-        $Demisto.Debug("Added key '$key' with value: '$value'")
     }
 
     return $newDict
@@ -2276,46 +2220,24 @@ function EXOGetQuarantineMessageCommand {
         Type = $kwargs.type
     }
 
-    $raw_response = $client.EXOGetQuarantineMessage($params)
+    $raw_response = @($client.EXOGetQuarantineMessage($params))
+
     $newResults = @()
 
-    switch ($raw_response) {
-        {Test-IsEmptyValue $_} {
-            $Demisto.Debug("The raw response is null or empty")
-            $newResults = @()
-            break
-        }
-        {$_ -is [System.Collections.IEnumerable] -and $_.GetType().Name -ne 'Hashtable' -and $_.GetType().Name -ne 'String' -and $_.GetType().Name -ne 'PSObject' -and $_.GetType().Name -ne 'PSCustomObject'} {
-            $Demisto.Debug("The raw response is a collection")
-            foreach ($item in $raw_response) {
-                $Demisto.Debug("Processing collection item")
-                $newResults += Remove-EmptyItems $item
-            }
-            break
-        }
-        {$_ -is [Hashtable]} {
-            $Demisto.Debug("The raw response is a Hashtable")
-            $newResults = @(Remove-EmptyItems $raw_response)
-            break
-        }
-        {$_ -is [PSObject] -or $_ -is [PSCustomObject]} {
-            $Demisto.Debug("The raw response is a PSObject/PSCustomObject")
-            $newResults = @(Remove-EmptyItems $raw_response)
-            break
-        }
-        default {
-            $Demisto.Debug("The raw response is of an unknown type: " + $raw_response.GetType().FullName)
-            $newResults = @(Remove-EmptyItems $raw_response)
+    # Simplified logic: process everything as an array
+    foreach ($item in $raw_response) {
+        if ($null -ne $item) {
+            $newResults += Remove-EmptyItems -inputObject $item
         }
     }
 
-    # Always pass the array to TableToMarkdown, even if it's empty
-    $Demisto.Debug("Sending results to TableToMarkdown, count: " + $newResults.Count)
-    # Force array wrapping to ensure consistent behavior
-    $human_readable = TableToMarkdown @($newResults) "Results of $command"
+    # Ensure $newResults is passed correctly to formatting
+    $human_readable = TableToMarkdown $newResults "Results of $command"
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.GetQuarantineMessage(obj.Identity === val.Identity)" = $raw_response }
+    
     Write-Output $human_readable, $entry_context, $raw_response
 }
+
 
 function EXOReleaseQuarantineMessageCommand
 {
