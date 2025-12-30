@@ -66,11 +66,12 @@ WEBAPP_COMMANDS = [
     "core-update-case",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    # "core-get-case-resolution-statuses"
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
-XSOAR_COMMANDS = ["core-run-playbook"]
+XSOAR_COMMANDS = ["core-run-playbook" , "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
@@ -989,6 +990,22 @@ class Client(CoreClient):
         )
 
         return reply
+
+    def get_case_resolution_statuses(self, case_id: str) -> dict:
+        # reply = self._http_request(
+        #     method="POST",
+        #     json_data={"case_id" : case_id},
+        #     headers=self._headers,
+        #     url_suffix="resolution_actions/case/read",
+        # )
+        reply = self._http_request(
+            method="GET",
+            json_data={},
+            headers=self._headers,
+            url_suffix=f"case/{case_id}/resolution-plan/tasks",
+        )
+        return reply
+
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -3753,7 +3770,50 @@ def list_system_users_command(client, args):
         raw_response=response,
     )
 
+def enhance_with_pb_details(pb_id_to_data, obj):
+    related_pb = pb_id_to_data.get(obj.get("id"))
+    if related_pb:
+        obj["name"] = related_pb.get("name")
+        obj["description"] = related_pb.get("comment")
+        obj["type"] = "playbook"  # todo: confirm this logic... with fe / xsoar ppl , especially with tasks of other kinds
 
+def postprocess_case_resolution_statuses(client, response : dict):
+    response = response.copy()
+    pbs_metadata = client.get_playbooks_metadata() or []
+    pb_id_to_data = map_pb_id_to_data(pbs_metadata)
+    task_statuses = ["done", "inProgress", "pending", "recommended"]
+    for task_status in task_statuses:
+        tasks = response.get(task_status, {}).get("caseTasks", [])
+        for task in tasks:
+            if task_status == "done":
+                enhance_with_pb_details(pb_id_to_data, task)
+                continue
+            if task_status == "inProgress":
+                continue
+            if task_status == "pending":
+                enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
+                continue
+    return response
+
+
+
+
+
+
+
+
+
+def get_case_resolution_statuses(client, args):
+    case_id = args.get("case_id")
+    response = client.get_case_resolution_statuses(case_id)
+    outputs = postprocess_case_resolution_statuses(client, response)
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Case Resolution Statuses", response, headerTransform=string_to_table_header),
+        outputs_prefix="Core.CaseResolutionStatus",
+        outputs=outputs,
+        raw_response=response,
+    )
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -3895,6 +3955,9 @@ def main():  # pragma: no cover
 
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
+            
+        elif command == "core-get-case-resolution-statuses": 
+            return_results(get_case_resolution_statuses(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

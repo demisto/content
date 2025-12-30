@@ -3130,6 +3130,15 @@ script:
         - contextPath: Core.User.groups
           description: A specific name of a group the user belongs to within this instance.
           type: String
+    - arguments:
+        - description: A comma separated list of case IDs.
+          isArray: true
+          name: case_id
+          required: true
+      name: core-get-case-resolution-statuses
+      description: Get extra data fields of a specific case, including issues and key artifacts.
+      outputs:
+
   runonce: false
   script: "-"
   subtype: python3
