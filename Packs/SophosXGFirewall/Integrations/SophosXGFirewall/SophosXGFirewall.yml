@@ -2632,7 +2632,7 @@ script:
       description: Rule list information.
       type: String
   - arguments:
-    - description: Name of the policy
+    - description: Name of the policy.
       name: name
       required: true
     - description: Description of the policy.
