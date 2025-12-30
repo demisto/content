@@ -159,10 +159,10 @@ script:
       description: The JWT Authentication Token Value.
       type: String
   - arguments:
-    - description: The token to decode
+    - description: The token to decode.
       name: token
       required: true
-    - description: The secret to validate the token signature
+    - description: The secret to validate the token signature.
       name: secret
     description: A command to decode JWT tokens
     name: jwt-decode-token
