@@ -16,7 +16,16 @@ configuration:
       - WHITE
     required: false
     section: Collect
-
+  - display: Feed Fetch Interval
+    name: feedFetchInterval
+    type: 19
+    defaultvalue: '1440'
+    required: false
+  - display: Fetch indicators
+    name: feed
+    type: 8
+    defaultvalue: 'true'
+    required: false
   - display: Source Reliability
     name: feedReliability
     type: 15
@@ -31,7 +40,6 @@ configuration:
       - E - Unreliable
       - F - Reliability cannot be judged
     section: Collect
-
   - display: Indicator Reputation
     name: feedReputation
     type: 18
