@@ -24,13 +24,13 @@ This integration allows you to connect securely with any MCP server and access i
         * **API Token / API Key**: Provide the raw token to access the service REST API.
 
     * **OAuth 2.0 Dynamic Client Registration**: Uses OAuth 2.0 Dynamic Client Registration.
-        * **Authorization code**: Required to obtain the access token. To get this code, run the `generic-mcp-generate-login-url` command and follow its instructions.
+        * **Authorization code**: Required to obtain the access token. To get this code, run the `!generic-mcp-generate-login-url` command and follow its instructions.
         * **Scope**: Space-separated permission identifiers requested from the authorization server.
 
     * **OAuth 2.0 Authorization Code**: Uses the OAuth 2.0 Authorization Code flow for authentication.
         * **Client ID**: The Client ID for your application.
         * **Client Secret**: The Client Secret for your application.
-        * **Authorization code**: Required to obtain the access token. To get this code, run the `generic-mcp-generate-login-url` command and follow its instructions.
+        * **Authorization code**: Required to obtain the access token. To get this code, run the `!generic-mcp-generate-login-url` command and follow its instructions.
         * **Scope**: Space-separated permission identifiers requested from the authorization server.
 
     * **OAuth 2.0 Client Credentials**: Uses the OAuth 2.0 Client Credentials flow for authentication.

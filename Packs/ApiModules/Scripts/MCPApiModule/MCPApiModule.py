@@ -640,10 +640,12 @@ async def generate_login_url(
         "  You will be automatically redirected to a link with the following structure:\n"
         "  ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```\n"
         "2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter) and paste it "
-        "in your instance configuration under the **Authorization code** parameter.\n"
-        f"3. Run the **!{oauth_handler.command_prefix}-auth-test** command to complete the OAuth setup.\n\n"
-        "**IMPORTANT NOTE**: Authentication code is time-sensitive and expires quickly.\n"
-        "Please complete the authorization process promptly."
+        "in the instance configuration under the **Authorization code** parameter.\n"
+        "3. Save the instance configuration.\n"
+        "  **IMPORTANT NOTE**: Authentication code is time-sensitive and expires quickly.\n"
+        "  Please copy the Authorization code to the instance configuration "
+        "within a short time frame after generating the login URL.\n\n"
+        f"4. To check connectivity, run the **!{oauth_handler.command_prefix}-auth-test** command."
     )
     if troubleshooting_redirect:
         result_msg += (
