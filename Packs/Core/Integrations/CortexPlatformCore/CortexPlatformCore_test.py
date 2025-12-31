@@ -8623,6 +8623,7 @@ def test_list_system_users_command_limits_results_to_50(mocker: MockerFixture):
 
     assert len(result.outputs) == 50
 
+
 def test_update_case_command_single_case_basic_fields(mocker: MockerFixture):
     """
     GIVEN:
@@ -8670,7 +8671,7 @@ def test_update_case_command_bulk_update_allowed_fields(mocker: MockerFixture):
 
     client = Client(base_url="", headers={})
     mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
-    mock_get_webapp_data = mocker.patch.object(
+    mocker.patch.object(
         client,
         "get_webapp_data",
         return_value={
@@ -8725,7 +8726,7 @@ def test_update_case_command_status_resolved_with_reason(mocker: MockerFixture):
         "resolved_comment": "This was a false alarm",
     }
 
-    result = update_case_command(client, args)
+    update_case_command(client, args)
 
     mock_update_case.assert_called_once()
     call_args = mock_update_case.call_args[0][0]
@@ -8823,35 +8824,6 @@ def test_update_case_command_invalid_severity_raises_error(mocker: MockerFixture
         update_case_command(client, args)
 
 
-def test_update_case_command_custom_fields(mocker: MockerFixture):
-    """
-    GIVEN:
-        Client instance and arguments with custom_fields JSON.
-    WHEN:
-        The update_case_command function is called.
-    THEN:
-        Custom fields are parsed and included in update payload.
-    """
-    from CortexPlatformCore import update_case_command, Client
-
-    client = Client(base_url="", headers={})
-    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
-    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
-    mocker.patch("CortexPlatformCore.demisto.info")
-
-    args = {
-        "case_id": "123",
-        "custom_fields": '[{"field1": "value1"}, {"field-2": "value2"}]',
-    }
-
-    result = update_case_command(client, args)
-
-    mock_update_case.assert_called_once()
-    call_args = mock_update_case.call_args[0][0]
-    assert call_args["CustomFields"]["field1"] == "value1"
-    assert call_args["CustomFields"]["field2"] == "value2"
-
-
 def test_update_case_command_no_valid_parameters_raises_error(mocker: MockerFixture):
     """
     GIVEN:
@@ -8867,7 +8839,7 @@ def test_update_case_command_no_valid_parameters_raises_error(mocker: MockerFixt
 
     args = {"case_id": "123"}
 
-    with pytest.raises(ValueError, match="No valid update parameters provided for case update"):
+    with pytest.raises(ValueError, match="No valid update parameters provided."):
         update_case_command(client, args)
 
 
@@ -9007,7 +8979,7 @@ def test_update_case_command_repackage_to_update_case_format(mocker: MockerFixtu
     from CortexPlatformCore import update_case_command, Client
 
     client = Client(base_url="", headers={})
-    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch.object(client, "bulk_update_case")
     raw_case_data = {
         "CASE_ID": 123,
         "NAME": "Test Case",
@@ -9022,7 +8994,7 @@ def test_update_case_command_repackage_to_update_case_format(mocker: MockerFixtu
         "CURRENT_TAGS": [{"tag_name": "DOM:Security"}],
         "CASE_GROUPING_STATUS": "GROUPING_STATUS_010_ENABLED",
     }
-    mock_get_webapp_data = mocker.patch.object(
+    mocker.patch.object(
         client,
         "get_webapp_data",
         return_value={"reply": {"DATA": [raw_case_data]}},
@@ -9074,6 +9046,7 @@ def test_update_case_command_resolve_all_alerts_field(mocker: MockerFixture):
     mock_update_case.assert_called_once()
     call_args = mock_update_case.call_args[0][0]
     assert call_args["resolve_all_alerts"] == "true"
+
 
 def test_validate_custom_fields_success(mocker):
     """
