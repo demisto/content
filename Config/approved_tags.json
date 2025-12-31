@@ -46,12 +46,14 @@
 			"Allow List",
 			"Plug & Enrich",
 			"Free Enricher",
-            "Feed",
-            "MCP"
+            "Feed"
 		],
 		"xsoar": [],
 		"marketplacev2": ["Data Source"],
-		"platform": ["Data Source"],
+		"platform": [
+            "Data Source",
+            "MCP"
+        ],
 		"xpanse": ["Data Source"]
 	}
 }
