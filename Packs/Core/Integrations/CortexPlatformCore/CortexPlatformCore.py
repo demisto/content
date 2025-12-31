@@ -97,6 +97,9 @@ DISABLE_PREVENTION_RULES_TABLE = "AGENT_EXCEPTION_RULES_TABLE_ADVANCED"
 LEGACY_AGENT_EXCEPTIONS_TABLE = "AGENT_EXCEPTION_RULES_TABLE_LEGACY"
 
 
+CUSTOM_FIELDS_TABLE = "CUSTOM_FIELDS_CASE_TABLE"
+
+
 class CaseManagement:
     STATUS_RESOLVED_REASON = {
         "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
@@ -1002,6 +1005,35 @@ class Client(CoreClient):
         )
 
         return reply
+
+    def get_custom_fields_metadata(self) -> dict[str, Any]:
+        """
+        Retrieve custom fields metadata from the CUSTOM_FIELDS_CASE_TABLE.
+
+        Returns comprehensive metadata for all custom fields including:
+        - CUSTOM_FIELD_NAME: Internal field identifier
+        - CUSTOM_FIELD_PRETTY_NAME: User-friendly display name
+        - CUSTOM_FIELD_IS_SYSTEM: Boolean flag (true = system field, false = custom field)
+        - CUSTOM_FIELD_TYPE: Field data type
+
+        Returns:
+            dict: Response containing custom fields metadata in reply.DATA
+        """
+        request_data = {
+            "type": "grid",
+            "table_name": CUSTOM_FIELDS_TABLE,
+            "filter_data": {
+                "sort": [],
+                "filter": {},
+                "free_text": "",
+                "visible_columns": None,
+                "locked": None,
+                "paging": {"from": 0, "to": 1000},
+            },
+            "jsons": [],
+        }
+
+        return self.get_webapp_data(request_data)
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -3037,6 +3069,8 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
             f"{list(CaseManagement.SEVERITY.keys())}"
         )
 
+    valid_fields_to_update, error_messages = validate_custom_fields(custom_fields, client)
+
     # Build request_data with mapped and filtered values
     case_update_payload = {
         "caseName": case_name if case_name else None,
@@ -3049,12 +3083,12 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
         "caseResolvedComment": resolved_comment if resolved_comment else None,
         "resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None,
-        "CustomFields": custom_fields if custom_fields else None,
+        "CustomFields": valid_fields_to_update if valid_fields_to_update else None,
     }
     remove_nulls_from_dictionary(case_update_payload)
 
     if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
-        raise ValueError("No valid update parameters provided for case update.")
+        raise ValueError(f"No valid update parameters provided.\n{error_messages}")
 
     def is_bulk_update_allowed(case_update_payload: dict) -> bool:
         # Bulk update supports only those fields
@@ -3175,13 +3209,68 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         for resp in responses:
             replies.append(process_case_response(resp))
 
-    return CommandResults(
+    command_results = CommandResults(
         readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
         outputs_key_field="case_id",
         outputs=replies,
         raw_response=replies,
     )
+
+    if error_messages:
+        return_results(command_results)
+        return_error(f"The following fields could not be updated:\n{error_messages}")
+
+    return command_results
+
+
+def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[dict, str]:
+    """
+    Validates custom fields against system metadata.
+
+    Args:
+        fields_to_validate: Dict of field names and values to validate.
+        client: Client instance for API calls.
+
+    Returns:
+        Tuple of (valid_fields_dict, error_messages_str).
+    """
+    if not fields_to_validate:
+        return {}, ""
+
+    fields_data = client.get_custom_fields_metadata().get("reply", {}).get("DATA", [])
+
+    if not fields_data:
+        return {}, "No Fields are defined in the system."
+
+    system_fields = {
+        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        for f in fields_data
+        if f.get("CUSTOM_FIELD_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
+    }
+    custom_fields = {
+        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        for f in fields_data
+        if f.get("CUSTOM_FIELD_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
+    }
+
+    if not custom_fields:
+        return {}, "No custom fields are defined in the system."
+
+    demisto.debug(f"Available custom fields: {custom_fields=}")
+    valid_fields, error_messages = {}, []
+    for field_name, field_value in fields_to_validate.items():
+        if field_name in system_fields:
+            error_messages.append(
+                f"Field '{field_name}' ({system_fields[field_name]}) is a system field and cannot"
+                f" be set with custom_fields argument."
+            )
+        elif field_name in custom_fields:
+            valid_fields[field_name] = field_value
+        else:
+            error_messages.append(f"Field '{field_name}' does not exist.")
+
+    return valid_fields, "\n".join(f"- {e}" for e in error_messages)
 
 
 def run_playbook_command(client: Client, args: dict) -> CommandResults:
