@@ -417,91 +417,125 @@ def entity_get_details(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-def insight_search(client: Client, args: dict[str, Any]) -> CommandResults:
+def insight_search(
+    client: Any,  # Replace 'Any' with your actual client type
+    args: Dict[str, Any],
+    last_run: Optional[Dict[str, Any]] = None,
+    lookback_minutes: Optional[int] = 5,
+) -> CommandResults:
     """
-    Search insights using available filters
-
-    The search query string is a custom DSL that is used to filter the results.
-
-    Operators:
-    - `exampleField:"bar"`: The value of the field is equal to "bar".
-    - `exampleField:in("bar", "baz", "qux")`: The value of the field is equal to either "bar", "baz", or "qux".
-    - `exampleTextField:contains("foo bar")`: The value of the field contains the phrase "foo bar".
-    - `exampleNumField:>5`: The value of the field is greater than 5. There are similar `<`, `<=`, and `>=` operators.
-    - `exampleNumField:5..10`: The value of the field is between 5 and 10 (inclusive).
-    - `exampleDateField:>2019-02-01T05:00:00+00:00`: The value of the date field is after 5 a.m. UTC time on February 2,
-        2019.
-    - `exampleDateField:2019-02-01T05:00:00+00:00..2019-02-01T08:00:00+00:00`: The value of the date field is between 5 a.m.
-        and 8 a.m. UTC time on February 2, 2019.
-
-    Fields:
-    - id
-    - readableId
-    - status
-    - name
-    - insightId
-    - description
-    - created
-    - timestamp
-    - closed
-    - assignee
-    - entity.ip
-    - entity.hostname
-    - entity.username
-    - entity.type
-    - enrichment
-    - tag
-    - severity
-    - resolution
-    - ruleId
-    - records
-
-    For example, the query `timestamp:>2021-03-18T12:00:00+00:00 severity:"HIGH` will return insights of high severity
-    created after 12 PM UTC time on March 18th, 2021.
+    Search insights using available filters, implementing a lookback window and deduplication.
+    - Uses a sliding window over [last_run - lookback_minutes, now] to avoid missing delayed insights.
+    - Deduplicates by maintaining a cache of recent insight IDs.
+    - Persists deduplication cache in last_run.
     """
+    demisto.debug("Step 1 - Initializing lookback parameters.")
+    # Setup
+    lookback_seconds = int(lookback_minutes * 60)
+    now = int(time.time())
+    last_run = last_run or {}
+    last_fetch = last_run.get("last_fetch", now - lookback_seconds)
+    recent_ids: Dict[str, int] = last_run.get("recent_ids", {})
+
+    demisto.debug(f"Step 2 - Pruning deduplication cache. Current cache size: {len(recent_ids)} IDs.")
+    # Prune deduplication cache (remove IDs older than lookback window)
+    pruned_ids = {
+        _id: ts for _id, ts in recent_ids.items() if (now - ts) <= lookback_seconds
+    }
+    demisto.debug(f"Step 2 - Pruning complete. New cache size: {len(pruned_ids)} IDs.")
+
+    # Determine fetch start time: last_fetch - lookback window
+    fetch_start_time = max(0, int(last_fetch) - lookback_seconds)
+    created_dt_obj = datetime.fromtimestamp(fetch_start_time, tz=timezone.utc)
+    created_time_str = created_dt_obj.strftime('%Y-%m-%dT%H:%M:%SZ')
+    demisto.debug(f"Step 3 - Calculated fetch start time: {created_time_str}")
+
+    # Compose query
+    user_query = args.get("query", "")
+    lookback_query = f'created:>={created_time_str}'
+    full_query = f'{lookback_query} {user_query}'.strip()
+    demisto.debug(f"Step 4 - Composed final query for API: {full_query}")
+
+    # Prepare API request parameters
     record_summary_fields = args.get("record_summary_fields")
-
-    query = {}
-    q = args.get("query", "")
-    q = arg_time_query_to_q(q, args.get("created"), "created")
-    q = add_list_to_q(q, ["status", "assignee"], args)
-    query["q"] = q
-    query["offset"] = args.get("offset")
-    query["limit"] = args.get("limit")
-    query["exclude"] = "signals.allRecords"
+    query = {
+        "q": full_query,
+        "offset": args.get("offset"),
+        "limit": args.get("limit"),
+        "exclude": "signals.allRecords",
+    }
     if record_summary_fields:
         query["recordSummaryFields"] = record_summary_fields
 
+    demisto.debug("Step 5 - Making API call to fetch insights.")
     resp_json = client.req("GET", "sec/v1/insights", query)
+    fetched_objects = resp_json.get("objects", [])
+    demisto.debug(f"Step 6 - API call complete. Received {len(fetched_objects)} potential insights.")
+
     insights = []
-    for insight in resp_json.get("objects"):
+    current_fetch_ids: List[str] = []
+    latest_created_time = int(last_fetch)
+
+    for i, insight in enumerate(fetched_objects):
+        insight_id = insight.get("id")
+        insight_created_str = insight.get("created")
+        demisto.debug(f"Step 7.{i+1} - Processing insight ID: {insight_id} with timestamp: {insight_created_str}")
+
+        if not insight_id or not insight_created_str:
+            demisto.debug(f"Step 7.{i+1} - Skipping insight due to missing ID or creation time.")
+            continue
+
+        # --- CORRECTED TIME PARSING ---
+        try:
+            dt_obj = datetime.fromisoformat(insight_created_str)
+            insight_created_epoch = int(dt_obj.timestamp())
+        except (ValueError, TypeError):
+            demisto.error(f"Could not parse timestamp for insight {insight_id}: {insight_created_str}")
+            continue
+
+        # Deduplication check
+        if insight_id in pruned_ids or insight_id in current_fetch_ids:
+            demisto.debug(f"Step 7.{i+1} - Skipping insight {insight_id} as it is a duplicate.")
+            continue
+        if insight_created_epoch < fetch_start_time:
+            demisto.debug(f"Step 7.{i+1} - Skipping insight {insight_id} as it is older than the fetch window.")
+            continue
+
+        demisto.info(f"Step 7.{i+1} - Insight {insight_id} is new. Adding to results.")
+        current_fetch_ids.append(insight_id)
+        pruned_ids[insight_id] = insight_created_epoch
+        if insight_created_epoch > latest_created_time:
+            latest_created_time = insight_created_epoch
+
         insights.append(insight_signal_to_readable(insight))
 
+    demisto.debug(f"Step 8 - Finished processing. Found {len(insights)} new insights.")
+
     readable_output = tableToMarkdown(
-        "Insights:",
+        "Insights (with lookback):",
         insights,
         [
-            "Id",
-            "ReadableId",
-            "Name",
-            "Action",
-            "Status",
-            "Assignee",
-            "Description",
-            "LastUpdated",
-            "LastUpdatedBy",
-            "Severity",
-            "Closed",
-            "ClosedBy",
-            "Timestamp",
-            "Entity",
-            "Resolution",
+            "Id", "ReadableId", "Name", "Action", "Status", "Assignee", "Description",
+            "LastUpdated", "LastUpdatedBy", "Severity", "Closed", "ClosedBy",
+            "Timestamp", "Entity", "Resolution",
         ],
         headerTransform=pascalToSpace,
     )
 
+    demisto.debug(f"Step 9 - Preparing next_run data. last_fetch will be set to: {latest_created_time}")
+    # Update next_run for persistence
+    next_run = {
+        "last_fetch": latest_created_time,
+        "recent_ids": pruned_ids,
+    }
+
+    demisto.debug("Step 10 - Returning command results.")
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="SumoLogicSec.InsightList", outputs_key_field="Id", outputs=insights
+        readable_output=readable_output,
+        outputs_prefix="SumoLogicSec.InsightList",
+        outputs_key_field="Id",
+        outputs=insights,
+        raw_response={"next_run": next_run},
     )
 
 
