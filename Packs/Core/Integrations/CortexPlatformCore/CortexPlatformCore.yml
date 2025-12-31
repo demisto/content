@@ -3156,11 +3156,11 @@ script:
 
         - contextPath: Core.CaseResolutionStatus.pendingPlaybookTasks.issueIDs
           description: Array of issue IDs associated with the pending task.
-          type: Unknown
+          type: String
 
         - contextPath: Core.CaseResolutionStatus.pendingPlaybookTasks.parentPlaybook
           description: The parent playbook object containing details about the playbook that spawned this task.
-          type: Unknown
+          type: String
 
         - contextPath: Core.CaseResolutionStatus.pendingPlaybookTasks.parentPlaybook.id
           description: The unique identifier of the parent playbook.
@@ -3188,7 +3188,7 @@ script:
 
         - contextPath: Core.CaseResolutionStatus.activePlaybooks.issueIDs
           description: Array of issue IDs being processed by the active task.
-          type: Unknown
+          type: String
 
         - contextPath: Core.CaseResolutionStatus.activePlaybooks.playbookVersion
           description: The version number of the playbook.
@@ -3220,7 +3220,7 @@ script:
 
         - contextPath: Core.CaseResolutionStatus.donePlaybooks.issueIDs
           description: Array of issue IDs that were processed by the completed playbook.
-          type: Unknown
+          type: String
 
         - contextPath: Core.CaseResolutionStatus.donePlaybooks.playbookVersion
           description: The version number of the playbook.
@@ -3240,7 +3240,7 @@ script:
 
         - contextPath: Core.CaseResolutionStatus.recommendedPlaybooks.issueIDs
           description: Array of issue IDs that the recommended playbook can address.
-          type: Unknown
+          type: String
 
         - contextPath: Core.CaseResolutionStatus.recommendedPlaybooks.description
           description: Detailed description of what the recommended playbook does and how it helps resolve the case.
