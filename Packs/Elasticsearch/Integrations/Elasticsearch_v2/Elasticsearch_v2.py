@@ -65,6 +65,7 @@ param = demisto.params()
 TIME_FIELD = param.get("fetch_time_field", "")
 FETCH_INDEX = param.get("fetch_index", "")
 FETCH_QUERY_PARM = param.get("fetch_query", "")
+FETCH_SINGLE_INCIDENT = param.get("fetch_single_incident", False)
 RAW_QUERY = param.get("raw_query", "")
 FETCH_TIME = param.get("fetch_time", "3 days")
 FETCH_SIZE = int(param.get("fetch_size", 50))
@@ -893,6 +894,15 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     return response
 
 
+def fetch_incident(args):
+    alert_id = args.get("alert_id")
+    integration_context_to_set = {"alert_id_to_fetch": alert_id}
+    demisto.debug(f"Method: fetch_incident; {integration_context_to_set=}")
+    set_integration_context(integration_context_to_set)
+
+    demisto.results(f"Method: fetch_incident; Alert {alert_id} cached for fetching")
+
+
 def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("time") or FETCH_TIME
@@ -900,7 +910,38 @@ def fetch_incidents(proxies):
     es = elasticsearch_builder(proxies)
     time_range_dict = get_time_range(time_range_start=last_fetch)
 
-    if RAW_QUERY:
+    if FETCH_SINGLE_INCIDENT:
+        integration_context = get_integration_context()
+        if "alert_id_to_fetch" not in integration_context:
+            alert_id = "0"
+            demisto.debug(f"Method: fetch_incidents; Alert ID not found, setting {alert_id=}")
+        else:
+            demisto.debug(f"Method: fetch_incidents; Checking {integration_context=} for alert_id_to_fetch")
+            alert_id = integration_context["alert_id_to_fetch"]
+
+        query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
+        # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
+        search = Search(using=es, index=FETCH_INDEX).filter({"match": {"_id": alert_id}})
+        search = search.sort({TIME_FIELD: {"order": "asc"}})[0:FETCH_SIZE].query(query)
+        response = search.execute().to_dict()
+
+        _, total_results = get_total_results(response)
+
+        text = "alert_id: " + str(alert_id) + " total_results: " + str(total_results)
+        demisto.info(text)
+
+        incidents = []  # type: List
+
+        if total_results > 0:
+            incidents, last_fetch = results_to_incidents_datetime(response, last_fetch)
+
+            demisto.debug(f"Method: fetch_incidents; extract {len(incidents)} incidents")
+        demisto.incidents(incidents)
+
+        integration_context_to_set = {"alert_id_to_fetch": "0"}
+        demisto.debug(f"Method: fetch_incidents; {integration_context_to_set=}")
+        set_integration_context(integration_context_to_set)
+    elif RAW_QUERY:
         response = execute_raw_query(es, RAW_QUERY)
     else:
         query = QueryString(query="(" + FETCH_QUERY + ") AND " + TIME_FIELD + ":*")
@@ -918,7 +959,7 @@ def fetch_incidents(proxies):
     demisto.debug(f"Fetch incidents response: {response}")
     _, total_results = get_total_results(response)
 
-    incidents = []  # type: List
+    incidents = []
 
     if total_results > 0:
         if "Timestamp" in TIME_METHOD:
@@ -1041,7 +1082,12 @@ def search_eql_command(args, proxies):
     hits_human_readable = tableToMarkdown("Hits:", hit_tables, hit_headers, removeNull=True)
     total_human_readable = search_human_readable + "\n" + hits_human_readable
 
-    return CommandResults(readable_output=total_human_readable, outputs_prefix="Elasticsearch.Search", outputs=search_context)
+    return CommandResults(
+        readable_output=total_human_readable,
+        outputs_prefix="Elasticsearch.Search",
+        outputs=search_context,
+        raw_response=response,
+    )
 
 
 def search_esql_command(args, proxies):
@@ -1218,6 +1264,8 @@ def main():  # pragma: no cover
             test_func(proxies)
         elif demisto.command() == "fetch-incidents":
             fetch_incidents(proxies)
+        elif demisto.command() == "es-fetch-incident":
+            fetch_incident(args)
         elif demisto.command() in ["search", "es-search"]:
             search_command(proxies)
         elif demisto.command() == "get-mapping-fields":

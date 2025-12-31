@@ -123,6 +123,11 @@ configuration:
   type: 8
   section: Collect
   required: false
+- display: Fetch single incident
+  name: fetch_single_incident
+  defaultvalue: "false"
+  type: 8
+  required: false
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
 display: Elasticsearch v2
 name: Elasticsearch v2
@@ -436,6 +441,12 @@ script:
     outputs:
     - contextPath: Elasticsearch.ESQLSearch
       description: ES|QL search result.
+  - name: es-fetch-incident
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID to fetch
+    description: Fetch a single alert
   dockerimage: demisto/elasticsearch:1.0.0.4861252
   isfetch: true
   runonce: false
