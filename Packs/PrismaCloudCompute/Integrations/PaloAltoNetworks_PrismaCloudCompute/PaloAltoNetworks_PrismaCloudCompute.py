@@ -18,6 +18,8 @@ import urllib
 
 import dateparser
 import urllib3
+import aiohttp
+import asyncio
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -629,8 +631,6 @@ class AsyncClient:  # pragma: no cover
 
     async def __aenter__(self):
         """Asynchronous context manager entry: creates the aiohttp session."""
-        import aiohttp
-
         # Create a single session that persists for the client's lifespan
         self._session = aiohttp.ClientSession()
         return self
@@ -703,8 +703,6 @@ class AsyncClient:  # pragma: no cover
         Raises:
             DemistoException: If the request fails after all retries
         """
-        import aiohttp
-        import asyncio
 
         url = self._base_url + endpoint
         request_headers = self.headers.copy()
@@ -820,8 +818,6 @@ def async_send_data_to_xsiam(
     await asyncio.gather(*tasks)
     :rtype: ``List[Task]`` or ``None``
     """
-    import asyncio
-
     data_size = 0
     params = demisto.params()
     url = params.get(url_key)
@@ -3594,7 +3590,7 @@ def main():
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
         elif requested_command == "long-running-execution":
-            client = PrismaCloudComputeAsyncClient(
+            client: PrismaCloudComputeAsyncClient = PrismaCloudComputeAsyncClient(
                 base_url=urljoin(base_url, "api/v1/"),
                 verify=verify,
                 username=username,
