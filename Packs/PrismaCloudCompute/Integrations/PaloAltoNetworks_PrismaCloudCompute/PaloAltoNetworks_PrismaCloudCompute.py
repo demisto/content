@@ -19,7 +19,6 @@ import urllib
 import dateparser
 import urllib3
 import aiohttp
-import asyncio
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -632,7 +631,7 @@ class AsyncClient:  # pragma: no cover
     async def __aenter__(self):
         """Asynchronous context manager entry: creates the aiohttp session."""
         # Create a single session that persists for the client's lifespan
-        self._session = aiohttp.ClientSession()
+        self._session = aiohttp.ClientSession()  # type: ignore
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -3574,7 +3573,7 @@ def main():
             verify = tmp.name
         else:
             # Save boolean as a string for synchronized client only.
-            verify = verify_certificate if requested_command == "long-running-execution" else str(verify_certificate)
+            verify = verify_certificate if requested_command == "long-running-execution" else str(verify_certificate)  # type: ignore
 
         client = PrismaCloudComputeClient(
             base_url=urljoin(base_url, "api/v1/"), verify=verify, auth=(username, password), proxy=proxy, project=project
@@ -3597,8 +3596,8 @@ def main():
                 password=password,
                 proxy=proxy,
                 project=project,
-            )
-            asyncio.run(fetch_assets_long_running_command(client))
+            )  # type: ignore
+            asyncio.run(fetch_assets_long_running_command(client))  # type: ignore
         elif requested_command == "prisma-cloud-compute-profile-host-list":
             return_results(results=get_profile_host_list(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-profile-container-list":
