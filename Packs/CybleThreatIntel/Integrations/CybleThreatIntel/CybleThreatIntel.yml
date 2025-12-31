@@ -131,6 +131,7 @@ configuration:
     type: 0
     required: true
     defaultvalue: '100'
+    section: Collect
     additionalinfo: Maximum number of indicators to fetch per execution.
 script:
   type: python
