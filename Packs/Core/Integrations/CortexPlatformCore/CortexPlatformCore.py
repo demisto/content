@@ -3784,7 +3784,7 @@ def postprocess_case_resolution_statuses(client, response : dict):
     for task_status in task_statuses:
         tasks = response.get(task_status, {}).get("caseTasks", [])
         for task in tasks:
-            if task_status == "done":
+            if task_status in ["done", "inProgress"]:
                 enhance_with_pb_details(pb_id_to_data, task)
 
             elif task_status == "pending":
@@ -3792,9 +3792,10 @@ def postprocess_case_resolution_statuses(client, response : dict):
                 task["parentPlaybook"] = task.pop("parentdetails")
 
         response[task_status] = tasks
-    response["pendingPlaybookTasks"] = response.get("pending").get
-    response["activePlaybooks"] = response.pop("inProgress")
+
     response["donePlaybooks"] = response.pop("done")
+    response["activePlaybooks"] = response.pop("inProgress")
+    response["pendingPlaybookTasks"] = response.get("pending")
     response["recommendedPlaybooks"] = response.pop("recommended")
 
     return response
