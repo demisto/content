@@ -19,7 +19,7 @@ DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"  # Your API format
 class Client:
     def __init__(self, params: dict):
         self.base_url = params.get("base_url", "").rstrip("/")
-        self.access_token = params.get("access_token", {}).get("password", "").strip()
+        self.access_token = params.get("credentials", {}).get("password", "").strip()
 
         self.headers = {
             "Authorization": f"Bearer {self.access_token}",
