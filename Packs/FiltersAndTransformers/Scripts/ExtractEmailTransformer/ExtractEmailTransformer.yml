@@ -13,6 +13,7 @@ args:
 tags:
 - transformer
 timeout: '0'
+isllm: false
 type: javascript
 fromversion: 6.11.0
 tests:

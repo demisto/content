@@ -1,0 +1,72 @@
+{
+    "symantec_endpoint_security_raw": {
+      "device_networks": {
+        "type": "string",
+        "is_array": false
+      },
+      "type": {
+        "type": "string",
+        "is_array": false
+      },
+      "feature_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "user": {
+        "type": "string",
+        "is_array": false
+      },
+      "user_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "device_domain": {
+        "type": "string",
+        "is_array": false
+      },
+      "device_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "device_uid": {
+        "type": "string",
+        "is_array": false
+      },
+      "actor": {
+        "type": "string",
+        "is_array": false
+      },
+      "device_os_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "type_id": {
+        "type": "string",
+        "is_array": false
+      },
+      "url": {
+        "type": "string",
+        "is_array": false
+      },
+      "threat": {
+        "type": "string",
+        "is_array": false
+      },
+      "message": {
+        "type": "string",
+        "is_array": false
+      },
+      "scan_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "count": {
+        "type": "string",
+        "is_array": false
+      },
+      "attacks": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

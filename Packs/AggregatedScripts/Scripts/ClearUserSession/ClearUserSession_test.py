@@ -15,6 +15,7 @@ from ClearUserSession import (
     get_user_id,
     clear_user_sessions,
     main,
+    get_enhanced_error_message,
 )
 
 
@@ -137,7 +138,7 @@ def test_prepare_human_readable_error():
 
     assert len(result) == 1
     assert isinstance(result[0], CommandResults)
-    assert result[0].readable_output == "#### Error for test-command arg1=value1\nError occurred"
+    assert result[0].readable_output == "Error occurred"
     assert result[0].entry_type == EntryType.ERROR
     assert result[0].mark_as_note is True
 
@@ -396,10 +397,12 @@ def test_main_successful_execution(mocker: MockerFixture):
             [
                 CommandResults(readable_output="#### Result for !get-user-data user_name..."),
                 CommandResults(readable_output="#### Result for !get-user-data user_name..."),
+                CommandResults(readable_output="#### Result for !get-user-data user_name..."),
             ],
             {
                 "user1": [{"Source": "Okta v2", "Value": "123"}],
                 "user2": [{"Source": "Microsoft Graph User", "Value": "456"}],
+                "user3": [{"Source": "GSuiteAdmin", "Value": "789"}],
             },
         ),
     )
@@ -620,28 +623,44 @@ def test_clear_user_sessions(mocker: MockerFixture):
                     "Result": "Success",
                     "Brand": "Okta v2",
                     "UserName": "user1@test.com",
+                    "UserId": "1234",
                 },
             ],
         ),
-        # Test one user which exists in two brands
+        # Test one user which exists in three brands
         (
             {
                 "user_name": ["user1@test.com"],
                 "brands": None,
             },
-            {"user1@test.com": [{"Source": "Okta v2", "Value": "11"}, {"Source": "Microsoft Graph User", "Value": "22"}]},
+            {
+                "user1@test.com": [
+                    {"Source": "Okta v2", "Value": "11"},
+                    {"Source": "Microsoft Graph User", "Value": "22"},
+                    {"Source": "GSuiteAdmin", "Value": "33"},
+                ]
+            },
             [
                 {
                     "Message": "User session was cleared for user1@test.com",
                     "Result": "Success",
                     "Brand": "Okta v2",
                     "UserName": "user1@test.com",
+                    "UserId": "11",
                 },
                 {
                     "Message": "User session was cleared for user1@test.com",
                     "Result": "Success",
                     "Brand": "Microsoft Graph User",
                     "UserName": "user1@test.com",
+                    "UserId": "22",
+                },
+                {
+                    "Message": "User session was cleared for user1@test.com",
+                    "Result": "Success",
+                    "Brand": "GSuiteAdmin",
+                    "UserName": "user1@test.com",
+                    "UserId": "33",
                 },
             ],
         ),
@@ -654,16 +673,25 @@ def test_clear_user_sessions(mocker: MockerFixture):
             {"user1@test.com": [{"Source": "Okta v2", "Value": "11"}]},
             [
                 {
+                    "Message": "User not found or no integration configured.",
+                    "Result": "Failed",
+                    "Brand": "Microsoft Graph User",
+                    "UserName": "user1@test.com",
+                    "UserId": "",
+                },
+                {
+                    "Message": "User not found or no integration configured.",
+                    "Result": "Failed",
+                    "Brand": "GSuiteAdmin",
+                    "UserName": "user1@test.com",
+                    "UserId": "",
+                },
+                {
                     "Message": "User session was cleared for user1@test.com",
                     "Result": "Success",
                     "Brand": "Okta v2",
                     "UserName": "user1@test.com",
-                },
-                {
-                    "Message": "Username not found or no integration configured.",
-                    "Result": "Failed",
-                    "Brand": "Microsoft Graph User",
-                    "UserName": "user1@test.com",
+                    "UserId": "11",
                 },
             ],
         ),
@@ -703,3 +731,129 @@ def test_final_context_format(inputs, get_user_data_context, expected_output, mo
     assert mock_return_results.called, "return_results should have been called"
     result = mock_return_results.call_args[0][0]
     assert result[0].outputs == expected_output
+
+
+def test_main_with_user_id_argument(mocker: MockerFixture):
+    """
+    Given:
+        Valid user_id arguments provided directly.
+    When:
+        The main function is called with user_id arguments.
+    Then:
+        The function should execute clear session commands for each user_id and brand combination.
+    """
+    # Mock demisto.args()
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"user_id": "123,456", "brands": "Okta v2,Microsoft Graph User,GSuiteAdmin", "verbose": "false"},
+    )
+
+    # Mock clear_user_sessions to return success
+    mock_clear_user_sessions = mocker.patch("ClearUserSession.clear_user_sessions", return_value=([], "", None))
+
+    # Mock return_results
+    mock_return_results = mocker.patch("ClearUserSession.return_results")
+
+    # Call the main function
+    main()
+
+    # Assert clear_user_sessions was called for each user_id and brand combination
+    assert mock_clear_user_sessions.call_count == 6  # 2 user_ids * 3 brands
+
+    # Verify return_results was called
+    assert mock_return_results.called
+
+    # Check the output structure
+    result = mock_return_results.call_args[0][0]
+    outputs = result[0].outputs
+
+    # Should have 6 entries (2 user_ids * 3 brands)
+    assert len(outputs) == 6
+
+    # Verify each output has the expected structure
+    for output in outputs:
+        assert output["Result"] == "Success"
+        assert output["Brand"] in ["Okta v2", "Microsoft Graph User", "GSuiteAdmin"]
+        assert output["UserId"] in ["123", "456"]
+        assert output["UserName"] == ""
+
+
+def test_is_error_enhanced_with_standard_error():
+    """
+    Given:
+        An entry with a standard error type.
+    When:
+        is_error_enhanced is called.
+    Then:
+        It should return True (using standard is_error function).
+    """
+    entry = {"Type": 4, "Contents": "Some error"}
+
+    result = bool(get_enhanced_error_message(entry))
+
+    assert result is True
+
+
+def test_is_error_enhanced_with_not_found_error():
+    """
+    Given:
+        An entry with content indicating a user not found error.
+    When:
+        is_error_enhanced is called.
+    Then:
+        It should return True.
+    """
+    entry = {"Type": 1, "Contents": "User john.doe not found in the system"}
+
+    result = bool(get_enhanced_error_message(entry))
+
+    assert result is True
+
+
+def test_is_error_enhanced_with_no_error():
+    """
+    Given:
+        An entry with no error indicators.
+    When:
+        is_error_enhanced is called.
+    Then:
+        It should return False.
+    """
+    entry = {"Type": 1, "Contents": "User session cleared successfully"}
+
+    result = bool(get_enhanced_error_message(entry))
+
+    assert result is False
+
+
+def test_get_error_enhanced_with_not_found_error():
+    """
+    Given:
+        An entry with content indicating a user not found error.
+    When:
+        get_error_enhanced is called.
+    Then:
+        It should return "User not found.".
+    """
+    entry = {"Type": 1, "Contents": "User john.doe does not exist"}
+
+    result = get_enhanced_error_message(entry)
+
+    assert result == "User not found."
+
+
+def test_get_error_enhanced_with_auth_error():
+    """
+    Given:
+        An entry with content indicating an authentication error.
+    When:
+        get_error_enhanced is called.
+    Then:
+        It should return "Authentication failed.".
+    """
+    entry = {"Type": 1, "Contents": "Unauthorized access for user"}
+
+    result = get_enhanced_error_message(entry)
+
+    assert result == "Authentication failed."

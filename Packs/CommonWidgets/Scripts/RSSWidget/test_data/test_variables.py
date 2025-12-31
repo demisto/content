@@ -9,7 +9,7 @@ ONE_ARTICLE_HTML_RES = [
         "timestamp": "June 25, 2021 3:35 PM",
         "link": "https://test-article.com/",
         "title": "Test html Article without comma",
-        "summary": "This is HTML article example.\n\n\nThe post [Example](http://example_link/) appeared first on:\n[Example URL](http://example_link/).\n\n",
+        "summary": "This is HTML article example.\n\nThe post [Example](http://example_link/) appeared first on:\n[Example URL](http://example_link/).",
         "author": "Jasmine",
     }
 ]

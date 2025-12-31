@@ -1,0 +1,14 @@
+{
+    "result": [
+        {
+            "_ref": "zone_rp/dummy:example.com/external",
+            "disable": false,
+            "fqdn": "example.com",
+            "rpz_policy": "SUBSTITUTE",
+            "rpz_severity": "WARNING",
+            "rpz_type": "LOCAL",
+            "view": "external",
+            "comment": "External view RPZ zone"
+        }
+    ]
+}

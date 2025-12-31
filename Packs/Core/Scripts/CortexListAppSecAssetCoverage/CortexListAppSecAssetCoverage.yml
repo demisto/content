@@ -1,0 +1,266 @@
+commonfields:
+  id: CortexListAppSecAssetCoverage
+  version: -1
+name: CortexListAppSecAssetCoverage
+script: ''
+type: python
+tags:
+- Utilities
+comment: Retrieves Application Security Posture Management (ASPM) coverage information for assets,
+  including scan status across different security scanning types (vulnerabilities, secrets, code weakness, IaC, malware, CICD).
+  Returns coverage statistics, histograms, and detailed asset information. 
+  Filters can be provided to return a subset of the results. Statistics are generated over the filtered set.
+enabled: true
+args:
+- description: The unique ID of the asset. Accepts a comma-separated list.
+  name: asset_id
+  isArray: true
+- description: The name of the asset. Accepts a comma-separated list.
+  name: asset_name
+  isArray: true
+- description: Business application names. Accepts a comma-separated list.
+  name: business_application_names
+  isArray: true
+- auto: PREDEFINED
+  description: The status coverage. Accepts a comma-separated list.
+  isArray: true
+  name: status_coverage
+  predefined:
+    - FULLY SCANNED
+    - NOT SCANNED
+    - PARTIALLY SCANNED
+- auto: PREDEFINED
+  description: Is scanned by vulnerabilities. Accepts a comma-separated list.
+  isArray: true
+  name: is_scanned_by_vulnerabilities
+  predefined:
+    - DISABLED
+    - ENABLED
+    - IRRELEVANT
+- auto: PREDEFINED
+  description: Is scanned by code weakness. Accepts a comma-separated list.
+  isArray: true
+  name: is_scanned_by_code_weakness
+  predefined:
+    - DISABLED
+    - ENABLED
+    - IRRELEVANT
+- auto: PREDEFINED
+  description: Is scanned by secrets. Accepts a comma-separated list.
+  isArray: true
+  name: is_scanned_by_secrets
+  predefined:
+    - DISABLED
+    - ENABLED
+    - IRRELEVANT
+- auto: PREDEFINED
+  description: Is scanned by IaC. Accepts a comma-separated list.
+  isArray: true
+  name: is_scanned_by_iac
+  predefined:
+    - DISABLED
+    - ENABLED
+    - IRRELEVANT
+- auto: PREDEFINED
+  description: Is scanned by malware. Accepts a comma-separated list.
+  isArray: true
+  name: is_scanned_by_malware
+  predefined:
+    - DISABLED
+    - ENABLED
+    - IRRELEVANT
+- auto: PREDEFINED
+  description: Is scanned by CICD. Accepts a comma-separated list.
+  isArray: true
+  name: is_scanned_by_cicd
+  predefined:
+    - DISABLED
+    - ENABLED
+    - IRRELEVANT
+- auto: PREDEFINED
+  description: The asset type. Accepts a comma-separated list.
+  isArray: true
+  name: asset_type
+  predefined:
+    - CICD PIPELINE
+    - CONTAINER IMAGE REPOSITORY
+    - REPOSITORY
+- auto: PREDEFINED
+  description: The asset provider. Accepts a comma-separated list.
+  isArray: true
+  name: asset_provider
+  predefined:
+    - AWS
+    - AWS_CODE_BUILD
+    - AWS_CODE_COMMIT
+    - AZURE
+    - AZURE_PIPELINES
+    - AZURE_REPOS
+    - BITBUCKET
+    - CIRCLE_CI
+    - DOCKER
+    - GCP
+    - GITHUB
+    - GITHUB_ACTIONS
+    - GITLAB
+    - GITLAB_CI
+    - HCP_TFC_RUN_TASKS
+    - JENKINS
+    - JFROG_ARTIFACTORY
+    - OCI
+- name: limit
+  description: "The maximum number of assets to return."
+  defaultValue: "50"
+outputs:
+- contextPath: Core.Coverage.total_filtered_assets
+  description: The total number of assets matching the filter (before the limit is applied).
+  type: Number
+- contextPath: Core.Coverage.number_returned_assets
+  description: The number of returned assets.
+  type: Number
+- contextPath: Core.Coverage.coverage_percentage
+  description: The ASPM coverage percentage calculated from the scanner coverage histogram.
+  type: Number
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned_count
+  description: The number of assets that are partially scanned according to ASPM coverage.
+  type: Number
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned_count
+  description: The number of assets that are fully scanned according to ASPM coverage.
+  type: Number
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.not_scanned_count
+  description: The number of assets that are not scanned according to ASPM coverage.
+  type: Number
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned_percentage
+  description: The percentage of assets that are partially scanned according to ASPM coverage.
+  type: Number
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned_percentage
+  description: The percentage of assets that are fully scanned according to ASPM coverage.
+  type: Number
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.not_scanned_percentage
+  description: The percentage of assets that are not scanned according to ASPM coverage.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.coverage_percentage
+  description: The percentage of assets scanned for vulnerabilities.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.enabled
+  description: The number of assets where vulnerability scanning is enabled.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.disabled
+  description: The number of assets where vulnerability scanning is disabled.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_code_weakness.coverage_percentage
+  description: The percentage of assets scanned for code weaknesses.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_code_weakness.enabled
+  description: The number of assets where code weakness scanning is enabled.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_code_weakness.disabled
+  description: The number of assets where code weakness scanning is disabled.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_secrets.coverage_percentage
+  description: The percentage of assets scanned for secrets.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_secrets.enabled
+  description: The number of assets where secret scanning is enabled.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_secrets.disabled
+  description: The number of assets where secret scanning is disabled.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_iac.coverage_percentage
+  description: The percentage of assets scanned for infrastructure-as-code (IaC) issues.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_iac.enabled
+  description: The number of assets where infrastructure-as-code (IaC) scanning is enabled.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_iac.disabled
+  description: The number of assets where infrastructure-as-code (IaC) scanning is disabled.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_malware.coverage_percentage
+  description: The percentage of assets scanned for malware.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_malware.enabled
+  description: The number of assets where malware scanning is enabled.
+  type: Number
+- contextPath: Core.Coverage.Metrics.is_scanned_by_malware.disabled
+  description: The number of assets where malware scanning is disabled.
+  type: Number
+- contextPath: Core.Coverage.Asset.asset_id
+  description: The unique ID of the asset. Each asset is assigned a unique identifier in the system.
+  type: String
+
+- contextPath: Core.Coverage.Asset.asset_name
+  description: The name of the asset. Typically corresponds to the repository, container image, or pipeline name.
+  type: String
+
+- contextPath: Core.Coverage.Asset.asset_provider
+  description: "The vendor or source platform of the asset. Indicates where the asset originates from. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_REPOS, BITBUCKET, BITBUCKET_DATACENTER, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITHUB_ENTERPRISE, GITLAB, GITLAB_SELF_MANAGED, HCP_TFC_RUN_TASKS, HCP_TFE_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI."
+  type: String
+
+- contextPath: Core.Coverage.Asset.asset_type
+  description: "The type or category of the asset. Determines the nature of the resource being scanned. Possible values: CICD PIPELINE, CONTAINER IMAGE REPOSITORY, REPOSITORY."
+  type: String
+
+- contextPath: Core.Coverage.Asset.business_application_names
+  description: A list of business applications associated with the asset. These applications help map the asset to business context or ownership.
+  type: Array
+
+- contextPath: Core.Coverage.Asset.is_scanned_by_cicd
+  description: "Indicates whether the asset is scanned within CI/CD pipelines. Possible values: ENABLED, DISABLED, IRRELEVANT."
+  type: String
+
+- contextPath: Core.Coverage.Asset.is_scanned_by_code_weakness
+  description: "Indicates whether code weakness scanning is performed on the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
+  type: String
+
+- contextPath: Core.Coverage.Asset.is_scanned_by_iac
+  description: "Indicates whether infrastructure-as-code (IaC) scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
+  type: String
+
+- contextPath: Core.Coverage.Asset.is_scanned_by_malware
+  description: "Indicates whether malware scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
+  type: String
+
+- contextPath: Core.Coverage.Asset.is_scanned_by_secrets
+  description: "Indicates whether the asset is scanned for hardcoded secrets or credentials. Possible values: ENABLED, DISABLED, IRRELEVANT."
+  type: String
+
+- contextPath: Core.Coverage.Asset.is_scanned_by_semgrep
+  description: "Boolean flag indicating whether the asset is analyzed using Semgrep for code issues or misconfigurations. Possible values: true, false."
+  type: Boolean
+
+- contextPath: Core.Coverage.Asset.is_scanned_by_sonarqube
+  description: "Boolean flag indicating whether the asset is analyzed using SonarQube for code quality and security issues. Possible values: true, false."
+  type: Boolean
+
+- contextPath: Core.Coverage.Asset.is_scanned_by_veracode
+  description: "Boolean flag indicating whether the asset is scanned using Veracode for security vulnerabilities. Possible values: true, false."
+  type: Boolean
+
+- contextPath: Core.Coverage.Asset.is_scanned_by_vulnerabilities
+  description: "Indicates whether vulnerability scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
+  type: String
+
+- contextPath: Core.Coverage.Asset.last_scan_status
+  description: "The status of the most recent scan performed on the asset. Possible values: NOT_SCANNED_YET, ERROR, COMPLETED."
+  type: String
+
+- contextPath: Core.Coverage.Asset.scanners_data
+  description: An array containing detailed information from the scanners that evaluated the asset, including scan results, timestamps, and metadata.
+  type: Array
+
+- contextPath: Core.Coverage.Asset.status_coverage
+  description: "The overall scan coverage of the asset. Possible values: FULLY SCANNED, PARTIALLY SCANNED, NOT SCANNED."
+  type: String
+
+- contextPath: Core.Coverage.Asset.unified_provider
+  description: "The unified provider name associated with the asset. Standardized across different vendor integrations. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_PIPELINES, AZURE_REPOS, BITBUCKET, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITLAB, GITLAB_CI, HCP_TFC_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI."
+  type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4819260
+fromversion: 6.1.0
+isInternal: true
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform
