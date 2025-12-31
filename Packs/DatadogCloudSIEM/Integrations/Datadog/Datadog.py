@@ -160,7 +160,7 @@ def event_for_lookup(event: dict) -> dict:
         "Id": event.get("id"),
         "Priority": event.get("priority"),
         "Source": event.get("source"),
-        "Tags": ",".join(tag for tag in event.get("tags", [])) if event.get("tags") else None,
+        "Tags": (",".join(tag for tag in event.get("tags", [])) if event.get("tags") else None),
         "Is Aggregate": event.get("is_aggregate"),
         "Host": event.get("host"),
         "Device Name": event.get("device_name"),
@@ -182,25 +182,29 @@ def incident_for_lookup(incident: dict) -> dict:
     return {
         "ID": str(incident.get("id")),
         "Title": str(incident.get("attributes", {}).get("title", "")),
-        "Created": datetime.fromisoformat(incident.get("attributes", {}).get("created", "")).strftime(UI_DATE_FORMAT)
-        if incident.get("attributes", {}).get("created", "")
-        else "",
+        "Created": (
+            datetime.fromisoformat(incident.get("attributes", {}).get("created", "")).strftime(UI_DATE_FORMAT)
+            if incident.get("attributes", {}).get("created", "")
+            else ""
+        ),
         "Customer Impacted": str(incident.get("attributes", {}).get("customer_impacted", "")),
         "Customer Impact Duration": str(incident.get("attributes", {}).get("customer_impact_duration", "")),
         "Customer Impact Scope": str(incident.get("attributes", {}).get("customer_impact_scope", "")),
-        "Customer Impact Start": datetime.fromisoformat(incident.get("attributes", {}).get("customer_impact_start", "")).strftime(
-            UI_DATE_FORMAT
-        )
-        if incident.get("attributes", {}).get("customer_impact_start", "")
-        else "",
-        "Customer Impact End": datetime.fromisoformat(incident.get("attributes", {}).get("customer_impact_end", "")).strftime(
-            UI_DATE_FORMAT
-        )
-        if incident.get("attributes", {}).get("customer_impact_end", "")
-        else "",
-        "Detected": datetime.fromisoformat(incident.get("attributes", {}).get("detected", "")).strftime(UI_DATE_FORMAT)
-        if incident.get("attributes", {}).get("detected", "")
-        else "",
+        "Customer Impact Start": (
+            datetime.fromisoformat(incident.get("attributes", {}).get("customer_impact_start", "")).strftime(UI_DATE_FORMAT)
+            if incident.get("attributes", {}).get("customer_impact_start", "")
+            else ""
+        ),
+        "Customer Impact End": (
+            datetime.fromisoformat(incident.get("attributes", {}).get("customer_impact_end", "")).strftime(UI_DATE_FORMAT)
+            if incident.get("attributes", {}).get("customer_impact_end", "")
+            else ""
+        ),
+        "Detected": (
+            datetime.fromisoformat(incident.get("attributes", {}).get("detected", "")).strftime(UI_DATE_FORMAT)
+            if incident.get("attributes", {}).get("detected", "")
+            else ""
+        ),
         "Resolved": str(incident.get("attributes", {}).get("resolved", "")),
         "Time to Detect": str(incident.get("attributes", {}).get("time_to_detect", "")),
         "Time to Internal Response": str(incident.get("attributes", {}).get("time_to_internal_response", "")),
@@ -211,12 +215,16 @@ def incident_for_lookup(incident: dict) -> dict:
         "Detection Method": str(incident.get("attributes", {}).get("fields", {}).get("detection_method", {}).get("value", "")),
         "Root Cause": str(incident.get("attributes", {}).get("fields", {}).get("root_cause", {}).get("value", "")),
         "Summary": str(incident.get("attributes", {}).get("fields", {}).get("summary", {}).get("value", "")),
-        "Notification Display Name": str(incident.get("attributes", {}).get("notification_handles")[0].get("display_name"))
-        if incident.get("attributes", {}).get("notification_handles")
-        else None,
-        "Notification Handle": str(incident.get("attributes", {}).get("notification_handles")[0].get("handle"))
-        if incident.get("attributes", {}).get("notification_handles")
-        else None,
+        "Notification Display Name": (
+            str(incident.get("attributes", {}).get("notification_handles")[0].get("display_name"))
+            if incident.get("attributes", {}).get("notification_handles")
+            else None
+        ),
+        "Notification Handle": (
+            str(incident.get("attributes", {}).get("notification_handles")[0].get("handle"))
+            if incident.get("attributes", {}).get("notification_handles")
+            else None
+        ),
     }
 
 
@@ -380,7 +388,7 @@ def create_event_command(configuration: Configuration, args: dict[str, Any]) -> 
         "alert_type": EventAlertType(args.get("alert_type")),
         "priority": EventPriority(args.get("priority")),
         "aggregation_key": args.get("aggregation_key"),
-        "related_event_id": int(args.get("related_event_id", 0)) if args.get("related_event_id") else None,
+        "related_event_id": (int(args.get("related_event_id", 0)) if args.get("related_event_id") else None),
         "host": args.get("host_name"),
         "device_name": args.get("device_name"),
         "date_happened": int(date_happened.timestamp()) if date_happened else None,
@@ -445,8 +453,8 @@ def get_events_command(configuration: Configuration, args: dict[str, Any]) -> Co
                 "priority": args.get("priority"),
                 "sources": args.get("sources"),
                 "tags": args.get("tags"),
-                "unaggregated": argToBoolean(args.get("unaggregated")) if args.get("unaggregated") else None,
-                "exclude_aggregate": argToBoolean(args.get("exclude_aggregate")) if args.get("exclude_aggregate") else None,
+                "unaggregated": (argToBoolean(args.get("unaggregated")) if args.get("unaggregated") else None),
+                "exclude_aggregate": (argToBoolean(args.get("exclude_aggregate")) if args.get("exclude_aggregate") else None),
                 "page": datadog_page,
             }
             event_list_response: EventListResponse = api_instance.list_events(
@@ -787,7 +795,7 @@ def update_metric_metadata_command(configuration: Configuration, args: dict[str,
         "description": args.get("description"),
         "per_unit": args.get("per_unit"),
         "short_name": args.get("short_name"),
-        "statsd_interval": int(args.get("statsd_interval", 0)) if args.get("statsd_interval") else None,
+        "statsd_interval": (int(args.get("statsd_interval", 0)) if args.get("statsd_interval") else None),
         "type": args.get("type"),
         "unit": args.get("unit"),
     }
@@ -857,15 +865,17 @@ def create_incident_command(configuration: Configuration, args: dict[str, Any]) 
                 notification_handles=[
                     IncidentNotificationHandle(display_name=display_name, handle=handle)  # type: ignore
                 ],
-                initial_cells=[
-                    IncidentTimelineCellCreateAttributes(
-                        cell_type=IncidentTimelineCellMarkdownContentType(value="markdown"),
-                        content=IncidentTimelineCellMarkdownCreateAttributesContent(content=content),
-                        important=important,
-                    )
-                ]
-                if content
-                else [],
+                initial_cells=(
+                    [
+                        IncidentTimelineCellCreateAttributes(
+                            cell_type=IncidentTimelineCellMarkdownContentType(value="markdown"),
+                            content=IncidentTimelineCellMarkdownCreateAttributesContent(content=content),
+                            important=important,
+                        )
+                    ]
+                    if content
+                    else []
+                ),
             ),
         ),
     )
@@ -913,46 +923,58 @@ def update_incident_command(configuration: Configuration, args: dict[str, Any]) 
     incident_attributes = {
         "title": args.get("title"),
         "customer_impacted": False,
-        "detected": parse(str(args.get("detected")), settings={"TIMEZONE": "UTC"}) if args.get("detected") else None,
+        "detected": (parse(str(args.get("detected")), settings={"TIMEZONE": "UTC"}) if args.get("detected") else None),
         "customer_impact_scope": args.get("customer_impact_scope"),
-        "customer_impact_start": parse(str(args.get("customer_impact_start")), settings={"TIMEZONE": "UTC"})
-        if args.get("customer_impact_start")
-        else None,
-        "customer_impact_end": parse(str(args.get("customer_impact_end")), settings={"TIMEZONE": "UTC"})
-        if args.get("customer_impact_end")
-        else None,
+        "customer_impact_start": (
+            parse(str(args.get("customer_impact_start")), settings={"TIMEZONE": "UTC"})
+            if args.get("customer_impact_start")
+            else None
+        ),
+        "customer_impact_end": (
+            parse(str(args.get("customer_impact_end")), settings={"TIMEZONE": "UTC"}) if args.get("customer_impact_end") else None
+        ),
     }
     incident_fields = {
-        "state": IncidentFieldAttributesSingleValue(
-            type=IncidentFieldAttributesSingleValueType.DROPDOWN,
-            value=state,
-        )
-        if state
-        else None,
-        "severity": IncidentFieldAttributesSingleValue(
-            type=IncidentFieldAttributesSingleValueType.DROPDOWN,
-            value=severity,
-        )
-        if severity
-        else None,
-        "detection_method": IncidentFieldAttributesSingleValue(
-            type=IncidentFieldAttributesSingleValueType.DROPDOWN,
-            value=detection_method,
-        )
-        if detection_method
-        else None,
-        "root_cause": IncidentFieldAttributesSingleValue(
-            type=IncidentFieldAttributesSingleValueType.TEXTBOX,
-            value=root_cause,
-        )
-        if root_cause
-        else None,
-        "summary": IncidentFieldAttributesSingleValue(
-            type=IncidentFieldAttributesSingleValueType.TEXTBOX,
-            value=summary,
-        )
-        if summary
-        else None,
+        "state": (
+            IncidentFieldAttributesSingleValue(
+                type=IncidentFieldAttributesSingleValueType.DROPDOWN,
+                value=state,
+            )
+            if state
+            else None
+        ),
+        "severity": (
+            IncidentFieldAttributesSingleValue(
+                type=IncidentFieldAttributesSingleValueType.DROPDOWN,
+                value=severity,
+            )
+            if severity
+            else None
+        ),
+        "detection_method": (
+            IncidentFieldAttributesSingleValue(
+                type=IncidentFieldAttributesSingleValueType.DROPDOWN,
+                value=detection_method,
+            )
+            if detection_method
+            else None
+        ),
+        "root_cause": (
+            IncidentFieldAttributesSingleValue(
+                type=IncidentFieldAttributesSingleValueType.TEXTBOX,
+                value=root_cause,
+            )
+            if root_cause
+            else None
+        ),
+        "summary": (
+            IncidentFieldAttributesSingleValue(
+                type=IncidentFieldAttributesSingleValueType.TEXTBOX,
+                value=summary,
+            )
+            if summary
+            else None
+        ),
     }
     body = IncidentUpdateRequest(
         data=IncidentUpdateData(
@@ -1157,7 +1179,7 @@ def fetch_incidents(configuration: Configuration, params: dict):
                 "occurred": obj["attributes"]["modified"],
                 "dbotMirrorId": obj["id"],
                 "rawJSON": json.dumps({"incidents": new_obj}),
-                "type": "Datadog Cloud SIEM",
+                "type": "Datadog",
             }
             incidents.append(incident)
         if data_list:
