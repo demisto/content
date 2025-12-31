@@ -271,5 +271,8 @@
    }
   }
  ],
- "isPredefined": true
+ "isPredefined": true,
+ "marketplaces": [
+     "xsoar"
+ ]
 }
