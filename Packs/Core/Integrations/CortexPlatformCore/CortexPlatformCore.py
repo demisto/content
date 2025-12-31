@@ -3088,11 +3088,11 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         outputs=replies,
         raw_response=replies,
     )
-    
+
     if error_messages:
         return_results(command_results)
         return_error(f"The following fields could not be updated:\n{error_messages}")
-    
+
     return command_results
 
 
