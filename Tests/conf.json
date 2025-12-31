@@ -2290,7 +2290,8 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "MSG-ediscovery-tpb",
-            "instance_names": "ms_graph_security_ediscovery"
+            "instance_names": "ms_graph_security_ediscovery",
+            "timeout": 600
         },
         {
             "integrations": "Microsoft Graph",
