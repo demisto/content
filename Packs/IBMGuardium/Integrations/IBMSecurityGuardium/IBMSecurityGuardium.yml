@@ -36,6 +36,7 @@ configuration:
     required: false
     type: 0
     section: Collect
+    additionalinfo: Recommended maximum is 10000.
   - display: Timestamp Field Name
     name: timestamp_field
     required: false
@@ -70,7 +71,7 @@ script:
           description: The name of the field in the event data that contains the timestamp. Required when should_push_events is true.
           required: false
         - name: limit
-          description: Maximum number of results to return. Max is 1000.
+          description: Maximum number of results to return. Maximum allowed is 1000.
           required: false
           defaultValue: "50"
         - name: start_time

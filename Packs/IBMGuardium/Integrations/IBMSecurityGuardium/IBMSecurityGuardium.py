@@ -16,7 +16,6 @@ VENDOR = "IBM"
 PRODUCT = "Guardium"
 DEFAULT_MAX_FETCH = 10000
 MAX_BATCH_SIZE = 1000
-MAX_ITERATIONS = 10
 
 """ CLIENT CLASS """
 
@@ -81,6 +80,7 @@ class Client(BaseClient):
                 demisto.debug(f"Warning: First line result keys: {list(result_data.keys())}")
 
         except json.JSONDecodeError as e:
+            demisto.debug(f"Failed to parse JSON. Full response text: {response}")
             raise DemistoException(f"Failed to parse first line as JSON: {e}")
 
         # Parse second line if present and merge pagination metadata
@@ -96,6 +96,7 @@ class Client(BaseClient):
                 else:
                     demisto.debug(f"Warning: Second line missing 'result' key. Available keys: {list(pagination_data.keys())}")
             except json.JSONDecodeError as e:
+                demisto.debug(f"Failed to parse pagination JSON. Full response text: {response}")
                 raise DemistoException(f"Failed to parse pagination data (second line): {e}")
 
         return parsed_response
@@ -369,7 +370,7 @@ def fetch_events_command(
     Args:
         client: IBM Guardium client
         report_id: Report ID to fetch events from
-        max_fetch: Maximum number of events to fetch (capped at 10000)
+        max_fetch: Maximum number of events to fetch
         last_run: Last run context with last_fetch_time and fetched_event_hashes
         timestamp_field: Name of the timestamp field to use for deduplication and _time
 
@@ -378,7 +379,6 @@ def fetch_events_command(
     """
     demisto.debug(f"Starting fetch_events with last_run: {last_run}, max_fetch: {max_fetch}")
     last_fetch_time_str = last_run.get("last_fetch_time")
-    max_fetch = min(max_fetch, DEFAULT_MAX_FETCH)
 
     # Determine fetch time range
     now = datetime.utcnow()
@@ -399,15 +399,11 @@ def fetch_events_command(
     offset = 0
     field_mapping: dict[str, str] = {}
     final_result = False
-    iteration = 0
 
-    while len(events) < max_fetch and not final_result and iteration < MAX_ITERATIONS:
-        iteration += 1
+    while len(events) < max_fetch and not final_result:
         remaining = max_fetch - len(events)
         batch_size = min(MAX_BATCH_SIZE, remaining)
-        demisto.debug(
-            f"Iteration {iteration}: Fetching batch with offset={offset}, batch_size={batch_size}, remaining={remaining}"
-        )
+        demisto.debug(f"Fetching batch with offset={offset}, batch_size={batch_size}, remaining={remaining}")
 
         response = client.run_report(
             report_id=report_id, fetch_size=batch_size, offset=offset, from_date=from_date, to_date=to_date
@@ -438,8 +434,8 @@ def fetch_events_command(
 
         # Check for final_result flag in the response
         result_data = response.get("result", {})
-        final_result = result_data.get("final_result", False)
-        limit_reached = result_data.get("limit_reached", False)
+        final_result = result_data.get("final_result")
+        limit_reached = result_data.get("limit_reached")
 
         demisto.debug(
             f"Batch complete: fetched {len(raw_events)} events, total so far: {len(events)}, "
@@ -458,9 +454,6 @@ def fetch_events_command(
 
         # Update offset for next iteration
         offset += len(raw_events)
-
-    if iteration >= MAX_ITERATIONS:
-        demisto.debug(f"WARNING: Reached maximum iterations ({MAX_ITERATIONS}), stopping fetch")
 
     # Deduplicate events (events are in descending order - newest first)
     deduplicated_events = deduplicate_events(events, last_run, timestamp_field)
@@ -499,7 +492,12 @@ def get_events_command(
         Tuple of (events list, CommandResults, timestamp_field to use for XSIAM or None)
     """
     demisto.debug(f"Executing get_events_command with args: {args}")
-    limit = min(arg_to_number(args.get("limit", 50)) or 50, 1000)
+    limit = arg_to_number(args.get("limit", 50)) or 50
+
+    # Validate limit does not exceed 1000
+    if limit > 1000:
+        raise DemistoException("The limit parameter cannot exceed 1000. Please use a smaller value.")
+
     now = datetime.utcnow()
 
     if args.get("start_time"):

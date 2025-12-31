@@ -823,3 +823,37 @@ class TestGetEventsCommand:
 
         assert len(events) == 1
         assert timestamp_field_result is None
+
+    def test_get_events_command_limit_exceeds_maximum(self, client):
+        """
+        Given:
+            - limit parameter exceeds 1000
+        When:
+            - Calling get_events_command
+        Then:
+            - Ensure DemistoException is raised with appropriate error message
+        """
+        args = {"limit": "1500"}
+        with pytest.raises(DemistoException, match="The limit parameter cannot exceed 1000"):
+            get_events_command(client, REPORT_ID, args, timestamp_field="Session Start Time")
+
+    def test_get_events_command_limit_at_maximum(self, client, requests_mock):
+        """
+        Given:
+            - limit parameter is exactly 1000 (maximum allowed)
+        When:
+            - Calling get_events_command
+        Then:
+            - Ensure the command executes successfully without raising an error
+        """
+        response = util_load_json("test_data/sample_api_response.json")
+        response_text = json.dumps(response)
+        requests_mock.post(f"{BASE_URL}/api/v3/reports/run", text=response_text)
+
+        args = {"limit": "1000"}
+        events, results, timestamp_field_result = get_events_command(
+            client, REPORT_ID, args, timestamp_field="Session Start Time"
+        )
+
+        assert len(events) == 1
+        assert timestamp_field_result is None
