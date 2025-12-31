@@ -2222,12 +2222,9 @@ function EXOGetQuarantineMessageCommand {
 
     $raw_response = @($client.EXOGetQuarantineMessage($params))
 
-    $newResults = @()
-
-    # Simplified logic: process everything as an array
-    foreach ($item in $raw_response) {
+    $newResults = foreach ($item in $raw_response) {
         if ($null -ne $item) {
-            $newResults += Remove-EmptyItems -inputObject $item
+            Remove-EmptyItems -inputObject $item
         }
     }
 
