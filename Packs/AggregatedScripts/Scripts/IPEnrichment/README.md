@@ -1,4 +1,4 @@
-This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information in the context.
+This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information in the context output. It supports only indicators of type IP. The script will create an IP indicator in TIM if it doesn’t already exist, and then enrich it; if the IP indicator already exists, it will enrich the existing indicator. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.
 
 ## Script Data
 

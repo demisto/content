@@ -1,4 +1,4 @@
-This script enriches Domains data with information from multiple integrations and returns a "DomainEnrichment" object with consolidated information in the context output.
+This script enriches Domain data with information from multiple integrations and returns a DomainEnrichment object with consolidated information in the context output. It supports only indicators of type Domain. The script will create a Domain indicator in TIM if it doesn’t already exist, and then enrich it; if the Domain indicator already exists, it will enrich the existing indicator.
 
 ## Script Data
 

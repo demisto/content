@@ -1,4 +1,4 @@
-This script gathers for reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information in the context output. The script runs core-get-hash-analytics-prevalence on SHA256 values only.
+This script gathers reputation data from multiple integrations and returns a FileEnrichment object with consolidated information in the context output. It supports only indicators of type File. The script will create a File indicator in TIM if it doesn’t already exist, and then enrich it; if the File indicator already exists, it will enrich the existing indicator. Note: The script runs core-get-hash-analytics-prevalence on SHA256 values only.
 
 ## Script Data
 

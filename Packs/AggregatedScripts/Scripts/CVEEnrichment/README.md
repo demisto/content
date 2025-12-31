@@ -1,4 +1,4 @@
-This script gathers CVE reputation data from multiple integrations and returns a "CVEEnrichment" object with consolidated information to the context output.
+This script gathers CVE reputation data from multiple integrations and returns a CVEEnrichment object with consolidated information in the context output. It supports only indicators of type CVE. The script will create a CVE indicator in TIM if it doesn’t already exist, and then enrich it; if the CVE indicator already exists, it will enrich the existing indicator.
 
 ## Script Data
 
