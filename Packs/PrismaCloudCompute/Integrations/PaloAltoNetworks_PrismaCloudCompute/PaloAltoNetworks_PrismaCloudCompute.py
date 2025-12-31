@@ -591,7 +591,7 @@ class PrismaCloudComputeClient(BaseClient):
 ###################################################################################################################################
 # beginning of CSP part
 ###################################################################################################################################
-class AsyncClient:
+class AsyncClient:  # pragma: no cover
     """
     Base asynchronous client for interacting with APIs.
     Handles session and authentication management.
@@ -3580,20 +3580,9 @@ def main():
             # Save boolean as a string for synchronized client only.
             verify = verify_certificate if requested_command == "long-running-execution" else str(verify_certificate)
 
-        # Init the client
-        if requested_command == "long-running-execution":
-            client = PrismaCloudComputeAsyncClient(
-                base_url=urljoin(base_url, "api/v1/"),
-                verify=verify,
-                username=username,
-                password=password,
-                proxy=proxy,
-                project=project,
-            )
-        else:
-            client = PrismaCloudComputeClient(
-                base_url=urljoin(base_url, "api/v1/"), verify=verify, auth=(username, password), proxy=proxy, project=project
-            )
+        client = PrismaCloudComputeClient(
+            base_url=urljoin(base_url, "api/v1/"), verify=verify, auth=(username, password), proxy=proxy, project=project
+        )
 
         if requested_command == "test-module":
             # This is the call made when pressing the integration test button
@@ -3605,6 +3594,14 @@ def main():
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
         elif requested_command == "long-running-execution":
+            client = PrismaCloudComputeAsyncClient(
+                base_url=urljoin(base_url, "api/v1/"),
+                verify=verify,
+                username=username,
+                password=password,
+                proxy=proxy,
+                project=project,
+            )
             asyncio.run(fetch_assets_long_running_command(client))
         elif requested_command == "prisma-cloud-compute-profile-host-list":
             return_results(results=get_profile_host_list(client=client, args=demisto.args()))
