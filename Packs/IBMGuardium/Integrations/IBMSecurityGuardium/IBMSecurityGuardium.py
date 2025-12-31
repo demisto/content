@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # Format for dates sent in API requests
 VENDOR = "IBM"
-PRODUCT = "Guardium"
+PRODUCT = "Guardium_dsc"
 DEFAULT_MAX_FETCH = 10000
 MAX_BATCH_SIZE = 1000
 
