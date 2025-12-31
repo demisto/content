@@ -541,6 +541,51 @@ class MsGraphClient:
             raise DemistoException(f"An unexpected error occurred: {e}")
 
 
+    def initiate_polling(self, user_principal_name: str):
+        """
+        Attempt to generate access token the MFA app using the given client secret.
+        Then send MFA push notification to the user with the given UPN.
+        If user Approve - return None, otherwise raise an error.
+        Args:
+            client_secret (str): The client secret of the MFA app.
+            user_principal_name (str): The user principal name of the user to send the MFA notification to.
+
+        Returns:
+            None.
+        """
+        import requests
+        demisto.debug("\nSending MFA challenge to the user...")
+
+        mfa_client_token = self.get_mfa_app_client_token()
+        try:
+            # Send the request to the strong authentication service
+            headers = {
+                "Authorization": f"Bearer {mfa_client_token}",
+                "Content-Type": "application/json"
+            }
+
+            # 1. Trigger the Push
+            res = requests.post(
+                "https://api.mfa-provider.com/v1/push_auth",
+                headers=headers,
+                json={"username": user_principal_name},
+                verify=False
+            )
+
+            # 2. Check if the request actually succeeded
+            if res.status_code == 202:
+                data = res.json()
+                auth_id = data.get('id')
+                # Now you move to the polling phase using this auth_id
+            else:
+                return_error(f"Failed to initiate MFA: {res.text}")
+
+            return auth_id
+        
+        except Exception as e:
+            raise DemistoException(f"An unexpected error occurred: {e}")
+        
+
 def suppress_errors_with_404_code(func):
     def wrapper(client: MsGraphClient, args: dict):
         try:
@@ -969,12 +1014,37 @@ def request_mfa_command(client: MsGraphClient, args: dict) -> None:
     """
     user_mail = args.get("user_mail", "")
     timeout = min(MAX_TIMEOUT_LIMIT, arg_to_number(args.get("timeout", MAX_ALLOWED_ENTRY_SIZE)))
+    # res = client.initiate_polling(user_mail)
+    # print(res)
     try:
         client.push_mfa_notification(user_mail, timeout)
     except Exception as e:
         raise DemistoException(f"Failed to pop MFA request for user {user_mail}: {e}")
     
     return CommandResults(readable_output=f"MFA request was successfully popped for user {user_mail}")
+
+
+def request_mfa_polling_command(client: MsGraphClient, args: dict) -> None:
+    """
+    Pops a request to MFA for the given user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary of arguments, which must include:
+            - user_mail (str): The mail of the user to pop the MFA to.
+
+    Returns:
+        CommandResults: Pops a request to MFA for the given user.
+    """
+    user_mail = args.get("user_mail", "")
+    timeout = min(MAX_TIMEOUT_LIMIT, arg_to_number(args.get("timeout", MAX_ALLOWED_ENTRY_SIZE)))
+    try:
+        client.push_mfa_notification(user_mail, timeout)
+    except Exception as e:
+        raise DemistoException(f"Failed to pop MFA request for user {user_mail}: {e}")
+    
+    return CommandResults(readable_output=f"MFA request was successfully popped for user {user_mail}")
+
 
 def create_zip_with_password(generated_tap_password: str, zip_password: str):
     """
