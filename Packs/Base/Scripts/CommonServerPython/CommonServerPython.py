@@ -10374,14 +10374,12 @@ class AsyncClient:
         if auth:
             auth = aiohttp.BasicAuth(auth)
 
-        # demisto.debug("[test] starting to run in for loop")
         for attempt in range(1, num_of_retires + 1):
             if attempt > 1:
                 delay = self.connection_error_interval * attempt
                 demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{num_of_retires}. Waiting {delay}s...")
                 await asyncio.sleep(delay)
             try:
-                # demisto.debug(f"[test] sending the request itself with {url=}, {request_headers=}, {payload=},{params=},{auth=}.")
                 response = await request_func(
                     url,
                     headers=request_headers,
@@ -10392,11 +10390,8 @@ class AsyncClient:
                     auth=auth,
                     data=data
                     )
-                # demisto.debug(f"[test] got {response=}.")
                 
                 if response.status in ok_codes:
-                    
-                    # demisto.debug(f"[test] {response.status=}")
                     # Return the RAW response object so the caller can read headers/json as needed.
                     return response
                     
@@ -10416,7 +10411,6 @@ class AsyncClient:
                     self._handle_error(error_handler, response)
 
             except aiohttp.ClientConnectorError as e:
-                demisto.debug(f"[test] in ClientConnectorError error with {e}")
                 demisto.debug(f"Connection error: {e}")
                 if attempt == num_of_retires:
                     raise DemistoException(f"Connection error after {num_of_retires} attempts: {str(e)}")

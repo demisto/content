@@ -3017,11 +3017,12 @@ async def collect_assets_and_sent_to_xsiam(client: PrismaCloudComputeAsyncClient
                 url_key="address",
                 items_count=asset_type_related_data.total_count,
             )
-            # demisto.info(f"[test] got the following list: {send_data_to_xsiam_tasks}, {type(send_data_to_xsiam_tasks)=}")
             await asyncio.gather(*send_data_to_xsiam_tasks)
-            # demisto.info("[test] gathered tasks")
             asset_type_related_data.next_page()
             asset_type_related_data.safe_update_integration_context(ctx_lock)
+            if asset_type_related_data.offset == 3000000:
+                asset_type_related_data.write_debug_log("reached 3m assets, breaking")
+                break
         except Exception as e:
             import traceback
 
