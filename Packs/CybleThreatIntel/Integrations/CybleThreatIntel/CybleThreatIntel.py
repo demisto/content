@@ -178,14 +178,14 @@ def fetch_indicators_command(client: Client, params: dict) -> int:
     use retry for HTTP errors, enforce max 24-hour first_fetch.
     """
     # --- first_fetch (hours) validation ---
-    first_fetch_hours = int(params.get("first_fetch", 2))  # default 6 hrs
+    first_fetch_hours = int(params.get("initial_interval", 2))  # default 6 hrs
 
     if first_fetch_hours < 1:
         first_fetch_hours = 1
     if first_fetch_hours > 3:
         first_fetch_hours = 3
 
-    limit = int(params.get("max_fetch", 100))
+    limit = int(params.get("limit", 100))
 
     # honor "recreate"
     should_reset = demisto.args().get("recreate")
