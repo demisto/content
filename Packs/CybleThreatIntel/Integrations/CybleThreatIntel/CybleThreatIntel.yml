@@ -121,34 +121,34 @@ configuration:
     defaultvalue: 'false'
     type: 8
     required: false
-#  - display: Collection Name
-#    name: collection
-#    type: 0
-#    required: false
-#    deprecated: true
-#    section: Collect
-#  - display: Discovery Service
-#    name: discovery_service
-#    type: 0
-#    required: false
-#    section: Collect
-#    deprecated: true
-#    additionalinfo: Collection name to fetch indicators from.
-#  - display: First fetch time (by days)
-#    name: initial_interval
-#    defaultvalue: '1'
-#    type: 0
-#    required: false
-#    section: Collect
-#    deprecated: true
-#    additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed.
-#  - display: Indicator Fetch Limit
-#    name: limit
-#    type: 0
-#    additionalinfo: Provide value to limit the indicator to be fetched per iteration (Limit higher than 30 is not recommended)
-#    required: false
-#    section: Collect
-#    deprecated: true
+  - display: Collection Name
+    name: collection
+    type: 0
+    required: false
+    deprecated: true
+    section: Collect
+  - display: Discovery Service
+    name: discovery_service
+    type: 0
+    required: false
+    section: Collect
+    deprecated: true
+    additionalinfo: Collection name to fetch indicators from.
+  - display: First fetch time (by days)
+    name: initial_interval
+    defaultvalue: '1'
+    type: 0
+    required: false
+    section: Collect
+    deprecated: true
+    additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed.
+  - display: Indicator Fetch Limit
+    name: limit
+    type: 0
+    additionalinfo: Provide value to limit the indicator to be fetched per iteration (Limit higher than 30 is not recommended)
+    required: false
+    section: Collect
+    deprecated: true
 script:
   type: python
   subtype: python3
