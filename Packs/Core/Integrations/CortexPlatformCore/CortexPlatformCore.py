@@ -3786,18 +3786,16 @@ def postprocess_case_resolution_statuses(client, response : dict):
         for task in tasks:
             if task_status == "done":
                 enhance_with_pb_details(pb_id_to_data, task)
-                continue
-            if task_status == "inProgress":
-                continue
-            if task_status == "pending":
+
+            elif task_status == "pending":
                 enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
                 task["parentPlaybook"] = task.pop("parentdetails")
-                continue
-    response["pendingPlaybookTasks"] = response.pop("pending")
-    response["inProgressPlaybookTasks"] = response.pop("inProgress")
+
+        response[task_status] = tasks
+    response["pendingPlaybookTasks"] = response.get("pending").get
+    response["activePlaybooks"] = response.pop("inProgress")
     response["donePlaybooks"] = response.pop("done")
     response["recommendedPlaybooks"] = response.pop("recommended")
-
 
     return response
 
@@ -3806,7 +3804,6 @@ def get_case_resolution_statuses(client, args):
     case_id = args.get("case_id")
     response = client.get_case_resolution_statuses(case_id)
     outputs = postprocess_case_resolution_statuses(client, response)
-
     return CommandResults(
         readable_output=tableToMarkdown("Case Resolution Statuses", response, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseResolutionStatus",
