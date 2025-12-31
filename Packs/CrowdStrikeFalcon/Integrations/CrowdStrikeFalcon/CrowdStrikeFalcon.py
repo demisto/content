@@ -346,6 +346,7 @@ CS_FALCON_INCIDENT_INCOMING_ARGS = [
     "assigned_to_uid",
     "assigned_to_name",
 ]
+NGSIEM_MIRRORING_FIELDS = ["status", "state"]
 
 MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 
@@ -431,7 +432,7 @@ class IncidentType(Enum):
     THIRD_PARTY = ":thirdparty:"
     NGSIEM_DETECTION = ":ngsiem:"
     NGSIEM_AUTOMATED_LEAD = ":automated-lead:"
-    NGSIEM_CASE = ":case:"
+    NGSIEM_CASE = ":case"
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get("mirror_direction"))
@@ -1833,9 +1834,6 @@ def get_incidents_entities(incidents_ids: list):
     return response
 
 
-def get_full_entities(incidents_ids: list[str], url_suffix: str="/alerts/entities/alerts/v2", id_field:str="composite_ids"):
-    pass
-
 def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
     full_cases = []
 
@@ -2600,6 +2598,13 @@ def get_remote_data_command(args: dict[str, Any]):
                 set_xsoar_entries(
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list
                 )  # sets in place
+        elif incident_type == IncidentType.NGSIEM_CASE:
+            mirrored_data, updated_object = get_remote_ngsiem_case_date(remote_incident_id)
+            if updated_object:
+                demisto.debug(f"Update ngsiem case {remote_incident_id} with fields: {updated_object}")
+                set_xsoar_entries(
+                    updated_object, entries, remote_incident_id, NGSIEM_CASE, reopen_statuses_list
+                )  # sets in place
         # for endpoint in the new version
         elif incident_type in (
             IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
@@ -2672,6 +2677,14 @@ def get_remote_incident_data(remote_incident_id: str):
     updated_object: dict[str, Any] = {"incident_type": "incident"}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
     return mirrored_data, updated_object
+
+
+def get_remote_ngsiem_case_date(remote_case_id: str):
+    original_remote_case_id = remote_case_id.replace(f"{IncidentType.NGSIEM_CASE}:", "", 1)
+    mirrored_case = get_cases_details([original_remote_case_id])[0]
+    updated_object = {"incident_type": NGSIEM_CASE}
+    set_updated_object(updated_object, mirrored_case, NGSIEM_MIRRORING_FIELDS)
+    return mirrored_case, updated_object
 
 
 def get_remote_detection_data(remote_incident_id: str):
