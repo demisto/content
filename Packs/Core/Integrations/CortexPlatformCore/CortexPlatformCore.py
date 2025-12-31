@@ -3775,7 +3775,6 @@ def enhance_with_pb_details(pb_id_to_data, obj):
     if related_pb:
         obj["name"] = related_pb.get("name")
         obj["description"] = related_pb.get("comment")
-        obj["type"] = "playbook"  # todo: confirm this logic... with fe / xsoar ppl , especially with tasks of other kinds
 
 def postprocess_case_resolution_statuses(client, response : dict):
     response = response.copy()
@@ -3792,15 +3791,15 @@ def postprocess_case_resolution_statuses(client, response : dict):
                 continue
             if task_status == "pending":
                 enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
+                task["parentPlaybook"] = task.pop("parentdetails")
                 continue
+    response["pendingPlaybookTasks"] = response.pop("pending")
+    response["inProgressPlaybookTasks"] = response.pop("inProgress")
+    response["donePlaybooks"] = response.pop("done")
+    response["recommendedPlaybooks"] = response.pop("recommended")
+
+
     return response
-
-
-
-
-
-
-
 
 
 def get_case_resolution_statuses(client, args):
