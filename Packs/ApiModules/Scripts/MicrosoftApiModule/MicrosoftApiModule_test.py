@@ -248,7 +248,7 @@ def test_raise_authentication_error(mocker):
         client._raise_authentication_error(err)
 
 
-@pytest.mark.parametrize("input_flow, expected_result", [
+@pytest.mark.parametrize("auth_flow, expected", [
     ("Cortex App", OPROXY_AUTH_TYPE),
     ("Azure Managed Identities", MANAGED_IDENTITIES),
     ("Client Credentials", CLIENT_CREDENTIALS),
@@ -258,15 +258,16 @@ def test_raise_authentication_error(mocker):
     ("Unknown Flow", None),
     ("", None),
 ])
-def test_get_auth_type_flow_scenarios(input_flow, expected_result):
+def test_get_auth_type_flow(auth_flow, expected):
     """
-    Tests get_auth_type_flow with various inputs to ensure correct
-    constants are returned and invalid inputs are handled gracefully.
+    Given: A string representing the selected authentication flow.
+    When:  get_auth_type_flow is called.
+    Then:  Ensure the correct internal constant or None is returned.
     """
-    assert get_auth_type_flow(input_flow) == expected_result
+    assert get_auth_type_flow(auth_flow) == expected
 
 
-@pytest.mark.parametrize("input_flow, expected_result", [
+@pytest.mark.parametrize("auth_flow, expected", [
     ("Device Code", True),
     ("Authorization Code", True),
     ("Client Credentials", True),
@@ -275,19 +276,17 @@ def test_get_auth_type_flow_scenarios(input_flow, expected_result):
     (AUTHORIZATION_CODE, True),
     (CLIENT_CREDENTIALS, True),
     (MANAGED_IDENTITIES, True),
-
     ("Cortex App", False),
     ("Not Selected", False),
-    ("Random String", False),
-    ("", False),
+    (None, False),
 ])
-def test_is_self_deployed_flow(input_flow, expected_result):
+def test_is_self_deployed_flow(auth_flow, expected):
     """
-    Verifies that is_self_deployed_flow returns True for both
-    human-readable names and internal constant values,
-    and False for everything else.
+    Given: An authentication flow string (name or constant).
+    When:  is_self_deployed_flow is called.
+    Then:  Ensure it correctly identifies self-deployed flows.
     """
-    assert is_self_deployed_flow(input_flow) is expected_result
+    assert is_self_deployed_flow(auth_flow) is expected
 
 
 def test_page_not_found_error(mocker):
@@ -1047,3 +1046,134 @@ def test_http_request_status_list_to_retry_parameter(requests_mock, mocker):
     assert isinstance(
         status_list, Iterable
     ), f"status_list_to_retry should be an Iterable, got {type(status_list)}: {status_list}"
+
+
+class TestMainModule:
+    """
+    Groups all tests related to the main_test_module function.
+    """
+    def test_oproxy_success(self, mocker):
+        """
+        Given: Auth type is Cortex App (OPROXY).
+        When:  main_test_module is called.
+        Then:  It should call get_access_token and return 'ok'.
+        """
+        client = self_deployed_client()
+        client.auth_type = OPROXY_AUTH_TYPE
+
+        mock_get_token = mocker.patch.object(client, 'get_access_token', return_value="token")
+
+        assert client.main_test_module() == "ok"
+        mock_get_token.assert_called_once()
+
+    def test_managed_identities_success(self, mocker):
+        """
+        Given: Grant type is Managed Identities.
+        When:  main_test_module is called.
+        Then:  It should call get_access_token and return 'ok'.
+        """
+        client = self_deployed_client()
+        client.grant_type = MANAGED_IDENTITIES
+        mock_get_token = mocker.patch.object(client, 'get_access_token', return_value="token")
+        mocker.patch.object(demisto, 'debug')
+
+        assert client.main_test_module() == "ok"
+        mock_get_token.assert_called_once()
+
+    def test_managed_identities_failure(self, mocker):
+        """
+        Given: Grant type is Managed Identities and connection fails.
+        When:  main_test_module is called.
+        Then:  It should raise a DemistoException with a specific error message.
+        """
+        client = self_deployed_client()
+        client.grant_type = MANAGED_IDENTITIES
+        mocker.patch.object(client, 'get_access_token', side_effect=Exception("Azure connection failed"))
+
+        with pytest.raises(DemistoException) as excinfo:
+            client.main_test_module()
+
+        assert "Failed to connect to Azure Managed Identities" in str(excinfo.value)
+        assert "Azure connection failed" in str(excinfo.value)
+
+    def test_client_credentials_success(self, mocker):
+        """
+        Given: Grant type is Client Credentials with all fields present.
+        When:  main_test_module is called.
+        Then:  It should return 'ok'.
+        """
+        client = self_deployed_client()
+        client.grant_type = CLIENT_CREDENTIALS
+
+        mock_get_token = mocker.patch.object(client, 'get_access_token', return_value="token")
+
+        assert client.main_test_module() == "ok"
+        mock_get_token.assert_called_once()
+
+    @pytest.mark.parametrize("missing_field", ["tenant_id", "client_secret", "client_id"])
+    def test_client_credentials_missing_fields(self, missing_field):
+        """
+        Given: Grant type is Client Credentials but a required field is missing.
+        When:  main_test_module is called.
+        Then:  It should raise DemistoException mentioning the missing field.
+        """
+        client = self_deployed_client()
+        client.grant_type = CLIENT_CREDENTIALS
+        client.client_id = "id"
+        client.client_secret = "secret"
+        client.tenant_id = "tenant"
+
+        # Unset the specific field being tested
+        setattr(client, missing_field, None)
+
+        with pytest.raises(DemistoException) as excinfo:
+            client.main_test_module()
+
+        expected_msg = missing_field.replace('_', ' ').title()
+        assert expected_msg in str(excinfo.value)
+
+    def test_device_code_flow(self):
+        """
+        Given: Grant type is Device Code.
+        When:  main_test_module is called.
+        Then:  It should raise an exception stating 'Test button is not available'.
+        """
+        client = self_deployed_client()
+        client.grant_type = DEVICE_CODE
+        client.client_id = "id"  # Required field
+
+        with pytest.raises(DemistoException) as excinfo:
+            client.main_test_module()
+
+        assert "The *Test* button is not available" in str(excinfo.value)
+
+    def test_auth_code_flow_missing_redirect(self, mocker):
+        """
+        Given: Grant type is Auth Code but redirect_uri is missing in params.
+        When:  main_test_module is called.
+        Then:  It should raise 'redirect URI is required'.
+        """
+        client = self_deployed_client()
+        client.grant_type = AUTHORIZATION_CODE
+        mocker.patch.object(demisto, 'params', return_value={})
+
+        with pytest.raises(DemistoException) as excinfo:
+            client.main_test_module()
+
+        assert "A redirect URI is required" in str(excinfo.value)
+
+    def test_auth_code_flow_success_message(self, mocker):
+        """
+        Given: Grant type is Auth Code and all fields are valid.
+        When:  main_test_module is called.
+        Then:  It should raise 'Test button is not available'.
+        """
+        client = self_deployed_client()
+        client.grant_type = AUTHORIZATION_CODE
+
+        mocker.patch.object(demisto, 'params', return_value={"redirect_uri": "http://callback"})
+
+        with pytest.raises(DemistoException) as excinfo:
+            client.main_test_module()
+
+        assert "The *Test* button is not available" in str(excinfo.value)
