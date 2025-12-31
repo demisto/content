@@ -1673,6 +1673,7 @@ def add_cases_ai_summary(client, cases_list):
         case_summary = get_case_ai_summary_command(client, {"case_id" : case_id})
         if case_summary:
             case['description'] = case_summary.outputs.get('case_description')
+            case["name"] = case_summary.outputs.get('case_name')
     return cases_list
 
 
@@ -1722,13 +1723,8 @@ def get_cases_command(client, args):
 
     # Check for enrichment flags
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
-    ai_generated_description = argToBoolean(args.get("ai_generated_description", "false"))
-
-    # Determine if any enrichment is requested
-    enhanced_requested = get_enriched_case_data or ai_generated_description
-
     # Validate enrichment request
-    if enhanced_requested and len(data) > MAX_ENHANCED_CASES:
+    if get_enriched_case_data and len(data) > MAX_ENHANCED_CASES:
         command_results.append(
             CommandResults(
                 readable_output=f"Cannot retrieve enhanced data for more than {MAX_ENHANCED_CASES} cases. "
