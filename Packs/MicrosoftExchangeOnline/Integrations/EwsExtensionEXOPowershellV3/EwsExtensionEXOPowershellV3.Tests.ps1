@@ -32,7 +32,7 @@ BeforeAll {
                 )
             }
             elseif ($identity -eq "empty-result") {
-                return $null
+                return @()
             }
             elseif ($identity -eq "hashtable-message") {
                 return @{

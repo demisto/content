@@ -2220,13 +2220,21 @@ function EXOGetQuarantineMessageCommand {
         Type = $kwargs.type
     }
 
-    $raw_response = @($client.EXOGetQuarantineMessage($params))
+    $client_response = $client.EXOGetQuarantineMessage($params)
+    
+    # Ensure raw_response is always an array, but handle null properly
+    if ($null -eq $client_response) {
+        $raw_response = @()
+    } else {
+        $raw_response = @($client_response)
+    }
 
-    $newResults = foreach ($item in $raw_response) {
+    # Process all items using foreach and collect results efficiently
+    $newResults = @(foreach ($item in $raw_response) {
         if ($null -ne $item) {
             Remove-EmptyItems -inputObject $item
         }
-    }
+    })
 
     # Ensure $newResults is passed correctly to formatting
     $human_readable = TableToMarkdown $newResults "Results of $command"
