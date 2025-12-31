@@ -125,30 +125,31 @@ configuration:
     name: collection
     type: 0
     required: false
-    deprecated: true
+    hidden: true
     section: Collect
+    additionalinfo: Deprecated. TAXII-based ingestion is no longer supported.
   - display: Discovery Service
     name: discovery_service
     type: 0
     required: false
+    hidden: true
     section: Collect
-    deprecated: true
-    additionalinfo: Collection name to fetch indicators from.
+    additionalinfo: Deprecated. TAXII-based ingestion is no longer supported.
   - display: First fetch time (by days)
     name: initial_interval
     defaultvalue: '1'
     type: 0
     required: false
     section: Collect
-    deprecated: true
-    additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed.
+    hidden: true
+    additionalinfo: Deprecated. Use First Fetch Time (hours) instead.
   - display: Indicator Fetch Limit
     name: limit
     type: 0
-    additionalinfo: Provide value to limit the indicator to be fetched per iteration (Limit higher than 30 is not recommended)
     required: false
+    hidden: true
     section: Collect
-    deprecated: true
+    additionalinfo: Deprecated. Fetch limits are now controlled by the REST API.
 script:
   type: python
   subtype: python3
