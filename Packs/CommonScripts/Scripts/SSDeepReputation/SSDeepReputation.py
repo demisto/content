@@ -1,10 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from typing import Any, cast
 
 REPUTATIONS = {0: "None", 1: "Good", 2: "Suspicious", 3: "Bad"}
 
 
-def get_investigation_ids(indicator):
+def get_investigation_ids(indicator: dict[str, Any]) -> list[str]:
     """Get investigation IDs from indicator, supporting both 'investigationIDs' and 'investigationID' keys.
 
     Args:
@@ -24,35 +25,41 @@ def get_investigation_ids(indicator):
     return []
 
 
-def get_indicator_from_value(indicator_value):
+def get_indicator_from_value(indicator_value: str | None) -> dict[str, Any] | None:
     try:
         if not indicator_value:
             return None
         res = demisto.executeCommand("findIndicators", {"value": indicator_value})
-        indicator = res[0]["Contents"][0]  # type: ignore[index]
-        return indicator
+        if res and isinstance(res, list) and len(res) > 0:
+            contents = res[0].get("Contents")
+            if contents and isinstance(contents, list) and len(contents) > 0:
+                return contents[0]
+        return None
     except Exception:
-        pass
+        return None
 
 
-def get_ssdeep_related_indicators(ssdeep_indicator):
-    related_indicators = [ssdeep_indicator]
+def get_ssdeep_related_indicators(ssdeep_indicator: dict[str, Any]) -> list[dict[str, Any]]:
+    related_indicators: list[dict[str, Any] | None] = [ssdeep_indicator]
     for inv_id in get_investigation_ids(ssdeep_indicator):
         try:
             res = demisto.executeCommand("getContext", {"id": inv_id})
-            context = res[0]["Contents"]["context"]  # type: ignore[index]
-            file_obj = demisto.dt(context, f"File(val.SSDeep == '{ssdeep_indicator['value']}')")
-            if file_obj is None:
-                file_obj = {}
-            elif type(file_obj) is list:
-                file_obj = file_obj[0]
-            related_indicators.append(get_indicator_from_value(file_obj.get("MD5")))  # type: ignore[union-attr]
-            related_indicators.append(get_indicator_from_value(file_obj.get("SHA1")))  # type: ignore[union-attr]
-            related_indicators.append(get_indicator_from_value(file_obj.get("SHA256")))  # type: ignore[union-attr]
+            if res and isinstance(res, list) and len(res) > 0:
+                contents = res[0].get("Contents", {})
+                context = contents.get("context") if isinstance(contents, dict) else {}
+                file_obj = demisto.dt(context, f"File(val.SSDeep == '{ssdeep_indicator['value']}')")
+                if file_obj is None:
+                    file_obj = {}
+                elif isinstance(file_obj, list) and len(file_obj) > 0:
+                    file_obj = file_obj[0]
+
+                if isinstance(file_obj, dict):
+                    related_indicators.append(get_indicator_from_value(file_obj.get("MD5")))
+                    related_indicators.append(get_indicator_from_value(file_obj.get("SHA1")))
+                    related_indicators.append(get_indicator_from_value(file_obj.get("SHA256")))
         except Exception:
             continue
-    related_indicators = [x for x in related_indicators if x is not None]
-    return related_indicators
+    return [x for x in related_indicators if x is not None]
 
 
 def main():
@@ -66,7 +73,15 @@ def main():
             "threshold": int(demisto.args().get("threshold", "50")),
         },
     )
-    ssdeep_indicators = [x["indicator"] for x in res[0]["Contents"]]  # type: ignore[index]
+    ssdeep_indicators: list[dict[str, Any]] = []
+    if res and isinstance(res, list) and len(res) > 0:
+        contents = res[0].get("Contents", [])
+        if isinstance(contents, list):
+            ssdeep_indicators = [
+                cast(dict[str, Any], x.get("indicator"))
+                for x in contents
+                if isinstance(x, dict) and isinstance(x.get("indicator"), dict)
+            ]
     ssdeep_indicator = get_indicator_from_value(ssdeep_value)
     if not ssdeep_indicator:
         # make the current ssdeep part of the current invastigation
@@ -97,10 +112,10 @@ def main():
     for i in ssdeep_indicators:
         related_indicators += get_ssdeep_related_indicators(i)
 
-    max_score = max([x.get("score") for x in related_indicators])
+    max_score = max([x.get("score", 0) for x in related_indicators])
     max_score_indicator = next(x for x in related_indicators if x.get("score", 0) == max_score)
 
-    if max_score > ssdeep_indicator.get("score", 0) and max_score > 1:
+    if isinstance(max_score, int) and max_score > ssdeep_indicator.get("score", 0) and max_score > 1:
         entry = {
             "Type": entryTypes["note"],
             "HumanReadable": f"Similarity to {REPUTATIONS[max_score_indicator['score']]}"
