@@ -10342,7 +10342,8 @@ class AsyncClient:
                             auth = None,
                             error_handler=None,
                             num_of_retires = 1,
-                            ok_codes = (200,)):
+                            ok_codes = (200,),
+                            data = ""):
         """
         Executes an asynchronous HTTP request and returns the raw response object.
         Includes retry logic for server errors.
@@ -10373,13 +10374,14 @@ class AsyncClient:
         if auth:
             auth = aiohttp.BasicAuth(auth)
 
-
+        # demisto.debug("[test] starting to run in for loop")
         for attempt in range(1, num_of_retires + 1):
             if attempt > 1:
                 delay = self.connection_error_interval * attempt
                 demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{num_of_retires}. Waiting {delay}s...")
                 await asyncio.sleep(delay)
             try:
+                # demisto.debug(f"[test] sending the request itself with {url=}, {request_headers=}, {payload=},{params=},{auth=}.")
                 response = await request_func(
                     url,
                     headers=request_headers,
@@ -10387,10 +10389,14 @@ class AsyncClient:
                     ssl=self._verify,
                     params=params,
                     timeout=timeout,
-                    auth=auth
+                    auth=auth,
+                    data=data
                     )
+                # demisto.debug(f"[test] got {response=}.")
                 
                 if response.status in ok_codes:
+                    
+                    # demisto.debug(f"[test] {response.status=}")
                     # Return the RAW response object so the caller can read headers/json as needed.
                     return response
                     
@@ -10410,6 +10416,12 @@ class AsyncClient:
                     self._handle_error(error_handler, response)
 
             except aiohttp.ClientConnectorError as e:
+                demisto.debug(f"[test] in ClientConnectorError error with {e}")
+                demisto.debug(f"Connection error: {e}")
+                if attempt == num_of_retires:
+                    raise DemistoException(f"Connection error after {num_of_retires} attempts: {str(e)}")
+            except Exception as e:
+                demisto.debug(f"[test] in general exception error with {e}")
                 demisto.debug(f"Connection error: {e}")
                 if attempt == num_of_retires:
                     raise DemistoException(f"Connection error after {num_of_retires} attempts: {str(e)}")
@@ -13071,6 +13083,7 @@ def split_data_by_slices(data, target_chunk_size):  # pragma: no cover
     target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
     if isinstance(data, str):
         data = data.split("\n")
+        
     entry_size = sys.getsizeof(data[0])
     num_of_entries_per_chunk = target_chunk_size // entry_size
     for i in range(0, len(data), num_of_entries_per_chunk):
@@ -13129,22 +13142,25 @@ async def xsiam_api_call_async_with_retries(
             data_type=data_type, attempt_num=attempt_num))
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
+        # demisto.debug("[test] preparing to send request to xsiam")
         response = await client._http_request(
             method='POST',
             endpoint='/logs/v1/xsiam',
-            payload=zipped_data,
+            data=zipped_data,
             headers=headers,
             error_handler=error_handler,
             ok_codes=ok_codes,
         )
-        status_code = response.status_code
-        demisto.debug('received status code: {status_code}'.format(status_code=status_code))
+        # demisto.debug("[test] got response from xsiam")
+        status_code = response.status
+        # demisto.debug('[test] received status code: {status_code}'.format(status_code=status_code))
         if status_code == 429:
             time.sleep(1)
         attempt_num += 1
     if is_json_response and response:
-        demisto.debug(f"[test] in condition, {response=}")
-        response = response.json()
+        # demisto.debug(f"[test] in condition, {response=}")
+        response = await response.json()
+        # demisto.debug(f"[test] after json, {response=}")
         if response.get('error', '').lower() != 'false':
             raise DemistoException(error_msg + response.get('error'))
     return response

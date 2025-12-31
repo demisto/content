@@ -2996,12 +2996,10 @@ async def collect_assets_and_sent_to_xsiam(client: PrismaCloudComputeAsyncClient
             params = assign_params(limit=asset_type_related_data.limit, offset=asset_type_related_data.offset, sort="scanTime")
             asset_type_related_data.write_debug_log("sending request.")
             response = await client._http_request("GET", url_suffix=asset_type_related_data.endpoint, params=params, timeout=300)
-            asset_type_related_data.write_debug_log(f"got response with {response=}.")
-            asset_type_related_data.write_debug_log(f"got response with {response.headers.get('Total-Count')=}.")
             asset_type_related_data.total_count = int(response.headers.get("Total-Count", 0))
             data = await response.json()
             await response.release()
-            asset_type_related_data.write_debug_log(f"got response with {data=}.")
+            asset_type_related_data.write_debug_log(f"got response with {data=} and {asset_type_related_data.total_count=}.")
             if not data:
                 asset_type_related_data.write_debug_log("No more data to fetch, breaking.")
                 break
@@ -3019,13 +3017,17 @@ async def collect_assets_and_sent_to_xsiam(client: PrismaCloudComputeAsyncClient
                 url_key="address",
                 items_count=asset_type_related_data.total_count,
             )
-            demisto.info(f"[test] got the following list: {send_data_to_xsiam_tasks}, {type(send_data_to_xsiam_tasks)=}")
+            # demisto.info(f"[test] got the following list: {send_data_to_xsiam_tasks}, {type(send_data_to_xsiam_tasks)=}")
             await asyncio.gather(*send_data_to_xsiam_tasks)
-            demisto.info("[test] gathered tasks")
+            # demisto.info("[test] gathered tasks")
             asset_type_related_data.next_page()
             asset_type_related_data.safe_update_integration_context(ctx_lock)
         except Exception as e:
-            demisto.debug(f"Got error {e}")
+            import traceback
+
+            # `e` is an exception object that you get from somewhere
+            traceback_str = ''.join(traceback.format_tb(e.__traceback__))
+            demisto.debug(f"Got error {e}\n{traceback_str=}")
     asset_type_related_data.write_debug_log("Finished obtaining and sending all assets to xsiam.")
     asset_type_related_data.remove_related_data_from_ctx(ctx_lock)
 
@@ -3037,16 +3039,13 @@ def process_host_results(data_list):
             {
                 "Name": data.get("cloudMetadata", {}).get("name", ""),
                 "Provider": data.get("cloudMetadata", {}).get("provider", ""),
-                "Type": "TBD",
-                "Category": "TBD",
+                "Type": "Virtual Machine",
+                "Category": "VM Instance",
                 "Class": "Compute",
                 "Region": data.get("cloudMetadata", {}).get("region", ""),
-                "Zone": None,
                 "Realm": data.get("cloudMetadata", {}).get("accountID", ""),
                 "Tags": data.get("tags", []) + data.get("labels", []),
-                "Internal IP": None,
-                "External IP": None,
-                "FQDN": None,
+                "Internal IP": ", ".join([ip.get("ip") for ip in data.get("hostDevices")]),
                 "Strong ID": data.get("hostname", ""),
             }
         )
@@ -3064,11 +3063,8 @@ def process_tas_droplet_results(data_list):
                 "Category": "Container Image",
                 "Class": "Compute",
                 "Region": data.get("region", ""),
-                "Zone": None,
                 "Realm": data.get("accountID", ""),
                 "Tags": data.get("tags", []) + data.get("labels", []),
-                "Internal IP": None,
-                "External IP": None,
                 "FQDN": data.get("cloudControllerAddress", ""),
                 "Strong ID": data.get("id", ""),
             }
@@ -3087,12 +3083,8 @@ def process_runtime_image_results(data_list):
                 "Category": "Container Image",
                 "Class": "Compute",
                 "Region": data.get("cloudMetadata", {}).get("region", ""),
-                "Zone": None,
                 "Realm": data.get("cloudMetadata", {}).get("accountID", ""),
                 "Tags": data.get("tags", []) + data.get("labels", []),
-                "Internal IP": None,
-                "External IP": None,
-                "FQDN": None,
                 "Strong ID": data.get("id", ""),
             }
         )
