@@ -3080,21 +3080,20 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
 
     responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
     replies = [process_case_response(resp) for resp in responses]
-    readable_output = tableToMarkdown("Cases", replies, headerTransform=string_to_table_header)
-    entry_type = entryTypes["note"]
-    if error_messages:  # If some fields failed, we use the error entry type
-        entry_type = entryTypes["error"]
-        unsuccessful_section = f"Case updated successfully. The following fields could not be updated:\n" f"{error_messages}"
-        readable_output = f"{readable_output}\n\n{unsuccessful_section}"
 
-    return CommandResults(
-        readable_output=readable_output,
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
         outputs_key_field="case_id",
         outputs=replies,
         raw_response=replies,
-        entry_type=entry_type,
     )
+    
+    if error_messages:
+        return_results(command_results)
+        return_error(f"The following fields could not be updated:\n{error_messages}")
+    
+    return command_results
 
 
 def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[dict, str]:
