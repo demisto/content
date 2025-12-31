@@ -27,13 +27,13 @@ This integration allows XSOAR to:
 
 ### Required Parameters
 
-| Parameter                  | Description                                                        | Example                              |
-| -------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
-| **Base URL**               | Cyble Vision API endpoint                                          | `https://api.cyble.ai/engine/api/v4` |
-| **API Key (Access Token)** | Cyble Vision API Bearer token                                      | *(stored securely in XSOAR)*         |
-| **First Fetch (hours)**    | Number of hours to fetch backward on first run                     | `2`                                  |
-|                            | (1–3 hours allowed)                                                |                                      |
-| **Max Fetch**              | Maximum indicators per API page                                    | `100`                                |
+| Parameter                    | Description                                                        | Example                              |
+|------------------------------| ------------------------------------------------------------------ | ------------------------------------ |
+| **Base URL**                 | Cyble Vision API endpoint                                          | `https://api.cyble.ai/engine/api/v4` |
+| **API Key (Access Token)**   | Cyble Vision API Bearer token                                      | *(stored securely in XSOAR)*         |
+| **First fetch time (hours)** | Number of hours to fetch backward on first run                     | `2`                                  |
+|                              | (1–3 hours allowed)                                                |                                      |
+| **Indicator Fetch Limit**    | Maximum indicators per API page                                    | `100`                                |
 
 ### Fetch Behavior
 

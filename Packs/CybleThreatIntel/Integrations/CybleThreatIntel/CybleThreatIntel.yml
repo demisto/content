@@ -94,20 +94,6 @@ configuration:
     hiddenusername: true
     required: false
     section: Connect
-  - display: First Fetch Time (hours)
-    name: first_fetch
-    type: 0
-    defaultvalue: 1
-    required: true
-    additionalinfo: How many hours back to fetch IOCs on first run. Max 3 hours.
-    section: Collect
-  - display: Maximum Indicators Per Fetch
-    name: max_fetch
-    type: 0
-    required: true
-    defaultvalue: '100'
-    additionalinfo: Maximum number of indicators to fetch per execution.
-    section: Collect
   - display: Trust any certificate (not secure)
     name: insecure
     defaultvalue: 'false'
@@ -127,6 +113,7 @@ configuration:
     required: false
     hidden: true
     section: Collect
+    additionalinfo: Deprecated. TAXII-based ingestion is no longer supported.
   - display: Discovery Service
     name: discovery_service
     type: 0
@@ -136,18 +123,18 @@ configuration:
     additionalinfo: Collection name to fetch indicators from.
   - display: First fetch time (by days)
     name: initial_interval
-    defaultvalue: '1'
     type: 0
-    required: false
+    defaultvalue: 1
+    required: true
+    additionalinfo: How many hours back to fetch IOCs on first run. Max 3 hours.
     section: Collect
     hidden: true
-    additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed.
   - display: Indicator Fetch Limit
     name: limit
     type: 0
-    additionalinfo: Provide value to limit the indicator to be fetched per iteration (Limit higher than 30 is not recommended)
-    required: false
+    defaultvalue: '100'
     section: Collect
+    additionalinfo: Maximum number of indicators to fetch per execution.
     hidden: true
 script:
   type: python
