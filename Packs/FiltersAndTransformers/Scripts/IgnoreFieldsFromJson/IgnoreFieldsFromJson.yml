@@ -9,7 +9,7 @@ comment: Removed selected fields from the JSON object.
 commonfields:
   id: IgnoreFieldsFromJson
   version: -1
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 enabled: true
 name: IgnoreFieldsFromJson
 runas: DBotWeakRole

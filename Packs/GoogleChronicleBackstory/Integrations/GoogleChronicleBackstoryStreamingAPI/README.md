@@ -27,17 +27,20 @@ Duplication of rule detection incidents when fetched from Google SecOps.
 | --- | --- | --- |
 | User's Service Account JSON | Your Customer Experience Engineer (CEE) will provide you with a [Google Developer Service Account Credential](https://developers.google.com/identity/protocols/OAuth2#serviceaccount) to enable the Google API client to communicate with the Backstory API. | True |
 | Use V1 Alpha API | Select this option to use the V1 Alpha API.<br/><br/>Note: If this option is selected, Update the Region and provide the v1 Alpha API supported Service Account JSON and Project Instance ID. | False |
+| API URL Format | Select the API URL format to use for API requests. Default value is '&lt;chronicle&gt;.&lt;REGION&gt;.&lt;rep.googleapis.com&gt;'. Only applicable if the "Use V1 Alpha API" parameter is selected. | False |
 | Google SecOps Project Instance ID | Provide the Project Instance ID of the Google SecOps. Only applicable if the "Use V1 Alpha API" parameter is selected.<br/><br/>Note: User can retrieve the Customer ID\(Project Instance ID\) in the Profile section of the Google SecOps page. | False |
+| Google SecOps Project Number | Provide the Project Number of the Google SecOps. Only applicable if the "Use V1 Alpha API" parameter is selected.<br/><br/>Note: User can retrieve the Project Number in the Profile section of the Google SecOps page. If Project Number is not provided, then Project ID\(from Service Account JSON\) will be used. | False |
 | Region | Select the region based on the location of the Google SecOps instance. If the region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field. | False |
 | Other Region | Specify the region based on the location of the Google SecOps instance. Only applicable if the "Other" option is selected in the Region dropdown. | False |
 | Incident type |  | False |
 | First fetch time | The date or relative timestamp from where to start fetching detections. Default will be the current time.<br/><br/>Note: The API is designed to retrieve data for the past 7 days only. Requests for data beyond that timeframe will result in errors.<br/><br/>Supported formats: N minutes, N hours, N days, N weeks, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/>For example: 10 minutes, 5 hours, 6 days, 1 week, 2024-12-31, 01 Mar 2024, 01 Feb 2024 04:45:33, 2024-04-17T14:05:44Z | False |
 | Google SecOps Alert Type | Select Google SecOps Alert types to be considered for Fetch Incidents. Available options are Curated Rule Detection Alerts and Rule Detection Alerts \(If not selected, fetches all detections\). | False |
-| Severity of Detection | Select the severity of detections to be considered for Fetch Incidents. Available options are 'High', 'Medium', 'Low', 'Informational' and 'Unspecified' \(If not selected, fetches all detections\). | False |
+| Severity of Detection | Select the severity of detections to be considered for Fetch Incidents. Available options are 'Critical', 'High', 'Medium', 'Low', 'Informational' and 'Unspecified' \(If not selected, fetches all detections\). | False |
 | Rule Names for Detection Ingestion | Only detections with the given rule names will be allowed for ingestion. | False |
 | If selected, detections with the above rule names will be denied for ingestion. |  | False |
 | Rule IDs for Detection Ingestion | Only the detections with the given rule IDs will be allowed for ingestion. | False |
 | If selected, detections with above rule IDs will be denied for ingestion. |  | False |
+| Default Severity of Incident | Select the default severity for incident when detection does not specify a severity. Available options are 'Critical', 'High', 'Medium', 'Low', 'Informational' and 'Unspecified' \(If not selected, defaults to Unspecified\). | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
