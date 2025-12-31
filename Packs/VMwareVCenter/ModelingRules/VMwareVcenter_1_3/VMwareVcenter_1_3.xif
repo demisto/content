@@ -203,7 +203,7 @@ alter
     xdm.event.outcome = if(description contains "Fail", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
-    xdm.source.host.hostname = source_hostname,
+    xdm.source.virtualization.data_center.name = source_hostname,
     xdm.source.user.username = source_username;
 
 [RULE: vmware_vcenter_host_event_format]
@@ -226,7 +226,7 @@ alter
     xdm.event.outcome_reason = description,
     xdm.event.outcome = if(description contains "Fail" or description contains "not responding", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
-    xdm.source.host.hostname = source_hostname,
+    xdm.source.virtualization.data_center.name = source_hostname,
     xdm.source.user.username = source_username,
     xdm.target.host.hostname = target_hostname;    
 
@@ -252,8 +252,8 @@ alter
     xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
     xdm.source.host.hostname = source_hostname,
     xdm.source.user.username = source_username,
-    xdm.source.virtualization.vm.hostname = vm_name,
-    xdm.target.resource.name = target_task_name;
+    xdm.target.virtualization.vm.hostname = vm_name,
+    xdm.target.virtualization.task.name = target_task_name;
 
 [RULE: vmware_vcenter_vcsa_audit_format]
 alter
@@ -268,7 +268,7 @@ alter
     xdm.observer.name = syslog_hostname,
     xdm.event.description = syslog_msg,
     xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
-    xdm.event.type = "Command Execution",
+    xdm.event.type = if(syscall_id in (59,322), "Command Execution", "File/Datastore Event"),
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUDIT,
     xdm.alert.name = event_name_clean,
     xdm.alert.description = parsed_fields -> msg,
