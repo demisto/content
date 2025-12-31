@@ -82,8 +82,7 @@ alter
                          description ~= "on", arrayindex(regextract(description, "\s+on\s+([^\s+]+)"), 0)),
     target_username = if(description ~= "^Account", arrayindex(regextract(description, "^Account ([^\s]+)"), 0),
                          description ~= "Permission", arrayindex(regextract(description, "for ([^\s]+)"), 0)),
-    target_datacenter = if(description ~= " in ", arrayindex(regextract(description, " in ([^\s]+)"), 1)),                 
-    role_name = arrayindex(regextract(description, "new role ([^\s]+) created"), 0)
+    target_datacenter = if(description ~= " in ", arrayindex(regextract(description, " in ([^\s]+)"), 1))
 | alter
 	xdm.observer.name = syslog_hostname,
 	xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
@@ -102,8 +101,7 @@ alter
     xdm.target.process.identifier = process_id,
 	xdm.target.process.name = process_name,
     xdm.target.host.hostname = target_hostname,
-    xdm.target.user.username = target_username,
-    xdm.target.resource.name = if(role_name != null, role_name);
+    xdm.target.user.username = target_username;
 
 [RULE: vmware_vcenter_file_or_datastore_format]
 alter
@@ -171,12 +169,12 @@ alter
     xdm.event.outcome_reason = description,
     xdm.event.outcome = if(description contains "Fail", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
-    xdm.event.operation = if(event_type_name in ("vim.event.VmCreatedEvent", "*VM Created*"), XDM_CONST.OPERATION_TYPE_CREATE,
-                             event_type_name in ("vim.event.VmPoweredOnEvent", "*VM Power On*", "vim.event.VmPoweredOffEvent", "*VM Power Off*", "vim.event.VmGuestRebootEvent", "*Guest OS VM Reboot*", "vim.event.VmGuestShutdownEvent", "*Guest OS VM Shutdown*", "vim.event.VmMigratedEvent", "*VM Migrated*", "vim.event.VmResettingEvent", "*VM Suspended*"), XDM_CONST.OPERATION_TYPE_STATUS_CHANGE,
+    xdm.event.operation = if(event_type_name in ("vim.event.VmCreatedEvent", "*VM Created*", "vim.event.VmClonedEvent", "*VM Cloned*"), XDM_CONST.OPERATION_TYPE_CREATE,
+                             event_type_name in ("vim.event.VmPoweredOnEvent", "*VM Power On*", "vim.event.VmPoweredOffEvent", "*VM Power Off*", "vim.event.VmGuestRebootEvent", "*Guest OS VM Reboot*", "vim.event.VmGuestShutdownEvent", "*Guest OS VM Shutdown*", "vim.event.VmMigratedEvent", "*VM Migrated*", "vim.event.VmResettingEvent", "*VM Resetting*", "vim.event.VmSuspendedEvent", "*VM Suspended*"), XDM_CONST.OPERATION_TYPE_STATUS_CHANGE,
                              event_type_name = "vim.event.VmRemovedEvent", XDM_CONST.OPERATION_TYPE_DELETE,
                              event_type_name in ("vim.event.VmRegisteredEvent","vim.event.VmDeployedEvent", "vim.event.VmReconfiguredEvent", "vim.event.VmRelocatedEvent"), XDM_CONST.OPERATION_TYPE_CONFIG_CHANGE,
                              event_type_name = "vim.event.VmRenamedEvent", XDM_CONST.OPERATION_TYPE_UPDATE),
-    xdm.source.host.hostname = source_hostname,
+    xdm.source.virtualization.data_center.name = source_hostname,
     xdm.source.user.username = source_username,
     xdm.target.host.hostname = target_hostname,
     xdm.target.resource.name = new_vm_name,
@@ -262,7 +260,7 @@ alter
     xdm.observer.name = syslog_hostname,
     xdm.event.description = syslog_msg,
     xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
-    xdm.event.type = "vcsa-audit",
+    xdm.event.type = "Command Execution",
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUDIT,
     xdm.alert.name = event_name_clean,
     xdm.alert.description = parsed_fields -> msg,
@@ -298,7 +296,7 @@ alter
     event_type_name = arrayindex(regextract(_raw_log, "\[([\.a-zA-Z]+)\]"), 0)
 | alter
     is_login_event = if(event_type_name in ("vim.event.BadUsernameSessionEvent", "vim.event.UserLoginSessionEvent", "vim.event.UserLogoutSessionEvent") or _raw_log ~= "vmware.sso.Login"),
-    is_account_operation_event = if(event_type_name in ("vim.event.AccountCreatedEvent", "vim.event.AccountUpdatedEvent", "vim.event.PermissionAddedEvent", "vim.event.PermissionRemovedEvent", "vim.event.PermissionUpdatedEvent", "vim.event.RoleAddedEvent")),
+    is_account_operation_event = if(event_type_name in ("vim.event.AccountCreatedEvent", "vim.event.AccountUpdatedEvent", "vim.event.PermissionAddedEvent", "vim.event.PermissionRemovedEvent", "vim.event.PermissionUpdatedEvent")),
     is_file_or_datastore_event = if(event_type_name in ("vim.event.VMFSDatastoreCreatedEvent", "vim.event.DatastoreDiscoveredEvent", "vim.event.DatastoreFileDeletedEvent")),
     is_vm_operations_event = if(event_type_name in ("vim.event.VmGuestRebootEvent", "vim.event.VmGuestShutdownEvent", "vim.event.VmMigratedEvent", "vim.event.VmBeingCreatedEvent", "vim.event.VmClonedEvent", "vim.event.VmCreatedEvent", "vim.event.VmDeployedEvent", "vim.event.VmPoweredOffEvent", "vim.event.VmPoweredOnEvent", "vim.event.VmReconfiguredEvent", "vim.event.VmRelocatedEvent", "vim.event.VmRemovedEvent", "vim.event.VmRenamedEvent", "vim.event.VmResettingEvent", "vim.event.VmSuspendedEvent", "vim.event.VmRegisteredEvent")),
     is_vsphere_task_event = if(event_type_name in ("vim.event.TaskEvent")),
