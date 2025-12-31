@@ -159,6 +159,10 @@ alter
     target_hostname = coalesce(
         arrayindex(regextract(description, " to ([^\s]+)"), 0),
         arrayindex(regextract(description, "on ([^\s]+) in"), 0)),
+    original_esxi_name = if(description ~= "relocated from\s+\S+", arrayindex(regextract(description, "relocated from\s+([^\,]+)"), 0)),
+    datastore_name =  if(description ~= "\S+\,\s+\S+\s+in", arrayindex(regextract(description, "\S+\,\s+([^\s]+)\s+in"), 0)),
+    target_datastore_name = if(description ~= "\s+to\s+\S+\,\s+\S+\s+in", arrayindex(regextract(description, "\s+to\s+\S+\,\s+([^\s]+)"), 0)),
+    old_vm_name = if(description ~= "from\s+\S+\s+to", arrayindex(regextract(description, "from\s+([^\s]+)\s+to"), 0)),
     new_vm_name = if(description ~= "deployed to", arrayindex(regextract(description, "deployed to ([^\s]+)"), 0),
                      description ~= "from\s\S+\sto\s+\S+\s+in\s", arrayindex(regextract(description, "from\s\S+\sto\s+([^\s]+)"), 0))
 | alter
@@ -176,8 +180,12 @@ alter
                              event_type_name = "vim.event.VmRenamedEvent", XDM_CONST.OPERATION_TYPE_UPDATE),
     xdm.source.virtualization.data_center.name = source_hostname,
     xdm.source.user.username = source_username,
+    xdm.source.host.hostname = original_esxi_name,
     xdm.target.host.hostname = target_hostname,
+    xdm.target.resource_before.name = old_vm_name,
     xdm.target.resource.name = new_vm_name,
+    xdm.source.virtualization.data_store.name = datastore_name,
+    xdm.target.virtualization.data_store.name = target_datastore_name,
     xdm.source.virtualization.vm.hostname = vm_name;
 
 
