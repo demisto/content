@@ -8622,3 +8622,105 @@ def test_list_system_users_command_limits_results_to_50(mocker: MockerFixture):
     result = list_system_users_command(mock_client, args)
 
     assert len(result.outputs) == 50
+
+
+def test_validate_custom_fields_success(mocker):
+    """
+    GIVEN:
+        Valid custom fields and client with metadata.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        All fields are returned as valid and no error messages.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    # Mock metadata response
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {"CUSTOM_FIELD_NAME": "field1", "CUSTOM_FIELD_PRETTY_NAME": "Field 1", "CUSTOM_FIELD_IS_SYSTEM": False},
+                {"CUSTOM_FIELD_NAME": "field2", "CUSTOM_FIELD_PRETTY_NAME": "Field 2", "CUSTOM_FIELD_IS_SYSTEM": False},
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"field1": "value1", "field2": "value2"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert valid_fields == fields_to_validate
+    assert not error_messages
+
+
+def test_validate_custom_fields_system_field(mocker):
+    """
+    GIVEN:
+        Custom fields containing a system field.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        System field is excluded and error message is returned.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {"CUSTOM_FIELD_NAME": "system_field", "CUSTOM_FIELD_PRETTY_NAME": "System Field", "CUSTOM_FIELD_IS_SYSTEM": True},
+                {
+                    "CUSTOM_FIELD_NAME": "custom_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"system_field": "value1", "custom_field": "value2"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "custom_field" in valid_fields
+    assert "system_field" not in valid_fields
+    assert error_messages
+    assert "is a system field" in error_messages
+
+
+def test_validate_custom_fields_non_existent_field(mocker):
+    """
+    GIVEN:
+        Custom fields containing a non-existent field.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        Non-existent field is excluded and error message is returned.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "existing_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"existing_field": "value1", "non_existent": "value2"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "existing_field" in valid_fields
+    assert "non_existent" not in valid_fields
+    assert error_messages
+    assert "does not exist" in error_messages
