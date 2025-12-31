@@ -33,7 +33,7 @@ configuration:
   type: 0
   section: Connect
 - display: Max events per fetch
-  additionalinfo: 'Maximum number of ConfigLog events per fetch. This requires the configuration logging database to be configured and enabled. Results are returned in the order of most-recent to least-recent.'
+  additionalinfo: 'Maximum number of configuration log events per fetch. Requires the configuration log database to be set up and enabled. Results are returned from newest to oldest.'
   defaultvalue: '10000'
   name: max_fetch
   section: Collect
@@ -49,21 +49,19 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Citrix DaaS services simplify delivery and management of Citrix technologies.
+description: Citrix DaaS simplifies the delivery and management of Citrix technologies.
 display: Citrix DaaS
 name: CitrixDaas
 script:
   commands:
   - name: citrix-daas-get-events
     description: |-
-      Returns config log events extracted from Citrix.
-      This command is used for developing/debugging and is to be used with caution, 
-      as it can create events, leading to events duplication and API request limitation exceeding.
+      Extracts Citrix configuration log events. Use with caution during development or debugging; this command may trigger event duplication or exceed API request limits.
     arguments:
     - name: should_push_events
       auto: PREDEFINED
       defaultValue: 'false'
-      description: Set this argument to True in order to create events, otherwise the command will only display the events.
+      description: Set to True to create events; otherwise, the command only displays the events.
       predefined:
       - 'true'
       - 'false'
@@ -75,7 +73,7 @@ script:
       description: Number of days of history to retrieve.
     - name: search_date_option
       auto: PREDEFINED
-      description: Specific time filters for searching operations.
+      description: Time filters for search operations.
       predefined:
       - 'LastMinute'
       - 'Last5Minutes'
