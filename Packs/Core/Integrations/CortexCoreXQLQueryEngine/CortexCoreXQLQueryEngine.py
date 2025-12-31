@@ -69,13 +69,12 @@ BUILT_IN_QUERY_COMMANDS = {
 }
 
 
-def get_xql_query_results_platform(client: CoreClient, execution_id: str, limit: int) -> dict:
+def get_xql_query_results_platform(client: CoreClient, execution_id: str) -> dict:
     """Retrieve results of an executed XQL query using Platform API.
 
     Args:
         client (CoreClient): The XDR Client.
         execution_id (str): The execution ID of the query to retrieve.
-        limit (int): The maximum number of results to return.
 
     Returns:
         dict: The query results including status, execution_id, and results if completed.
@@ -100,7 +99,7 @@ def get_xql_query_results_platform(client: CoreClient, execution_id: str, limit:
         query_data = client._http_request(
             method="POST", json_data=data, url_suffix="/xql_queries/results/", ok_codes=[200], use_platform_api=True
         )
-        response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()][:limit]
+        response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
 
     if response.get("status") == "FAIL":
         # Get full error details using PAPI
@@ -116,13 +115,12 @@ def get_xql_query_results_platform(client: CoreClient, execution_id: str, limit:
     return response
 
 
-def get_xql_query_results_platform_polling(client: CoreClient, execution_id: str, limit: int, timeout: int) -> dict:
+def get_xql_query_results_platform_polling(client: CoreClient, execution_id: str, timeout: int) -> dict:
     """Retrieve results of an executed XQL query using Platform API with polling.
 
     Args:
         client (CoreClient): The XDR Client.
         execution_id (str): The execution ID of the query to fetch.
-        limit (int): The maximum number of results to return.
         timeout (int): The polling timeout in seconds.
 
     Returns:
@@ -133,7 +131,7 @@ def get_xql_query_results_platform_polling(client: CoreClient, execution_id: str
     # Block execution until the execution status isn't pending or we time out
     polling_start_time = datetime.now()
     while (datetime.now() - polling_start_time).total_seconds() < timeout:
-        outputs = get_xql_query_results_platform(client, execution_id, limit)
+        outputs = get_xql_query_results_platform(client, execution_id)
         if outputs.get("status") != "PENDING":
             break
 
@@ -202,7 +200,7 @@ def xql_query_platform_command(client: CoreClient, args: dict) -> CommandResults
     if argToBoolean(args.get("wait_for_results", True)):
         demisto.debug(f"Polling query execution with {execution_id=}")
         timeout_in_secs = int(args.get("timeout_in_seconds", 180))
-        outputs.update(get_xql_query_results_platform_polling(client, execution_id, DEFAULT_LIMIT, timeout_in_secs))
+        outputs.update(get_xql_query_results_platform_polling(client, execution_id, timeout_in_secs))
 
     return CommandResults(
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
@@ -241,6 +239,8 @@ def main() -> None:
         elif command in BUILT_IN_QUERY_COMMANDS:
             return_results(get_built_in_query_results_polling_command(client, args))
         elif command in PLATFORM_QUERY_COMMANDS:
+            if not is_demisto_version_ge("8.13.0"):
+                raise DemistoException("This command is not available for this platform version")
             return_results(PLATFORM_QUERY_COMMANDS[command](client, args))
         else:
             raise NotImplementedError(f"Command {command} does not exist.")
