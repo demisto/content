@@ -189,7 +189,7 @@ class Client(BaseClient):
             dict: CVE information from the collections endpoint
 
         See Also:
-            https://gtidocs.virustotal.com/reference/collections
+            https://gtidocs.virustotal.com/reference/get-vulnerability
         """
         # Format: vulnerability--cve-2025-62173
         object_id = f"vulnerability--{cve_id.lower()}"
@@ -911,7 +911,7 @@ def create_relationships(entity_a: str, entity_a_type: str, relationships_respon
 
 
 def create_relationships_cve(
-    entity_a: str, entity_a_type: str, relationships_response: dict, reliability
+    entity_a: str, entity_a_type: str, relationships_response: dict, reliability: DBotScoreReliability
 ) -> List[EntityRelationship]:
     """
     Create relationships between CVE and related files (MD5 hashes from sources)
@@ -920,7 +920,7 @@ def create_relationships_cve(
         entity_a (str): The source of the relationship
         entity_a_type (str): The type of the source of the relationship
         relationships_response (dict): The relationship response from the api
-        reliability (_type_): The reliability of the source.
+        reliability (DBotScoreReliability): The reliability of the source.
 
     Returns:
         List[EntityRelationship]: List of EntityRelationship objects
