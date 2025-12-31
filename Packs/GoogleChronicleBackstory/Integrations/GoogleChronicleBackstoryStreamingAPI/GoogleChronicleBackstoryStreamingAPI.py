@@ -405,6 +405,8 @@ def convert_events_to_actionable_incidents(events: list) -> list:
     :rtype: list
     :return: Returns updated list of detection identifiers and unique incidents that should be created.
     """
+    integration_params = demisto.params()
+    default_severity = integration_params.get("default_severity", "Unspecified").lower()
     incidents = []
     for event in events:
         event["IncidentType"] = "DetectionAlert"
@@ -416,10 +418,10 @@ def convert_events_to_actionable_incidents(events: list) -> list:
                 rule_labels = element.get("ruleLabels", [])
                 break
 
-        event_severity = "unspecified"
+        event_severity = default_severity
         for label in rule_labels:
             if label.get("key", "").lower() == "severity":
-                event_severity = label.get("value", "").lower()
+                event_severity = label.get("value", default_severity).lower()
                 break
         incident = {
             "name": event["detection"][0]["ruleName"],
@@ -443,6 +445,8 @@ def convert_curatedrule_events_to_actionable_incidents(events: list) -> list:
     :rtype: List
     :return: Returns updated list of detection identifiers and unique incidents that should be created.
     """
+    integration_params = demisto.params()
+    default_severity = integration_params.get("default_severity", "Unspecified").lower()
     incidents = []
     for event in events:
         event["IncidentType"] = "CuratedRuleDetectionAlert"
@@ -451,7 +455,7 @@ def convert_curatedrule_events_to_actionable_incidents(events: list) -> list:
             "occurred": event.get("detectionTime"),
             "details": json.dumps(event),
             "rawJSON": json.dumps(event),
-            "severity": SEVERITY_MAP.get(str(event["detection"][0].get("severity")).lower(), 0),
+            "severity": SEVERITY_MAP.get(str(event["detection"][0].get("severity", default_severity)).lower(), 0),
         }
         incidents.append(incident)
 
@@ -706,8 +710,8 @@ def filter_detections(
 
             detection_severity = "unspecified"
             for label in detection_rule_labels:
-                if label.get("key").lower() == "severity":
-                    detection_severity = label.get("value").lower()
+                if label.get("key", "").lower() == "severity":
+                    detection_severity = label.get("value", "").lower()
                     break
 
         if filter_severity and (detection_severity not in filter_severity):

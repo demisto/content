@@ -1441,7 +1441,7 @@ Updates a message.
 | team | The team in which the specified message exists. | Optional |
 | channel | The channel in which the specified message exists. | Optional |
 | message | The new message content. | Optional |
-| team_member | The team member the message to be edited was sent to. | Optional |
+| team_member | The message recipient. Accepts the team member's email address or username. | Optional |
 | format_as_card | Whether or not an adaptive card is being updated. | Optional |
 
 ##### Context Output
