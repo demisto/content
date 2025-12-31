@@ -71,7 +71,7 @@ WEBAPP_COMMANDS = [
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
-XSOAR_COMMANDS = ["core-run-playbook" , "core-get-case-resolution-statuses"]
+XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
@@ -1005,7 +1005,6 @@ class Client(CoreClient):
             url_suffix=f"case/{case_id}/resolution-plan/tasks",
         )
         return reply
-
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -3770,13 +3769,15 @@ def list_system_users_command(client, args):
         raw_response=response,
     )
 
+
 def enhance_with_pb_details(pb_id_to_data, obj):
     related_pb = pb_id_to_data.get(obj.get("id"))
     if related_pb:
         obj["name"] = related_pb.get("name")
         obj["description"] = related_pb.get("comment")
 
-def postprocess_case_resolution_statuses(client, response : dict):
+
+def postprocess_case_resolution_statuses(client, response: dict):
     response = response.copy()
     pbs_metadata = client.get_playbooks_metadata() or []
     pb_id_to_data = map_pb_id_to_data(pbs_metadata)
@@ -3811,6 +3812,8 @@ def get_case_resolution_statuses(client, args):
         outputs=outputs,
         raw_response=response,
     )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -3952,8 +3955,8 @@ def main():  # pragma: no cover
 
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
-            
-        elif command == "core-get-case-resolution-statuses": 
+
+        elif command == "core-get-case-resolution-statuses":
             return_results(get_case_resolution_statuses(client, args))
 
     except Exception as err:
