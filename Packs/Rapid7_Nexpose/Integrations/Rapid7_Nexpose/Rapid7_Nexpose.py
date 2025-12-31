@@ -2568,7 +2568,7 @@ class Client(BaseClient):
         )
 
 
-class InsightVMClient(AsyncClient):
+class InsightVMClient:
     """
     Asynchronous client for interacting with the Rapid7 InsightVM API.
     Handles session and authentication management.
@@ -2582,33 +2582,86 @@ class InsightVMClient(AsyncClient):
         token: str = "",
         verify: bool = True,
     ):
-        # Create authentication headers
-        headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        }
-
-        # Add 2FA token to headers if provided
-        if token:
-            headers.update({"Token": token})
-
-        # Add Basic Auth header
-        auth_string = base64.b64encode(f"{username}:{password}".encode()).decode("utf-8")
-        headers.update({"Authorization": f"Basic {auth_string}"})
-
-        # Initialize the parent AsyncClient
-        super().__init__(
-            base_url=base_url,
-            auth_headers=headers,
-            verify=verify,
-            connection_error_retries=CONNECTION_ERRORS_RETRIES,
-            connection_error_interval=CONNECTION_ERRORS_INTERVAL,
-        )
-
-        # Store credentials for potential future use
+        self._base_url = base_url.rstrip("/")
         self._auth_username = username
         self._auth_password = password
         self._auth_token = token
+        self._verify = verify
+        self._headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        }
+        self.connection_error_retries = CONNECTION_ERRORS_RETRIES
+
+        # Add 2FA token to headers if provided
+        if token:
+            self._headers.update({"Token": token})
+
+        auth_string = base64.b64encode(f"{username}:{password}".encode()).decode("utf-8")
+        self._headers.update({"Authorization": f"Basic {auth_string}"})
+
+    async def __aenter__(self):
+        """Asynchronous context manager entry: creates the aiohttp session."""
+        # Create a single session that persists for the client's lifespan
+        self._session = aiohttp.ClientSession()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Asynchronous context manager exit: closes the aiohttp session."""
+        await self._session.close()
+
+    async def http_request(self, method: str, endpoint: str, payload: Optional[Dict[str, Any]] = None) -> aiohttp.ClientResponse:
+        """
+        Executes an asynchronous HTTP request and returns the raw response object.
+        Includes retry logic for server errors.
+        """
+        url = self._base_url + endpoint
+
+        # Select the method function (get, post, etc.)
+        request_func = getattr(self._session, method.lower())
+
+        MAX_RETRIES = 3
+        # Retry on: 500/502/503/504 (Server Errors), 429 (Rate Limit)
+        RETRYABLE_STATUSES = {500, 502, 503, 504, 429}
+
+        for attempt in range(MAX_RETRIES + 1):
+            if attempt > 0:
+                delay = 5**attempt
+                demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{MAX_RETRIES}. Waiting {delay}s...")
+                await asyncio.sleep(delay)
+
+            try:
+                response = await request_func(url, headers=self._headers, json=payload, ssl=False)
+
+                # 1. Handle Retryable Errors
+                if response.status in RETRYABLE_STATUSES:
+                    try:
+                        message = response.message
+                    except AttributeError:
+                        message = "No message from Rapid7"
+                    demisto.debug(f"API returned retryable status {response.status}: {message}")
+                    response.close()  # Close connection before retrying
+                    continue
+
+                # 2. Handle Fatal Client Errors (4xx)
+                if 400 <= response.status < 500:
+                    try:
+                        error_body = await response.text()
+                    except Exception:
+                        error_body = "Could not read error body."
+                    response.close()
+                    raise DemistoException(f"Client API Error ({response.status}): {error_body}")
+
+                # 3. Success (2xx)
+                # Return the RAW response object so the caller can read headers/json as needed.
+                return response
+
+            except aiohttp.ClientConnectorError as e:
+                demisto.debug(f"Connection error: {e}")
+                if attempt == MAX_RETRIES:
+                    raise
+
+        raise DemistoException(f"API request failed after {MAX_RETRIES} attempts.")
 
 
 class Site:
@@ -6846,7 +6899,7 @@ async def create_report_config_from_template(client: InsightVMClient, event_type
         "version": "2.3.0",
     }
     log(event_type, "Creating report config.")
-    response = await client._http_request(method="POST", endpoint=endpoint, payload=payload, num_of_retires=5)
+    response = await client.http_request(method="POST", endpoint=endpoint, payload=payload)
 
     try:
         # The Location header contains the URL of the new report
@@ -6870,8 +6923,8 @@ async def generate_report(client: InsightVMClient, report_id: str, event_type: s
     """Triggers the generation of a report."""
     endpoint = f"/api/3/reports/{report_id}/generate"
 
-    # Use the client's _http_request method for POST
-    response = await client._http_request("POST", endpoint, payload={}, num_of_retires=5)
+    # Use the client's http_request method for POST
+    response = await client.http_request("POST", endpoint, payload={})
 
     # Handle response logic
     data = await response.json()
@@ -6886,8 +6939,8 @@ async def check_status_of_report(client: InsightVMClient, report_id: str, instan
     while True:
         endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
 
-        # Use the client's _http_request method for GET
-        response = await client._http_request("GET", endpoint, num_of_retires=5)
+        # Use the client's http_request method for GET
+        response = await client.http_request("GET", endpoint)
 
         status_data = await response.json()
         await response.release()
@@ -6918,7 +6971,7 @@ async def stream_report(
     endpoint = f"/api/3/reports/{report_id}/history/{instance_id}/output"
     log(event_type, f"Starting report download stream from: {endpoint}")
 
-    response = await client._http_request("GET", endpoint, num_of_retires=5)
+    response = await client.http_request("GET", endpoint)
 
     buffer = b""  # Buffer to hold partial lines across chunks
 
@@ -7256,7 +7309,7 @@ async def delete_report_instance(client: InsightVMClient, report_id: str, instan
     endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
     demisto.debug(f"Deleting report instance ID: {instance_id} for {event_type}.")
     try:
-        await client._http_request("DELETE", endpoint, num_of_retires=5)
+        await client.http_request("DELETE", endpoint)
         demisto.debug(f"Report instance {instance_id} for {event_type} deleted successfully.")
     except Exception as e:
         # Expected if resource is already gone (e.g., Status 404)
@@ -7268,7 +7321,7 @@ async def delete_report_configuration(client: InsightVMClient, report_id: str, e
     endpoint = f"/api/3/reports/{report_id}"
     demisto.debug(f"Deleting report configuration ID: {report_id} for {event_type}.")
     try:
-        await client._http_request("DELETE", endpoint, num_of_retires=5)
+        await client.http_request("DELETE", endpoint)
         demisto.debug(f"Report {report_id} for {event_type} configuration deleted successfully.")
     except Exception as e:
         # Expected if resource is already gone (e.g., Status 404)
