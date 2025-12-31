@@ -714,13 +714,11 @@ class AsyncClient:
             auth = aiohttp.BasicAuth(auth)
 
         for attempt in range(1, num_of_retires + 1):
-            demisto.info(f"[test] running in {attempt=}")
             if attempt > 1:
                 delay = self.connection_error_interval * attempt
                 demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{num_of_retires}. Waiting {delay}s...")
                 await asyncio.sleep(delay)
             try:
-                demisto.debug(f"[test] Going to send request with {url=}, {headers=}, {payload=}, {params=}, {auth=}, {data=}")
                 response = await request_func(
                     url,
                     headers=request_headers,
@@ -731,11 +729,9 @@ class AsyncClient:
                     auth=auth,
                     data=data
                     )
-                demisto.info(f"[test] got {response=}")
                 if response.status in ok_codes:
                     # Return the RAW response object so the caller can read headers/json as needed.
                     return response
-                demisto.info("[test] skipped first condition")
                 # Handle Retryable Errors
                 if response.status in retryable_statuses:
                     try:
@@ -751,12 +747,9 @@ class AsyncClient:
                     response.close()
                     self._handle_error(error_handler, response)
             except Exception as e:
-
-                # `e` is an exception object that you get from somewhere
-                traceback_str = ''.join(traceback.format_tb(e.__traceback__))
-                demisto.debug(f"[test] in general exception error with {e}\n{traceback_str=}")
                 if attempt == num_of_retires:
-                    raise DemistoException(f"Connection error after {num_of_retires} attempts: {str(e)}")
+                    traceback_str = ''.join(traceback.format_tb(e.__traceback__))
+                    raise DemistoException(f"errored after {num_of_retires} attempts: {e}\n{traceback_str=}")
 
         raise DemistoException(f"API request failed after {num_of_retires} attempts.")
 
@@ -1012,11 +1005,10 @@ async def xsiam_api_call_async_with_retries(
     response = None
 
     while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(
+        demisto.debug(f'Sending {data_type} into xsiam, attempt number {attempt_num}'.format(
             data_type=data_type, attempt_num=attempt_num))
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
-        # demisto.debug("[test] preparing to send request to xsiam")
         response = await client._http_request(
             method='POST',
             endpoint='/logs/v1/xsiam',
@@ -1025,16 +1017,12 @@ async def xsiam_api_call_async_with_retries(
             error_handler=error_handler,
             ok_codes=ok_codes,
         )
-        # demisto.debug("[test] got response from xsiam")
         status_code = response.status
-        # demisto.debug('[test] received status code: {status_code}'.format(status_code=status_code))
         if status_code == 429:
             time.sleep(1)
         attempt_num += 1
     if is_json_response and response:
-        # demisto.debug(f"[test] in condition, {response=}")
         response = await response.json()
-        # demisto.debug(f"[test] after json, {response=}")
         if response.get('error', '').lower() != 'false':
             raise DemistoException(error_msg + response.get('error'))
     return response
@@ -3425,8 +3413,8 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
     )
     tasks = [
         collect_assets_and_send_to_xsiam(client, tas_droplets_related_data, ctx_lock),
-        # collect_assets_and_send_to_xsiam(client, host_scan_related_data, ctx_lock),
-        # collect_assets_and_send_to_xsiam(client, image_scan_related_data, ctx_lock),
+        collect_assets_and_send_to_xsiam(client, host_scan_related_data, ctx_lock),
+        collect_assets_and_send_to_xsiam(client, image_scan_related_data, ctx_lock),
     ]
     await asyncio.gather(*tasks)
     total = tas_droplets_related_data.total_count + host_scan_related_data.total_count + image_scan_related_data.total_count
@@ -3481,7 +3469,6 @@ async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient
                 asset_type_related_data.write_debug_log("reached 3m assets, breaking")
                 break
         except Exception as e:
-            # `e` is an exception object that you get from somewhere
             traceback_str = ''.join(traceback.format_tb(e.__traceback__))
             demisto.debug(f"Got error {e}\n{traceback_str=}")
     asset_type_related_data.write_debug_log("Finished obtaining and sending all assets to xsiam.")
