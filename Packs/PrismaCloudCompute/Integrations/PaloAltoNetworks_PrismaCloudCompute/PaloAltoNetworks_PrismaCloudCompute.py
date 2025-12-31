@@ -607,7 +607,7 @@ class AsyncClient:
         verify: bool = True,
         connection_error_interval: int = 1,
         proxy: bool = False,
-        auth = None
+        auth=None,
     ):
         """
         Initialize the AsyncClient.
@@ -630,6 +630,7 @@ class AsyncClient:
     async def __aenter__(self):
         """Asynchronous context manager entry: creates the aiohttp session."""
         import aiohttp
+
         # Create a single session that persists for the client's lifespan
         self._session = aiohttp.ClientSession()
         return self
@@ -640,19 +641,19 @@ class AsyncClient:
             await self._session.close()
 
     def _handle_error(self, error_handler, res):
-            """ Handles error response by calling error handler or default handler.
+        """Handles error response by calling error handler or default handler.
 
-            :type res: ``requests.Response``
-            :param res: Response from API after the request for which to check error type
+        :type res: ``requests.Response``
+        :param res: Response from API after the request for which to check error type
 
-            :type error_handler ``callable``
-            :param error_handler: Given an error entry, the error handler outputs the
-                new formatted error message.
-            """
-            if error_handler:
-                error_handler(res)
-            else:
-                self.client_error_handler(res) 
+        :type error_handler ``callable``
+        :param error_handler: Given an error entry, the error handler outputs the
+            new formatted error message.
+        """
+        if error_handler:
+            error_handler(res)
+        else:
+            self.client_error_handler(res)
 
     def client_error_handler(self, res):
         """Generic handler for API call error
@@ -661,29 +662,31 @@ class AsyncClient:
         :type response: ``requests.Response``
         :param response: Response from API after the request for which to check the status.
         """
-        err_msg = 'Error in API call [{}] - {}'.format(res.status, res.reason)
+        err_msg = f"Error in API call [{res.status}] - {res.reason}"
         try:
             # Try to parse json error response
             error_entry = res.json()
-            err_msg += '\n{}'.format(json.dumps(error_entry))
+            err_msg += f"\n{json.dumps(error_entry)}"
             raise DemistoException(err_msg, res=res)
         except ValueError:
-            err_msg += '\n{}'.format(res.text)
+            err_msg += f"\n{res.text}"
             raise DemistoException(err_msg, res=res)
 
-    async def _http_request(self,
-                            method: str,
-                            endpoint: str,
-                            payload: dict = None,
-                            headers: dict = None,
-                            retryable_statuses: set = {500, 502, 503, 504, 429},
-                            params: dict = {},
-                            timeout: int = 60,
-                            auth = None,
-                            error_handler=None,
-                            num_of_retires = 1,
-                            ok_codes = (200,),
-                            data = ""):
+    async def _http_request(
+        self,
+        method: str,
+        endpoint: str,
+        payload: dict = None,
+        headers: dict = None,
+        retryable_statuses: set = {500, 502, 503, 504, 429},
+        params: dict = {},
+        timeout: int = 60,
+        auth=None,
+        error_handler=None,
+        num_of_retires=1,
+        ok_codes=(200,),
+        data="",
+    ):
         """
         Executes an asynchronous HTTP request and returns the raw response object.
         Includes retry logic for server errors.
@@ -702,6 +705,7 @@ class AsyncClient:
         """
         import aiohttp
         import asyncio
+
         url = self._base_url + endpoint
         request_headers = self.headers.copy()
         if headers:
@@ -727,8 +731,8 @@ class AsyncClient:
                     params=params,
                     timeout=timeout,
                     auth=auth,
-                    data=data
-                    )
+                    data=data,
+                )
                 if response.status in ok_codes:
                     # Return the RAW response object so the caller can read headers/json as needed.
                     return response
@@ -748,11 +752,10 @@ class AsyncClient:
                     self._handle_error(error_handler, response)
             except Exception as e:
                 if attempt == num_of_retires:
-                    traceback_str = ''.join(traceback.format_tb(e.__traceback__))
+                    traceback_str = "".join(traceback.format_tb(e.__traceback__))
                     raise DemistoException(f"errored after {num_of_retires} attempts: {e}\n{traceback_str=}")
 
         raise DemistoException(f"API request failed after {num_of_retires} attempts.")
-
 
 
 def async_send_data_to_xsiam(
@@ -818,6 +821,7 @@ def async_send_data_to_xsiam(
     :rtype: ``List[Task]`` or ``None``
     """
     import asyncio
+
     data_size = 0
     params = demisto.params()
     url = params.get(url_key)
@@ -917,14 +921,14 @@ def async_send_data_to_xsiam(
         zipped_data = gzip.compress(data_chunk.encode("utf-8"))  # type: ignore[AttributeError,attr-defined]
         async with client:
             _ = await xsiam_api_call_async_with_retries(
-                client = client,
+                client=client,
                 zipped_data=zipped_data,
                 headers=headers,
                 num_of_attempts=num_of_attempts,
                 data_type=data_type,
                 error_handler=data_error_handler,
                 error_msg=header_msg,
-                is_json_response=True
+                is_json_response=True,
             )
 
         return chunk_size
@@ -958,16 +962,15 @@ def split_data_by_slices(data, target_chunk_size):  # pragma: no cover
         yield chunk
 
 
-
 async def xsiam_api_call_async_with_retries(
     client: AsyncClient,
     zipped_data,
     headers,
     num_of_attempts,
     error_handler=None,
-    error_msg='',
+    error_msg="",
     is_json_response=False,
-    data_type=EVENTS
+    data_type=EVENTS,
 ):  # pragma: no cover
     """
     Send the fetched events or assests into the XDR data-collector private api.
@@ -1005,13 +1008,14 @@ async def xsiam_api_call_async_with_retries(
     response = None
 
     while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug(f'Sending {data_type} into xsiam, attempt number {attempt_num}'.format(
-            data_type=data_type, attempt_num=attempt_num))
+        demisto.debug(
+            f"Sending {data_type} into xsiam, attempt number {attempt_num}".format(data_type=data_type, attempt_num=attempt_num)
+        )
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
         response = await client._http_request(
-            method='POST',
-            endpoint='/logs/v1/xsiam',
+            method="POST",
+            endpoint="/logs/v1/xsiam",
             data=zipped_data,
             headers=headers,
             error_handler=error_handler,
@@ -1023,9 +1027,10 @@ async def xsiam_api_call_async_with_retries(
         attempt_num += 1
     if is_json_response and response:
         response = await response.json()
-        if response.get('error', '').lower() != 'false':
-            raise DemistoException(error_msg + response.get('error'))
+        if response.get("error", "").lower() != "false":
+            raise DemistoException(error_msg + response.get("error"))
     return response
+
 
 ###################################################################################################################################
 # end of CSP part
@@ -1087,7 +1092,8 @@ class AssetType(Enum):
     TAS_DROPLET = "Tas Droplet"
     RUNTIME_IMAGE = "Runtime Image"
     HOST = "Host"
-    
+
+
 @dataclass
 class AssetTypeRelatedData:
     endpoint: str
@@ -1105,18 +1111,19 @@ class AssetTypeRelatedData:
 
     def write_debug_log(self, msg: str):
         demisto.debug(f"[{self.asset_type.value}] {msg}")
-        
+
     def safe_update_integration_context(self, ctx_lock):
         with ctx_lock:
             ctx = get_integration_context()
             ctx[self.asset_type.value] = {"offset": self.offset, "total_count": self.total_count, "snapshot_id": self.snapshot_id}
             set_integration_context(ctx)
-            
+
     def remove_related_data_from_ctx(self, ctx_lock):
         with ctx_lock:
             ctx = get_integration_context()
             ctx.pop(self.asset_type.value)
             set_integration_context(ctx)
+
 
 def format_context(context):
     """
@@ -3361,9 +3368,11 @@ async def fetch_assets_long_running_command(client: PrismaCloudComputeAsyncClien
             remaining_time_seconds = TWELVE_HOURS_AS_SECONDS - duration_seconds
             demisto.debug(f"Will sleep for {remaining_time_seconds} seconds.")
             await asyncio.sleep(remaining_time_seconds)
-            
 
-def init_asset_type_related_data(endpoint: str, product: str, asset_type: AssetType, process_result_func: Callable) -> AssetTypeRelatedData:
+
+def init_asset_type_related_data(
+    endpoint: str, product: str, asset_type: AssetType, process_result_func: Callable
+) -> AssetTypeRelatedData:
     """Attempts to check if there's exiting information related to the asset type in the context.
     If there is such data, will create a new AssetTypeRelatedData from that data.
     Otherwise, will create from scratch. In that case, AssetTypeRelatedData will assign default values to some of the fields.
@@ -3389,27 +3398,30 @@ def init_asset_type_related_data(endpoint: str, product: str, asset_type: AssetT
             process_result_func=process_result_func,
             offset=offset,
             total_count=total_count,
-            snapshot_id=snapshot_id
+            snapshot_id=snapshot_id,
         )
     else:
         return AssetTypeRelatedData(
-            endpoint=endpoint,
-            product=product,
-            asset_type=asset_type,
-            process_result_func=process_result_func
+            endpoint=endpoint, product=product, asset_type=asset_type, process_result_func=process_result_func
         )
 
 
 async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncClient):
     ctx_lock = threading.Lock()
     tas_droplets_related_data = init_asset_type_related_data(
-        endpoint="/tas-droplets", product="Tas_Droplets", asset_type=AssetType.TAS_DROPLET, process_result_func=process_tas_droplet_results
+        endpoint="/tas-droplets",
+        product="Tas_Droplets",
+        asset_type=AssetType.TAS_DROPLET,
+        process_result_func=process_tas_droplet_results,
     )
     host_scan_related_data = init_asset_type_related_data(
         endpoint="/hosts", product="Hosts", asset_type=AssetType.HOST, process_result_func=process_host_results
     )
     image_scan_related_data = init_asset_type_related_data(
-        endpoint="/images", product="Runtime_images", asset_type=AssetType.RUNTIME_IMAGE, process_result_func=process_runtime_image_results
+        endpoint="/images",
+        product="Runtime_images",
+        asset_type=AssetType.RUNTIME_IMAGE,
+        process_result_func=process_runtime_image_results,
     )
     tasks = [
         collect_assets_and_send_to_xsiam(client, tas_droplets_related_data, ctx_lock),
@@ -3425,7 +3437,9 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
     demisto.updateModuleHealth({"assetsPulled": total})
 
 
-async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData, ctx_lock: Lock):
+async def collect_assets_and_send_to_xsiam(
+    client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData, ctx_lock: Lock
+):
     """Implement the main log, sending requests to Prisma to fetch assets, process the assets and then send them to xsiam.
     Saving the current advancement between intervals.
 
@@ -3463,13 +3477,15 @@ async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient
             )
             await asyncio.gather(*send_data_to_xsiam_tasks)
             asset_type_related_data.next_page()
-            asset_type_related_data.write_debug_log(f"Finished sending assets batch to xsiam, sent {asset_type_related_data.offset} assets so far.")
+            asset_type_related_data.write_debug_log(
+                f"Finished sending assets batch to xsiam, sent {asset_type_related_data.offset} assets so far."
+            )
             asset_type_related_data.safe_update_integration_context(ctx_lock)
             if asset_type_related_data.offset == 3000000:
                 asset_type_related_data.write_debug_log("reached 3m assets, breaking")
                 break
         except Exception as e:
-            traceback_str = ''.join(traceback.format_tb(e.__traceback__))
+            traceback_str = "".join(traceback.format_tb(e.__traceback__))
             demisto.debug(f"Got error {e}\n{traceback_str=}")
     asset_type_related_data.write_debug_log("Finished obtaining and sending all assets to xsiam.")
     asset_type_related_data.remove_related_data_from_ctx(ctx_lock)
