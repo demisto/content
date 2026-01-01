@@ -21,7 +21,7 @@ warnings.filterwarnings(action="ignore", message=".*using SSL with verify_certs=
 # .ymla values
 BASIC_AUTH = "Basic auth"
 BEARER_AUTH = "Bearer auth"
-API_KEY_AUTH = "Api key auth"
+API_KEY_AUTH = "API key auth"
 
 API_KEY_PREFIX = "_api_key_id:"
 
@@ -32,7 +32,7 @@ API_KEY_ID: str = demisto.params().get("api_key_auth_credentials", {}).get("iden
 API_KEY_SECRET: str = demisto.params().get("api_key_auth_credentials", {}).get("password")
 API_KEY = None
 
-# Using Api key auth by username and password fields for backward compatibility.
+# Using API key auth by username and password fields for backward compatibility.
 if AUTH_TYPE == BASIC_AUTH:
     if USERNAME and USERNAME.startswith(API_KEY_PREFIX):
         AUTH_TYPE = API_KEY_AUTH
@@ -267,6 +267,7 @@ def get_elastic_token():
             # If refresh fails, clear the refresh token to force generating of new token
             demisto.debug("get_elastic_token - refresh fails, a new token will be generated via password grant.")
             integration_context.update({"refresh_token": None, "refresh_token_expires_in": None})
+            set_integration_context(integration_context)
 
         # Generate a new access vi password grant
         demisto.debug("get_elastic_token - Attempting to get token using grant_type:password")
@@ -341,7 +342,7 @@ def elasticsearch_builder(proxies):
 
     es = Elasticsearch(**connection_args)  # type: ignore[arg-type]
 
-    # Ensuring api_key will be set correctly in case the authentication type is Api key auth.
+    # Ensuring api_key will be set correctly in case the authentication type is API key auth.
     # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
     # In some versions of the ES library, the transport object does not have a get_session func
     if AUTH_TYPE == API_KEY_AUTH and hasattr(es, "transport") and hasattr(es.transport, "get_connection"):
@@ -701,7 +702,7 @@ def test_connectivity_auth(proxies) -> tuple[bool, str]:
             res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE, headers=headers)
 
         elif AUTH_TYPE == API_KEY_AUTH:
-            demisto.debug("test_connectivity_auth - Api key auth setting authorization header and sending request")
+            demisto.debug("test_connectivity_auth - API key auth setting authorization header and sending request")
             headers["authorization"] = get_api_key_header_val(API_KEY)
             res = requests.get(SERVER, verify=INSECURE, headers=headers)
 

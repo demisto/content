@@ -22,11 +22,11 @@ configuration:
   options:
   - Basic auth
   - Bearer auth
-  - Api key auth
+  - API key auth
   type: 15
   section: Connect
   required: true
-- additionalinfo: Use for Api key auth
+- additionalinfo: Use for API key auth
   display: API key ID
   displaypassword: API Key
   name: api_key_auth_credentials
@@ -75,7 +75,7 @@ configuration:
   type: 0
   additionalinfo: |-
     Query string is queried using the Lucene syntax.
-    For more information about the Lucene syntax see the link appear in the help section.
+    For more information about the Lucene syntax see the link appears in the help section.
     The query will be used when fetching incidents. Index time field will be used as a filter in the query.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
@@ -93,7 +93,7 @@ configuration:
   additionalinfo: |-
     Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string.
     Results will not be filtered or sorted. Use additional parameters in the raw query for these purposes.
-    For more information see the link appear in the help section.
+    For more information see the link appears in the help section.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
@@ -110,7 +110,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: For more information see the explanation appear in the help section.
+  additionalinfo: For more information see the explanation appears in the help section.
 - defaultvalue: 'true'
   display: Map JSON fields into labels
   name: map_labels
