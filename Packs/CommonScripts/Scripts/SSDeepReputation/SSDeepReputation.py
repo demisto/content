@@ -47,7 +47,9 @@ def get_ssdeep_related_indicators(ssdeep_indicator: dict[str, Any]) -> list[dict
             if res and isinstance(res, list) and len(res) > 0:
                 contents = res[0].get("Contents", {})
                 context = contents.get("context") if isinstance(contents, dict) else {}
-                file_obj = demisto.dt(context, f"File(val.SSDeep == '{ssdeep_indicator['value']}')")
+                # Sanitize ssdeep value to prevent DT query syntax errors
+                ssdeep_value = str(ssdeep_indicator.get("value", "")).replace("'", "\\'")
+                file_obj = demisto.dt(context, f"File(val.SSDeep == '{ssdeep_value}')")
                 if file_obj is None:
                     file_obj = {}
                 elif isinstance(file_obj, list) and len(file_obj) > 0:
@@ -98,7 +100,8 @@ def main():
             if current_incident_id not in inv_ids:
                 # Need to add current_incident_id
                 if "investigationIDs" in ssdeep_indicator:
-                    # investigationIDs exists - append to it
+                    # investigationIDs exists - use setdefault for defensive programming
+                    # Protects against edge case where key exists but value is None or not a list
                     ssdeep_indicator.setdefault("investigationIDs", []).append(current_incident_id)
                 elif "investigationID" in ssdeep_indicator:
                     # Only investigationID exists - convert to investigationIDs and add new ID
