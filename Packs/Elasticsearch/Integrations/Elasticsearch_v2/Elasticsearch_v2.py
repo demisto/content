@@ -8,7 +8,7 @@ from CommonServerUserPython import *
 """IMPORTS"""
 import json
 import warnings
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import requests
 import urllib3
@@ -187,10 +187,10 @@ def is_access_token_expired(expires_in: str) -> bool:
     """
     try:
         # Parse the expires_in string to a UTC datetime object
-        expiration_time = datetime.strptime(expires_in, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        expiration_time = datetime.strptime(expires_in, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
 
         # Subtract 1 min to refresh slightly early and avoid expiration issues.
-        current_time_with_buffer = datetime.now(timezone.utc) + timedelta(minutes=1)
+        current_time_with_buffer = datetime.now(UTC) + timedelta(minutes=1)
 
         is_not_expired = expiration_time > current_time_with_buffer
         if is_not_expired:
@@ -244,7 +244,7 @@ def get_elastic_token():
             response = requests.post(url, headers=headers, json=payload, verify=INSECURE, auth=(USERNAME, PASSWORD))
 
             if response.status_code == 200:
-                now = datetime.now(timezone.utc)
+                now = datetime.now(UTC)
                 token_data = response.json()
                 access_token_expires_in = (now + timedelta(seconds=token_data.get("expires_in"))).strftime("%Y-%m-%dT%H:%M:%SZ")
                 refresh_token_expires_in = (now + timedelta(hours=24)).strftime(
@@ -276,7 +276,7 @@ def get_elastic_token():
         payload = {"grant_type": "password", "username": USERNAME, "password": PASSWORD}
         response = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), json=payload, verify=INSECURE)
         if response.status_code == 200:
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             token_data = response.json()
             access_token_expires_in = (now + timedelta(seconds=token_data.get("expires_in"))).strftime("%Y-%m-%dT%H:%M:%SZ")
             refresh_token_expires_in = (now + timedelta(hours=24)).strftime(
