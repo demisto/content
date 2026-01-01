@@ -2054,7 +2054,7 @@ async def test_collect_assets_and_send_to_xsiam_no_data(mocker):
 @pytest.mark.asyncio
 async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
     """
-    Given: Data returned from the API.
+    Given: Data returned from the API where the first time return 1 entry and the second time return no entries.
     When: collect_assets_and_send_to_xsiam is called.
     Then: It should process and send data to XSIAM, update context, and increment offset.
     """
@@ -2068,7 +2068,7 @@ async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
     second_response_mock.headers = {"Total-Count": "1"}
     second_response_mock.json = AsyncMock(return_value=[])
     second_response_mock.release = AsyncMock(return_value=None)
-    mock_client._http_request = AsyncMock(return_value=[first_mock_response, second_response_mock])
+    mock_client._http_request = AsyncMock(side_effect=[first_mock_response, second_response_mock])
 
     asset_type_related_data = AssetTypeRelatedData(
         endpoint="/hosts", product="Hosts", asset_type=AssetType.HOST, process_result_func=process_host_results, limit=1, ctx_lock=ctx_lock
@@ -2077,18 +2077,17 @@ async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
     mock_send_data = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.process_asset_data_and_send_to_xsiam", new_callable=MagicMock)
     mock_gather = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.asyncio.gather", new_callable=MagicMock)
     mock_update_context = mocker.patch.object(asset_type_related_data, "safe_update_integration_context")
+    mock_clear_context = mocker.patch.object(asset_type_related_data, "remove_related_data_from_ctx")
 
     mock_send_data.return_value = [asyncio.Future()]
     mock_send_data.return_value[0].set_result(None)
     mock_gather.return_value = asyncio.Future()
     mock_gather.return_value.set_result(None)
 
-    try:
-        await collect_assets_and_send_to_xsiam(mock_client, asset_type_related_data)
-    except BaseException as e:
-        assert str(e) == "Stop loop"
+    await collect_assets_and_send_to_xsiam(mock_client, asset_type_related_data)
 
     assert mock_client._http_request.call_count == 2
-    assert mock_send_data.call_count == 2
+    mock_send_data.assert_called_once()
     assert mock_update_context.called
+    assert mock_clear_context.called
     assert asset_type_related_data.offset == 1  # Should have incremented once
