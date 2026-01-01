@@ -204,7 +204,7 @@ class CollectorRunResult:
     """Result of a collection run."""
     events: List[Dict[str, Any]]
     state: CollectorState
-    metrics: Any  # ExecutionMetrics
+    metrics: Any  # ClientExecutionMetrics
     exhausted: bool
     timed_out: bool
 

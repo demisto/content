@@ -146,7 +146,7 @@ class CollectorConfigurationError(CollectorError):
 
 
 @dataclass
-class ExecutionMetrics:
+class ClientExecutionMetrics:
     """Metrics for collector execution."""
     success: int = 0
     retry_error: int = 0
@@ -752,7 +752,7 @@ class ContentClient:
         self._diagnostic_mode = diagnostic_mode
         
         # Execution metrics (like BaseClient)
-        self.execution_metrics = ExecutionMetrics()
+        self.execution_metrics = ClientExecutionMetrics()
         
         # Logger
         self.logger = CollectorLogger(collector_name, diagnostic_mode=diagnostic_mode)
@@ -1133,7 +1133,7 @@ class ContentClient:
         return self._http_request('DELETE', url_suffix, **kwargs)
 
     @property
-    def metrics(self) -> ExecutionMetrics:
+    def metrics(self) -> ClientExecutionMetrics:
         return self.execution_metrics
 
     def get_diagnostic_report(self) -> DiagnosticReport:
