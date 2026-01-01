@@ -4804,7 +4804,6 @@ def main():  # pragma: no cover
 
         elif command in COMMANDS_MAPPING:
             result = execute_aws_command(command, args, params)
-            demisto.debug("before return_results")
             return_results(result)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
