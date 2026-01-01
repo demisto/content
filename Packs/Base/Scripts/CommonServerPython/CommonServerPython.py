@@ -68,7 +68,7 @@ GENERAL_RATE_LIMIT_MESSAGE = (
     "share the same outbound IP address. Consider using an engine to avoid IP-based rate limits, "
     "or use alternative integrations."
 )
-GENERAL_RATE_LIMIT_DOCS_LINK = "https://xsoar.pan.dev/docs/reference/integrations/whois#rate-limiting-or-ip-blocking-issues"
+GENERAL_RATE_LIMIT_DOCS_LINK = "XSIAM: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-3.x-Documentation/Configure-Threat-Intelligence-feed-integrations, XSOAR: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-SaaS-Documentation/Configure-Threat-Intel-feed-integrations"
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
