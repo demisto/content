@@ -177,20 +177,20 @@ def get_api_key_header_val(api_key):
 
 def is_access_token_expired(expires_in: str) -> bool:
     """Check if access token is expired.
-    
+
     Args:
         expires_in: ISO format datetime string representing when the token expires
-        
+
     Returns:
         bool: True if token is expired or will expire within 1 minute, False otherwise
     """
     try:
         # Parse the expires_in string to a datetime object
         expiration_time = datetime.strptime(expires_in, "%Y-%m-%dT%H:%M:%SZ")
-        
+
         # Subtract 1 min to refresh slightly early and avoid expiration issues.
         current_time_with_buffer = datetime.now() + timedelta(minutes=1)
-        
+
         is_not_expired = expiration_time > current_time_with_buffer
         if is_not_expired:
             demisto.debug(
@@ -689,7 +689,7 @@ def test_connectivity_auth(proxies) -> tuple[bool, str]:
         proxies (dict): Dictionary of proxy settings
 
     Returns:
-    bool: True if authentication and connectivity test passes, False otherwise
+        tuple[bool, str]: (success status, message)
     """
 
     demisto.debug("test_connectivity_auth started")
@@ -720,6 +720,8 @@ def test_connectivity_auth(proxies) -> tuple[bool, str]:
                 demisto.debug("test_connectivity_auth - Connectivity test successful")
                 verify_es_server_version(res.json())
                 return True, "Connectivity test successful"
+
+        return False, "No response received from server"
 
     except Exception as e:
         demisto.debug(f"test_connectivity_auth - Failed to connect.\nError message: {e}")
