@@ -1,6 +1,6 @@
 {
     "name": "GitHub MCP",
-    "description": "Integrate with GitHub via the Management Control Plane (MCP) server to automate GitHub operations.",
+    "description": "Integrate with GitHub via the Model Context Protocol (MCP) server to automate GitHub operations.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "serverMinVersion": "8.13.0",
