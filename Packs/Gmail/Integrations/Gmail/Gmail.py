@@ -1487,7 +1487,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
         if nextPageToken:
             if 'EntryContext' not in res:
                 res['EntryContext'] = {}
-            res['EntryContext']['Gmail.PageToken'] = {'NextPageToken': nextPageToken}
+            res['EntryContext']['GmailPageToken'] = {'NextPageToken': nextPageToken}
         return res
     return None
 
