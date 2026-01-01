@@ -1,4 +1,10 @@
 category: Utilities
+sectionorder:
+- Connect
+- Collect
+- Optimize
+- Mirroring
+- Result
 commonfields:
   id: Cypho Threat Intelligence
   version: -1
