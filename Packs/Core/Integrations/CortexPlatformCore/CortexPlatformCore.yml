@@ -1873,9 +1873,7 @@ script:
           description: "Filter findings by severity level to prioritize policy actions. Supported values: CRITICAL, HIGH, MEDIUM, LOW."
           isArray: true
         - name: conditions_respect_developer_suppression
-          description: "Controls whether a developer’s manual suppression should be honored. 
-          Set to 'true' to respect developer suppression (evaluate only non-suppressed findings). 
-          Set to 'false' to ignore suppression and always evaluate the finding."
+          description: "Controls whether a developer's manual suppression should be honored. Set to 'true' to respect developer suppression (evaluate only non-suppressed findings). Set to 'false' to ignore suppression and always evaluate the finding."
           auto: PREDEFINED
           predefined:
             - "true"
@@ -2524,7 +2522,7 @@ script:
             - "false"
         - name: custom_fields
           description: |
-            A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`). 
+            A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
           type: String
       outputs:
         - contextPath: Core.Case.modifiedBy
