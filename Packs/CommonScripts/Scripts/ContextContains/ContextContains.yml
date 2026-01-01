@@ -10,13 +10,13 @@ comment: This script searches for a value in a context path.
 enabled: true
 args:
 - name: path
-  description: Path in the context
+  description: Path in the context.
 - name: value
   required: true
   default: true
-  description: Value to search
+  description: Value to search.
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 tests:
 - No tests (auto formatted)
