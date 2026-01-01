@@ -1485,9 +1485,9 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
         res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, "full", mailbox, fields)
         # Add nextPageToken to the context if it exists
         if nextPageToken:
-            if 'EntryContext' not in res:
-                res['EntryContext'] = {}
-            res['EntryContext']['GmailPageToken'] = {'NextPageToken': nextPageToken}
+            if "EntryContext" not in res:
+                res["EntryContext"] = {}
+            res["EntryContext"]["GmailPageToken"] = {"NextPageToken": nextPageToken}
         return res
     return None
 
