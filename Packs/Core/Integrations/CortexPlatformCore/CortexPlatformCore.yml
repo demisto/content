@@ -1873,7 +1873,9 @@ script:
           description: "Filter findings by severity level to prioritize policy actions. Supported values: CRITICAL, HIGH, MEDIUM, LOW."
           isArray: true
         - name: conditions_respect_developer_suppression
-          description: "Controls whether a developer's manual suppression should be honored. Set to 'true' to respect developer suppression (evaluate only non-suppressed findings). Set to 'false' to ignore suppression and always evaluate the finding."
+          description: "Controls whether a developer’s manual suppression should be honored. 
+          Set to 'true' to respect developer suppression (evaluate only non-suppressed findings). 
+          Set to 'false' to ignore suppression and always evaluate the finding."
           auto: PREDEFINED
           predefined:
             - "true"
@@ -2863,6 +2865,105 @@ script:
       - contextPath: Core.Endpoint.cloud_region
         description: The cloud region of the endpoint.
         type: String
+    - arguments:
+      - name: profile_name
+        description: The name of the assessment profile to create.
+        required: true
+      - name: profile_description
+        description: The description of the assessment profile to create.
+      - name: standard_name
+        description: The name of the compliance standard to associate with the profile.
+        required: true
+      - name: asset_group_name
+        description: The name of the asset group to apply the assessment profile to.
+        required: true
+      - auto: PREDEFINED
+        name: day
+        description: The day of the week to schedule the assessment. If left empty, assessment runs daily.
+        predefined:
+          - "Sunday"
+          - "Monday"
+          - "Tuesday"
+          - "Wednesday"
+          - "Thursday"
+          - "Friday"
+          - "Saturday"
+      - name: time
+        description: The time of day to run the assessment in HH:MM format.
+        defaultValue: "12:00"
+      name: core-add-assessment-profile
+      description: Create new assessment profile.
+      hidden: true
+      supportedModules:
+        - cloud_runtime_security
+        - cloud_posture
+      outputs:
+      - contextPath: Core.AssessmentProfile.assessment_profile_id
+        description: The unique identifier of the newly created assessment profile.
+        type: String
+    - arguments:
+      - name: name
+        description: The name of the standard.
+      - auto: PREDEFINED
+        name: created_by
+        description: The user or entity who created the compliance.
+        predefined:
+        - System
+        - Custom
+      - name: page_size
+        description: The number of standards to return per page. Default is 100.
+      - name: page_number
+        description: The page number for the standards to return for pagination. Default is 0.
+      - auto: PREDEFINED
+        name: labels
+        description: A comma-separated list of labels to filter compliance standards.
+        predefined:
+          - "Aws"
+          - "Azure"
+          - "GCP"
+          - "GKE"
+          - "K8S"
+          - "Windows"
+          - "Linux"
+          - "EKS"
+          - "AKS"
+          - "OCI"
+          - "Alibaba Cloud"
+          - "On Prem"
+          - "LLM"
+          - "Docker"
+          - "Openshift"
+      name: core-list-compliance-standards
+      description: Create new assessment profile.
+      hidden: true
+      supportedModules:
+        - cloud_runtime_security
+        - cloud_posture
+      outputs:
+      - contextPath: Core.ComplianceStandards.id
+        description: The unique identifier of the standard.
+        type: String
+      - contextPath: Core.ComplianceStandards.name
+        description: The name of the standard.
+        type: String
+      - contextPath: Core.ComplianceStandards.description
+        description: The description of the standard.
+        type: String
+      - contextPath: Core.ComplianceStandards.labels
+        description: The labels associated with the compliance standard.
+        type: Array
+      - contextPath: Core.ComplianceStandards.controls_count
+        description: The number of controls in the standard.
+        type: Number
+      - contextPath: Core.ComplianceStandards.assessments_profiles_count
+        description: The number of assessment profiles associated with the standard.
+        type: Number
+      - contextPath: Core.ComplianceStandardsMetadata.returned_count
+        description: The actual number of compliance standards that match all filter criteria and returned in this specific response.
+        type: Number
+      - contextPath: Core.ComplianceStandardsMetadata.filtered_count
+        description: The total number of compliance standards in the system that match all filter criteria.
+        type: Number
     - arguments:
       - description: A comma-separated list of endpoint IDs.
         name: endpoint_ids

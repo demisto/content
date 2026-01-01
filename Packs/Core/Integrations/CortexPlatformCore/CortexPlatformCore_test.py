@@ -6917,6 +6917,301 @@ def test_normalize_key_without_prefix():
     assert normalize_key("some_xdm_field") == "some_xdm_field"
 
 
+class TestCoreAddAssessmentProfileCommand:
+    def test_core_add_assessment_profile_command_success(self, mocker):
+        """Test successful assessment profile creation
+
+        Given: Mock client with valid standards and asset groups responses
+        When: core_add_assessment_profile_command is called with valid arguments
+        Then: Returns successful result with profile ID
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        # Mock compliance standards response
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        # Mock asset groups response
+        asset_groups_response = {"reply": {"data": [{"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group"}]}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        # Mock add assessment profile response
+        add_profile_response = {"assessment_profile_id": "profile-789"}
+        mock_client.add_assessment_profile.return_value = add_profile_response
+
+        # Mock payload functions
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.create_assessment_profile_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+
+        args = {
+            "profile_name": "Test Profile",
+            "profile_description": "Test Description",
+            "standard_name": "Test Standard",
+            "asset_group_name": "Test Group",
+            "day": "monday",
+            "time": "14:30",
+        }
+
+        result = core_add_assessment_profile_command(mock_client, args)
+
+        assert result.readable_output == "Assessment Profile profile-789 successfully added"
+        assert result.outputs_prefix == "Core.AssessmentProfile"
+        assert result.outputs_key_field == "assessment_profile_id"
+        assert result.outputs == "profile-789"
+
+    def test_core_add_assessment_profile_command_no_compliance_standards(self, mocker):
+        """Test when no compliance standards are found
+
+        Given: Mock client with empty standards response
+        When: core_add_assessment_profile_command is called with nonexistent standard
+        Then: Raises exception indicating no compliance standards found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": []}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("No compliance standards found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Nonexistent Standard", "asset_group_name": "Test Group"}
+
+        with pytest.raises(Exception, match="No compliance standards found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_multiple_compliance_standards(self, mocker):
+        """Test when multiple compliance standards match
+
+        Given: Mock client with multiple standards that match the search criteria
+        When: core_add_assessment_profile_command is called with ambiguous standard name
+        Then: Raises exception indicating multiple standards found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {
+            "reply": {"standards": [{"id": "std-123", "name": "Test Standard 1"}, {"id": "std-456", "name": "Test Standard 2"}]}
+        }
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("Multiple standards found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test", "asset_group_name": "Test Group"}
+
+        with pytest.raises(Exception, match="Multiple standards found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_no_asset_groups(self, mocker):
+        """Test when no asset groups are found
+
+        Given: Mock client with valid standards but empty asset groups response
+        When: core_add_assessment_profile_command is called with nonexistent asset group
+        Then: Raises exception indicating no asset group found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {"reply": {"data": []}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("No asset group found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test Standard", "asset_group_name": "Nonexistent Group"}
+
+        with pytest.raises(Exception, match="No asset group found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_multiple_asset_groups(self, mocker):
+        """Test when multiple asset groups match
+
+        Given: Mock client with multiple asset groups that match the search criteria
+        When: core_add_assessment_profile_command is called with ambiguous asset group name
+        Then: Raises exception indicating multiple asset groups found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {
+            "reply": {
+                "data": [
+                    {"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group 1"},
+                    {"XDM.ASSET_GROUP.ID": "group-789", "XDM.ASSET_GROUP.NAME": "Test Group 2"},
+                ]
+            }
+        }
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("Multiple asset groups found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test Standard", "asset_group_name": "Test"}
+
+        with pytest.raises(Exception, match="Multiple asset groups found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_default_values(self, mocker):
+        """Test with default day and time values
+
+        Given: Mock client with valid responses and arguments without day/time specified
+        When: core_add_assessment_profile_command is called with minimal arguments
+        Then: Uses default values for day (sunday) and time (12:00) and returns successful result
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {"reply": {"data": [{"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group"}]}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        add_profile_response = {"assessment_profile_id": "profile-789"}
+        mock_client.add_assessment_profile.return_value = add_profile_response
+
+        mock_create_payload = mocker.patch("CortexPlatformCore.create_assessment_profile_payload", return_value={})
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+
+        args = {
+            "profile_name": "Test Profile",
+            "profile_description": "Test Description",
+            "standard_name": "Test Standard",
+            "asset_group_name": "Test Group",
+        }
+
+        result = core_add_assessment_profile_command(mock_client, args)
+
+        mock_create_payload.assert_called_with(
+            name="Test Profile",
+            description="Test Description",
+            standard_id="std-123",
+            asset_group_id="group-456",
+            day=None,
+            time="12:00",
+            report_type="ALL",
+        )
+        assert result.outputs == "profile-789"
+
+
+class TestCoreListComplianceStandardsCommand:
+    def test_core_list_compliance_standards_command_with_empty_args(self, mocker):
+        """Test list compliance standards command with empty arguments
+
+        Given: A mock client and empty arguments
+        When: core_list_compliance_standards_command is called with empty args
+        Then: Returns proper response structure with correct counts
+        """
+        from CortexPlatformCore import core_list_compliance_standards_command
+
+        client = mocker.Mock()
+        mock_response = {
+            "reply": {
+                "standards": [
+                    {
+                        "id": "std1",
+                        "name": "Standard 1",
+                        "description": "Test standard",
+                        "controls_ids": ["ctrl1", "ctrl2"],
+                        "assessments_profiles_count": 5,
+                        "labels": ["label1", "label2"],
+                    }
+                ],
+                "result_count": 1,
+            }
+        }
+        client.list_compliance_standards_command.return_value = mock_response
+
+        result = core_list_compliance_standards_command(client, {})
+
+        assert len(result) == 2
+        assert result[0].outputs_prefix == "Core.ComplianceStandards"
+        assert result[1].outputs["filtered_count"] == 1
+        assert result[1].outputs["returned_count"] == 1
+
+    def test_core_list_compliance_standards_command_with_empty_standards_list(self, mocker):
+        """Test handling of empty standards list
+
+        Given: A mock client returning empty standards list
+        When: core_list_compliance_standards_command is called
+        Then: Returns empty outputs with zero counts
+        """
+        from CortexPlatformCore import core_list_compliance_standards_command
+
+        client = mocker.Mock()
+        mock_response = {"reply": {"standards": [], "result_count": 0}}
+        client.list_compliance_standards_command.return_value = mock_response
+
+        result = core_list_compliance_standards_command(client, {})
+
+        assert len(result) == 2
+        assert result[0].outputs == []
+        assert result[1].outputs["filtered_count"] == 0
+        assert result[1].outputs["returned_count"] == 0
+
+    def test_core_list_compliance_standards_command_multiple_standards(self, mocker):
+        """Test handling of multiple compliance standards
+
+        Given: A mock client returning multiple standards
+        When: core_list_compliance_standards_command is called
+        Then: Returns all standards with correct control counts and metadata
+        """
+        from CortexPlatformCore import core_list_compliance_standards_command
+
+        client = mocker.Mock()
+        mock_response = {
+            "reply": {
+                "standards": [
+                    {
+                        "id": "std1",
+                        "name": "Standard 1",
+                        "description": "Test standard 1",
+                        "controls_ids": ["ctrl1", "ctrl2"],
+                        "assessments_profiles_count": 2,
+                        "labels": ["lbl1"],
+                    },
+                    {
+                        "id": "std2",
+                        "name": "Standard 2",
+                        "description": "Test standard 2",
+                        "controls_ids": ["ctrl3"],
+                        "assessments_profiles_count": 5,
+                        "labels": ["lbl2", "lbl3"],
+                    },
+                ],
+                "result_count": 2,
+            }
+        }
+        client.list_compliance_standards_command.return_value = mock_response
+
+        result = core_list_compliance_standards_command(client, {})
+
+        assert len(result[0].outputs) == 2
+        assert result[0].outputs[0]["id"] == "std1"
+        assert result[0].outputs[0]["controls_count"] == 2
+        assert result[0].outputs[1]["id"] == "std2"
+        assert result[0].outputs[1]["controls_count"] == 1
+        assert result[1].outputs["returned_count"] == 2
+
+
 def test_run_script_agentix_command_both_script_uid_and_name_provided():
     """
     Given:
@@ -8622,105 +8917,3 @@ def test_list_system_users_command_limits_results_to_50(mocker: MockerFixture):
     result = list_system_users_command(mock_client, args)
 
     assert len(result.outputs) == 50
-
-
-def test_validate_custom_fields_success(mocker):
-    """
-    GIVEN:
-        Valid custom fields and client with metadata.
-    WHEN:
-        validate_custom_fields is called.
-    THEN:
-        All fields are returned as valid and no error messages.
-    """
-    from CortexPlatformCore import validate_custom_fields, Client
-
-    client = Client(base_url="", headers={})
-
-    # Mock metadata response
-    metadata_response = {
-        "reply": {
-            "DATA": [
-                {"CUSTOM_FIELD_NAME": "field1", "CUSTOM_FIELD_PRETTY_NAME": "Field 1", "CUSTOM_FIELD_IS_SYSTEM": False},
-                {"CUSTOM_FIELD_NAME": "field2", "CUSTOM_FIELD_PRETTY_NAME": "Field 2", "CUSTOM_FIELD_IS_SYSTEM": False},
-            ]
-        }
-    }
-    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
-
-    fields_to_validate = {"field1": "value1", "field2": "value2"}
-    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
-
-    assert valid_fields == fields_to_validate
-    assert not error_messages
-
-
-def test_validate_custom_fields_system_field(mocker):
-    """
-    GIVEN:
-        Custom fields containing a system field.
-    WHEN:
-        validate_custom_fields is called.
-    THEN:
-        System field is excluded and error message is returned.
-    """
-    from CortexPlatformCore import validate_custom_fields, Client
-
-    client = Client(base_url="", headers={})
-
-    metadata_response = {
-        "reply": {
-            "DATA": [
-                {"CUSTOM_FIELD_NAME": "system_field", "CUSTOM_FIELD_PRETTY_NAME": "System Field", "CUSTOM_FIELD_IS_SYSTEM": True},
-                {
-                    "CUSTOM_FIELD_NAME": "custom_field",
-                    "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
-                    "CUSTOM_FIELD_IS_SYSTEM": False,
-                },
-            ]
-        }
-    }
-    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
-
-    fields_to_validate = {"system_field": "value1", "custom_field": "value2"}
-    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
-
-    assert "custom_field" in valid_fields
-    assert "system_field" not in valid_fields
-    assert error_messages
-    assert "is a system field" in error_messages
-
-
-def test_validate_custom_fields_non_existent_field(mocker):
-    """
-    GIVEN:
-        Custom fields containing a non-existent field.
-    WHEN:
-        validate_custom_fields is called.
-    THEN:
-        Non-existent field is excluded and error message is returned.
-    """
-    from CortexPlatformCore import validate_custom_fields, Client
-
-    client = Client(base_url="", headers={})
-
-    metadata_response = {
-        "reply": {
-            "DATA": [
-                {
-                    "CUSTOM_FIELD_NAME": "existing_field",
-                    "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
-                    "CUSTOM_FIELD_IS_SYSTEM": False,
-                },
-            ]
-        }
-    }
-    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
-
-    fields_to_validate = {"existing_field": "value1", "non_existent": "value2"}
-    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
-
-    assert "existing_field" in valid_fields
-    assert "non_existent" not in valid_fields
-    assert error_messages
-    assert "does not exist" in error_messages
