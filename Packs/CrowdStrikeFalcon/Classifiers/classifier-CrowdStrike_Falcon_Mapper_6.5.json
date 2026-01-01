@@ -1621,15 +1621,31 @@
                 "UUID": {
                     "simple": "created_by.uuid"
                 },
-                "name": {
-                    "simple": "id"
-                },
                 "dbotMirrorDirection": {
                     "simple": "mirror_direction"
                 },
-                "dbotMirrorId": {
-                    "simple": "id"
-                },
+				"dbotMirrorId": {
+					"complex": {
+						"filters": [],
+						"root": "id",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"simple": ":case:"
+										}
+									},
+									"suffix": {
+										"isContext": false
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
                 "dbotMirrorInstance": {
                     "simple": "mirror_instance"
                 },
@@ -1747,9 +1763,6 @@
 				},
 				"State": {
 					"simple": "status"
-				},
-				"name": {
-					"simple": "composite_id"
 				},
 				"occurred": {
 					"simple": "created_timestamp"

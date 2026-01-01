@@ -2387,6 +2387,21 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     )
 
 
+def update_ngeism_case_request(id: str, status: str) -> dict:
+    list_of_stats = STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
+    if status not in list_of_stats:
+        raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
+
+    demisto.debug(f"Updating remote ngsiem case with {id=} and {status=}")
+    payload = {"fields": {"status": status}, "id": id }
+
+    # Call the hypothetical function
+    return http_request(
+        "PATCH",
+        "/cases/entities/cases/v2",
+        data=json.dumps(payload)
+    )
+
 def update_request_for_multiple_detection_types(ids: list[str], status: str) -> dict:
     """
     Manage the status to send to update to for IDP/Mobile detections.
@@ -2680,7 +2695,7 @@ def get_remote_incident_data(remote_incident_id: str):
 
 
 def get_remote_ngsiem_case_date(remote_case_id: str):
-    original_remote_case_id = remote_case_id.replace(f"{IncidentType.NGSIEM_CASE}:", "", 1)
+    original_remote_case_id = remote_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
     mirrored_case = get_cases_details([original_remote_case_id])[0]
     updated_object = {"incident_type": NGSIEM_CASE}
     set_updated_object(updated_object, mirrored_case, NGSIEM_MIRRORING_FIELDS)
@@ -2917,11 +2932,11 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         ).get("resources", [])
     if NGSIEM_CASES_FETCH_TYPE in fetch_types:
         _, case_ids = get_cases_data(
-            url_filter=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}",
+            url_filter=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'",
             limit=INCIDENTS_PER_FETCH,
             offset=0
         )
-        raw_ids += [f"{IncidentType.NGSIEM_CASE}:{case_id}" for case_id in case_ids]
+        raw_ids += [f"{IncidentType.NGSIEM_CASE.value}:{case_id}" for case_id in case_ids]
 
     modified_ids_to_mirror = list(map(str, raw_ids))
     demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
@@ -2962,10 +2977,15 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
                 IncidentType.NGSIEM_DETECTION,
                 IncidentType.THIRD_PARTY,
+                IncidentType.NGSIEM_AUTOMATED_LEAD,
             ):
                 result = update_remote_for_multiple_detection_types(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
-                    demisto.debug(f"IDP/Mobile/NGSIEM/Thirs Party Detection updated successfully. Result: {result}")
+                    demisto.debug(f"IDP/Mobile/NGSIEM/Third Party Detection updated successfully. Result: {result}")
+            elif incident_type == IncidentType.NGSIEM_CASE:
+                result = update_remote_ngsiem_case(delta, parsed_args.inc_status, remote_incident_id)
+                if result:
+                    demisto.debug(f"NGSIEM case updated successfully. Result: {result}")
             else:
                 raise Exception(f"Executed update-remote-system command with undefined id: {remote_incident_id}")
 
@@ -3004,6 +3024,16 @@ def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str
         demisto.debug(f'Detection with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
         return str(update_detection_request([detection_id], delta.get("status")))
 
+    return ""
+
+
+def update_remote_ngsiem_case(delta, inc_status: IncidentStatus, ngsiem_case_id: str) -> str:
+    remote_id = ngsiem_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
+    if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
+        demisto.debug(f"Closing case with remote ID {remote_id} in remote system.")
+        return str(update_ngeism_case_request(remote_id, "closed"))
+    elif "status" in delta:
+        return str(update_ngeism_case_request(remote_id, delta.get("status")))
     return ""
 
 
@@ -3950,6 +3980,7 @@ def fetch_ngsiem_cases(last_run: dict, look_back: int, fetch_query: str):
         # add incident type and append to list
         demisto.debug(f"CrowdStrikeFalconMsg: fetched cases details: {json.dumps(cases_details)=}")
         for case in cases_details:
+            add_mirroring_fields(case)
             case["incident_type"] = NGSIEM_CASE
             fix_time_field(case, "created_timestamp")
             case_context =  {
