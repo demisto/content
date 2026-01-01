@@ -63,6 +63,13 @@ NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
 DEFAULT_INSIGHT_CACHE_SIZE = 3072
+GENERAL_RATE_LIMIT_MESSAGE = (
+    "Encountered rate limiting. This is a common issue in SaaS environments where multiple tenants "
+    "share the same outbound IP address. Consider using an engine to avoid IP-based rate limits, "
+    "or use alternative integrations."
+)
+GENERAL_RATE_LIMIT_DOCS_LINK = "https://xsoar.pan.dev/docs/reference/integrations/whois#rate-limiting-or-ip-blocking-issues"
+
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     global _MODULES_LINE_MAPPING
@@ -7679,8 +7686,9 @@ class CommandResults:
                  content_format=None,
                  extended_payload=None,
                  execution_metrics=None,
-                 replace_existing=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, dict, List[Any], bool) -> None  # noqa: E501
+                 replace_existing=False,
+                 is_rate_limit=False):
+       # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, dict, List[Any], bool, bool) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
@@ -7724,6 +7732,7 @@ class CommandResults:
         self.extended_payload = extended_payload
         self.execution_metrics = execution_metrics
         self.replace_existing = replace_existing
+        self.is_rate_limit = is_rate_limit
 
         if content_format is not None and not EntryFormat.is_valid_type(content_format):
             raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
@@ -7737,6 +7746,13 @@ class CommandResults:
             human_readable = self.readable_output
         else:
             human_readable = None  # type: ignore[assignment]
+
+        if self.is_rate_limit:
+            rate_limit_md = '\n### {}\n{}'.format(GENERAL_RATE_LIMIT_MESSAGE, GENERAL_RATE_LIMIT_DOCS_LINK)
+            if human_readable:
+                human_readable += rate_limit_md
+            else:
+                human_readable = rate_limit_md
         raw_response = self.raw_response  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
         ignore_auto_extract = False  # type: bool
