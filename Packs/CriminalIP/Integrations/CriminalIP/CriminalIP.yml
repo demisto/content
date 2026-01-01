@@ -1,0 +1,512 @@
+category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: CriminalIP
+  version: -1
+
+configuration:
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: false
+  hiddenusername: true
+  section: Connect
+  type: 9
+
+- display: Server URL
+  name: url
+  type: 0
+  required: true
+  additionalinfo: "The base URL of the Criminal IP API."
+  section: Connect
+
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  additionalinfo: When set to true, SSL certificates will not be validated.
+
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  additionalinfo: Use the system proxy settings to communicate with the API.
+
+- display: Request timeout (seconds)
+  name: request_timeout
+  type: 0
+  required: false
+  section: Connect
+  defaultvalue: "30"
+  additionalinfo: Timeout for HTTP requests in seconds. Default is 30.
+
+description: |
+  Criminal IP is a comprehensive cyber threat intelligence solution that provides actionable insights into IP addresses, domains, and connected assets across the internet.
+  It enables organizations to detect malicious indicators, assess asset reputation, and enhance threat detection by integrating enriched threat data directly into security operations via the XSOAR interface.
+
+name: CriminalIP
+display: CriminalIP
+
+script:
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.11.4508456
+  script: '-'
+  runonce: false
+  isfetch: false
+  commands:
+
+  # --- IP Report ---
+  - name: criminal-ip-ip-report
+    description: Provides detailed information about an IP address using Criminal IP's API.
+    arguments:
+    - name: ip
+      description: The IP address to search.
+      required: true
+      default: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.IP.IP
+      description: Queried IP address.
+      type: String
+    - contextPath: CriminalIP.IP.InboundScore
+      description: Inbound reputation score.
+      type: String
+    - contextPath: CriminalIP.IP.OutboundScore
+      description: Outbound reputation score.
+      type: String
+    - contextPath: CriminalIP.IP.Issues
+      description: Detected issues (VPN, Proxy, Tor, Hosting, Cloud, etc.)
+      type: String
+    - contextPath: CriminalIP.IP.ProtectedIPs
+      description: Number of protected IPs related to this IP.
+      type: Number
+    - contextPath: CriminalIP.IP.RelatedDomains
+      description: Number of domains related to this IP.
+      type: Number
+    - contextPath: CriminalIP.IP.ASN
+      description: Autonomous System Number (ASN).
+      type: Number
+    - contextPath: CriminalIP.IP.ASName
+      description: Autonomous System Name.
+      type: String
+    - contextPath: CriminalIP.IP.Org
+      description: Organization name from Whois.
+      type: String
+    - contextPath: CriminalIP.IP.Country
+      description: Country code from Whois.
+      type: String
+    - contextPath: CriminalIP.IP.Hostname
+      description: Resolved hostname.
+      type: String
+    - contextPath: CriminalIP.IP.OpenPorts
+      description: Number of open ports detected.
+      type: Number
+    - contextPath: CriminalIP.IP.ObservedPort
+      description: Example open port number.
+      type: Number
+    - contextPath: CriminalIP.IP.ObservedService
+      description: Example service detected on an open port.
+      type: String
+    - contextPath: CriminalIP.IP.Vulnerabilities
+      description: Number of vulnerabilities detected on the IP.
+      type: Number
+    - contextPath: CriminalIP.IP.ObservedCVE
+      description: Example CVE ID detected on the IP.
+      type: String
+    - contextPath: CriminalIP.IP.ObservedCVSS
+      description: Example CVSS v3 score of detected vulnerability.
+      type: Number
+    - contextPath: CriminalIP.IP.raw
+      description: Full raw response from CriminalIP API.
+      type: Unknown
+
+  # --- Check Malicious IP ---
+  - name: criminal-ip-check-malicious-ip
+    description: Determines whether an IP is malicious or safe through CriminalIP Asset Search.
+    arguments:
+    - name: ip
+      description: IP Address to check.
+      required: true
+      default: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.Mal_IP.ip
+      description: Queried IP address.
+      type: String
+    - contextPath: CriminalIP.Mal_IP.malicious
+      description: Whether the IP was detected as malicious.
+      type: Boolean
+    - contextPath: CriminalIP.Mal_IP.real_ip_list
+      description: List of real IPs if protected IP was detected.
+      type: Unknown
+    - contextPath: CriminalIP.Mal_IP.raw
+      description: Full raw response.
+      type: Unknown
+
+  # --- Check Last Scan Date ---
+  - name: criminal-ip-check-last-scan-date
+    description: Checks if the domain has been scanned within the last 7 days.
+    arguments:
+    - name: domain
+      description: The domain to check last scan date for.
+      required: true
+      default: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.Scan_Date.domain
+      description: Queried Domain.
+      type: String
+    - contextPath: CriminalIP.Scan_Date.scan_id
+      description: The last scan ID of the domain.
+      type: String
+    - contextPath: CriminalIP.Scan_Date.scanned
+      description: Whether the domain was scanned within the last 7 days.
+      type: Boolean
+    - contextPath: CriminalIP.Scan_Date.scan_date
+      description: The last scan date in ISO format.
+      type: String
+    - contextPath: CriminalIP.Scan_Date.raw
+      description: Full raw response from CriminalIP API.
+      type: Unknown
+
+  # --- Domain Quick Scan ---
+  - name: criminal-ip-domain-quick-scan
+    description: Performs a Domain Quick Scan using CriminalIP's API.
+    arguments:
+    - name: domain
+      description: The domain to perform Quick Scan.
+      required: true
+      default: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.Domain_Quick.domain
+      description: Queried Domain.
+      type: String
+    - contextPath: CriminalIP.Domain_Quick.reg_dtime
+      description: Domain registration time.
+      type: String
+    - contextPath: CriminalIP.Domain_Quick.result
+      description: Quick scan result string.
+      type: String
+    - contextPath: CriminalIP.Domain_Quick.type
+      description: Domain type classification.
+      type: String
+    - contextPath: CriminalIP.Domain_Quick.raw
+      description: Full raw response.
+      type: Unknown
+
+  # --- Domain Lite Scan ---
+  - name: criminal-ip-domain-lite-scan
+    description: Initiates a Domain Lite Scan and returns a scan_id.
+    arguments:
+    - name: domain
+      description: The domain to perform Lite Scan.
+      required: true
+      default: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.Domain_Lite.scan_id
+      description: Scan ID returned for Lite Scan.
+      type: String
+    - contextPath: CriminalIP.Domain_Lite.raw
+      description: Full raw response.
+      type: Unknown
+
+  - name: criminal-ip-domain-lite-scan-status
+    description: Checks the progress of the Lite Scan.
+    arguments:
+    - name: scan_id
+      description: The scan_id whose Lite Scan progress to check.
+      required: true
+      default: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.Domain_Lite_Status.status
+      description: Lite Scan status.
+      type: String
+    - contextPath: CriminalIP.Domain_Lite_Status.scan_percentage
+      description: Scan percentage progress.
+      type: Number
+    - contextPath: CriminalIP.Domain_Lite_Status.raw
+      description: Full raw response.
+      type: Unknown
+
+  - name: criminal-ip-domain-lite-scan-result
+    description: Returns the Lite Scan results for the given scan_id.
+    arguments:
+    - name: scan_id
+      description: The scan_id whose Lite Scan result to fetch.
+      required: true
+      default: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.Domain_Lite_Result.domain
+      description: Queried Domain.
+      type: String
+    - contextPath: CriminalIP.Domain_Lite_Result.created
+      description: Domain creation date.
+      type: String
+    - contextPath: CriminalIP.Domain_Lite_Result.registrar
+      description: Domain registrar.
+      type: String
+    - contextPath: CriminalIP.Domain_Lite_Result.score
+      description: Domain risk score.
+      type: String
+    - contextPath: CriminalIP.Domain_Lite_Result.report_time
+      description: Report generation time.
+      type: String
+    - contextPath: CriminalIP.Domain_Lite_Result.phishing_prob
+      description: Phishing probability.
+      type: Number
+    - contextPath: CriminalIP.Domain_Lite_Result.dga_score
+      description: DGA score.
+      type: Number
+    - contextPath: CriminalIP.Domain_Lite_Result.abuse_critical
+      description: Critical abuse record count.
+      type: Number
+    - contextPath: CriminalIP.Domain_Lite_Result.abuse_dangerous
+      description: Dangerous abuse record count.
+      type: Number
+    - contextPath: CriminalIP.Domain_Lite_Result.a_records
+      description: A records resolved.
+      type: String
+    - contextPath: CriminalIP.Domain_Lite_Result.ns_records
+      description: NS records resolved.
+      type: String
+    - contextPath: CriminalIP.Domain_Lite_Result.mapped_ips
+      description: Mapped IP list.
+      type: String
+    - contextPath: CriminalIP.Domain_Lite_Result.raw
+      description: Full raw response.
+      type: Unknown
+
+  # --- Domain Full Scan ---
+  - name: criminal-ip-domain-full-scan
+    description: Initiates a Domain Full Scan and returns a scan_id.
+    arguments:
+    - name: domain
+      description: The domain to perform Full Scan.
+      required: true
+      default: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.Full_Scan.scan_id
+      description: Scan ID returned for Full Scan.
+      type: String
+    - contextPath: CriminalIP.Full_Scan.raw
+      description: Full raw response.
+      type: Unknown
+
+  - name: criminal-ip-domain-full-scan-status
+    description: Checks the progress of the Full Scan.
+    arguments:
+    - name: scan_id
+      description: The scan_id whose Full Scan status to check.
+      required: true
+      default: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.Full_Scan_Status.status
+      description: Full Scan status.
+      type: String
+    - contextPath: CriminalIP.Full_Scan_Status.scan_percentage
+      description: Scan percentage progress.
+      type: Number
+    - contextPath: CriminalIP.Full_Scan_Status.raw
+      description: Full raw response.
+      type: Unknown
+
+  - name: criminal-ip-domain-full-scan-result
+    description: Returns the Full Scan results for the given scan_id.
+    arguments:
+    - name: scan_id
+      description: The scan_id whose Full Scan result to fetch.
+      required: true
+      default: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.Full_Scan_Result.domain
+      description: Queried Domain.
+      type: String
+    - contextPath: CriminalIP.Full_Scan_Result.created
+      description: Domain creation date.
+      type: String
+    - contextPath: CriminalIP.Full_Scan_Result.registrar
+      description: Domain registrar.
+      type: String
+    - contextPath: CriminalIP.Full_Scan_Result.score
+      description: Domain risk score.
+      type: String
+    - contextPath: CriminalIP.Full_Scan_Result.report_time
+      description: Report generation time.
+      type: String
+    - contextPath: CriminalIP.Full_Scan_Result.phishing_prob
+      description: Phishing probability.
+      type: Number
+    - contextPath: CriminalIP.Full_Scan_Result.dga_score
+      description: DGA score.
+      type: Number
+    - contextPath: CriminalIP.Full_Scan_Result.punycode
+      description: Whether punycode detected.
+      type: Boolean
+    - contextPath: CriminalIP.Full_Scan_Result.fake_https
+      description: Whether fake HTTPS detected.
+      type: Boolean
+    - contextPath: CriminalIP.Full_Scan_Result.abuse_critical
+      description: Critical abuse record count.
+      type: Number
+    - contextPath: CriminalIP.Full_Scan_Result.abuse_dangerous
+      description: Dangerous abuse record count.
+      type: Number
+    - contextPath: CriminalIP.Full_Scan_Result.cert_valid_to
+      description: Certificate valid until date.
+      type: String
+    - contextPath: CriminalIP.Full_Scan_Result.connected_ips
+      description: Connected IP list.
+      type: String
+    - contextPath: CriminalIP.Full_Scan_Result.ssl_vulns
+      description: SSL vulnerabilities detected.
+      type: String
+    - contextPath: CriminalIP.Full_Scan_Result.raw
+      description: Full raw response.
+      type: Unknown
+
+  # --- Full Scan Email Body ---
+  - name: criminal-ip-domain-full-scan-make-email-body
+    description: Builds an email body summarizing notable findings from a completed Full Scan.
+    arguments:
+    - name: scan_id
+      description: The scan_id of the completed Full Scan.
+      required: true
+      default: true
+      type: String
+    - name: domain
+      description: The domain of the completed Full Scan.
+      required: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.Email_Body.domain
+      description: Domain analyzed.
+      type: String
+    - contextPath: CriminalIP.Email_Body.scan_id
+      description: Scan ID used for generating the email body.
+      type: String
+    - contextPath: CriminalIP.Email_Body.domain_score
+      description: Domain score.
+      type: String
+    - contextPath: CriminalIP.Email_Body.phishing_prob
+      description: Phishing probability.
+      type: Number
+    - contextPath: CriminalIP.Email_Body.dga_score
+      description: DGA score.
+      type: Number
+    - contextPath: CriminalIP.Email_Body.registrar
+      description: Domain registrar.
+      type: String
+    - contextPath: CriminalIP.Email_Body.created
+      description: Domain creation date.
+      type: String
+    - contextPath: CriminalIP.Email_Body.report_time
+      description: Report generation time.
+      type: String
+    - contextPath: CriminalIP.Email_Body.abuse_critical
+      description: Critical abuse record count.
+      type: Number
+    - contextPath: CriminalIP.Email_Body.abuse_dangerous
+      description: Dangerous abuse record count.
+      type: Number
+    - contextPath: CriminalIP.Email_Body.fake_https
+      description: Whether fake HTTPS detected.
+      type: Boolean
+    - contextPath: CriminalIP.Email_Body.punycode
+      description: Whether punycode detected.
+      type: Boolean
+    - contextPath: CriminalIP.Email_Body.cert_valid_to
+      description: Certificate expiration date.
+      type: String
+    - contextPath: CriminalIP.Email_Body.connected_ips
+      description: Connected IP addresses (comma-separated).
+      type: String
+    - contextPath: CriminalIP.Email_Body.ssl_vulns
+      description: SSL vulnerabilities detected.
+      type: String
+    - contextPath: CriminalIP.Email_Body.readable_output
+      description: Pre-formatted Full Scan report (email-ready).
+      type: String
+    - contextPath: CriminalIP.Email_Body.raw
+      description: Full raw response from Criminal IP API.
+      type: Unknown
+  # --- Micro ASM ---
+  - name: criminal-ip-micro-asm
+    description: Performs a micro ASM-style summary for a domain with a completed Full Scan.
+    arguments:
+    - name: scan_id
+      description: The scan_id of the completed Full Scan.
+      required: true
+      default: true
+      type: String
+    - name: domain
+      description: The domain of the completed Full Scan.
+      required: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.Micro_ASM.domain
+      description: Domain analyzed.
+      type: String
+    - contextPath: CriminalIP.Micro_ASM.scan_id
+      description: Scan ID used for Micro ASM.
+      type: String
+    - contextPath: CriminalIP.Micro_ASM.domain_score
+      description: Domain score.
+      type: String
+    - contextPath: CriminalIP.Micro_ASM.phishing_prob
+      description: Phishing probability.
+      type: Number
+    - contextPath: CriminalIP.Micro_ASM.dga_score
+      description: DGA score.
+      type: Number
+    - contextPath: CriminalIP.Micro_ASM.registrar
+      description: Domain registrar.
+      type: String
+    - contextPath: CriminalIP.Micro_ASM.created
+      description: Domain creation date.
+      type: String
+    - contextPath: CriminalIP.Micro_ASM.report_time
+      description: Report generation time.
+      type: String
+    - contextPath: CriminalIP.Micro_ASM.abuse_critical
+      description: Critical abuse record count.
+      type: Number
+    - contextPath: CriminalIP.Micro_ASM.abuse_dangerous
+      description: Dangerous abuse record count.
+      type: Number
+    - contextPath: CriminalIP.Micro_ASM.fake_https
+      description: Whether fake HTTPS detected.
+      type: Boolean
+    - contextPath: CriminalIP.Micro_ASM.punycode
+      description: Whether punycode detected.
+      type: Boolean
+    - contextPath: CriminalIP.Micro_ASM.cert_valid_to
+      description: Certificate expiration date.
+      type: String
+    - contextPath: CriminalIP.Micro_ASM.connected_ips
+      description: Connected IP addresses (comma-separated).
+      type: String
+    - contextPath: CriminalIP.Micro_ASM.ssl_vulns
+      description: SSL vulnerabilities detected.
+      type: String
+    - contextPath: CriminalIP.Micro_ASM.readable_output
+      description: Pre-formatted Micro ASM report (email-ready).
+      type: String
+    - contextPath: CriminalIP.Micro_ASM.raw
+      description: Full raw response from CriminalIP API.
+      type: Unknown
+
+tests:
+- Test-CriminalIP
+fromversion: 6.10.0

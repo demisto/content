@@ -8299,7 +8299,7 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
     assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[0].args == (
         "Correlation",
-        "query and (match_time geq '2024/04/08 07:22:54')",
+        "(query) and (match_time geq '2024/04/08 07:22:54')",
         10,
         1,
         0,
@@ -8348,7 +8348,7 @@ def test_fetch_incidents_offset(mocker: MockerFixture):
     assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[0].args == (
         "Correlation",
-        "query and (match_time geq '2024/04/08 07:22:54')",
+        "(query) and (match_time geq '2024/04/08 07:22:54')",
         5,
         1,
         0,
@@ -8365,7 +8365,7 @@ def test_fetch_incidents_offset(mocker: MockerFixture):
     assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[1].args == (
         "Correlation",
-        "query and (match_time geq '2024/04/08 07:22:54')",
+        "(query) and (match_time geq '2024/04/08 07:22:54')",
         5,
         1,
         5,

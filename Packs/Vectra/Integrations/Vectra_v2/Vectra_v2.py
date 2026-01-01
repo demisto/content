@@ -355,7 +355,7 @@ def get_users_command(client: Client, **kwargs):
     :keyword role: Filter by role
     :keyword account_type: Filter by account type (Local, Special, Limited Time Link, LDAP, TACACS)
     :keyword authentication_profile: Filter by authentication profile (LDAP or TACACS only)
-    :keyword last_login_gte: Filters for User’s that have logged in since the given timestamp
+    :keyword last_login_gte: Filters for User's that have logged in since the given timestamp
     """
     raw_response = client.http_request(params=kwargs, url_suffix='users')
     count = raw_response.get('count')

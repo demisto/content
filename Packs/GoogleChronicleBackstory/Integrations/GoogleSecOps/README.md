@@ -15,7 +15,9 @@ If you are upgrading from a Google Chronicle Backstory integration, please refer
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | User's Service Account JSON |  | True |
+| API URL Format | Select the API URL format to use for API requests. Default value is '&lt;chronicle&gt;.&lt;REGION&gt;.&lt;rep.googleapis.com&gt;'. | False |
 | Google SecOps Project Instance ID | Provide the Project Instance ID of the Google SecOps.<br/><br/>Note: User can retrieve the Customer ID\(Project Instance ID\) in the Profile section of the Google SecOps page. | True |
+| Google SecOps Project Number | Provide the Project Number of the Google SecOps.<br/><br/>Note: User can retrieve the Project Number in the Profile section of the Google SecOps page. If Project Number is not provided, then Project ID\(from Service Account JSON\) will be used. | False |
 | Region | Select the region based on the location of the Google SecOps instance. If the region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field. | True |
 | Other Region | Specify the region based on the location of the Google SecOps instance. Only applicable if the "Other" option is selected in the Region dropdown. | False |
 | Provide comma(',') separated categories (e.g. APT-Activity, Phishing). | Indicators belonging to these "categories" would be considered as "malicious" when executing reputation commands. | False |
@@ -105,8 +107,9 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| preset_time_range | Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time argument. | Optional |
+| preset_time_range | Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time and end_time arguments. Possible values are: Last 1 day, Last 7 days, Last 15 days, Last 30 days. | Optional |
 | start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional |
+| end_time | The value of the end time for your request, in RFC 3339 format (e.g. 2025-11-01T15:00:00Z) or relative time. If not supplied, the default is the current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2025-11-01T00:00:00Z, 2025-11-01, 2 days, 5 hours, 01 Nov 2025, 01 Nov 2025 04:45:33, 15 Oct. | Optional |
 | page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. Default is 10000. | Optional |
 
 #### Context Output
@@ -3423,7 +3426,7 @@ Return the detections for the specified curated rule identifier.
 
 ***
 Lists the events for the specified UDM Search query.
-Note: The underlying API has the rate limit of 360 queries per hour.
+Note: For more information about rate limits, see [Google service limits](https://cloud.google.com/chronicle/docs/reference/service-limits#:~:text=udmSearch-,360%20QPH,-Search%20API).
 
 #### Base Command
 

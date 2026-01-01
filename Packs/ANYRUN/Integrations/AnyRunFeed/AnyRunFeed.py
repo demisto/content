@@ -8,13 +8,15 @@ from anyrun.iterators import FeedsIterator
 from anyrun import RunTimeException
 
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-VERSION = "PA-XSOAR:2.0.0"
+VERSION = "PA-XSOAR:2.1.0"
 
 
 def test_module(params: dict) -> str:  # pragma: no cover
     """Performs ANY.RUN API call to verify integration is operational"""
     try:
-        with FeedsConnector(params.get("credentials", {}).get("password")) as connector:
+        with FeedsConnector(
+            params.get("credentials", {}).get("password"), integration=VERSION, verify_ssl=not params.get("insecure")
+        ) as connector:
             connector.check_authorization()
             return "ok"
     except RunTimeException as exception:
@@ -101,7 +103,9 @@ def fetch_indicators_command(params: dict) -> None:  # pragma: no cover
     """
     modified_after = get_timestamp(params)
 
-    with FeedsConnector(params.get("credentials", {}).get("password"), integration=VERSION) as connector:
+    with FeedsConnector(
+        params.get("credentials", {}).get("password"), integration=VERSION, verify_ssl=not params.get("insecure")
+    ) as connector:
         connector._taxii_delta_timestamp = None
         for chunk in FeedsIterator.taxii_stix(
             connector, match_type="indicator", match_version="all", modified_after=modified_after, limit=10000, chunk_size=10000
@@ -114,7 +118,9 @@ def fetch_indicators_command(params: dict) -> None:  # pragma: no cover
 def main():  # pragma: no cover
     """Main Execution block"""
     params = demisto.params()
-    handle_proxy()
+
+    if params.get("proxy"):
+        handle_proxy()
 
     try:
         if demisto.command() == "fetch-indicators":

@@ -15790,7 +15790,7 @@ def add_time_filter_to_query_parameter(query: str, last_fetch: datetime, time_ke
     Returns:
         str: a string representing a query with added time filter parameter
     """
-    return f"{query} and ({time_key} geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
+    return f"({query}) and ({time_key} geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
 
 
 def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[str, str]:

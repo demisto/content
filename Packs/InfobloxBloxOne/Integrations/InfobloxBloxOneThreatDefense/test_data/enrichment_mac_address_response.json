@@ -1,0 +1,24 @@
+{
+    "results": [
+        {
+            "address": "0.0.0.1",
+            "client_id": "01:00:00:00:00:00:01",
+            "ends": "2025-07-01T19:25:24Z",
+            "fingerprint": "VMware:Virtual Machine:Windows:",
+            "fingerprint_processed": "processed",
+            "ha_group": null,
+            "hardware": "00:00:00:00:00:01",
+            "host": "dhcp/host/123456",
+            "hostname": "test-host01",
+            "iaid": 0,
+            "last_updated": "2025-07-01T18:25:24.792Z",
+            "options": "{\"Options\":[{\"Code\":\"57\",\"Value\":\"test\"},{\"Code\":\"61\",\"Value\":\"sample\"},{\"Code\":\"53\",\"Value\":\"world\"},{\"Code\":\"55\",\"Value\":\"bar\"}]}",
+            "preferred_lifetime": "2025-07-01T18:25:24Z",
+            "protocol": "",
+            "space": "ipam/ip_space/12345678-1234-1234-1234-123456789012",
+            "starts": "2025-07-01T18:25:24Z",
+            "state": "used",
+            "type": "DHCPv4"
+        }
+    ]
+}

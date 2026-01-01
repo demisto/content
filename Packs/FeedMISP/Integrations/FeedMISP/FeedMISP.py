@@ -578,7 +578,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     last_run_page = last_run.get("page") or 1
     last_run_value = last_run.get("last_indicator_value") or ""
     params_dict = (
-        parsing_user_query(query, LIMIT, from_timestamp=last_run_timestamp)
+        parsing_user_query(query, LIMIT, from_timestamp=last_run_timestamp, page=last_run_page)
         if query
         else build_params_dict(
             tags=tags, attribute_type=attribute_types, limit=LIMIT, page=last_run_page, from_timestamp=last_run_timestamp

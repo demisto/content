@@ -11,7 +11,7 @@ from anyrun.connectors.sandbox.base_connector import BaseSandboxConnector
 from anyrun.connectors.sandbox.operation_systems import WindowsConnector, LinuxConnector, AndroidConnector
 
 
-VERSION = "PA-XSOAR:2.0.0"
+VERSION = "PA-XSOAR:2.1.0"
 
 SCORE_TO_VERDICT = {0: "Unknown", 1: "Suspicious", 2: "Malicious"}
 
@@ -116,17 +116,23 @@ def wait_for_the_task_to_complete(
 
 
 def detonate_entity_windows(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
-    with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
+    with SandboxConnector.windows(
+        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+    ) as connector:
         wait_for_the_task_to_complete(args, analysis_type, connector)
 
 
 def detonate_entity_linux(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
-    with SandboxConnector.linux(get_authentication(params), integration=VERSION) as connector:
+    with SandboxConnector.linux(
+        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+    ) as connector:
         wait_for_the_task_to_complete(args, analysis_type, connector)
 
 
 def detonate_entity_android(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
-    with SandboxConnector.android(get_authentication(params), integration=VERSION) as connector:
+    with SandboxConnector.android(
+        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+    ) as connector:
         wait_for_the_task_to_complete(args, analysis_type, connector)
 
 
@@ -157,7 +163,9 @@ def detonate_url_android(params: dict, args: dict) -> None:  # pragma: no cover
 def delete_task(params: dict, args: dict) -> None:  # pragma: no cover
     task_uuid = args.get("task_uuid")
 
-    with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
+    with SandboxConnector.windows(
+        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+    ) as connector:
         connector.delete_task(task_uuid)
 
     return_results(f"Task {task_uuid} successfully deleted")
@@ -166,7 +174,9 @@ def delete_task(params: dict, args: dict) -> None:  # pragma: no cover
 def download_analysis_sample(params: dict, args: dict, download_type: str) -> None:  # pragma: no cover
     task_uuid = args.get("task_uuid")
 
-    with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
+    with SandboxConnector.windows(
+        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+    ) as connector:
         if download_type == "pcap":
             return_results(fileResult(f"{task_uuid}_traffic_dump.pcap", connector.download_pcap(task_uuid)))
         return_results(fileResult(f"{task_uuid}_sample.zip", connector.download_file_sample(task_uuid)))
@@ -175,7 +185,9 @@ def download_analysis_sample(params: dict, args: dict, download_type: str) -> No
 def get_analysis_verdict(params: dict, args: dict) -> None:  # pragma: no cover
     task_uuid = args.get("task_uuid")
 
-    with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
+    with SandboxConnector.windows(
+        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+    ) as connector:
         verdict = connector.get_analysis_verdict(task_uuid)
 
         return_results(
@@ -184,14 +196,18 @@ def get_analysis_verdict(params: dict, args: dict) -> None:  # pragma: no cover
 
 
 def get_user_limits(params: dict) -> None:  # pragma: no cover
-    with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
+    with SandboxConnector.windows(
+        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+    ) as connector:
         user_limits = connector.get_user_limits().get("data").get("limits")
 
     return_results(CommandResults(outputs_prefix="ANYRUN.SandboxLimits", outputs=user_limits, ignore_auto_extract=True))
 
 
 def get_analysis_history(params: dict, args: dict) -> None:  # pragma: no cover
-    with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
+    with SandboxConnector.windows(
+        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+    ) as connector:
         analysis_history = connector.get_analysis_history(**args)
 
     return_results(CommandResults(outputs_prefix="ANYRUN.SandboxHistory", outputs=analysis_history, ignore_auto_extract=True))
@@ -262,7 +278,9 @@ def get_analysis_report(params: dict, args: dict) -> None:  # pragma: no cover
 
     incident_id = incident_info.get("id")
 
-    with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
+    with SandboxConnector.windows(
+        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+    ) as connector:
         report = connector.get_analysis_report(task_uuid, report_format=report_format)
 
         if report_format == "html":
@@ -278,7 +296,8 @@ def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
 
-    handle_proxy()
+    if params.get("proxy"):
+        handle_proxy()
 
     try:
         if demisto.command() == "anyrun-delete-task":

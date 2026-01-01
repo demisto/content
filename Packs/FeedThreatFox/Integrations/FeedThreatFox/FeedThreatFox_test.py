@@ -420,6 +420,40 @@ def test_tags(indicator, with_ports, expected_tags):
     assert set(tags) == set(expected_tags)
 
 
+tags_data = [
+    (
+        {"malware_printable": "Unknown malware"},
+        ["threatFoxTagFromConfiguration"],
+        False,  # case malware_printable in unknown
+        ["threatfoxtagfromconfiguration"],
+    ),
+    (
+        {"malware_printable": "Unknown malware"},
+        ["threatFoxTagFromConfiguration", "threatFoxTagFromConfiguration2"],
+        False,  # case malware_printable in unknown
+        ["threatfoxtagfromconfiguration", "threatfoxtagfromconfiguration2"],
+    ),
+]
+
+
+@pytest.mark.parametrize("indicator, tags_from_conf, with_ports, expected_tags", tags_data)
+def test_tags_from_configuration(indicator, tags_from_conf, with_ports, expected_tags):
+    """
+    Given:
+        - The raw json of an indicator and a with_ports boolean argument.
+
+    When:
+        - Running tags func.
+
+    Then:
+        - The right list of tags to add to the indicator is returned.
+    """
+    from FeedThreatFox import tags
+
+    local_tags = tags(indicator, with_ports, tags_from_conf)
+    assert set(local_tags) == set(expected_tags)
+
+
 value_data = [({"ioc_type": "ip:port", "ioc": "1.1.1.1:80"}, "1.1.1.1"), ({"ioc_type": "url", "ioc": "www..."}, "www...")]
 
 

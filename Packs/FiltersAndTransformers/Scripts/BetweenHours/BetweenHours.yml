@@ -34,6 +34,7 @@ outputs:
   description: The end time range in the format HH:MM:SS.
   type: string
 scripttarget: 0
+isllm: false
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole

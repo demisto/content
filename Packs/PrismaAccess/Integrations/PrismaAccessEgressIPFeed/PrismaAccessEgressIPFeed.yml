@@ -32,7 +32,7 @@ configuration:
   defaultvalue: all
   type: 15
   section: Collect
-  required: true
+  required: false
   options:
   - all
   - remote_network
@@ -45,7 +45,7 @@ configuration:
   defaultvalue: all
   type: 15
   section: Collect
-  required: true
+  required: false
   options:
   - all
   - active
@@ -78,7 +78,7 @@ configuration:
   defaultvalue: A - Completely reliable
   type: 15
   section: Collect
-  required: true
+  required: false
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -167,7 +167,7 @@ script:
       description: Prisma Access Egress IP zone.
       type: string
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.12.8.3720084
+  dockerimage: demisto/python3:3.12.12.5490952
   feed: true
   subtype: python3
 fromversion: 5.5.0

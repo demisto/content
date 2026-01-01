@@ -12,18 +12,19 @@ tasks:
       id: f45944a7-0362-48e3-8adb-7022ef46ef0e
       version: -1
       name: ""
+      description: Begins the playbook.
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 50
+          "x": 265,
+          "y": 40
         }
       }
     note: false
@@ -31,6 +32,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 22138dd2-186a-4001-83b5-006026235ffc
@@ -75,11 +78,12 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 195
+          "x": 265,
+          "y": 175
         }
       }
     note: false
@@ -87,15 +91,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 3d40417b-2a78-4c8d-877c-10fa9b4d9d84
+    taskid: 698d902d-578c-4567-858d-807573f8e997
     type: condition
     task:
-      id: 3d40417b-2a78-4c8d-877c-10fa9b4d9d84
+      id: 698d902d-578c-4567-858d-807573f8e997
       version: -1
       name: What type of hash was supplied?
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -106,6 +113,8 @@ tasks:
       - "6"
       SHA256:
       - "5"
+      XFCID:
+      - "8"
     separatecontext: false
     conditions:
     - label: MD5
@@ -115,6 +124,8 @@ tasks:
             value:
               simple: inputs.MD5
             iscontext: true
+          right:
+            value: {}
     - label: SHA256
       condition:
       - - operator: isNotEmpty
@@ -122,11 +133,19 @@ tasks:
             value:
               simple: inputs.SHA256
             iscontext: true
+    - label: XFCID
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.XFC ID
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 265,
+          "y": 350
         }
       }
     note: false
@@ -134,6 +153,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 3b2c3188-d267-4e9d-8f27-54993aa266ee
@@ -155,12 +176,13 @@ tasks:
         simple: ${inputs.Filename}
       hash:
         simple: ${inputs.SHA256}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -150,
           "y": 545
         }
       }
@@ -173,6 +195,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 6b09d948-56b3-4236-87d5-06469c6a67b2
@@ -194,12 +218,13 @@ tasks:
         simple: ${inputs.Filename}
       hash:
         simple: ${inputs.MD5}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 545
         }
       }
@@ -212,6 +237,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: a31058a7-f7d7-4c3b-8d52-633b15b8b385
@@ -221,10 +248,11 @@ tasks:
       version: -1
       name: Complete
       type: title
+      description: The playbook is complete.
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -237,15 +265,54 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e47b7f60-ecf8-4834-8aac-6bbc935dc87b
+    type: regular
+    task:
+      id: e47b7f60-ecf8-4834-8aac-6bbc935dc87b
+      version: -1
+      name: code42-download-file-by-xfc-id
+      description: Downloads a file from Incydr using the XFC Event ID.
+      script: Code42|||code42-download-file-by-xfc-id
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      filename:
+        simple: ${inputs.Filename}
+      xfc_id:
+        simple: ${inputs.XFC ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 810,
-        "x": 50,
-        "y": 50
+        "height": 745,
+        "width": 1205,
+        "x": -150,
+        "y": 40
       }
     }
   }
@@ -259,7 +326,7 @@ inputs:
       - operator: uniq
   required: false
   description: MD5 hash to search for
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SHA256
   value:
     complex:
@@ -269,12 +336,17 @@ inputs:
       - operator: uniq
   required: false
   description: SHA256 hash to search for
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Filename
   value: {}
   required: false
   description: The name of the file to save as.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: XFC ID
+  value: {}
+  required: false
+  description: The XFC ID of the file to download.
+  playbookInputQuery: null
 outputs:
 - contextPath: File.Size
   description: The size of the file.

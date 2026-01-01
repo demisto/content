@@ -2,7 +2,7 @@
     "name": "Oracle Database",
     "description": "A database management system designed for high performance, scalability, and secure data storage across cloud and on-premises environments.",
     "support": "xsoar",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -30,6 +30,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

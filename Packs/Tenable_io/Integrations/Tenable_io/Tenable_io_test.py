@@ -900,3 +900,55 @@ def test_handle_assets_chunks(requests_mock, api_response, expected_assets, expe
     assert new_last_run.get("assets_available_chunks") == expected_last_run.get("assets_available_chunks")
     assert new_last_run.get("nextTrigger") == expected_last_run.get("nextTrigger")
     assert new_last_run.get("type") == expected_last_run.get("type")
+
+
+@pytest.mark.parametrize(
+    "args, expected_tag_filter",
+    [
+        # Test case 1: Both tag_category and tag_value provided
+        (
+            {"tagCategory": "Location", "tagValue": "US-East"},
+            {"tag.Location": ["US-East"]},
+        ),
+        # Test case 2: Tags with other filters
+        (
+            {"tagCategory": "Environment", "tagValue": "Production, Development", "severity": "critical"},
+            {"tag.Environment": ["Production", "Development"], "severity": ["critical"]},
+        ),
+        # Test case 3: tagValue is an array
+        (
+            {"tagCategory": "Environment", "tagValue": ["Production", "Development"], "severity": "critical"},
+            {"tag.Environment": ["Production", "Development"], "severity": ["critical"]},
+        ),
+    ],
+)
+def test_request_uuid_export_vulnerabilities_with_tags(mocker, args, expected_tag_filter):
+    """
+    Given:
+        - args (dict): Arguments with tagCategory and tagValue.
+    When:
+        - Running the request_uuid_export_vulnerabilities function.
+    Then:
+        - Verify that tag filters are properly added to request parameters.
+    """
+    mock_demisto(mocker, args)
+    import Tenable_io
+    from Tenable_io import request_uuid_export_vulnerabilities
+
+    mock_export_uuid = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+    mock_export_request = mocker.patch.object(Tenable_io, "export_request", return_value={"export_uuid": mock_export_uuid})
+
+    result = request_uuid_export_vulnerabilities(args)
+
+    # Verify the request was made
+    assert mock_export_request.called
+    request_params = mock_export_request.call_args[0][0]
+
+    # Verify tag filter is in the filters
+    assert "filters" in request_params
+    for key, value in expected_tag_filter.items():
+        assert request_params["filters"][key] == value
+
+    # Verify PollResult structure
+    assert result.continue_to_poll is True
+    assert result.args_for_next_run["exportUuid"] == mock_export_uuid

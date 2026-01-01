@@ -1,0 +1,20 @@
+{
+    "name": "Citrix",
+    "description": "Citrix is a unified platform that provides management, monitoring, and delivery services for Citrix products and resources across cloud and on-premise environments. It centralizes administration, enhances visibility, and simplifies operational workflows.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2025-11-11T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": ["citrix"],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ]
+}

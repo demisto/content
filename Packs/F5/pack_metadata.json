@@ -2,7 +2,7 @@
     "name": "F5 firewall",
     "description": "Manages F5 firewall rules",
     "support": "xsoar",
-    "currentVersion": "1.2.25",
+    "currentVersion": "1.2.26",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -23,6 +23,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

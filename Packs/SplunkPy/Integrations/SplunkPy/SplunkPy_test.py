@@ -763,7 +763,7 @@ class TestFetchRemovingIrrelevantIncidents:
         mock_last_run = {
             "time": "2024-02-12T10:00:00",
             "latest_time": "2024-02-19T10:00:00",
-            "found_incidents_ids": {"1": {"occurred_time": "2024-02-12T09:59:59"}, "2": {"occurred_time": "2024-02-18T10:00:00"}},
+            "found_incidents_ids": {"1": {"occurred_time": "2024-02-12T08:59:59"}, "2": {"occurred_time": "2024-02-18T10:00:00"}},
         }
         mock_params = {"fetchQuery": "`notable` is cool", "fetch_limit": 2}
         mocker.patch("demistomock.getLastRun", return_value=mock_last_run)
@@ -779,6 +779,51 @@ class TestFetchRemovingIrrelevantIncidents:
             "3": {"occurred_time": "2024-02-19T10:00:00"},
             "4": {"occurred_time": "2024-02-19T10:00:00"},
         }
+
+    def test_daylight_saving_time_delta_handling(self, mocker: MockerFixture):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round
+        - A fetch window that overlaps with a daylight saving time transition period
+
+        When
+        - Fetching notables and filtering irrelevant incident IDs
+
+        Then
+        - Make sure that incidents within the DAYLIGHT_SAVING_TIME_DELTA buffer are kept in cache
+        - This prevents duplicate incidents during clock changes
+        """
+        from SplunkPy import remove_irrelevant_incident_ids
+
+        # Setup: Create a scenario where an incident is just outside the normal window
+        # but within the DST delta buffer
+        window_start_time = "2024-03-10T10:00:00"  # DST transition date example
+        window_end_time = "2024-03-10T12:00:00"
+
+        # Incident that occurred 59 minutes before window start (within 1-hour DST buffer)
+        incident_within_dst_buffer = "2024-03-10T09:01:00"
+
+        # Incident that occurred 61 minutes before window start (outside DST buffer)
+        incident_outside_dst_buffer = "2024-03-10T08:59:00"
+
+        last_run_fetched_ids = {
+            "incident_within_buffer": {"occurred_time": incident_within_dst_buffer},
+            "incident_outside_buffer": {"occurred_time": incident_outside_dst_buffer},
+        }
+
+        # Execute the function
+        filtered_ids = remove_irrelevant_incident_ids(last_run_fetched_ids, window_start_time, window_end_time)
+
+        # Verify: Incident within DST buffer should be kept
+        assert "incident_within_buffer" in filtered_ids, "Incident within DAYLIGHT_SAVING_TIME_DELTA should be kept in cache"
+
+        # Verify: Incident outside DST buffer should be removed
+        assert (
+            "incident_outside_buffer" not in filtered_ids
+        ), "Incident outside DAYLIGHT_SAVING_TIME_DELTA should be removed from cache"
+
+        # Verify the kept incident has the correct structure
+        assert filtered_ids["incident_within_buffer"]["occurred_time"] == incident_within_dst_buffer
 
 
 class TestFetchForLateIndexedEvents:

@@ -1,8 +1,7 @@
 id: Office 365 and Azure Hunting
 version: -1
 name: Office 365 and Azure Hunting
-description: 'This playbook enables you to collect and investigate suspicious security
-  events from Azure AD environment. '
+description: 'This playbook enables you to collect and investigate suspicious security events from Azure AD environment. '
 starttaskid: "0"
 tasks:
   "0":
@@ -65,19 +64,7 @@ tasks:
       id: 9b9c34a8-15c4-46c8-83b9-5a15e108b370
       version: -1
       name: Search for Azure AD service account created or modified
-      description: "Hunt for a Azure AD new or modified service account.\nXDR example\
-        \ query:\npreset = msft_azure_ad_audit // go over azure ad audit logs\n| filter\
-        \ activityDisplayName IN (\"Add service principal credentials\", \"Add service\
-        \ principal\")\nAND result = \"success\" // find cases where someone adds\
-        \ SPNs to an account\n\nSplunk example queries:\nsourcetype=\"azure:aad:audit\"\
-        \ activityDisplayName=\"Add service principal\" \n| stats values(activityDisplayName)\
-        \ AS Action, values(initiatedBy.user.userPrincipalName) \nAS UPN, values(targetResources{}.displayName)\
-        \ AS Target,\nvalues(targetResources{}.modifiedProperties{}.displayName) AS\
-        \ \"Modified Resources\",\nvalues(targetResources{}.modifiedProperties{}.oldValue)\
-        \ AS \"Old Values\",\nvalues(targetResources{}.modifiedProperties{}.newValue)\
-        \ AS \"New Values\" by correlationId \n| fields - correlationId\n---------\n\
-        sourcetype=\"azure:aad:audit\" activityDisplayName=\"Add service principal\
-        \ credentials\"\n"
+      description: "Hunt for a Azure AD new or modified service account.\nXDR example query:\npreset = msft_azure_ad_audit // go over azure ad audit logs\n| filter activityDisplayName IN (\"Add service principal credentials\", \"Add service principal\")\nAND result = \"success\" // find cases where someone adds SPNs to an account\n\nSplunk example queries:\nsourcetype=\"azure:aad:audit\" activityDisplayName=\"Add service principal\" \n| stats values(activityDisplayName) AS Action, values(initiatedBy.user.userPrincipalName) \nAS UPN, values(targetResources{}.displayName) AS Target,\nvalues(targetResources{}.modifiedProperties{}.displayName) AS \"Modified Resources\",\nvalues(targetResources{}.modifiedProperties{}.oldValue) AS \"Old Values\",\nvalues(targetResources{}.modifiedProperties{}.newValue) AS \"New Values\" by correlationId \n| fields - correlationId\n---------\nsourcetype=\"azure:aad:audit\" activityDisplayName=\"Add service principal credentials\"\n"
       type: regular
       iscommand: false
       brand: ""
@@ -105,16 +92,7 @@ tasks:
       id: 6240c9dc-c4d0-4e19-8055-d90a16ed5bec
       version: -1
       name: Search for Azure AD application sharing with additional tenants
-      description: "Hunt for Azure AD application sharing with additional tenants.\n\
-        **XDR example query:**\npreset = msft_azure_ad_audit  // go over azure ad\
-        \ audit logs\n| filter activityDisplayName = \"Update application\"\nAND operationType=\"\
-        Update\"\nand result=\"success\"\nand modifiedDisplayName = \"AvailableToOtherTenants\"\
-          // find cases where someone grants permission to access an app from another\
-        \ azure ad tenant\n\n**Splunk example query:**\nsourcetype=\"azure:aad:audit\"\
-        \ activityDisplayName=\"Update application\" operationType=Update \nresult=success\
-        \ targetResources{}.modifiedProperties{}.displayName=AvailableToOtherTenants\
-        \ \n| table activityDateTime initiatedBy.user.userPrincipalName, \ntargetResources{}.displayName\
-        \ additionalDetails{}.value"
+      description: "Hunt for Azure AD application sharing with additional tenants.\n**XDR example query:**\npreset = msft_azure_ad_audit  // go over azure ad audit logs\n| filter activityDisplayName = \"Update application\"\nAND operationType=\"Update\"\nand result=\"success\"\nand modifiedDisplayName = \"AvailableToOtherTenants\"  // find cases where someone grants permission to access an app from another azure ad tenant\n\n**Splunk example query:**\nsourcetype=\"azure:aad:audit\" activityDisplayName=\"Update application\" operationType=Update \nresult=success targetResources{}.modifiedProperties{}.displayName=AvailableToOtherTenants \n| table activityDateTime initiatedBy.user.userPrincipalName, \ntargetResources{}.displayName additionalDetails{}.value"
       type: regular
       iscommand: false
       brand: ""
@@ -384,12 +362,7 @@ tasks:
       id: 8b9ad15d-f0e2-43b9-84fb-b0684357c75f
       version: -1
       name: Search for Azure AD service account created or modified
-      description: Use the o365-search-auditlog command to search the unified audit
-        log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
-        Microsoft 365 services. You can search for all events in a specified date
-        range, or you can filter the results based on specific criteria, such as the
-        action, the user who performed the action, or the target object.
+      description: Use the o365-search-auditlog command to search the unified audit log. This log contains events from Exchange Online, SharePoint Online, OneDrive for Business, Entra ID, Microsoft Teams, Power BI, and other Microsoft 365 services. You can search for all events in a specified date range, or you can filter the results based on specific criteria, such as the action, the user who performed the action, or the target object.
       script: '|||o365-auditlog-search'
       type: regular
       iscommand: true
@@ -433,12 +406,7 @@ tasks:
       id: b33e2258-dd01-4a54-86ae-f38c1ad0f045
       version: -1
       name: Search for Azure AD application sharing with additional tenants
-      description: Use the o365-search-auditlog command to search the unified audit
-        log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
-        Microsoft 365 services. You can search for all events in a specified date
-        range, or you can filter the results based on specific criteria, such as the
-        action, the user who performed the action, or the target object.
+      description: Use the o365-search-auditlog command to search the unified audit log. This log contains events from Exchange Online, SharePoint Online, OneDrive for Business, Entra ID, Microsoft Teams, Power BI, and other Microsoft 365 services. You can search for all events in a specified date range, or you can filter the results based on specific criteria, such as the action, the user who performed the action, or the target object.
       script: '|||o365-auditlog-search'
       type: regular
       iscommand: true
@@ -483,12 +451,7 @@ tasks:
       id: 11863f50-65fe-4b12-80da-72551d2f44fe
       version: -1
       name: Search for Azure AD custom unverified domain was added
-      description: Use the o365-search-auditlog command to search the unified audit
-        log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
-        Microsoft 365 services. You can search for all events in a specified date
-        range, or you can filter the results based on specific criteria, such as the
-        action, the user who performed the action, or the target object.
+      description: Use the o365-search-auditlog command to search the unified audit log. This log contains events from Exchange Online, SharePoint Online, OneDrive for Business, Entra ID, Microsoft Teams, Power BI, and other Microsoft 365 services. You can search for all events in a specified date range, or you can filter the results based on specific criteria, such as the action, the user who performed the action, or the target object.
       script: '|||o365-auditlog-search'
       type: regular
       iscommand: true
@@ -528,12 +491,7 @@ tasks:
       id: 12bff9a6-df8e-40e4-8f3c-eaca767a7c40
       version: -1
       name: Search for SSO being disabled for a domain
-      description: Use the o365-search-auditlog command to search the unified audit
-        log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
-        Microsoft 365 services. You can search for all events in a specified date
-        range, or you can filter the results based on specific criteria, such as the
-        action, the user who performed the action, or the target object.
+      description: Use the o365-search-auditlog command to search the unified audit log. This log contains events from Exchange Online, SharePoint Online, OneDrive for Business, Entra ID, Microsoft Teams, Power BI, and other Microsoft 365 services. You can search for all events in a specified date range, or you can filter the results based on specific criteria, such as the action, the user who performed the action, or the target object.
       script: '|||o365-auditlog-search'
       type: regular
       iscommand: true
@@ -573,12 +531,7 @@ tasks:
       id: a18788f3-0bf4-4372-8541-927a7b9936cf
       version: -1
       name: Search for domain federation settings modified
-      description: Use the o365-search-auditlog command to search the unified audit
-        log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
-        Microsoft 365 services. You can search for all events in a specified date
-        range, or you can filter the results based on specific criteria, such as the
-        action, the user who performed the action, or the target object.
+      description: Use the o365-search-auditlog command to search the unified audit log. This log contains events from Exchange Online, SharePoint Online, OneDrive for Business, Entra ID, Microsoft Teams, Power BI, and other Microsoft 365 services. You can search for all events in a specified date range, or you can filter the results based on specific criteria, such as the action, the user who performed the action, or the target object.
       script: '|||o365-auditlog-search'
       type: regular
       iscommand: true
@@ -618,12 +571,7 @@ tasks:
       id: 841b04e8-ecab-460f-898d-54710a044b8a
       version: -1
       name: Search whether mail permissions were added to a service principal
-      description: Use the o365-search-auditlog command to search the unified audit
-        log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
-        Microsoft 365 services. You can search for all events in a specified date
-        range, or you can filter the results based on specific criteria, such as the
-        action, the user who performed the action, or the target object.
+      description: Use the o365-search-auditlog command to search the unified audit log. This log contains events from Exchange Online, SharePoint Online, OneDrive for Business, Entra ID, Microsoft Teams, Power BI, and other Microsoft 365 services. You can search for all events in a specified date range, or you can filter the results based on specific criteria, such as the action, the user who performed the action, or the target object.
       script: '|||o365-auditlog-search'
       type: regular
       iscommand: true
@@ -634,8 +582,7 @@ tasks:
     scriptarguments:
       end_date: {}
       free_text:
-        simple: Add app role assignment to service principal,Add delegated permission
-          grant,Add application
+        simple: Add app role assignment to service principal,Add delegated permission grant,Add application
       ip_addresses: {}
       operations: {}
       record_type:
@@ -808,3 +755,4 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+- xsiam

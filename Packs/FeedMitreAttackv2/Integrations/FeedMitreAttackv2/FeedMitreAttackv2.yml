@@ -34,7 +34,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
+  required: false
   type: 15
   section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
@@ -187,7 +187,7 @@ script:
     - contextPath: MITREATTACK.value
       description: MITRE ATTACK Attack Pattern value.
       type: String
-  dockerimage: demisto/taxii2:1.0.0.3588613
+  dockerimage: demisto/taxii2:1.0.0.5113063
   feed: true
   runonce: false
   script: '-'

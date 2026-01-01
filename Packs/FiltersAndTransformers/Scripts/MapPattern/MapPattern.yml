@@ -73,6 +73,7 @@ args:
 - name: default_value
   description: The value to return when all the patterns are not satisfied.
 scripttarget: 0
+isllm: false
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole

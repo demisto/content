@@ -1,0 +1,103 @@
+args:
+- name: ip_address
+  required: true
+  description: The ip address of the network adapters to look for.
+comment: This script resolves the owner and related configuration items of a network adapter by searching the ServiceNow CMDB network adapter table using a specified IP address.
+outputs:
+- contextPath: ServiceNowCMDBAssetEnrichment.summary
+  description: A brief summary of the results of enrichment.
+  type: string
+- contextPath: ServiceNowCMDBAssetEnrichment.network_adapters.sys_id
+  description: The unique system identifier (Sys ID) of the network adapter record in ServiceNow.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.network_adapters.name
+  description: The name of the network adapter.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.network_adapters.ip
+  description: The IP address assigned to the network adapter.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.network_adapters.owner
+  description: The display name of the user assigned as the owner of the network adapter.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.network_adapters.owner_id
+  description: The unique Sys ID of the user assigned to the network adapter.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.network_adapters.related_configuration_item_name
+  description: The display name of the related configuration item (CI) associated with this network adapter.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.network_adapters.related_configuration_item_id
+  description: The Sys ID of the related configuration item associated with this network adapter.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.network_adapters.url
+  description: A direct URL link to the network adapter record in the ServiceNow instance.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.related_configuration_items.sys_id
+  description: The unique system identifier (Sys ID) of the related configuration item (CI) record in ServiceNow.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.related_configuration_items.name
+  description: The name of the related configuration item.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.related_configuration_items.ip
+  description: The IP address associated with the configuration item.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.related_configuration_items.owner
+  description: The display name of the user assigned as the owner of the configuration item.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.related_configuration_items.owner_id
+  description: The unique Sys ID of the user assigned to the configuration item.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.related_configuration_items.hostname
+  description: The hostname of the configuration item.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.related_configuration_items.os
+  description: The operating system running on the configuration item.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.related_configuration_items.os_version
+  description: The version of the operating system running on the configuration item.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.related_configuration_items.ci_class
+  description: The ServiceNow CI class that defines the type of the configuration item (e.g., Server, Application, Network Gear).
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.related_configuration_items.use
+  description: The intended purpose or usage of the configuration item as recorded in ServiceNow.
+  type: string
+
+- contextPath: ServiceNowCMDBAssetEnrichment.related_configuration_items.url
+  description: A direct URL link to the configuration item record in the ServiceNow instance.
+  type: string
+
+commonfields:
+  id: ServiceNowCMDBEnrichAsset
+  version: -1
+dockerimage: demisto/python3:3.12.11.4819260
+enabled: true
+name: ServiceNowCMDBEnrichAsset
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+runonce: false
+engineinfo: {}
+isInternal: true

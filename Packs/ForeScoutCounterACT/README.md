@@ -47,7 +47,7 @@ Follow the below steps to configure the Broker VM to receive Forescout CounterAC
     |:-------------|:------------------------------------------------------------------------------------------------------------------------------------------------|
     | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in Forescout CounterACT).            |
     | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Forescout CounterACT.              |
-    | `Vendor`     | Enter forescout.                                                                                                                                 |
-    | `Product`    | Enter counteract.                                                                                                                                |
+    | `Vendor`     | Enter **ForeScout Technologies**.                                                                                                                                 |
+    | `Product`    | Enter **CounterAct**.                                                                                                                                |
 
 </~XSIAM>

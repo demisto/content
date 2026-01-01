@@ -1,0 +1,22 @@
+{
+    "comments": [
+        {
+            "commentsChanger": "abc@xyz.com",
+            "dateChanged": "2023-01-01T10:00:00Z",
+            "status": "ACTIVE",
+            "newComment": "This is a test comment about the threat"
+        },
+        {
+            "commentsChanger": "def@xyz.com",
+            "dateChanged": "2023-01-02T14:30:00Z",
+            "status": "ACTIVE",
+            "newComment": "Additional context: This IP has been seen in previous incidents"
+        },
+        {
+            "commentsChanger": "ghi@xyz.com",
+            "dateChanged": "2023-01-03T09:15:00Z",
+            "status": "RESOLVED",
+            "newComment": "Marking as resolved after investigation"
+        }
+    ]
+}

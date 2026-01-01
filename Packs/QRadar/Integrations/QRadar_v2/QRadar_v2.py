@@ -913,7 +913,7 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
     """
     Use filter frames based on id ranges: "id>offense_id AND id<(offense_id+incidents_per_fetch)"
 
-    If couldn’t fetch offense:
+    If couldn't fetch offense:
         Fetch last fetchable offense, and set it as the upper limit
         is limit greater than last fetched offense id?
              yes - fetch with increments until manage to fetch (or until limit is reached - dead condition)

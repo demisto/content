@@ -15,6 +15,10 @@ INTEGRATION_NAME = "Unit 42 Intelligence"
 SERVER_URL = "https://prod-us.tas.crtx.paloaltonetworks.com"
 LOOKUP_ENDPOINT = "/api/v1/lookups/indicator/{indicator_type}/{indicator_value}"
 
+# Retry configuration
+RETRY_COUNT = 5
+STATUS_CODES_TO_RETRY = list(range(429, 600))
+
 # Score mappings
 VERDICT_TO_SCORE = {
     "malicious": Common.DBotScore.BAD,
@@ -56,6 +60,29 @@ VALID_REGIONS = {
     "south america": "South America",
 }
 
+#### HELPER FUNCTIONS ####
+
+
+def unit42_error_handler(res: requests.Response):
+    """
+    Custom error handler for Unit 42 API requests.
+    Extracts and logs X-Request-ID header for failed requests (4xx/5xx errors).
+
+    Args:
+        res: Response object from failed request
+
+    Returns:
+        Error message string including X-Request-ID if available
+    """
+    request_id = res.headers.get("X-Request-ID", "N/A")
+    demisto.debug(f"{INTEGRATION_NAME} API Error - X-Request-ID: {request_id}, Status: {res.status_code}, URL: {res.url}")
+
+    error_msg = f"Error in API request [Status: {res.status_code}]\n"
+    error_msg += f"[X-Request-ID: {request_id}]\n"
+    error_msg += f"Response text - {res.text}"
+
+    return_error(error_msg)
+
 
 #### CLIENT CLASS ####
 
@@ -91,10 +118,15 @@ class Client(BaseClient):
 
         endpoint = LOOKUP_ENDPOINT.format(indicator_type=indicator_type, indicator_value=indicator_value)
 
-        return self._http_request(method="GET", url_suffix=endpoint, ok_codes=(200, 404), resp_type="response")
-
-
-#### HELPER FUNCTION ####
+        return self._http_request(
+            method="GET",
+            url_suffix=endpoint,
+            ok_codes=(200, 404),
+            resp_type="response",
+            error_handler=unit42_error_handler,
+            retries=RETRY_COUNT,
+            status_list_to_retry=STATUS_CODES_TO_RETRY,
+        )
 
 
 def create_dbot_score(

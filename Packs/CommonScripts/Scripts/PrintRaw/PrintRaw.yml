@@ -13,7 +13,7 @@ args:
   description: The value to be represented.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.5490952
 runas: DBotWeakRole
 tests:
 - No test - unit test

@@ -13,9 +13,7 @@
                 "cn": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "email",
                         "transformers": [
                             {
@@ -85,9 +83,7 @@
                 "sAMAccountName": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "email",
                         "transformers": [
                             {
@@ -212,9 +208,7 @@
                 "sAMAccountName": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "email",
                         "transformers": [
                             {
@@ -281,6 +275,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

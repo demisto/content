@@ -2,7 +2,7 @@
     "name": "FlashpointFeed",
     "description": "Ingest indicator feeds from Flashpoint.",
     "support": "partner",
-    "currentVersion": "2.0.6",
+    "currentVersion": "2.0.7",
     "author": "Flashpoint",
     "url": "https://flashpoint.my.site.com/helpcenter/s/",
     "email": "support@flashpoint-intel.com",
@@ -31,6 +31,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

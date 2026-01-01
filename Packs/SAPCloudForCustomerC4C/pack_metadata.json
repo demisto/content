@@ -2,7 +2,7 @@
     "name": "SAP Cloud For Customer C4C",
     "description": "SAP Cloud for Customer (C4C) is a cloud-based Customer Relationship Management (CRM) solution from SAP that helps businesses manage customer interactions, sales, and marketing processes. This pack fetches, filters, and paginates audit events from your SAP C4C instance for security monitoring and analysis.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -21,6 +21,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

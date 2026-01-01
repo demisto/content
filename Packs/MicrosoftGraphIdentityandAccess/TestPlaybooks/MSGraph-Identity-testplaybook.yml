@@ -2,7 +2,7 @@ id: Identity & Access test playbook
 version: 5
 vcShouldKeepItemLegacyProdMachine: false
 name: Identity & Access test playbook
-description: Test playbook for MSGraph Identity & Access
+description: Test playbook for MSGraph Identity & Access.
 starttaskid: "0"
 tasks:
   "0":

@@ -7,6 +7,7 @@ from Unit42Feed import (
     create_location_indicators_and_relationships,
     build_threat_object_description,
     test_module as unit42_test_module,
+    unit42_error_handler,
     main,
     INDICATOR_TYPE_MAPPING,
     VERDICT_TO_SCORE,
@@ -14,6 +15,8 @@ from Unit42Feed import (
     DATE_FORMAT,
     API_LIMIT,
     INTEGRATION_NAME,
+    RETRY_COUNT,
+    STATUS_CODES_TO_RETRY,
 )
 from CommonServerPython import *
 
@@ -84,6 +87,9 @@ def test_client_get_indicators(client, mocker):
     mock_http_request.assert_called_once_with(
         method="GET",
         url_suffix="/api/v1/feeds/indicators",
+        error_handler=unit42_error_handler,
+        retries=RETRY_COUNT,
+        status_list_to_retry=STATUS_CODES_TO_RETRY,
         params={
             "indicator_types": ["ip", "domain"],
             "limit": 100,
@@ -109,7 +115,12 @@ def test_client_get_indicators_file_type_mapping(client, mocker):
     client.get_indicators(indicator_types=["file"])
 
     mock_http_request.assert_called_once_with(
-        method="GET", url_suffix="/api/v1/feeds/indicators", params={"indicator_types": ["filehash_sha256"], "limit": 5000}
+        method="GET",
+        url_suffix="/api/v1/feeds/indicators",
+        error_handler=unit42_error_handler,
+        retries=RETRY_COUNT,
+        status_list_to_retry=STATUS_CODES_TO_RETRY,
+        params={"indicator_types": ["filehash_sha256"], "limit": 5000},
     )
 
 
@@ -132,7 +143,12 @@ def test_client_get_threat_objects(client, mocker):
 
     assert result == mock_response
     mock_http_request.assert_called_once_with(
-        method="GET", url_suffix="/api/v1/feeds/threat_objects", params={"limit": 50, "page_token": "test_token"}
+        method="GET",
+        url_suffix="/api/v1/feeds/threat_objects",
+        error_handler=unit42_error_handler,
+        retries=RETRY_COUNT,
+        status_list_to_retry=STATUS_CODES_TO_RETRY,
+        params={"limit": 50, "page_token": "test_token"},
     )
 
 
@@ -1198,3 +1214,32 @@ def test_main_function_exception_handling(mocker):
     error_call = mock_return_error.call_args[0][0]
     assert "Failed to execute test-module command" in error_call
     assert "Test error" in error_call
+
+
+def test_unit42_error_handler_with_request_id(mocker):
+    """
+    Given:
+        - A mock requests.Response object with a status code, URL, and an X-Request-ID header.
+    When:
+        - Calling unit42_error_handler.
+    Then:
+        - demisto.return_error is called with a formatted error message including the X-Request-ID.
+    """
+    mock_response = mocker.Mock()
+    mock_response.status_code = 500
+    mock_response.url = "https://example.com/api"
+    mock_response.text = "Internal Server Error"
+    mock_response.headers = {"X-Request-ID": "test-request-id-123"}
+
+    mocker.patch.object(demisto, "debug")
+    mock_return_error = mocker.patch("Unit42Feed.return_error")
+
+    unit42_error_handler(mock_response)
+
+    expected_error_msg = (
+        "Error in API request [Status: 500]\n" "[X-Request-ID: test-request-id-123]\n" "Response text - Internal Server Error"
+    )
+    mock_return_error.assert_called_once_with(expected_error_msg)
+    demisto.debug.assert_called_once_with(
+        f"{INTEGRATION_NAME} API Error - X-Request-ID: test-request-id-123, Status: 500, URL: https://example.com/api"
+    )

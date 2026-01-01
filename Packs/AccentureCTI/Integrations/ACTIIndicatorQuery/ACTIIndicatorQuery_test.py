@@ -281,10 +281,10 @@ def _is_intelligence_data_present_in_command_result(context_result, test_intel_j
     content = context_result["HumanReadable"]
 
     for title, url in alerts.items():
-        if url not in content[content.find(title): content.find("|", content.find(title))]:
+        if url not in content[content.find(title) : content.find("|", content.find(title))]:
             return False
 
-    return all(url in content[content.find(title): content.find("|", content.find(title))] for title, url in reports.items())
+    return all(url in content[content.find(title) : content.find("|", content.find(title))] for title, url in reports.items())
 
 
 def test_uuid_command():

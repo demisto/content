@@ -3,7 +3,7 @@ commonfields:
   id: Tavily
   version: -1
 sectionorder:
-  - Connect
+- Connect
 configuration:
 - name: url
   display: Server URL

@@ -1312,7 +1312,10 @@ def main():  # pragma: no cover
             delete_account_alias(args, client)
         elif command == "aws-iam-get-account-password-policy":
             get_account_password_policy(args, client)
-        elif command == "aws-iam-update-account-password-policy":
+        elif (
+            command == "aws-iam-update-account-password-policy"
+            or command == "aws-iam-account-password-policy-update-quick-action"
+        ):
             update_account_password_policy(args, client)
         elif command == "aws-iam-list-role-policies":
             list_role_policies(args, client)

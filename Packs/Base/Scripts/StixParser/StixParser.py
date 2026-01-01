@@ -305,6 +305,13 @@ class STIX2Parser:
         kill_chain_mitre = [chain.get("phase_name", "") for chain in attack_pattern_obj.get("kill_chain_phases", [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
 
+        # Extract MitreID from external_references
+        mitre_id = ""
+        for external_ref in attack_pattern_obj.get("external_references", []):
+            if external_ref.get("source_name") == "mitre":
+                mitre_id = external_ref.get("external_id", "")
+                break
+
         attack_pattern = {
             "value": attack_pattern_obj.get("name"),
             "indicator_type": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
@@ -312,6 +319,7 @@ class STIX2Parser:
             "rawJSON": attack_pattern_obj,
         }
         fields = {
+            "mitreid": mitre_id,
             "stixid": attack_pattern_obj.get("id"),
             "killchainphases": kill_chain_phases,
             "firstseenbysource": attack_pattern_obj.get("created"),
@@ -1489,12 +1497,12 @@ class StixDecode:
             title = next((c for c in ttp[0] if c.name == "Title"), None)  # type: ignore
             if title is not None:
                 title = title.text  # type: ignore
-                ttp_info["stix_ttp_title"] = title
+                ttp_info["stix_ttp_title"] = title  # type: ignore
 
             description = next((c for c in ttp[0] if c.name == "Description"), None)  # type: ignore
             if description is not None:
                 description = description.text  # type: ignore
-                ttp_info["ttp_description"] = description
+                ttp_info["ttp_description"] = description  # type: ignore
 
             if behavior := package.find_all("Behavior"):
                 if behavior[0].find_all("Malware"):  # type: ignore

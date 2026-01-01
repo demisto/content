@@ -112,18 +112,18 @@ configuration:
   required: false
   type: 8
   section: Collect
-- display: Email address from which to fetch incidents (e.g., "example@mail.com")
+- display: Email address to associate for this integration.
   name: mailbox_to_fetch
-  required: true
+  required: false
   type: 0
-  section: Collect
+  section: Connect
   additionalinfo: During authentication, ensure you are logged in to this email address.
 - display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing)
   name: folder_to_fetch
   type: 0
   defaultvalue: Inbox
   section: Collect
-  required: true
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: '15 minutes'
@@ -957,17 +957,17 @@ script:
       name: htmlBody
       prettyname: HTML Body
       defaultValue: |
-              <p>Dear recipient</p>
-              <p>Our security team has identified and removed a potentially malicious email that was previously delivered to your inbox.</p>
-              <p><strong>Email Details:</strong><br>
-              - Delivery Time: ${issue.timestamp}<br>
-              - Sender: ${issue.xdmemailsender}</p>
-              <p>This message was deemed suspicious or malicious and has been automatically deleted to protect your account and our organization.</p>
-              <p><strong>Important:</strong><br>
-              Please do not attempt to reopen retrieve or interact with the email if you have it cached or archived in any personal folders or devices.</p>
-              <p>If you clicked any links or downloaded attachments from the original message or if you experience any suspicious system behavior. Please notify the Security Team immediately.</p>
-              <p>Thank you for your cooperation in keeping our environment secure.</p>
-              <p>—<br>Security Operations Team</p>
+        <p>Dear recipient</p>
+        <p>Our security team has identified and removed a potentially malicious email that was previously delivered to your inbox.</p>
+        <p><strong>Email Details:</strong><br>
+        - Delivery Time: ${issue.timestamp}<br>
+        - Sender: ${issue.xdmemailsender}</p>
+        <p>This message was deemed suspicious or malicious and has been automatically deleted to protect your account and our organization.</p>
+        <p><strong>Important:</strong><br>
+        Please do not attempt to reopen retrieve or interact with the email if you have it cached or archived in any personal folders or devices.</p>
+        <p>If you clicked any links or downloaded attachments from the original message or if you experience any suspicious system behavior. Please notify the Security Team immediately.</p>
+        <p>Thank you for your cooperation in keeping our environment secure.</p>
+        <p>—<br>Security Operations Team</p>
     - auto: PREDEFINED
       description: 'The body type of the email. Can be: "text", or "HTML".'
       name: body_type

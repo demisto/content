@@ -217,7 +217,6 @@ GET_BLOB_DATA_RESPONSE_FOR_AUDIT_ACTIVEDIRECTORY = [
     }
 ]
 
-
 CONTENT_RECORD_CREATED_ONE_HOUR_AGO = [
     {
         "CreationTime": TIME_ONE_HOUR_AGO_STRING,
@@ -689,3 +688,39 @@ def test_fetch_start_time(mocker):
 
     assert fetch_start_time_str == "2023-08-02T14:22:49"
     assert fetch_end_time_str == "2023-08-03T14:22:49"
+
+
+def test_test_module_with_auth_code(mocker):
+    """
+    Given:
+        - Various configurations of valid auth_code and redirect_uri.
+    When:
+        - Calling test_module function.
+    Then:
+        - Ensure the appropriate error is raised based on the configuration.
+    """
+    import MicrosoftManagementActivity
+    from MicrosoftManagementActivity import main
+
+    redirect_uri = "redirect_uri"
+    tenant_id = "tenant_id"
+    client_id = "client_id"
+    mocked_params = {
+        "redirect_uri": redirect_uri,
+        "credentials_auth_code": {"password": "test_auth_code"},
+        "self_deployed": True,
+        "refresh_token": tenant_id,
+        "auth_id": client_id,
+        "enc_key": "client_secret",
+    }
+    mocker.patch.object(demisto, "params", return_value=mocked_params)
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(MicrosoftManagementActivity, "return_results")
+    mock_return_error = mocker.patch.object(MicrosoftManagementActivity, "return_error")
+
+    main()
+
+    expected_error = "Please run the !ms-management-activity-list-subscriptions command"
+    assert mock_return_error.called
+    error_message = mock_return_error.call_args[0][0]
+    assert expected_error in error_message

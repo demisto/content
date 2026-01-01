@@ -2,7 +2,7 @@
     "name": "Zscaler Internet Access",
     "description": "Zscaler is a cloud security solution built for performance and flexible scalability.",
     "support": "xsoar",
-    "currentVersion": "1.3.33",
+    "currentVersion": "1.3.37",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -30,6 +30,10 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }

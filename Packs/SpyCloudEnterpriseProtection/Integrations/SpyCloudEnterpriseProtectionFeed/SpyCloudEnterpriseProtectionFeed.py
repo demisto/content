@@ -1,13 +1,14 @@
-from datetime import datetime, UTC
+# === SpyCloudEnterpriseProtectionFeed Integration ===
+
+from datetime import datetime, timedelta
 from json import dumps
 from typing import Any
-
-import demistomock as demisto
-from CommonServerPython import *  # noqa: F401 # pylint:# disable=unused-wildcard-import
 from requests import Response
-from urllib3 import disable_warnings
 
-# Disable insecure warnings
+from urllib3 import disable_warnings
+from CommonServerPython import *
+
+
 disable_warnings()  # Disable SSL warnings
 
 INTEGRATION_CONTEXT_NAME = "SpyCloud"
@@ -58,14 +59,6 @@ SEVERITY_VALUE = {
 
 
 class Client(BaseClient):
-    """
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this implementation, no special attributes defined
-    """
-
     def __init__(self, base_url: str, apikey: str, verify=None, proxy=None):
         headers = {"Accept": "application/json", "X-API-Key": apikey, "User-Agent": "paloalto_xsoar_v1.5.0"}
         super().__init__(
@@ -76,22 +69,14 @@ class Client(BaseClient):
         )
 
     def query_spy_cloud_api(self, end_point: str, params: dict[Any, Any] = None, is_retry: bool = False) -> dict:
-        """
-        Args:
-         end_point (str): SpyCloud endpoint.
-         params (dict): Params.
-         is_retry (bool): Boolean Variable to check whether retry required.
-        Returns:
-         Return the raw API response from SpyCloud API.
-        """
         if params is None:
             params = {}
 
         url_path = urljoin(self._base_url, end_point) if not is_retry else end_point
 
-        demisto.debug(f"[SpyCloud] Calling API endpoint: {url_path}")
+        demisto.info(f"[SpyCloud] Calling API endpoint: {url_path}")
         if params:
-            demisto.debug(f"[SpyCloud] With query params: {params}")
+            demisto.info(f"[SpyCloud] With query params: {params}")
 
         retries = None
         status_list_to_retry = None
@@ -115,13 +100,6 @@ class Client(BaseClient):
         return response
 
     def spy_cloud_error_handler(self, response: Response):
-        """
-        Error Handler for SpyCloud
-        Args:
-            response (response): SpyCloud response
-        Raise:
-             DemistoException
-        """
         response_headers = response.headers
         err_msg = response.json().get("message") or response.json().get("errorMessage")
         if response.status_code == 429:
@@ -141,46 +119,33 @@ class Client(BaseClient):
 
     @staticmethod
     def set_last_run():
-        """
-        sets the last run
-        """
-        current_date = datetime.now(UTC)
+        current_date = datetime.utcnow()
         demisto.setLastRun({"lastRun": current_date.strftime(DATE_TIME_FORMAT)})
 
     @staticmethod
     def get_last_run() -> str:
-        """
-        Gets last run time in timestamp
-        Returns:
-            last run in timestamp, or '' if no last run
-        """
         return demisto.getLastRun().get("lastRun")
 
 
 def create_spycloud_args(args: dict, client: Client) -> dict:
-    """
-    This function creates a dictionary of the arguments sent to the SpyCloud
-    API based on the demisto.args().
-    Args:
-        args: demisto.args()
-        client: Client class
-    Returns:
-        Return arguments dict.
-    """
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     last_run = client.get_last_run()
 
     if last_run:
-        last_run_dt = arg_to_datetime(last_run)
-        since = since_modification_date = last_run_dt.strftime("%Y-%m-%d") if isinstance(last_run_dt, datetime) else None
-        until = until_modification_date = now.strftime("%Y-%m-%d")
+        since = last_run
+        until = now.strftime(DATE_TIME_FORMAT)
+        since_modification_date = (now - timedelta(days=1)).strftime("%Y-%m-%d")
+        until_modification_date = (now - timedelta(days=1)).strftime("%Y-%m-%d")
     else:
         since_dt = arg_to_datetime(args.get("first_fetch") or DEFAULT_DATE)
-        since = since_dt.strftime("%Y-%m-%d") if since_dt else None
-        until = now.strftime("%Y-%m-%d")
-        since_mod_dt = arg_to_datetime(args.get("since_modification_date", DEFAULT_DATE), "Since Modification Date")
-        since_modification_date = since_mod_dt.strftime("%Y-%m-%d") if since_mod_dt else None
-        until_modification_date = now.strftime("%Y-%m-%d")
+        since = since_dt.strftime("%Y-%m-%d") if since_dt else now.strftime("%Y-%m-%d")
+
+        until_dt = arg_to_datetime(args.get("until")) or now
+        until = until_dt.strftime("%Y-%m-%d")
+
+        since_mod_dt = arg_to_datetime(args.get("since_modification_date")) if args.get("since_modification_date") else since_dt
+        since_modification_date = since_mod_dt.strftime("%Y-%m-%d") if since_mod_dt else since
+        until_modification_date = until
 
     severity_list = argToList(args.get("severity", []))
     supported_severities = {"2", "5", "25", "20"}
@@ -204,70 +169,52 @@ def create_spycloud_args(args: dict, client: Client) -> dict:
 
 
 def fetch_domain_or_watchlist_data(client: Client, args: dict, base_args: dict) -> list:
-    """
-    Args:
-         client (Client): Client class object.
-         args (dict): demisto.args().
-         base_args (dict): Custom Param.
-        Returns:
-         Return Watchlist or domain specific data.
-    """
     domain_search = (args.get("domain_search") or "").strip()
-    type_param = (args.pop("type", "") or "").strip()
     results = []
 
-    def build_endpoint(base: str, domain: str = None) -> str:
-        endpoint = base
-        if domain:
-            endpoint += domain
-        if type_param:
-            delimiter = "&" if "?" in endpoint else "?"
-            endpoint += f"{delimiter}type={type_param}"
-        return endpoint
-
-    def fetch_paginated(endpoint_url: str) -> None:
-        cursor = None
-        while True:
-            try:
-                params = dict(base_args)
-                if cursor:
-                    params["cursor"] = cursor
-                response = client.query_spy_cloud_api(endpoint_url, params)
-
-                results.extend(response.get("results", []))
-                cursor = response.get("cursor")
-                if not cursor:
-                    break
-            except Exception as e:
-                demisto.error(f"[SpyCloud] Failed to fetch data from {endpoint_url}: {e}")
-                break
-
     if domain_search:
-        required_types = {"email_domain", "target_domain"}
-        current_types = set(type_param.split(",")) if type_param else set()
-        type_param = ",".join(sorted(current_types | required_types))
-
         domains = [d.strip() for d in domain_search.split(",") if d.strip()]
-        demisto.debug(f"[SpyCloud] Detected domain_search values: {domains}")
+        demisto.debug(f"[SpyCloud] Processing domain_search values: {domains}")
 
         for domain in domains:
-            endpoint = build_endpoint(DOMAIN_ENDPOINT, domain)
-            fetch_paginated(endpoint)
+            demisto.info(f"[SpyCloud] Fetching data for domain: {domain}")
+            endpoint = f"{DOMAIN_ENDPOINT}{domain}"
+            domain_params = base_args.copy()
+            domain_params["type"] = "email_domain"
+            if base_args.get("severity"):
+                pass
+
+            cursor = " "
+            while cursor:
+                try:
+                    response = client.query_spy_cloud_api(endpoint, {**domain_params, "cursor": cursor})
+                    domain_results = response.get("results", [])
+                    demisto.debug(f"[SpyCloud] Retrieved {len(domain_results)} records for domain: {domain}")
+                    results.extend(domain_results)
+                    cursor = response.get("cursor", "")
+                except Exception as e:
+                    demisto.error(f"[SpyCloud] Failed to fetch data for domain {domain}: {str(e)}")
+                    break
     else:
-        endpoint = build_endpoint(WATCHLIST_ENDPOINT)
-        fetch_paginated(endpoint)
+        demisto.info("[SpyCloud] No domain_search provided, using watchlist endpoint")
+        endpoint = WATCHLIST_ENDPOINT
+        cursor = " "
+        while cursor:
+            try:
+                response = client.query_spy_cloud_api(endpoint, {**base_args, "cursor": cursor})
+                watchlist_results = response.get("results", [])
+                demisto.debug(f"[SpyCloud] Retrieved {len(watchlist_results)} records from watchlist")
+                results.extend(watchlist_results)
+                cursor = response.get("cursor", "")
+            except Exception as e:
+                demisto.error(f"[SpyCloud] Failed to fetch data from watchlist: {str(e)}")
+                break
+
+    demisto.info(f"[SpyCloud] Total records retrieved: {len(results)}")
     return results
 
 
 def build_iterators(client: Client, results: list) -> list:
-    """
-    Function to parse data and create relationship.
-    Args:
-        client: Client class
-        results: API response.
-    Returns:
-        list of incidents
-    """
     incident_record = []
     for item in results:
         source_id = item.get("source_id")
@@ -288,80 +235,91 @@ def build_iterators(client: Client, results: list) -> list:
 
 
 def remove_duplicate(since_response: list, modified_response: list) -> list:
-    """
-    Function to remove duplicate record from two different calls.
-    Args:
-        since_response: response when only since parameter given.
-        modified_response: response when only since parameter given.
-    """
     id_set = {rec["document_id"] for rec in modified_response}
     modified_response.extend(res for res in since_response if res["document_id"] not in id_set)
     return modified_response
 
 
 def fetch_incident(client: Client, args: dict):
-    """
-    Function to create Incident and Indicator to XSOAR platform.
-    Args:
-        client(Client): Client class object
-        args: demisto.args()
-    """
-    left_results = demisto.getIntegrationContext().get("results")
+    modified_results = []
+    context = demisto.getIntegrationContext() or {}
+    left_results = context.get("results", [])
+    last_mod_check = context.get("last_mod_check")
 
     try:
         max_fetch = int(args.get("fetch_limit", DEFAULT_FETCH_LIMIT))
     except (ValueError, TypeError):
         max_fetch = DEFAULT_FETCH_LIMIT
 
+    # Handle leftover results first
     if left_results:
         incident_record = build_iterators(client, left_results[:max_fetch])
         if len(left_results) <= max_fetch:
-            demisto.setIntegrationContext({"results": []})
+            context["results"] = []
         else:
-            demisto.setIntegrationContext({"results": left_results[max_fetch:]})
+            context["results"] = left_results[max_fetch:]
+        demisto.setIntegrationContext(context)
         return incident_record
 
+    # Build args and time windows
     param = create_spycloud_args(args, client)
     since = param.pop("since")
     until = param.pop("until")
     since_modification_date = param.pop("since_modification_date")
     until_modification_date = param.pop("until_modification_date")
 
+    # Always fetch recent data
     since_results = fetch_domain_or_watchlist_data(client, args, {**param, "since": since, "until": until})
-    modified_results = fetch_domain_or_watchlist_data(
-        client,
-        args,
-        {**param, "since_modification_date": since_modification_date, "until_modification_date": until_modification_date},
-    )
+
+    # Run modification check once per day
+    now = datetime.now(timezone.utc)
+    run_mod_check = False
+
+    if not last_mod_check:
+        run_mod_check = True
+    else:
+        try:
+            last_mod_dt = datetime.strptime(last_mod_check, DATE_TIME_FORMAT)
+            if (now - last_mod_dt) >= timedelta(days=1):
+                run_mod_check = True
+        except Exception:
+            run_mod_check = True
+
+    if run_mod_check:
+        demisto.info("[SpyCloud] Running daily modification date check.")
+        modified_results = fetch_domain_or_watchlist_data(
+            client,
+            args,
+            {
+                **param,
+                "since_modification_date": since_modification_date,
+                "until_modification_date": until_modification_date,
+            },
+        )
+        context["last_mod_check"] = now.strftime(DATE_TIME_FORMAT)
+    else:
+        demisto.info("[SpyCloud] Skipping modification date check (already done today).")
 
     client.set_last_run()
     incidents = remove_duplicate(since_results, modified_results)
 
     if len(incidents) > max_fetch:
-        demisto.setIntegrationContext({"results": incidents[max_fetch:]})
+        context["results"] = incidents[max_fetch:]
+        demisto.setIntegrationContext(context)
         return build_iterators(client, incidents[:max_fetch])
+
+    context["results"] = []
+    demisto.setIntegrationContext(context)
     return build_iterators(client, incidents)
 
 
 def test_module(client: Client, params: dict) -> str:
-    """
-    Tests API connectivity and authentication
-    When 'ok' is returned it indicates the integration works like
-    it is supposed to and connection to the service is successful.
-    Args:
-        client(Client): Client class object
-    Returns:
-        Connection ok
-    """
     args = create_spycloud_args(params, client)
     client.query_spy_cloud_api(WATCHLIST_ENDPOINT, args)
     return "ok"
 
 
 def main():
-    """
-    PARSE AND VALIDATE INTEGRATION PARAMS
-    """
     params = demisto.params()
     apikey = params.get("apikey")
     verify_certificate = not params.get("insecure", False)

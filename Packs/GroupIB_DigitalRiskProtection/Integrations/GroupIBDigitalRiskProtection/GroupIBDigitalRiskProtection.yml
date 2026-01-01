@@ -1,0 +1,185 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Group-IB Digital Risk Protection
+  version: -1
+configuration:
+- defaultvalue: https://drp.group-ib.com/client_api/
+  display: GIB DRP URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  section: Collect
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  section: Connect
+  type: 13
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+  section: Collect
+- name: credentials
+  display: Username
+  required: true
+  type: 9
+  displaypassword: ""
+  hiddenusername: false
+  section: Connect
+- display: Filter by Violation Type
+  additionalinfo: >
+    Select a Violation Section to filter fetched Violations. Options map to DRP sections: Web (1), Marketplace (3), Advertising (5), Mobile Apps (2), Social Networks (4), Instant Messengers (6). Leave empty to fetch from all sections.
+  name: violationSection
+  type: 15
+  required: false
+  options:
+  - "Web"
+  - "Marketplace"
+  - "Advertising"
+  - "Mobile Apps"
+  - "Social Networks"
+  - "Instant Messengers"
+  section: Collect
+- display: Filter by Brand
+  name: brands
+  type: 0
+  required: false
+  additionalinfo: >
+    Requests only Violations associated with the specified Brand IDs. The list of available brands can be obtained with the command !gibdrp-get-brands in the menu WarRoom -> Playground. After getting the brands you must specify the brand ID for which you want to receive violations. Attention! Currently filtering is available only by one brand in one Instance
+  section: Collect
+- additionalinfo: Date to start fetching incidents from.
+  defaultvalue: 3 days
+  display: Incidents first fetch
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
+- display: Download images
+  name: download_images
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Enables or disables loading of each image in each violation. Can significantly affect the speed of data collection if the parameter is enabled, i.e. set to True
+  section: Optimize
+- display: Get Typosquatting Only
+  name: only_typosquatting
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Returns only records of the Typosquatting type. If not specified, you consume only violations - without Typosquatting detections.
+  section: Optimize
+- display: Number of requests per collection
+  name: max_fetch
+  type: 15
+  required: true
+  defaultvalue: "1"
+  options:
+  - "1"
+  - "2"
+  - "3"
+  - "4"
+  - "5"
+  - "6"
+  additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 30 incidents). If you face some runtime errors, lower the value.
+  section: Collect
+description: Pack helps to integrate Group-IB Digital Risk Protection and get violations incidents directly into Cortex XSOAR.
+display: Group-IB Digital Risk Protection
+name: Group-IB Digital Risk Protection
+script:
+  dockerimage: demisto/vendors-sdk:1.0.0.5505539
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+  commands:
+  - name: gibdrp-get-brands
+    arguments: []
+    description: Receive all configured brands.
+    outputs:
+    - contextPath: GIBDRP.OtherInfo
+      description: List of configured brands.
+      type: string
+    - contextPath: GIBDRP.OtherInfo.brands.name
+      description: Brand name.
+      type: string
+    - contextPath: GIBDRP.OtherInfo.brands.id
+      description: Brand ID.
+      type: string
+  - name: gibdrp-get-subscriptions
+    arguments: []
+    description: Receive all configured subscriptions.
+    outputs:
+    - contextPath: GIBDRP.OtherInfo
+      description: List of configured subscriptions.
+      type: string
+    - contextPath: GIBDRP.OtherInfo.subscriptions
+      description: Subscriptions list.
+      type: string
+  - name: gibdrp-get-violation-by-id
+    arguments:
+    - name: id
+      required: true
+      description: ID violation.
+    description: Getting a single violation by its ID.
+    outputs:
+    - contextPath: GIBDRP.Violation.id
+      description: Violation ID.
+      type: string
+    - contextPath: GIBDRP.Violation.title
+      description: Violation title.
+      type: string
+    - contextPath: GIBDRP.Violation.description
+      description: Violation description.
+      type: string
+    - contextPath: GIBDRP.Violation.status
+      description: Violation status.
+      type: string
+    - contextPath: GIBDRP.Violation.violation_uri
+      description: Violation URI.
+      type: string
+    - contextPath: GIBDRP.Violation.source
+      description: Violation source section.
+      type: string
+    - contextPath: GIBDRP.Violation.detected
+      description: Detected timestamp.
+      type: date
+  - name: gibdrp-change-violation-status
+    arguments:
+    - name: id
+      required: true
+      description: ID violation.
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - approve
+      - reject
+      description: What status to change to.
+    description: Changing the status of a single violation.
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+sectionorder:
+- Connect
+- Collect
+- Optimize

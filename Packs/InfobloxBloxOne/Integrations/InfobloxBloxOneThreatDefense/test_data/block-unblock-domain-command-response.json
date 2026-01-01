@@ -1,0 +1,37 @@
+{
+    "results": {
+        "confidence_level": "HIGH",
+        "created_time": "2024-04-01T18:24:37Z",
+        "description": "Auto-generated",
+        "id": 123456,
+        "item_count": 1,
+        "items": [
+            "test.com",
+            "test.org"
+        ],
+        "items_described": [
+            {
+                "description": "",
+                "item": "test.com",
+                "status": "ACTIVE",
+                "status_details": ""
+            },
+            {
+                "description": "",
+                "item": "test.org",
+                "status": "ACTIVE",
+                "status_details": ""
+            }
+        ],
+        "name": "Test Name",
+        "policies": [
+            "Test Policy"
+        ],
+        "tags": {
+            "test_key": "test_value"
+        },
+        "threat_level": "MEDIUM",
+        "type": "test_type",
+        "updated_time": "2025-07-25T10:57:25Z"
+    }
+}

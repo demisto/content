@@ -34,6 +34,7 @@ args:
   description: Set to true to not replace a value if the variable is null, otherwise false.
   defaultValue: "false"
 scripttarget: 0
+isllm: false
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole

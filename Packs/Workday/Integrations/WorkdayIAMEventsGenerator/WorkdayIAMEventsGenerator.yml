@@ -81,13 +81,13 @@ fromversion: 6.0.0
 toversion: 7.9.9
 beta: true
 triggers:
-  - conditions:
-      - name: engine
-        operator: not_exists
-      - name: isEngineGroup
-        operator: not_exists
-    effects:
-      - name: longRunningPort
-        action:
-          hidden: true
-          required: false
+- conditions:
+  - name: engine
+    operator: not_exists
+  - name: isEngineGroup
+    operator: not_exists
+  effects:
+  - name: longRunningPort
+    action:
+      hidden: true
+      required: false

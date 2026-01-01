@@ -1,4 +1,4 @@
-This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It automates the analysis of potentially malicious URLs on Ubuntu OS.
+This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It automates the analysis of potentially malicious URLs on Linux OS.
 
 ## Dependencies
 

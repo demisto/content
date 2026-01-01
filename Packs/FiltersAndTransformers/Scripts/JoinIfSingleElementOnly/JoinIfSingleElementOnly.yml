@@ -18,6 +18,7 @@ args:
   description: The array to join if it has single element.
   isArray: true
 scripttarget: 0
+isllm: false
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.12.8.3296088
 tests:

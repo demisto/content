@@ -9,5 +9,6 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+- xsiam
 tags: okta
 toversion: 8.3.0

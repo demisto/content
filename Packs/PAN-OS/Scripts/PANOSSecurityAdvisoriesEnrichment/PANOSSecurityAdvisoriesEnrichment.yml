@@ -88,5 +88,7 @@ tests:
 - No tests (auto formatted)
 supportedModules:
 - agentix
+- xsiam
+- cloud_posture
 marketplaces:
 - platform

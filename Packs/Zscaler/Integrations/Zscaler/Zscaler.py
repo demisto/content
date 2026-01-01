@@ -124,9 +124,9 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type="json"):
 
 def validate_urls(urls):
     for url in urls:
-        if url.startswith(("http://", "https://")):
+        if url.startswith(("http://", "https://", "*")):
             return_error(
-                "Enter a valid URL address without an http:// or https:// prefix. URL should have at least host."
+                "Enter a valid URL address without an http:// or https:// or * prefix. URL should have at least host."
                 "domain pattern to qualify."
             )
 

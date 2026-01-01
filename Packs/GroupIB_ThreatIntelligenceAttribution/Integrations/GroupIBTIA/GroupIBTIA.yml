@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: Group-IB Threat Intelligence & Attribution
   version: -1
@@ -80,13 +77,28 @@ configuration:
   name: exclude_combolist
   required: false
   type: 8
+  additionalinfo: This parameter has been deprecated.
+- display: Include combolist type in data
+  name: combolist
+  section: Collect
+  required: false
+  type: 8
+  defaultvalue: "false"
+  additionalinfo: Works only for compromised/account_group. If the parameter is enabled, the response contains combolist data. If you enable “Include unique type in data” with this filter, the response will contain data of both types. If “Include combolist type in data” and “Include unique type in data” are disabled, the response will contain data of both types.
+- display: Include unique type in data
+  name: unique
+  section: Collect
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Works only for compromised/account_group. If the parameter is enabled, the response contains unique data. If you enable “Include combolist type in data” with this filter, the response will contain data of both types. If “Include combolist type in data” and “Include unique type in data” are disabled, the response will contain data of both types.
 - display: Enable filter "Probable Corporate Access"
   name: enable_probable_corporate_access
   section: Collect
   required: false
   type: 8
   defaultvalue: "false"
-  additionalinfo: Enable filter "Probable Corporate Access"
+  additionalinfo: Works only for compromised/account_group
 - display: Number of requests per collection
   name: max_fetch
   section: Collect
@@ -101,6 +113,13 @@ configuration:
   - '3'
   - '4'
   - '5'
+- display: Limit (items per request)
+  name: limit
+  section: Collect
+  defaultvalue: '100'
+  type: 0
+  required: false
+  additionalinfo: Number of items requested per API page. Larger values reduce API round-trips but may increase response size. Server-side caps may apply.
 - display: Incident type
   name: incidentType
   section: Collect
@@ -948,7 +967,7 @@ script:
       required: true
     description: Command performs Group IB event lookup in attacks/phishing_group collection by provided ID.
     name: gibtia-get-phishing-group-info
-  dockerimage: demisto/vendors-sdk:1.0.0.3242986
+  dockerimage: demisto/vendors-sdk:1.0.0.5505539
   feed: false
   isfetch: true
   longRunning: false
@@ -960,3 +979,6 @@ script:
 tests:
 - Group-IB Threat Intelligence -Test
 fromversion: 6.0.0
+sectionorder:
+- Connect
+- Collect

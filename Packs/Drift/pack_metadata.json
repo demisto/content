@@ -2,7 +2,7 @@
     "name": "Drift",
     "description": "Drift Pack containing integrations with the Drift API",
     "support": "community",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "Adriana Rose Diaz",
     "url": "https://devdocs.drift.com/docs/using-drift-apis",
     "email": "",
@@ -28,6 +28,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

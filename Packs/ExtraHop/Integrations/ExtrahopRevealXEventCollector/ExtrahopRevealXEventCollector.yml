@@ -42,7 +42,7 @@ configuration:
   defaultvalue: "25000"
   display: Maximum number of events per fetch
   name: max_events_per_fetch
-  required: true
+  required: false
   type: 0
   section: Collect
   advanced: true
@@ -76,9 +76,10 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)

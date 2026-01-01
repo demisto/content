@@ -121,6 +121,7 @@ def http_request(
     files=None,
     resp_type: str = "xml",
     return_raw: bool = False,
+    ok_codes: list = None,
 ):
     LOG(f"running request with url={url}")
     result = requests.request(method, url, headers=headers, data=body, verify=USE_SSL, params=params, files=files)
@@ -136,6 +137,10 @@ def http_request(
             raise Exception(f"Failed to parse response to json. response: {result.text}")
 
         demisto.results({"Type": entryTypes["error"], "Contents": error_message, "ContentsFormat": formats["text"]})
+
+    # Check if status code is in ok_codes before treating it as an error
+    if ok_codes and result.status_code in ok_codes:
+        return result
 
     if result.status_code < 200 or result.status_code >= 300:
         if str(result.status_code) in ERROR_DICT:
@@ -1468,7 +1473,7 @@ def wildfire_get_sample(file_hash):
 
     PARAMS_DICT["hash"] = file_hash
 
-    result = http_request(get_report_uri, "POST", headers=DEFAULT_HEADERS, params=PARAMS_DICT, return_raw=True)
+    result = http_request(get_report_uri, "POST", headers=DEFAULT_HEADERS, params=PARAMS_DICT, return_raw=True, ok_codes=[403])
     return result
 
 
@@ -1483,21 +1488,28 @@ def wildfire_get_sample_command():
     for element in inputs:
         try:
             result = wildfire_get_sample(element)
-            # filename will be found under the Content-Disposition header in the format
-            # attachment; filename=<FILENAME>.000
-            content_disposition = result.headers.get("Content-Disposition")
-            raw_filename = content_disposition.split("filename=")[1]
-            # there are 2 dots in the filename as the response saves the packet capture file
-            # need to extract the string until the second occurrence of the dot char
-            file_name = ".".join(raw_filename.split(".")[:2])
-            # will be saved under 'File' in the context, can be further investigated.
-            file_entry = fileResult(file_name, result.content)
-            demisto.results(file_entry)
+
+            # Check if we got a 403 status code (benign sample)
+            if result.status_code == 403:
+                demisto.results(
+                    "Benign samples are not available for download. For more info contact your WildFire representative."
+                )
+            else:
+                # filename will be found under the Content-Disposition header in the format
+                # attachment; filename=<FILENAME>.000
+                content_disposition = result.headers.get("Content-Disposition")
+                raw_filename = content_disposition.split("filename=")[1]
+                # there are 2 dots in the filename as the response saves the packet capture file
+                # need to extract the string until the second occurrence of the dot char
+                file_name = ".".join(raw_filename.split(".")[:2])
+                # will be saved under 'File' in the context, can be further investigated.
+                file_entry = fileResult(file_name, result.content)
+                demisto.results(file_entry)
         except NotFoundError as exc:
             demisto.error(f"Sample was not found. Error: {exc}")
             demisto.results(
                 "Sample was not found. "
-                "Please note that grayware and benign samples are available for 14 days only. "
+                "Please note that grayware samples are available for 14 days only. "
                 "For more info contact your WildFire representative."
             )
 

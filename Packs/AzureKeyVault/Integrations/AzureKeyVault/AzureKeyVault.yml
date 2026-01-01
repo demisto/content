@@ -47,6 +47,7 @@ configuration:
   required: false
   hiddenusername: true
   type: 9
+  section: Connect
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
@@ -158,7 +159,7 @@ script:
       predefined:
       - standard
       - premium
-    - description: 'The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies: Any change in the access policy regards that object ID, will override the exists one. To retrieve it navigate in the Azure Portal to App registrations > your registered application > click on manage application in local directory > copy Object ID property.'
+    - description: 'The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies: Any change in the access policy regards that object ID, will override the exists one. To retrieve it navigate in the Azure Portal to App registrations > your registered application > click on manage application in local directory > copy Object ID property.'
       name: object_id
       required: true
     - auto: PREDEFINED
@@ -303,13 +304,13 @@ script:
       description: SKU name to specify whether the key vault is a standard vault or a premium vault.
       type: String
     - contextPath: AzureKeyVault.KeyVault.properties.tenantId
-      description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+      description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
       type: String
     - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.tenantId
-      description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+      description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
       type: String
     - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.objectId
-      description: The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies.
+      description: The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies.
       type: String
     - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys
       description: Permissions to keys.
@@ -380,13 +381,13 @@ script:
       description: SKU name to specify whether the key vault is a standard vault or a premium vault.
       type: String
     - contextPath: AzureKeyVault.KeyVault.properties.tenantId
-      description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+      description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
       type: String
     - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.tenantId
-      description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+      description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
       type: String
     - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.objectId
-      description: The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies.
+      description: The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies.
       type: String
     - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys
       description: Permissions to keys.
@@ -442,13 +443,13 @@ script:
       description: SKU name to specify whether the key vault is a standard vault or a premium vault.
       type: String
     - contextPath: AzureKeyVault.KeyVault.properties.tenantId
-      description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+      description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
       type: String
     - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.tenantId
-      description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+      description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
       type: String
     - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.objectId
-      description: The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies.
+      description: The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies.
       type: String
     - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys
       description: Permissions to keys.
@@ -486,7 +487,7 @@ script:
       - remove
       - replace
       required: true
-    - description: The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The update regards only the access policy for the specified object ID.
+    - description: The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The update regards only the access policy for the specified object ID.
       name: object_id
       required: true
     - auto: PREDEFINED
@@ -578,10 +579,10 @@ script:
       description: Resource type in Azure.
       type: String
     - contextPath: AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.tenantId
-      description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+      description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
       type: String
     - contextPath: AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.objectId
-      description: The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies.
+      description: The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies.
       type: String
     - contextPath: AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.keys
       description: Permissions to keys.
@@ -964,7 +965,7 @@ script:
     description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: azure-key-vault-auth-reset
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
   subtype: python3

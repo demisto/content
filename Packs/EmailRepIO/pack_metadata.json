@@ -2,7 +2,7 @@
     "name": "EmailRepIO",
     "description": "Provide email address reputation and reports from EmailRep.io.",
     "support": "xsoar",
-    "currentVersion": "1.0.30",
+    "currentVersion": "1.0.31",
     "author": "Cortex XSOAR",
     "url": "https://emailrep.io",
     "email": "",
@@ -24,6 +24,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

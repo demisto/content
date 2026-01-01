@@ -6,7 +6,7 @@ Perform deep searches, look up threats online, and enrich your security solution
 
 ## Generate API token
 
-* Follow [ANY.RUN Sandbox](https://app.any.run/)
+* Follow [ANY.RUN TI Lookup](https://app.any.run/)
 * [1] Profile > [2] API and Limits > [3] Generate > [4] Copy
 
 ![ANY.RUN Generate API KEY](../../doc_files/ANYRUN_API_TOKEN.png)
@@ -22,9 +22,6 @@ Perform deep searches, look up threats online, and enrich your security solution
 | **Parameter**    | **Description**                                                                                                                                                | **Required** |
 |------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | Password         | ANY.RUN API-KEY without prefix                                                                                                                               | True |
-| Server's FQDN    | Go to Settings &amp; Info → Settings → Integrations → API Keys. Click Copy API URL. Your FQDN is saved in the clipboard. Inline it without http/https protocol | True |
-| XSOAR API-KEY ID | In the API Keys table, locate the ID field. Note your corresponding ID number                                                                                  | True |
-| XSOAR API-KEY    | XSOAR API-KEY                                                                                                                                                  | True |
 
 ## Commands
 
@@ -255,3 +252,137 @@ Perform threat intelligence using specified IOC
 | ANYRUN.Lookup.summary.details.threatLevel | Number | Threat level. |
 | ANYRUN.Lookup.summary.details.lastSeen | Date | Last Seen Date |
 | ANYRUN.Lookup.summary.details.count | Number | Count of iocs/objects by threat level |
+
+### ip
+
+***
+Check the IP address reputation.
+
+#### Base Command
+
+`ip`
+
+#### Input
+
+| **Argument Name**          | **Description** | **Required** |
+|----------------------------| --- | --- |
+| ip                         | IP address to check. | Required |
+
+#### Context Output
+
+| **Path**                       | **Type** | **Description**                                            |
+|--------------------------------| --- |------------------------------------------------------------|
+| IP.Address                     | String | The IP address.                                        |
+| IP.Country                     | String | The IP country.                                        |
+| IP.Port                        | String | The IP destination port.                               |
+| IP.ASOwner                     | String | The IP autonomous system owner.                        |
+| IP.LastModified                | String | The IP last modified date.                             |
+| IP.Tags                        | String | The IP related tags.                                   |
+| IP.FeedRelatedIndicators.value | String | The IP related indicator type.                         |
+| IP.FeedRelatedIndicators.type  | String | The IP related indicator value.                        |
+| DBotScore.Indicator            | String | The indicator that was tested.                             |
+| DBotScore.Type                 | String | The indicator type.                                        |
+| DBotScore.Vendor               | String | The vendor used to calculate the score.                    |
+| DBotScore.Score                | Number | The actual score.                                          |
+| DBotScore.Reliability          | String | Reliability of the source providing the intelligence data. |
+
+### domain
+
+***
+Check the Domain name reputation.
+
+#### Base Command
+
+`domain`
+
+#### Input
+
+| **Argument Name**          | **Description**       | **Required** |
+|----------------------------|-----------------------| --- |
+| domain                         | Domain name to check. | Required |
+
+#### Context Output
+
+| **Path**                           | **Type** | **Description**                                            |
+|------------------------------------| --- |------------------------------------------------------------|
+| Domain.Name                        | String | The Domain name.                                           |
+| Domain.Country                     | String | The Domain country.                                        |
+| Domain.Port                        | String | The Domain destination port.                               |
+| Domain.ASOwner                     | String | The Domain autonomous system owner.                        |
+| Domain.LastModified                | String | The Domain last modified date.                             |
+| Domain.Tags                        | String | The Domain related tags.                                   |
+| Domain.FeedRelatedIndicators.value | String | The Domain related indicator type.                         |
+| Domain.FeedRelatedIndicators.type  | String | The Domain related indicator value.                        |
+| DBotScore.Indicator                | String | The indicator that was tested.                             |
+| DBotScore.Type                     | String | The indicator type.                                        |
+| DBotScore.Vendor                   | String | The vendor used to calculate the score.                    |
+| DBotScore.Score                    | Number | The actual score.                                          |
+| DBotScore.Reliability              | String | Reliability of the source providing the intelligence data. |
+
+### url
+
+***
+Check the URL reputation.
+
+#### Base Command
+
+`url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------|-----------------| --- |
+| url               | URL to check.   | Required |
+
+#### Context Output
+
+| **Path**                        | **Type** | **Description**                                            |
+|---------------------------------| --- |------------------------------------------------------------|
+| URL.Data                        | String | The URL name.                                              |
+| URL.Country                     | String | The URL country.                                           |
+| URL.Port                        | String | The URL destination port.                                  |
+| URL.ASOwner                     | String | The URL autonomous system owner.                           |
+| URL.LastModified                | String | The URL last modified date.                                |
+| URL.Tags                        | String | The URL related tags.                                      |
+| URL.FeedRelatedIndicators.value | String | The URL related indicator type.                            |
+| URL.FeedRelatedIndicators.type  | String | The URL related indicator value.                           |
+| DBotScore.Indicator             | String | The indicator that was tested.                             |
+| DBotScore.Type                  | String | The indicator type.                                        |
+| DBotScore.Vendor                | String | The vendor used to calculate the score.                    |
+| DBotScore.Score                 | Number | The actual score.                                          |
+| DBotScore.Reliability           | String | Reliability of the source providing the intelligence data. |
+
+### file
+
+***
+Check the SHA256 hash reputation.
+
+#### Base Command
+
+`file`
+
+#### Input
+
+| **Argument Name** | **Description**       | **Required** |
+|-------------------|-----------------------| --- |
+| file              | SHA256 hash to check. | Required |
+
+#### Context Output
+
+| **Path**                         | **Type** | **Description**                                                  |
+|----------------------------------| --- |------------------------------------------------------------------|
+| File.Name                        | String | The File name.                                                   |
+| File.Extension                   | String | The File extension.                                              |
+| File.Path                        | String | The File path.                                                   |
+| File.SHA256                      | String | The File SHA256 hash value.                                      |
+| File.SHA1                        | String | The File SHA1 hash value.                                        |
+| File.MD5                         | String | The File MD5 hash value.                                         |
+| File.SSDeep                | String | The ssdeep hash of the File (same as displayed in file entries). |
+| File.Tags                        | String | The File related tags.                                           |
+| File.FeedRelatedIndicators.value | String | The File related indicator type.                                 |
+| File.FeedRelatedIndicators.type  | String | The File related indicator value.                                |
+| DBotScore.Indicator              | String | The indicator that was tested.                                   |
+| DBotScore.Type                   | String | The indicator type.                                              |
+| DBotScore.Vendor                 | String | The vendor used to calculate the score.                          |
+| DBotScore.Score                  | Number | The actual score.                                                |
+| DBotScore.Reliability            | String | Reliability of the source providing the intelligence data.       |

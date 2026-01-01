@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from datetime import date
+from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -22,6 +22,40 @@ MAX_FILTER_VALUES = 200
 MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
 MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
+
+
+def handle_port_range(args: dict) -> tuple:
+    """
+    Parse and extract port range information from command arguments.
+
+    Handles port specification in multiple formats:
+    - Individual from_port and to_port arguments
+    - Single port argument that can be a port number or range (e.g., "80" or "80-443")
+
+    Args:
+        args (dict): Command arguments dictionary containing port specifications
+
+    Returns:
+        tuple: A tuple containing (from_port, to_port) as integers, or (None, None) if no ports specified
+    """
+    from_port = arg_to_number(args.get("from_port"))
+    to_port = arg_to_number(args.get("to_port"))
+
+    def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+        """Parse port argument which can be a single port or range (min-max)."""
+        if not port:
+            return None, None
+
+        if "-" in port:
+            from_port, to_port = port.split("-", 1)
+            return int(from_port.strip()), int(to_port.strip())
+        else:
+            _port: int = int(port.strip())
+            return _port, _port
+
+    if args.get("port") and (not from_port and not to_port):
+        from_port, to_port = parse_port_range(args.get("port", ""))
+    return from_port, to_port
 
 
 def serialize_response_with_datetime_encoding(response: Dict[str, Any]) -> Dict[str, Any]:
@@ -74,7 +108,7 @@ def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
     return instance_data
 
 
-def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
+def build_pagination_kwargs(args: Dict[str, Any], minimum_limit: int = 0) -> Dict[str, Any]:
     """
     Build pagination parameters for AWS API calls with proper validation and limits.
 
@@ -101,8 +135,8 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
 
     # Validate limit constraints
-    if limit is not None and limit <= 0:
-        raise ValueError("Limit must be greater than 0")
+    if limit is not None and limit <= minimum_limit:
+        raise ValueError(f"Limit must be greater than {minimum_limit}")
 
     # AWS API constraints - most services have a max of 1000 items per request
     if limit is not None and limit > MAX_LIMIT_VALUE:
@@ -362,6 +396,11 @@ class AWSServices(str, Enum):
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
     ECS = "ecs"
+    ACM = "acm"
+    KMS = "kms"
+    ELB = "elb"
+    CostExplorer = "ce"
+    BUDGETS = "budgets"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -704,7 +743,7 @@ class S3:
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
             json_response = json.loads(response.get("Policy", "{}"))
-            json_stetment = json_response.get("Statement", [])
+            json_statement = json_response.get("Statement", [])
             return CommandResults(
                 outputs_prefix="AWS.S3-Buckets",
                 outputs_key_field="BucketName",
@@ -714,7 +753,7 @@ class S3:
                 },
                 readable_output=tableToMarkdown(
                     f"Bucket Policy ID: {json_response.get('Id','N/A')} Version: {json_response.get('Version','N/A')}",
-                    t=json_stetment,
+                    t=json_statement,
                     removeNull=True,
                     headerTransform=pascalToSpace,
                 ),
@@ -843,6 +882,92 @@ class S3:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
         return CommandResults(readable_output="Failed to upload file")
+
+    @staticmethod
+    def get_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves the website configuration for a specified Amazon S3 bucket.
+        The function calls the AWS S3 'get_bucket_website' API to check if the bucket
+        is configured for static website hosting and, if so, what its configuration is.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args: A dictionary containing arguments, expected to include 'bucket'
+                  (the name of the S3 bucket).
+
+        Returns:
+            CommandResults: An object containing the raw website configuration as outputs,
+                            and a md table summarizing the configuration details
+                            (IndexDocument, ErrorDocument, RedirectAllRequestsTo, RoutingRules).
+        """
+        kwargs = {"Bucket": args.get("bucket")}
+
+        response = client.get_bucket_website(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response["WebsiteConfiguration"] = {
+            "ErrorDocument": response.get("ErrorDocument"),
+            "IndexDocument": response.get("IndexDocument"),
+            "RedirectAllRequestsTo": response.get("RedirectAllRequestsTo"),
+            "RoutingRules": response.get("RoutingRules"),
+        }
+
+        readable_output = tableToMarkdown(
+            name="Bucket Website Configuration",
+            t=response.get("WebsiteConfiguration", {}),
+            removeNull=True,
+            headers=["ErrorDocument", "IndexDocument", "RedirectAllRequestsTo", "RoutingRules"],
+            headerTransform=pascalToSpace,
+        )
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.S3-Buckets.BucketWebsite",
+            outputs=response.get("WebsiteConfiguration", {}),
+            raw_response=response.get("WebsiteConfiguration", {}),
+        )
+
+    @staticmethod
+    def get_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves the Access Control List (ACL) of a specified Amazon S3 bucket.
+
+        The function calls the AWS S3 'get_bucket_acl' API to determine the permissions
+        granted to specific users or groups on the bucket.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args: A dictionary containing arguments, expected to include 'bucket'
+                  (the name of the S3 bucket).
+
+        Returns:
+            CommandResults: An object containing the raw Access Control Policy details as
+                            outputs, and a md table summarizing the ACL configuration
+                            (Grants and Owner).
+        """
+        kwargs = {"Bucket": args.get("bucket")}
+
+        response = client.get_bucket_acl(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response["AccessControlPolicy"] = {
+            "Grants": response.get("Grants"),
+            "Owner": response.get("Owner"),
+        }
+        readable_output = tableToMarkdown(
+            name="Bucket Acl",
+            t=response.get("AccessControlPolicy", {}),
+            removeNull=True,
+            headers=["Grants", "Owner"],
+            headerTransform=pascalToSpace,
+        )
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.S3-Buckets.BucketAcl",
+            outputs=response.get("AccessControlPolicy", {}),
+            raw_response=response.get("AccessControlPolicy", {}),
+        )
 
 
 class IAM:
@@ -1147,7 +1272,6 @@ class EC2:
         }
         remove_nulls_from_dictionary(kwargs)
         response = client.modify_instance_attribute(**kwargs)
-
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(
                 readable_output=f"Successfully modified EC2 instance `{args.get('instance_id')}` attribute `{kwargs.popitem()}"
@@ -1254,20 +1378,8 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+        kwargs["FromPort"], kwargs["ToPort"] = handle_port_range(args)
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -1304,20 +1416,8 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+        kwargs["FromPort"], kwargs["ToPort"] = handle_port_range(args)
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -1353,19 +1453,6 @@ class EC2:
         1) Full mode: use `ip_permissions` JSON
         2) Simple mode: protocol, port, cidr → build IpPermissions
         """
-
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         group_id = args.get("group_id")
         ip_permissions_arg = args.get("ip_permissions")
 
@@ -1378,17 +1465,25 @@ class EC2:
         else:
             # Simple mode: build a single rule descriptor
             proto = args.get("protocol")
-            from_port, to_port = parse_port_range(args.get("port", ""))
-            cidr = args.get("cidr")
-            ip_perms = [{"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}]}]
+            from_port, to_port = handle_port_range(args)
 
+            cidr = args.get("cidr")
+            ip_perms = [
+                {"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}] if cidr else None}
+            ]
+            ip_perms = [remove_empty_elements(ip_perms[0])]
         kwargs = {"GroupId": group_id, "IpPermissions": ip_perms}
 
         try:
             resp = client.revoke_security_group_egress(**kwargs)
             status = resp.get("Return")
             if resp.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200 and status:
-                return CommandResults(readable_output="Egress rule revoked successfully.")
+                readable_output = (
+                    "Egress rule revoked successfully."
+                    if resp.get("RevokedSecurityGroupRules")
+                    else "No egress rules were revoked."
+                )
+                return CommandResults(readable_output=readable_output, raw_response=resp)
             else:
                 # If no exception but Return is False, AWS may report unknown perms
                 unknown = resp.get("UnknownIpPermissions")
@@ -1861,6 +1956,574 @@ class EC2:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
+    @staticmethod
+    def describe_vpcs_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more of your VPCs.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including VPC IDs
+
+        Returns:
+            CommandResults: Results of the operation with VPC information
+        """
+        kwargs = {}
+        data = []
+        if args.get("filters"):
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("vpc_ids"):
+            kwargs.update({"VpcIds": parse_resource_ids(args.get("vpc_ids"))})
+
+        response = client.describe_vpcs(**kwargs)
+
+        if len(response["Vpcs"]) == 0:
+            return CommandResults(readable_output="No VPCs were found.")
+        for i, vpc in enumerate(response["Vpcs"]):
+            data.append(
+                {
+                    "CidrBlock": vpc["CidrBlock"],
+                    "DhcpOptionsId": vpc["DhcpOptionsId"],
+                    "State": vpc["State"],
+                    "VpcId": vpc["VpcId"],
+                    "InstanceTenancy": vpc["InstanceTenancy"],
+                    "IsDefault": vpc["IsDefault"],
+                    "Region": args["region"],
+                }
+            )
+
+            if "Tags" in vpc:
+                for tag in vpc["Tags"]:
+                    data[i].update({tag["Key"]: tag["Value"]})
+
+        try:
+            output = json.dumps(response["Vpcs"], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            raw[0].update({"Region": args["region"]})
+        except ValueError as e:
+            raise DemistoException(f"Could not decode/encode the raw response - {e}")
+        return CommandResults(
+            outputs=raw,
+            outputs_prefix="AWS.EC2.Vpcs",
+            outputs_key_field="VpcId",
+            readable_output=tableToMarkdown(
+                "AWS EC2 Vpcs",
+                data,
+                headers=["VpcId", "IsDefault", "CidrBlock", "DhcpOptionsId", "State", "InstanceTenancy", "Region"],
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_subnets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more of your subnets.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including subnet IDs
+
+        Returns:
+            CommandResults: Results of the operation with subnet information
+        """
+        kwargs = {}
+        data = []
+        if args.get("filters"):
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("subnet_ids"):
+            kwargs.update({"SubnetIds": parse_resource_ids(args.get("subnet_ids"))})
+
+        response = client.describe_subnets(**kwargs)
+
+        if len(response["Subnets"]) == 0:
+            return CommandResults(readable_output="No subnets were found.")
+        for i, subnet in enumerate(response["Subnets"]):
+            data.append(
+                {
+                    "AvailabilityZone": subnet["AvailabilityZone"],
+                    "AvailableIpAddressCount": subnet["AvailableIpAddressCount"],
+                    "CidrBlock": subnet.get("CidrBlock", ""),
+                    "DefaultForAz": subnet["DefaultForAz"],
+                    "State": subnet["State"],
+                    "SubnetId": subnet["SubnetId"],
+                    "VpcId": subnet["VpcId"],
+                    "Region": args["region"],
+                }
+            )
+
+            if "Tags" in subnet:
+                for tag in subnet["Tags"]:
+                    data[i].update({tag["Key"]: tag["Value"]})
+
+        try:
+            output = json.dumps(response["Subnets"], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            raw[0].update({"Region": args["region"]})
+        except ValueError as e:
+            raise DemistoException(f"Could not decode/encode the raw response - {e}")
+        return CommandResults(
+            outputs=raw,
+            outputs_prefix="AWS.EC2.Subnets",
+            outputs_key_field="SubnetId",
+            readable_output=tableToMarkdown(
+                "AWS EC2 Subnets",
+                data,
+                headers=[
+                    "SubnetId",
+                    "AvailabilityZone",
+                    "AvailableIpAddressCount",  # noqa: E501
+                    "CidrBlock",
+                    "DefaultForAz",
+                    "State",
+                    "VpcId",
+                    "Region",
+                ],
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_ipam_resource_discoveries_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """Describes one or more IPAM resource discoveries.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including filters, max results, next token, and IPAM resource discovery IDs
+
+        Returns:
+            CommandResults: Results of the operation with IPAM resource discovery information
+        """
+        kwargs = {
+            "Filters": parse_filter_field(args.get("filters")),
+            "IpamResourceDiscoveryIds": argToList(args.get("ipam_resource_discovery_ids")),
+        }
+        if not args.get("ipam_resource_discovery_ids"):
+            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
+            kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+
+        response = client.describe_ipam_resource_discoveries(**kwargs)
+
+        if len(response["IpamResourceDiscoveries"]) == 0:
+            return CommandResults(readable_output="No Ipam Resource Discoveries were found.")
+
+        human_readable = tableToMarkdown("Ipam Resource Discoveries", response["IpamResourceDiscoveries"], removeNull=True)
+        command_results = CommandResults(
+            outputs_prefix="AWS.EC2.IpamResourceDiscoveries",
+            outputs_key_field="IpamResourceDiscoveryId",
+            outputs=response["IpamResourceDiscoveries"],
+            raw_response=response,
+            readable_output=human_readable,
+        )
+        return command_results
+
+    @staticmethod
+    def describe_ipam_resource_discovery_associations_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """Describes one or more IPAM resource discovery associations.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including filters, max results, next token, and IPAM resource discovery IDs
+
+        Returns:
+            CommandResults: Results of the operation with IPAM resource discovery association information
+        """
+        kwargs = {
+            "Filters": parse_filter_field(args.get("filters")),
+            "IpamResourceDiscoveryAssociationIds": argToList(args.get("ipam_resource_discovery_association_ids")),
+        }
+        if not args.get("ipam_resource_discovery_association_ids"):
+            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
+            kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+
+        response = client.describe_ipam_resource_discovery_associations(**kwargs)
+
+        if len(response["IpamResourceDiscoveryAssociations"]) == 0:
+            return CommandResults(readable_output="No Ipam Resource Discovery Associations were found.")
+
+        human_readable = tableToMarkdown(
+            "Ipam Resource Discovery Associations", response["IpamResourceDiscoveryAssociations"], removeNull=True
+        )  # noqa: E501
+        command_results = CommandResults(
+            outputs_prefix="AWS.EC2.IpamResourceDiscoveryAssociations",
+            outputs_key_field="IpamResourceDiscoveryId",
+            outputs=response["IpamResourceDiscoveryAssociations"],
+            raw_response=response,
+            readable_output=human_readable,
+        )
+        return command_results
+
+    @staticmethod
+    def get_latest_ami_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves information about the latest Amazon Machine Image (AMI) based on provided filters.
+        The function calls the AWS EC2 'describe_images' API, sorts the results by
+        'CreationDate' in descending order, and returns the first image in the list.
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                  Expected keys include 'executable_by', 'filters', 'owners', 'image_id',
+                  'include_deprecated', and 'include_disabled'.
+
+        Returns:
+            CommandResults: An object containing the raw image details as outputs,
+                            and a md table with a concise summary of the latest AMI.
+        """
+        kwargs = {
+            "ExecutableUsers": parse_resource_ids(args.get("executable_users")) if args.get("executable_users") else None,
+            "Filters": parse_filter_field(args.get("filters")),
+            "Owners": parse_resource_ids(args.get("owners")) if args.get("owners") else None,
+            "ImageIds": parse_resource_ids(args.get("image_ids")) if args.get("image_ids") else None,
+            "IncludeDeprecated": arg_to_bool_or_none(args.get("include_deprecated")),
+            "IncludeDisabled": arg_to_bool_or_none(args.get("include_disabled")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        response = client.describe_images(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        amis = response.get("Images", [])
+        iterates = 1
+
+        while response.get("nextToken"):
+            demisto.info(f"iterate #{iterates}")
+            kwargs["NextToken"] = response.get("nextToken")
+            response = client.describe_images(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            amis.extend(response.get("Images", []))
+            iterates += 1
+
+        # return CommandResults(readable_output=f"Fetched {len(amis)} AMIs")
+        demisto.info(f"Fetched {len(amis)} AMIs")
+        if not amis:
+            return CommandResults(readable_output="No AMIs found.")
+
+        sorted_amis = sorted(amis, key=lambda x: x["CreationDate"], reverse=True)
+        image = sorted_amis[0]
+        data = {
+            "CreationDate": image.get("CreationDate"),
+            "ImageId": image.get("ImageId"),
+            "Public": image.get("Public"),
+            "Name": image.get("Name"),
+            "State": image.get("State"),
+            "Region": args.get("region"),
+            "Description": image.get("Description"),
+        }
+        data.update({tag["Key"]: tag["Value"] for tag in image["Tags"]}) if "Tags" in image else None
+        remove_nulls_from_dictionary(data)
+
+        return CommandResults(
+            outputs=image,
+            outputs_prefix="AWS.EC2.Images",
+            readable_output=tableToMarkdown("AWS EC2 latest Image", data, headerTransform=pascalToSpace, removeNull=True),
+            outputs_key_field="ImageId",
+        )
+
+    @staticmethod
+    def create_network_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a Network Access Control List (Network ACL) for the specified VPC.
+        The function calls the AWS EC2 'create_network_acl' API. It requires the ID
+        of the VPC where the Network ACL will be created.
+
+        Args:
+           client (BotoClient): The initialized Boto3 EC2 client.
+            args: A dictionary containing arguments for creating the Network ACL.
+                  Expected keys include 'vpc_id' (required), 'client_token', and
+                  'tag_specification'.
+
+        Returns:
+            CommandResults: An object containing the raw Network ACL details as outputs,
+                            and a md table with a summary of the created Network ACL
+                            and its default entries.
+        """
+        kwargs = {
+            "VpcId": args.get("vpc_id"),
+            "ClientToken": args.get("client_token"),
+            "TagSpecifications": parse_tag_field(args.get("tag_specifications")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        if tag_specifications := kwargs.get("TagSpecifications"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "network-acl", "Tags": tag_specifications}]
+
+        response = client.create_network_acl(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        network_acl = response.get("NetworkAcl")
+        readable_data = {
+            "Associations": network_acl.get("Associations"),
+            "IsDefault": network_acl.get("IsDefault"),
+            "NetworkAclId": network_acl.get("NetworkAclId"),
+            "Tags": network_acl.get("Tags"),
+            "VpcId": network_acl.get("VpcId"),
+        }
+        return CommandResults(
+            outputs=network_acl,
+            outputs_prefix="AWS.EC2.VpcId.NetworkAcl",
+            outputs_key_field="VpcId",
+            readable_output=(
+                tableToMarkdown(
+                    "The AWS EC2 Instance ACL",
+                    readable_data,
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                )
+                + tableToMarkdown(
+                    f"The Entries of AWS EC2 ACL {network_acl.get('NetworkAclId')}",
+                    [entry for entry in network_acl.get("Entries")],  # noqa: C416
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                )
+            ),
+        )
+
+    @staticmethod
+    def get_ipam_discovered_public_addresses_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
+
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+        Returns:
+            CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+             that contains public IP addresses that have been discovered by IPAM.
+        """
+        kwargs = {
+            "IpamResourceDiscoveryId": args.get("ipam_resource_discovery_id"),
+            "AddressRegion": args.get("address_region"),
+            "Filters": parse_filter_field(args.get("filters")),
+            "MaxResults": arg_to_number(args.get("limit", 1000)),
+            "NextToken": args.get("next_token"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        response = client.get_ipam_discovered_public_addresses(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        if not response.get("IpamDiscoveredPublicAddresses"):
+            return CommandResults(readable_output="No Ipam Discovered Public Addresses were found.")
+
+        output = json.loads(json.dumps(response, cls=DatetimeEncoder))
+        human_readable = tableToMarkdown(
+            "Ipam Discovered Public Addresses",
+            output.get("IpamDiscoveredPublicAddresses"),
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
+            outputs_key_field="Address",
+            outputs=output.get("IpamDiscoveredPublicAddresses"),
+            raw_response=output,
+            readable_output=human_readable,
+        )
+
+    @staticmethod
+    def create_tags_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Adds or overwrites one or more tags for the specified AWS resources.
+
+        The function calls the AWS EC2 'create_tags' API. It requires a list of resource IDs
+        to tag and a list of key-value pairs representing the tags to apply.
+
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args: A dictionary containing arguments for creating the tags.
+                  Expected keys are 'resources' (list of resource IDs) and 'tags'
+                  (list of key-value tag dictionaries).
+
+        Returns:
+            CommandResults: An object confirming the successful tagging operation via a
+                            readable output message. The command has no explicit outputs.
+        """
+        kwargs = {
+            "Resources": parse_resource_ids(args.get("resources")),
+            "Tags": parse_tag_field(args.get("tags")),
+        }
+
+        response = client.create_tags(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output="The resources where tagged successfully")
+
+    @staticmethod
+    def create_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Creates a new security group in the specified VPC or EC2-Classic.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_name (str): Name of the security group.
+                - description (str): Description of the security group.
+                - vpc_id (str, optional): VPC ID where security group will be created.
+
+        Returns:
+            CommandResults: Results of the operation with security group creation details
+        """
+        group_name = args.get("group_name")
+        description = args.get("description")
+        vpc_id = args.get("vpc_id")
+        kwargs = {"Description": description, "GroupName": group_name, "VpcId": vpc_id}
+        remove_nulls_from_dictionary(kwargs)
+        response = client.create_security_group(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and (group_id := response.get("GroupId")):
+            return CommandResults(
+                readable_output=f'The security group "{group_id}" was created successfully.',
+                raw_response=response,
+            )
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def delete_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Deletes a security group.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_id (str, optional): ID of the security group to delete.
+                - group_name (str, optional): Name of the security group to delete.
+
+        Returns:
+            CommandResults: Results of the operation with deletion confirmation
+        """
+        group_id = args.get("group_id")
+        group_name = args.get("group_name")
+
+        if not group_id and not group_name:
+            raise DemistoException("Either group_id or group_name must be provided")
+
+        if group_id and group_name:
+            raise DemistoException("Cannot specify both group_id and group_name. Please provide only one.")
+
+        kwargs = {}
+
+        if group_id:
+            kwargs["GroupId"] = group_id
+        else:
+            kwargs["GroupName"] = group_name
+
+        remove_nulls_from_dictionary(kwargs)
+        response = client.delete_security_group(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and response.get("GroupId"):
+            return CommandResults(
+                readable_output=f"Successfully deleted security group: {response.get('GroupId')}",
+                raw_response=response,
+            )
+        else:
+            # If group_id was not found or no GroupId in response, raise an exception
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def describe_security_groups_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Describes one or more security groups in your account.
+        Returns detailed information about security groups including their rules, tags, and associated VPC information.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_ids (str, optional): Comma-separated list of security group IDs
+                - group_names (str, optional): Comma-separated list of security group names
+                - filters (str, optional): Custom filters to apply
+
+
+        Returns:
+            CommandResults: Results containing security group details
+        """
+        kwargs = {}
+        data = []
+        if args.get("filters") is not None:
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("group_ids") is not None:
+            kwargs.update({"GroupIds": argToList(args.get("group_ids", []))})
+        if args.get("group_names") is not None:
+            kwargs.update({"GroupNames": argToList(args.get("group_names", []))})
+        # Can't add limit when specify GroupIds or GroupNames
+        if not args.get("group_ids") and not args.get("group_names"):
+            kwargs.update(build_pagination_kwargs(args))
+
+        remove_nulls_from_dictionary(kwargs)
+        response = client.describe_security_groups(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            if len(response["SecurityGroups"]) == 0:
+                return CommandResults(readable_output="No security groups were found.")
+            for _, sg in enumerate(response["SecurityGroups"]):
+                data.append(
+                    {
+                        "Description": sg["Description"],
+                        "GroupName": sg["GroupName"],
+                        "OwnerId": sg["OwnerId"],
+                        "GroupId": sg["GroupId"],
+                        "VpcId": sg["VpcId"],
+                        "tags": sg.get("Tags"),
+                    }
+                )
+            output = json.dumps(response["SecurityGroups"], cls=DatetimeEncoder)
+
+            outputs = {
+                "AWS.EC2.SecurityGroups(val.GroupId && val.GroupId == obj.GroupId)": json.loads(output),
+                "AWS.EC2(true)": {"SecurityGroupsNextToken": response.get("NextToken")},
+            }
+            return CommandResults(
+                outputs=outputs,
+                readable_output=tableToMarkdown("AWS EC2 SecurityGroups", data, removeNull=True),
+                raw_response=response,
+            )
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Adds the specified outbound (egress) rules to a security group.
+
+        The command supports two modes:
+        1. Simple mode: using protocol, port, and cidr arguments
+        2. Full mode: using ip_permissions for complex configurations
+        """
+
+        kwargs: Dict[str, Any] = {"GroupId": args.get("group_id")}
+        from_port = arg_to_number(args.get("from_port"))
+        to_port = arg_to_number(args.get("to_port"))
+
+        if ip_permissions := args.get("ip_permissions"):
+            try:
+                kwargs["IpPermissions"] = json.loads(ip_permissions)
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
+        else:
+            kwargs["IpPermissions"] = [
+                {
+                    "IpProtocol": args.get("protocol"),
+                    "FromPort": from_port,
+                    "ToPort": to_port,
+                    "IpRanges": [{"CidrIp": args.get("cidr")}] if args.get("cidr") else None,
+                }
+            ]
+
+        remove_nulls_from_dictionary(kwargs["IpPermissions"][0])
+        response = client.authorize_security_group_egress(**kwargs)
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
+            readable_output = (
+                "The Security Group egress rule was authorized"
+                if response.get("SecurityGroupRules")
+                else "No Security Group egress rule was authorized"
+            )
+            return CommandResults(readable_output=readable_output, raw_response=response)
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
 
 class EKS:
     service = AWSServices.EKS
@@ -2166,7 +2829,9 @@ class RDS:
                 "EnableIAMDatabaseAuthentication": arg_to_bool_or_none(args.get("enable_iam_database_authentication")),
                 "PubliclyAccessible": arg_to_bool_or_none(args.get("publicly_accessible")),
                 "CopyTagsToSnapshot": arg_to_bool_or_none(args.get("copy_tags_to_snapshot")),
-                "BackupRetentionPeriod": arg_to_bool_or_none(args.get("backup_retention_period")),
+                "BackupRetentionPeriod": int(args.get("backup_retention_period", ""))
+                if args.get("backup_retention_period")
+                else None,
             }
             remove_nulls_from_dictionary(kwargs)
             demisto.info(f"modify_db_instance {kwargs=}")
@@ -2291,6 +2956,352 @@ class RDS:
             raise DemistoException(f"Failed to modify event subscription {args.get('subscription_name')}.")
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
+
+
+class CostExplorer:
+    service = AWSServices.CostExplorer
+
+    @staticmethod
+    def billing_cost_usage_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves cost and usage data from AWS Cost Explorer API.
+
+        This command provides detailed cost and usage information for AWS services over a specified time period.
+        It supports multiple metrics including costs (blended, unblended, amortized) and usage quantities.
+        Results can be filtered by AWS services and support pagination for large datasets.
+
+        Args:
+            client (BotoClient): AWS Cost Explorer boto3 client
+            args (Dict[str, Any]): Command arguments containing:
+                - metrics: List of metrics to retrieve (UsageQuantity, BlendedCost, etc.)
+                - start_date: Start date for the report (YYYY-MM-DD format)
+                - end_date: End date for the report (YYYY-MM-DD format)
+                - granularity: Time granularity (Daily, Monthly, Hourly)
+                - aws_services: Optional filter for specific AWS services
+                - next_page_token: Token for pagination
+
+        Returns:
+            CommandResults: Contains usage data grouped by time periods and metrics,
+                          with separate tables for each metric type in readable output
+
+        Raises:
+            DemistoException: If AWS API call fails or invalid parameters provided
+        """
+        today_utc = datetime.now(UTC)
+        metrics = argToList(args.get("metrics", "UsageQuantity"))
+        allowed_metrics = {
+            "AmortizedCost",
+            "BlendedCost",
+            "NetAmortizedCost",
+            "NetUnblendedCost",
+            "NormalizedUsageAmount",
+            "UnblendedCost",
+            "UsageQuantity",
+        }
+        invalid_metrics = [m for m in metrics if m not in allowed_metrics]
+        if invalid_metrics:
+            raise DemistoException(
+                f"Invalid metrics: {', '.join(invalid_metrics)}. Allowed metrics: {', '.join(sorted(allowed_metrics))}"
+            )
+        start_date = arg_to_datetime(args.get("start_date")) or (today_utc - timedelta(days=7))
+        end_date = arg_to_datetime(args.get("end_date")) or today_utc
+        granularity = args.get("granularity", "Daily").upper()
+        aws_services = argToList(args.get("aws_services"))
+        token = args.get("next_page_token")
+
+        request = {
+            "TimePeriod": {
+                "Start": start_date.date().isoformat(),
+                "End": end_date.date().isoformat(),
+            },
+            "Granularity": granularity,
+            "Metrics": metrics,
+        }
+        if aws_services:
+            request["Filter"] = {
+                "Dimensions": {
+                    "Key": "SERVICE",
+                    "MatchOptions": ["EQUALS"],
+                    "Values": aws_services,
+                }
+            }
+        if token:
+            request["NextPageToken"] = token
+        demisto.debug(f"AWS get_cost_and_usage request: {request}")
+
+        response = client.get_cost_and_usage(**request)
+
+        results = response.get("ResultsByTime", [])
+        next_token = response.get("NextPageToken", "")
+        demisto.debug(f"AWS get_cost_and_usage response - ResultsByTime count: {len(results)},\n NextToken: {next_token}")
+
+        results_by_metric: dict[str, list] = {metric: [] for metric in metrics}
+        for result in results:
+            total = result.get("Total")
+            service = total.get("Keys", [None])[0] if total.get("Keys") else None
+            for metric in metrics:
+                results_by_metric[metric].append(
+                    {
+                        "Service": service,
+                        "StartDate": result.get("TimePeriod", {}).get("Start"),
+                        "EndDate": result.get("TimePeriod", {}).get("End"),
+                        "Amount": total.get(metric, {}).get("Amount", ""),
+                        "Unit": total.get(metric, {}).get("Unit", ""),
+                    }
+                )
+        outputs = {"AWS.Billing.Usage": results, "AWS.Billing(true)": {"UsageNextToken": next_token}}
+        readable_tables = []
+        for metric in metrics:
+            metric_results = results_by_metric[metric]
+            if metric_results:
+                table = tableToMarkdown(
+                    f"AWS Billing Usage - {metric}",
+                    metric_results,
+                    headers=["Service", "StartDate", "EndDate", "Amount", "Unit"],
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                )
+                readable_tables.append(table)
+        readable = "\n".join(readable_tables) if readable_tables else "No billing usage data found."
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
+        return CommandResults(
+            readable_output=readable,
+            outputs=outputs,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def billing_forecast_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves cost forecast data from AWS Cost Explorer API.
+
+        This command provides forecasted cost information for AWS services over a future time period.
+        It uses historical data to predict future spending patterns and supports multiple cost metrics.
+        Results can be filtered by AWS services and include prediction intervals for accuracy assessment.
+
+        Args:
+            client (BotoClient): AWS Cost Explorer boto3 client
+            args (Dict[str, Any]): Command arguments containing:
+                - metric: Single forecast metric (AMORTIZED_COST, BLENDED_COST, etc.)
+                - start_date: Start date for the forecast (YYYY-MM-DD format, defaults to today)
+                - end_date: End date for the forecast (YYYY-MM-DD format, defaults to +7 days)
+                - granularity: Time granularity (Daily, Monthly, Hourly)
+                - aws_services: Optional filter for specific AWS services
+                - next_page_token: Token for pagination
+
+        Returns:
+            CommandResults: Contains forecast data with mean values and prediction intervals,
+                          organized by time periods for the specified metric
+
+        Raises:
+            DemistoException: If AWS API call fails or invalid parameters provided
+        """
+        today_utc = datetime.now(UTC)
+        metric = args.get("metric", "AMORTIZED_COST")
+        start_date = arg_to_datetime(args.get("start_date")) or today_utc
+        end_date = arg_to_datetime(args.get("end_date")) or (today_utc + timedelta(days=7))
+        granularity = args.get("granularity", "Daily").upper()
+        aws_services = argToList(args.get("aws_services"))
+        token = args.get("next_page_token")
+
+        request = {
+            "TimePeriod": {
+                "Start": start_date.date().isoformat(),
+                "End": end_date.date().isoformat(),
+            },
+            "Granularity": granularity,
+            "Metric": metric,
+        }
+        if aws_services:
+            request["Filter"] = {
+                "Dimensions": {
+                    "Key": "SERVICE",
+                    "MatchOptions": ["EQUALS"],
+                    "Values": aws_services,
+                }
+            }
+        if token:
+            request["NextPageToken"] = token
+        demisto.debug(f"AWS Cost Forecast request: {request}")
+
+        response = client.get_cost_forecast(**request)
+
+        results = response.get("ForecastResultsByTime", [])
+        next_token = response.get("NextPageToken", "")
+        demisto.debug(f"AWS Cost Forecast response - ForecastResultsByTime count: {len(results)},\nNextToken: {next_token}")
+
+        metric_results = []
+        for result in results:
+            metric_results.append(
+                {
+                    "StartDate": result.get("TimePeriod", {}).get("Start"),
+                    "EndDate": result.get("TimePeriod", {}).get("End"),
+                    "TotalAmount": f"{float(result.get('MeanValue', 0)):.2f}",
+                    "TotalUnit": response.get("Unit"),
+                }
+            )
+
+        outputs = {
+            "AWS.Billing.Forecast": results,
+            "AWS.Billing(true)": {"ForecastNextToken": next_token},
+        }
+
+        readable = tableToMarkdown(
+            f"AWS Billing Forecast - {metric}",
+            metric_results,
+            headers=["StartDate", "EndDate", "TotalAmount", "TotalUnit"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
+
+        return CommandResults(
+            readable_output=readable,
+            outputs=outputs,
+            raw_response=response,
+        )
+
+
+class Budgets:
+    service = AWSServices.BUDGETS
+
+    @staticmethod
+    def billing_budgets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves budget information from AWS Budgets API.
+
+        This command lists all configured budgets for a specified AWS account, providing detailed
+        information about budget limits, actual spending, forecasted spending, and time periods.
+        Supports various budget types including cost, usage, and savings plans budgets.
+
+        Args:
+            client (BotoClient): AWS Budgets boto3 client
+            args (Dict[str, Any]): Command arguments containing:
+                - account_id: AWS account ID to retrieve budgets for (required)
+                - max_result: Maximum number of results to return (default: 50, max: 1000)
+                - show_filter_expression: Whether to include filter expressions in output
+                - next_page_token: Token for pagination
+
+        Returns:
+            CommandResults: Contains budget data including names, types, limits, actual spend,
+                          forecasted spend, and time periods with pagination support
+
+        Raises:
+            DemistoException: If AWS API call fails, account_id is invalid, or other errors occur
+        """
+        max_results = int(args.get("max_result", 50))
+        token = args.get("next_page_token")
+        account_id = args.get("account_id")
+        show_filter_expression = argToBoolean(args.get("show_filter_expression"))
+        request = {"AccountId": account_id, "MaxResults": max_results}
+        if token:
+            request["NextToken"] = token
+        if show_filter_expression:
+            request["ShowFilterExpression"] = show_filter_expression
+        demisto.debug(f"AWS Budgets request: {request}")
+
+        response = client.describe_budgets(**request)
+
+        budgets = response.get("Budgets", [])
+        next_token = response.get("NextToken")
+        demisto.debug(f"AWS Budgets response - Budgets count: {len(budgets)},\n NextToken: {next_token}")
+        results = []
+        for b in budgets:
+            budget_limit = b.get("BudgetLimit", {})
+            actual_spend = b.get("CalculatedSpend", {}).get("ActualSpend", {})
+            start = b.get("TimePeriod", {}).get("Start").strftime("%Y-%m-%d")
+            end = b.get("TimePeriod", {}).get("End").strftime("%Y-%m-%d")
+            results.append(
+                {
+                    "BudgetName": b.get("BudgetName"),
+                    "BudgetType": b.get("BudgetType"),
+                    "BudgetLimitAmount": budget_limit.get("Amount"),
+                    "BudgetLimitUnit": budget_limit.get("Unit"),
+                    "ActualSpendAmount": actual_spend.get("Amount"),
+                    "ActualSpendUnit": actual_spend.get("Unit"),
+                    "TimePeriod": f"{start} - {end}",
+                    "FilterExpression": b.get("FilterExpression") if show_filter_expression else None,
+                }
+            )
+        outputs = {
+            "AWS.Billing.Budget(val.BudgetName && val.BudgetName == obj.BudgetName)": results,
+            "AWS.Billing(true)": {"BudgetNextToken": next_token},
+        }
+        readable = tableToMarkdown(
+            "AWS Budgets",
+            results,
+            headers=[
+                "BudgetName",
+                "TimePeriod",
+                "BudgetType",
+                "BudgetLimitAmount",
+                "BudgetLimitUnit",
+                "FilterExpression",
+                "ActualSpendAmount",
+                "ActualSpendUnit",
+            ],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
+        return CommandResults(
+            readable_output=readable,
+            outputs=outputs,
+            raw_response=json.loads(json.dumps(response, cls=DatetimeEncoder)),
+        )
+
+    @staticmethod
+    def billing_budget_notification_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves notification configurations for a specific budget from AWS Budgets API.
+
+        This command lists all notification settings associated with a particular budget,
+        including notification types (actual vs forecasted), thresholds, comparison operators,
+        and subscriber information (email addresses or SNS topics).
+
+        Args:
+            client (BotoClient): AWS Budgets boto3 client
+            args (Dict[str, Any]): Command arguments containing:
+                - account_id: AWS account ID that owns the budget (required)
+                - budget_name: Name of the budget to retrieve notifications for (required)
+                - max_result: Maximum number of results to return (default: 50, max: 100)
+                - next_page_token: Token for pagination
+
+        Returns:
+            CommandResults: Contains notification configurations including notification types,
+                          thresholds, comparison operators, and subscriber details
+
+        Raises:
+            DemistoException: If AWS API call fails, budget doesn't exist, or invalid parameters provided
+        """
+        budget_name = args.get("budget_name")
+        max_results = int(args.get("max_result", 50))
+        token = args.get("next_page_token")
+        request = {"AccountId": args["account_id"], "BudgetName": budget_name, "MaxResults": max_results}
+        if token:
+            request["NextToken"] = token
+        demisto.debug(f"AWS Budget Notifications request: {request}")
+
+        response = client.describe_notifications_for_budget(**request)
+
+        notifications = response.get("Notifications", [])
+        next_token = response.get("NextToken", "")
+        demisto.debug(f"AWS Budget Notifications response - Notifications count: {len(notifications)},\n NextToken: {next_token}")
+        outputs = {
+            "AWS.Billing.Notification": notifications,
+            "AWS.Billing(true)": {"NotificationNextToken": next_token},
+        }
+        readable = tableToMarkdown(f"Notifications for Budget: {budget_name}", notifications)
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
+        return CommandResults(
+            readable_output=readable,
+            outputs=outputs,
+            raw_response=response,
+        )
 
 
 class CloudTrail:
@@ -2456,24 +3467,536 @@ class ECS:
             )
 
 
+class KMS:
+    service = AWSServices.KMS
+
+    @staticmethod
+    def enable_key_rotation_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Enables automatic rotation for a symmetric customer-managed KMS key.
+        Uses a custom rotation period (days) from args; valid range is 90–2560.
+        Args:
+            client (BotoClient): The boto3 client for KMS service.
+            args (Dict[str, Any]): Command arguments including key id and rotation period in days.
+
+        Returns:
+            CommandResults: Results of the operation with updated key rotation settings.
+        """
+        key_id = args.get("key_id", "")
+        rot_period = arg_to_number(args.get("rotation_period_in_days"))
+        kwargs = {"KeyId": key_id, "RotationPeriodInDays": rot_period}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"EnableKeyRotation params: {kwargs}")
+
+        try:
+            resp = client.enable_key_rotation(**kwargs)
+            status = resp.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            if status in (HTTPStatus.OK, HTTPStatus.NO_CONTENT):
+                hr = f"Enabled automatic rotation for KMS key '{key_id}' (rotation period: {rot_period} days)."
+                return CommandResults(readable_output=hr, raw_response=resp)
+            return AWSErrorHandler.handle_response_error(resp)
+
+        except ClientError as e:
+            return AWSErrorHandler.handle_client_error(e)
+
+        except Exception as e:
+            raise DemistoException(f"Error enabling key rotation for '{key_id}': {str(e)}")
+
+
+class ELB:
+    service = AWSServices.ELB
+
+    @staticmethod
+    def modify_load_balancer_attributes_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Modifies Classic ELB attributes:
+        Cross-Zone Load Balancing, Access Logs, Connection Draining, Connection Settings, AdditionalAttributes.
+        Sends only sub-blocks provided by the user.
+        Args:
+            client (BotoClient): The boto3 client for ELB service.
+            args (Dict[str, Any]): Command arguments including load balancer name and setting values:
+                - cross-zone load balancing (enabled).
+                - access logs (enabled, s3 bucket name, s3 bucket prefix, emit interval).
+                - connection draining (enabled, timeout).
+                - connection settings (idle timeout).
+                - desync mitigation mode (monitor, defensive, strictest).
+
+        Returns:
+            CommandResults: Results of the operation with updated load balancer attributes.
+        """
+        lb_name = args.get("load_balancer_name", "")
+        attrs: Dict[str, Any] = {}
+        # Cross-zone
+        ELB.add_block_if_any(
+            block_name="CrossZoneLoadBalancing",
+            block={"Enabled": arg_to_bool_or_none(args.get("cross_zone_load_balancing_enabled"))},
+            target=attrs,
+        )
+        # Access logs
+        ELB.add_block_if_any(
+            block_name="AccessLog",
+            block={
+                "Enabled": arg_to_bool_or_none(args.get("access_log_enabled")),
+                "S3BucketName": args.get("access_log_s3_bucket_name"),
+                "S3BucketPrefix": args.get("access_log_s3_bucket_prefix"),
+                "EmitInterval": arg_to_number(args.get("access_log_interval")),
+            },
+            target=attrs,
+        )
+        # Connection draining
+        ELB.add_block_if_any(
+            block_name="ConnectionDraining",
+            block={
+                "Enabled": arg_to_bool_or_none(args.get("connection_draining_enabled")),
+                "Timeout": arg_to_number(args.get("connection_draining_timeout")),
+            },
+            target=attrs,
+        )
+        # Connection settings (idle timeout)
+        ELB.add_block_if_any(
+            block_name="ConnectionSettings",
+            block={"IdleTimeout": arg_to_number(args.get("connection_settings_idle_timeout"))},
+            target=attrs,
+        )
+        # Additional attributes (JSON list of {Key,Value})
+        # Only one additional attribute is supported on classic ELB, Therefore we directly set the key and value
+        if desync_mitigation_mode := args.get("desync_mitigation_mode"):
+            attrs["AdditionalAttributes"] = [{"Key": "elb.http.desyncmitigationmode", "Value": desync_mitigation_mode}]
+
+        kwargs = {"LoadBalancerName": lb_name, "LoadBalancerAttributes": attrs}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"ModifyLoadBalancerAttributes params: {kwargs}")
+
+        try:
+            resp = client.modify_load_balancer_attributes(**kwargs)
+            status = resp.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            if status == HTTPStatus.OK:
+                lb_attrs = resp.get("LoadBalancerAttributes", {})
+                out = {"LoadBalancerName": lb_name, "LoadBalancerAttributes": lb_attrs}
+                hr = ELB.format_elb_modify_attributes_hr(lb_name, resp)
+                return CommandResults(
+                    readable_output=hr,
+                    outputs_prefix="AWS.ELB.LoadBalancer",
+                    outputs_key_field="LoadBalancerName",
+                    outputs=out,
+                    raw_response=resp,
+                )
+
+            return AWSErrorHandler.handle_response_error(resp)
+
+        except ClientError as e:
+            return AWSErrorHandler.handle_client_error(e)
+
+        except Exception as e:
+            raise DemistoException(f"Error modifying load balancer '{lb_name}': {str(e)}")
+
+    @staticmethod
+    def add_block_if_any(block_name: str, block: dict, target: dict) -> None:
+        """
+        Adds a block to the target dictionary if the value is not empty.
+        Args:
+            block_name (str): The name of the block to add.
+            block (dict): The block to add.
+            target (dict): The target dictionary to add the block to.
+        Returns:
+            None
+        """
+        remove_nulls_from_dictionary(block)
+        if block:
+            target[block_name] = block
+
+    @staticmethod
+    def format_elb_modify_attributes_hr(lb_name: str, resp: dict) -> str:
+        """
+        Minimal formatter:
+        - prints "Updated attributes for <lb>"
+        - then one table per attribute block under LoadBalancerAttributes
+        Args:
+            lb_name (str): The name of the Classic ELB.
+            resp (dict): The response from the modify_load_balancer_attributes API call.
+        Returns:
+            str: The formatted output.
+        """
+        lb_attrs = resp.get("LoadBalancerAttributes", {})
+        sections: list[str] = [f"### Updated attributes for Classic ELB {lb_name}"]
+
+        for attr_name, attr_values in lb_attrs.items():
+            title = attr_name
+            if isinstance(attr_values, dict):
+                sections.append(tableToMarkdown(title, [attr_values], removeNull=True))
+            elif attr_values and isinstance(attr_values, list):
+                for attr_value in attr_values:
+                    sections.append(tableToMarkdown(title, attr_value, removeNull=True))
+            else:
+                sections.append(tableToMarkdown(title, [{"Value": attr_values}], removeNull=True))
+        return "\n\n".join(sections)
+
+
+class Lambda:
+    service = AWSServices.LAMBDA
+
+    @staticmethod
+    def get_function_configuration_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Retrieves the configuration information for a Lambda function.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including function name and optional qualifier
+
+        Returns:
+            CommandResults: Results of the operation with function configuration details
+        """
+        # Prepare parameters
+        function_name = args.get("function_name")
+        params = {"FunctionName": function_name}
+        if qualifier := args.get("qualifier"):
+            params["Qualifier"] = qualifier
+
+        # Get function configuration
+        response = client.get_function_configuration(**params)
+
+        # Remove ResponseMetadata for cleaner output
+        if "ResponseMetadata" in response:
+            del response["ResponseMetadata"]
+
+        # Create human readable output
+        human_readable = tableToMarkdown(
+            f"Lambda Function Configuration: {function_name}",
+            response,
+            headers=[
+                "FunctionName",
+                "FunctionArn",
+                "Runtime",
+                "CodeSha256",
+                "State",
+                "Description",
+                "RevisionId",
+                "LastModified",
+            ],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.Lambda.FunctionConfig",
+            outputs_key_field="FunctionArn",
+            outputs=response,
+            readable_output=human_readable,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def get_function_url_configuration_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Retrieves the configuration for a Lambda function URL.
+
+        Args:
+            client (BotoClient): The AWS Lambda client used to retrieve the function URL configuration.
+            args (Dict[str, Any]): A dictionary containing the function URL configuration parameters including
+                                   function_name and optional qualifier.
+
+        Returns:
+            CommandResults: An object containing the function URL configuration details including FunctionUrl,
+                           FunctionArn, AuthType, CreationTime, LastModifiedTime, and InvokeMode.
+        """
+        function_name = args.get("function_name")
+        qualifier = args.get("qualifier")
+
+        # Prepare parameters
+        params = {"FunctionName": function_name}
+        if qualifier:
+            params["Qualifier"] = qualifier
+
+        # Get function URL configuration
+        response = client.get_function_url_config(**params)
+
+        # Remove ResponseMetadata for cleaner output
+        if "ResponseMetadata" in response:
+            del response["ResponseMetadata"]
+
+        # Create human readable output
+        human_readable = tableToMarkdown(
+            f"Lambda Function URL Configuration: {function_name}",
+            response,
+            headers=["FunctionUrl", "FunctionArn", "AuthType", "CreationTime", "LastModifiedTime", "InvokeMode"],
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.Lambda.FunctionURLConfig",
+            outputs_key_field="FunctionArn",
+            outputs=response,
+            readable_output=human_readable,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def update_function_url_configuration_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Updates the configuration for a Lambda function URL.
+
+        Args:
+            client (BotoClient): The AWS Lambda client used to update the function URL configuration.
+            args (Dict[str, Any]): A dictionary containing the function URL configuration parameters including
+                                   function_name, qualifier, auth_type, CORS settings (allow_credentials,
+                                   allow_headers, allow_methods, allow_origins, expose_headers, max_age),
+                                   and invoke_mode.
+
+        Returns:
+            CommandResults: An object containing a success message and raw response for updating the function URL configuration.
+        """
+        params = {
+            "FunctionName": args.get("function_name"),
+            "Qualifier": args.get("qualifier"),
+            "AuthType": args.get("auth_type"),
+            "InvokeMode": args.get("invoke_mode"),
+        }
+        cors = {
+            "AllowCredentials": arg_to_bool_or_none(args.get("cors_allow_credentials")),
+            "AllowHeaders": argToList(args.get("cors_allow_headers", [])),
+            "AllowMethods": argToList(args.get("cors_allow_methods", [])),
+            "AllowOrigins": argToList(args.get("cors_allow_origins", [])),
+            "ExposeHeaders": argToList(args.get("cors_expose_headers", [])),
+            "MaxAge": arg_to_number(args.get("cors_max_age")),
+        }
+        fixed_cors = remove_empty_elements(cors)
+        if any(fixed_cors.values()):
+            params.update({"Cors": fixed_cors})
+        fixed_params = remove_empty_elements(params)
+        response = client.update_function_url_config(**fixed_params)
+        # Create human readable output
+        human_readable = tableToMarkdown(
+            f"The Updated Lambda Function URL Configuration: {response.get('FunctionArn',args.get('function_name'))}",
+            response,
+            headers=["FunctionUrl", "FunctionArn", "AuthType", "CreationTime", "LastModifiedTime", "InvokeMode"],
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.Lambda.FunctionURLConfig",
+            outputs_key_field="FunctionArn",
+            outputs=response,
+            readable_output=human_readable,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def _parse_policy_response(data: dict[str, Any]) -> tuple[dict, list | None]:
+        """
+        Parses the response data representing a policy into a structured format.
+
+        Args:
+            data (dict): The response data containing the policy information.
+
+        Returns:
+            tuple[dict[str, Any], list[dict[str, str | None]]]: A tuple containing the parsed policy information.
+                The first element of the tuple is a dictionary representing the policy metadata with the following keys:
+                    - "Id" (str): The ID of the policy.
+                    - "Version" (str): The version of the policy.
+                    - "RevisionId" (str): The revision ID of the policy.
+                The second element of the tuple is a list of dictionaries representing the policy statements.
+                Each dictionary in the list represents a statement with the following keys:
+                    - "Sid" (str): The ID of the statement.
+                    - "Effect" (str): The effect of the statement (e.g., "Allow" or "Deny").
+                    - "Action" (str): The action associated with the statement.
+                    - "Resource" (str): The resource associated with the statement.
+                    - "Principal" (str | None): The principal associated with the statement, if applicable.
+        """
+        policy: dict[str, Any] = data.get("Policy", {})
+        statements: list[dict[str, str | None]] = policy.get("Statement", [])
+
+        if len(statements) == 1:
+            return {
+                "Sid": statements[0].get("Sid"),
+                "Effect": statements[0].get("Effect"),
+                "Action": statements[0].get("Action"),
+                "Resource": statements[0].get("Resource"),
+                "Principal": statements[0].get("Principal"),
+            }, None
+
+        else:
+            policy_table = {
+                "Id": policy.get("Id"),
+                "Version": policy.get("Version"),
+                "RevisionId": data.get("RevisionId"),
+            }
+            statements_table = [
+                {
+                    "Sid": statement.get("Sid"),
+                    "Effect": statement.get("Effect"),
+                    "Action": statement.get("Action"),
+                    "Resource": statement.get("Resource"),
+                    "Principal": statement.get("Principal"),
+                }
+                for statement in statements
+            ]
+            return policy_table, statements_table
+
+    @staticmethod
+    def get_policy_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Retrieves the policy for a Lambda function from AWS and parses it into a dictionary.
+
+        Args:
+            args (dict): A dictionary containing the function name and optional qualifier.
+            aws_client: The AWS client(boto3 client) used to retrieve the policy.
+
+        Returns:
+            CommandResults: An object containing the parsed policy as outputs, a readable output in Markdown format,
+                            and relevant metadata.
+        """
+        kwargs = {"FunctionName": args["function_name"]}
+        if qualifier := args.get("qualifier"):
+            kwargs["Qualifier"] = qualifier
+
+        response = client.get_policy(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        fixed_response = {}
+        fixed_response["AccountId"] = args.get("account_id", "")
+        fixed_response["FunctionName"] = args["function_name"]
+        fixed_response["Region"] = args["region"]
+        response["Policy"] = json.loads(response["Policy"])
+        fixed_response.update(response["Policy"])
+        fixed_response.update({"RevisionId": response.get("RevisionId")})
+
+        parsed_policy, parsed_statement = Lambda._parse_policy_response(response)
+
+        policy_table = tableToMarkdown(name="Policy Statements", t=parsed_policy)
+
+        if parsed_statement:  # if policy contains a multiple statements, then print the statements in another table
+            statements_table = tableToMarkdown("Statements", t=parsed_statement)
+            policy_table = policy_table + statements_table
+
+        return CommandResults(
+            outputs=fixed_response,
+            readable_output=policy_table,
+            outputs_prefix="AWS.Lambda.Policy",
+            outputs_key_field=["Region", "FunctionName", "AccountId"],
+            raw_response=response,
+        )
+
+    @staticmethod
+    def invoke_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Invokes a Lambda function with the specified parameters and returns the response.
+
+        Args:
+            client (BotoClient): The AWS Lambda client used to invoke the function.
+            args (Dict[str, Any]): A dictionary containing the function invocation parameters including
+                                   functionName, invocationType, logType, clientContext, payload, and qualifier.
+
+        Returns:
+            CommandResults: An object containing the invocation response data including function name,
+                            region, request payload, log results, response payload, executed version,
+                            and any function errors, formatted as readable output.
+        """
+        payload = args.get("payload")
+        kwargs: dict[str, Any] = {
+            "FunctionName": args.get("function_name"),
+            "InvocationType": args.get("invocation_type"),
+            "LogType": args.get("log_type"),
+            "ClientContext": args.get("client_context"),
+            "Payload": json.dumps(payload)
+            if (not isinstance(payload, str)) or (not payload.startswith("{") and not payload.startswith("["))
+            else payload,
+            "Qualifier": args.get("qualifier"),
+        }
+        fixed_kwargs = remove_empty_elements(kwargs)
+        response = client.invoke(**fixed_kwargs)
+        data = {
+            "FunctionName": args.get("function_name"),
+            "Region": args.get("region"),
+            "RequestPayload": args.get("payload"),
+        }
+        remove_nulls_from_dictionary(data)
+        if "LogResult" in response:
+            data.update({"LogResult": base64.b64decode(response["LogResult"]).decode("utf-8")})  # type:ignore
+        if "Payload" in response:
+            data.update({"Payload": response["Payload"].read().decode("utf-8")})  # type:ignore
+            response["Payload"] = data["Payload"]
+        if "ExecutedVersion" in response:
+            data.update({"ExecutedVersion": response["ExecutedVersion"]})  # type:ignore
+        if "FunctionError" in response:
+            data.update({"FunctionError": response["FunctionError"]})
+
+        human_readable = tableToMarkdown("AWS Lambda Invoked Functions", data)
+        return CommandResults(
+            outputs=data,
+            readable_output=human_readable,
+            outputs_prefix="AWS.Lambda.InvokedFunction",
+            outputs_key_field=["FunctionName", "Region"],
+            raw_response=response,
+        )
+
+
+class ACM:
+    service = AWSServices.ACM
+
+    @staticmethod
+    def update_certificate_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Updates Certificate Transparency (CT) logging preference for an ACM certificate.
+        Args:
+            client: The AWS ACM boto3 client used to perform the update request.
+            args (dict): A dictionary containing the certificate ARN and the desired
+                transparency logging preference ("ENABLED" or "DISABLED").
+
+        Returns:
+            CommandResults: An object containing a human-readable summary of the change,
+                the raw AWS API response, and related metadata.
+        """
+        arn = args.get("certificate_arn")
+        pref = args.get("transparency_logging_preference")
+        kwargs = {"CertificateArn": arn, "Options": {"CertificateTransparencyLoggingPreference": pref}}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"UpdateCertificateOptions params: {kwargs}")
+
+        try:
+            resp = client.update_certificate_options(**kwargs)
+            status = resp.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            if status in (HTTPStatus.OK, HTTPStatus.NO_CONTENT):
+                hr = f"Updated Certificate Transparency (CT) logging to '{pref}' for certificate '{arn}'."
+                return CommandResults(readable_output=hr, raw_response=resp)
+            return AWSErrorHandler.handle_response_error(resp)
+
+        except ClientError as e:
+            return AWSErrorHandler.handle_client_error(e)
+
+        except Exception as e:
+            raise DemistoException(f"Error updating certificate options for '{arn}': {str(e)}")
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
 
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
+    "aws-billing-cost-usage-list": CostExplorer.billing_cost_usage_list_command,
+    "aws-billing-forecast-list": CostExplorer.billing_forecast_list_command,
+    "aws-billing-budgets-list": Budgets.billing_budgets_list_command,
+    "aws-billing-budget-notification-list": Budgets.billing_budget_notification_list_command,
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-public-access-block-quick-action": S3.put_public_access_block_command,
     "aws-s3-bucket-delete": S3.delete_bucket_command,
     "aws-s3-bucket-objects-list": S3.list_bucket_objects_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
+    "aws-s3-bucket-versioning-enable-quick-action": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
+    "aws-s3-bucket-enable-bucket-access-logging-quick-action": S3.put_bucket_logging_command,
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
+    "aws-s3-bucket-acl-set-to-private-quick-action": S3.put_bucket_acl_command,
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
     "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
+    "aws-s3-bucket-website-disable-hosting-quick-action": S3.delete_bucket_website_command,
     "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
     "aws-s3-file-upload": S3.file_upload_command,
     "aws-s3-file-download": S3.file_download_command,
+    "aws-s3-bucket-website-get": S3.get_bucket_website_command,
+    "aws-s3-bucket-acl-get": S3.get_bucket_acl_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -2482,36 +4005,75 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-iam-role-from-instance-profile-remove": IAM.remove_role_from_instance_profile_command,
     "aws-iam-access-key-update": IAM.update_access_key_command,
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
+    "aws-ec2-enable-imdsv2-quick-action": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
+    "aws-ec2-instance-attribute-modify-quick-action": EC2.modify_instance_attribute_command,
     "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
     "aws-ec2-image-attribute-modify": EC2.modify_image_attribute_command,
+    "aws-ec2-image-attribute-set-ami-to-private-quick-action": EC2.modify_image_attribute_command,
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
-    "aws-ec2-create-snapshot": EC2.create_snapshot_command,
-    "aws-ec2-modify-snapshot-permission": EC2.modify_snapshot_permission_command,
+    "aws-ec2-snapshot-create": EC2.create_snapshot_command,
+    "aws-ec2-snapshot-permission-modify": EC2.modify_snapshot_permission_command,
     "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
+    "aws-ec2-vpcs-describe": EC2.describe_vpcs_command,
+    "aws-ec2-subnets-describe": EC2.describe_subnets_command,
+    "aws-ec2-ipam-resource-discoveries-describe": EC2.describe_ipam_resource_discoveries_command,
+    "aws-ec2-ipam-resource-discovery-associations-describe": EC2.describe_ipam_resource_discovery_associations_command,
+    "aws-ec2-set-snapshot-to-private-quick-action": EC2.modify_snapshot_permission_command,
+    "aws-ec2-latest-ami-get": EC2.get_latest_ami_command,
+    "aws-ec2-network-acl-create": EC2.create_network_acl_command,
+    "aws-ec2-ipam-discovered-public-addresses-get": EC2.get_ipam_discovered_public_addresses_command,
+    "aws-ec2-security-group-create": EC2.create_security_group_command,
+    "aws-ec2-security-group-delete": EC2.delete_security_group_command,
+    "aws-ec2-security-groups-describe": EC2.describe_security_groups_command,
+    "aws-ec2-security-group-egress-authorize": EC2.authorize_security_group_egress_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
-    "aws-eks-describe-cluster": EKS.describe_cluster_command,
-    "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
+    "aws-eks-enable-control-plane-logging-quick-action": EKS.update_cluster_config_command,
+    "aws-eks-disable-public-access-quick-action": EKS.update_cluster_config_command,
+    "aws-eks-cluster-describe": EKS.describe_cluster_command,
+    "aws-eks-access-policy-associate": EKS.associate_access_policy_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
+    "aws-rds-db-cluster-enable-iam-auth-quick-action": RDS.modify_db_cluster_command,
+    "aws-rds-db-cluster-enable-deletion-protection-quick-action": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
+    "aws-rds-db-cluster-snapshot-set-to-private-quick-action": RDS.modify_db_cluster_snapshot_attribute_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-modify-publicly-accessible-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-modify-enable-automatic-backup-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-enable-iam-auth-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-enable-deletion-protection-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-enable-auto-upgrade-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-enable-multi-az-quick-action": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-rds-event-subscription-modify": RDS.modify_event_subscription_command,
+    "aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
+    "aws-cloudtrail-logging-start-enable-logging-quick-action": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
+    "aws-cloudtrail-trail-enable-log-validation-quick-action": CloudTrail.update_trail_command,
     "aws-ec2-instances-describe": EC2.describe_instances_command,
     "aws-ec2-instances-start": EC2.start_instances_command,
     "aws-ec2-instances-stop": EC2.stop_instances_command,
     "aws-ec2-instances-terminate": EC2.terminate_instances_command,
     "aws-ec2-instances-run": EC2.run_instances_command,
+    "aws-ec2-tags-create": EC2.create_tags_command,
     "aws-s3-bucket-policy-delete": S3.delete_bucket_policy_command,
     "aws-s3-public-access-block-get": S3.get_public_access_block_command,
     "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,
     "aws-s3-bucket-policy-get": S3.get_bucket_policy_command,
     "aws-cloudtrail-trails-describe": CloudTrail.describe_trails_command,
-    "aws-ecs-update-cluster-settings": ECS.update_cluster_settings_command,
+    "aws-acm-certificate-options-update": ACM.update_certificate_options_command,
+    "aws-ecs-cluster-settings-update": ECS.update_cluster_settings_command,
+    "aws-lambda-function-configuration-get": Lambda.get_function_configuration_command,
+    "aws-lambda-function-url-config-get": Lambda.get_function_url_configuration_command,
+    "aws-lambda-policy-get": Lambda.get_policy_command,
+    "aws-lambda-invoke": Lambda.invoke_command,
+    "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
+    "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
+    "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -2519,6 +4081,7 @@ REQUIRED_ACTIONS: list[str] = [
     "kms:Decrypt",
     "kms:DescribeKey",
     "kms:GenerateDataKey",
+    "kms:EnableKeyRotation",
     "secretsmanager:CreateSecret",
     "secretsmanager:RotateSecret",
     "secretsmanager:TagResource",
@@ -2541,9 +4104,16 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:ModifySnapshotAttribute",
     "ec2:RevokeSecurityGroupIngress",
     "ec2:CreateSnapshot",
+    "ec2:DescribeVpcs",
+    "ec2:DescribeSubnets",
+    "ec2:DescribeIpamResourceDiscoveries",
+    "ec2:DescribeIpamResourceDiscoveryAssociations",
+    "ec2:DescribeImages",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "ec2:CreateSecurityGroup",
+    "ec2:CreateNetworkAcl",
+    "ec2:GetIpamDiscoveredPublicAddresses",
     "ec2:CreateTags",
     "ec2:DeleteSecurityGroup",
     "ec2:DescribeInstances",
@@ -2567,11 +4137,31 @@ REQUIRED_ACTIONS: list[str] = [
     "iam:GetAccountAuthorizationDetails",
     "ecs:UpdateClusterSettings",
     "s3:GetBucketPolicy",
+    "s3:GetBucketWebsite",
+    "s3:GetBucketAcl",
     "s3:GetBucketPublicAccessBlock",
     "s3:GetEncryptionConfiguration",
     "s3:DeleteBucketPolicy",
+    "acm:UpdateCertificateOptions",
     "cloudtrail:DescribeTrails",
+    "lambda:GetFunctionConfiguration",
+    "lambda:GetFunctionUrlConfig",
+    "lambda:GetPolicy",
+    "lambda:InvokeFunction",
+    "lambda:UpdateFunctionUrlConfig",
+    "elasticloadbalancing:ModifyLoadBalancerAttributes",
+    "ce:GetCostAndUsage",
+    "ce:GetCostForecast",
+    "budgets:DescribeBudgets",
+    "budgets:DescribeNotificationsForBudget",
 ]
+
+COMMAND_SERVICE_MAP = {
+    "aws-billing-cost-usage-list": "ce",
+    "aws-billing-forecast-list": "ce",
+    "aws-billing-budgets-list": "budgets",
+    "aws-billing-budget-notification-list": "budgets",
+}
 
 
 def print_debug_logs(client: BotoClient, message: str):
@@ -2683,10 +4273,10 @@ def get_service_client(
     params: dict = {},
     args: dict = {},
     command: str = "",
-    session: Optional[Session] = None,
+    session: Session | None = None,
     service_name: str = "",
-    config: Optional[Config] = None,
-) -> tuple[BotoClient, Optional[Session]]:
+    config: Config | None = None,
+) -> tuple[BotoClient, Session | None]:
     """
     Create and configure a boto3 client for the specified AWS service.
 
@@ -2708,6 +4298,8 @@ def get_service_client(
     )
 
     # Resolve service name
+    if command in COMMAND_SERVICE_MAP:
+        service_name = COMMAND_SERVICE_MAP[command]
     service_name = service_name or command.split("-")[1]
     service = AWSServices(service_name)
 

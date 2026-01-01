@@ -1,0 +1,37 @@
+{
+    "Domain(val.Name && val.Name == obj.Name)": {
+        "Name": "test.com",
+        "DetectionEngines": 1,
+        "Tags": [
+            "cyberint_guid: simple_cyberint_guid",
+            "notes: cyber actors, possibly associated with the APT group Agent Serpens, created a fake website mimicking a modeling agency to collect detailed visitor."
+        ],
+        "MalwareFamily": "Phishing",
+        "Malicious": {
+            "Vendor": "InfobloxThreatDefense",
+            "Description": "cyber actors, possibly associated with the APT group Agent Serpens, created a fake website mimicking a modeling agency to collect detailed visitor."
+        },
+        "ThreatTypes": [
+            {
+                "threatcategory": "HOST",
+                "threatcategoryconfidence": "100"
+            }
+        ],
+        "Relationships": [
+            {
+                "Relationship": "resolves-to",
+                "EntityA": "test.com",
+                "EntityAType": "Domain",
+                "EntityB": "0.0.0.1",
+                "EntityBType": "IP"
+            }
+        ],
+        "Description": "cyber actors, possibly associated with the APT group Agent Serpens, created a fake website mimicking a modeling agency to collect detailed visitor."
+    },
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        "Indicator": "test.com",
+        "Type": "domain",
+        "Vendor": "InfobloxThreatDefense",
+        "Score": 3
+    }
+}

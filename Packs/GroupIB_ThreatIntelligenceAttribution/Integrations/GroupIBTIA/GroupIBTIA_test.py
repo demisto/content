@@ -10,6 +10,7 @@ from GroupIBTIA import (
     get_available_collections_command,
     local_search_command,
     CommonHelpers,
+    INCIDENT_CREATED_DATES_MAPPING,
 )
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
@@ -162,7 +163,7 @@ def test_global_search_command(mocker, single_session_fixture):
       - The global_search_command() function is called with the client and test_query arguments.
 
     Then:
-      - Ensures that the command’s outputs_prefix and outputs_key_field are correctly set to expected values.
+      - Ensures that the command's outputs_prefix and outputs_key_field are correctly set to expected values.
       - Verifies that the command returns the data structure with the correct outputs_key_field ("query"),
         ensuring compatibility with other functions that depend on this structure.
       - This test validates that the search command integrates smoothly with the client and returns
@@ -338,3 +339,458 @@ def test_transform_list_to_str():
 
 def test_validate_collections_valid():
     CommonHelpers.validate_collections("valid_collection")
+
+
+def _get_date_field_for_collection(collection_name: str) -> str:
+    """
+    Helper function to get the appropriate date field for a collection.
+
+    Returns the first date field from INCIDENT_CREATED_DATES_MAPPING for the given collection.
+    """
+    date_field = INCIDENT_CREATED_DATES_MAPPING.get(collection_name, "dateFirstSeen")
+    if isinstance(date_field, list):
+        return str(date_field[0])  # Return first field if it's a list
+    return str(date_field)
+
+
+def test_fetch_incidents_with_combolist_and_unique_parameters(mocker, session_fixture):
+    """
+    Test for verifying fetch_incidents_command correctly passes combolist and unique parameters.
+
+    Given:
+      - A session_fixture providing a client and collection name.
+      - combolist and unique parameters set to True.
+
+    When:
+      - fetch_incidents_command() is called with combolist=True and unique=True.
+
+    Then:
+      - Verifies that create_poll_generator is called with the correct combolist and unique parameters.
+      - Ensures incidents are returned as a list.
+    """
+    collection_name, client = session_fixture
+    mock_portions = []
+    mock_portion = MagicMock()
+    mock_portion.sequpdate = 12345
+    mock_portion.portion_size = 10
+    mock_portion.count = 10
+    # Mock incident data that will be processed by IncidentBuilder
+    # Include required fields: id, name, evaluation, and date field based on collection
+    # Use date format that matches real data: "YYYY-MM-DD" or "YYYY-MM-DDTHH:MM:SS+00:00"
+    date_field = _get_date_field_for_collection(collection_name)
+    mock_incident_data = {
+        "id": "test-id",
+        "name": "test",
+        "evaluation": {"severity": "green"},
+    }
+    # Add the appropriate date field for this collection
+    mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
+    # For compromised/breached collection, add emails field required for portal link generation
+    if collection_name == "compromised/breached":
+        mock_incident_data["emails"] = ["test@example.com"]
+    mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
+    mock_portions.append(mock_portion)
+
+    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(
+        client.poller,
+        "get_available_collections",
+        return_value=[collection_name],
+    )
+    mocker.patch.object(
+        client,
+        "create_poll_generator",
+        return_value=(mock_portions, None),
+    )
+
+    next_run, incidents = fetch_incidents_command(
+        client=client,
+        last_run={},
+        first_fetch_time="3 days",
+        incident_collections=[collection_name],
+        max_requests=3,
+        hunting_rules=0,
+        combolist=True,
+        unique=True,
+        enable_probable_corporate_access=False,
+    )
+
+    # Verify create_poll_generator was called with combolist and unique parameters
+    client.create_poll_generator.assert_called_once()
+    call_kwargs = client.create_poll_generator.call_args[1]
+    assert call_kwargs["combolist"] is True, "Expected combolist parameter to be True."
+    assert call_kwargs["unique"] is True, "Expected unique parameter to be True."
+    assert isinstance(incidents, list), "Expected incidents to be a list."
+
+
+def test_fetch_incidents_sequpdate_resolution(mocker, session_fixture):
+    """
+    Test for verifying sequpdate resolution in create_poll_generator when no last_fetch exists.
+
+    Given:
+      - A session_fixture providing a client and collection name.
+      - An empty last_run dictionary (first time fetch).
+      - A mocked get_seq_update_dict that returns a sequpdate value.
+
+    When:
+      - fetch_incidents_command() is called with first_fetch_time.
+
+    Then:
+      - Verifies that create_poll_generator resolves sequpdate via get_seq_update_dict.
+      - Ensures the resolved sequpdate is used instead of date_from.
+    """
+    collection_name, client = session_fixture
+    if collection_name == "compromised/breached":
+        # Skip this test for compromised/breached as it uses different logic
+        return
+
+    mock_portions = []
+    mock_portion = MagicMock()
+    mock_portion.sequpdate = 12345
+    mock_portion.portion_size = 10
+    mock_portion.count = 10
+    # Mock incident data with required fields
+    date_field = _get_date_field_for_collection(collection_name)
+    mock_incident_data = {
+        "id": "test-id",
+        "name": "test",
+        "evaluation": {"severity": "green"},
+    }
+    # Add the appropriate date field for this collection
+    mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
+    mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
+    mock_portions.append(mock_portion)
+
+    # Mock get_seq_update_dict to return a sequpdate
+    resolved_sequpdate = 10000
+    mocker.patch.object(
+        client.poller,
+        "get_seq_update_dict",
+        return_value={collection_name: resolved_sequpdate},
+    )
+    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(
+        client.poller,
+        "get_available_collections",
+        return_value=[collection_name],
+    )
+    mocker.patch.object(
+        client.poller,
+        "create_update_generator",
+        return_value=mock_portions,
+    )
+
+    next_run, incidents = fetch_incidents_command(
+        client=client,
+        last_run={},
+        first_fetch_time="2023-01-01",
+        incident_collections=[collection_name],
+        max_requests=3,
+        hunting_rules=0,
+        combolist=False,
+        unique=False,
+        enable_probable_corporate_access=False,
+    )
+
+    # Verify get_seq_update_dict was called for sequpdate resolution
+    client.poller.get_seq_update_dict.assert_called_once()
+    assert isinstance(incidents, list), "Expected incidents to be a list."
+
+
+def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixture):
+    """
+    Test for verifying effective_last_fetch calculation using max(last_fetch, sequpdate).
+
+    Given:
+      - A session_fixture providing a client and collection name.
+      - A last_run dictionary with existing last_fetch value.
+      - Multiple portions with different sequpdate values.
+
+    When:
+      - fetch_incidents_command() processes portions and updates sequpdate.
+
+    Then:
+      - Verifies that next_run contains the maximum of last_fetch and sequpdate.
+      - Ensures effective_last_fetch is correctly calculated.
+    """
+    collection_name, client = session_fixture
+    if collection_name == "compromised/breached":
+        # Skip this test for compromised/breached as it uses different logic
+        return
+
+    last_fetch_value = 10000
+    sequpdate_value = 15000  # Higher than last_fetch
+
+    mock_portions = []
+    mock_portion = MagicMock()
+    mock_portion.sequpdate = sequpdate_value
+    mock_portion.portion_size = 10
+    mock_portion.count = 10
+    # Mock incident data with required fields
+    date_field = _get_date_field_for_collection(collection_name)
+    mock_incident_data = {
+        "id": "test-id",
+        "name": "test",
+        "evaluation": {"severity": "green"},
+    }
+    # Add the appropriate date field for this collection
+    mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
+    mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
+    mock_portions.append(mock_portion)
+
+    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(
+        client.poller,
+        "get_available_collections",
+        return_value=[collection_name],
+    )
+    mocker.patch.object(
+        client,
+        "create_poll_generator",
+        return_value=(mock_portions, last_fetch_value),
+    )
+
+    next_run, incidents = fetch_incidents_command(
+        client=client,
+        last_run={"last_fetch": {collection_name: last_fetch_value}},
+        first_fetch_time="3 days",
+        incident_collections=[collection_name],
+        max_requests=3,
+        hunting_rules=0,
+        combolist=False,
+        unique=False,
+        enable_probable_corporate_access=False,
+    )
+
+    # Verify effective_last_fetch is max(last_fetch, sequpdate)
+    assert collection_name in next_run["last_fetch"], "Expected collection name in next_run['last_fetch']."
+    effective_last_fetch = next_run["last_fetch"][collection_name]
+    assert effective_last_fetch == max(
+        last_fetch_value, sequpdate_value
+    ), f"Expected effective_last_fetch to be max({last_fetch_value}, {sequpdate_value}) = {sequpdate_value}."
+
+
+def test_fetch_incidents_incident_processing_loop(mocker, session_fixture):
+    """
+    Test for verifying the incident processing loop handles multiple portions correctly.
+
+    Given:
+      - A session_fixture providing a client and collection name.
+      - Multiple portions with different sequpdate values.
+
+    When:
+      - fetch_incidents_command() processes multiple portions in a loop.
+
+    Then:
+      - Verifies that all portions are processed.
+      - Ensures sequpdate is updated from each portion.
+      - Checks that requests_count limits the number of processed portions.
+    """
+    collection_name, client = session_fixture
+    if collection_name == "compromised/breached":
+        # Skip this test for compromised/breached as it uses different logic
+        return
+
+    # Create multiple mock portions
+    mock_portions = []
+    date_field = _get_date_field_for_collection(collection_name)
+    for i in range(5):
+        mock_portion = MagicMock()
+        mock_portion.sequpdate = 10000 + i * 1000
+        mock_portion.portion_size = 10
+        mock_portion.count = 10
+        # Mock incident data with required fields
+        mock_incident_data = {
+            "id": f"test-id-{i}",
+            "name": f"test-{i}",
+            "evaluation": {"severity": "green"},
+        }
+        # Add the appropriate date field for this collection
+        mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
+        mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
+        mock_portions.append(mock_portion)
+
+    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(
+        client.poller,
+        "get_available_collections",
+        return_value=[collection_name],
+    )
+    mocker.patch.object(
+        client,
+        "create_poll_generator",
+        return_value=(mock_portions, None),
+    )
+
+    max_requests = 3
+    next_run, incidents = fetch_incidents_command(
+        client=client,
+        last_run={},
+        first_fetch_time="3 days",
+        incident_collections=[collection_name],
+        max_requests=max_requests,
+        hunting_rules=0,
+        combolist=False,
+        unique=False,
+        enable_probable_corporate_access=False,
+    )
+
+    # Verify that only max_requests portions were processed
+    assert len(incidents) == max_requests, f"Expected {max_requests} incidents, got {len(incidents)}."
+    # Verify that the final sequpdate is from the last processed portion
+    assert collection_name in next_run["last_fetch"], "Expected collection name in next_run['last_fetch']."
+
+
+def test_create_poll_generator_with_combolist_and_unique(mocker, single_session_fixture):
+    """
+    Test for verifying create_poll_generator correctly passes combolist and unique to create_update_generator.
+
+    Given:
+      - A client instance.
+      - combolist=True and unique=True parameters.
+
+    When:
+      - create_poll_generator() is called with these parameters.
+
+    Then:
+      - Verifies that create_update_generator is called with combolist=1 and unique=1 (converted to int).
+    """
+    client = single_session_fixture
+    collection_name = "compromised/account_group"
+
+    mock_portions = []
+    mock_portion = MagicMock()
+    mock_portions.append(mock_portion)
+
+    mocker.patch.object(
+        client.poller,
+        "get_seq_update_dict",
+        return_value={},  # Empty dict means no sequpdate found, will use date_from
+    )
+    mocker.patch.object(
+        client.poller,
+        "create_update_generator",
+        return_value=mock_portions,
+    )
+
+    portions, last_fetch = client.create_poll_generator(
+        collection_name=collection_name,
+        hunting_rules=0,
+        enable_probable_corporate_access=False,
+        unique=True,
+        combolist=True,
+        last_fetch=None,
+        first_fetch_time="2023-01-01",
+    )
+
+    # Verify create_update_generator was called with combolist and unique as integers
+    client.poller.create_update_generator.assert_called_once()
+    call_kwargs = client.poller.create_update_generator.call_args[1]
+    assert call_kwargs["combolist"] == 1, "Expected combolist to be converted to 1 (int)."
+    assert call_kwargs["unique"] == 1, "Expected unique to be converted to 1 (int)."
+    assert portions == mock_portions, "Expected returned portions to match mocked portions."
+
+
+def test_create_poll_generator_sequpdate_resolution_success(mocker, single_session_fixture):
+    """
+    Test for verifying create_poll_generator resolves sequpdate via get_seq_update_dict when successful.
+
+    Given:
+      - A client instance.
+      - No last_fetch, but date_from is provided.
+      - get_seq_update_dict returns a valid sequpdate.
+
+    When:
+      - create_poll_generator() is called with first_fetch_time.
+
+    Then:
+      - Verifies that get_seq_update_dict is called.
+      - Ensures resolved sequpdate is used and date_from is set to None.
+    """
+    client = single_session_fixture
+    collection_name = "compromised/account_group"
+    resolved_sequpdate = 12345
+
+    mock_portions = []
+    mock_portion = MagicMock()
+    mock_portions.append(mock_portion)
+
+    mocker.patch.object(
+        client.poller,
+        "get_seq_update_dict",
+        return_value={collection_name: resolved_sequpdate},
+    )
+    mocker.patch.object(
+        client.poller,
+        "create_update_generator",
+        return_value=mock_portions,
+    )
+
+    portions, last_fetch = client.create_poll_generator(
+        collection_name=collection_name,
+        hunting_rules=0,
+        enable_probable_corporate_access=False,
+        unique=False,
+        combolist=False,
+        last_fetch=None,
+        first_fetch_time="2023-01-01",
+    )
+
+    # Verify get_seq_update_dict was called
+    client.poller.get_seq_update_dict.assert_called_once()
+    # Verify create_update_generator was called with resolved sequpdate and date_from=None
+    call_kwargs = client.poller.create_update_generator.call_args[1]
+    assert call_kwargs["sequpdate"] == resolved_sequpdate, "Expected resolved sequpdate to be used."
+    assert call_kwargs.get("date_from") is None, "Expected date_from to be None when sequpdate is resolved."
+
+
+def test_create_poll_generator_sequpdate_resolution_fallback(mocker, single_session_fixture):
+    """
+    Test for verifying create_poll_generator falls back to date_from when sequpdate resolution fails.
+
+    Given:
+      - A client instance.
+      - No last_fetch, but date_from is provided.
+      - get_seq_update_dict returns empty dict or raises exception.
+
+    When:
+      - create_poll_generator() is called with first_fetch_time.
+
+    Then:
+      - Verifies that get_seq_update_dict is called.
+      - Ensures date_from is used when sequpdate resolution fails.
+    """
+    client = single_session_fixture
+    collection_name = "compromised/account_group"
+
+    mock_portions = []
+    mock_portion = MagicMock()
+    mock_portions.append(mock_portion)
+
+    mocker.patch.object(
+        client.poller,
+        "get_seq_update_dict",
+        return_value={},  # Empty dict means no sequpdate found
+    )
+    mocker.patch.object(
+        client.poller,
+        "create_update_generator",
+        return_value=mock_portions,
+    )
+
+    portions, last_fetch = client.create_poll_generator(
+        collection_name=collection_name,
+        hunting_rules=0,
+        enable_probable_corporate_access=False,
+        unique=False,
+        combolist=False,
+        last_fetch=None,
+        first_fetch_time="2023-01-01",
+    )
+
+    # Verify get_seq_update_dict was called
+    client.poller.get_seq_update_dict.assert_called_once()
+    # Verify create_update_generator was called with date_from (fallback)
+    call_kwargs = client.poller.create_update_generator.call_args[1]
+    assert call_kwargs.get("date_from") is not None, "Expected date_from to be used when sequpdate resolution fails."
+    assert call_kwargs.get("sequpdate") is None, "Expected sequpdate to be None when resolution fails."

@@ -279,6 +279,8 @@ BEACONING
 backslashes
 Accountresourcekey
 TDT
+markdownlint-disable
+markdownlint-enable
 
 [file:SecuronixGetViolations.yml]
 ignore=BA124

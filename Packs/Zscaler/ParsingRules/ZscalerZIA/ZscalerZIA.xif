@@ -28,7 +28,7 @@ filter _raw_log -> [] != null
 
 // use case 3: JSON Array Notation disabled, with a valid epoch / timestamp & timezone. 
 filter _raw_log -> [] = null
-| alter _raw_log = to_json_string(event)
+| alter _raw_log = to_string(to_json_string(event))
 | call ZSCALER_NSS_EXTRACT_TIMESTAMP_FIELDS
 | call ZSCALER_NSS_ASSERT_VALID_TIMESTAMP
 | call ZSCALER_NSS_PARSE_TIMESTAMP
@@ -36,7 +36,7 @@ filter _raw_log -> [] = null
 
 // use case 4: JSON Array Notation disabled, without a valid epoch / timestamp & timezone. 
 filter _raw_log -> [] = null
-| alter _raw_log = to_json_string(event)
+| alter _raw_log = to_string(to_json_string(event))
 | call ZSCALER_NSS_EXTRACT_TIMESTAMP_FIELDS
 | call ZSCALER_NSS_ASSERT_INVALID_TIMESTAMP
 | call ZSCALER_NSS_REMOVE_REDUNDANT_FIELDS;
@@ -59,7 +59,7 @@ alter _raw_log = _raw_log -> []
 | arrayexpand _raw_log
 | alter 
     sourcetype = _raw_log -> sourcetype,
-    _raw_log = _raw_log -> event{};
+    _raw_log = to_string(_raw_log -> event{});
 
 [RULE:ZSCALER_NSS_EXTRACT_TIMESTAMP_FIELDS]
 alter // timestamp could be populated either as an epoch value (in seconds), or as a formatted string

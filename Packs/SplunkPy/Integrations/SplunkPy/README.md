@@ -1261,6 +1261,26 @@ Creates the KV store collection transform.
 
 There is no context output for this command.
 
+### splunk-job-share
+
+***
+Change job settings to share its results to all Splunk users, and change its TTL.
+
+#### Base Command
+
+`splunk-job-share`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sid | Comma-separated list of job IDs to share. | Required |
+| ttl | Time in seconds for the job's expiry time. Default is 1800. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
 ## Additional Information
 
 To get the HEC token

@@ -1,0 +1,164 @@
+id: Test-CriminalIP
+version: -1
+fromversion: 6.10.0
+name: Test-CriminalIP
+description: >
+  Test playbook for the CriminalIP integration.
+  This playbook runs all main commands to verify the integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 00000000-0000-0000-0000-000000000000
+    type: start
+    task:
+      id: 00000000-0000-0000-0000-000000000000
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |
+      {
+        "position": {"x": 250, "y": 50}
+      }
+
+  "1":
+    id: "1"
+    taskid: 11111111-1111-1111-1111-111111111111
+    type: regular
+    task:
+      id: 11111111-1111-1111-1111-111111111111
+      version: -1
+      name: Get IP Report
+      description: Run IP report command
+      script: CriminalIP|||criminal-ip-get-ip-report
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    nexttasks:
+      '#none#': ["2"]
+    view: |
+      {
+        "position": {"x": 250, "y": 200}
+      }
+
+  "2":
+    id: "2"
+    taskid: 22222222-2222-2222-2222-222222222222
+    type: condition
+    task:
+      id: 22222222-2222-2222-2222-222222222222
+      version: -1
+      name: Verify IP Report
+      description: Ensure IP field exists
+      type: condition
+      iscommand: false
+      brand: ""
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CriminalIP.IP.ip
+            iscontext: true
+    nexttasks:
+      "yes": ["3"]
+    view: |
+      {
+        "position": {"x": 250, "y": 350}
+      }
+
+  "3":
+    id: "3"
+    taskid: 33333333-3333-3333-3333-333333333333
+    type: regular
+    task:
+      id: 33333333-3333-3333-3333-333333333333
+      version: -1
+      name: Check Malicious IP
+      description: Run malicious IP check
+      script: CriminalIP|||criminal-ip-check-malicious-ip
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    nexttasks:
+      '#none#': ["4"]
+    view: |
+      {
+        "position": {"x": 250, "y": 500}
+      }
+
+  "4":
+    id: "4"
+    taskid: 44444444-4444-4444-4444-444444444444
+    type: regular
+    task:
+      id: 44444444-4444-4444-4444-444444444444
+      version: -1
+      name: Check Last Scan Date
+      description: Run last scan date check
+      script: CriminalIP|||criminal-ip-check-last-scan-date
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    nexttasks:
+      '#none#': ["5"]
+    view: |
+      {
+        "position": {"x": 250, "y": 650}
+      }
+
+  "5":
+    id: "5"
+    taskid: 55555555-5555-5555-5555-555555555555
+    type: regular
+    task:
+      id: 55555555-5555-5555-5555-555555555555
+      version: -1
+      name: Domain Quick Scan
+      description: Run domain quick scan
+      script: CriminalIP|||criminal-ip-domain-quick-scan
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    scriptarguments:
+      domain:
+        simple: example.com
+    nexttasks:
+      '#none#': ["6"]
+    view: |
+      {
+        "position": {"x": 250, "y": 800}
+      }
+
+  "6":
+    id: "6"
+    taskid: 66666666-6666-6666-6666-666666666666
+    type: title
+    task:
+      id: 66666666-6666-6666-6666-666666666666
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    view: |
+      {
+        "position": {"x": 250, "y": 950}
+      }

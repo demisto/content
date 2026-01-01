@@ -91,6 +91,14 @@
         "vpcEndpointId": {
             "type": "string",
             "is_array": false
+        },
+        "eventTime": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "start": {
+            "type": "string",
+            "is_array": false
         }
     }
 }

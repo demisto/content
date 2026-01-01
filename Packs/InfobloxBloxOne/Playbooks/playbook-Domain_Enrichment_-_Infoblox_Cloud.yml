@@ -1,0 +1,534 @@
+id: Domain Enrichment - Infoblox Cloud
+version: -1
+name: Domain Enrichment - Infoblox Cloud
+description: This playbook enriches domains or hosts with the dossier, TIDE and asset data using Infoblox Threat Defense with DDI integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5317eb2a-7e95-4d69-8801-24224d2b6ed1
+    type: start
+    task:
+      id: 5317eb2a-7e95-4d69-8801-24224d2b6ed1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 44c3742b-12fc-4ebb-855c-391c5d3ef585
+    type: condition
+    task:
+      id: 44c3742b-12fc-4ebb-855c-391c5d3ef585
+      version: -1
+      name: Is Infoblox Threat Defense with DDI integration enabled?
+      description: Checks whether Infoblox Threat Defense with DDI integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: InfobloxBloxOneThreatDefense
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ccbc4774-5df3-45e4-8b12-8c1a17423311
+    type: regular
+    task:
+      id: ccbc4774-5df3-45e4-8b12-8c1a17423311
+      version: -1
+      name: Clear previous inputs
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: FoundIndicators
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 20fdd2ec-bf72-4358-81f1-43a6c9543742
+    type: regular
+    task:
+      id: 20fdd2ec-bf72-4358-81f1-43a6c9543742
+      version: -1
+      name: Fetch Indicators from Incident
+      description: commands.local.cmd.find.indicators
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: FoundIndicators=.={"value":val.value,"indicator_type":val.indicator_type}
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d71a418f-a078-41f9-8cf1-0c9f625c304c
+    type: regular
+    task:
+      id: d71a418f-a078-41f9-8cf1-0c9f625c304c
+      version: -1
+      name: Get reputation for domain indicators
+      description: Gets the comprehensive domain/host reputation and threat intelligence from Infoblox Threat Defense, including threat indicators, IPAM address information and standard domain reputation data.
+      script: InfobloxBloxOneThreatDefense|||domain
+      type: regular
+      iscommand: true
+      brand: InfobloxBloxOneThreatDefense
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      domain:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.domains
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9cc17556-8bab-47f6-8bb4-ceff650af5ab
+    type: title
+    task:
+      id: 9cc17556-8bab-47f6-8bb4-ceff650af5ab
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 857d3d0c-6330-427f-847f-43bf0523d285
+    type: condition
+    task:
+      id: 857d3d0c-6330-427f-847f-43bf0523d285
+      version: -1
+      name: Check whether domains are available in playbook input
+      description: Check whether domains are available in playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.domains
+                transformers:
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 296a0786-e7e0-4713-8a5d-29c631f43552
+    type: title
+    task:
+      id: 296a0786-e7e0-4713-8a5d-29c631f43552
+      version: -1
+      name: Check for indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 172d85d5-7bd2-4ce6-8b04-3b863c6169a2
+    type: condition
+    task:
+      id: 172d85d5-7bd2-4ce6-8b04-3b863c6169a2
+      version: -1
+      name: Check that domain indicators are present or not
+      description: Check that domains are present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: domain
+                    ignorecase: true
+                accessor: value
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.domains
+                      iscontext: true
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 785b0262-8459-487f-8e8b-c5bcab276041
+    type: regular
+    task:
+      id: 785b0262-8459-487f-8e8b-c5bcab276041
+      version: -1
+      name: Get dossier information for domain indicators
+      description: The Dossier Lookup API returns detailed information on the specified indicator from the requested sources.
+      script: '|||bloxone-td-dossier-lookup-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      indicator_type:
+        simple: host
+      value:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.domains
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_4_yes": 0.46,
+      "11_6_#default#": 0.2,
+      "1_2_yes": 0.58,
+      "1_6_#default#": 0.1,
+      "8_10_yes": 0.16,
+      "8_3_#default#": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1595,
+        "width": 820,
+        "x": 390,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: domains
+  value: {}
+  required: false
+  description: The optional comma-separated list of domains or hosts to enrich.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

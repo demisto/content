@@ -91,6 +91,7 @@ configuration:
 - display: Incident severity
   name: severity
   type: 16
+  section: Collect
   required: false
   options:
   - Low
@@ -99,6 +100,7 @@ configuration:
   - All
 - display: Maximum alerts to fetch
   name: max_fetch
+  section: Collect
   type: 0
   required: false
   defaultvalue: '50'
@@ -888,7 +890,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.5490413
   isfetch: true
   runonce: false
   script: '-'

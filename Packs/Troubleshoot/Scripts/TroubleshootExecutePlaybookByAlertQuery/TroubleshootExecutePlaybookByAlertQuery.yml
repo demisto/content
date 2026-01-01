@@ -67,7 +67,7 @@ tags:
 - troubleshoot
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 5.0.0
 enabled: true
 tests:

@@ -253,7 +253,7 @@ Enrich a file hash with Unit 42 threat intelligence context.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | File hash to enrich (MD5, SHA1, or SHA256). | Required |
+| file | File hash to enrich (SHA256). | Required |
 
 #### Context Output
 

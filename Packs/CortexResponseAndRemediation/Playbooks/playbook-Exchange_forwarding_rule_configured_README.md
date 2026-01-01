@@ -32,7 +32,7 @@ Requirements:
 
 For any response action, you need the following integrations:
 - EWS Extension Online Powershell v3 integration.
-- Azure Active Directory Users.
+- Entra ID Users.
 
 ## Dependencies
 

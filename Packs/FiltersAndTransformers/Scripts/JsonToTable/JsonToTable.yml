@@ -27,6 +27,7 @@ args:
 - name: url_keys
   description: Comma-separated list of keys in the given JSON table that should be turned into a clickable URL.
 scripttarget: 0
+isllm: false
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
