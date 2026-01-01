@@ -2892,7 +2892,6 @@ def storage_container_blob_get_command(client: AzureClient, params: dict, args: 
     account_name = args.get("account_name", "")
 
     response = client.storage_container_blob_get_request(container_name, blob_name, account_name)
-
     if hasattr(response, "content"):
         return fileResult(filename=blob_name, data=response.content)  # type: ignore[attr-defined]
     else:
@@ -4668,7 +4667,6 @@ def get_azure_client(params: dict, args: dict, command: str):
             raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
         demisto.debug("Using CTS.")
-
     client = AzureClient(
         app_id=params.get("app_id", ""),
         subscription_id=params.get("subscription_id", ""),
@@ -4706,7 +4704,7 @@ def switch_to_gov_account() -> None:
     global PREFIX_URL_AZURE
     global PREFIX_URL_MS_GRAPH
 
-    BLOB_SERVICE_PREFIX = "blob.core.usgovcloudapi.net "
+    BLOB_SERVICE_PREFIX = "blob.core.usgovcloudapi.net"
     SCOPE_BY_CONNECTION = {
         "Device Code": "https://management.usgovcloudapi.net/user_impersonation offline_access user.read",
         "Authorization Code": "https://management.usgovcloudapi.net/.default",
@@ -4726,7 +4724,7 @@ def main():  # pragma: no cover
     demisto.debug(f"Command being called is {command}")
     connector_id = get_connector_id()
     demisto.debug(f"{connector_id=}")
-    account_id = (get_from_args_or_params(params=params, args=args, key="subscription_id"),)
+    account_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     if is_gov_account(connector_id, account_id):  # type: ignore
         switch_to_gov_account()
     handle_proxy()
@@ -4810,7 +4808,6 @@ def main():  # pragma: no cover
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
             return return_results(run_health_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
-
         client = get_azure_client(params, args, command)
         if command == "test-module":
             return_results(test_module(client))
