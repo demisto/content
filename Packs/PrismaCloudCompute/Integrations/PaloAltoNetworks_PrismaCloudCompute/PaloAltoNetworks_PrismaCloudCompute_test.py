@@ -6,7 +6,6 @@ from CommonServerPython import *
 from unittest.mock import MagicMock, AsyncMock
 import asyncio
 import threading
-from base64 import b64encode
 from PaloAltoNetworks_PrismaCloudCompute import (
     HEADERS_BY_NAME,
     PrismaCloudComputeClient,
@@ -1920,7 +1919,9 @@ async def test_fetch_assets_long_running_command_initial_run(mocker):
     mock_main_loop = mocker.patch(
         "PaloAltoNetworks_PrismaCloudCompute.preform_fetch_assets_main_loop_logic", side_effect=[None, BaseException("Stop loop")]
     )
-    mock_sleep = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.asyncio.sleep", side_effect=[None, BaseException("Stop sleep")])
+    mock_sleep = mocker.patch(
+        "PaloAltoNetworks_PrismaCloudCompute.asyncio.sleep", side_effect=[None, BaseException("Stop sleep")]
+    )
     mock_info = mocker.patch.object(demisto, "info")
     mock_debug = mocker.patch.object(demisto, "debug")
 
@@ -1933,7 +1934,7 @@ async def test_fetch_assets_long_running_command_initial_run(mocker):
     mock_sleep.assert_called_once()
     assert mock_info.called
     assert mock_debug.called
-    
+
 
 @pytest.mark.asyncio
 async def test_fetch_assets_long_running_command_error_handling(mocker):
@@ -1994,7 +1995,7 @@ def test_init_asset_type_related_data_new_data(mocker):
         product="Runtime_images",
         asset_type=AssetType.RUNTIME_IMAGE,
         process_result_func=process_runtime_image_results,
-        ctx_lock=ctx_lock
+        ctx_lock=ctx_lock,
     )
     assert asset_type_data.offset == 0
     assert asset_type_data.total_count == 0
@@ -2071,10 +2072,17 @@ async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
     mock_client._http_request = AsyncMock(side_effect=[first_mock_response, second_response_mock])
 
     asset_type_related_data = AssetTypeRelatedData(
-        endpoint="/hosts", product="Hosts", asset_type=AssetType.HOST, process_result_func=process_host_results, limit=1, ctx_lock=ctx_lock
+        endpoint="/hosts",
+        product="Hosts",
+        asset_type=AssetType.HOST,
+        process_result_func=process_host_results,
+        limit=1,
+        ctx_lock=ctx_lock,
     )
 
-    mock_send_data = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.process_asset_data_and_send_to_xsiam", new_callable=MagicMock)
+    mock_send_data = mocker.patch(
+        "PaloAltoNetworks_PrismaCloudCompute.process_asset_data_and_send_to_xsiam", new_callable=MagicMock
+    )
     mock_gather = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.asyncio.gather", new_callable=MagicMock)
     mock_update_context = mocker.patch.object(asset_type_related_data, "safe_update_integration_context")
     mock_clear_context = mocker.patch.object(asset_type_related_data, "remove_related_data_from_ctx")

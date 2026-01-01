@@ -3362,7 +3362,7 @@ async def fetch_assets_long_running_command(client: PrismaCloudComputeAsyncClien
 
         except Exception as e:
             demisto.debug(f"Got the following error while trying to stream events: {str(e)}")
-            
+
 
 def init_asset_type_related_data(
     endpoint: str, product: str, asset_type: AssetType, process_result_func: Callable, ctx_lock: Lock
@@ -3394,7 +3394,7 @@ def init_asset_type_related_data(
             offset=offset,
             total_count=total_count,
             snapshot_id=snapshot_id,
-            ctx_lock=ctx_lock
+            ctx_lock=ctx_lock,
         )
     else:
         return AssetTypeRelatedData(
@@ -3454,8 +3454,10 @@ async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient
             data = await obtain_asset_data_from_prisma(asset_type_related_data=asset_type_related_data, client=client)
             if not data:
                 asset_type_related_data.write_debug_log("No more data to fetch, breaking.")
-                break                
-            send_data_to_xsiam_tasks = process_asset_data_and_send_to_xsiam(data=data, asset_type_related_data=asset_type_related_data)
+                break
+            send_data_to_xsiam_tasks = process_asset_data_and_send_to_xsiam(
+                data=data, asset_type_related_data=asset_type_related_data
+            )
             await asyncio.gather(*send_data_to_xsiam_tasks)
             asset_type_related_data.next_page()
             asset_type_related_data.write_debug_log(
@@ -3469,7 +3471,9 @@ async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient
     asset_type_related_data.remove_related_data_from_ctx()
 
 
-async def obtain_asset_data_from_prisma(client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData) -> List:
+async def obtain_asset_data_from_prisma(
+    client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData
+) -> List:
     """Handling the send request to Prisma to obtain more data logic.
 
     Args:
@@ -3603,7 +3607,7 @@ def main():
 
         client = PrismaCloudComputeClient(
             base_url=urljoin(base_url, "api/v1/"), verify=verify, auth=(username, password), proxy=proxy, project=project
-        ) # type: ignore[reportAssignmentType]
+        )  # type: ignore[reportAssignmentType]
 
         if requested_command == "test-module":
             # This is the call made when pressing the integration test button
