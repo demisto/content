@@ -31,6 +31,8 @@ args:
     Leave blank to use the default team configured in the integration parameters.
   type: string
   required: false
+- name: thread_id
+  description: The ID of the thread to which to reply. Can be retrieved from a previous send-notification command.
 comment: |
   Sends a notification message to a user, group, or channel. Supports sending messages to Slack, Microsoft Teams, Mattermost or Zoom.
 commonfields:

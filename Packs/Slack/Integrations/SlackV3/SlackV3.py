@@ -2828,11 +2828,14 @@ def conversation_history():
     and events
     """
     args = demisto.args()
+    if args.get("thread_timestamp"):
+        return conversation_replies()
+        
     conversation_id = args.get("channel_id") or args.get("conversation_id")
     conversation_name = args.get("conversation_name")
     limit = arg_to_number(args.get("limit"))
     from_time = args.get("from_time")
-
+    
     if not conversation_id and not conversation_name:
         raise ValueError("Either conversation_id or conversation_name must be provided.")
 
