@@ -176,17 +176,32 @@ def get_api_key_header_val(api_key):
 
 
 def is_access_token_expired(expires_in: str) -> bool:
-    """Check if access token is expired."""
-
-    # Subtract 1 min to refresh slightly early and avoid expiration issues.
-    is_not_expired = expires_in > (datetime.now() + timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
-    if is_not_expired:
-        demisto.debug(
-            f"is_access_token_expired - using existing Access token from integration context (expires in {expires_in})."
-        )
-        return False
-    else:
-        demisto.debug("is_access_token_expired - Access token expired.")
+    """Check if access token is expired.
+    
+    Args:
+        expires_in: ISO format datetime string representing when the token expires
+        
+    Returns:
+        bool: True if token is expired or will expire within 1 minute, False otherwise
+    """
+    try:
+        # Parse the expires_in string to a datetime object
+        expiration_time = datetime.strptime(expires_in, "%Y-%m-%dT%H:%M:%SZ")
+        
+        # Subtract 1 min to refresh slightly early and avoid expiration issues.
+        current_time_with_buffer = datetime.now() + timedelta(minutes=1)
+        
+        is_not_expired = expiration_time > current_time_with_buffer
+        if is_not_expired:
+            demisto.debug(
+                f"is_access_token_expired - using existing Access token from integration context (expires in {expires_in})."
+            )
+            return False
+        else:
+            demisto.debug("is_access_token_expired - Access token expired.")
+            return True
+    except (ValueError, TypeError) as e:
+        demisto.debug(f"is_access_token_expired - Error parsing expiration time: {e}. Treating as expired.")
         return True
 
 
@@ -1314,6 +1329,7 @@ def get_indices_statistics(client):
     raw_indices_data = stats.get("indices")
 
     return raw_indices_data
+
 
 def get_indices_statistics_command(args, proxies):
     """
