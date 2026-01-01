@@ -3458,7 +3458,7 @@ async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient
             send_data_to_xsiam_tasks = process_asset_data_and_send_to_xsiam(
                 data=data, asset_type_related_data=asset_type_related_data
             )
-            await asyncio.gather(*send_data_to_xsiam_tasks) # type: ignore
+            await asyncio.gather(*send_data_to_xsiam_tasks)  # type: ignore
             asset_type_related_data.next_page()
             asset_type_related_data.write_debug_log(
                 f"Finished sending assets batch to xsiam, sent {asset_type_related_data.offset} assets so far."
