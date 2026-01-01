@@ -498,6 +498,9 @@ script:
     - contextPath: Email.Date
       description: The date the email was received.
       type: String
+    - contextPath: Gmail.PageToken.NextPageToken
+      description: Token to retrieve the next page of results.
+      type: String
   - arguments:
     - description: 'Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en".'
       name: query
