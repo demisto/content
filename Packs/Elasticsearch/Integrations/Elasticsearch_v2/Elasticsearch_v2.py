@@ -188,10 +188,10 @@ def is_access_token_expired(expires_in: str) -> bool:
     try:
         # Parse the expires_in string to a UTC datetime object
         expiration_time = datetime.strptime(expires_in, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
-        
+
         # Subtract 1 min to refresh slightly early and avoid expiration issues.
         current_time_with_buffer = datetime.now(timezone.utc) + timedelta(minutes=1)
-        
+
         is_not_expired = expiration_time > current_time_with_buffer
         if is_not_expired:
             demisto.debug(
