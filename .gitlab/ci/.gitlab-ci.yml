@@ -4,4 +4,4 @@ variables:
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
     ref: "add-slack-notify"
-    project: "${CI_PROJECT_NAMESPACE}/infra"
+    project: "${CI_PROJECT_NAMESPACE}/infra" 
