@@ -8,7 +8,7 @@ from CommonServerUserPython import *
 """IMPORTS"""
 import json
 import warnings
-from datetime import datetime
+from datetime import datetime, timezone
 
 import requests
 import urllib3
@@ -18,6 +18,8 @@ from dateutil.parser import parse
 urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message=".*using SSL with verify_certs=False is insecure.")
 
+PARAMS = demisto.params()
+
 # .ymla values
 BASIC_AUTH = "Basic auth"
 BEARER_AUTH = "Bearer auth"
@@ -25,11 +27,11 @@ API_KEY_AUTH = "API key auth"
 
 API_KEY_PREFIX = "_api_key_id:"
 
-AUTH_TYPE = demisto.params().get("auth_type", "Basic auth")
-USERNAME: str = demisto.params().get("credentials", {}).get("identifier")
-PASSWORD: str = demisto.params().get("credentials", {}).get("password")
-API_KEY_ID: str = demisto.params().get("api_key_auth_credentials", {}).get("identifier")
-API_KEY_SECRET: str = demisto.params().get("api_key_auth_credentials", {}).get("password")
+AUTH_TYPE = PARAMS.get("auth_type", "Basic auth")
+USERNAME: str = PARAMS.get("credentials", {}).get("identifier")
+PASSWORD: str = PARAMS.get("credentials", {}).get("password")
+API_KEY_ID: str = PARAMS.get("api_key_auth_credentials", {}).get("identifier")
+API_KEY_SECRET: str = PARAMS.get("api_key_auth_credentials", {}).get("password")
 API_KEY = None
 
 # Using API key auth by username and password fields for backward compatibility.
@@ -45,7 +47,7 @@ elif AUTH_TYPE == API_KEY_AUTH:
 ELASTICSEARCH_V8 = "Elasticsearch_v8"
 ELASTICSEARCH_V9 = "Elasticsearch_v9"
 OPEN_SEARCH = "OpenSearch"
-ELASTIC_SEARCH_CLIENT = demisto.params().get("client_type")
+ELASTIC_SEARCH_CLIENT = PARAMS.get("client_type")
 if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
@@ -64,8 +66,8 @@ else:  # Elasticsearch (<= v7)
 
 ES_DEFAULT_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSSSS"
 PYTHON_DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
-SERVER = demisto.params().get("url", "").rstrip("/")
-PROXY = demisto.params().get("proxy")
+SERVER = PARAMS.get("url", "").rstrip("/")
+PROXY = PARAMS.get("proxy")
 HTTP_ERRORS = {
     400: "400 Bad Request - Incorrect or invalid parameters",
     401: "401 Unauthorized - Incorrect or invalid username or password",
@@ -78,17 +80,16 @@ HTTP_ERRORS = {
 }
 
 """VARIABLES FOR FETCH INCIDENTS"""
-param = demisto.params()
-TIME_FIELD = param.get("fetch_time_field", "")
-FETCH_INDEX = param.get("fetch_index", "")
-FETCH_QUERY_PARM = param.get("fetch_query", "")
-RAW_QUERY = param.get("raw_query", "")
-FETCH_TIME = param.get("fetch_time", "3 days")
-FETCH_SIZE = int(param.get("fetch_size", 50))
-INSECURE = not param.get("insecure", False)
-TIME_METHOD = param.get("time_method", "Simple-Date")
-TIMEOUT = int(param.get("timeout") or 60)
-MAP_LABELS = param.get("map_labels", True)
+TIME_FIELD = PARAMS.get("fetch_time_field", "")
+FETCH_INDEX = PARAMS.get("fetch_index", "")
+FETCH_QUERY_PARM = PARAMS.get("fetch_query", "")
+RAW_QUERY = PARAMS.get("raw_query", "")
+FETCH_TIME = PARAMS.get("fetch_time", "3 days")
+FETCH_SIZE = int(PARAMS.get("fetch_size", 50))
+INSECURE = not PARAMS.get("insecure", False)
+TIME_METHOD = PARAMS.get("time_method", "Simple-Date")
+TIMEOUT = int(PARAMS.get("timeout") or 60)
+MAP_LABELS = PARAMS.get("map_labels", True)
 
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
@@ -179,18 +180,18 @@ def is_access_token_expired(expires_in: str) -> bool:
     """Check if access token is expired.
 
     Args:
-        expires_in: ISO format datetime string representing when the token expires
+        expires_in: ISO format datetime string representing when the token expires (UTC)
 
     Returns:
         bool: True if token is expired or will expire within 1 minute, False otherwise
     """
     try:
-        # Parse the expires_in string to a datetime object
-        expiration_time = datetime.strptime(expires_in, "%Y-%m-%dT%H:%M:%SZ")
-
+        # Parse the expires_in string to a UTC datetime object
+        expiration_time = datetime.strptime(expires_in, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        
         # Subtract 1 min to refresh slightly early and avoid expiration issues.
-        current_time_with_buffer = datetime.now() + timedelta(minutes=1)
-
+        current_time_with_buffer = datetime.now(timezone.utc) + timedelta(minutes=1)
+        
         is_not_expired = expiration_time > current_time_with_buffer
         if is_not_expired:
             demisto.debug(
@@ -243,7 +244,7 @@ def get_elastic_token():
             response = requests.post(url, headers=headers, json=payload, verify=INSECURE, auth=(USERNAME, PASSWORD))
 
             if response.status_code == 200:
-                now = datetime.now()
+                now = datetime.now(timezone.utc)
                 token_data = response.json()
                 access_token_expires_in = (now + timedelta(seconds=token_data.get("expires_in"))).strftime("%Y-%m-%dT%H:%M:%SZ")
                 refresh_token_expires_in = (now + timedelta(hours=24)).strftime(
@@ -275,7 +276,7 @@ def get_elastic_token():
         payload = {"grant_type": "password", "username": USERNAME, "password": PASSWORD}
         response = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), json=payload, verify=INSECURE)
         if response.status_code == 200:
-            now = datetime.now()
+            now = datetime.now(timezone.utc)
             token_data = response.json()
             access_token_expires_in = (now + timedelta(seconds=token_data.get("expires_in"))).strftime("%Y-%m-%dT%H:%M:%SZ")
             refresh_token_expires_in = (now + timedelta(hours=24)).strftime(

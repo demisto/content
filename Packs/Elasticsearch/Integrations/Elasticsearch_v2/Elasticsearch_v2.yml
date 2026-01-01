@@ -15,9 +15,10 @@ configuration:
 - display: Authorization type
   defaultvalue: Basic auth
   additionalinfo: |-
-    Choose your auth type and specify the appropriate credentials in the configuration.
-    For API key auth, enter API key ID and API key.
-    For Basic auth and Bearer tokens, enter Username and Password.
+    Select the authentication type and enter the appropriate credentials:
+    - Basic Auth: Enter Username and Password.
+    - Bearer Auth: Enter Username and Password.
+    - API Key Auth: Enter the API Key ID and API Key.
   name: auth_type
   options:
   - Basic auth
@@ -74,8 +75,8 @@ configuration:
   name: fetch_query
   type: 0
   additionalinfo: |-
-    Query string is queried using the Lucene syntax.
-    For more information about the Lucene syntax see the link appears in the help section.
+    Query string uses the Lucene syntax.
+    For more information about the Lucene syntax, see the link in the help section.
     The query will be used when fetching incidents. Index time field will be used as a filter in the query.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
@@ -93,7 +94,7 @@ configuration:
   additionalinfo: |-
     Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string.
     Results will not be filtered or sorted. Use additional parameters in the raw query for these purposes.
-    For more information see the link appears in the help section.
+    For more information see the link in the help section.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
@@ -110,7 +111,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: For more information see the explanation appears in the help section.
+  additionalinfo: For more information see the explanation in the help section.
 - defaultvalue: 'true'
   display: Map JSON fields into labels
   name: map_labels
