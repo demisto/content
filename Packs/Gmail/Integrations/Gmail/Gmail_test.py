@@ -1123,3 +1123,73 @@ def test_send_mail_sender_display_name(mocker, display_name):
         expected_from_header = "sender@example.com"
 
     assert f"from: {expected_from_header}" in message_str
+
+
+def test_search_command_with_next_page_token(mocker):
+    """
+    Tests search_command function with nextPageToken.
+        Given:
+            - A search query that returns results with a nextPageToken.
+        When:
+            - Executing search_command function.
+        Then:
+            - The result contains the nextPageToken in the context.
+    """
+    import Gmail
+    from Gmail import search_command
+
+    # Mock the search function to return a nextPageToken
+    mocker.patch.object(
+        Gmail,
+        "search",
+        return_value=(
+            [input_data.first_message],  # mails
+            "subject:test",  # query
+            "next_page_token_123",  # nextPageToken
+        ),
+    )
+
+    mocker.patch.object(demisto, "args", return_value={"user-id": "test@example.com", "subject": "test", "max-results": "100"})
+
+    result = search_command()
+
+    # Verify that the nextPageToken is in the context
+    assert result is not None
+    assert "EntryContext" in result
+    assert "Gmail.PageToken" in result["EntryContext"]
+    assert result["EntryContext"]["Gmail.PageToken"]["NextPageToken"] == "next_page_token_123"
+
+
+def test_search_command_without_next_page_token(mocker):
+    """
+    Tests search_command function without nextPageToken.
+        Given:
+            - A search query that returns results without a nextPageToken.
+        When:
+            - Executing search_command function.
+        Then:
+            - The result does not contain the nextPageToken in the context.
+    """
+    import Gmail
+    from Gmail import search_command
+
+    # Mock the search function to return None for nextPageToken
+    mocker.patch.object(
+        Gmail,
+        "search",
+        return_value=(
+            [input_data.first_message],  # mails
+            "subject:test",  # query
+            None,  # nextPageToken
+        ),
+    )
+
+    mocker.patch.object(demisto, "args", return_value={"user-id": "test@example.com", "subject": "test", "max-results": "100"})
+
+    result = search_command()
+
+    # Verify that the nextPageToken is not in the context when it's None
+    assert result is not None
+    assert "EntryContext" in result
+    # Gmail.PageToken should not exist when nextPageToken is None
+    assert "Gmail.PageToken" not in result["EntryContext"]
