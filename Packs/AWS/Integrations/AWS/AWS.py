@@ -409,6 +409,36 @@ class S3:
         raise DemistoException(f"Couldn't apply public access block to the {args.get('bucket')} bucket. {json.dumps(response)}")
 
     @staticmethod
+    def delete_bucket_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        bucket = args.get("bucket")
+
+        print_debug_logs(client, f"Deleting bucket: {bucket}")
+
+        response = client.delete_bucket(Bucket=bucket)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.NO_CONTENT:
+            return CommandResults(readable_output=f"Successfully deleted bucket '{bucket}'")
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def list_bucket_objects_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        kwargs = {"Bucket": args.get("bucket")}
+        if args.get("delimiter") is not None:
+            kwargs.update({"Delimiter": args.get("delimiter")})
+        if args.get("prefix") is not None:
+            kwargs.update({"Prefix": args.get("prefix")})
+
+        response = client.list_objects(**kwargs)
+
+        if len(response) > 0:
+            human_readable = tableToMarkdown("AWS S3 Bucket Objects", response)
+            return CommandResults(
+                readable_output=human_readable, outputs_prefix="AWS.S3.Buckets", outputs_key_field="BucketName", outputs=response
+            )
+        return CommandResults(readable_output=f"The {args.get('bucket')} bucket contains no objects.")
+
+    @staticmethod
     def put_bucket_versioning_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Set the versioning state of an Amazon S3 bucket.
@@ -2433,6 +2463,9 @@ def get_file_path(file_id):
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
+    "aws-s3-public-access-block-quick-action": S3.put_public_access_block_command,
+    "aws-s3-bucket-delete": S3.delete_bucket_command,
+    "aws-s3-bucket-objects-list": S3.list_bucket_objects_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
