@@ -80,7 +80,7 @@ def main():
         contents = res[0].get("Contents", [])
         if isinstance(contents, list):
             ssdeep_indicators = [
-                cast(dict[str, Any], x.get("indicator"))
+                cast(dict[str, Any], x.get("indicator") or {})
                 for x in contents
                 if isinstance(x, dict) and isinstance(x.get("indicator"), dict)
             ]
