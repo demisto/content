@@ -1,32 +1,19 @@
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM. This integration was developed and tested using Mimecast API 2.0.
 
 ## Configure Mimecast Event Collector in Cortex
 
+**Note**: Following [the announcement about Mimecast API 1.0 End of Life](https://mimecastsupport.zendesk.com/hc/en-us/articles/39704312201235-API-Integrations-API-1-0-End-of-Life-Mar-2025), the legacy authentication model (using Application ID, Application Key, Access Key, and Secret Key) is no longer supported by this integration. This has been replaced by the new client credentials flow in Mimecast API 2.0.
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Base URL |  | True |
-| Application ID |  | True |
-| Application Key |  | True |
-| Access Key |  | True |
-| Secret Key |  | True |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | This parameter is used only for the Audit logs configuration. SIEM logs always set to "7 days ago". For additional information, review the pack README. | True |
+| Base URL | Use `https://api.services.mimecast.com` for the Global region or review the [Mimecast guide on per-region Base URLs](https://integrations.mimecast.com/documentation/api-overview/global-base-urls/) to find the suitable Base URL. | True |
+| Client ID | Refer to the help section for instructions on how to obtain API 2.0 OAuth2 credentials. | True |
+| Client secret | Refer to the help section for instructions on how to obtain API 2.0 OAuth2 credentials. | True |
+| Fetch events | | False |
+| Event types | Possible values are: audit, av, delivery, internal email protect, impersonation protect, journal, process, receipt, attachment protect, spam, url protect. | False |
+| Maximum number of events per fetch | Default is 1000. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
-## General information
-
-This integration is collecting events from 2 end points.
-
-* ### audit events
-
-    All events are fetched at once when activating the integration from **first fetch timestamp** until now.
-    After that the fetch mechanism will call every 1 minute to update the audit events from Mimecast.
-
-* ### SIEM logs
-
-    The logs will **always be fetched from 7 days ago**. Once the integration is activated, the logs will
-    stream in batches of 350 logs per fetch.
-    When all available logs are retrieved, the fetch mechanism will call every 1 minute to update the SIEM logs from Mimecast.  
 
 ## Commands
 
@@ -36,7 +23,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### mimecast-get-events
 
 ***
-Manual command to fetch events and display them.
+Retrieve Mimecast audit and SIEM events. This command is intended for development and debugging purposes, as it may produce duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
 
 #### Base Command
 
@@ -46,8 +33,20 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
+| should_push_events | If True, the command will push the events to the Cortex XSIAM dataset; otherwise, it will only display them. Default is False. | Required |
+| event_types | Event types to retrieve. Possible values are: audit, av, delivery, internal email protect, impersonation protect, journal, process, receipt, attachment protect, spam, url protect. | Optional |
+| limit | Maximum number of events to retrieve per event type. Default is 10. | Optional |
+| start_date | The start date for retrieving events as a relative time expression (e.g., '3 hours ago') or an absolute time in ISO 8601 format (e.g., '2025-12-01T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM events. Default is 1 hour ago. | Optional |
+| end_date | The end date for retrieving events as a relative time expression (e.g., '2 hours ago') or an absolute time in ISO 8601 format (e.g., '2025-12-02T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM events. Default is now. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
+## Limitations
+
+Due to the data retention period of the Mimecast SIEM CG events endpoint, SIEM events are only available for fetching within a 24-hour rolling window. This limitation applies to all SIEM event types (av, delivery, internal email protect, impersonation protect, journal, process, receipt, attachment protect, spam, url protect) but does _not_ apply to audit events.
+
+* When retrieving SIEM events using the `!mimecast-get-events` command, ensure both the `start_date` and `end_date` arguments are within the last 24 hours in the UTC timezone. Values outside this time window will return an error for SIEM event types.
+
+* If the integration instance is disabled or the **Fetch events** parameter is unchecked for more than 24 hours, the event collector will automatically adjust the SIEM collection start time to the most recent available data (within the last 24 hours) upon resumption. This prevents collection failures but may result in a gap in SIEM event coverage during the downtime period.

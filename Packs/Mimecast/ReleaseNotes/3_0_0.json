@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Migrated from the legacy API 1.0 authentication method to OAuth2 client credentials flow for Mimecast API 2.0. Integration instances must be re-configured using OAuth2 Client ID and Client Secret."
+}

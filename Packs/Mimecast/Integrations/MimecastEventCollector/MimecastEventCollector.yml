@@ -2,41 +2,65 @@ category: Email
 commonfields:
   id: Mimecast Event Collector
   version: -1
+sectionorder:
+  - Connect
+  - Collect
 configuration:
 - display: Base URL
   name: base_url
+  defaultvalue: https://api.services.mimecast.com
+  additionalinfo: Use https://api.services.mimecast.com for the Global region or review the Mimecast guide on per-region Base URLs to find the suitable Base URL.
   required: true
+  section: Connect
   type: 0
-- display: Application ID
-  displaypassword: Application key
-  name: credentials_app
+- display: Client ID
+  displaypassword: Client secret
+  name: client_credentials
+  additionalinfo: Refer to the help section for instructions on how to obtain API 2.0 OAuth2 credentials.
+  section: Connect
   type: 9
-  required: true
-- displaypassword: Access Key
-  name: credentials_access_key
-  type: 9
-  required: true
-  hiddenusername: true
-- displaypassword: Secret Key
-  name: credentials_secret_key
-  type: 9
-  required: true
-  hiddenusername: true
-- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
-  name: after
-  additionalinfo: This parameter is used only for the Audit logs configuration. SIEM logs are always set to "7 days ago". For additional information, review the pack README.
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+- display: Event types
+  name: event_types
+  defaultvalue: 'audit,av,delivery,internal email protect,impersonation protect,journal,process,receipt,attachment protect,spam,url protect'
+  options:
+  - 'audit'
+  - 'av'
+  - 'delivery'
+  - 'internal email protect'
+  - 'impersonation protect'
+  - 'journal'
+  - 'process'
+  - 'receipt'
+  - 'attachment protect'
+  - 'spam'
+  - 'url protect'
+  required: false
+  section: Collect
+  type: 16
+- display: Maximum number of events per fetch
+  name: max_fetch
+  defaultvalue: '1000'
+  required: false
+  section: Collect
   type: 0
-  required: true
-  defaultvalue: 7 days
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
+  advanced: true
   required: false
+  section: Connect
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
+  advanced: true
   required: false
-description: ''
+  section: Connect
+  type: 8
+description: 'Mimecast Event Collector integration for fetching audit events and SIEM logs using API 2.0. Supports OAuth2 authentication and multiple SIEM event types.'
 display: Mimecast Event Collector
 name: Mimecast Event Collector
 script:
@@ -44,17 +68,42 @@ script:
   type: python
   commands:
   - arguments:
-    - auto: PREDEFINED
+    - name: should_push_events
+      description: If True, the command will push the events to the Cortex XSIAM dataset; otherwise, it will only display them.
       defaultValue: 'False'
-      description: Set to True in order to create events, otherwise the command will only display them.
-      name: should_push_events
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
       required: true
-    description: Manual command to fetch events and display them.
+    - name: event_types
+      description: Event types to retrieve.
+      auto: PREDEFINED
+      isArray: true
+      predefined:
+      - 'audit'
+      - 'av'
+      - 'delivery'
+      - 'internal email protect'
+      - 'impersonation protect'
+      - 'journal'
+      - 'process'
+      - 'receipt'
+      - 'attachment protect'
+      - 'spam'
+      - 'url protect'
+    - name: limit
+      description: Maximum number of events to retrieve per event type.
+      defaultValue: '10'
+    - name: start_date
+      description: The start date for retrieving events as a relative time expression (e.g., '3 hours ago') or an absolute time in ISO 8601 format (e.g., '2025-12-01T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM events.
+      defaultValue: '1 hour ago'
+    - name: end_date
+      description: The end date for retrieving events as a relative time expression (e.g., '2 hours ago') or an absolute time in ISO 8601 format (e.g., '2025-12-02T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM events.
+      defaultValue: 'now'
+    description: Retrieve Mimecast audit and SIEM events. This command is intended for development and debugging purposes, as it may produce duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
     name: mimecast-get-events
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.6308650
   isfetchevents: true
   subtype: python3
 marketplaces:

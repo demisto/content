@@ -1,573 +1,938 @@
-import base64
-import hashlib
-import hmac
-import io
-import json
-import os
-import re
-import tempfile
-import uuid
-from zipfile import ZipFile
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import aiohttp
+from http import HTTPStatus
+import asyncio
+from typing import Any
+from collections.abc import Callable
+from datetime import datetime, timedelta, UTC
 
-import urllib3
-from CommonServerPython import *  # noqa: F401, N999
-from requests import Response
-from SiemApiModule import *  # noqa: E402
+""" CONSTANTS """
 
-urllib3.disable_warnings()
+# Date formats
+AUDIT_DATE_FILTER_FORMAT = "%Y-%m-%dT%H:%M:%S+0000"
+SIEM_DATE_FILTER_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"  # Call the `convert_to_siem_filter_format` function instead of using directly!
+EVENTS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-SIEM_LAST_RUN = "siem_last_run"
-SIEM_EVENTS_FROM_LAST_RUN = "siem_events_from_last_run"
-AUDIT_LAST_RUN = "audit_last_run"
-AUDIT_EVENT_DEDUP_LIST = "audit_event_dedup_list"
-
-LOCAL_LAST_RUN = {SIEM_LAST_RUN: "", SIEM_EVENTS_FROM_LAST_RUN: "", AUDIT_LAST_RUN: "", AUDIT_EVENT_DEDUP_LIST: []}
-
-AUDIT_EVENT_PAGE_SIZE = 500
-SIEM_LOG_LIMIT = 350
+# Events dataset
 VENDOR = "mimecast"
 PRODUCT = "mimecast"
+EVENT_TIME_KEY = "_time"
+SOURCE_LOG_TYPE_KEY = "_source_log_type"
+FILTER_TIME_KEY = "_filter_time"  # For last run and deduplication (will be removed before sending to dataset)
+
+# Response general error fields
+IS_FAIL = "fail"
+IS_ERROR = "error"
+
+# Access token response fields and default values
+ACCESS_TOKEN_KEY = "access_token"
+TOKEN_TYPE_KEY = "token_type"
+TOKEN_TTL_KEY = "expires_in"  # TTL in seconds
+TOKEN_VALID_UNTIL_KEY = "valid_until"
+
+DEFAULT_TOKEN_TTL = 1800  # 30 minutes
+DEFAULT_TOKEN_TYPE = "bearer"
+
+# Default connection values
+DEFAULT_BASE_URL = "https://api.services.mimecast.com"  # Global region
+DEFAULT_RETRY_COUNT = 3
+
+# Default page size values
+DEFAULT_AUDIT_PAGE_SIZE = 500
+DEFAULT_SIEM_PAGE_SIZE = 100
+
+# Default limit values
+DEFAULT_GET_EVENTS_LIMIT = 10
+DEFAULT_FETCH_EVENTS_LIMIT = 1000
+
+# Default dates
+UTC_NOW = datetime.now(tz=UTC)
+UTC_HOUR_AGO = UTC_NOW - timedelta(hours=1)
+UTC_MINUTE_AGO = UTC_NOW - timedelta(minutes=1)
+
+# Event ID and time fields (for deduplication and formatting)
+AUDIT_ID_KEY = "id"
+SIEM_ID_KEY = "aCode"
+AUDIT_TIME_KEY = "eventTime"
+SIEM_TIME_KEY = "timestamp"
+
+# Event types (Audit + SIEM types)
+DEFAULT_EVENT_TYPES = [
+    "audit",
+    "av",
+    "delivery",
+    "internal email protect",
+    "impersonation protect",
+    "journal",
+    "process",
+    "receipt",
+    "attachment protect",
+    "spam",
+    "url protect",
+]
+DATEPARSER_SETTINGS = {"RETURN_AS_TIMEZONE_AWARE": True, "TIMEZONE": str(UTC)}
+
+""" CLIENT CLASS """
 
 
-class MimecastOptions(IntegrationOptions):
-    app_key: str
-    secret_key: str
-    app_id: str
-    access_key: str
-    base_url: str
-    verify: Optional[bool] = False
+class AsyncClient:
+    """An asynchronous client for interacting with the Mimecast API; used for SIEM event collection"""
 
+    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool):
+        self.base_url = base_url
+        self._client_id = client_id
+        self._client_secret = client_secret
+        self._access_token: str | None = None
+        self._verify = verify
+        self._proxy_url = handle_proxy().get("http", "") if proxy else None
 
-class MimecastClient(IntegrationEventsClient):
-    def __init__(self, request: IntegrationHTTPRequest, options: MimecastOptions):  # pragma: no cover
-        super().__init__(request=request, options=options)
+    async def __aenter__(self):
+        self._session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=self._verify), proxy=self._proxy_url)
+        return self
 
-    def prepare_headers(self, uri: str):  # pragma: no cover
-        """
-        Args:
-            uri (str): The uri of the end point
-
-        Returns:
-            The headers part of the request to send to mimecast
-        """
-        # Create variables required for request headers
-        request_id = str(uuid.uuid4())
-        request_date = self.get_hdr_date()
-
-        unsigned_auth_header = f"{request_date}:{request_id}:{uri}:{self.options.app_key}"  # type: ignore[attr-defined]
-        hmac_sha1 = hmac.new(
-            base64.b64decode(self.options.secret_key),  # type: ignore[attr-defined]
-            unsigned_auth_header.encode(),
-            digestmod=hashlib.sha1,
-        ).digest()
-        sig = base64.encodebytes(hmac_sha1).rstrip()
-        headers = {
-            "Authorization": "MC " + self.options.access_key + ":" + sig.decode(),  # type: ignore[attr-defined]
-            "x-mc-app-id": self.options.app_id,  # type: ignore[attr-defined]
-            "x-mc-date": request_date,
-            "x-mc-req-id": request_id,
-            "Content-Type": "application/json",
-        }
-        return headers
-
-    @staticmethod
-    def get_hdr_date():  # pragma: no cover
-        return datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S UTC")
-
-    def set_request_filter(self, after: Any):  # noqa: F841  # pragma: no cover
-        pass
-
-
-class MimecastGetSiemEvents(IntegrationGetEvents):
-    def __init__(self, client: MimecastClient, options: IntegrationOptions):  # pragma: no cover
-        super().__init__(client=client, options=options)
-        self.token: str = ""
-        self.uri: str = "/api/audit/get-siem-logs"
-        self.events_from_prev_run: list = []
-
-    @staticmethod
-    def get_last_run(events: list):
-        pass
-
-    def run(self):
-        """
-        Always takes SIEM_LOG_LIMIT amount of events.
-        If the limit is reached, the extra events will be saved in the self.events_from_prev_run.
-        Returns:
-             - stored (list): A list of this run siem events.
-        """
-        limit = 1 if demisto.command() == "test-module" else SIEM_LOG_LIMIT
-        stored = []
-
-        if self.events_from_prev_run:
-            # In order to ensure no bc break and missing events V2.5.0
-            stored.extend(self.events_from_prev_run)
-            self.events_from_prev_run = []
-
-        for logs in self._iter_events():
-            stored.extend(logs)
-            if len(stored) >= limit:
-                demisto.info(f"Reached more then {limit} siem events")
-                break
-
-        return stored
-
-    def _iter_events(self):  # pragma: no cover
-        while True:
-            self.client.request = IntegrationHTTPRequest(**(self.get_req_object_siem()))
-            response = self.call()
-            events = self.process_siem_response(response)
-            demisto.info(f"\n {len(events)} Siem logs were fetched from Mimecast \n")
-            if not events:
-                return []
-
-            yield events
-
-    def process_siem_response(self, response: Response) -> list:
-        """
-        Args:
-            response (Request.Response) - The response from the mimecast API
-
-        Returns:
-            The events after process and modification.
-        """
-        resp_body = response.content
-        resp_headers = response.headers
-        content_type = str(resp_headers["Content-Type"]).lower()
-
-        # End if response is JSON as there is no log file to download
-        if content_type == "application/json":
-            decoded_response = resp_body.decode("utf8")
-            json_response = json.loads(decoded_response)
-
-            if fail_reason := json_response.get("fail", []):
-                raise DemistoException(f"There was an error with siem events call {fail_reason}")
-
-            demisto.info("No siem logs available")
-            return []
-        # Process log file
-        elif content_type == "application/octet-stream":
-            file_name = resp_headers["Content-Disposition"].split('="')
-            file_name = file_name[1][:-1]
-
-            # Save the logs
-            events = self.write_file(file_name, resp_body)
-            # Save mc-siem-token page token to check point directory
-            if events:
-                self.token = resp_headers["mc-siem-token"]
-
-            return events
-
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is not None:
+            exception_traceback = "".join(traceback.format_exception(exc_type, exc_val, exc_tb))
+            demisto.error(f"AsyncClient context exited with an exception: {exception_traceback}.")
         else:
-            # Handle errors
-            demisto.info("Unexpected response from siem logs")
-            headers_list = list(resp_headers)
-            raise DemistoException(f"headers of failed request for siem errors: {headers_list}")
+            demisto.debug("AsyncClient context exited normally.")
 
-    def process_siem_events(self, siem_json_resp: dict) -> list:
+        # Always ensure HTTP client session is closed
+        await self._session.close()
+
+    async def _generate_new_access_token(self) -> dict[str, Any]:
         """
-        Args:
-            - siem_json_resp (list): a list of the siem events after extracted as json format
+        Generates a new OAuth2 access token using client credentials flow.
 
-        Returns:
-            - list: A flattened list of all fields before under the data part of the resopnse with some
-                        additional fields.
-        """
-        siem_log_type = siem_json_resp.get("type")
-        data: list = siem_json_resp.get("data", [])
-        events = []
-        for event in data:
-            event["type"] = siem_log_type
-            event["xsiem_classifier"] = "siem_log"
-            self.convert_field_to_xdm_type(event)
-            events.append(event)
-
-        return events
-
-    @staticmethod
-    def convert_field_to_xdm_type(event: dict):
-        """
-        Args:
-            event (dict) - a siem event dict
+        Raises:
+            ClientResponseError: If request failed.
+            DemistoException: If response contains an error message and/or no access token.
 
         Returns:
-            (None) this method works on the response as reference. If the event had one of the following fields
-                    'IP', 'SourceIP', 'Recipient', 'Rcpt' the specified filed will be wrapped with an array.
+            dict[str, Any]: The token raw API response.
         """
-        for key in ["IP", "SourceIP", "Recipient", "Rcpt"]:
-            if key in event and not isinstance(event[key], list):
-                event[key] = [event[key]]
-
-    def get_req_object_siem(self):
-        """
-        Returns all data needed for the siem http request.
-        """
-        req_obj = {
-            "headers": self.client.prepare_headers(self.uri),  # type: ignore
-            "data": self.prepare_siem_request_body(),
-            "method": Method.POST,
-            "url": self.options.base_url + self.uri,  # type: ignore[attr-defined]
-            "verify": self.options.verify,  # type: ignore[attr-defined]
+        token_url = urljoin(self.base_url, "/oauth/token")
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        body = {
+            "client_id": self._client_id,
+            "client_secret": self._client_secret,
+            "grant_type": "client_credentials",
         }
-        return req_obj
-
-    def prepare_siem_request_body(self):
-        """
-        Return the data parameter for the http siem request
-        """
-        # Build post body for request
-        post_body: dict = {}
-        post_body["data"] = [{}]
-        post_body["data"][0]["type"] = "MTA"
-        post_body["data"][0]["compress"] = True
-        post_body["data"][0]["fileFormat"] = "json"
-        # If token is not included the earliest available log will be returned by the API.
-        if self.token:
-            post_body["data"][0]["token"] = self.token
-
-        return json.dumps(post_body)
-
-    def write_file(self, file_name: str, data_to_write: bytes) -> list:  # pragma: no cover
-        """
-        Args:
-            - file_name (str): The name of the file returned form the api response header
-            - data_to_write (bytes): The byte's representation of the zip file.
-
-        Returns:
-             The events that were stored in the zip-file files.
-        """
-        if ".zip" in file_name:
+        demisto.debug(f"Requesting new OAuth2 access token using {token_url=}.")
+        async with self._session.post(url=token_url, headers=headers, data=body) as response:
+            response_json = await response.json()
             try:
-                with tempfile.TemporaryDirectory() as tmpdir:
-                    byte_content = io.BytesIO(data_to_write)
-                    zip_file = ZipFile(byte_content)
-                    zip_file.extractall(tmpdir)
-                    extracted_logs_list = []
-                    for file in os.listdir(tmpdir):
-                        with open(os.path.join(tmpdir, file)) as json_res:
-                            extracted_logs_list.extend(self.process_siem_events(json.load(json_res)))
+                response.raise_for_status()
+            except aiohttp.ClientResponseError as e:
+                raise DemistoException(
+                    f"Request to {token_url} failed with HTTP {e.status} status. Got response: {response_json}."
+                ) from e
 
-                    return extracted_logs_list
+            if is_fail := response_json.get(IS_FAIL):
+                error_message = is_fail[0]["message"]
+                raise DemistoException(f"Request to {token_url} failed. Got error: {error_message}.")
 
-            except Exception as e:
-                raise DemistoException("Error writing file " + file_name + ". Cannot continue. Exception: " + str(e))
+            if not response_json.get(ACCESS_TOKEN_KEY):
+                raise DemistoException(f"Request to {token_url} failed. Failed to get access token from response.")
 
-        else:
-            raise DemistoException(f"Only compressed siem log files are supported. file_name: {file_name}")
+            token_type = response_json.get(TOKEN_TYPE_KEY)
+            token_ttl = response_json.get(TOKEN_TTL_KEY)  # TTL in seconds
 
+            demisto.debug(f"Successfully obtained OAuth2 access token. {token_type=}, {token_ttl=}.")
+            return response_json
 
-class MimecastGetAuditEvents(IntegrationGetEvents):
-    def __init__(self, client: MimecastClient, options: IntegrationOptions):  # pragma: no cover
-        super().__init__(client=client, options=options)
-        self.page_token: str = ""
-        self.start_time: str = ""
-        self.end_time: str = self.to_audit_time_format(datetime.now().astimezone().replace(microsecond=0).isoformat())
-        self.uri: str = "/api/audit/get-audit-events"
-
-    @staticmethod
-    def get_last_run(events: list):
-        pass
-
-    def run(self):
-        self.options.limit = 1 if demisto.command() == "test-module" else None
-        return super().run()
-
-    def _iter_events(self):
-        self.client.request = IntegrationHTTPRequest(**(self.get_req_object_audit()))
-        response = self.call()
-        events = self.process_audit_response(json.loads(response.text))
-        if not events:
-            return []
-
-        while True:
-            demisto.info(f"\n {len(events)} Audit logs were fetched from Mimecast \n")
-            yield events
-
-            self.client.request = IntegrationHTTPRequest(**(self.get_req_object_audit()))
-            response = self.call()
-            events = self.process_audit_response(json.loads(response.text))
-            if not events:
-                break
-
-    def process_audit_response(self, res: dict):
+    async def get_authorization_header(self, force_generate_new_token: bool = False) -> str:
         """
+        Constructs Authorization header using the access token in the integration context (if found), or generating a new one.
+
         Args:
-            res (dict) - The response.text from the get Audit events.
+            force_generate_new_token (bool, optional): Whether to request a new OAuth access token. Defaults to False.
+
         Returns:
-            event_list (list) - The processed Audit events
+            str: The Authorization header containing the token type and access token.
         """
-        if res.get("fail", []):
-            raise DemistoException(f'There was an error with audit events call {res.get("fail")}')
+        demisto.debug(f"Constructing Authorization header using {force_generate_new_token=}.")
+        integration_context = get_integration_context()
+        access_token = integration_context.get(ACCESS_TOKEN_KEY)
+        token_type = integration_context.get(TOKEN_TYPE_KEY, DEFAULT_TOKEN_TYPE)
+        token_valid_until = arg_to_datetime(integration_context.get(TOKEN_VALID_UNTIL_KEY))
+        is_valid_token = token_valid_until and token_valid_until > UTC_NOW
+        demisto.debug(f"Found in integration context {token_valid_until=}, {is_valid_token=}.")
 
-        data = res.get("data", [])
-        pagination = res.get("meta", {}).get("pagination", {})
-        event_list = []
-
-        for event in data:
-            event["xsiem_classifier"] = "audit_event"
-            event_list.append(event)
-
-        if next_token := pagination.get("next", ""):
-            # there are more pages to process
-            self.page_token = next_token
+        if access_token and is_valid_token and not force_generate_new_token:
+            demisto.debug("Using valid access token in integration context to construct Authorization header.")
         else:
-            return []
+            demisto.debug("Generating new access token.")
+            token_response = await self._generate_new_access_token()
+            access_token = token_response.get(ACCESS_TOKEN_KEY)
+            token_type = token_response.get(TOKEN_TYPE_KEY, DEFAULT_TOKEN_TYPE)
+            token_ttl = token_response.get(TOKEN_TTL_KEY, DEFAULT_TOKEN_TTL) - 300  # subtract 5 minutes as a safety margin
+            token_response[TOKEN_VALID_UNTIL_KEY] = (UTC_NOW + timedelta(seconds=token_ttl)).isoformat()
+            demisto.debug("Saving new access token in integration context.")
+            set_integration_context(token_response)
 
-        return event_list
+        demisto.debug(f"Constructed Authorization header using {token_type=}.")
+        return f"{token_type.capitalize()} {access_token}"
 
-    def get_req_object_audit(self):
+    async def _handle_request_with_retries(
+        self,
+        method: str,
+        endpoint: str,
+        max_retries: int,
+        event_type: str,
+        **request_kwargs,
+    ) -> dict[str, Any]:
         """
-        Returns all the parameters needed for the audit API call
-        """
-        return {
-            "headers": self.client.prepare_headers(self.uri),  # type: ignore
-            "data": self.prepare_audit_events_data(),
-            "method": Method.POST,
-            "url": self.options.base_url + self.uri,  # type: ignore[attr-defined]
-            "verify": self.options.verify,  # type: ignore[attr-defined]
-        }
+        Handles HTTP requests with automatic retry logic for 401 and 429 errors.
 
-    def prepare_audit_events_data(self):
+        Args:
+            method (str): The HTTP method to use (e.g., "GET", "POST").
+            url (str): The full URL.
+            headers (dict[str, str]): The request headers, including the "Authorization" header.
+            max_retries (int): Maximum number of retries for rate limit errors.
+            context (str): Context string for logging (e.g., event type).
+            **request_kwargs: Additional keyword arguments to pass to the request (e.g., json, params).
+
+        Raises:
+            ClientResponseError: If the request fails after retries.
+            DemistoException: If the request fails with a non-retryable error.
+
+        Returns:
+            dict[str, Any]: The API response as JSON.
         """
-        prepares the data section of the audit events api call.
+        url = urljoin(self.base_url, endpoint)
+        headers = {"Accept": "application/json", "Authorization": await self.get_authorization_header()}
+
+        retry_count = 0
+
+        while retry_count <= max_retries:
+            try:
+                async with self._session.request(method=method, url=url, headers=headers, **request_kwargs) as response:
+                    response_json = await response.json()
+                    response.raise_for_status()
+                    return response_json
+
+            except aiohttp.ClientResponseError as e:
+                status_code = e.status
+
+                # Handle 401 Unauthorized - regenerate token and retry once
+                if status_code == HTTPStatus.UNAUTHORIZED:
+                    demisto.debug(f"[{event_type}] Received HTTP 401 Unauthorized. Generating new token and retrying...")
+                    headers["Authorization"] = await self.get_authorization_header(force_generate_new_token=True)
+                    # Retry immediately with new token
+                    async with self._session.request(method=method, url=url, headers=headers, **request_kwargs) as response:
+                        response_json = await response.json()
+                        response.raise_for_status()
+                        return response_json
+
+                # Handle 429 Too Many Requests - exponential backoff
+                elif status_code == HTTPStatus.TOO_MANY_REQUESTS:
+                    if retry_count >= max_retries:
+                        raise
+                    wait_time = 2**retry_count  # Exponential backoff: 1s, 2s, 4s
+                    demisto.debug(
+                        f"[{event_type}] Received HTTP 429 Too Many Requests. "
+                        f"Retrying {retry_count + 1} of {max_retries} after {wait_time} seconds..."
+                    )
+                    await asyncio.sleep(wait_time)
+                    retry_count += 1
+
+                # Handle other errors - don't retry
+                else:
+                    demisto.error(
+                        f"[{event_type}] {e.request_info.method} Request failed to {e.request_info.url}. "
+                        f"Got {status_code=} and {response_json=}."
+                    )
+                    raise DemistoException(f"Request to {e.request_info.url} failed with HTTP {e.status} status.") from e
+
+        # Should not reach here, but just in case
+        raise DemistoException(f"Failed after {max_retries} retries.")
+
+    async def get_audit_events(
+        self,
+        start_date: str,
+        end_date: str,
+        next_page: str | None = None,
+        page_size: int = DEFAULT_AUDIT_PAGE_SIZE,
+        max_retries: int = DEFAULT_RETRY_COUNT,
+    ) -> dict[str, Any]:
         """
-        # no pagination we move the time
+        Retrieves audit events from Mimecast.
+
+        Args:
+            start_date (str): The start date for the audit events in Mimecast format.
+            end_date (str): The end date for the audit events in Mimecast format.
+            next_page (str | None): Optional page token for pagination.
+            page_size (int): The number of items per page. Defaults to 500.
+            max_retries (int): Maximum number of retries for rate limit errors. Defaults to 3.
+
+        Raises:
+            ClientResponseError: If the request fails (after retry on 401 or 429 errors or some other status code).
+
+        Returns:
+            dict[str, Any]: A dictionary containing the audit events raw API response.
+        """
         payload = {
-            "data": [{"startDateTime": self.start_time, "endDateTime": self.end_time}],
-            "meta": {
-                "pagination": {
-                    "pageSize": AUDIT_EVENT_PAGE_SIZE,
-                }
-            },
+            "data": [{"startDateTime": start_date, "endDateTime": end_date}],
+            "meta": {"pagination": assign_params(pageSize=page_size, pageToken=next_page)},
         }
-        if self.page_token:
-            payload["meta"]["pagination"]["pageToken"] = self.page_token  # type: ignore
 
-        return json.dumps(payload)
+        demisto.debug(f"Requesting audit events using {payload=}.")
 
-    @staticmethod
-    def to_audit_time_format(time_to_convert: str) -> str:
-        """
-        converts the iso8601 format (e.g. 2011-12-03T10:15:30+00:00),
-        to be mimecast compatible (e.g. 2011-12-03T10:15:30+0000).
-        Removes last colon from the time format.
-        """
-        regex = r"(?!.*:)"
-        find_last_colon = re.search(regex, time_to_convert)
-        index = find_last_colon.start()  # type: ignore
-        audit_time_format = time_to_convert[: index - 1] + time_to_convert[index:]
-        return audit_time_format
-
-
-def handle_last_run_entrance(
-    user_inserted_last_run: str, audit_event_handler: MimecastGetAuditEvents, siem_event_handler: MimecastGetSiemEvents
-):
-    start_time = arg_to_datetime(user_inserted_last_run)
-    start_time_iso = start_time.astimezone().replace(microsecond=0).isoformat()  # type: ignore
-    if not demisto.getLastRun():
-        # first time to enter init with user specified time.
-        audit_event_handler.start_time = audit_event_handler.to_audit_time_format(start_time_iso)
-        demisto.info("first time setting last run")
-    else:
-        demisto_last_run: dict = demisto.getLastRun()
-        audit_event_handler.start_time = demisto_last_run.get(AUDIT_LAST_RUN, "")
-        siem_event_handler.token = demisto_last_run.get(SIEM_LAST_RUN, "")
-        # starting version 2.5.0 siem_events_from_last_run should always be empty list.
-        # we dont save any more events in the context between fetch executions.
-        siem_event_handler.events_from_prev_run = demisto_last_run.get(SIEM_EVENTS_FROM_LAST_RUN, [])
-        demisto.info(
-            f"handle_last_run_entrance \naudit start time: {audit_event_handler.start_time} \n"
-            f"siem next token: {siem_event_handler.token}\n"
-            f"duplicate list last run {demisto_last_run.get(AUDIT_EVENT_DEDUP_LIST, [])}\n"
+        response_json = await self._handle_request_with_retries(
+            method="POST",
+            endpoint="/api/audit/get-audit-events",
+            max_retries=max_retries,
+            event_type="audit",
+            json=payload,
         )
 
+        events_count = len(response_json.get("data", []))
+        demisto.debug(f"Fetched {events_count} audit events using {payload=}.")
 
-def dedup_audit_events(audit_events: list, last_run_potential_dup: list) -> list:
+        return response_json
+
+    async def get_siem_events(
+        self,
+        event_type: str,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        next_page: str | None = None,
+        page_size: int = DEFAULT_SIEM_PAGE_SIZE,
+        max_retries: int = DEFAULT_RETRY_COUNT,
+    ) -> dict[str, Any]:
+        """
+        Retrieves SIEM events from Mimecast.
+
+        Args:
+            event_type (str): The type of SIEM events to fetch.
+            start_date (str | None): The start date in ISO 8601 format.
+            next_page (str | None): Optional next page token for pagination.
+            page_size (int): The number of items per page. Defaults to 100.
+            max_retries (int): Maximum number of retries for rate limit errors. Defaults to 3.
+
+        Raises:
+            ClientResponseError: If the request fails.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the SIEM events.
+        """
+        if not (start_date or next_page):
+            raise ValueError("Either 'start_date' or 'next_page' should be specified.")
+
+        params = assign_params(
+            types=event_type,
+            pageSize=page_size,
+            dateRangeStartsAt=start_date,
+            dateRangeEndsAt=end_date,
+            nextPage=next_page,
+        )
+
+        demisto.debug(f"[{event_type}] Requesting SIEM events using {params=}.")
+
+        response_json = await self._handle_request_with_retries(
+            method="GET",
+            endpoint="/siem/v1/events/cg",
+            max_retries=max_retries,
+            event_type=event_type,
+            params=params,
+        )
+
+        events_count = len(response_json.get("value", []))
+        demisto.debug(f"[{event_type}] Fetched {events_count} SIEM events using {params=}.")
+
+        return response_json
+
+
+""" HELPER FUNCTIONS """
+
+
+def convert_to_audit_filter_format(filter_datetime: datetime) -> str:
     """
-    This function gets the audit_events list and removes from it duplicates from the prev run
+    Converts datetime object (e.g. 2025-12-24T11:23:41.955Z).
+
+    Removes last colon from the time format.
+    """
+    return filter_datetime.strftime(AUDIT_DATE_FILTER_FORMAT)
+
+
+def convert_to_siem_filter_format(filter_datetime: datetime) -> str:
+    """
+    Converts datetime object (e.g. 2025-12-24T11:23:41.955Z).
+
+    Removes last colon from the time format.
+    """
+    return filter_datetime.strftime(SIEM_DATE_FILTER_FORMAT)[:-3] + "Z"
+
+
+def is_within_last_24_hours(filter_datetime: datetime | str) -> bool:
+    """
+    Checks if a given timezone-aware datetime is within the last 24 hours.
+
     Args:
-        audit_events (list): The list of events from this run
-        last_run_potential_dup (list) : potential duplicates from prev run
+        filter_datetime (datetime | str): A datetime object or a string timestamp.
+
     Returns:
-        list: A filtered de dup list of the events.
+        bool: True if the datetime is within the last 24 hours, False otherwise.
     """
-    if not last_run_potential_dup or not audit_events:
-        return audit_events
-    return [event for event in audit_events if event.get("id") not in last_run_potential_dup]
+    if isinstance(filter_datetime, str):
+        filter_datetime = cast(datetime, arg_to_datetime(filter_datetime, settings=DATEPARSER_SETTINGS))
+
+    # Ensure the input datetime is timezone-aware
+    if filter_datetime.tzinfo is None:
+        demisto.debug(f"No timezone info in provided datetime object. Assuming {str(UTC)} timezone for comparison.")
+        filter_datetime = filter_datetime.replace(tzinfo=timezone.utc)
+
+    # Calculate the time 24 hours ago
+    twenty_four_hours_ago = UTC_NOW - timedelta(hours=24)
+
+    # Check if the target datetime is after or equal to the time 24 hours ago
+    return filter_datetime >= twenty_four_hours_ago
 
 
-def set_audit_next_run(audit_events: list) -> str:
+def deduplicate_and_format_events(
+    events: list[dict[str, Any]],
+    all_fetched_ids: set[str],
+    event_id_key: str,
+    event_time_key: str,
+    source_log_type: str,
+    filter_format_func: Callable[[datetime], str],
+) -> list[dict[str, Any]]:
     """
-    Return the first element in the audit_events list (were latest event is stored).
-    """
-    next_run = "" if not audit_events else audit_events[0].get("eventTime", "")
-    return next_run
-
-
-def handle_last_run_exit(audit_next_run: str, duplicates_audit: list, siem_next_run: str):
-    """Sets the next_run object
+    Deduplicates raw events based on a unique identifier and formats them by adding `_time` and `_source_log_type` fields.
 
     Args:
-        audit_next_run (str): audit next start time to fetch from.
-        duplicates_audit (list): Potential duplicate audit events for next run.
-        siem_next_run (str): siem token to continue the fetch in the next run.
-        siem_fetched_events_for_next_run (list): remaining siem events to digest on the next run.
+        events (list[dict[str, Any]]): List of raw events.
+        all_fetched_ids (set[str]): Set of event IDs that have already been fetched.
+        event_id_key (str): Key denoting the unique ID of each event (for deduplication).
+        event_time_key (str): Key denoting the occurrence time of the each raw event (for deduplication and formatting).
+        source_log_time (str): Type of event (either "Audit" or "SIEM log").
+        filter_format_func (Callable[[datetime], str]): Function formats a datetime object as a string (for deduplication).
 
     Returns:
-        next_run_object (dict): The next run object.
+        list[dict[str, Any]]: A list of deduplicated events.
     """
-    next_run_object = {
-        SIEM_LAST_RUN: siem_next_run,
-        SIEM_EVENTS_FROM_LAST_RUN: [],
-        AUDIT_LAST_RUN: audit_next_run,
-        AUDIT_EVENT_DEDUP_LIST: duplicates_audit,
-    }
-    demisto.info(
-        f"last_run_exit\naudit events next run: {audit_next_run} \n siem next run: {siem_next_run} \n"
-        f"audit potential dups: {duplicates_audit}\n"
+    demisto.debug(f"Starting to deduplicate {len(events)} {source_log_type} events.")
+    deduplicated_events = []
+
+    for event in events:
+        event_id = event[event_id_key]
+
+        if event_id in all_fetched_ids:
+            demisto.debug(f"Skipping duplicate {source_log_type} {event_id=}.")
+            continue
+
+        event_time = cast(datetime, arg_to_datetime(event[event_time_key], required=True))
+
+        # For dataset
+        event[EVENT_TIME_KEY] = event_time.strftime(EVENTS_DATE_FORMAT)
+        event[SOURCE_LOG_TYPE_KEY] = source_log_type
+        # For last run (will be removed before sending to dataset)
+        event[FILTER_TIME_KEY] = filter_format_func(event_time)
+
+        all_fetched_ids.add(event_id)
+        deduplicated_events.append(event)
+
+    demisto.debug(
+        f"Finished deduplicating {len(events)} {source_log_type} events. " f"Got {len(deduplicated_events)} unique events."
     )
-    return next_run_object
+    return deduplicated_events
 
 
-def siem_events_last_run(siem_event_handler: MimecastGetSiemEvents, demisto_last_run: dict):
+async def get_audit_events(
+    client: AsyncClient,
+    start_date: str,
+    end_date: str,
+    limit: int,
+    last_fetched_ids: list[str] | None = None,
+) -> list[dict[str, Any]]:
     """
+    Asynchronously fetches audit events from Mimecast for a specific time range.
 
     Args:
-        siem_event_handler (MimecastGetSiemEvents): the siem event handler.
-        audit_events (list): the audit events of this run.
+        client (AsyncClient): An instance of the AsyncClient.
+        start_date (str): The start time in Mimecast format.
+        end_date (str): The end time in Mimecast format.
+        limit (int): The maximum number of events to retrieve.
+        last_fetched_ids (list[str]): A list of IDs of events that have already been fetched.
+
     Returns:
-        siem_next_run (str): The token to continue fetch on the next run.
-        siem_fetched_events_for_next_run (list): list of events for next run.
+        list[dict[str, Any]]: A list of new audit events.
     """
-    siem_next_run = siem_event_handler.token if siem_event_handler.token else demisto_last_run.get(SIEM_LAST_RUN, "")
-    return siem_next_run
+    last_fetched_ids = last_fetched_ids or []
+    all_fetched_ids = set(last_fetched_ids)
+    all_events: list[dict[str, Any]] = []
+    next_page: str | None = None
+    page_number = 1
 
+    demisto.debug(f"Fetching audit events between {start_date=} and {end_date=}.")
+    while len(all_events) < limit:
+        response = await client.get_audit_events(
+            start_date=start_date,
+            end_date=end_date,
+            next_page=next_page,
+            page_size=DEFAULT_AUDIT_PAGE_SIZE,
+        )
 
-def prepare_potential_audit_duplicates_for_next_run(audit_events: list, next_run_time: str) -> list:
-    """
-    Notice: This function modifies the audit_events list
-    The list is sorted s.t. Latest events are in the start,
-    if no more events with the same time are found break the search.
+        # Check for errors (if any) under "fail" key in audit endpoint
+        if errors := response.get(IS_FAIL):
+            raise DemistoException(f"Audit events API call failed with {errors=}.")
 
-    Args:
-        audit_events (list): the list of the audit events
-        next_run_time (str): the new last_run time for next run
+        page_events = response.get("data", [])
+        next_page = response.get("meta", {}).get("pagination", {}).get("next")
 
-    Return:
-        list: The event list for next run to check against duplicates.
-    """
-    if not audit_events or not next_run_time:
-        return []
+        # Process and deduplicate events
+        deduplicated_events = deduplicate_and_format_events(
+            page_events,
+            all_fetched_ids,
+            event_id_key=AUDIT_ID_KEY,
+            event_time_key=AUDIT_TIME_KEY,
+            source_log_type="Audit",
+            filter_format_func=convert_to_audit_filter_format,
+        )
+        all_events.extend(deduplicated_events)
 
-    same_time_events = []
-    for event in audit_events:
-        if event.get("eventTime", "") == next_run_time:
-            same_time_events.append(event.get("id"))
-        else:
+        # Check if there are more pages
+        # API response has next page value even if the actual next page is empty, so use two conditions
+        # If number of page events is less than requested page size *or* no next page, assume no more events to fetch
+        if len(page_events) < DEFAULT_AUDIT_PAGE_SIZE or next_page is None:
+            demisto.debug(
+                f"No more audit events available after {page_number=}. "
+                f"Got {len(page_events)} page events and {next_page=}. Breaking..."
+            )
             break
 
-    return same_time_events
+        if len(all_events) >= limit:
+            demisto.debug(f"Reached {limit=} for audit events on {page_number=}. Breaking...")
+            break
+
+        page_number += 1
+
+    demisto.debug(
+        f"Finished fetching {len(all_events)} audit events from {page_number} pages between {start_date=} and {end_date=}."
+    )
+    return sorted(all_events, key=lambda item: item[AUDIT_TIME_KEY])[:limit]  # Sort by timestamp ascending
 
 
-def audit_events_last_run(audit_event_handler: MimecastGetAuditEvents, audit_events: list, demisto_last_run: dict):
-    """de dup events same events from previous round.
-        set audit next run time to be the latest event time if no event then the end_time.
-        prepare all event
+async def get_siem_events(
+    client: AsyncClient,
+    event_type: str,
+    start_date: str | None,
+    limit: int,
+    last_fetched_ids: list[str] | None = None,
+    end_date: str | None = None,
+) -> list[dict[str, Any]]:
+    """
+    Asynchronously fetches SIEM events from Mimecast for a specific SIEM event type.
 
     Args:
-        audit_event_handler (MimecastGetAuditEvents): The audit event class
-        audit_events (list): The fetched audit events.
-        demisto_last_run (dict): The last run object.
+        client (AsyncClient): An instance of the AsyncClient.
+        event_type (str): The SIEM event type.
+        start_date (str | None): The start date in ISO 8601 format.
+        limit (int): The maximum number of events to retrieve.
+        last_fetched_ids (list[str]): A list of IDs of events that have already been fetched.
+        last_next_page (str | None): The last next page token.
 
     Returns:
-        (audit_events) : De dup list of audit events.
-        (audit_next_run): The next run for audit event type.
-        (duplicates_audit): Potential duplicate list of events for next run.
+        dict[str, Any]: A list of events.
     """
-    # de dup with events from previous round.
-    audit_events = dedup_audit_events(audit_events, demisto_last_run.get(AUDIT_EVENT_DEDUP_LIST, []))
-    # set next audit event type next query start time.
-    audit_next_run = set_audit_next_run(audit_events) if audit_events else audit_event_handler.end_time
-    # prepare all events with the same last run time.
-    duplicates_audit = prepare_potential_audit_duplicates_for_next_run(audit_events, audit_next_run)
-    demisto.info(f"{len(audit_events)} Audit events remain after de dup.")
-    return audit_events, audit_next_run, duplicates_audit
+    last_fetched_ids = last_fetched_ids or []
+    all_fetched_ids = set(last_fetched_ids)
+    all_events: list[dict[str, Any]] = []
+    next_page: str | None = None
+    page_number = 1
 
-
-def main():  # pragma: no cover
-    # Args is always stronger. Get last run even stronger
-    demisto.info("\n started running main\n")
-    demisto_params: dict = demisto.params() | demisto.args()
-    demisto_params["secret_key"] = demisto_params.get("credentials_secret_key", {}).get("password")
-    demisto_params["access_key"] = demisto_params.get("credentials_access_key", {}).get("password")
-    demisto_params["app_id"] = demisto_params.get("credentials_app", {}).get("identifier")
-    demisto_params["app_key"] = demisto_params.get("credentials_app", {}).get("password")
-    should_push_events = argToBoolean(demisto_params.get("should_push_events", "false"))
-    options = MimecastOptions(**demisto_params)
-    empty_first_request = IntegrationHTTPRequest(method=Method.GET, url="https://api.mimecast.com", headers={})  # type: ignore
-    client = MimecastClient(empty_first_request, options)
-    siem_event_handler = MimecastGetSiemEvents(client, options)
-    audit_event_handler = MimecastGetAuditEvents(client, options)
-    command = demisto.command()
-    handle_last_run_entrance(demisto_params.get("after", "now"), audit_event_handler, siem_event_handler)
-    try:
-        events_audit = audit_event_handler.run()
-        demisto.info(f"\n Total of {len(events_audit)} Audit Logs were fetched in this run")
-        events_siem = siem_event_handler.run()
-        demisto.info(f"\n Total of {len(events_siem)} Siem Logs were fetched in this run")
-
-        demisto_last_run: dict = demisto.getLastRun()
-        events_audit, audit_next_run, duplicates_audit = audit_events_last_run(
-            audit_event_handler, events_audit, demisto_last_run
+    demisto.debug(f"[{event_type}] Starting to fetch SIEM events between {start_date=} and {end_date=}.")
+    while len(all_events) < limit:
+        response = await client.get_siem_events(
+            event_type=event_type,
+            start_date=start_date,
+            end_date=end_date,
+            next_page=next_page,
+            page_size=DEFAULT_SIEM_PAGE_SIZE,
         )
-        siem_next_run = siem_events_last_run(siem_event_handler, demisto_last_run)
 
-        events = events_siem + events_audit
+        # Check for errors (if any) under "error" key in SIEM endpoint
+        if errors := response.get(IS_ERROR):
+            raise DemistoException(f"[{event_type}] SIEM events API call failed with {errors=}.")
 
-        if command == "test-module":
-            # End points are already tested as part of the event_handlers run method.
-            # If we reach this point the requests were executed successfully.
-            return_results("ok")
+        page_events = response.get("value", [])
+        next_page = response.get("@nextPage")
 
-        elif command == "fetch-events":
-            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            next_run_obj = handle_last_run_exit(audit_next_run, duplicates_audit, siem_next_run)
-            demisto.setLastRun(next_run_obj)
+        # Process and deduplicate events
+        deduplicated_events = deduplicate_and_format_events(
+            page_events,
+            all_fetched_ids,
+            event_id_key=SIEM_ID_KEY,
+            event_time_key=SIEM_TIME_KEY,
+            source_log_type="SIEM log",
+            filter_format_func=convert_to_siem_filter_format,
+        )
+        all_events.extend(deduplicated_events)
 
-        elif command == "mimecast-get-events":
-            command_results_siem = CommandResults(
-                readable_output=tableToMarkdown("Mimecast Siem Logs", events_siem),
-                outputs_prefix="Mimecast.SiemLogs",
-                outputs=events_siem,
-                raw_response=events_siem,
+        # Check if there are more pages
+        # API response has next page value even if the actual next page is empty, so use two conditions
+        # If number of page events is less than requested page size *or* no next page, assume no more events to fetch
+        if len(page_events) < DEFAULT_SIEM_PAGE_SIZE or next_page is None:
+            demisto.debug(
+                f"[{event_type}] No more SIEM events available after {page_number=}. "
+                f"Got {len(page_events)} page events and {next_page=}. Breaking..."
             )
-            command_results_audit = CommandResults(
-                readable_output=tableToMarkdown("Mimecast Audit Logs", events_audit),
-                outputs_prefix="Mimecast.AuditLogs",
-                outputs_key_field="id",
-                outputs=events_audit,
-                raw_response=events_audit,
-            )
-            return_results([command_results_siem, command_results_audit])
-            if should_push_events:
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                next_run_obj = handle_last_run_exit(audit_next_run, duplicates_audit, siem_next_run)
-                demisto.setLastRun(next_run_obj)
+            break
 
+        if len(all_events) >= limit:
+            demisto.debug(f"[{event_type}] Reached {limit=} for SIEM events on {page_number=}. Breaking...")
+            break
+
+        page_number += 1
+
+    demisto.debug(
+        f"[{event_type}] Finished fetching {len(all_events)} SIEM events "
+        f"from {page_number} pages between {start_date=} and {end_date=}."
+    )
+    return sorted(all_events, key=lambda item: item[SIEM_TIME_KEY])[:limit]  # Sort by timestamp ascending
+
+
+""" COMMAND FUNCTIONS """
+
+
+async def test_module(client: AsyncClient, event_types: list[str]) -> str:
+    """
+    Tests the connection to the Mimecast API.
+
+    Args:
+        client (AsyncClient): An instance of the AsyncClient.
+        event_types (list[str]): List of event types to test.
+
+    Returns:
+        str: "ok" if connection succeeded.
+    """
+    demisto.debug(f"Starting test module using {event_types=}.")
+
+    # Test Audit events
+    if "audit" in event_types:
+        audit_start_date = convert_to_audit_filter_format(UTC_MINUTE_AGO)
+        audit_end_date = convert_to_audit_filter_format(UTC_NOW)
+        demisto.debug(f"Testing fetching of audit events from {audit_start_date=} to {audit_end_date=}.")
+        await get_audit_events(
+            client,
+            start_date=audit_start_date,
+            end_date=audit_end_date,
+            limit=1,
+        )
+
+    # Test SIEM events
+    siem_event_types = [event_type for event_type in event_types if event_type != "audit"]
+    if siem_event_types:
+        siem_start_date = convert_to_siem_filter_format(UTC_MINUTE_AGO)
+        demisto.debug(f"Testing fetching of SIEM events from {siem_start_date=} with {siem_event_types=}.")
+        siem_tasks = [
+            get_siem_events(
+                client,
+                event_type=event_type,
+                start_date=siem_start_date,
+                limit=1,
+            )
+            for event_type in siem_event_types
+        ]
+        await asyncio.gather(*siem_tasks)
+
+    demisto.debug("Test module completed successfully.")
+    return "ok"
+
+
+async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple[list[dict[str, Any]], list[CommandResults]]:
+    """
+    Implements the `mimecast-get-events` command. Gets events using the AsyncClient.
+
+    Args:
+        client (AsyncClient): An instance of the AsyncClient.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        tuple[list[dict[str, Any]], list[CommandResults]]: A tuple of the events list and the CommandResults list.
+    """
+    limit = arg_to_number(args.get("limit")) or DEFAULT_GET_EVENTS_LIMIT  # limit is per event type
+    event_types = argToList(args.get("event_types")) or DEFAULT_EVENT_TYPES
+
+    start_date = arg_to_datetime(args.get("start_date"), settings=DATEPARSER_SETTINGS) or UTC_HOUR_AGO
+    end_date = arg_to_datetime(args.get("end_date"), settings=DATEPARSER_SETTINGS) or UTC_NOW
+
+    demisto.debug(f"Starting to get events with {limit=} and {event_types=}.")
+    all_events: list[dict[str, Any]] = []
+    command_results: list[CommandResults] = []
+
+    # Fetch audit events
+    if "audit" in event_types:
+        audit_start_date = convert_to_audit_filter_format(start_date)
+        audit_end_date = convert_to_audit_filter_format(end_date)
+        demisto.debug(f"Getting audit events between {audit_start_date=} and {audit_end_date=} with {limit=}.")
+        audit_events = await get_audit_events(client, start_date=audit_start_date, end_date=audit_end_date, limit=limit)
+        demisto.debug(f"Got {len(audit_events)} audit events between {audit_start_date=} and {audit_end_date=}.")
+        all_events.extend(audit_events)
+        human_readable = tableToMarkdown(name="Mimecast Audit Events", t=audit_events)
+        command_results.append(CommandResults(readable_output=human_readable))
+
+    # Fetch SIEM events
+    siem_event_types = [event_type for event_type in event_types if event_type != "audit"]
+    if siem_event_types:
+        if not (is_within_last_24_hours(start_date) and is_within_last_24_hours(end_date)):
+            human_readable = "The 'start_date' and 'end_date' arguments must be within the last 24 hours to get SIEM events."
+            command_results.append(CommandResults(readable_output=human_readable, entry_type=EntryType.ERROR))
         else:
-            raise NotImplementedError(f'Command "{command}" is not implemented.')
+            siem_start_date = convert_to_siem_filter_format(start_date)
+            siem_end_date = convert_to_siem_filter_format(end_date)
+            demisto.debug(f"Getting audit events between {siem_start_date=} and {siem_end_date=} with {limit=}.")
+            siem_tasks = [
+                get_siem_events(client, event_type=event_type, start_date=siem_start_date, end_date=siem_end_date, limit=limit)
+                for event_type in siem_event_types
+            ]
+            siem_events_lists = await asyncio.gather(*siem_tasks)
+            # Flatten the list of lists
+            for siem_events in siem_events_lists:
+                all_events.extend(siem_events)
+            demisto.debug(f"Got {len(siem_events)} SIEM events between {siem_start_date=} and {siem_end_date=}.")
+            human_readable = tableToMarkdown(name="Mimecast SIEM Events", t=siem_events)
+            command_results.append(CommandResults(readable_output=human_readable))
 
-    except Exception as exc:
-        exc_message = str(exc)
-        if "401" in exc_message:
-            exc_message = exc_message + "\nTry checking your Application key, Access Key, or secret Key"
-        if "multiple of 4" in exc_message:
-            exc_message = exc_message + "\n Try checking your Secret key - (wrong Secret key length)"
-        if "HTTPSConnectionPool" in exc_message:
-            exc_message = exc_message + "\n Try checking your Base url"
+    demisto.debug(f"Got {len(all_events)} events in total with {limit=} and {event_types=}.")
+    return all_events, command_results
 
-        return_error(f"Failed to execute {command} command.\nError:\n{exc_message}", error=str(exc))
 
+async def fetch_audit_events(
+    client: AsyncClient,
+    audit_last_run: dict,
+    max_fetch: int,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """
+    Fetches audit events from Mimecast.
+
+    Args:
+        client (AsyncClient): An instance of the AsyncClient.
+        audit_last_run (dict): The last run object containing audit event state.
+        max_fetch (int): The maximum number of events to fetch.
+
+    Returns:
+        tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of (next_run_state, fetched_events).
+    """
+    demisto.debug(f"Starting to fetch audit events. Got {audit_last_run=}.")
+    audit_start_date = audit_last_run.get("start_date") or convert_to_audit_filter_format(UTC_MINUTE_AGO)
+    audit_end_date = convert_to_audit_filter_format(UTC_NOW)
+    audit_last_fetched_ids = audit_last_run.get("last_fetched_ids", [])
+
+    demisto.debug(f"Fetching audit events from {audit_start_date=} to {audit_end_date=} with {max_fetch=}.")
+    # Fetch audit events
+    audit_events = await get_audit_events(
+        client,
+        start_date=audit_start_date,
+        end_date=audit_end_date,
+        limit=max_fetch,
+        last_fetched_ids=audit_last_fetched_ids,
+    )
+
+    # Update next run state
+    if not audit_events:
+        demisto.debug(f"No new audit events found. Keeping {audit_last_run=}.")
+        return audit_last_run, []
+
+    newest_filter_time = audit_events[-1].get(FILTER_TIME_KEY)
+    newest_fetched_ids = [event.get(AUDIT_ID_KEY) for event in audit_events if event.pop(FILTER_TIME_KEY) == newest_filter_time]
+    audit_next_run = {"start_date": newest_filter_time, "last_fetched_ids": newest_fetched_ids}
+
+    demisto.debug(f"Finished fetching {len(audit_events)} audit events with {newest_filter_time=} and {newest_fetched_ids=}.")
+    return audit_next_run, audit_events
+
+
+async def fetch_siem_events(
+    client: AsyncClient,
+    siem_last_run: dict,
+    max_fetch: int,
+    event_types: list[str],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """
+    Fetches SIEM events from Mimecast for all configured event types concurrently.
+
+    Args:
+        client (AsyncClient): An instance of the AsyncClient.
+        last_run (dict): The last run object containing SIEM event states for each type.
+        max_fetch (int): The maximum number of events to fetch per event type.
+        event_types (list[str]): List of SIEM event types to fetch.
+
+    Returns:
+        tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of (next_run, all_fetched_events).
+    """
+    demisto.debug(f"Starting to fetch SIEM events for {event_types=}. Got {siem_last_run=}")
+
+    default_start_date = convert_to_siem_filter_format(UTC_MINUTE_AGO)
+    all_events: list[dict[str, Any]] = []
+    siem_next_run: dict[str, Any] = {}
+
+    # Prepare tasks for concurrent fetching
+    siem_tasks = []
+    for event_type in event_types:
+        event_type_last_run = siem_last_run.get(event_type, {})
+        event_type_last_fetched_ids = event_type_last_run.get("last_fetched_ids", [])
+        event_type_start_date = event_type_last_run.get("start_date") or default_start_date
+
+        # Ensure the start date within than 24 hours to avoid HTTP 400 (bad request) errors from SIEM API endpoint
+        # If no events were fetched within the last 24 hours, the start date may not be within the allowed API range
+        if not is_within_last_24_hours(event_type_start_date):
+            demisto.info(f"[{event_type}] {event_type_start_date=} is older than 24 hours. Skipping forward to last 23 hours.")
+            event_type_start_date = convert_to_siem_filter_format(UTC_NOW - timedelta(hours=23))
+
+        demisto.debug(f"[{event_type}] Creating task to fetch SIEM from {event_type_start_date=} with {max_fetch=}.")
+        # Create async task
+        siem_tasks.append(
+            get_siem_events(
+                client,
+                event_type=event_type,
+                start_date=event_type_start_date,
+                limit=max_fetch,
+                last_fetched_ids=event_type_last_fetched_ids,
+            )
+        )
+
+    demisto.debug(f"Fetching SIEM events concurrently for {len(siem_tasks)} event types.")
+
+    # Execute all SIEM fetches concurrently
+    siem_results = await asyncio.gather(*siem_tasks, return_exceptions=True)
+
+    # Process results
+    for event_type, result in zip(event_types, siem_results):
+        event_type_last_run = siem_last_run.get(event_type, {})
+
+        # Handle exceptions
+        if isinstance(result, Exception):
+            error_traceback = "".join(traceback.format_exception(type(result), result, result.__traceback__))
+            demisto.error(
+                f"[{event_type}] Failed to fetch SIEM events. Keeping Keeping {event_type_last_run=}. Got {error_traceback=}."
+            )
+            siem_next_run[event_type] = event_type_last_run
+            continue
+
+        siem_events = cast(list, result)
+
+        # Handle empty results
+        if not siem_events:
+            demisto.debug(f"[{event_type}] No new SIEM events found. Keeping {event_type_last_run=}.")
+            siem_next_run[event_type] = event_type_last_run
+            continue
+
+        # Update state with newest events
+        newest_filter_time = siem_events[-1].get(FILTER_TIME_KEY)
+        newest_fetched_ids = [event.get(SIEM_ID_KEY) for event in siem_events if event.pop(FILTER_TIME_KEY) == newest_filter_time]
+        siem_next_run[event_type] = {"start_date": newest_filter_time, "last_fetched_ids": newest_fetched_ids}
+
+        all_events.extend(siem_events)
+        demisto.debug(
+            f"[{event_type}] Fetched {len(siem_events)} SIEM events with {newest_filter_time=} and {newest_fetched_ids=}."
+        )
+
+    demisto.debug(f"Finished fetching {len(all_events)} events from {len(event_types)} event types.")
+    return siem_next_run, all_events
+
+
+async def fetch_events_command(
+    client: AsyncClient,
+    last_run: dict,
+    max_fetch: int,
+    event_types: list[str],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """
+    Implements `fetch-events` command. Orchestrates concurrent fetching of both audit and SIEM events.
+
+    Args:
+        client (AsyncClient): An instance of the AsyncClient.
+        last_run (dict): The last run object.
+        max_fetch (int): The maximum number of events to fetch.
+        event_types (list[str]): List of event types to fetch.
+
+    Returns:
+        tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of next run dictionary and all events list.
+    """
+    demisto.debug(f"Starting to fetch events with {max_fetch=} and {len(event_types)} event types. Got {last_run=}.")
+
+    next_run = {}
+    all_events = []
+
+    if "audit" in event_types:
+        audit_last_run = last_run.get("audit", {})
+        audit_next_run, audit_events = await fetch_audit_events(client, audit_last_run, max_fetch)
+        next_run["audit"] = audit_next_run
+        all_events.extend(audit_events)
+
+    siem_event_types = [event_type for event_type in event_types if event_type != "audit"]
+    if siem_event_types:
+        siem_last_run = last_run.get("siem", {})
+        siem_next_run, siem_events = await fetch_siem_events(client, siem_last_run, max_fetch, siem_event_types)
+        next_run["siem"] = siem_next_run
+        all_events.extend(siem_events)
+
+    demisto.debug(f"Finished fetching events completed. Got {len(all_events)} total events. Updating {next_run=}.")
+    return next_run, all_events
+
+
+""" MAIN FUNCTION """
+
+
+async def main() -> None:  # pragma: no cover
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
+    command: str = demisto.command()
+
+    # HTTP Connection
+    base_url: str = params.get("base_url", DEFAULT_BASE_URL).rstrip("/")
+    verify: bool = not params.get("insecure", False)
+    proxy: bool = params.get("proxy", False)
+
+    # OAuth Credentials
+    client_id: str = params.get("client_credentials", {}).get("identifier", "")
+    client_secret: str = params.get("client_credentials", {}).get("password", "")
+
+    # Fetch Events
+    max_fetch: int = arg_to_number(params.get("max_fetch")) or DEFAULT_FETCH_EVENTS_LIMIT
+    event_types: list = argToList(params.get("event_types")) or DEFAULT_EVENT_TYPES
+
+    demisto.debug(f"Command being called is {command!r}.")
+
+    try:
+        async with AsyncClient(
+            base_url=base_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            verify=verify,
+            proxy=proxy,
+        ) as async_client:
+            if command == "test-module":
+                return_results(await test_module(async_client, event_types=event_types))
+
+            elif command == "mimecast-get-events":
+                should_push_events = argToBoolean(args.pop("should_push_events", False))
+                events, command_results = await get_events_command(async_client, args)
+                return_results(command_results)
+                if should_push_events:
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+            elif command == "fetch-events":
+                last_run = demisto.getLastRun()
+                next_run, events = await fetch_events_command(
+                    async_client,
+                    last_run=last_run,
+                    max_fetch=max_fetch,
+                    event_types=event_types,
+                )
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                demisto.setLastRun(next_run)
+
+            else:
+                raise NotImplementedError(f"Command {command!r} is not implemented.")
+
+    except Exception as e:
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+
+
+""" ENTRY POINT """
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
+    asyncio.run(main())

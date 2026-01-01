@@ -1,374 +1,682 @@
-import pytest  # noqa: N999
-from SiemApiModule import *  # noqa # pylint: disable=unused-wildcard-import
-
-from Packs.Mimecast.Integrations.MimecastEventCollector.MimecastEventCollector import *
-from Packs.Mimecast.Integrations.MimecastEventCollector.test_data.data import (
-    AUDIT_LOG_AFTER_PROCESS,
-    AUDIT_LOG_RESPONSE,
-    EMPTY_EVENTS_LIST,
-    FILTER_SAME_TIME_EVEMTS,
-    SIEM_LOG_PROCESS_EVENT,
-    SIEM_RESPONSE_MULTIPLE_EVENTS,
-    SIEM_RESULT_MULTIPLE_EVENTS_PROCESS,
-    WITH_DUP_TEST,
-    WITH_OUT_DUP_TEST,
+import json
+from datetime import UTC, datetime
+import pytest
+from pytest_mock import MockerFixture
+from aiohttp import ClientResponseError, RequestInfo
+from unittest.mock import AsyncMock
+from CommonServerPython import *
+from MimecastEventCollector import (
+    ACCESS_TOKEN_KEY,
+    TOKEN_TYPE_KEY,
+    TOKEN_TTL_KEY,
+    TOKEN_VALID_UNTIL_KEY,
+    AUDIT_ID_KEY,
+    AUDIT_TIME_KEY,
+    EVENT_TIME_KEY,
+    SOURCE_LOG_TYPE_KEY,
+    FILTER_TIME_KEY,
+    DEFAULT_BASE_URL,
+    AsyncClient,
 )
 
-mimecast_options = MimecastOptions(
-    app_id="XXX",
-    app_key="XXX",
-    uri="/api/audit/get-siem-logs",
-    email_address="XXX.mime.integration.com",
-    access_key="XXX",
-    secret_key="XXX",
-    after="7 days",
-    base_url="https://us-api.mimecast.com",
-    verify=False,
-)
-
-empty_first_request = IntegrationHTTPRequest(method=Method.GET, url="http://bla.com", headers={})
-client = MimecastClient(empty_first_request, mimecast_options)
-siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
-audit_event_handler = MimecastGetAuditEvents(client, mimecast_options)
+CLIENT_ID = "test_client_id"
+CLIENT_SECRET = "test_client_secret"
 
 
-def test_handle_last_run_entrance(mocker):
-    mocker.patch.object(demisto, "getLastRun", return_value={})
-    local_siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
-    assert audit_event_handler.start_time == ""
-    handle_last_run_entrance("7 days", audit_event_handler, local_siem_event_handler)
-    assert audit_event_handler.start_time != ""
-    assert local_siem_event_handler.token == ""
-    assert local_siem_event_handler.events_from_prev_run == []
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.loads(f.read())
 
 
-def test_process_audit_data():
-    """
-    Given:
-        - a dict representing the Resopnse.text of the audit event
-    When:
-        - processing the audit log
-    Then:
-        - collect all the events in the data section, add a xsiem_classifier, and set page_token for next run if exists
-    """
-    assert audit_event_handler.process_audit_response(AUDIT_LOG_RESPONSE) == AUDIT_LOG_AFTER_PROCESS
-    assert audit_event_handler.page_token == "1234"
-
-
-@pytest.mark.parametrize(
-    "audit_response, res", [(FILTER_SAME_TIME_EVEMTS.get("audit_response"), FILTER_SAME_TIME_EVEMTS.get("res"))]
-)
-def test_filter_same_time_events(audit_response, res):
-    time = "2022-05-31T12:50:33+0000"
-    data = audit_response.get("data", [])
-    same_time_events = []
-    for event in data:
-        if event.get("eventTime", "") == time:
-            same_time_events.append(event)
-    assert same_time_events == res
-
-
-@pytest.mark.parametrize(
-    "audit_events, last_run_potential_dup, res",
-    [
-        (
-            WITH_OUT_DUP_TEST.get("audit_events"),
-            WITH_OUT_DUP_TEST.get("last_run_potential_dup"),
-            WITH_OUT_DUP_TEST.get("audit_events"),
-        ),
-        (WITH_DUP_TEST.get("audit_events"), WITH_DUP_TEST.get("last_run_potential_dup"), WITH_DUP_TEST.get("res")),
-        (EMPTY_EVENTS_LIST.get("audit_events"), EMPTY_EVENTS_LIST.get("last_run_potential_dup"), EMPTY_EVENTS_LIST.get("res")),
-    ],
-)
-def test_dedup_audit_events(audit_events, last_run_potential_dup, res):
-    assert dedup_audit_events(audit_events, last_run_potential_dup) == res
-
-
-def test_handle_last_run_entrance_with_prev_run(mocker):
-    """
-    Given:
-        - A non empty last run object.
-
-    When:
-        - We enter the MimecastEventCollector main
-
-    Then:
-        - check that the fields of the last run are passed correctly to the event handler objects.
-    """
-    mocker.patch.object(
-        demisto,
-        "getLastRun",
-        return_value={
-            SIEM_LAST_RUN: "token1",
-            SIEM_EVENTS_FROM_LAST_RUN: ["event1", "event2"],
-            AUDIT_EVENT_DEDUP_LIST: ["id1", "id2"],
-            AUDIT_LAST_RUN: "2011-12-03T10:15:30+0000",
-        },
+@pytest.fixture()
+def async_client():
+    return AsyncClient(
+        base_url=DEFAULT_BASE_URL,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        verify=False,
+        proxy=False,
     )
-    handle_last_run_entrance("3 days", audit_event_handler, siem_event_handler)
-    assert siem_event_handler.token == "token1"
-    assert siem_event_handler.events_from_prev_run == ["event1", "event2"]
-    assert audit_event_handler.start_time == "2011-12-03T10:15:30+0000"
+
+
+def mock_async_session_response(
+    response_json: dict | None = None,
+    error_status_code: int | None = None,
+    error_message: str = "Server error",
+) -> AsyncMock | ClientResponseError:
+    """Helper function to create mock async session responses."""
+    mock_response = AsyncMock()
+    mock_response.json = AsyncMock(return_value=response_json)
+    if error_status_code:
+        return ClientResponseError(
+            status=error_status_code,
+            history=(),
+            request_info=RequestInfo("", "POST", {}),
+            message=error_message,
+        )
+    else:
+        mock_response.raise_for_status = AsyncMock()
+        mock_response.status = 200
+    return AsyncMock(__aenter__=AsyncMock(return_value=mock_response))
+
+
+@pytest.mark.asyncio
+async def test_async_client_generate_new_access_token(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient instance.
+    When:
+     - Calling _generate_new_access_token.
+    Then:
+     - Ensure the correct HTTP POST request is made to the OAuth token endpoint.
+     - Ensure the correct token response is returned.
+    """
+    mock_token_response = {"access_token": "test_access_token_12345", "token_type": "bearer", "expires_in": 1800}
+
+    mock_response = mock_async_session_response(mock_token_response)
+
+    async with async_client as _client:
+        mock_client_post = mocker.patch.object(_client._session, "post", return_value=mock_response)
+        token_response = await _client._generate_new_access_token()
+
+    assert token_response == mock_token_response
+    assert mock_client_post.call_args.kwargs["url"] == urljoin(DEFAULT_BASE_URL, "/oauth/token")
+    assert mock_client_post.call_args.kwargs["headers"]["Content-Type"] == "application/x-www-form-urlencoded"
+    assert mock_client_post.call_args.kwargs["data"]["grant_type"] == "client_credentials"
+
+
+@pytest.mark.asyncio
+async def test_async_client_generate_new_access_token_error(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient instance.
+    When:
+     - Calling _generate_new_access_token and the response contains an error.
+    Then:
+     - Ensure a DemistoException is raised with the appropriate error message.
+    """
+    token_url = urljoin(DEFAULT_BASE_URL, "/oauth/token")
+    error_message = "Invalid client credentials"
+
+    mock_response = mock_async_session_response(response_json={"fail": [{"message": error_message}]})
+
+    async with async_client as _client:
+        mocker.patch.object(_client._session, "post", return_value=mock_response)
+        with pytest.raises(DemistoException, match=f"Request to {token_url} failed. Got error: {error_message}."):
+            await _client._generate_new_access_token()
 
 
 @pytest.mark.parametrize(
-    "time_to_convert, res",
-    [("2011-12-03T10:15:30+00:00", "2011-12-03T10:15:30+0000"), ("2011-12-03T10:15:30+03:00", "2011-12-03T10:15:30+0300")],
-)
-def test_to_audit_time_format(time_to_convert, res):
-    """
-    Given:
-        - An iso 8601 time format
-
-    When:
-        - Before Sending the request to the audit events end point
-
-    Then:
-        - Convert the time format to fit the mimecast API format
-    """
-    assert audit_event_handler.to_audit_time_format(time_to_convert) == res
-
-
-def test_process_siem_data():
-    """
-    Given:
-        - The Siem response after calling the mimecast api
-
-    When:
-        - We process the response
-
-    Then:
-        - Return a flattened event list with some additional info data
-    """
-    after_process = siem_event_handler.process_siem_events(SIEM_RESPONSE_MULTIPLE_EVENTS)
-    assert after_process == SIEM_RESULT_MULTIPLE_EVENTS_PROCESS
-
-
-@pytest.mark.parametrize(
-    "event, res",
+    "integration_context, force_generate, expected_generate_call_count, expected_set_context_call_count",
     [
-        ({"IP": "1.2.3.4", "Dir": "Outbound", "Rcpt": "bla"}, {"IP": ["1.2.3.4"], "Dir": "Outbound", "Rcpt": ["bla"]}),
-        ({"a": "b", "c": "d"}, {"a": "b", "c": "d"}),
-        ({"Rcpt": ["bla"]}, {"Rcpt": ["bla"]}),
-        ({}, {}),
-    ],
-)
-def test_convert_field_to_xdm_type(event, res):
-    """
-    Given:
-        - A siem event with
-    When:
-        - one of the fields in the event dict is 'IP', 'SourceIP', 'Recipient'
-    Then:
-        - convert the specified fields to be of type list and do not modify the other fields
-    """
-    event_handler = MimecastGetSiemEvents(client, mimecast_options)
-    event_handler.convert_field_to_xdm_type(event)
-    assert event == res
-
-
-@pytest.mark.parametrize(
-    "audit_event_list, audit_next_run, res",
-    [
-        ([{"eventTime": "2022-05-29T10:43:25+0000", "id": "234"}], "2022-05-29T10:43:25+0000", ["234"]),
-        ([{"eventTime": "2022-05-29T10:43:25+0000", "id": "234"}], "", []),
-        ([], "2022-05-29T10:43:25+0000", []),
-        (
-            [
-                {"eventTime": "2022-05-29T10:43:25+0000", "id": "234"},
-                {"eventTime": "2022-05-29T10:43:25+0000", "id": "567"},
-                {"eventTime": "2022-04-29T10:43:25+0000", "id": "888"},
-            ],
-            "2022-05-29T10:43:25+0000",
-            ["234", "567"],
+        pytest.param(
+            {
+                ACCESS_TOKEN_KEY: "existing_token",
+                TOKEN_TYPE_KEY: "bearer",
+                TOKEN_VALID_UNTIL_KEY: "2025-01-02T12:00:00+00:00",  # Valid until noon (current time is 10:00)
+            },
+            False,
+            0,  # Should not generate new token
+            0,  # Should not set context
+            id="Valid token in integration context",
+        ),
+        pytest.param(
+            {
+                ACCESS_TOKEN_KEY: "expired_token",
+                TOKEN_TYPE_KEY: "bearer",
+                TOKEN_VALID_UNTIL_KEY: "2025-01-02T09:00:00+00:00",  # Expired (current time is 10:00)
+            },
+            False,
+            1,  # Should generate new token
+            1,  # Should set new token in context
+            id="Expired token in integration context",
+        ),
+        pytest.param(
+            {},  # Empty context
+            False,
+            1,  # Should generate new token
+            1,  # Should set new token in context
+            id="No token in integration context",
+        ),
+        pytest.param(
+            {
+                ACCESS_TOKEN_KEY: "existing_token",
+                TOKEN_TYPE_KEY: "bearer",
+                TOKEN_VALID_UNTIL_KEY: "2025-01-02T12:00:00+00:00",  # Valid token
+            },
+            True,  # Force generate
+            1,  # Should generate new token even though existing is valid
+            1,  # Should set new token in context
+            id="Force generate new token",
         ),
     ],
 )
-def test_prepare_potential_audit_duplicates_for_next_run(audit_event_list, audit_next_run, res):
+@pytest.mark.asyncio
+async def test_async_client_get_authorization_header(
+    async_client: AsyncClient,
+    mocker: MockerFixture,
+    integration_context: dict,
+    force_generate: bool,
+    expected_generate_call_count: int,
+    expected_set_context_call_count: int,
+):
     """
     Given:
-        - A list of audit events s.t. the latest events are in the start of the list, an audit next run
+     - An AsyncClient instance and various integration context states.
     When:
-        - Preparing the duplicates list for next run if events would be brought twice
+     - Calling get_authorization_header with different scenarios.
     Then:
-        - return a list with the Id of all the events that happened at the same time like audit_next_run
+     - Ensure the correct behavior for token retrieval/generation.
+     - Ensure get_integration_context and set_integration_context are called appropriately.
     """
-    assert prepare_potential_audit_duplicates_for_next_run(audit_event_list, audit_next_run) == res
+    mocker.patch("MimecastEventCollector.UTC_NOW", datetime(2025, 1, 2, 10, 0, 0, tzinfo=UTC))
+    # Mock integration context functions
+    mock_get_context = mocker.patch("MimecastEventCollector.get_integration_context", return_value=integration_context)
+    mock_set_context = mocker.patch("MimecastEventCollector.set_integration_context")
 
-
-def test_process_siem_events():
-    """
-    Given:
-        - a siem log response after it was extracted as json
-    When:
-        - The siem log is bieng processed
-    Then:
-        - return a flat list with all the information.
-        (some fields my convert to a list in the convert_field_to_xdm_type method)
-    """
-    for test_case in SIEM_LOG_PROCESS_EVENT:
-        siem_response = test_case.get("siem_data_response")
-        after_process = test_case.get("after_process")
-        assert siem_event_handler.process_siem_events(siem_response) == after_process
-
-
-@pytest.mark.parametrize("audit_events, res", [([{"eventTime": "1"}, {"eventTime": "2"}, {"eventTime": "3"}], "1"), ([], "")])
-def test_set_audit_next_run(audit_events, res):
-    assert set_audit_next_run(audit_events) == res
-
-
-def test_siem_custom_run(mocker):
-    """
-    Given:
-         - A list of events_from_prev_run
-    When:
-        - The events_from_prev_run is bigger the SIEM_LOG_LIMIT
-    Then:
-        - assert that the stored returned are the events from last run and that the events_from_prev_run has been modified
-    """
-    mock_events_from_prev_run: list = list(range(500))
-    mocker.patch.object(MimecastGetSiemEvents, "_iter_events", return_value=[])
-    siem_event_handler.events_from_prev_run = mock_events_from_prev_run
-    assert siem_event_handler.run() == mock_events_from_prev_run
-    assert siem_event_handler.events_from_prev_run == []
-
-
-def test_siem_custom_run2(mocker):
-    """
-    Given:
-        - A list of events from last run
-    When:
-        - calling the run function
-    Then:
-        - Verify all the events from prev run are stored correctly.
-    """
-    mocker.patch.object(MimecastGetSiemEvents, "_iter_events", return_value=[])
-    mock_events_from_prev_run: list = list(range(200))
-    siem_event_handler.events_from_prev_run = mock_events_from_prev_run
-    assert siem_event_handler.run() == mock_events_from_prev_run[:SIEM_LOG_LIMIT]
-    assert siem_event_handler.events_from_prev_run == []
-
-
-def test_siem_custom_run3(mocker):
-    """
-    Given:
-        - A list of events from last run
-    When:
-        - The events_from_prev_run is smaller then SIEM_LOG_LIMIT and events are returned from iter events
-    Then:
-        - Check the events are stored correctly
-    """
-    # This is a list of list so the iter_events loop will take into acount as one batch of events.
-    iter_events_mock_return_val = [list(range(600, 900))]
-    mocker.patch.object(MimecastGetSiemEvents, "_iter_events", return_value=iter_events_mock_return_val)
-    events_from_prev_run = list(range(200))
-    siem_event_handler.events_from_prev_run = events_from_prev_run
-
-    stored = siem_event_handler.run()
-
-    assert stored == events_from_prev_run + iter_events_mock_return_val[0]
-    assert siem_event_handler.events_from_prev_run == []
-
-
-def test_prepare_siem_request_body():
-    siem_event_handler.token = ""
-    post_body = {"data": [{"type": "MTA", "compress": True, "fileFormat": "json"}]}
-    assert json.dumps(post_body) == siem_event_handler.prepare_siem_request_body()
-
-    siem_event_handler.token = "1234"
-    post_body = {"data": [{"type": "MTA", "compress": True, "fileFormat": "json", "token": "1234"}]}
-    assert json.dumps(post_body) == siem_event_handler.prepare_siem_request_body()
-
-
-def test_audit_events_next_run_with_new_events():
-    """
-    Given:
-        - Audit event with new events
-    When:
-        - handling the new events and preparing data for next run.
-    Then:
-        - Verify De dup event list, next run time, potential duplicate events list.
-    """
-    last_run_object = {
-        SIEM_LAST_RUN: "",
-        SIEM_EVENTS_FROM_LAST_RUN: [],
-        AUDIT_EVENT_DEDUP_LIST: ["1"],
-        AUDIT_LAST_RUN: "2011-12-03T10:15:30+0000",
+    # Mock token generation response
+    mock_token_response = {
+        ACCESS_TOKEN_KEY: "new_generated_token",
+        TOKEN_TYPE_KEY: "bearer",
+        TOKEN_TTL_KEY: 1800,
     }
-    audit_events = [
-        {"eventTime": "2011-12-03T10:15:32+0000", "id": "4"},
-        {"eventTime": "2011-12-03T10:15:31+0000", "id": "3"},
-        {"eventTime": "2011-12-03T10:15:30+0000", "id": "1"},
+
+    async with async_client as _client:
+        mock_generate = mocker.patch.object(
+            _client,
+            "_generate_new_access_token",
+            return_value=mock_token_response,
+        )
+
+        # Call the method
+        auth_header = await _client.get_authorization_header(force_generate_new_token=force_generate)
+
+        # Assertions
+        assert mock_get_context.call_count == 1
+        assert mock_generate.call_count == expected_generate_call_count
+        assert mock_set_context.call_count == expected_set_context_call_count
+
+        # Verify the authorization header format
+        if expected_generate_call_count > 0:
+            # New token was generated
+            assert auth_header == "Bearer new_generated_token"
+            # Verify set_integration_context was called with correct data
+            if expected_set_context_call_count > 0:
+                set_context_call_args = mock_set_context.call_args[0][0]
+                assert set_context_call_args[ACCESS_TOKEN_KEY] == "new_generated_token"
+                assert set_context_call_args[TOKEN_TYPE_KEY] == "bearer"
+                assert TOKEN_VALID_UNTIL_KEY in set_context_call_args
+        else:
+            # Existing token was used
+            assert auth_header == "Bearer existing_token"
+
+
+@pytest.mark.asyncio
+async def test_async_client_get_audit_events(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient instance.
+    When:
+     - Calling `get_audit_events` with specific parameters.
+    Then:
+     - Ensure the correct HTTP POST request is made to the audit events endpoint.
+     - Ensure the correct response is returned.
+    """
+    start_date = "2025-01-01T00:00:00+0000"
+    end_date = "2025-01-02T00:00:00+0000"
+    page_size = 500
+
+    mock_response_json = util_load_json("test_data/audit_raw_response.json")
+
+    mock_response = mock_async_session_response(response_json=mock_response_json)
+    mock_get_auth_header = mocker.patch.object(async_client, "get_authorization_header", return_value="Bearer test_token")
+
+    async with async_client as _client:
+        mock_post_request = mocker.patch.object(_client._session, "request", return_value=mock_response)
+        response_json = await _client.get_audit_events(
+            start_date=start_date,
+            end_date=end_date,
+            page_size=page_size,
+        )
+
+    assert response_json == mock_response_json
+    assert mock_get_auth_header.call_count == 1
+    assert mock_post_request.call_args.kwargs["url"] == urljoin(DEFAULT_BASE_URL, "/api/audit/get-audit-events")
+    assert mock_post_request.call_args.kwargs["json"]["data"][0]["startDateTime"] == start_date
+    assert mock_post_request.call_args.kwargs["json"]["data"][0]["endDateTime"] == end_date
+
+
+@pytest.mark.asyncio
+async def test_async_client_get_siem_events(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient instance.
+    When:
+     - Calling get_siem_events with specific parameters.
+    Then:
+     - Ensure the correct HTTP GET request is made to the SIEM events endpoint.
+     - Ensure the correct response is returned.
+    """
+    event_type = "receipt"
+    start_date = "2025-01-01T00:00:00.000Z"
+    page_size = 100
+
+    mock_response_json = util_load_json("test_data/siem_raw_response.json")
+
+    mock_response = mock_async_session_response(response_json=mock_response_json)
+    mock_get_auth_header = mocker.patch.object(async_client, "get_authorization_header", return_value="Bearer test_token")
+
+    async with async_client as _client:
+        mock_get_request = mocker.patch.object(_client._session, "request", return_value=mock_response)
+        response_json = await _client.get_siem_events(event_type=event_type, start_date=start_date, page_size=page_size)
+
+    assert response_json == mock_response_json
+    assert mock_get_auth_header.call_count == 1
+    assert mock_get_request.call_args.kwargs["url"] == urljoin(DEFAULT_BASE_URL, "/siem/v1/events/cg")
+    assert mock_get_request.call_args.kwargs["params"]["types"] == event_type
+
+
+@pytest.mark.parametrize(
+    "filter_datetime, expected_audit_format, expected_siem_format",
+    [
+        pytest.param(
+            datetime(2025, 1, 1, 12, 30, 45, tzinfo=UTC),
+            "2025-01-01T12:30:45+0000",
+            "2025-01-01T12:30:45.000Z",
+            id="Datetime conversion with UTC timezone",
+        ),
+        pytest.param(
+            datetime(2025, 1, 1, 13, 35, 55, tzinfo=None),
+            "2025-01-01T13:35:55+0000",
+            "2025-01-01T13:35:55.000Z",
+            id="Datetime conversion with no timezone info",
+        ),
+    ],
+)
+def test_convert_to_filter_formats(filter_datetime, expected_audit_format, expected_siem_format):
+    """
+    Given:
+     - A datetime object.
+    When:
+     - Converting to audit and SIEM filter formats.
+    Then:
+     - Ensure the correct format strings are returned.
+    """
+    from MimecastEventCollector import convert_to_audit_filter_format, convert_to_siem_filter_format
+
+    assert convert_to_audit_filter_format(filter_datetime) == expected_audit_format
+    assert convert_to_siem_filter_format(filter_datetime) == expected_siem_format
+
+
+@pytest.mark.parametrize(
+    "events, all_fetched_ids, expected_events_count, expected_all_ids_count",
+    [
+        pytest.param(
+            [
+                {"id": "event-1", "eventTime": "2025-01-01T00:00:00+0000"},
+                {"id": "event-2", "eventTime": "2025-01-01T01:00:00+0000"},
+            ],
+            set(),
+            2,
+            2,
+            id="No duplicates",
+        ),
+        pytest.param(
+            [
+                {"id": "event-1", "eventTime": "2025-01-01T00:00:00+0000"},
+                {"id": "event-2", "eventTime": "2025-01-01T01:00:00+0000"},
+            ],
+            {"event-1"},
+            1,
+            2,
+            id="With duplicates",
+        ),
+        pytest.param(
+            [],
+            {"event-1"},
+            0,
+            1,
+            id="Empty events list",
+        ),
+        pytest.param(
+            [{"id": "event-1", "eventTime": "2025-01-01T00:00:00+0000"}],
+            {"event-1"},
+            0,
+            1,
+            id="All duplicates",
+        ),
+    ],
+)
+def test_deduplicate_and_format_events(
+    events: list[dict[str, Any]],
+    all_fetched_ids: set[str],
+    expected_events_count: int,
+    expected_all_ids_count: int,
+):
+    """
+    Given:
+     - A list of raw events and a set of already fetched event IDs.
+    When:
+     - Calling deduplicate_and_format_events.
+    Then:
+     - Ensure that events are correctly deduplicated and formatted.
+     - Ensure that the set of fetched IDs is correctly updated.
+    """
+    from MimecastEventCollector import deduplicate_and_format_events, convert_to_audit_filter_format
+
+    source_log_type = "Audit"
+    new_events = deduplicate_and_format_events(
+        events, all_fetched_ids, AUDIT_ID_KEY, AUDIT_TIME_KEY, source_log_type, convert_to_audit_filter_format
+    )
+
+    assert len(new_events) == expected_events_count
+    assert len(all_fetched_ids) == expected_all_ids_count
+
+    for event in new_events:
+        assert EVENT_TIME_KEY in event
+        assert event[SOURCE_LOG_TYPE_KEY] == source_log_type
+        assert FILTER_TIME_KEY in event
+
+
+@pytest.mark.asyncio
+async def test_get_audit_events_pagination(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - A limit that requires fetching multiple pages of events.
+    When:
+     - Calling get_audit_events.
+    Then:
+     - Ensure that multiple API calls are made and events are aggregated.
+    """
+    from MimecastEventCollector import get_audit_events
+
+    start_date = "2025-01-01T00:00:00+0000"
+    end_date = "2025-01-02T00:00:00+0000"
+    limit = 600
+
+    mock_response_jsons = [
+        {  # Page 1
+            "data": [{"id": f"event-A{i}", "eventTime": "2025-01-01T00:00:00+0000"} for i in range(500)],
+            "meta": {"pagination": {"next": "page2_token"}},
+        },
+        {  # Page 2
+            "data": [{"id": f"event-B{i}", "eventTime": "2025-01-01T01:00:00+0000"} for i in range(500)],
+            "meta": {"pagination": {"next": None}},
+        },
     ]
-    res_audit_events = [
-        {"eventTime": "2011-12-03T10:15:32+0000", "id": "4"},
-        {"eventTime": "2011-12-03T10:15:31+0000", "id": "3"},
-    ]
 
-    res_potential_duplicate_events = ["4"]
-    audit_event_handler = MimecastGetAuditEvents(client, mimecast_options)
+    async with async_client as _client:
+        mock_get_audit_events = mocker.patch.object(_client, "get_audit_events", side_effect=mock_response_jsons)
+        events = await get_audit_events(
+            client=_client,
+            start_date=start_date,
+            end_date=end_date,
+            limit=limit,
+        )
 
-    audit_events, audit_next_run, duplicates_audit = audit_events_last_run(audit_event_handler, audit_events, last_run_object)
-    assert duplicates_audit == res_potential_duplicate_events
-    assert audit_events == res_audit_events
-    assert audit_next_run == "2011-12-03T10:15:32+0000"
+    assert len(events) == limit
+    assert mock_get_audit_events.call_count == 2  # 500 from first page, 100 from second page
 
 
-def test_audit_events_next_run_without_new_events():
+@pytest.mark.asyncio
+async def test_get_audit_events_with_deduplication(async_client: AsyncClient, mocker: MockerFixture):
     """
     Given:
-        - Audit event with no new events.
+     - A limit and a list of previously fetched event IDs.
     When:
-        - handling the audit events.
+     - Calling get_audit_events.
     Then:
-        - Verify De dup event list, next run time, potential duplicate events list.
+     - Ensure that duplicate events are filtered out.
     """
-    last_run_object = {
-        SIEM_LAST_RUN: "",
-        SIEM_EVENTS_FROM_LAST_RUN: [],
-        AUDIT_EVENT_DEDUP_LIST: ["1"],
-        AUDIT_LAST_RUN: "2011-12-03T10:15:30+0000",
+    from MimecastEventCollector import get_audit_events
+
+    start_date = "2025-01-01T00:00:00+0000"
+    end_date = "2025-01-02T00:00:00+0000"
+    limit = 500
+    last_fetched_ids = ["event-A0", "event-A1"]
+
+    mock_response_json = {
+        "data": [
+            {"id": "event-A0", "eventTime": "2025-01-01T00:00:00+0000"},  # Duplicate
+            {"id": "event-A1", "eventTime": "2025-01-01T00:00:00+0000"},  # Duplicate
+            {"id": "event-A2", "eventTime": "2025-01-01T00:00:00+0000"},  # New
+        ],
+        "meta": {"pagination": {"next": None}},
     }
-    audit_events = [
-        {"eventTime": "2011-12-03T10:15:30+0000", "id": "1"},
+
+    async with async_client as _client:
+        mocker.patch.object(_client, "get_audit_events", return_value=mock_response_json)
+        events = await get_audit_events(
+            client=_client,
+            start_date=start_date,
+            end_date=end_date,
+            limit=limit,
+            last_fetched_ids=last_fetched_ids,
+        )
+
+    assert len(events) == 1  # Only one new event after deduplication
+    assert events[0]["id"] == "event-A2"
+
+
+@pytest.mark.asyncio
+async def test_get_siem_events_pagination(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - A limit that requires fetching multiple pages of SIEM events.
+    When:
+     - Calling get_siem_events.
+    Then:
+     - Ensure that multiple API calls are made and events are aggregated.
+    """
+    from MimecastEventCollector import get_siem_events
+
+    event_type = "receipt"
+    start_date = "2025-01-01T00:00:00.000Z"
+    limit = 150
+
+    mock_response_jsons = [
+        {  # Page 1
+            "value": [{"aCode": f"event-A{i}", "timestamp": 1704067200000} for i in range(100)],
+            "@nextPage": "page2_token",
+        },
+        {  # Page 2
+            "value": [{"aCode": f"event-B{i}", "timestamp": 1704070800000} for i in range(100)],
+            "@nextPage": None,
+        },
     ]
-    res_audit_events = []
-    res_potential_duplicate_events = []
-    audit_event_handler = MimecastGetAuditEvents(client, mimecast_options)
-    audit_event_handler.end_time = "2024-24-24T00:00:00+0000"
 
-    audit_events, audit_next_run, duplicates_audit = audit_events_last_run(audit_event_handler, audit_events, last_run_object)
-    assert duplicates_audit == res_potential_duplicate_events
-    assert audit_events == res_audit_events
-    assert audit_next_run == "2024-24-24T00:00:00+0000"
+    async with async_client as _client:
+        mock_get_siem_events = mocker.patch.object(_client, "get_siem_events", side_effect=mock_response_jsons)
+        events = await get_siem_events(
+            client=_client,
+            event_type=event_type,
+            start_date=start_date,
+            limit=limit,
+        )
 
-
-def test_siem_events_last_run_with_new_events():
-    last_run_object = {
-        SIEM_LAST_RUN: "token2",
-        SIEM_EVENTS_FROM_LAST_RUN: [],
-        AUDIT_EVENT_DEDUP_LIST: [],
-        AUDIT_LAST_RUN: "",
-    }
-    siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
-    siem_event_handler.token = "token99"
-    siem_event_handler.events_from_prev_run = ["evnet1", "event2"]
-    siem_next_run = siem_events_last_run(siem_event_handler, last_run_object)
-
-    # When the token is set on the current run, use the new token.
-    assert siem_next_run == "token99"
+    assert len(events) == limit
+    assert mock_get_siem_events.call_count == 2
 
 
-def test_siem_events_last_run_without_new_events():
-    last_run_object = {
-        SIEM_LAST_RUN: "token2",
-        SIEM_EVENTS_FROM_LAST_RUN: ["siem_event1"],
-        AUDIT_EVENT_DEDUP_LIST: [],
-        AUDIT_LAST_RUN: "2011-12-03T10:15:30+0000",
-    }
-    siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
-    siem_event_handler.events_from_prev_run = []
-    siem_next_run = siem_events_last_run(siem_event_handler, last_run_object)
+@pytest.mark.asyncio
+async def test_get_events_command(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient and command arguments.
+    When:
+     - Calling get_events_command.
+    Then:
+     - Ensure get_audit_events and get_siem_events are called with the correct arguments.
+     - Ensure tableToMarkdown is called with the correct arguments.
+    """
+    from MimecastEventCollector import get_events_command
 
-    # When no new events arrive use the previous token set on the past run.
-    assert siem_next_run == "token2"
+    mock_audit_events = [{"id": "event-1", "eventTime": "2025-01-01T00:00:00+0000", "_time": "2025-01-01T00:00:00Z"}]
+    mock_siem_events = [{"aCode": "event-2", "timestamp": 1704067200000, "_time": "2025-01-01T00:00:00Z"}]
+
+    mocker.patch("MimecastEventCollector.UTC_NOW", datetime(2025, 1, 2, 10, 0, 0, tzinfo=UTC))
+    mock_get_audit_events = mocker.patch("MimecastEventCollector.get_audit_events", return_value=mock_audit_events)
+    mock_get_siem_events = mocker.patch("MimecastEventCollector.get_siem_events", return_value=mock_siem_events)
+    mock_table_to_markdown = mocker.patch("MimecastEventCollector.tableToMarkdown")
+
+    args = {"event_types": "audit,receipt", "limit": "10", "start_date": "1 hour ago"}
+
+    events, _ = await get_events_command(async_client, args)
+
+    assert len(events) == 2
+    assert mock_get_audit_events.call_count == 1
+    assert mock_get_siem_events.call_count == 1
+    assert mock_table_to_markdown.call_count == 2
+
+
+@pytest.mark.parametrize(
+    "last_run, max_fetch, mock_audit_events, expected_next_run",
+    [
+        pytest.param(
+            {},
+            100,
+            [
+                {"id": "event-1", "eventTime": "2025-01-01T00:00:00+0000", "_filter_time": "2025-01-01T00:00:00+0000"},
+                {"id": "event-2", "eventTime": "2025-01-01T01:00:00+0000", "_filter_time": "2025-01-01T01:00:00+0000"},
+            ],
+            {"start_date": "2025-01-01T01:00:00+0000", "last_fetched_ids": ["event-2"]},
+            id="Initial run with audit events",
+        ),
+        pytest.param(
+            {"start_date": "2025-01-01T00:00:00+0000", "last_fetched_ids": ["event-1"]},
+            50,
+            [
+                {"id": "event-2", "eventTime": "2025-01-01T01:00:00+0000", "_filter_time": "2025-01-01T01:00:00+0000"},
+                {"id": "event-3", "eventTime": "2025-01-01T01:00:00+0000", "_filter_time": "2025-01-01T01:00:00+0000"},
+            ],
+            {"start_date": "2025-01-01T01:00:00+0000", "last_fetched_ids": ["event-2", "event-3"]},
+            id="Subsequent run with events at same timestamp",
+        ),
+        pytest.param(
+            {"start_date": "2025-01-01T01:00:00+0000", "last_fetched_ids": ["event-2"]},
+            100,
+            [],
+            {"start_date": "2025-01-01T01:00:00+0000", "last_fetched_ids": ["event-2"]},
+            id="No new events",
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_fetch_audit_events(
+    async_client: AsyncClient,
+    mocker: MockerFixture,
+    last_run: dict,
+    max_fetch: int,
+    mock_audit_events: list,
+    expected_next_run: dict,
+):
+    """
+    Given:
+     - An AsyncClient, last_run, and max_fetch parameters.
+    When:
+     - Calling fetch_audit_events.
+    Then:
+     - Ensure that get_audit_events is called.
+     - Ensure that the next_run object and events are returned correctly.
+    """
+    from MimecastEventCollector import fetch_audit_events
+
+    mocker.patch("MimecastEventCollector.get_audit_events", return_value=mock_audit_events)
+
+    next_run, events = await fetch_audit_events(async_client, last_run, max_fetch)
+
+    assert next_run == expected_next_run
+    assert len(events) == len(mock_audit_events)
+
+
+@pytest.mark.asyncio
+async def test_fetch_siem_events_service_failure_isolation(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - Multiple SIEM event types to fetch.
+    When:
+     - One event type fails but others succeed.
+    Then:
+     - Ensure that successful event types' events are still returned.
+     - Ensure that the failure is logged but doesn't stop other event types.
+    """
+    from MimecastEventCollector import fetch_siem_events
+
+    event_types = ["receipt", "delivery", "spam"]
+    last_run = {}
+    max_fetch = 100
+
+    async def mock_get_siem_events(client, event_type, start_date, limit, last_fetched_ids=None, end_date=None):
+        if event_type == "delivery":
+            raise Exception("Service error")
+        return [{"aCode": f"{event_type}-event-1", "timestamp": 1704067200000, "_filter_time": "2025-01-01T00:00:00.000Z"}]
+
+    mocker.patch("MimecastEventCollector.get_siem_events", side_effect=mock_get_siem_events)
+    mock_demisto_error = mocker.patch.object(demisto, "error")
+
+    next_run, events = await fetch_siem_events(async_client, last_run, max_fetch, event_types)
+
+    # Should have events from 2 successful event types
+    assert len(events) == 2
+    assert mock_demisto_error.call_count == 1
+    assert "delivery" in mock_demisto_error.call_args[0][0]
+
+
+@pytest.mark.asyncio
+async def test_fetch_events_command(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient, last_run, max_fetch, and event_types.
+    When:
+     - Calling fetch_events_command.
+    Then:
+     - Ensure that fetch_audit_events and fetch_siem_events are called.
+     - Ensure that the next_run object and events are returned correctly.
+    """
+    from MimecastEventCollector import fetch_events_command
+
+    last_run = {}
+    max_fetch = 100
+    event_types = ["audit", "receipt"]
+
+    mock_audit_events = [{"id": "event-1", "eventTime": "2025-01-01T00:00:00+0000"}]
+    mock_siem_events = [{"aCode": "event-2", "timestamp": 1704067200000}]
+
+    mocker.patch(
+        "MimecastEventCollector.fetch_audit_events", return_value=({"start_date": "2025-01-01T00:00:00+0000"}, mock_audit_events)
+    )
+    mocker.patch(
+        "MimecastEventCollector.fetch_siem_events",
+        return_value=({"receipt": {"start_date": "2025-01-01T00:00:00.000Z"}}, mock_siem_events),
+    )
+
+    next_run, events = await fetch_events_command(async_client, last_run, max_fetch, event_types)
+
+    assert "audit" in next_run
+    assert "siem" in next_run
+    assert len(events) == 2
+
+
+@pytest.mark.asyncio
+async def test_test_module(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient and event types.
+    When:
+     - Calling `test_module`.
+    Then:
+     - Ensure that get_audit_events and get_siem_events are called.
+     - Ensure "ok" is returned.
+    """
+    from MimecastEventCollector import test_module
+
+    event_types = ["audit", "receipt"]
+
+    mock_get_audit_events = mocker.patch("MimecastEventCollector.get_audit_events", return_value=[])
+    mock_get_siem_events = mocker.patch("MimecastEventCollector.get_siem_events", return_value=[])
+
+    result = await test_module(async_client, event_types)
+
+    assert mock_get_audit_events.call_count == 1
+    assert mock_get_siem_events.call_count == 1
+    assert result == "ok"
