@@ -3,9 +3,14 @@ from collections import OrderedDict
 
 import pytest
 from CommonServerPython import *
+from unittest.mock import MagicMock, AsyncMock
+import asyncio
+import threading
+from base64 import b64encode
 from PaloAltoNetworks_PrismaCloudCompute import (
     HEADERS_BY_NAME,
     PrismaCloudComputeClient,
+    PrismaCloudComputeAsyncClient,
     add_custom_ip_feeds,
     add_custom_malware_feeds,
     camel_case_transformer,
@@ -28,6 +33,15 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     get_profile_host_forensic_list,
     get_profile_host_list,
     parse_date_string_format,
+    process_tas_droplet_results,
+    process_host_results,
+    process_runtime_image_results,
+    fetch_assets_long_running_command,
+    init_asset_type_related_data,
+    AssetType,
+    preform_fetch_assets_main_loop_logic,
+    collect_assets_and_send_to_xsiam,
+    AssetTypeRelatedData,
 )
 
 BASE_URL = "https://test.com"
@@ -1738,3 +1752,343 @@ def test_remove_custom_ip_feeds(client, requests_mock, initial_ips, ips_arg, exp
         assert custom_ip_put_mock.called is False
     else:
         assert set(custom_ip_put_mock.last_request.json()["feed"]) == set(expected)
+
+
+def test_process_host_results_success():
+    """
+    Given: Raw host data.
+    When: process_host_results is called.
+    Then: It should return processed host data.
+    """
+    raw_data = [
+        {
+            "cloudMetadata": {"name": "host1", "provider": "AWS", "region": "us-east-1", "accountID": "12345"},
+            "tags": ["tag1"],
+            "labels": ["label1"],
+            "hostDevices": [{"ip": "192.168.1.1"}, {"ip": "10.0.0.1"}],
+            "hostname": "test-host-1",
+        }
+    ]
+    expected_result = [
+        {
+            "Name": "host1",
+            "Provider": "AWS",
+            "Type": "Virtual Machine",
+            "Category": "VM Instance",
+            "Class": "Compute",
+            "Region": "us-east-1",
+            "Realm": "12345",
+            "Tags": ["tag1", "label1"],
+            "Internal IP": "192.168.1.1, 10.0.0.1",
+            "Strong ID": "test-host-1",
+        }
+    ]
+    result = process_host_results(raw_data)
+    assert result == expected_result
+
+
+def test_process_host_results_empty_data():
+    """
+    Given: Empty raw host data.
+    When: process_host_results is called.
+    Then: It should return an empty list.
+    """
+    raw_data = []
+    expected_result = []
+    result = process_host_results(raw_data)
+    assert result == expected_result
+
+
+def test_process_runtime_image_results_success():
+    """
+    Given: Raw runtime image data.
+    When: process_runtime_image_results is called.
+    Then: It should return processed runtime image data.
+    """
+    raw_data = [
+        {
+            "cloudMetadata": {"name": "image1", "provider": "GCP", "region": "us-central1", "accountID": "67890"},
+            "tags": ["tagA"],
+            "labels": ["labelB"],
+            "id": "image-id-1",
+        }
+    ]
+    expected_result = [
+        {
+            "Name": "image1",
+            "Provider": "GCP",
+            "Type": "Runtime Image",
+            "Category": "Container Image",
+            "Class": "Compute",
+            "Region": "us-central1",
+            "Realm": "67890",
+            "Tags": ["tagA", "labelB"],
+            "Strong ID": "image-id-1",
+        }
+    ]
+    result = process_runtime_image_results(raw_data)
+    assert result == expected_result
+
+
+def test_process_runtime_image_results_empty_data():
+    """
+    Given: Empty raw runtime image data.
+    When: process_runtime_image_results is called.
+    Then: It should return an empty list.
+    """
+    raw_data = []
+    expected_result = []
+    result = process_runtime_image_results(raw_data)
+    assert result == expected_result
+
+
+def test_process_tas_droplet_results_success():
+    """
+    Given: Raw TAS droplet data.
+    When: process_tas_droplet_results is called.
+    Then: It should return processed TAS droplet data.
+    """
+    raw_data = [
+        {
+            "name": "droplet1",
+            "provider": "Azure",
+            "region": "eastus",
+            "accountID": "abcde",
+            "tags": ["tagX"],
+            "labels": ["labelY"],
+            "cloudControllerAddress": "droplet.example.com",
+            "id": "droplet-id-1",
+        }
+    ]
+    expected_result = [
+        {
+            "Name": "droplet1",
+            "Provider": "Azure",
+            "Type": "Runtime Image",
+            "Category": "Container Image",
+            "Class": "Compute",
+            "Region": "eastus",
+            "Realm": "abcde",
+            "Tags": ["tagX", "labelY"],
+            "FQDN": "droplet.example.com",
+            "Strong ID": "droplet-id-1",
+        }
+    ]
+    result = process_tas_droplet_results(raw_data)
+    assert result == expected_result
+
+
+def test_process_tas_droplet_results_empty_data():
+    """
+    Given: Empty raw TAS droplet data.
+    When: process_tas_droplet_results is called.
+    Then: It should return an empty list.
+    """
+    raw_data = []
+    expected_result = []
+    result = process_tas_droplet_results(raw_data)
+    assert result == expected_result
+
+
+class MockAsyncClient(PrismaCloudComputeAsyncClient):
+    """Mock PrismaCloudComputeAsyncClient for testing with predefined credentials and URL."""
+
+    def __init__(self):
+        base_url = "https://8.8.8.8:8080"
+        username = "a"
+        password = "a"
+        project = ""
+
+        super().__init__(
+            base_url=base_url,
+            verify=False,
+            project=project,
+            proxy=False,
+            username=username,
+            password=password,
+        )
+
+
+@pytest.mark.asyncio
+async def test_fetch_assets_long_running_command_initial_run(mocker):
+    """
+    Given: An initial run of the fetch assets command.
+    When: fetch_assets_long_running_command is called.
+    Then: It should initialize the long running command and return a status.
+    """
+    mock_client = MockAsyncClient()
+    mock_main_loop = mocker.patch(
+        "PaloAltoNetworks_PrismaCloudCompute.preform_fetch_assets_main_loop_logic", side_effect=[None, BaseException("Stop loop")]
+    )
+    mock_sleep = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.asyncio.sleep", side_effect=[None, BaseException("Stop sleep")])
+    mock_info = mocker.patch.object(demisto, "info")
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    try:
+        await fetch_assets_long_running_command(mock_client)
+    except BaseException as e:
+        assert str(e) == "Stop loop"  # Expecting the sleep to stop the loop
+
+    assert mock_main_loop.call_count == 2
+    mock_sleep.assert_called_once()
+    assert mock_info.called
+    assert mock_debug.called
+    
+
+@pytest.mark.asyncio
+async def test_fetch_assets_long_running_command_error_handling(mocker):
+    """
+    Given: An error occurs during the execution of preform_fetch_assets_main_loop_logic.
+    When: fetch_assets_long_running_command is called.
+    Then: It should catch the exception, log it, and continue to sleep.
+    """
+    mock_client = MockAsyncClient()
+    mock_main_loop = mocker.patch(
+        "PaloAltoNetworks_PrismaCloudCompute.preform_fetch_assets_main_loop_logic", new_callable=MagicMock
+    )
+    mock_sleep = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.asyncio.sleep", new_callable=MagicMock)
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    mock_main_loop.side_effect = [Exception("Simulated error"), BaseException("Stop loop")]
+    mock_sleep.side_effect = [None, BaseException("Stop sleep")]
+    try:
+        await fetch_assets_long_running_command(mock_client)
+    except BaseException as e:
+        assert str(e) == "Stop loop"
+
+    mock_main_loop.assert_called_with(mock_client)
+    assert mock_debug.mock_calls[1][1][0] == "Got the following error while trying to stream events: Simulated error"
+
+
+def test_init_asset_type_related_data_from_context(mocker):
+    """
+    Given: Existing asset type data in integration context.
+    When: init_asset_type_related_data is called.
+    Then: It should initialize AssetTypeRelatedData with values from the context.
+    """
+    ctx_lock = threading.Lock()
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={"Host": {"offset": 50, "total_count": 100, "snapshot_id": "test_snapshot"}},
+    )
+    asset_type_data = init_asset_type_related_data(
+        endpoint="/hosts", product="Hosts", asset_type=AssetType.HOST, process_result_func=process_host_results, ctx_lock=ctx_lock
+    )
+    assert asset_type_data.offset == 50
+    assert asset_type_data.total_count == 100
+    assert asset_type_data.snapshot_id == "test_snapshot"
+    assert asset_type_data.asset_type == AssetType.HOST
+
+
+def test_init_asset_type_related_data_new_data(mocker):
+    """
+    Given: No existing asset type data in integration context.
+    When: init_asset_type_related_data is called.
+    Then: It should initialize AssetTypeRelatedData with default values.
+    """
+    ctx_lock = threading.Lock()
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    asset_type_data = init_asset_type_related_data(
+        endpoint="/images",
+        product="Runtime_images",
+        asset_type=AssetType.RUNTIME_IMAGE,
+        process_result_func=process_runtime_image_results,
+        ctx_lock=ctx_lock
+    )
+    assert asset_type_data.offset == 0
+    assert asset_type_data.total_count == 0
+    assert asset_type_data.asset_type == AssetType.RUNTIME_IMAGE
+    assert isinstance(asset_type_data.snapshot_id, str)  # Should be a new snapshot ID
+
+
+@pytest.mark.asyncio
+async def test_preform_fetch_assets_main_loop_logic_success(mocker):
+    """
+    Given: Client and asset type related data.
+    When: preform_fetch_assets_main_loop_logic is called.
+    Then: It should call collect_assets_and_send_to_xsiam for each asset type and update module health.
+    """
+    mock_client = MockAsyncClient()
+    mock_collect_assets = mocker.patch(
+        "PaloAltoNetworks_PrismaCloudCompute.collect_assets_and_send_to_xsiam", new_callable=MagicMock
+    )
+    mock_update_health = mocker.patch.object(demisto, "updateModuleHealth")
+
+    mock_collect_assets.return_value = asyncio.Future()
+    mock_collect_assets.return_value.set_result(None)  # Mock the async call to return immediately
+
+    await preform_fetch_assets_main_loop_logic(mock_client)
+
+    assert mock_collect_assets.call_count == 3  # Called for Tas Droplet, Host, and Runtime Image
+    assert mock_update_health.called
+
+
+# Test cases for collect_assets_and_send_to_xsiam
+@pytest.mark.asyncio
+async def test_collect_assets_and_send_to_xsiam_no_data(mocker):
+    """
+    Given: No data returned from the API.
+    When: collect_assets_and_send_to_xsiam is called.
+    Then: It should break the loop and remove related data from context.
+    """
+    ctx_lock = threading.Lock()
+    mock_client = MockAsyncClient()
+    mock_response = AsyncMock()
+    mock_response.headers = {"Total-Count": "0"}
+    mock_response.json = AsyncMock(return_value=[])
+    mock_response.release = AsyncMock(return_value=None)
+    mock_client._http_request = AsyncMock(return_value=mock_response)
+
+    asset_type_related_data = AssetTypeRelatedData(
+        endpoint="/hosts", product="Hosts", asset_type=AssetType.HOST, process_result_func=process_host_results, ctx_lock=ctx_lock
+    )
+
+    mock_send_data = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.async_send_data_to_xsiam")
+    mock_remove_data = mocker.patch.object(asset_type_related_data, "remove_related_data_from_ctx")
+    await collect_assets_and_send_to_xsiam(mock_client, asset_type_related_data)
+    mock_send_data.assert_not_called()
+    assert mock_remove_data.called
+
+
+@pytest.mark.asyncio
+async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
+    """
+    Given: Data returned from the API.
+    When: collect_assets_and_send_to_xsiam is called.
+    Then: It should process and send data to XSIAM, update context, and increment offset.
+    """
+    ctx_lock = threading.Lock()
+    mock_client = MockAsyncClient()
+    first_mock_response = AsyncMock()
+    first_mock_response.headers = {"Total-Count": "1"}
+    first_mock_response.json = AsyncMock(return_value=[{"id": "123", "hostname": "test-host"}])
+    first_mock_response.release = AsyncMock(return_value=None)
+    second_response_mock = AsyncMock()
+    second_response_mock.headers = {"Total-Count": "1"}
+    second_response_mock.json = AsyncMock(return_value=[])
+    second_response_mock.release = AsyncMock(return_value=None)
+    mock_client._http_request = AsyncMock(return_value=[first_mock_response, second_response_mock])
+
+    asset_type_related_data = AssetTypeRelatedData(
+        endpoint="/hosts", product="Hosts", asset_type=AssetType.HOST, process_result_func=process_host_results, limit=1, ctx_lock=ctx_lock
+    )
+
+    mock_send_data = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.process_asset_data_and_send_to_xsiam", new_callable=MagicMock)
+    mock_gather = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.asyncio.gather", new_callable=MagicMock)
+    mock_update_context = mocker.patch.object(asset_type_related_data, "safe_update_integration_context")
+
+    mock_send_data.return_value = [asyncio.Future()]
+    mock_send_data.return_value[0].set_result(None)
+    mock_gather.return_value = asyncio.Future()
+    mock_gather.return_value.set_result(None)
+
+    try:
+        await collect_assets_and_send_to_xsiam(mock_client, asset_type_related_data)
+    except BaseException as e:
+        assert str(e) == "Stop loop"
+
+    assert mock_client._http_request.call_count == 2
+    assert mock_send_data.call_count == 2
+    assert mock_update_context.called
+    assert asset_type_related_data.offset == 1  # Should have incremented once

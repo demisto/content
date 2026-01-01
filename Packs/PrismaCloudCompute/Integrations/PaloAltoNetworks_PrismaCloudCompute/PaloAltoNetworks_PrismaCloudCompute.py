@@ -1091,6 +1091,7 @@ class AssetType(Enum):
 
 @dataclass
 class AssetTypeRelatedData:
+    ctx_lock: Lock
     endpoint: str
     product: str
     asset_type: AssetType
@@ -1107,14 +1108,14 @@ class AssetTypeRelatedData:
     def write_debug_log(self, msg: str):
         demisto.debug(f"[{self.asset_type.value}] {msg}")
 
-    def safe_update_integration_context(self, ctx_lock):
-        with ctx_lock:
+    def safe_update_integration_context(self):
+        with self.ctx_lock:
             ctx = get_integration_context()
             ctx[self.asset_type.value] = {"offset": self.offset, "total_count": self.total_count, "snapshot_id": self.snapshot_id}
             set_integration_context(ctx)
 
-    def remove_related_data_from_ctx(self, ctx_lock):
-        with ctx_lock:
+    def remove_related_data_from_ctx(self):
+        with self.ctx_lock:
             ctx = get_integration_context()
             ctx.pop(self.asset_type.value)
             set_integration_context(ctx)
@@ -3346,27 +3347,25 @@ async def fetch_assets_long_running_command(client: PrismaCloudComputeAsyncClien
     """
     demisto.info("Starting long-running execution.")
     while True:
-        demisto.debug("Starting new fetch-assets interval.")
-        start_time = time.time()
         try:
+            start_time = time.time()
+            demisto.debug("Starting new fetch-assets interval.")
             async with client:
                 await preform_fetch_assets_main_loop_logic(client)
-            demisto.debug("Finished running all collectors.")
-
-        except Exception as e:
-            demisto.debug(f"Got the following error while trying to stream events: {str(e)}")
-
-        finally:
+            demisto.debug("Finished fetch-assets interval.")
             end_time = time.time()
             duration_seconds = end_time - start_time
             demisto.debug(f"The whole run took {duration_seconds} seconds.")
-            remaining_time_seconds = TWELVE_HOURS_AS_SECONDS - duration_seconds
+            remaining_time_seconds = max(TWELVE_HOURS_AS_SECONDS - duration_seconds, 0)
             demisto.debug(f"Will sleep for {remaining_time_seconds} seconds.")
             await asyncio.sleep(remaining_time_seconds)
 
+        except Exception as e:
+            demisto.debug(f"Got the following error while trying to stream events: {str(e)}")
+            
 
 def init_asset_type_related_data(
-    endpoint: str, product: str, asset_type: AssetType, process_result_func: Callable
+    endpoint: str, product: str, asset_type: AssetType, process_result_func: Callable, ctx_lock: Lock
 ) -> AssetTypeRelatedData:
     """Attempts to check if there's exiting information related to the asset type in the context.
     If there is such data, will create a new AssetTypeRelatedData from that data.
@@ -3377,15 +3376,16 @@ def init_asset_type_related_data(
         product (str): The product to assign to the asset type when sending data to xsiam.
         asset_type (AssetType): The type of the asset.
         process_result_func (Callable): The function that flow should use to process the incoming results.
+        ctx_lock (Lock): The lock for editing the context.
 
     Returns:
         AssetTypeRelatedData: The initialized AssetTypeRelatedData object.
     """
     ctx = get_integration_context() or {}
-    if type in ctx:
-        offset = int(ctx.get("offset", 0))
-        total_count = int(ctx.get("total_count", 0))
-        snapshot_id = ctx.get("snapshot_id", str(round(time.time() * 1000)))
+    if asset_type_ctx := ctx.get(asset_type.value):
+        offset = int(asset_type_ctx.get("offset", 0))
+        total_count = int(asset_type_ctx.get("total_count", 0))
+        snapshot_id = asset_type_ctx.get("snapshot_id", str(round(time.time() * 1000)))
         return AssetTypeRelatedData(
             endpoint=endpoint,
             product=product,
@@ -3394,10 +3394,11 @@ def init_asset_type_related_data(
             offset=offset,
             total_count=total_count,
             snapshot_id=snapshot_id,
+            ctx_lock=ctx_lock
         )
     else:
         return AssetTypeRelatedData(
-            endpoint=endpoint, product=product, asset_type=asset_type, process_result_func=process_result_func
+            endpoint=endpoint, product=product, asset_type=asset_type, process_result_func=process_result_func, ctx_lock=ctx_lock
         )
 
 
@@ -3408,21 +3409,28 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
         product="Tas_Droplets",
         asset_type=AssetType.TAS_DROPLET,
         process_result_func=process_tas_droplet_results,
+        ctx_lock=ctx_lock,
     )
     host_scan_related_data = init_asset_type_related_data(
-        endpoint="/hosts", product="Hosts", asset_type=AssetType.HOST, process_result_func=process_host_results
+        endpoint="/hosts",
+        product="Hosts",
+        asset_type=AssetType.HOST,
+        process_result_func=process_host_results,
+        ctx_lock=ctx_lock,
     )
     image_scan_related_data = init_asset_type_related_data(
         endpoint="/images",
         product="Runtime_images",
         asset_type=AssetType.RUNTIME_IMAGE,
         process_result_func=process_runtime_image_results,
+        ctx_lock=ctx_lock,
     )
     tasks = [
-        collect_assets_and_send_to_xsiam(client, tas_droplets_related_data, ctx_lock),
-        collect_assets_and_send_to_xsiam(client, host_scan_related_data, ctx_lock),
-        collect_assets_and_send_to_xsiam(client, image_scan_related_data, ctx_lock),
+        collect_assets_and_send_to_xsiam(client, tas_droplets_related_data),
+        collect_assets_and_send_to_xsiam(client, host_scan_related_data),
+        collect_assets_and_send_to_xsiam(client, image_scan_related_data),
     ]
+    demisto.debug("Initiated all asset collection tasks.")
     await asyncio.gather(*tasks)
     total = tas_droplets_related_data.total_count + host_scan_related_data.total_count + image_scan_related_data.total_count
     demisto.debug(
@@ -3432,58 +3440,76 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
     demisto.updateModuleHealth({"assetsPulled": total})
 
 
-async def collect_assets_and_send_to_xsiam(
-    client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData, ctx_lock: Lock
-):
-    """Implement the main log, sending requests to Prisma to fetch assets, process the assets and then send them to xsiam.
+async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData):
+    """Implement the main loop, sending requests to Prisma to fetch assets, process the assets and then send them to xsiam.
     Saving the current advancement between intervals.
 
     Args:
         client (PrismaCloudComputeAsyncClient): The Prisma cloud compute client.
         asset_type_related_data (AssetTypeRelatedData): The object that contains that data related to the specific asset type.
-        ctx_lock (Lock): The lock to use when writing to the context.
     """
     asset_type_related_data.write_debug_log(f"starting execution with snapshot = {asset_type_related_data.snapshot_id}.")
     while True:
         try:
-            params = assign_params(limit=asset_type_related_data.limit, offset=asset_type_related_data.offset, sort="scanTime")
-            asset_type_related_data.write_debug_log("sending request.")
-            response = await client._http_request("GET", url_suffix=asset_type_related_data.endpoint, params=params, timeout=300)
-            asset_type_related_data.write_debug_log("got response.")
-            asset_type_related_data.total_count = int(response.headers.get("Total-Count", 3000000))
-            data = await response.json()
-            await response.release()
+            data = await obtain_asset_data_from_prisma(asset_type_related_data=asset_type_related_data, client=client)
             if not data:
                 asset_type_related_data.write_debug_log("No more data to fetch, breaking.")
-                break
-            processed_data = asset_type_related_data.process_result_func(data)
-            send_data_to_xsiam_tasks = async_send_data_to_xsiam(
-                data=processed_data,
-                vendor=asset_type_related_data.vendor,
-                product=asset_type_related_data.product,
-                num_of_attempts=3,
-                chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
-                data_type=ASSETS,
-                add_proxy_to_request=False,
-                snapshot_id=asset_type_related_data.snapshot_id,
-                data_size_expected_to_split_evenly=False,
-                url_key="address",
-                items_count=asset_type_related_data.total_count,
-            )
+                break                
+            send_data_to_xsiam_tasks = process_asset_data_and_send_to_xsiam(data=data, asset_type_related_data=asset_type_related_data)
             await asyncio.gather(*send_data_to_xsiam_tasks)
             asset_type_related_data.next_page()
             asset_type_related_data.write_debug_log(
                 f"Finished sending assets batch to xsiam, sent {asset_type_related_data.offset} assets so far."
             )
-            asset_type_related_data.safe_update_integration_context(ctx_lock)
-            if asset_type_related_data.offset == 3000000:
-                asset_type_related_data.write_debug_log("reached 3m assets, breaking")
-                break
+            asset_type_related_data.safe_update_integration_context()
         except Exception as e:
             traceback_str = "".join(traceback.format_tb(e.__traceback__))
             demisto.debug(f"Got error {e}\n{traceback_str=}")
     asset_type_related_data.write_debug_log("Finished obtaining and sending all assets to xsiam.")
-    asset_type_related_data.remove_related_data_from_ctx(ctx_lock)
+    asset_type_related_data.remove_related_data_from_ctx()
+
+
+async def obtain_asset_data_from_prisma(client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData) -> List:
+    """Handling the send request to Prisma to obtain more data logic.
+
+    Args:
+        client (PrismaCloudComputeAsyncClient): The Prisma cloud compute client.
+        asset_type_related_data (AssetTypeRelatedData): The object that contains that data related to the specific asset type.
+
+    Returns:
+        List: The jsonified response from Prisma
+    """
+    params = assign_params(limit=asset_type_related_data.limit, offset=asset_type_related_data.offset, sort="scanTime")
+    response = await client._http_request("GET", url_suffix=asset_type_related_data.endpoint, params=params, timeout=300)
+    asset_type_related_data.total_count = int(response.headers.get("Total-Count", -1))
+    data = await response.json()
+    return data
+
+
+async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_data: AssetTypeRelatedData):
+    """Handle the main logic for processing the data obtained from Prisma and sending to xsiam.
+
+    Args:
+        data (List): The data obtained from prisma.
+        asset_type_related_data (AssetTypeRelatedData): The object that contains that data related to the specific asset type.
+
+    Returns:
+        _type_: The send_data_to_xsiam tasks.
+    """
+    processed_data = asset_type_related_data.process_result_func(data)
+    return async_send_data_to_xsiam(
+        data=processed_data,
+        vendor=asset_type_related_data.vendor,
+        product=asset_type_related_data.product,
+        num_of_attempts=3,
+        chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
+        data_type=ASSETS,
+        add_proxy_to_request=False,
+        snapshot_id=asset_type_related_data.snapshot_id,
+        data_size_expected_to_split_evenly=False,
+        url_key="address",
+        items_count=asset_type_related_data.total_count,
+    )
 
 
 def process_host_results(data_list):
@@ -3550,8 +3576,8 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    username = params.get("credentials").get("identifier")
-    password = params.get("credentials").get("password")
+    username = params.get("credentials", {}).get("identifier")
+    password = params.get("credentials", {}).get("password")
     base_url = params.get("address")
     project = params.get("project", "")
     verify_certificate = not params.get("insecure", False)
@@ -3577,7 +3603,7 @@ def main():
 
         client = PrismaCloudComputeClient(
             base_url=urljoin(base_url, "api/v1/"), verify=verify, auth=(username, password), proxy=proxy, project=project
-        )
+        ) # type: ignore[reportAssignmentType]
 
         if requested_command == "test-module":
             # This is the call made when pressing the integration test button
