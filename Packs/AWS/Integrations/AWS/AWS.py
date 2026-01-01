@@ -287,7 +287,7 @@ def parse_triple_filter(filter_string: str | None):
     Args:
         filter_string: The name and values list
     Returns:
-        A list of dicts with the form {"Name": <key>, "Values": [<value>]}
+        A list of dicts with the form {"Key": <key>, "Values": [<value>], "Type": <type>}
     """
     filters = []
     list_filters = argToList(filter_string, separator=";")
@@ -295,7 +295,7 @@ def parse_triple_filter(filter_string: str | None):
         list_filters = list_filters[0:50]
         demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
     regex = re.compile(
-        r"^name=([\w:.-]+),values=([ \w@,.*-\/:]+),type=([\w:.-]+)",
+        r"^key=([\w:.-]+),values=([ \w@,.*-\/:]+),type=([\w:.-]+)",
         flags=re.I,
     )
     for f in list_filters:
@@ -312,7 +312,7 @@ def parse_triple_filter(filter_string: str | None):
         )
         filters.append(
             {
-                "Name": match_filter.group(1),
+                "Key": match_filter.group(1),
                 "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES],
                 "Type": match_filter.group(3),
             }
@@ -1175,6 +1175,7 @@ class S3:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         next_token = response.get("ContinuationToken")
+        metadata = ""
         if next_token:
             metadata = (
                 "Run the following command to retrieve the next batch of buckets:\n"
@@ -4285,11 +4286,15 @@ class SSM:
         Returns:
             CommandResults: An object containing an inventory item, and it's list of entries.
         """
+        account_id = args.get("account_id")
+        region = args.get("region")
         instance_id = args.get("instance_id")
+        type_name = args.get("type_name")
+        filters = args.get("filters")
         kwargs = {
             "InstanceId": instance_id,
-            "TypeName": args.get("type_name"),
-            "Filters": parse_triple_filter(args.get("filters")),
+            "TypeName": type_name,
+            "Filters": parse_triple_filter(filters),
         }
         kwargs.update(build_pagination_kwargs(args, 1, 50))
         remove_nulls_from_dictionary(kwargs)
@@ -4300,17 +4305,21 @@ class SSM:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         if response.get('Entries'):
-            data = {
-                "TypeName": response.get("TypeName"),
-                "InstanceId": response.get("InstanceId"),
-                "Entries": response.get("Entries"),
-            }
-            headers = ["InstanceId", "TypeName", "Entries"]
-            readable_output = tableToMarkdown(
-                f"The inventory item {instance_id} and it's entries", data, headers, headerTransform=pascalToSpace, removeNull=True
-            )
+            metadata = ""
             if response.get("NextToken"):
                 response["EntriesNextPageToken"] = response.pop("NextToken")
+                metadata = ("Run the following command to retrieve the next batch of inventory entries:\n"
+                            f"!aws-ssm-inventory-entries-list account_id={account_id} region={region} instance_id={instance_id} type_name={type_name} next_token={response['EntriesNextPageToken']}")
+                if filters:
+                    metadata = f"{metadata} filters={filters}"
+                limit = kwargs.get("MaxBuckets")
+                if limit and limit != 50:
+                    metadata = f"{metadata} limit={limit}"
+            headers = ["Name", "URL", "Summary"]
+            readable_output = tableToMarkdown(
+                f"The inventory entries of item {instance_id} with the type {type_name}", response.get("Entries"), headers, headerTransform=pascalToSpace, removeNull=True, metadata=metadata
+            )
+
             return CommandResults(
                 outputs_prefix="AWS.SSM.Inventory",
                 outputs_key_field="InstanceId",

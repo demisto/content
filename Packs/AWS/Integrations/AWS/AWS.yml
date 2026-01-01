@@ -7357,7 +7357,7 @@ script:
         description: Maximum number of buckets to be returned in response.
         defaultValue: 50
         required: false
-      - description: "One or more filters separated by ';' (for example, name=<name>,values=<values>,type=<type>;name=<name>,values=<values>,type=<type>). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
+      - description: "One or more filters separated by ';' (for example, key=<key>,values=<values>,type=<type>;name=<name>,values=<values>,type=<type>). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
         name: filters
         required: false
       - name: next_token
