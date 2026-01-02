@@ -1,3 +1,4 @@
+import html
 import ipaddress
 import string
 import urllib.parse
@@ -94,15 +95,12 @@ class URLCheck:
             # The URL seems to have a scheme indicated by presence of "//", "%3A" or "%2F"
             self.scheme_check()
 
-        host_end_position = -1
         special_chars = ("/", "?", "#")  # Any one of these states the end of the host / authority part in a URL
-
-        for char in special_chars:
-            try:
-                host_end_position = self.modified_url[self.base :].index(char)
-                break  # index for the end of the part found, breaking loop
-            except ValueError:
-                continue  # no reserved char found, URL has no path, query or fragment parts.
+        # Find the earliest occurrence of any special character
+        host_end_position = min(
+            (self.modified_url[self.base :].index(char) for char in special_chars if char in self.modified_url[self.base :]),
+            default=-1,
+        )
 
         try:
             if "@" in self.modified_url[:host_end_position]:
@@ -722,6 +720,7 @@ class URLFormatter:
 
         url = self.correct_and_refang_url(self.original_url)
         url = self.strip_wrappers(url)
+        url = self.decode_html_entities(url)
         url = self.correct_and_refang_url(url)
 
         try:
@@ -799,6 +798,41 @@ class URLFormatter:
                 return urllib.parse.unquote(url[1])
 
     @staticmethod
+    def decode_html_entities(url: str) -> str:
+        """
+        Decodes HTML entities in URLs extracted from HTML content.
+
+        This fixes issues where URLs extracted from HTML contain HTML entities
+        (e.g., &amp;, &lt;, &gt;, &quot;) that enrichment integrations cannot process.
+        The function iteratively decodes to handle multiple levels of encoding.
+
+        Args:
+            url: The URL potentially containing HTML entities
+
+        Returns:
+            URL with HTML entities decoded
+
+        Example:
+            &amp; -> &
+            &amp;amp; -> & (double-encoded)
+            &lt; -> <
+            &gt; -> >
+            &quot; -> "
+        """
+        if "&" not in url:
+            return url
+
+        # Decode iteratively to handle multiple levels of encoding (e.g., &amp;amp; -> &)
+        while "&" in url:
+            unescaped = html.unescape(url)
+            if unescaped == url:
+                # No more entities to decode
+                break
+            url = unescaped
+
+        return url
+
+    @staticmethod
     def correct_and_refang_url(url: str) -> str:
         """
         Refangs URL and corrects its scheme
@@ -814,6 +848,7 @@ class URLFormatter:
         url = url.replace("[.]", ".")
         url = url.replace("[:]", ":")
         url = url.replace("%2F", "/").replace("%2f", "/")
+
         lower_url = url.lower()
         if lower_url.startswith(("hxxp", "meow")):
             url = re.sub(schemas, "http", url, count=1)
