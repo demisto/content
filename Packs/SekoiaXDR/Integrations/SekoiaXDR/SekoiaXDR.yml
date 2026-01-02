@@ -1171,7 +1171,7 @@ script:
       required: true
       description: Method to use with the http request (GET,POST,etc).
       defaultValue: GET
-    - name: url_sufix
+    - name: url_suffix
       required: true
       description: The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/.
     - name: parameters
