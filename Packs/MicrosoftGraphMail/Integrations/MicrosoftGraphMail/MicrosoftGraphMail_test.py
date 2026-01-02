@@ -428,7 +428,7 @@ def test_fetch_incidents(client, email_content_html, email_content_text, mocker,
     # the third argument in side effect is for attachments (no-attachments here)
     mocker.patch.object(client, "http_request", side_effect=[email_content_html, email_content_text, {}])
     mocker.patch.object(demisto, "info")
-    result_next_run, result_incidents = client.fetch_incidents(last_run_data)
+    result_next_run, result_incidents = client.fetch_incidents(last_run_data, False)
 
     assert result_next_run.get("time") == "2019-11-12T15:00:30Z"
     assert result_next_run.get("LAST_RUN_IDS") == ["dummy_id_1"]
@@ -508,7 +508,7 @@ class TestFetchIncidentsWithLookBack:
         expected_last_run_timestamps = ["2022-07-28T12:07:17Z", "2022-07-28T12:04:17Z", "2022-07-28T11:59:17Z"]
 
         for i in range(3, 0, -1):
-            next_run, incidents = client.fetch_incidents(last_run=last_run)
+            next_run, incidents = client.fetch_incidents(last_run=last_run, fetch_single_incident=False)
             assert last_emails_mocker.call_args.kwargs["last_fetch"] == (datetime.now() - timedelta(minutes=look_back)).strftime(
                 API_DATE_FORMAT
             )
@@ -526,7 +526,7 @@ def test_fetch_incidents_changed_folder(mocker, client, emails_data_as_html, ema
     # the third argument in side effect is for attachments (no-attachments here)
     mocker.patch.object(client, "http_request", side_effect=[emails_data_as_html, emails_data_as_text, {}])
     mocker.patch.object(demisto, "info")
-    client.fetch_incidents(last_run_data)
+    client.fetch_incidents(last_run_data, False)
 
     mocker_folder_by_path.assert_called_once_with("dummy@mailbox.com", changed_folder, overwrite_rate_limit_retry=True)
 
@@ -539,7 +539,7 @@ def test_fetch_incidents_changed_account(mocker, client, emails_data_as_html, em
     # the third argument in side effect is for attachments (no-attachments here)
     mocker.patch.object(client, "http_request", side_effect=[emails_data_as_html, emails_data_as_text, {}])
     mocker.patch.object(demisto, "info")
-    client.fetch_incidents(last_run_data)
+    client.fetch_incidents(last_run_data, False)
 
     mocker_folder_by_path.assert_called_once_with(
         changed_account, last_run_data["LAST_RUN_FOLDER_PATH"], overwrite_rate_limit_retry=True
@@ -552,7 +552,7 @@ def test_fetch_incidents_detect_initial(mocker, client, emails_data_as_html, ema
     # the third argument in side effect is for attachments (no-attachments here)
     mocker.patch.object(client, "http_request", side_effect=[emails_data_as_html, emails_data_as_text, {}])
     mocker.patch.object(demisto, "info")
-    client.fetch_incidents({})
+    client.fetch_incidents({}, False)
 
     mocker_folder_by_path.assert_called_once_with("dummy@mailbox.com", "Phishing", overwrite_rate_limit_retry=True)
 
@@ -578,7 +578,7 @@ def test_fetch_incidents_with_full_body(
     # the third argument in side effect is for attachments (no-attachments here)
     mocker.patch.object(client, "http_request", side_effect=[emails_data_full_body_as_html, emails_data_full_body_as_text, {}])
     mocker.patch.object(demisto, "info")
-    result_next_run, result_incidents = client.fetch_incidents(last_run_data)
+    result_next_run, result_incidents = client.fetch_incidents(last_run_data, False)
 
     assert result_next_run.get("time") == "2019-11-12T15:00:30Z"
     assert result_next_run.get("LAST_RUN_IDS") == ["dummy_id_1"]

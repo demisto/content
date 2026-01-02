@@ -731,3 +731,22 @@ Deletes a specific email rule by ID from a user's mailbox using the Microsoft Gr
 #### Context Output
 
 There is no context output for this command.
+
+### msgraph-mail-fetch-incident
+
+***
+Fetch a single mail as an incident on the mail message ID.
+
+#### Base Command
+
+`msgraph-mail-fetch-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message_id | Internet message ID of mail. | Required |
+
+#### Context Output
+
+There is no context output for this command.

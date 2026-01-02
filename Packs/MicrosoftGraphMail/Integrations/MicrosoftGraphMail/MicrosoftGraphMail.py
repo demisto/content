@@ -11,13 +11,16 @@ urllib3.disable_warnings()
 
 class MsGraphMailClient(MsGraphMailBaseClient):
     @logger
-    def fetch_incidents(self, last_run):
+    def fetch_incidents(self, last_run, fetch_single_incident):
         """
         Fetches emails from office 365 mailbox and creates incidents of parsed emails.
         :type last_run: ``dict``
         :param last_run:
             Previous fetch run data that holds the fetch time in utc Y-m-dTH:M:SZ format,
             ids of fetched emails, id and path of folder to fetch incidents from
+        :type fetch_single_incident: ``bool``
+        :param fetch_single_incident: Fetch a single email as incident
+
         :return: Next run data and parsed fetched incidents
         :rtype: ``dict`` and ``list``
         """
@@ -52,6 +55,25 @@ class MsGraphMailClient(MsGraphMailBaseClient):
         else:
             # LAST_RUN_FOLDER_ID is stored in order to avoid calling _get_folder_by_path method in each fetch
             folder_id = last_run.get("LAST_RUN_FOLDER_ID")
+
+        if fetch_single_incident:
+            integration_context = get_integration_context()
+            if "messageidtofetch" not in integration_context:
+                raise ValueError("No messageidtofetch in integration context")
+            else:
+                message_id = integration_context["messageidtofetch"]
+
+            demisto.info("Fetch single incident")
+
+            fetched_emails = self.get_single_email(message_id=message_id, folder_id=folder_id)
+
+            incidents = [self._parse_email_as_incident(email, True, True) for email in fetched_emails]
+
+            demisto.info(f"fetched {len(incidents)} incidents, {message_id=}")
+
+            set_integration_context({"messageidtofetch": "<do-not-fetch>"})
+
+            return {}, incidents
 
         fetched_emails, exclude_ids = self._fetch_last_emails(
             folder_id=folder_id, last_fetch=start_fetch_time, exclude_ids=exclude_ids
@@ -102,6 +124,27 @@ class MsGraphMailClient(MsGraphMailBaseClient):
         demisto.debug(f"{next_run=}")
 
         return next_run, incidents
+
+
+def fetch_incident(args, fetch_single_incident):
+    message_id = args.get("message_id")
+
+    if not message_id:
+        raise ValueError("No message_id argument provided in command")
+
+    if not fetch_single_incident:
+        meta = "Fetch single incident is not enabled in the integration"
+    else:
+        integration_context_to_set = {"messageidtofetch": message_id}
+        set_integration_context(integration_context_to_set)
+
+        meta = f"Message ID {message_id} cached for fetching"
+
+    output = [{"Message ID": message_id}]
+
+    readable_output = tableToMarkdown("MicrosoftGraphMail Fetch Incident", output, metadata=meta, removeNull=True)
+
+    return CommandResults(readable_output=readable_output)
 
 
 def main():  # pragma: no cover
@@ -156,6 +199,7 @@ def main():  # pragma: no cover
         mark_fetched_read = argToBoolean(params.get("mark_fetched_read", "false"))
         look_back = arg_to_number(params.get("look_back", 0))
         legacy_name = argToBoolean(params.get("legacy_name", False))
+        fetch_single_incident: bool = params.get("fetchSingleIncident", False)
 
         client: MsGraphMailClient = MsGraphMailClient(
             self_deployed=self_deployed,
@@ -189,9 +233,12 @@ def main():  # pragma: no cover
             client.test_connection()
             return_results("ok")
         if command == "fetch-incidents":
-            next_run, incidents = client.fetch_incidents(demisto.getLastRun())
-            demisto.setLastRun(next_run)
+            next_run, incidents = client.fetch_incidents(demisto.getLastRun(), fetch_single_incident)
+            if not fetch_single_incident:
+                demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+        elif command == "msgraph-mail-fetch-incident":
+            return_results(fetch_incident(args, fetch_single_incident))
         elif command in ("msgraph-mail-list-emails", "msgraph-mail-search-email"):
             return_results(list_mails_command(client, args))
         elif command == "msgraph-mail-create-draft":

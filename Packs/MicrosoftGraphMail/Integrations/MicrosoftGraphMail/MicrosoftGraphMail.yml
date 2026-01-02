@@ -199,6 +199,12 @@ name: MicrosoftGraphMail
 script:
   commands:
   - arguments:
+    - description: Internet message ID of mail.
+      name: message_id
+      required: true
+    description: Fetch a single mail as an incident on the mail message ID.
+    name: msgraph-mail-fetch-incident
+  - arguments:
     - description: User ID from which to pull mails (can be principal ID (email address)).
       name: user_id
       required: true
