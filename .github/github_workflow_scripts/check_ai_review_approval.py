@@ -56,8 +56,6 @@ def main():
 
     for comment in comments:
         print(comment.body)
-        breakpoint()
-        print("JOEY -------------------------------------------------")
         # Check if comment is from the bot and has the required text
         if (comment.user.login == BOT_USERNAME) and (REQUIRED_TEXT in comment.body):
             found_bot_comment = True
