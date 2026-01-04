@@ -499,7 +499,7 @@ script:
         Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with time stamp ≥ this value. Accepts Unix timestamp or ISO strings (e.g., "1727448000.000200", "2025-10-12T09:00:00+03:00"). Results are returned in descending order.
       name: from_time
     - description: Token to retrieve the next page of results.
-      name: pageToken
+      name: page_token
     description: Fetches a conversation's history of messages and events.
     name: slack-get-conversation-history
     outputs:
