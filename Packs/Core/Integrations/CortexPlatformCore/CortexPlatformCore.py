@@ -755,14 +755,6 @@ class Client(CoreClient):
             DemistoException: If FORWARD_USER_RUN_RBAC is not enabled, indicating the integration
                 is cloned or the server version is too low.
         """
-        if not FORWARD_USER_RUN_RBAC:
-            raise DemistoException(
-                "Failed due to one of the following options: The integration is cloned, "
-                "please use only the built-in version since it can not be cloned."
-                " OR the Server version of the tenant is lower than"
-                f" {RBAC_VALIDATIONS_VERSION}-{RBAC_VALIDATIONS_BUILD_NUMBER}."
-            )
-
         data = json.dumps(json_data) if json_data else data
 
         response = demisto._platformAPICall(path=url_suffix, method=method, params=params, data=data, timeout=timeout)
@@ -4212,7 +4204,7 @@ def main():  # pragma: no cover
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
 
-        elif command == "xdr-xql-generic-query-platform":
+        elif command == "core-xql-generic-query-platform":
             if not is_demisto_version_ge("8.13.0"):
                 raise DemistoException("This command is not available for this platform version")
 

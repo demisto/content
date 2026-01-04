@@ -3148,7 +3148,7 @@ script:
       description: |-
         Execute an XQL query and retrieve a link to the query in the query center.
         If set to wait for results, the command will be executed every 10 seconds until results are retrieved or until the timeout is reached.
-      name: xdr-xql-generic-query-platform
+      name: core-xql-generic-query-platform
       hidden: true
       outputs:
       - contextPath: GenericXQLQuery.execution_id
