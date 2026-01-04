@@ -2189,7 +2189,7 @@ function EXOExportQuarantineMessageCommand
 function EXOGetQuarantineMessageCommand {
     [CmdletBinding()]
     Param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [Parameter(Mandatory)]$client,
         [hashtable]$kwargs
     )
 
@@ -2220,22 +2220,26 @@ function EXOGetQuarantineMessageCommand {
         Type = $kwargs.type
     }
 
-    $raw_response = $client.EXOGetQuarantineMessage($params)
-
-    $newResults = @()
-
-    if ($raw_response -is [System.Collections.IEnumerable]) {
-        # If raw_response is a list, process each dictionary
-        foreach ($item in $raw_response) {
-            $newResults += Remove-EmptyItems $item
-        }
-    } elseif ($raw_response -Is [Hashtable]) {
-        # If input is a single dictionary, process it directly
-        $newResults = Remove-EmptyItems $raw_response
+    $client_response = $client.EXOGetQuarantineMessage($params)
+    
+    # Ensure raw_response is always an array, but handle null properly
+    if ($null -eq $client_response) {
+        $raw_response = @()
+    } else {
+        $raw_response = @($client_response)
     }
 
+    # Process all items using foreach and collect results efficiently
+    $newResults = @(foreach ($item in $raw_response) {
+        if ($null -ne $item) {
+            Remove-EmptyItems -inputObject $item
+        }
+    })
+
+    # Ensure $newResults is passed correctly to formatting
     $human_readable = TableToMarkdown $newResults "Results of $command"
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.GetQuarantineMessage(obj.Identity === val.Identity)" = $raw_response }
+    
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
