@@ -355,6 +355,36 @@ class TokenScope:
     WORKSPACE_CUSTOMER = "WORKSPACE_CUSTOMER"
 
 
+
+class TokenScope:
+    STORAGE = "STORAGE"
+    GRAPH = "GRAPH"
+    NETWORK = "NETWORK"
+    COMPUTE = "COMPUTE"
+    VAULT = "VAULT"
+    CONTAINER_REGISTRY = "CONTAINER_REGISTRY"
+    DATABASE = "DATABASE"
+    COSMOS = "COSMOS"
+    DATA_LAKE_1 = "DATA_LAKE_1"
+    DATA_LAKE_2 = "DATA_LAKE_2"
+    SIGNALR = "SIGNALR"
+    EVENT_HUBS = "EVENT_HUBS"
+    SERVICE_BUS = "SERVICE_BUS"
+    MONITOR = "MONITOR"
+    DIGITAL_TWINS = "DIGITAL_TWINS"
+    COGNITIVE_SERVICES = "COGNITIVE_SERVICES"
+    SYNAPSE_ANALYTICS = "SYNAPSE_ANALYTICS"
+    ML = "ML"
+    NONE = "NONE"
+    DEFAULT = "DEFAULT"
+    SEARCH = "SEARCH"
+    WORKSPACE_MEMBERSHIP = "WORKSPACE_MEMBERSHIP"
+    WORKSPACE_GROUP = "WORKSPACE_GROUP"
+    WORKSPACE_USER = "WORKSPACE_USER"
+    WORKSPACE_DOMAIN = "WORKSPACE_DOMAIN"
+    WORKSPACE_CUSTOMER = "WORKSPACE_CUSTOMER"
+
+
 """ CLIENT CLASS """
 
 
@@ -896,7 +926,7 @@ class AzureClient:
 
     def storage_container_create_blob_request(
         self, container_name: str, account_name: str, file_entry_id: str, blob_name: str, system_file_path: str
-    ) -> requests.Response | dict[str, Any]:  # noqa: E501
+    ) -> None:  # noqa: E501
         """
         Create or update Blob under the specified Container.
 
@@ -921,9 +951,7 @@ class AzureClient:
                 }
                 self.storage_container_set_headers(headers)
 
-                response = self.http_request(method="PUT", full_url=full_url, data=file_data, resp_type="response")  # type: ignore
-
-                return response
+                self.http_request(method="PUT", full_url=full_url, data=file_data, resp_type="response")  # type: ignore
         except Exception as e:
             raise DemistoException(f"Unable to read file with id {file_entry_id}", e)
 
@@ -2899,11 +2927,9 @@ def storage_container_blob_create_command(client: AzureClient, params: dict, arg
     system_file_path = file_data["path"]
     file_name = blob_name if blob_name else file_data["name"]
 
-    response = client.storage_container_create_blob_request(
-        container_name, account_name, file_entry_id, file_name, system_file_path
-    )  # noqa: E501
+    client.storage_container_create_blob_request(container_name, account_name, file_entry_id, file_name, system_file_path)
 
-    command_results = CommandResults(readable_output=f"Blob {file_name} successfully created.", raw_response=response)
+    command_results = CommandResults(readable_output=f"Blob {file_name} successfully created.")
 
     return command_results
 
