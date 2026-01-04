@@ -12,9 +12,7 @@ alter
     username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5),
     target_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6),
     event_id = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 0),
-    event_type_name = arrayindex(regextract(syslog_msg, "\[([\.a-zA-Z]+)\]"), 0),
-    process_id = arrayindex(regextract(_raw_log, "^\S+\s+\S+\S+\s+\S+\s+\S+\s+([^\s]+)"), 0),
-    process_name = arrayindex(regextract(_raw_log, "^\S+\s+\S+\S+\s+\S+\s+([^\s]+)"), 0)
+    event_type_name = arrayindex(regextract(syslog_msg, "\[([\.a-zA-Z]+)\]"), 0)
 | alter
 	target_ip = arrayindex(regextract(description, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0),
 	user_agent = arrayindex(regextract(description, "logged in as (.*)"), 0)
@@ -34,9 +32,7 @@ alter
         incidr(target_ip, "10.0.0.0/8"), null,
         incidr(target_ip, "192.168.0.0/16"), null,
         incidr(target_ip, "172.16.0.0/12"), null, arraycreate(target_ip)),
-	xdm.source.user_agent = user_agent,
-	xdm.source.process.identifier = process_id,
-	xdm.source.process.name = process_name,
+	xdm.source.user_agent = user_agent
     xdm.target.virtualization.vm.hostname = target_hostname;
 
 
@@ -104,7 +100,8 @@ alter
 [RULE: vmware_vcenter_file_or_datastore_format]
 alter
     description = if(syslog_msg ~= "Deletion of file or directory", arrayindex(regextract(syslog_msg, "\[((?:[^\[\]]|\[[^\[\]]*\])*)\]"), 8),
-                     arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8))
+                     arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8)),
+    source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6)
 | alter
     source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6),
     target_hostname = coalesce(arrayindex(regextract(description, "on ([^\s]+) in"), 0),
@@ -115,24 +112,27 @@ alter
     datastore_uuid = arrayindex(regextract(description, "\((ds:\/\/[^\)]+)\)"), 0),
     file_path = arrayindex(regextract(description, "\]\s+(.*?)\s+from"), 0), 
     initiator_str = arrayindex(regextract(description, "initiated from '([^\']+)"), 0),
-    outcome_str = arrayindex(regextract(description, "completed with status ([^\s]+)"), 0)
+    outcome_str = arrayindex(regextract(description, "completed with status ([^\s]+)"), 0),
+    action = arrayindex(regextract(description, "with status '([^\']+)"), 0)
 | alter
     xdm.observer.name = syslog_hostname,
     xdm.event.type = "File/Datastore Event",
     xdm.event.description = syslog_msg,
     xdm.event.original_event_type = event_type_name,
     xdm.event.outcome_reason = description,
+    xdm.event.operation_sub_type = action,
     xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
     xdm.event.outcome = if(description contains "Fail" or outcome_str = "failure", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.operation = if(
         description contains "Created", XDM_CONST.OPERATION_TYPE_CREATE,
         description contains "Discovered", XDM_CONST.OPERATION_TYPE_READ,
         description contains "Deletion", XDM_CONST.OPERATION_TYPE_DELETE),
-    xdm.source.host.hostname = source_hostname,
+    xdm.source.virtualization.data_center.name = source_hostname,
+    xdm.source.user.username = source_username,
     xdm.source.user_agent = arrayindex(split(initiator_str, "@"), 0),
     xdm.source.ipv4 = if(is_ipv4(arrayindex(split(initiator_str, "@"), 1)), arrayindex(split(initiator_str, "@"), 1), null),
-    xdm.target.host.hostname = target_hostname,
-    xdm.source.virtualization.data_store.name = datastore_name,
+    xdm.target.virtualization.data_center.name = target_hostname,
+    xdm.target.virtualization.data_store.name = datastore_name,
     xdm.target.virtualization.data_store.uuid = datastore_uuid,
     xdm.target.file.path = file_path,
     xdm.target.file.filename = if(file_path != null, arrayindex(regextract(file_path, "\/([^\$]+)"), 0));
@@ -147,7 +147,7 @@ alter
         arrayindex(regextract(description, "Guest OS (?:reboot|shut down) for ([^\s]+) on"), 0),
         arrayindex(regextract(description, "Virtual machine ([^\s]+)"), 0),
         arrayindex(regextract(description, "Creating ([^\s]+) on"), 0),
-        arrayindex(regextract(description, "cloned to ([^\s]+) on"), 0),
+        arrayindex(regextract(description, "([^\s]+) cloned to"), 0),
         arrayindex(regextract(description, "Created virtual machine ([^\s]+) on"), 0),
         arrayindex(regextract(description, "Template (.+?)\s"), 0),
         arrayindex(regextract(description, "Removed\s([^\s]+)"), 0),
@@ -155,10 +155,9 @@ alter
         arrayindex(regextract(description, "Renamed\s([^\s]+)"), 0),
         arrayindex(regextract(description, "^([^\s]+) - "), 0),
         arrayindex(regextract(description, "^([^\s]+) on \S+\s+in "), 0)),
-    target_hostname = coalesce(
-        arrayindex(regextract(description, " to ([^\s]+)"), 0),
-        arrayindex(regextract(description, "on ([^\s]+) in"), 0)),
-    original_esxi_name = if(description ~= "relocated from\s+\S+", arrayindex(regextract(description, "relocated from\s+([^\,]+)"), 0)),
+    target_vm_name = arrayindex(regextract(description, "cloned to ([^\s]+) on"), 0),
+    target_hostname = arrayindex(regextract(description, " to ([^\s]+)"), 0),
+    target_datacenter = arrayindex(regextract(description, " to ([^\s]+)"), 0),    original_esxi_name = if(description ~= "relocated from\s+\S+", arrayindex(regextract(description, "relocated from\s+([^\,]+)"), 0)),
     datastore_name =  if(description ~= "\S+\,\s+\S+\s+in", arrayindex(regextract(description, "\S+\,\s+([^\s]+)\s+in"), 0)),
     target_datastore_name = if(description ~= "\s+to\s+\S+\,\s+\S+\s+in", arrayindex(regextract(description, "\s+to\s+\S+\,\s+([^\s]+)"), 0)),
     old_vm_name = if(description ~= "from\s+\S+\s+to", arrayindex(regextract(description, "from\s+([^\s]+)\s+to"), 0)),
@@ -177,15 +176,17 @@ alter
                              event_type_name = "vim.event.VmRemovedEvent", XDM_CONST.OPERATION_TYPE_DELETE,
                              event_type_name in ("vim.event.VmRegisteredEvent","vim.event.VmDeployedEvent", "vim.event.VmReconfiguredEvent", "vim.event.VmRelocatedEvent"), XDM_CONST.OPERATION_TYPE_CONFIG_CHANGE,
                              event_type_name = "vim.event.VmRenamedEvent", XDM_CONST.OPERATION_TYPE_UPDATE),
-    xdm.source.virtualization.data_center.name = source_hostname,
     xdm.source.user.username = source_username,
     xdm.source.host.hostname = original_esxi_name,
     xdm.target.host.hostname = target_hostname,
     xdm.target.resource_before.name = old_vm_name,
     xdm.target.resource.name = new_vm_name,
+    xdm.source.virtualization.data_center.name = source_hostname,
+    xdm.target.virtualization.data_center.name = target_datacenter,  
     xdm.source.virtualization.data_store.name = datastore_name,
     xdm.target.virtualization.data_store.name = target_datastore_name,
-    xdm.source.virtualization.vm.hostname = vm_name;
+    xdm.source.virtualization.vm.hostname = vm_name,
+    xdm.target.virtualization.vm.hostname = target_vm_name;
 
 
 [RULE: vmware_vcenter_vsphere_task_format]
@@ -267,7 +268,8 @@ alter
     xdm.observer.name = syslog_hostname,
     xdm.event.description = syslog_msg,
     xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
-    xdm.event.type = if(syscall_id in (59,322), "Command Execution", "File/Datastore Event"),
+    xdm.event.type = if(syscall_id in (59,322), "Command Execution", 
+                        syscall_id in (2,3,85,22,257,292,0,1,17,18,19,20,295,296,82,87,263,264,79,83,84,86,88,89,217,258,260,266,4,5,6,9,11,21,76,90,91,92,93,133), "File/Datastore Event"),
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUDIT,
     xdm.alert.name = event_name_clean,
     xdm.alert.description = parsed_fields -> msg,
@@ -293,8 +295,12 @@ alter
 alter
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\d?"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d?\s?[^\s]+\d{2}:\d{2}:\d{2}[^\s]*\s+(\S+)"), 0),
-    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0),
+    process_id = arrayindex(regextract(_raw_log, "^\S+\s+\S+\S+\s+\S+\s+\S+\s+([^\s]+)"), 0),
+    process_name = arrayindex(regextract(_raw_log, "^\S+\s+\S+\S+\s+\S+\s+([^\s]+)"), 0)
 | alter
+	xdm.source.process.identifier = process_id,
+	xdm.source.process.name = process_name,
     xdm.event.format = if(_raw_log ~= "^<\d+>1\s", "0", // Matches RFC 5424
                           _raw_log ~= "^<\d+>\s", "1");  // Matches RFC 3164 
 
