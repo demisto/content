@@ -103,8 +103,9 @@ alter
 
 [RULE: vmware_vcenter_file_or_datastore_format]
 alter
-    description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8)     
-| alter 
+    description = if(syslog_msg ~= "Deletion of file or directory", arrayindex(regextract(syslog_msg, "\[((?:[^\[\]]|\[[^\[\]]*\])*)\]"), 8),
+                     arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8))
+| alter
     source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6),
     target_hostname = coalesce(arrayindex(regextract(description, "on ([^\s]+) in"), 0),
         					   arrayindex(regextract(description, "from ([^\s]+) was initiated"), 0)),
@@ -113,7 +114,7 @@ alter
      					      arrayindex(regextract(description, "\[([^\]]+)\]"), 0)),
     datastore_uuid = arrayindex(regextract(description, "\((ds:\/\/[^\)]+)\)"), 0),
     file_path = arrayindex(regextract(description, "\]\s+(.*?)\s+from"), 0), 
-    initiator_str = arrayindex(regextract(description, "initiated from ([^\s]+)"), 0),
+    initiator_str = arrayindex(regextract(description, "initiated from '([^\']+)"), 0),
     outcome_str = arrayindex(regextract(description, "completed with status ([^\s]+)"), 0)
 | alter
     xdm.observer.name = syslog_hostname,
@@ -134,7 +135,7 @@ alter
     xdm.source.virtualization.data_store.name = datastore_name,
     xdm.target.virtualization.data_store.uuid = datastore_uuid,
     xdm.target.file.path = file_path,
-    xdm.target.file.filename = if(file_path != null, arrayindex(regextract(file_path, "[\\/]([^\\/]+)$"), 0), null);
+    xdm.target.file.filename = if(file_path != null, arrayindex(regextract(file_path, "\/([^\$]+)"), 0));
 
 [RULE: vmware_vcenter_vm_operation_format]
 alter
