@@ -316,16 +316,13 @@ class TestEndpointCommandRunner:
         mocker.patch.object(
             command_runner,
             "get_command_results",
-            return_value=([], [note_result], []) # <--- Empty error list is the key
+            return_value=([], [note_result], [])
         )
 
-        # 4. Execute and Assert the Crash
-        # We expect an IndexError because the code does: 
-        # get_endpoint_not_found(..., readable_errors[0].readable_output, ...)
         with pytest.raises(IndexError) as excinfo:
             command_runner.run_command(command, endpoint_args)
         
-        assert "list index out of range" == str(excinfo.value)
+        assert str(excinfo.value) == "list index out of range"
 
 def test_is_private_ip():
     """
