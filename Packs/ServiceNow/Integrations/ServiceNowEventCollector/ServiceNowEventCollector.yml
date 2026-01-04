@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: ServiceNow
 commonfields:
   id: ServiceNow Event Collector
   version: -1

@@ -2,7 +2,6 @@ sectionorder:
 - Connect
 - Collect
 category: Messaging and Conferencing
-provider: Salesforce
 commonfields:
   id: SlackV3
   version: -1
