@@ -227,12 +227,6 @@ script:
         - sa-east-1
         - us-gov-east-1
         - us-gov-west-1
-      - description: The Amazon Resource Name (ARN) of the role to assume.
-        name: roleArn
-      - description: An identifier for the assumed role session.
-        name: roleSessionName
-      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-        name: roleSessionDuration
 
   - name: aws-s3-bucket-objects-list
     description: List object in S3 bucket.
@@ -286,20 +280,14 @@ script:
         name: delimiter
       - description: Limits the response to keys that begin with the specified prefix.
         name: prefix
-      - description: The Amazon Resource Name (ARN) of the role to assume.
-        name: roleArn
-      - description: An identifier for the assumed role session.
-        name: roleSessionName
-      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-        name: roleSessionDuration
     outputs:
-      - contextPath: AWS.S3.Buckets.Objects.Key
+      - contextPath: AWS.S3-Buckets.Objects.Key
         description: The name of S3 object.
         type: Unknown
-      - contextPath: AWS.S3.Buckets.Objects.Size
+      - contextPath: AWS.S3-Buckets.Objects.Size
         description: Object size.
         type: Unknown
-      - contextPath: AWS.S3.Buckets.Objects.LastModified
+      - contextPath: AWS.S3-Buckets.Objects.LastModified
         description: Last date object was modified.
         type: Unknown
 

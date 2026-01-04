@@ -9,6 +9,7 @@ from botocore.config import Config
 from botocore.exceptions import ClientError
 from boto3 import Session
 import re
+import math
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
@@ -460,23 +461,81 @@ class S3:
         else:
             return AWSErrorHandler.handle_response_error(response)
 
+
+    @staticmethod
+    def convert_size(size_bytes):
+        if size_bytes == 0:
+            return "0B"
+        size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+        i = int(math.floor(math.log(size_bytes, 1024)))
+        p = math.pow(1024, i)
+        s = round(size_bytes / p, 2)
+        return f"{s} {size_name[i]}"
+
     @staticmethod
     def list_bucket_objects_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        bucket: str = args.get("bucket", "")
-        # delimiter: str = args.get("delimiter", "")
-        # prefix: str = args.get("prefix", "")
+        bucket: str = args.get("bucket")
+        prefix: str = args.get("prefix")
+        delimiter: str = args.get("delimiter")
 
-        response = client.list_objects(Bucket=bucket)
+        kwargs = {
+            "Bucket": bucket,
+            "Prefix": prefix,
+            "Delimiter": delimiter,
+            "PaginationConfig": {
+                "MaxItems": 10
+            }
+        }
 
-        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        remove_nulls_from_dictionary(kwargs)
 
-        if len(response) > 0:
-            human_readable = tableToMarkdown("AWS S3 Bucket Objects", response)
+        try:
+            paginator = client.get_paginator("list_objects")
+            demisto.debug(f"{paginator=}")
+            # if paginator.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            table_data = []
+            all_objects = []
+
+            for page in paginator.paginate(**kwargs):
+                for obj in page.get("Contents", []):
+                    raw_obj = obj.copy()
+                    converted_last_modified = raw_obj["LastModified"].strftime("%Y-%m-%dT%H:%M:%S") if raw_obj.get("LastModified") else None
+                    converted_size = S3.convert_size(obj["Size"])
+
+                    raw_obj["LastModified"] = converted_last_modified
+                    raw_obj["Size"] = converted_size
+
+                    all_objects.append(raw_obj)
+
+                    table_data.append({
+                        "Key": obj.get("Key", ""),
+                        "Size": converted_size,
+                        "LastModified": converted_last_modified,
+                        "StorageClass": obj.get("StorageClass")
+                    })
+
+            if not table_data:
+                return CommandResults(readable_output=f"No objects found in bucket {bucket}.")
+
+            human_readable = tableToMarkdown(f"AWS S3 Bucket Objects: {bucket}", table_data,
+                                             headers=["Key", "Size", "LastModified", "StorageClass"])
+
             return CommandResults(
-                readable_output=human_readable, outputs_prefix="AWS.S3.Buckets", outputs_key_field="BucketName", outputs=response
+                outputs_prefix="AWS.S3-Buckets.Objects",
+                outputs_key_field="BucketName",
+                outputs={
+                    "BucketName": bucket,
+                    "Objects": all_objects
+                },
+                readable_output=human_readable
             )
-        return CommandResults(readable_output=f"The {args.get('bucket')} bucket contains no objects.")
+            # raise DemistoException(
+            #     f"Request completed but received unexpected status code: "
+            #     f"{paginator['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(paginator)}"
+            # )
+        except Exception as e:
+            raise DemistoException(f"Failed to list objects for bucket {bucket}. Error: {str(e)}")
+
 
     @staticmethod
     def put_bucket_versioning_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -4143,6 +4202,7 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:GetBucketPublicAccessBlock",
     "s3:GetEncryptionConfiguration",
     "s3:DeleteBucketPolicy",
+    "s3:ListObjects",
     "acm:UpdateCertificateOptions",
     "cloudtrail:DescribeTrails",
     "lambda:GetFunctionConfiguration",
