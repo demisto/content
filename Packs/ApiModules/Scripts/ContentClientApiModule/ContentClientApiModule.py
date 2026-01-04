@@ -38,13 +38,16 @@ from CommonServerUserPython import *  # noqa: F401,F403
 # Constants
 DEFAULT_USER_AGENT: Final[str] = "ContentClient/1.0"
 
+
 def _now() -> float:
     return time.monotonic()
+
 
 def _ensure_dict(value: Optional[MutableMapping[str, Any]]) -> Dict[str, Any]:
     if value is None:
         return {}
     return dict(value)
+
 
 def _get_value_by_path(obj: Any, path: str) -> Any:
     """Retrieve a value from a nested dictionary using dot notation.
@@ -96,6 +99,7 @@ def _extract_list(data: Any, path: Optional[str]) -> List[Any]:
         return [extracted]
     return [extracted]
 
+
 def _parse_retry_after(response: Optional[httpx.Response]) -> Optional[float]:
     if not response:
         return None
@@ -112,42 +116,45 @@ def _parse_retry_after(response: Optional[httpx.Response]) -> Optional[float]:
         except ValueError:
             return None
 
+
 # Error Classes
-class CollectorError(DemistoException):
-    """Base error for all collector failures."""
+
+
+class ContentClientError(DemistoException):
+    """Base error for all content client failures."""
 
     def __init__(self, message: str, response: Optional[httpx.Response] = None):
         super().__init__(message)
         self.response = response
 
 
-class CollectorAuthenticationError(CollectorError):
+class ContentClientAuthenticationError(ContentClientError):
     """Raised when authentication cannot be completed."""
 
 
-class CollectorRateLimitError(CollectorError):
+class ContentClientRateLimitError(ContentClientError):
     """Raised when the client hits a user-defined rate limit."""
 
 
-class CollectorTimeoutError(CollectorError):
+class ContentClientTimeoutError(ContentClientError):
     """Raised when the execution timeout window is about to be exceeded."""
 
 
-class CollectorCircuitOpenError(CollectorError):
+class ContentClientCircuitOpenError(ContentClientError):
     """Raised when the circuit breaker prevents additional requests."""
 
 
-class CollectorRetryError(CollectorError):
+class ContentClientRetryError(ContentClientError):
     """Raised when requests exhaust all retry attempts."""
 
 
-class CollectorConfigurationError(CollectorError):
+class ContentClientConfigurationError(ContentClientError):
     """Raised when the blueprint or request definition is invalid."""
 
 
 @dataclass
 class ClientExecutionMetrics:
-    """Metrics for collector execution."""
+    """Metrics for content client execution."""
     success: int = 0
     retry_error: int = 0
     quota_error: int = 0
@@ -296,6 +303,7 @@ class TimeoutSettings(BaseModel):
     def as_httpx(self) -> httpx.Timeout:
         return httpx.Timeout(connect=self.connect, read=self.read, write=self.write, pool=self.pool)
 
+
 @dataclass
 class DeduplicationState:
     """State for event deduplication."""
@@ -319,7 +327,7 @@ class DeduplicationState:
 
 
 @dataclass
-class CollectorState:
+class ContentClientState:
     """Pagination and collection state for resuming after timeouts.
     
     Stores pagination position (cursor, page, offset) and metadata to allow seamless
@@ -354,7 +362,7 @@ class CollectorState:
         }
 
     @classmethod
-    def from_dict(cls, raw: Optional[Dict[str, Any]]) -> "CollectorState":
+    def from_dict(cls, raw: Optional[Dict[str, Any]]) -> "ContentClientState":
         if not raw:
             return cls()
         return cls(
@@ -366,6 +374,39 @@ class CollectorState:
             partial_results=raw.get("partial_results", []),
             metadata=raw.get("metadata", {}),
         )
+
+
+class ContentClientContextStore:
+    """Store for persisting state to Demisto integration context.
+    
+    Provides read/write access to the integration context with retry logic
+    for handling transient failures.
+    
+    Args:
+        namespace: A namespace prefix for storing data (e.g., client name)
+    """
+    
+    def __init__(self, namespace: str, max_retries: int = 3):
+        self.namespace = namespace
+        self.max_retries = max_retries
+    
+    def read(self) -> Dict[str, Any]:
+        """Read the current integration context."""
+        context = demisto.getIntegrationContext() or {}
+        return context
+    
+    def write(self, data: Dict[str, Any]) -> None:
+        """Write data to the integration context with retry logic."""
+        last_error: Optional[Exception] = None
+        for attempt in range(self.max_retries):
+            try:
+                demisto.setIntegrationContext(data)
+                return
+            except Exception as e:
+                last_error = e
+                time.sleep(0.1 * (attempt + 1))  # Simple backoff
+        if last_error:
+            raise last_error
 
 
 # Auth Handlers
@@ -386,7 +427,7 @@ class APIKeyAuthHandler(AuthHandler):
     """Authentication handler for API key-based authentication."""
     def __init__(self, key: str, header_name: Optional[str] = None, query_param: Optional[str] = None):
         if not header_name and not query_param:
-            raise CollectorConfigurationError("APIKeyAuthHandler requires header_name or query_param")
+            raise ContentClientConfigurationError("APIKeyAuthHandler requires header_name or query_param")
         self.key = key
         self.header_name = header_name
         self.query_param = query_param
@@ -486,7 +527,7 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
                 
                 self._access_token = token_data.get("access_token")
                 if not self._access_token:
-                    raise CollectorAuthenticationError("No access_token in response")
+                    raise ContentClientAuthenticationError("No access_token in response")
                 
                 expires_in = token_data.get("expires_in", 3600)
                 self._expires_at = _now() + expires_in
@@ -505,9 +546,12 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
                         demisto.debug(f"Failed to persist OAuth2 token: {e}")
 
             except Exception as e:
-                raise CollectorAuthenticationError(f"Failed to refresh token: {str(e)}") from e
+                raise ContentClientAuthenticationError(f"Failed to refresh token: {str(e)}") from e
+
 
 # Diagnostics
+
+
 @dataclass
 class RequestTrace:
     """Trace information for a single HTTP request."""
@@ -538,11 +582,11 @@ class DiagnosticReport:
     timestamp: float
 
 
-class CollectorLogger:
+class ContentClientLogger:
     """Enhanced logger with diagnostic capabilities."""
     
-    def __init__(self, collector_name: str, diagnostic_mode: bool = False):
-        self.collector_name = collector_name
+    def __init__(self, client_name: str, diagnostic_mode: bool = False):
+        self.client_name = client_name
         self.diagnostic_mode = diagnostic_mode
         self._traces: List[RequestTrace] = []
         self._errors: List[Dict[str, Any]] = []
@@ -678,7 +722,7 @@ class CollectorLogger:
                 recommendations.append("High retry rate detected. Check API health and retry policy configuration.")
         
         return DiagnosticReport(
-            collector_name=self.collector_name,
+            collector_name=self.client_name,
             configuration=configuration,
             request_traces=self._traces.copy(),
             state_snapshots=state_snapshots or [],
@@ -690,12 +734,33 @@ class CollectorLogger:
 
     def _format(self, level: str, message: str, extra: Optional[Dict[str, Any]]) -> str:
         if not extra:
-            return f"[CollectorClient:{self.collector_name}:{level}] {message}"
+            return f"[ContentClient:{self.client_name}:{level}] {message}"
         try:
             extra_str = json.dumps(extra)
         except (TypeError, ValueError):
             extra_str = str(extra)
-        return f"[CollectorClient:{self.collector_name}:{level}] {message} | extra={extra_str}"
+        return f"[ContentClient:{self.client_name}:{level}] {message} | extra={extra_str}"
+
+
+def _create_rate_limiter(policy: Optional[RateLimitPolicy]) -> Optional[TokenBucketRateLimiter]:
+    """Create a rate limiter from policy if enabled.
+    
+    Factory function that encapsulates the rate limiter creation logic,
+    improving readability and making the initialization more maintainable.
+    
+    Args:
+        policy: Optional rate limit policy configuration.
+        
+    Returns:
+        TokenBucketRateLimiter instance if policy is provided and enabled,
+        None otherwise.
+    """
+    if policy is None:
+        return None
+    if not policy.enabled:
+        return None
+    return TokenBucketRateLimiter(policy)
+
 
 class ContentClient:
     """Drop-in replacement for BaseClient with enhanced features.
@@ -719,7 +784,7 @@ class ContentClient:
         rate_limiter: Optional[RateLimitPolicy] = None,
         circuit_breaker: Optional[CircuitBreakerPolicy] = None,
         diagnostic_mode: bool = False,
-        collector_name: str = "ContentClient",
+        client_name: str = "ContentClient",
     ):
         """
         Initialize ContentClient with BaseClient-compatible parameters.
@@ -745,17 +810,19 @@ class ContentClient:
             skip_cert_verification()
         
         # Enhanced features (optional, backward compatible)
-        self._auth_handler = auth_handler
-        self._retry_policy = retry_policy or RetryPolicy()
-        self._rate_limiter = TokenBucketRateLimiter(rate_limiter) if rate_limiter and rate_limiter.enabled else None
-        self._circuit_breaker = CircuitBreaker(circuit_breaker or CircuitBreakerPolicy())
+        self._auth_handler: Optional[AuthHandler] = auth_handler
+        self._retry_policy: RetryPolicy = retry_policy if retry_policy is not None else RetryPolicy()
+        self._rate_limiter: Optional[TokenBucketRateLimiter] = _create_rate_limiter(rate_limiter)
+        self._circuit_breaker: CircuitBreaker = CircuitBreaker(
+            circuit_breaker if circuit_breaker is not None else CircuitBreakerPolicy()
+        )
         self._diagnostic_mode = diagnostic_mode
         
         # Execution metrics (like BaseClient)
         self.execution_metrics = ClientExecutionMetrics()
         
         # Logger
-        self.logger = CollectorLogger(collector_name, diagnostic_mode=diagnostic_mode)
+        self.logger = ContentClientLogger(client_name, diagnostic_mode=diagnostic_mode)
 
         # httpx client for async operations
         try:
@@ -815,7 +882,7 @@ class ContentClient:
     ) -> httpx.Response:
         
         if not self._circuit_breaker.can_execute():
-            raise CollectorCircuitOpenError("Circuit breaker is open, refusing to send request")
+            raise ContentClientCircuitOpenError("Circuit breaker is open, refusing to send request")
 
         if self._rate_limiter:
             await self._rate_limiter.acquire()
@@ -924,8 +991,8 @@ class ContentClient:
                 )
                 return response
 
-            except CollectorError:
-                # Re-raise CollectorError (including subclasses) without wrapping
+            except ContentClientError:
+                # Re-raise ContentClientError (including subclasses) without wrapping
                 raise
             except tuple(self._retry_policy.retryable_exceptions) as exc:
                 last_error = exc
@@ -973,7 +1040,7 @@ class ContentClient:
                         await anyio.sleep(delay)
                         continue
                     self._circuit_breaker.record_failure()
-                    raise CollectorRateLimitError(f"Rate limit exceeded: {exc.response.text}", response=exc.response) from exc
+                    raise ContentClientRateLimitError(f"Rate limit exceeded: {exc.response.text}", response=exc.response) from exc
                 elif exc.response.status_code in (401, 403):
                     self.execution_metrics.auth_error += 1
                     self.logger.error("Authentication error", {"status": exc.response.status_code, "error_type": "auth"})
@@ -985,7 +1052,7 @@ class ContentClient:
                         await anyio.sleep(delay)
                         continue
                     self._circuit_breaker.record_failure()
-                    raise CollectorAuthenticationError(
+                    raise ContentClientAuthenticationError(
                         f"Authentication failed: {exc.response.text}", response=exc.response
                     ) from exc
                 else:
@@ -999,7 +1066,7 @@ class ContentClient:
                         await anyio.sleep(delay)
                         continue
                     self._circuit_breaker.record_failure()
-                    raise CollectorError(f"Request failed: {exc.response.text}", response=exc.response) from exc
+                    raise ContentClientError(f"Request failed: {exc.response.text}", response=exc.response) from exc
             except Exception as exc:
                 elapsed_ms = (_now() - start) * 1000
                 if self._diagnostic_mode and trace:
@@ -1012,7 +1079,7 @@ class ContentClient:
         
         self._circuit_breaker.record_failure()
         last_response = getattr(last_error, "response", None)
-        raise CollectorRetryError(f"Exceeded retry attempts: {last_error}", response=last_response)
+        raise ContentClientRetryError(f"Exceeded retry attempts: {last_error}", response=last_response)
 
     def _http_request(
         self,
@@ -1139,24 +1206,24 @@ class ContentClient:
     def get_diagnostic_report(self) -> DiagnosticReport:
         return self.logger.get_diagnostic_report(
             configuration={
-                "name": self.logger.collector_name,
+                "name": self.logger.client_name,
                 "base_url": self._base_url,
                 "timeout": self.timeout
             }
         )
 
     def diagnose_error(self, error: Exception) -> Dict[str, str]:
-        if isinstance(error, CollectorAuthenticationError):
+        if isinstance(error, ContentClientAuthenticationError):
             return {"issue": "Authentication failed", "solution": "Check credentials and token expiration."}
-        if isinstance(error, CollectorRateLimitError):
+        if isinstance(error, ContentClientRateLimitError):
             return {"issue": "Rate limit exceeded", "solution": "Increase retry delay or request quota."}
-        if isinstance(error, CollectorTimeoutError):
+        if isinstance(error, ContentClientTimeoutError):
             return {"issue": "Execution timeout", "solution": "Increase timeout settings or reduce batch size."}
-        if isinstance(error, CollectorCircuitOpenError):
+        if isinstance(error, ContentClientCircuitOpenError):
             return {"issue": "Circuit breaker is open", "solution": "Wait for recovery timeout."}
-        if isinstance(error, CollectorRetryError):
+        if isinstance(error, ContentClientRetryError):
             return {"issue": "All retry attempts exhausted", "solution": "Check API availability and retry policy."}
-        if isinstance(error, CollectorConfigurationError):
+        if isinstance(error, ContentClientConfigurationError):
             return {"issue": "Configuration error", "solution": "Check integration parameters."}
         return {"issue": "Unexpected error", "solution": f"Check logs for details: {str(error)}"}
 
