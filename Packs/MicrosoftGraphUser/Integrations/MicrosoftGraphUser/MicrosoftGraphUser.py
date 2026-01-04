@@ -1186,11 +1186,10 @@ def _get_polling_client() -> MsGraphClient:
 
 
 @polling_function(
-    name="msgraph-user-request-mfa-polling",
+    "msgraph-user-request-mfa-polling",
     poll_message="Waiting for MFA response from user:",
-    polling_arg_name="polling",
     interval=arg_to_number(demisto.args().get("interval_in_seconds", 10)) or 10,
-    timeout=arg_to_number(demisto.args().get("timeout", 120)) or 120,
+    timeout=arg_to_number(demisto.args().get("timeout", 30)) or 30
 )
 def request_mfa_polling_command(args: dict) -> PollResult:
     """
@@ -1211,11 +1210,13 @@ def request_mfa_polling_command(args: dict) -> PollResult:
     Returns:
         PollResult: Result with continue_to_poll flag and response.
     """
+    print("Starting a new execution.")
     client = _get_polling_client()
     user_mail = args.get("user_mail", "")
     context_id = args.get("context_id")
     
     if not context_id:
+        print("no context ID")
         # First call - initiate the async MFA push
         demisto.debug(f"Initiating async MFA push for user: {user_mail}")
         
@@ -1238,13 +1239,15 @@ def request_mfa_polling_command(args: dict) -> PollResult:
         
         # Add context_id to args for next poll
         args["context_id"] = context_id
-        
+        print(f"returning results with {args=}")
         return PollResult(
-            response=command_results,
+            partial_result=command_results,
             continue_to_poll=True,
-            args_for_next_run=args
+            args_for_next_run=args,
+            response=command_results
         )
     else:
+        print(f"get {context_id=}")
         # Subsequent call - poll for status
         demisto.debug(f"Polling MFA status for context_id: {context_id}")
         
@@ -1254,6 +1257,7 @@ def request_mfa_polling_command(args: dict) -> PollResult:
             raise DemistoException(f"Failed to poll MFA status for user {user_mail}: {e}")
         
         status = poll_result.get('status')
+        print(f"got {status=}")
         message = poll_result.get('message')
         continue_polling = poll_result.get('continue_polling', False)
         
