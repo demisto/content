@@ -316,7 +316,7 @@ class EndpointCommandRunner:
 
         Args:
             command (Command): An instance of MappedCommand that contains the command information.
-            results (Dict[str, Any]): A dictionary containing the command results.
+            results (List[Dict[str, Any]]): A list of dictionaries containing the command results.
             args (Dict[str, Any]): A dictionary containing the specific arguments for the command.
 
         Returns:

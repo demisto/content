@@ -283,6 +283,49 @@ class TestEndpointCommandRunner:
         mock_run_execute_command.assert_called_once()
         mock_get_command_results.assert_called_once()
 
+    def test_reproduce_list_index_out_of_range_bug(self, setup, mocker):
+        """
+        Given:
+            A command execution that returns:
+            1. Empty Entry Context (No data found).
+            2. A Human Readable Note (e.g., "No entries found").
+            3. NO Error entries (readable_errors is empty list []).
+        When:
+            The run_command method is called.
+        Then:
+            The code encounters 'if not entry_context:', assumes an error exists,
+            and attempts to access 'readable_errors[0]'.
+            Since 'readable_errors' is empty, this raises an IndexError.
+        """
+        command_runner, module_manager, command = setup
+        endpoint_args = {"endpoint_id": "test_id"}
+
+        # 1. Mock prerequisites to ensure we reach the specific line of code
+        module_manager.is_brand_available.return_value = True
+        mocker.patch("GetEndpointData.prepare_args", return_value={"id": "test_id"})
+        mocker.patch("GetEndpointData.demisto.debug")
+        
+        # 2. Mock execute_command (value doesn't matter as we mock the parser next)
+        mocker.patch.object(command_runner, "run_execute_command", return_value=[])
+
+        # 3. THE TRIGGER CONFIGURATION
+        # get_command_results returns tuple: (context_outputs, human_readable_entry, command_error_outputs)
+        # We simulate: Empty Context, Valid Note, Empty Errors.
+        note_result = CommandResults(readable_output="No entries found")
+        
+        mocker.patch.object(
+            command_runner,
+            "get_command_results",
+            return_value=([], [note_result], []) # <--- Empty error list is the key
+        )
+
+        # 4. Execute and Assert the Crash
+        # We expect an IndexError because the code does: 
+        # get_endpoint_not_found(..., readable_errors[0].readable_output, ...)
+        with pytest.raises(IndexError) as excinfo:
+            command_runner.run_command(command, endpoint_args)
+        
+        assert "list index out of range" == str(excinfo.value)
 
 def test_is_private_ip():
     """
