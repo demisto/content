@@ -425,33 +425,30 @@ class MsGraphClient:
             return mfa_access_token.get("access_token")
         
 
-    def push_mfa_notification(self, user_principal_name: str, timeout: int):
+    def push_mfa_notification(self, user_principal_name: str, timeout: int) -> str:
         """
-        Attempt to generate access token the MFA app using the given client secret.
-        Then send MFA push notification to the user with the given UPN.
-        If user Approve - return None, otherwise raise an error.
+        Send a synchronous MFA push notification to the user with the given UPN.
+        This is a blocking call that waits for user response or timeout.
+        
         Args:
-            client_secret (str): The client secret of the MFA app.
             user_principal_name (str): The user principal name of the user to send the MFA notification to.
+            timeout (int): The timeout in seconds for the request.
 
         Returns:
-            None.
+            str: Status message indicating the result of the MFA challenge.
         """
-        import requests
         import xml.etree.ElementTree as ET
         import uuid
 
         # Hardcoded endpoints
         MFA_SERVICE_URI = 'https://strongauthenticationservice.auth.microsoft.com/StrongAuthenticationService.svc/Connector//BeginTwoWayAuthentication'
 
-        demisto.debug("\nSending MFA challenge to the user...")
+        demisto.debug("Sending synchronous MFA challenge to the user...")
 
         # Generate a unique GUID for ContextId
         context_id = str(uuid.uuid4())
 
-        # Define the XML payload
-        # The ContextId is dynamically replaced with a new GUID
-        # The UPN is the user principal name of the user to send the MFA notification to.
+        # Define the XML payload with SyncCall=true for blocking behavior
         xml_payload = f"""
         <BeginTwoWayAuthenticationRequest>
             <Version>1.0</Version>
@@ -470,6 +467,51 @@ class MsGraphClient:
             <CallerIP>UNKNOWN:</CallerIP>
         </BeginTwoWayAuthenticationRequest>
         """
+        
+        return self._send_mfa_request_and_parse_response(MFA_SERVICE_URI, xml_payload, timeout)
+
+    def initiate_mfa_push_async(self, user_principal_name: str) -> str:
+        """
+        Initiate an asynchronous MFA push notification to the user.
+        This is a non-blocking call that returns immediately with a context_id for polling.
+        
+        Args:
+            user_principal_name (str): The user principal name of the user to send the MFA notification to.
+
+        Returns:
+            str: The context_id to use for polling the MFA status.
+        """
+        import xml.etree.ElementTree as ET
+        import uuid
+
+        # Hardcoded endpoints
+        MFA_SERVICE_URI = 'https://strongauthenticationservice.auth.microsoft.com/StrongAuthenticationService.svc/Connector//BeginTwoWayAuthentication'
+
+        demisto.debug("Sending asynchronous MFA challenge to the user...")
+
+        # Generate a unique GUID for ContextId
+        context_id = str(uuid.uuid4())
+
+        # Define the XML payload with SyncCall=false for non-blocking behavior
+        xml_payload = f"""
+        <BeginTwoWayAuthenticationRequest>
+            <Version>1.0</Version>
+            <UserPrincipalName>{user_principal_name}</UserPrincipalName>
+            <Lcid>en-us</Lcid>
+            <AuthenticationMethodProperties xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+                <a:KeyValueOfstringstring>
+                    <a:Key>OverrideVoiceOtp</a:Key>
+                    <a:Value>false</a:Value>
+                </a:KeyValueOfstringstring>
+            </AuthenticationMethodProperties>
+            <ContextId>{context_id}</ContextId>
+            <SyncCall>false</SyncCall>
+            <RequireUserMatch>true</RequireUserMatch>
+            <CallerName>radius</CallerName>
+            <CallerIP>UNKNOWN:</CallerIP>
+        </BeginTwoWayAuthenticationRequest>
+        """
+        
         mfa_client_token = self.get_mfa_app_client_token()
         headers = {
             "Authorization": f"Bearer {mfa_client_token}",
@@ -482,106 +524,213 @@ class MsGraphClient:
                 MFA_SERVICE_URI,
                 headers=headers,
                 data=xml_payload.strip().encode('utf-8'),
+                timeout=30  # Short timeout for async initiation
+            )
+            mfa_result.raise_for_status()
+
+            demisto.debug(f"MFA Challenge initiated. Context ID: {context_id}")
+            demisto.debug(f"Response: {mfa_result.text}")
+            
+            # For async calls, we return the context_id to be used for polling
+            return context_id
+
+        except requests.exceptions.HTTPError as e:
+            raise DemistoException(f"Error initiating MFA challenge: {e}\nResponse: {mfa_result.text}")
+        except Exception as e:
+            raise DemistoException(f"An unexpected error occurred while initiating MFA: {e}")
+
+    def poll_mfa_status(self, user_principal_name: str, context_id: str) -> dict:
+        """
+        Poll the status of an MFA push notification using the context_id.
+        
+        Args:
+            user_principal_name (str): The user principal name of the user.
+            context_id (str): The context_id returned from initiate_mfa_push_async.
+
+        Returns:
+            dict: A dictionary containing:
+                - 'status': One of 'pending', 'approved', 'denied', 'timeout', 'error'
+                - 'message': A human-readable message
+                - 'continue_polling': Boolean indicating if polling should continue
+        """
+        import xml.etree.ElementTree as ET
+
+        # Use the same endpoint but with the existing context_id
+        MFA_SERVICE_URI = 'https://strongauthenticationservice.auth.microsoft.com/StrongAuthenticationService.svc/Connector//BeginTwoWayAuthentication'
+
+        demisto.debug(f"Polling MFA status for context_id: {context_id}")
+
+        # Define the XML payload with the existing context_id and SyncCall=false
+        xml_payload = f"""
+        <BeginTwoWayAuthenticationRequest>
+            <Version>1.0</Version>
+            <UserPrincipalName>{user_principal_name}</UserPrincipalName>
+            <Lcid>en-us</Lcid>
+            <AuthenticationMethodProperties xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+                <a:KeyValueOfstringstring>
+                    <a:Key>OverrideVoiceOtp</a:Key>
+                    <a:Value>false</a:Value>
+                </a:KeyValueOfstringstring>
+            </AuthenticationMethodProperties>
+            <ContextId>{context_id}</ContextId>
+            <SyncCall>false</SyncCall>
+            <RequireUserMatch>true</RequireUserMatch>
+            <CallerName>radius</CallerName>
+            <CallerIP>UNKNOWN:</CallerIP>
+        </BeginTwoWayAuthenticationRequest>
+        """
+        
+        mfa_client_token = self.get_mfa_app_client_token()
+        headers = {
+            "Authorization": f"Bearer {mfa_client_token}",
+            "Content-Type": "application/xml"
+        }
+
+        try:
+            # Send the request to check status
+            mfa_result = requests.post(
+                MFA_SERVICE_URI,
+                headers=headers,
+                data=xml_payload.strip().encode('utf-8'),
+                timeout=30
+            )
+            mfa_result.raise_for_status()
+
+            demisto.debug(f"MFA Poll Response: {mfa_result.text}")
+
+            # Parse the XML response
+            root = ET.fromstring(mfa_result.text)
+            
+            result_node = root.find('./Result')
+            auth_result_node = root.find('./AuthenticationResult')
+
+            if result_node is not None:
+                result_value = result_node.find('./Value')
+                result_value_text = result_value.text if result_value is not None else None
+                
+                message_node = result_node.find('./Message')
+                is_nil = message_node is not None and message_node.get('{http://www.w3.org/2001/XMLSchema-instance}nil') == 'true'
+                result_message = message_node.text if message_node is not None and not is_nil else "No specific message"
+
+                auth_result = auth_result_node.text.lower() == 'true' if auth_result_node is not None else False
+
+                demisto.debug(f"Poll result - Value: {result_value_text}, AuthResult: {auth_result}, Message: {result_message}")
+
+                # Determine status based on response
+                if result_value_text == "Success" and auth_result:
+                    return {
+                        'status': 'approved',
+                        'message': 'User Approved MFA Request',
+                        'continue_polling': False
+                    }
+                elif result_value_text == "PhoneAppDenied":
+                    return {
+                        'status': 'denied',
+                        'message': 'User Denied MFA Request',
+                        'continue_polling': False
+                    }
+                elif result_value_text == "PhoneAppNoResponse":
+                    return {
+                        'status': 'timeout',
+                        'message': 'MFA Request Timed Out - No Response from User',
+                        'continue_polling': False
+                    }
+                elif result_value_text in ("Pending", "PhoneAppPending", None) or not auth_result:
+                    # Still waiting for user response
+                    return {
+                        'status': 'pending',
+                        'message': 'Waiting for user to respond to MFA push notification',
+                        'continue_polling': True
+                    }
+                else:
+                    # Unknown or error state
+                    return {
+                        'status': 'error',
+                        'message': f'MFA Request Failed: {result_value_text} - {result_message}',
+                        'continue_polling': False
+                    }
+            else:
+                return {
+                    'status': 'error',
+                    'message': f'Could not parse MFA response: {mfa_result.text}',
+                    'continue_polling': False
+                }
+
+        except requests.exceptions.HTTPError as e:
+            raise DemistoException(f"Error polling MFA status: {e}\nResponse: {mfa_result.text}")
+        except ET.ParseError as e:
+            raise DemistoException(f"XML Parse Error while polling MFA status: {e}\nRaw Response: {mfa_result.text}")
+        except Exception as e:
+            raise DemistoException(f"An unexpected error occurred while polling MFA status: {e}")
+
+    def _send_mfa_request_and_parse_response(self, mfa_service_uri: str, xml_payload: str, timeout: int) -> str:
+        """
+        Helper method to send MFA request and parse the XML response.
+        
+        Args:
+            mfa_service_uri (str): The MFA service endpoint URL.
+            xml_payload (str): The XML payload to send.
+            timeout (int): Request timeout in seconds.
+
+        Returns:
+            str: Status message indicating the result.
+        """
+        import xml.etree.ElementTree as ET
+
+        mfa_client_token = self.get_mfa_app_client_token()
+        headers = {
+            "Authorization": f"Bearer {mfa_client_token}",
+            "Content-Type": "application/xml"
+        }
+
+        try:
+            mfa_result = requests.post(
+                mfa_service_uri,
+                headers=headers,
+                data=xml_payload.strip().encode('utf-8'),
                 timeout=timeout
             )
             mfa_result.raise_for_status()
 
             demisto.debug("MFA Challenge Request Sent. Waiting for response...")
 
-            # PARSE THE XML RESPONSE AND OUTPUT RESULTS
-            
-            # 1. Parse the XML string into an ElementTree root object
+            # Parse the XML response
             root = ET.fromstring(mfa_result.text)
             
-            # 2. Extract crucial nodes directly from the root element
             result_node = root.find('./Result')
             auth_result_node = root.find('./AuthenticationResult')
 
-            # Ensure the core nodes exist before accessing their text
             if result_node is not None and auth_result_node is not None:
-                
-                # Get the core values
                 result_value = result_node.find('./Value').text
-                # AuthenticationResult is a string "true" or "false"
                 mfa_challenge_received = auth_result_node.text.lower() == 'true'
 
-                # Get message, correctly handling the XML schema 'nil' attribute
                 message_node = result_node.find('./Message')
                 is_nil = message_node is not None and message_node.get('{http://www.w3.org/2001/XMLSchema-instance}nil') == 'true'
                 result_message = message_node.text if message_node is not None and not is_nil else "No specific message"
 
-                # Determine final status
                 mfa_challenge_approved = (result_value == "Success")
                 mfa_challenge_denied = (result_value == "PhoneAppDenied")
                 mfa_challenge_timeout = (result_value == "PhoneAppNoResponse")
 
-                demisto.debug("--- MFA CHALLENGE RESULT ---")
-                demisto.debug(f"Raw Result Value: {result_value}")
-                demisto.debug(f"Message: {result_message}")
+                demisto.debug(f"MFA Result - Value: {result_value}, Message: {result_message}")
 
                 if mfa_challenge_approved and mfa_challenge_received:
-                    return "Status: User Approved MFA Request 🎉"
+                    return "Status: User Approved MFA Request"
                 elif mfa_challenge_denied:
-                    raise DemistoException("Status: User Denied Request ❌")
+                    raise DemistoException("Status: User Denied Request")
                 elif mfa_challenge_timeout:
-                    raise DemistoException("Status: MFA Request Timed Out ⏳")
+                    raise DemistoException("Status: MFA Request Timed Out")
                 else:
-                    # Covers "NoDefaultAuthenticationMethodIsConfigured" or other failures
-                    raise DemistoException("Status: MFA Request Failed. Check user setup or raw XML for details.")
-            
+                    raise DemistoException(f"Status: MFA Request Failed - {result_message}")
             else:
-                # Fallback if XML structure is unexpected or empty
-                raise DemistoException(f"Error: Could not find core <Result> or <AuthenticationResult> elements in XML.\nRaw Response:\n{mfa_result.text}")
+                raise DemistoException(f"Error: Could not parse MFA response.\nRaw Response:\n{mfa_result.text}")
 
         except requests.exceptions.HTTPError as e:
-            raise DemistoException(f"Error sending MFA challenge: {e}\n Response: {mfa_result.text}")
+            raise DemistoException(f"Error sending MFA challenge: {e}\nResponse: {mfa_result.text}")
         except ET.ParseError as e:
-            raise DemistoException(f"FATAL XML PARSE ERROR (Structure): {e}\nRaw Response: {mfa_result.text}")
-        except Exception as e:
-            raise DemistoException(f"An unexpected error occurred: {e}")
-
-
-    def initiate_polling(self, user_principal_name: str):
-        """
-        Attempt to generate access token the MFA app using the given client secret.
-        Then send MFA push notification to the user with the given UPN.
-        If user Approve - return None, otherwise raise an error.
-        Args:
-            client_secret (str): The client secret of the MFA app.
-            user_principal_name (str): The user principal name of the user to send the MFA notification to.
-
-        Returns:
-            None.
-        """
-        import requests
-        demisto.debug("\nSending MFA challenge to the user...")
-
-        mfa_client_token = self.get_mfa_app_client_token()
-        try:
-            # Send the request to the strong authentication service
-            headers = {
-                "Authorization": f"Bearer {mfa_client_token}",
-                "Content-Type": "application/json"
-            }
-
-            # 1. Trigger the Push
-            res = requests.post(
-                "https://api.mfa-provider.com/v1/push_auth",
-                headers=headers,
-                json={"username": user_principal_name},
-                verify=False
-            )
-
-            # 2. Check if the request actually succeeded
-            if res.status_code == 202:
-                data = res.json()
-                auth_id = data.get('id')
-                # Now you move to the polling phase using this auth_id
-            else:
-                return_error(f"Failed to initiate MFA: {res.text}")
-
-            return auth_id
-        
+            raise DemistoException(f"XML Parse Error: {e}\nRaw Response: {mfa_result.text}")
+        except DemistoException:
+            raise
         except Exception as e:
             raise DemistoException(f"An unexpected error occurred: {e}")
         
@@ -990,60 +1139,189 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
 
 
 def create_client_secret_command(client: MsGraphClient, args: dict) -> CommandResults:
-        ctx = get_integration_context()
-        if ctx.get('mfa_app_client_secret'):
-            return CommandResults(readable_output="Client secret already exist, skipping creating a new one.")
+    ctx = get_integration_context()
+    if ctx.get('mfa_app_client_secret'):
+        return CommandResults(readable_output="Client secret already exist, skipping creating a new one.")
+    else:
+        mfa_app_secret = client.request_mfa_app_secret()
+        ctx["mfa_app_client_secret"] = mfa_app_secret
+        set_integration_context(context=ctx)
+        return CommandResults(readable_output="A new client secret has been added, you might need to wait 30-60 seconds before the secret will be activated.")
+
+
+def request_mfa_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Pops a synchronous MFA request for the given user.
+    This is the original blocking implementation that waits for user response.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary of arguments, which must include:
+            - user_mail (str): The mail of the user to pop the MFA to.
+            - timeout (int, optional): Timeout in seconds. Default is 60 seconds.
+
+    Returns:
+        CommandResults: Result of the MFA request.
+    """
+    user_mail = args.get("user_mail", "")
+    timeout_val = arg_to_number(args.get("timeout", MAX_TIMEOUT_LIMIT))
+    timeout = min(MAX_TIMEOUT_LIMIT, timeout_val) if timeout_val else MAX_TIMEOUT_LIMIT
+    
+    try:
+        result = client.push_mfa_notification(user_mail, timeout)
+        return CommandResults(readable_output=result)
+    except Exception as e:
+        raise DemistoException(f"Failed to pop MFA request for user {user_mail}: {e}")
+
+
+# Global client variable for polling function (set in main before command execution)
+_polling_client: MsGraphClient | None = None
+
+
+def _get_polling_client() -> MsGraphClient:
+    """Get the global client for polling functions."""
+    if _polling_client is None:
+        raise DemistoException("Client not initialized for polling function")
+    return _polling_client
+
+
+@polling_function(
+    name="msgraph-user-request-mfa-polling",
+    poll_message="Waiting for MFA response from user:",
+    polling_arg_name="polling",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 10)) or 10,
+    timeout=arg_to_number(demisto.args().get("timeout", 120)) or 120,
+)
+def request_mfa_polling_command(args: dict) -> PollResult:
+    """
+    Pops a request to MFA for the given user using XSOAR's polling mechanism.
+    This function uses the @polling_function decorator for cleaner async handling.
+    
+    The flow:
+    1. First call (no context_id): Initiate async MFA push
+    2. Subsequent calls (with context_id): Poll for status until complete
+
+    Args:
+        args (dict): A dictionary of arguments, which must include:
+            - user_mail (str): The mail of the user to pop the MFA to.
+            - polling (bool, optional): Enable polling mode. Default is true.
+            - interval_in_seconds (int, optional): Polling interval. Default is 10 seconds.
+            - timeout (int, optional): Timeout in seconds. Default is 120 seconds.
+
+    Returns:
+        PollResult: Result with continue_to_poll flag and response.
+    """
+    client = _get_polling_client()
+    user_mail = args.get("user_mail", "")
+    context_id = args.get("context_id")
+    
+    if not context_id:
+        # First call - initiate the async MFA push
+        demisto.debug(f"Initiating async MFA push for user: {user_mail}")
+        
+        try:
+            context_id = client.initiate_mfa_push_async(user_mail)
+        except Exception as e:
+            raise DemistoException(f"Failed to initiate MFA request for user {user_mail}: {e}")
+        
+        # Return pending result and schedule next poll
+        command_results = CommandResults(
+            readable_output=f"MFA push notification sent to {user_mail}. Waiting for user response...",
+            outputs_prefix="MSGraphUser.MFA",
+            outputs_key_field="ContextId",
+            outputs={
+                "ContextId": context_id,
+                "UserMail": user_mail,
+                "Status": "pending"
+            }
+        )
+        
+        # Add context_id to args for next poll
+        args["context_id"] = context_id
+        
+        return PollResult(
+            response=command_results,
+            continue_to_poll=True,
+            args_for_next_run=args
+        )
+    else:
+        # Subsequent call - poll for status
+        demisto.debug(f"Polling MFA status for context_id: {context_id}")
+        
+        try:
+            poll_result = client.poll_mfa_status(user_mail, context_id)
+        except Exception as e:
+            raise DemistoException(f"Failed to poll MFA status for user {user_mail}: {e}")
+        
+        status = poll_result.get('status')
+        message = poll_result.get('message')
+        continue_polling = poll_result.get('continue_polling', False)
+        
+        if continue_polling:
+            # Still waiting for user response
+            command_results = CommandResults(
+                readable_output=f"MFA Status: {message}",
+                outputs_prefix="MSGraphUser.MFA",
+                outputs_key_field="ContextId",
+                outputs={
+                    "ContextId": context_id,
+                    "UserMail": user_mail,
+                    "Status": status
+                }
+            )
+            
+            return PollResult(
+                response=command_results,
+                continue_to_poll=True,
+                args_for_next_run=args
+            )
         else:
-            mfa_app_secret = client.request_mfa_app_secret()
-            ctx["mfa_app_client_secret"] = mfa_app_secret
-            set_integration_context(context=ctx)
-            return CommandResults(readable_output="A new client secret has been added, you might need to wait 30-60 seconds before the secret will be activated.")
-    
-    
-def request_mfa_command(client: MsGraphClient, args: dict) -> None:
-    """
-    Pops a request to MFA for the given user.
-
-    Args:
-        client (MsGraphClient): The Microsoft Graph client used to make the API request.
-        args (dict): A dictionary of arguments, which must include:
-            - user_mail (str): The mail of the user to pop the MFA to.
-
-    Returns:
-        CommandResults: Pops a request to MFA for the given user.
-    """
-    user_mail = args.get("user_mail", "")
-    timeout = min(MAX_TIMEOUT_LIMIT, arg_to_number(args.get("timeout", MAX_ALLOWED_ENTRY_SIZE)))
-    # res = client.initiate_polling(user_mail)
-    # print(res)
-    try:
-        client.push_mfa_notification(user_mail, timeout)
-    except Exception as e:
-        raise DemistoException(f"Failed to pop MFA request for user {user_mail}: {e}")
-    
-    return CommandResults(readable_output=f"MFA request was successfully popped for user {user_mail}")
-
-
-def request_mfa_polling_command(client: MsGraphClient, args: dict) -> None:
-    """
-    Pops a request to MFA for the given user.
-
-    Args:
-        client (MsGraphClient): The Microsoft Graph client used to make the API request.
-        args (dict): A dictionary of arguments, which must include:
-            - user_mail (str): The mail of the user to pop the MFA to.
-
-    Returns:
-        CommandResults: Pops a request to MFA for the given user.
-    """
-    user_mail = args.get("user_mail", "")
-    timeout = min(MAX_TIMEOUT_LIMIT, arg_to_number(args.get("timeout", MAX_ALLOWED_ENTRY_SIZE)))
-    try:
-        client.push_mfa_notification(user_mail, timeout)
-    except Exception as e:
-        raise DemistoException(f"Failed to pop MFA request for user {user_mail}: {e}")
-    
-    return CommandResults(readable_output=f"MFA request was successfully popped for user {user_mail}")
+            # Polling complete - return final result
+            if status == 'approved':
+                command_results = CommandResults(
+                    readable_output=f"✅ MFA Request Approved: {message}",
+                    outputs_prefix="MSGraphUser.MFA",
+                    outputs_key_field="ContextId",
+                    outputs={
+                        "ContextId": context_id,
+                        "UserMail": user_mail,
+                        "Status": status,
+                        "Result": "approved"
+                    }
+                )
+            elif status == 'denied':
+                command_results = CommandResults(
+                    readable_output=f"❌ MFA Request Denied: {message}",
+                    outputs_prefix="MSGraphUser.MFA",
+                    outputs_key_field="ContextId",
+                    outputs={
+                        "ContextId": context_id,
+                        "UserMail": user_mail,
+                        "Status": status,
+                        "Result": "denied"
+                    }
+                )
+            elif status == 'timeout':
+                command_results = CommandResults(
+                    readable_output=f"⏳ MFA Request Timed Out: {message}",
+                    outputs_prefix="MSGraphUser.MFA",
+                    outputs_key_field="ContextId",
+                    outputs={
+                        "ContextId": context_id,
+                        "UserMail": user_mail,
+                        "Status": status,
+                        "Result": "timeout"
+                    }
+                )
+            else:
+                # Error or unknown status
+                raise DemistoException(f"MFA Request Failed: {message}")
+            
+            return PollResult(
+                response=command_results,
+                continue_to_poll=False,
+                args_for_next_run=args
+            )
 
 
 def create_zip_with_password(generated_tap_password: str, zip_password: str):
@@ -1156,6 +1434,7 @@ def main():
     LOG(f"Command being called is {command}")
 
     try:
+        global _polling_client
         client: MsGraphClient = MsGraphClient(
             tenant_id=tenant,
             auth_id=auth_and_token_url,
@@ -1173,10 +1452,16 @@ def main():
             azure_cloud=azure_cloud,
             managed_identities_client_id=managed_identities_client_id,
         )
+        # Set global client for polling functions
+        _polling_client = client
+        
         if command == "msgraph-user-generate-login-url":
             return_results(generate_login_url(client.ms_client))
         elif command == "msgraph-user-auth-reset":
             return_results(reset_auth())
+        elif command == "msgraph-user-request-mfa-polling":
+            # Polling command uses decorator pattern - call directly with args
+            return_results(request_mfa_polling_command(demisto.args()))
         else:
             return_results(commands[command](client, demisto.args()))
 

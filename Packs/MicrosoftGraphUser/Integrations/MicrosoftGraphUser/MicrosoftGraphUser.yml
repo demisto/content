@@ -769,8 +769,43 @@ script:
       name: timeout
       required: false
       defaultValue: 60
-    description: pops a request to MFA for the given user.
+    description: Pops a synchronous MFA request for the given user. This is a blocking call that waits for user response or timeout.
     name: msgraph-user-request-mfa
+  - arguments:
+    - description: The user mail to pop the MFA to.
+      name: user_mail
+      required: true
+    - description: The interval in seconds between polling attempts.
+      name: interval_in_seconds
+      required: false
+      defaultValue: 5
+    - description: The timeout in seconds for the entire polling operation.
+      name: timeout
+      required: false
+      defaultValue: 30
+    - description: Internal argument used for polling. Do not set manually.
+      name: context_id
+      required: false
+      hidden: true
+    description: |-
+      Pops a request to MFA for the given user using XSOAR's polling mechanism.
+      This command uses async polling to avoid blocking while waiting for user response.
+      The command will automatically poll for the MFA status until the user responds or timeout is reached.
+    name: msgraph-user-request-mfa-polling
+    polling: true
+    outputs:
+    - contextPath: MSGraphUser.MFA.ContextId
+      description: The context ID for the MFA request.
+      type: String
+    - contextPath: MSGraphUser.MFA.UserMail
+      description: The user mail address.
+      type: String
+    - contextPath: MSGraphUser.MFA.Status
+      description: The current status of the MFA request (pending, approved, denied, timeout, error).
+      type: String
+    - contextPath: MSGraphUser.MFA.Result
+      description: The final result of the MFA request (approved, denied, timeout).
+      type: String
   - name: msgraph-user-create-mfa-client-secret
     description: Issue a new client secret for the MFA app.
   dockerimage: demisto/crypto:1.0.0.4578119
