@@ -26,12 +26,33 @@ outputs:
   - contextPath: MicrosoftATP.Machine.Isolation.RequestorComment
     description: Machine un-isolation requestor comment.
     type: string
-  - contextPath: MicrosoftATP.Machine.ID
-    description: Machine ID.
-    type: Unknown
+  - contextPath: MicrosoftATP.MachineAction.ID
+    description: Unique identifier of the machine action performed (e.g., unisolation).
+    type: string
+  - contextPath: MicrosoftATP.MachineAction.Scope
+    description: The scope or extent of the action applied. May include user-level or machine-wide context.
+    type: string
+  - contextPath: MicrosoftATP.MachineAction.Status
+    description: Current status of the action (e.g., Pending, Succeeded, Failed).
+    type: string
+  - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
+    description: DNS name of the machine on which the action was executed.
+    type: string
+  - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+    description: Timestamp (in UTC) when the action was created.
+    type: date
+  - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
+    description: Timestamp (in UTC) when the status of the action was last updated.
+    type: date
+  - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
+    description: Unique identifier (e.g., hash) of the file related to the action, if applicable.
+    type: string
+  - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
+    description: Type of the file identifier used (e.g., "SHA1", "SHA256", or "MD5").
+    type: string
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4508456
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.1.0
 isInternal: true
 tests:

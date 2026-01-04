@@ -1,0 +1,32 @@
+{
+    "id": "incident_gtidtmalertdoclanguage",
+    "version": -1,
+    "modified": "2025-09-02T17:06:27.231871954+05:30",
+    "name": "GTI DTM Alert Doc Language",
+    "ownerOnly": false,
+    "description": "Language of the tweet in the document associated with the alert.",
+    "cliName": "gtidtmalertdoclanguage",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Google Threat Intelligence DTM Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
