@@ -527,10 +527,12 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = "
     return ticket_fields
 
 def set_required_fields(data, table_name):
-    required_fields_mapping = REQUIRED_FIELDS_FOR_UPDATE.get(table_name)
-    default_field_values_mapping = DEFAULT_REQUIRED_FIELDS_FOR_UPDATE.get(table_name)
+    required_fields_mapping = REQUIRED_FIELDS_FOR_UPDATE.get(table_name , {})
+    default_field_values_mapping = DEFAULT_REQUIRED_FIELDS_FOR_UPDATE.get(table_name, {})
 
-    for field in data:
+    if not required_fields_mapping:
+        return
+    for field in list(data.keys()):
         # Get required fields for this ticket type
         field_value = data.get(field)
         required_fields = required_fields_mapping.get(field).get(field_value)
