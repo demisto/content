@@ -6,6 +6,12 @@ Genesys Cloud is a unified, all-in-one cloud collaboration and contact center pl
 
 - Rest API integration to fetch audit logs
 - XDM Mapping for audit events
+- **Supported Events:**
+    - ContactCenter
+    - Telephony
+    - Groups
+    - Outbound
+    - PeoplePermissions
 
 ## Configure Genesys Cloud in Cortex
 
