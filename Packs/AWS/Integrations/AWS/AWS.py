@@ -462,13 +462,14 @@ class S3:
 
     @staticmethod
     def list_bucket_objects_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        kwargs = {"Bucket": args.get("bucket")}
-        if args.get("delimiter") is not None:
-            kwargs.update({"Delimiter": args.get("delimiter")})
-        if args.get("prefix") is not None:
-            kwargs.update({"Prefix": args.get("prefix")})
+        bucket: str = args.get("bucket", "")
+        # delimiter: str = args.get("delimiter", "")
+        # prefix: str = args.get("prefix", "")
 
-        response = client.list_objects(**kwargs)
+        response = client.list_objects(Bucket=bucket)
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         if len(response) > 0:
             human_readable = tableToMarkdown("AWS S3 Bucket Objects", response)
