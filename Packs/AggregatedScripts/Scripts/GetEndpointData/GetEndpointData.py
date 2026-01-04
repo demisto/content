@@ -258,8 +258,6 @@ class EndpointCommandRunner:
             hr = readable_errors[0].readable_output if readable_errors and readable_errors[0].readable_output else ""
             endpoints = get_endpoint_not_found(command, hr, [], endpoint_args)
             return readable_errors, endpoints
-        
-        
         hr = human_readable[0].readable_output if human_readable and human_readable[0].readable_output else ""
         endpoints = entry_context_to_endpoints(command, entry_context, self.add_additional_fields)
         endpoints.extend(get_endpoint_not_found(command, hr, endpoints, endpoint_args))

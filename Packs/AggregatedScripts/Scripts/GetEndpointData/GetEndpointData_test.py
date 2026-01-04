@@ -312,7 +312,7 @@ class TestEndpointCommandRunner:
         hr, endpoints = command_runner.run_command(command, endpoint_args)
 
         # Assertions
-        assert hr == [] 
+        assert hr == []
         assert endpoints == []
 
 
