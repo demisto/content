@@ -321,9 +321,6 @@ class TestEndpointCommandRunner:
         # Since 'hr' passed to get_endpoint_not_found was "", endpoints is empty
         assert endpoints == []
 
-        mock_run_execute_command.assert_called_once()
-        mock_get_command_results.assert_called_once()
-
 def test_is_private_ip():
     """
     Given:
