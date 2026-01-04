@@ -2852,16 +2852,16 @@ def conversation_history() -> None:
 
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
     demisto.debug(f"Raw response from Slack conversations.history: {raw_response}")
-    
+
     if not raw_response.get("ok"):
         raise DemistoException(
             f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response
         )
-    
+
     messages: Any = raw_response.get("messages", [])
     response_metadata: dict = raw_response.get("response_metadata", {})  # type: ignore[assignment]
     cursor: str = response_metadata.get("next_cursor", "")
-    
+
     # Normalize messages to list
     if isinstance(messages, dict):
         messages = [messages]
@@ -2869,28 +2869,28 @@ def conversation_history() -> None:
         raise DemistoException(
             f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response
         )
-    
+
     context: List[Dict[str, Any]] = []
     for message in messages:
         thread_ts = "N/A"
         has_replies = "No"
         name = "N/A"
         full_name = "N/A"
-        
+
         if "subtype" not in message:
             user_id = message.get("user")
             user_details_response = send_slack_request_sync(CLIENT, "users.info", http_verb="GET", body={"user": user_id})
             user_details: dict = user_details_response.get("user", {})  # type: ignore[assignment]
-            full_name = user_details.get("real_name")
-            name = user_details.get("name")
+            full_name = user_details.get("real_name", "N/A")
+            name = user_details.get("name", "N/A")
             if "thread_ts" in message:
-                thread_ts = message.get("thread_ts")
+                thread_ts = message.get("thread_ts", "N/A")
                 has_replies = "Yes"
         elif "thread_ts" in message:
-            thread_ts = message.get("thread_ts")
+            thread_ts = message.get("thread_ts", "N/A")
             has_replies = "Yes"
-            full_name = message.get("username")
-            name = message.get("username")
+            full_name = message.get("username", "N/A")
+            name = message.get("username", "N/A")
 
         entry = {
             "Type": message.get("type"),
