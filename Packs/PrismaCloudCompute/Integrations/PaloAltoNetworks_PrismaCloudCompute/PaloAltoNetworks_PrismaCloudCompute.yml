@@ -73,7 +73,7 @@ configuration:
   section: Connect
 - display: Long running integration
   name: longRunning
-  additionalinfo: Use this to fetch assets and vulnerabilities snapshots. creates a long-running docker instance.
+  additionalinfo: Use this to fetch assets and vulnerabilities snapshots. Creates a long-running docker instance.
   type: 8
   required: false
   section: Collect

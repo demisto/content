@@ -1018,7 +1018,7 @@ async def xsiam_api_call_async_with_retries(
         )
         status_code = response.status
         if status_code == 429:
-            time.sleep(1)
+            await asyncio.sleep(1)
         attempt_num += 1
     if is_json_response and response:
         response = await response.json()
@@ -3529,7 +3529,7 @@ def process_host_results(data_list):
                 "Region": data.get("cloudMetadata", {}).get("region", ""),
                 "Realm": data.get("cloudMetadata", {}).get("accountID", ""),
                 "Tags": data.get("tags", []) + data.get("labels", []),
-                "Internal IP": ", ".join([ip.get("ip") for ip in data.get("hostDevices")]),
+                "Internal IP": ", ".join([ip.get("ip") for ip in data.get("hostDevices", {})]),
                 "Strong ID": data.get("hostname", ""),
             }
         )
