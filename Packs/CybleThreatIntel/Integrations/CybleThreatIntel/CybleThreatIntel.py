@@ -33,7 +33,7 @@ class Client:
         demisto.debug(f"POST Request URL: {url}")
         demisto.debug(f"POST Request Body: {json_body}")
         resp = requests.post(url, headers=self.headers, json=json_body, verify=False)
-        demisto.debug(f"Response Status Code: {resp.status_code}")
+        demisto.debug(f"Response Status Code : {resp.status_code}")
         try:
             resp.raise_for_status()
             resp_json = resp.json()
