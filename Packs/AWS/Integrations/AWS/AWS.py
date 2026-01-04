@@ -275,7 +275,7 @@ def parse_parameters_arg(parameters_str: str) -> dict:
     for param in list_parameters:
         first_split = param.split(",values=")
         key = first_split[0][4:]  # remove 'key='
-        values = first_split[1].split(',')
+        values = first_split[1].split(",")
         parameters[key] = values
     return parameters
 
@@ -397,7 +397,8 @@ def build_kwargs_network_interface_attribute(args: dict, network_interface_id: s
 
     if (attachment_id and not delete_on_termination) or (not attachment_id and delete_on_termination):
         raise DemistoException(
-            "If one of the arguments 'attachment_id' or 'delete_on_termination' is given, the other one must be given as well.")
+            "If one of the arguments 'attachment_id' or 'delete_on_termination' is given, the other one must be given as well."
+        )
     return kwargs
 
 
@@ -1122,7 +1123,7 @@ class S3:
             CommandResults: A success message and information on the newly created bucket.
         """
         bucket_name = args.get("bucket_name")
-        location = args.get("location_constraint") or args.get('region', "")
+        location = args.get("location_constraint") or args.get("region", "")
         kwargs = {
             "Bucket": bucket_name,
             "GrantFullControl": args.get("grant_full_control"),
@@ -1158,15 +1159,12 @@ class S3:
         Returns:
             CommandResults: Containing the list of buckets.
         """
-        account_id = args.get("account_id")
-        region = args.get("region")
         filter_by_region = args.get("filter_by_region")
         prefix = args.get("prefix")
-        kwargs = {
-            "Prefix": prefix,
-            "BucketRegion": filter_by_region
-        }
-        kwargs.update(build_pagination_kwargs(args, max_limit=10000, next_token_name="ContinuationToken", limit_name="MaxBuckets"))
+        kwargs = {"Prefix": prefix, "BucketRegion": filter_by_region}
+        kwargs.update(
+            build_pagination_kwargs(args, max_limit=10000, next_token_name="ContinuationToken", limit_name="MaxBuckets")
+        )
         remove_nulls_from_dictionary(kwargs)
         demisto.debug(f"{kwargs=}")
         response = client.list_buckets(**kwargs)
@@ -1177,9 +1175,7 @@ class S3:
         buckets = response.get("Buckets")
         for bucket in buckets:
             bucket["CreationDate"] = datetime.strftime(bucket["CreationDate"], "%Y-%m-%dT%H:%M:%S")
-        readable_output = tableToMarkdown(
-            "The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace
-        )
+        readable_output = tableToMarkdown("The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace)
         outputs = {
             "AWS.S3.Buckets(val.BucketArn && val.BucketArn == obj.BucketArn)": buckets,
             "AWS.S3(true)": {
@@ -2586,7 +2582,7 @@ class EC2:
         Returns:
             CommandResults: A success message in case the modification was successful.
         """
-        network_interface_id = args.get("network_interface_id")
+        network_interface_id = args.get("network_interface_id", "")
         kwargs = build_kwargs_network_interface_attribute(args, network_interface_id)
         remove_nulls_from_dictionary(kwargs)
         demisto.debug(f"{kwargs=}")
@@ -2595,7 +2591,9 @@ class EC2:
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        return CommandResults(readable_output=f"The Network Interface attribute {network_interface_id} was modified successfully.")
+        return CommandResults(
+            readable_output=f"The Network Interface attribute {network_interface_id} was modified successfully."
+        )
 
     @staticmethod
     def regions_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -2641,7 +2639,8 @@ class EC2:
             raw_response=response,
             outputs_key_field="RegionName",
         )
-    
+
+    @staticmethod
     def create_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a new security group in the specified VPC or EC2-Classic.
@@ -4271,8 +4270,6 @@ class SSM:
         Returns:
             CommandResults: An object containing an inventory item, and it's list of entries.
         """
-        account_id = args.get("account_id")
-        region = args.get("region")
         instance_id = args.get("instance_id")
         type_name = args.get("type_name")
         filters = args.get("filters")
@@ -4289,10 +4286,14 @@ class SSM:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        if response.get('Entries'):
+        if response.get("Entries"):
             headers = ["Name", "URL", "Summary"]
             readable_output = tableToMarkdown(
-                f"The inventory entries of item {instance_id} with the type {type_name}", response.get("Entries"), headers, headerTransform=pascalToSpace, removeNull=True
+                f"The inventory entries of item {instance_id} with the type {type_name}",
+                response.get("Entries"),
+                headers,
+                headerTransform=pascalToSpace,
+                removeNull=True,
             )
 
             return CommandResults(
@@ -4372,10 +4373,10 @@ class SSM:
 
         response_command_run = client.send_command(**kwargs)
 
-        command_id = response_command_run.get('Command', {}).get('CommandId', '')
+        command_id = response_command_run.get("Command", {}).get("CommandId", "")
         demisto.debug(f"The {command_id=} of the current execution.")
         args["command_id"] = command_id
-        command_response = serialize_response_with_datetime_encoding(response_command_run.get('Command', {}))
+        command_response = serialize_response_with_datetime_encoding(response_command_run.get("Command", {}))
         return PollResult(
             response=None,
             continue_to_poll=True,
@@ -4387,6 +4388,7 @@ class SSM:
                 outputs_key_field="CommandId",
             ),
         )
+
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -4496,7 +4498,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
     "aws-ssm-inventory-entries-list": SSM.inventory_entries_list,
-    "aws-ssm-command-run": SSM.command_run_command
+    "aws-ssm-command-run": SSM.command_run_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -4765,7 +4767,7 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
 
     service_client, _ = get_service_client(credentials, params, args, command)
     # If it is a polling command, the args must be the first argument
-    if args.get('polling_timeout') is not None:
+    if args.get("polling_timeout") is not None:
         demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
         return COMMANDS_MAPPING[command](args, service_client)
     return COMMANDS_MAPPING[command](service_client, args)
