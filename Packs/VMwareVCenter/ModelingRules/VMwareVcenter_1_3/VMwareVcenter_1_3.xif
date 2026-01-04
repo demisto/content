@@ -81,10 +81,9 @@ alter
     target_hostname = if(description ~= "on host", arrayindex(regextract(description, "\s+on host\s+([^\s+|\]]+)"), 0),
                          description ~= "on", arrayindex(regextract(description, "\s+on\s+([^\s+]+)"), 0)),
     target_username = if(description ~= "^Account", arrayindex(regextract(description, "^Account ([^\s]+)"), 0),
-                         description ~= "Permission", arrayindex(regextract(description, "for ([^\s]+)"), 0)),
-    target_datacenter = if(description ~= " in ", arrayindex(regextract(description, " in ([^\s]+)"), 1))
+                         description ~= "Permission", arrayindex(regextract(description, "for ([^\s]+)"), 0))
 | alter
-	xdm.observer.name = syslog_hostname,
+	xdm.observer.name = syslog_hostname, 
 	xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
 	xdm.event.description = syslog_msg,
     xdm.event.type = "Account Operations",
@@ -97,7 +96,6 @@ alter
     xdm.source.virtualization.vm.hostname = vm_name,
 	xdm.source.virtualization.data_center.name = source_hostname,
 	xdm.source.user.username = source_username,
-    xdm.target.virtualization.data_center.name = target_datacenter,
     xdm.target.process.identifier = process_id,
 	xdm.target.process.name = process_name,
     xdm.target.host.hostname = target_hostname,
