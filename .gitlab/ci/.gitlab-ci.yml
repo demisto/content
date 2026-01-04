@@ -5,3 +5,5 @@ include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
     ref: "yc/sign_integration"
     project: "${CI_PROJECT_NAMESPACE}/infra"
+
+
