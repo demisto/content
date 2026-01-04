@@ -32,7 +32,7 @@ alter
         incidr(target_ip, "10.0.0.0/8"), null,
         incidr(target_ip, "192.168.0.0/16"), null,
         incidr(target_ip, "172.16.0.0/12"), null, arraycreate(target_ip)),
-	xdm.source.user_agent = user_agent
+	xdm.source.user_agent = user_agent,
     xdm.target.virtualization.vm.hostname = target_hostname;
 
 
