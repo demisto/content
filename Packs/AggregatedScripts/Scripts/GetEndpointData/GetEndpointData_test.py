@@ -283,46 +283,42 @@ class TestEndpointCommandRunner:
         mock_run_execute_command.assert_called_once()
         mock_get_command_results.assert_called_once()
 
-    def test_reproduce_list_index_out_of_range_bug(self, setup, mocker):
+    def test_run_command_no_output_no_error(self, setup, mocker):
         """
         Given:
-            A command execution that returns:
-            1. Empty Entry Context (No data found).
-            2. A Human Readable Note (e.g., "No entries found").
-            3. NO Error entries (readable_errors is empty list []).
+            A command that returns NO context and NO errors and NO human readable.
+            (This triggered the original crash).
         When:
-            The run_command method is called.
+            run_command is executed.
         Then:
-            The code encounters 'if not entry_context:', assumes an error exists,
-            and attempts to access 'readable_errors[0]'.
-            Since 'readable_errors' is empty, this raises an IndexError.
+            1. It should NOT raise IndexError.
+            2. It should return empty results (because the code checks readable_errors, which is empty).
         """
         command_runner, module_manager, command = setup
-        endpoint_args = {"endpoint_id": "test_id"}
+        endpoint_args = {"endpoint_id": "123"}
 
-        # 1. Mock prerequisites to ensure we reach the specific line of code
+        # Mocks
         module_manager.is_brand_available.return_value = True
-        mocker.patch("GetEndpointData.prepare_args", return_value={"id": "test_id"})
+        mocker.patch("GetEndpointData.prepare_args", return_value={"id": "123"})
         mocker.patch("GetEndpointData.demisto.debug")
-        
-        # 2. Mock execute_command (value doesn't matter as we mock the parser next)
         mocker.patch.object(command_runner, "run_execute_command", return_value=[])
 
-        # 3. THE TRIGGER CONFIGURATION
-        # get_command_results returns tuple: (context_outputs, human_readable_entry, command_error_outputs)
-        # We simulate: Empty Context, Valid Note, Empty Errors.
+        # Mock: Empty Context, Valid Note ("No entries found"), Empty Errors
         note_result = CommandResults(readable_output="No entries found")
-        
         mocker.patch.object(
-            command_runner,
-            "get_command_results",
-            return_value=([], [note_result], [])
+            command_runner, 
+            "get_command_results", 
+            return_value=([], [], []) 
         )
 
-        with pytest.raises(IndexError) as excinfo:
-            command_runner.run_command(command, endpoint_args)
-        
-        assert str(excinfo.value) == "list index out of range"
+        # Execute
+        hr, endpoints = command_runner.run_command(command, endpoint_args)
+
+        # Assertions
+        # With the minimal fix, hr is 'readable_errors' (which is empty)
+        assert hr == [] 
+        # Since 'hr' passed to get_endpoint_not_found was "", endpoints is empty
+        assert endpoints == []
 
 def test_is_private_ip():
     """

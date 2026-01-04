@@ -255,10 +255,13 @@ class EndpointCommandRunner:
         entry_context, human_readable, readable_errors = self.get_command_results(command.name, raw_outputs, args)
 
         if not entry_context:
-            endpoints = get_endpoint_not_found(command, readable_errors[0].readable_output or "", [], endpoint_args)
+            hr = readable_errors[0].readable_output if readable_errors and readable_errors[0].readable_output else ""
+            endpoints = get_endpoint_not_found(command, hr, [], endpoint_args)
             return readable_errors, endpoints
+        
+        hr = human_readable[0].readable_output if human_readable and human_readable[0].readable_output else ""
         endpoints = entry_context_to_endpoints(command, entry_context, self.add_additional_fields)
-        endpoints.extend(get_endpoint_not_found(command, human_readable[0].readable_output or "", endpoints, endpoint_args))
+        endpoints.extend(get_endpoint_not_found(command, hr, endpoints, endpoint_args))
 
         if command.post_processing:
             demisto.debug(f"command with post processing: {command.name}")
