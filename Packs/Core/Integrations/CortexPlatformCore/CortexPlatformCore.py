@@ -1001,7 +1001,10 @@ class Client(CoreClient):
         reply = self._http_request(
             method="GET",
             json_data={},
-            headers=self._headers,
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
             url_suffix=f"case/{case_id}/resolution-plan/tasks",
         )
         return reply
@@ -3794,10 +3797,10 @@ def postprocess_case_resolution_statuses(client, response: dict):
 
         response[task_status] = tasks
 
-    response["donePlaybooks"] = response.pop("done")
-    response["activePlaybooks"] = response.pop("inProgress")
-    response["pendingPlaybookTasks"] = response.get("pending")
-    response["recommendedPlaybooks"] = response.pop("recommended")
+    response["donePlaybooks"] = response.pop("done", [])
+    response["activePlaybooks"] = response.pop("inProgress",[])
+    response["pendingPlaybookTasks"] = response.pop("pending",[])
+    response["recommendedPlaybooks"] = response.pop("recommended",[])
 
     return response
 
@@ -3807,7 +3810,7 @@ def get_case_resolution_statuses(client, args):
     response = client.get_case_resolution_statuses(case_id)
     outputs = postprocess_case_resolution_statuses(client, response)
     return CommandResults(
-        readable_output=tableToMarkdown("Case Resolution Statuses", response, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseResolutionStatus",
         outputs=outputs,
         raw_response=response,
