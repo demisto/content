@@ -1174,24 +1174,13 @@ def request_mfa_command(client: MsGraphClient, args: dict) -> CommandResults:
         raise DemistoException(f"Failed to pop MFA request for user {user_mail}: {e}")
 
 
-# Global client variable for polling function (set in main before command execution)
-_polling_client: MsGraphClient | None = None
-
-
-def _get_polling_client() -> MsGraphClient:
-    """Get the global client for polling functions."""
-    if _polling_client is None:
-        raise DemistoException("Client not initialized for polling function")
-    return _polling_client
-
-
 @polling_function(
     "msgraph-user-request-mfa-polling",
     poll_message="Waiting for MFA response from user:",
     interval=arg_to_number(demisto.args().get("interval_in_seconds", 10)) or 10,
     timeout=arg_to_number(demisto.args().get("timeout", 30)) or 30
 )
-def request_mfa_polling_command(args: dict) -> PollResult:
+def request_mfa_polling_command(args: dict, client: MsGraphClient) -> PollResult:
     """
     Pops a request to MFA for the given user using XSOAR's polling mechanism.
     This function uses the @polling_function decorator for cleaner async handling.
@@ -1211,7 +1200,6 @@ def request_mfa_polling_command(args: dict) -> PollResult:
         PollResult: Result with continue_to_poll flag and response.
     """
     demisto.debug("Starting a new interval of requesting MFA.")
-    client = _get_polling_client()
     user_mail = args.get("user_mail", "")
     context_id = args.get("context_id")
     
@@ -1428,7 +1416,7 @@ def main():
         "msgraph-user-tap-policy-create": create_tap_policy_command,
         "msgraph-user-tap-policy-delete": delete_tap_policy_command,
         "msgraph-user-request-mfa": request_mfa_command,
-        "msgraph-user-create-mfa-client-secret": create_client_secret_command,
+        "msgraph-user-create-mfa-client-secret": create_client_secret_command
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
@@ -1461,7 +1449,7 @@ def main():
             return_results(reset_auth())
         elif command == "msgraph-user-request-mfa-polling":
             # Polling command uses decorator pattern - call directly with args
-            return_results(request_mfa_polling_command(demisto.args()))
+            return_results(request_mfa_polling_command(demisto.args(), client))
         else:
             return_results(commands[command](client, demisto.args()))
 
