@@ -787,6 +787,14 @@ script:
       name: context_id
       required: false
       hidden: true
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: whether to poll.
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+      hidden: true
     description: |-
       Pops a request to MFA for the given user using XSOAR's polling mechanism.
       This command uses async polling to avoid blocking while waiting for user response.
