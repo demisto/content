@@ -1,5 +1,4 @@
 from collections.abc import Callable
-import threading
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
@@ -1094,7 +1093,7 @@ class AssetType(Enum):
 
 @dataclass
 class AssetTypeRelatedData:
-    ctx_lock: Lock
+    ctx_lock: asyncio.Lock
     endpoint: str
     product: str
     asset_type: AssetType
@@ -1111,14 +1110,14 @@ class AssetTypeRelatedData:
     def write_debug_log(self, msg: str):
         demisto.debug(f"[{self.asset_type.value}] {msg}")
 
-    def safe_update_integration_context(self):
-        with self.ctx_lock:
+    async def safe_update_integration_context(self):
+        async with self.ctx_lock:
             ctx = get_integration_context()
             ctx[self.asset_type.value] = {"offset": self.offset, "total_count": self.total_count, "snapshot_id": self.snapshot_id}
             set_integration_context(ctx)
 
-    def remove_related_data_from_ctx(self):
-        with self.ctx_lock:
+    async def remove_related_data_from_ctx(self):
+        async with self.ctx_lock:
             ctx = get_integration_context()
             ctx.pop(self.asset_type.value)
             set_integration_context(ctx)
@@ -3368,7 +3367,7 @@ async def fetch_assets_long_running_command(client: PrismaCloudComputeAsyncClien
 
 
 def init_asset_type_related_data(
-    endpoint: str, product: str, asset_type: AssetType, process_result_func: Callable, ctx_lock: Lock
+    endpoint: str, product: str, asset_type: AssetType, process_result_func: Callable, ctx_lock: asyncio.Lock
 ) -> AssetTypeRelatedData:
     """Attempts to check if there's exiting information related to the asset type in the context.
     If there is such data, will create a new AssetTypeRelatedData from that data.
@@ -3406,7 +3405,7 @@ def init_asset_type_related_data(
 
 
 async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncClient):
-    ctx_lock = threading.Lock()
+    ctx_lock = asyncio.Lock()
     tas_droplets_related_data = init_asset_type_related_data(
         endpoint="/tas-droplets",
         product="Tas_Droplets",
@@ -3458,19 +3457,17 @@ async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient
             if not data:
                 asset_type_related_data.write_debug_log("No more data to fetch, breaking.")
                 break
-            await process_asset_data_and_send_to_xsiam(
-                data=data, asset_type_related_data=asset_type_related_data
-            )
+            await process_asset_data_and_send_to_xsiam(data=data, asset_type_related_data=asset_type_related_data)
             asset_type_related_data.next_page()
             asset_type_related_data.write_debug_log(
                 f"Finished sending assets batch to xsiam, sent {asset_type_related_data.offset} assets so far."
             )
-            asset_type_related_data.safe_update_integration_context()
+            await asset_type_related_data.safe_update_integration_context()
         except Exception as e:
             traceback_str = "".join(traceback.format_tb(e.__traceback__))
             demisto.debug(f"Got error {e}\n{traceback_str=}")
     asset_type_related_data.write_debug_log("Finished obtaining and sending all assets to xsiam.")
-    asset_type_related_data.remove_related_data_from_ctx()
+    await asset_type_related_data.remove_related_data_from_ctx()
 
 
 async def obtain_asset_data_from_prisma(

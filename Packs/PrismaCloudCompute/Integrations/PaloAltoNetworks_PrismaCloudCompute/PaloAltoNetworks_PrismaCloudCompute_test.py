@@ -5,7 +5,6 @@ import pytest
 from CommonServerPython import *
 from unittest.mock import MagicMock, AsyncMock
 import asyncio
-import threading
 from PaloAltoNetworks_PrismaCloudCompute import (
     HEADERS_BY_NAME,
     PrismaCloudComputeClient,
@@ -1967,7 +1966,7 @@ def test_init_asset_type_related_data_from_context(mocker):
     When: init_asset_type_related_data is called.
     Then: It should initialize AssetTypeRelatedData with values from the context.
     """
-    ctx_lock = threading.Lock()
+    ctx_lock = asyncio.Lock()
     mocker.patch.object(
         demisto,
         "getIntegrationContext",
@@ -1988,7 +1987,7 @@ def test_init_asset_type_related_data_new_data(mocker):
     When: init_asset_type_related_data is called.
     Then: It should initialize AssetTypeRelatedData with default values.
     """
-    ctx_lock = threading.Lock()
+    ctx_lock = asyncio.Lock()
     mocker.patch.object(demisto, "getIntegrationContext", return_value={})
     asset_type_data = init_asset_type_related_data(
         endpoint="/images",
@@ -2033,7 +2032,7 @@ async def test_collect_assets_and_send_to_xsiam_no_data(mocker):
     When: collect_assets_and_send_to_xsiam is called.
     Then: It should break the loop and remove related data from context.
     """
-    ctx_lock = threading.Lock()
+    ctx_lock = asyncio.Lock()
     mock_client = MockAsyncClient()
     mock_response = AsyncMock()
     mock_response.headers = {"Total-Count": "0"}
@@ -2046,7 +2045,7 @@ async def test_collect_assets_and_send_to_xsiam_no_data(mocker):
     )
 
     mock_send_data = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.async_send_data_to_xsiam")
-    mock_remove_data = mocker.patch.object(asset_type_related_data, "remove_related_data_from_ctx")
+    mock_remove_data = mocker.patch.object(asset_type_related_data, "remove_related_data_from_ctx", new_callable=AsyncMock)
     await collect_assets_and_send_to_xsiam(mock_client, asset_type_related_data)
     mock_send_data.assert_not_called()
     assert mock_remove_data.called
@@ -2059,7 +2058,7 @@ async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
     When: collect_assets_and_send_to_xsiam is called.
     Then: It should process and send data to XSIAM, update context, and increment offset.
     """
-    ctx_lock = threading.Lock()
+    ctx_lock = asyncio.Lock()
     mock_client = MockAsyncClient()
     first_mock_response = AsyncMock()
     first_mock_response.headers = {"Total-Count": "1"}
@@ -2084,8 +2083,8 @@ async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
         "PaloAltoNetworks_PrismaCloudCompute.process_asset_data_and_send_to_xsiam", new_callable=MagicMock
     )
     mock_gather = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.asyncio.gather", new_callable=MagicMock)
-    mock_update_context = mocker.patch.object(asset_type_related_data, "safe_update_integration_context")
-    mock_clear_context = mocker.patch.object(asset_type_related_data, "remove_related_data_from_ctx")
+    mock_update_context = mocker.patch.object(asset_type_related_data, "safe_update_integration_context", new_callable=AsyncMock)
+    mock_clear_context = mocker.patch.object(asset_type_related_data, "remove_related_data_from_ctx", new_callable=AsyncMock)
 
     mock_send_data.return_value = [asyncio.Future()]
     mock_send_data.return_value[0].set_result(None)
