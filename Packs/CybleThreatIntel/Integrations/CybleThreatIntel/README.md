@@ -88,7 +88,7 @@ Prefix: `CybleIntel.IOCLookup`
 ### **Example**
 
 ```text
-!cyble-vision-ioc-lookup ioc=45.67.23.9
+!cyble-vision-ioc-lookup ioc=test
 
 ```
 
@@ -133,3 +133,24 @@ It is used by the XSOAR engine when *Fetches Indicators* is enabled.
 
 For issues, contact **[support@cyble.com](mailto:support@cyble.com)**
 or your assigned Cyble Technical Advisor.
+
+### cyble-vision-ioc-lookup
+
+***
+Lookup a single IOC using the Cyble Vision API.
+
+#### Base Command
+
+`cyble-vision-ioc-lookup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ioc | IOC value. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CybleIntel.IOCLookup | String | IOC lookup response. |
