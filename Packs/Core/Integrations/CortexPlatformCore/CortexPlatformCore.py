@@ -3784,25 +3784,29 @@ def postprocess_case_resolution_statuses(client, response: dict):
     response = response.copy()
     pbs_metadata = client.get_playbooks_metadata() or []
     pb_id_to_data = map_pb_id_to_data(pbs_metadata)
-    task_statuses = ["done", "inProgress", "pending", "recommended"]
-    for task_status in task_statuses:
-        tasks = response.get(task_status, {}).get("caseTasks", [])
-        for task in tasks:
-            if task_status in ["done", "inProgress"]:
-                enhance_with_pb_details(pb_id_to_data, task)
 
-            elif task_status == "pending":
+    all_items = []
+    categories = ["done", "inProgress", "pending", "recommended"]
+
+    for category in categories:
+        tasks = response.get(category, {}).get("caseTasks", [])
+        for task in tasks:
+            # Add category field to identify which list this came from
+            task["category"] = category
+            if category in ["done", "inProgress", "recommended"]:
+                task["itemType"] = "playbook"
+            else:
+                task["itemType"] = "playbookTask"
+
+            if category in ["done", "inProgress"]:
+                enhance_with_pb_details(pb_id_to_data, task)
+            elif category == "pending":
                 enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
                 task["parentPlaybook"] = task.pop("parentdetails")
 
-        response[task_status] = tasks
+            all_items.append(task)
 
-    response["donePlaybooks"] = response.pop("done", [])
-    response["activePlaybooks"] = response.pop("inProgress",[])
-    response["pendingPlaybookTasks"] = response.pop("pending",[])
-    response["recommendedPlaybooks"] = response.pop("recommended",[])
-
-    return response
+    return all_items
 
 
 def get_case_resolution_statuses(client, args):
