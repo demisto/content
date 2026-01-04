@@ -2082,14 +2082,11 @@ async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
     mock_send_data = mocker.patch(
         "PaloAltoNetworks_PrismaCloudCompute.process_asset_data_and_send_to_xsiam", new_callable=MagicMock
     )
-    mock_gather = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.asyncio.gather", new_callable=MagicMock)
     mock_update_context = mocker.patch.object(asset_type_related_data, "safe_update_integration_context", new_callable=AsyncMock)
     mock_clear_context = mocker.patch.object(asset_type_related_data, "remove_related_data_from_ctx", new_callable=AsyncMock)
 
-    mock_send_data.return_value = [asyncio.Future()]
-    mock_send_data.return_value[0].set_result(None)
-    mock_gather.return_value = asyncio.Future()
-    mock_gather.return_value.set_result(None)
+    mock_send_data.return_value = asyncio.Future()
+    mock_send_data.return_value.set_result(None)
 
     await collect_assets_and_send_to_xsiam(mock_client, asset_type_related_data)
 
