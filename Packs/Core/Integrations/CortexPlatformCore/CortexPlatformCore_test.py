@@ -8725,6 +8725,7 @@ def test_validate_custom_fields_non_existent_field(mocker):
     assert error_messages
     assert "does not exist" in error_messages
 
+
 # =========================================== TEST platform_http_request Method ===========================================#
 def test_platform_http_request_success(mocker):
     """
@@ -8736,32 +8737,30 @@ def test_platform_http_request_success(mocker):
         - Ensure demisto._platformAPICall is called correctly and JSON response is parsed.
     """
     from CortexPlatformCore import Client
-    
+
     client = Client(base_url="", headers={})
     mocker.patch("CortexPlatformCore.FORWARD_USER_RUN_RBAC", True)
-    
+
     mock_platform_api_call = mocker.patch.object(
-        demisto,
-        "_platformAPICall",
-        return_value={"status": 200, "data": '{"result": "success", "query_id": "abc123"}'}
+        demisto, "_platformAPICall", return_value={"status": 200, "data": '{"result": "success", "query_id": "abc123"}'}
     )
-    
+
     response = client.platform_http_request(
         method="POST",
         url_suffix="/xql_queries/submit/",
         json_data={"query": "dataset = xdr_data | fields *", "timeframe": {"relativeTime": 86400000}},
         params={"param1": "value1"},
         timeout=120,
-        ok_codes=[200]
+        ok_codes=[200],
     )
-    
+
     assert response == {"result": "success", "query_id": "abc123"}
     mock_platform_api_call.assert_called_once_with(
         path="/xql_queries/submit/",
         method="POST",
         params={"param1": "value1"},
         data='{"query": "dataset = xdr_data | fields *", "timeframe": {"relativeTime": 86400000}}',
-        timeout=120
+        timeout=120,
     )
 
 
@@ -8776,13 +8775,13 @@ def test_platform_http_request_rbac_disabled(mocker):
     """
     from CortexPlatformCore import Client
     from CommonServerPython import DemistoException
-    
+
     client = Client(base_url="", headers={})
     mocker.patch("CortexPlatformCore.FORWARD_USER_RUN_RBAC", False)
-    
+
     with pytest.raises(DemistoException) as exc_info:
         client.platform_http_request(method="GET", url_suffix="/test")
-    
+
     assert "integration is cloned" in str(exc_info.value)
 
 
@@ -8942,7 +8941,7 @@ def test_get_xql_query_results_platform_polling_success(mocker):
     Then:
     - Ensure results are returned after polling.
     """
-    from CortexPlatformCore import get_xql_query_results_platform_polling, get_xql_query_results_platform, Client
+    from CortexPlatformCore import get_xql_query_results_platform_polling, Client
 
     client = Client(base_url="", headers={})
     execution_id = "test_exec_id"

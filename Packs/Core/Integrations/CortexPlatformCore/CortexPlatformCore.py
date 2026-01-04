@@ -3898,6 +3898,7 @@ def list_system_users_command(client, args):
         raw_response=response,
     )
 
+
 def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
     """Convert a timeframe string to a json required for XQL queries.
 
@@ -4028,9 +4029,7 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     }
 
     demisto.debug(f"Calling xql_queries/submit with {data=}")
-    res = client.platform_http_request(
-        url_suffix="/xql_queries/submit/", method="POST", json_data=data, ok_codes=[200]
-    )
+    res = client.platform_http_request(url_suffix="/xql_queries/submit/", method="POST", json_data=data, ok_codes=[200])
     return str(res)
 
 
@@ -4069,7 +4068,6 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
     )
-
 
 
 def main():  # pragma: no cover
