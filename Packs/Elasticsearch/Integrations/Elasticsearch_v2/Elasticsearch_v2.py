@@ -232,7 +232,7 @@ def get_elastic_token():
 
         if not USERNAME or not PASSWORD:
             demisto.debug("get_elastic_token - username or password fields are missing.")
-            raise DemistoException("get_elastic_token - username or password fields are missing.")
+            raise DemistoException("username or password fields are missing.")
 
         # 2. Token exists but expired, and refresh token is valid
         if refresh_token and not is_access_token_expired(refresh_token_expires_in):
@@ -298,11 +298,12 @@ def get_elastic_token():
             return integration_context["access_token"]
 
         demisto.debug(f"Failed to authenticate: {response.status_code}\n{response.text}")
-        raise DemistoException(f"Failed to authenticate: {response.status_code}\n{response.text}")
+        reason = json.loads(response.text).get("error", {}).get("reason") or response.reason or response.text
+        raise DemistoException(f"{response.status_code}\n{reason}")
 
     except Exception as e:
         demisto.debug(f"get_elastic_token error: \n{str(e)}")
-        raise DemistoException(f"get_elastic_token error:\n{str(e)}")
+        raise DemistoException(f"{str(e)}")
 
 
 def elasticsearch_builder(proxies):
@@ -715,7 +716,7 @@ def test_connectivity_auth(proxies) -> tuple[bool, str]:
         if res is not None:
             if res.status_code >= 400:
                 demisto.debug(f"test_connectivity_auth - Failed to connect.\n{res.status_code=}, {res.text=}")
-                return False, f"Failed to connect.\n{res.status_code=}, {res.text=}"
+                return False, f"Failed to connect.\nStatus:{res.status_code}, {res.reason}"
 
             elif res.status_code == 200:
                 demisto.debug("test_connectivity_auth - Connectivity test successful")
@@ -726,7 +727,7 @@ def test_connectivity_auth(proxies) -> tuple[bool, str]:
 
     except Exception as e:
         demisto.debug(f"test_connectivity_auth - Failed to connect.\nError message: {e}")
-        return False, f"Failed to connect.\nError message: {e}"
+        return False, f"Failed to connect.\n{e}"
 
 
 def verify_es_server_version(res):

@@ -23,7 +23,10 @@ To use **API Key Authentication**:
 
 For more info about API Key management see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-create-api-key.html)
 
-**Note:** You can optionally use the *Username* and *Password* fields to enter the API key ID and API key. See the hint note on the configuration page for more details.
+**Note:** Optionally, you can choose **Basic Auth** type and use the *Username* and *Password* fields to enter the API key ID and API key.
+Example:
+for *API Key ID* kQme5aOx enter: _api_key_id:kQme5aOx
+for *API Key* ui2lp2axT enter: ui2lp2axT
 
 ### Bearer Auth (http)
 
@@ -48,12 +51,6 @@ Fetch incidents requires:
     - Query String or Raw Query
 
 For further information about type mapping, see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/mapping.html#mapping-type).
-
-**Username**
-Use for Basic auth username. Optionally you can use this field as an *API key ID* for *API Key auth*. Example: for *API Key ID* kQme5aOx enter: _api_key_id:kQme5aOx
-
-**Password**
-Use for Basic auth password. Optionally you can use this field as an *API key* for *API Key auth*. Example: for *API Key* ui2lp2axT enter: ui2lp2axT
 
 **Query String**
 Query String is queried using the Lucene syntax. For more information about the Lucene syntax see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax).
