@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Palo Alto Networks
 defaultEnabled: true
 sectionorder:
   - Connect
