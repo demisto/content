@@ -65,7 +65,8 @@ def main():
         print("⚠️ No AI Review comment found from content-bot.")
 
     print(
-        '❌ AI Review check failed. Please trigger an AI review, check if the generated comments valid and relevant (otherwise edit or delete them) and finally approve the results with a 👍 reaction.'
+        "❌ AI Review check failed. Please trigger an AI review, check if the generated comments valid and relevant ",
+        "otherwise edit or delete them) and finally approve the results with a 👍 reaction."
     )
     sys.exit(1)
 
