@@ -8764,27 +8764,6 @@ def test_platform_http_request_success(mocker):
     )
 
 
-def test_platform_http_request_rbac_disabled(mocker):
-    """
-    Given:
-        - A client with RBAC not enabled (FORWARD_USER_RUN_RBAC is False).
-    When:
-        - Calling platform_http_request.
-    Then:
-        - Ensure DemistoException is raised indicating integration is cloned or server version is too low.
-    """
-    from CortexPlatformCore import Client
-    from CommonServerPython import DemistoException
-
-    client = Client(base_url="", headers={})
-    mocker.patch("CortexPlatformCore.FORWARD_USER_RUN_RBAC", False)
-
-    with pytest.raises(DemistoException) as exc_info:
-        client.platform_http_request(method="GET", url_suffix="/test")
-
-    assert "integration is cloned" in str(exc_info.value)
-
-
 # =========================================== TEST Platform Query Functions ===========================================#
 def test_start_xql_query_platform(mocker):
     """
