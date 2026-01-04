@@ -755,7 +755,7 @@ class Client(CoreClient):
             DemistoException: If FORWARD_USER_RUN_RBAC is not enabled, indicating the integration
                 is cloned or the server version is too low.
         """
-        data = json.dumps(json_data) if json_data else data
+        data = json.dumps(json_data) if json_data is not None else data
 
         response = demisto._platformAPICall(path=url_suffix, method=method, params=params, data=data, timeout=timeout)
 
@@ -3907,15 +3907,21 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
             if len(tokens) == 2:
                 time_from = dateparser.parse(tokens[0], settings={"TIMEZONE": "UTC"})
                 time_to = dateparser.parse(tokens[1], settings={"TIMEZONE": "UTC"})
-                assert time_from is not None
-                assert time_to is not None
-                return {"from": int(time_from.timestamp()) * 1000, "to": int(time_to.timestamp()) * 1000}
+                if time_from is None or time_to is None:
+                    raise DemistoException(
+                        "Failed to parse timeframe argument, please use a valid format."
+                        " (e.g. '1 day', '3 weeks ago', 'between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00')"
+                    )
+                return {"from": int(time_from.timestamp() * 1000), "to": int(time_to.timestamp() * 1000)}
         else:
             relative = dateparser.parse(time_to_convert, settings={"TIMEZONE": "UTC"})
             now_date = datetime.utcnow()
-            assert now_date is not None
-            assert relative is not None
-            return {"relativeTime": int((now_date - relative).total_seconds()) * 1000}
+            if relative is None or now_date is None:
+                raise DemistoException(
+                    "Failed to parse timeframe argument, please use a valid format."
+                    " (e.g. '1 day', '3 weeks ago', 'between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00')"
+                )
+            return {"relativeTime": int((now_date - relative).total_seconds() * 1000)}
 
         raise ValueError(f"Invalid timeframe: {time_to_convert}")
     except Exception as exc:
@@ -3954,7 +3960,10 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
         query_data = client.platform_http_request(
             method="POST", json_data=data, url_suffix="/xql_queries/results/", ok_codes=[200]
         )
-        response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
+        if isinstance(query_data, str):
+            response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
+        else:
+            response["results"] = query_data
 
     if response.get("status") == "FAIL":
         # Get full error details using PAPI
