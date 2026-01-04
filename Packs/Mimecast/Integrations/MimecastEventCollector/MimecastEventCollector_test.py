@@ -614,7 +614,7 @@ async def test_fetch_siem_events_service_failure_isolation(async_client: AsyncCl
         if event_type == "delivery":
             raise Exception("Service error")
         return (
-            [{"aCode": f"{event_type}-event-1", "timestamp": 1704067200000, "_filter_time": "2025-01-01T00:00:00.000Z"}],
+            [{"id": 1, "aCode": f"{event_type}-event-1", "timestamp": 1704067200000, "_filter_time": "2025-01-01T00:00:00.000Z"}],
             "next_page",
         )
 

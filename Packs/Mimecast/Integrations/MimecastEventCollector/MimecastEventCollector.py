@@ -766,11 +766,15 @@ async def fetch_audit_events(
         demisto.debug(f"No new audit events found. Keeping {audit_last_run=}.")
         return audit_last_run, []
 
-    new_start_time = audit_events[-1].get(FILTER_TIME_KEY)
-    new_last_fetched_ids = [event.get(EVENT_ID_KEY) for event in audit_events if event.pop(FILTER_TIME_KEY) == new_start_time]
+    new_start_time = audit_events[-1][FILTER_TIME_KEY]
+    new_last_fetched_ids = [event[EVENT_ID_KEY] for event in audit_events if event[FILTER_TIME_KEY] == new_start_time]
     audit_next_run = {START_DATE_KEY: new_start_time, LAST_FETCHED_IDS_KEY: new_last_fetched_ids}
 
-    demisto.debug(f"Finished fetching {len(audit_events)} audit events " f"with {new_start_time=}, {new_last_fetched_ids=}.")
+    # Remove internal key used for deduplication purposes before sending events to dataset
+    for event in audit_events:
+        event.pop(FILTER_TIME_KEY)
+
+    demisto.debug(f"Finished fetching {len(audit_events)} audit events with {new_start_time=}, {new_last_fetched_ids=}.")
     return audit_next_run, audit_events
 
 
@@ -852,15 +856,18 @@ async def fetch_siem_events(
             continue
 
         # Update state with newest events
-        new_start_time = event_type_events[-1].get(FILTER_TIME_KEY)
-        new_last_fetched_ids = [
-            event.get(EVENT_ID_KEY) for event in event_type_events if event.pop(FILTER_TIME_KEY) == new_start_time
-        ]
+        new_start_time, new_last_fetched_ids = get_siem_new_start_time_last_fetched_ids(
+            event_type=event_type, events=event_type_events
+        )
         siem_next_run[event_type] = {
             START_DATE_KEY: new_start_time,
             LAST_FETCHED_IDS_KEY: new_last_fetched_ids,
             NEXT_PAGE_KEY: new_next_page,
         }
+
+        # Remove internal key used for deduplication purposes before sending events to dataset
+        for event in event_type_events:
+            event.pop(FILTER_TIME_KEY)
 
         all_events.extend(event_type_events)
         demisto.debug(
@@ -923,6 +930,35 @@ def ensure_new_last_run_schema(last_run: dict) -> dict[str, Any]:
 
     demisto.info(f"Finished migrating last run to new schema {new_last_run=}.")
     return new_last_run
+
+
+def get_siem_new_start_time_last_fetched_ids(events: list[dict[str, Any]], event_type: str) -> tuple[str, list[str]]:
+    """
+    Gets the new `start_time` based on the `_filter_time` key in formatted and sorted events as well as
+    the list of last fetched IDs either with the newest time or last page (whichever is larger).
+
+    Args:
+        events (list[dict[str, Any]]): List of events from the SIEM event type (must be sorted and formatted).
+        event_type (str): SIEM event type name.
+
+    Returns:
+        tuple[str, str]: Tuple of new start time and list of last fetched IDs.
+
+    Raises:
+        IndexError: If called with an empty events list.
+    """
+    new_start_time = events[-1][FILTER_TIME_KEY]
+    events_with_newest_time = [event[EVENT_ID_KEY] for event in events if event.get(FILTER_TIME_KEY) == new_start_time]
+    events_from_last_page = [event[EVENT_ID_KEY] for event in events[-DEFAULT_SIEM_PAGE_SIZE:]]
+    if len(events_with_newest_time) > len(events_from_last_page):
+        demisto.debug(f"[{event_type}] Using event IDs with time={new_start_time} for last run {LAST_FETCHED_IDS_KEY!r} value.")
+        new_last_fetched_ids = events_with_newest_time
+    else:
+        # In certain cases, even when using passing `next_page` to SIEM endpoint, we may get events from previous page on the next page
+        demisto.debug(f"[{event_type}] Using all event IDs in last SIEM page for last run {LAST_FETCHED_IDS_KEY!r} value.")
+        new_last_fetched_ids = events_from_last_page
+
+    return new_start_time, new_last_fetched_ids
 
 
 async def fetch_events_command(
