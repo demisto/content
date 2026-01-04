@@ -13,13 +13,13 @@ args:
 - name: value
   description: The context to refer a value with ${.xxx} if `template` is not empty, otherwise the template text.
 - name: template
-  description: The template text
+  description: The template text.
 - name: template_type
   auto: PREDEFINED
   predefined:
   - raw
   - json
-  description: The template type
+  description: The template type.
   defaultValue: raw
 - name: ctx_data
   description: 'Context Data: Input . (single dot) on `From previous tasks` to enable to extract the context data.'
@@ -40,7 +40,7 @@ args:
 scripttarget: 0
 isllm: false
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
