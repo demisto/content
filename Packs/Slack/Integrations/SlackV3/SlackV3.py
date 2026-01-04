@@ -2852,15 +2852,16 @@ def conversation_history() -> None:
 
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
     demisto.debug(f"Raw response from Slack conversations.history: {raw_response}")
-
+    
     if not raw_response.get("ok"):
         raise DemistoException(
             f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response
         )
-
-    messages = raw_response.get("messages", [])
-    cursor = raw_response.get("response_metadata", {}).get("next_cursor", "")
-
+    
+    messages: Any = raw_response.get("messages", [])
+    response_metadata: dict = raw_response.get("response_metadata", {})  # type: ignore[assignment]
+    cursor: str = response_metadata.get("next_cursor", "")
+    
     # Normalize messages to list
     if isinstance(messages, dict):
         messages = [messages]
@@ -2868,18 +2869,18 @@ def conversation_history() -> None:
         raise DemistoException(
             f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response
         )
-
+    
     context: List[Dict[str, Any]] = []
     for message in messages:
         thread_ts = "N/A"
         has_replies = "No"
         name = "N/A"
         full_name = "N/A"
-
+        
         if "subtype" not in message:
             user_id = message.get("user")
             user_details_response = send_slack_request_sync(CLIENT, "users.info", http_verb="GET", body={"user": user_id})
-            user_details = user_details_response.get("user")
+            user_details: dict = user_details_response.get("user", {})  # type: ignore[assignment]
             full_name = user_details.get("real_name")
             name = user_details.get("name")
             if "thread_ts" in message:
