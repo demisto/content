@@ -1434,15 +1434,15 @@ def test_state_exhaustion_check():
 @respx.mock
 def test_retry_after_header_parsing():
     """Test Retry-After header parsing."""
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
     
     # Test numeric Retry-After
     response = Response(429, headers={"Retry-After": "60"})
     delay = _parse_retry_after(response)
     assert delay == 60.0
     
-    # Test date Retry-After
-    future = datetime.utcnow() + timedelta(seconds=30)
+    # Test date Retry-After (use timezone-aware datetime)
+    future = datetime.now(timezone.utc) + timedelta(seconds=30)
     retry_after_date = future.strftime("%a, %d %b %Y %H:%M:%S GMT")
     response = Response(429, headers={"Retry-After": retry_after_date})
     delay = _parse_retry_after(response)
@@ -2038,3 +2038,527 @@ def test_collector_retry_error_response_attribute():
     assert excinfo.value.response is not None
     assert excinfo.value.response.status_code == 500
     assert excinfo.value.response.json() == {"error": "Server Error"}
+
+
+# ============================================================================
+# Additional tests for uncovered lines in ContentClientApiModule.py
+# ============================================================================
+
+
+def test_get_value_by_path_empty_parts():
+    """Test _get_value_by_path handles empty parts from consecutive dots."""
+    from ContentClientApiModule import _get_value_by_path as content_get_value
+    
+    data = {"a": {"b": "value"}}
+    # Path with consecutive dots should skip empty parts
+    result = content_get_value(data, "a..b")
+    assert result == "value"
+    
+    # Leading dot
+    result = content_get_value(data, ".a.b")
+    assert result == "value"
+    
+    # Trailing dot
+    result = content_get_value(data, "a.b.")
+    assert result == "value"
+
+
+def test_extract_list_with_non_standard_types():
+    """Test _extract_list with various non-standard types."""
+    from ContentClientApiModule import _extract_list as content_extract_list
+    
+    # Test with boolean
+    result = content_extract_list(True, None)
+    assert result == [True]
+    
+    # Test with float
+    result = content_extract_list(3.14, None)
+    assert result == [3.14]
+
+
+def test_parse_retry_after_with_none_response():
+    """Test _parse_retry_after with None response."""
+    from ContentClientApiModule import _parse_retry_after as content_parse_retry_after
+    
+    result = content_parse_retry_after(None)
+    assert result is None
+
+
+def test_timeout_settings_as_httpx():
+    """Test TimeoutSettings.as_httpx() method."""
+    settings = TimeoutSettings(connect=5.0, read=30.0, write=20.0, pool=15.0)
+    httpx_timeout = settings.as_httpx()
+    
+    assert httpx_timeout.connect == 5.0
+    assert httpx_timeout.read == 30.0
+    assert httpx_timeout.write == 20.0
+    assert httpx_timeout.pool == 15.0
+
+
+@respx.mock
+def test_content_client_direct_usage():
+    """Test ContentClient directly (not through BaseCollector)."""
+    from ContentClientApiModule import ContentClient, BearerTokenAuthHandler
+    
+    # Mock API endpoint
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        auth_handler=BearerTokenAuthHandler("test_token"),
+    )
+    
+    response = client.get("/v1/data")
+    
+    assert route.called
+    assert response.status_code == 200
+    sent_headers = route.calls[0].request.headers
+    assert sent_headers["Authorization"] == "Bearer test_token"
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_basic_auth_handler():
+    """Test ContentClient with BasicAuthHandler."""
+    from ContentClientApiModule import ContentClient, BasicAuthHandler
+    
+    # Mock API endpoint
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        auth_handler=BasicAuthHandler("user", "password"),
+    )
+    
+    response = client.get("/v1/data")
+    
+    assert route.called
+    assert response.status_code == 200
+    sent_headers = route.calls[0].request.headers
+    assert "Authorization" in sent_headers
+    assert sent_headers["Authorization"].startswith("Basic ")
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_patch_method():
+    """Test ContentClient PATCH method."""
+    from ContentClientApiModule import ContentClient
+    
+    route = respx.patch("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"patched": True})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    response = client.patch("/v1/data", json_data={"field": "value"})
+    
+    assert route.called
+    assert response.status_code == 200
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_with_tuple_auth():
+    """Test ContentClient with tuple auth (username, password)."""
+    from ContentClientApiModule import ContentClient
+    
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    # Create client with tuple auth
+    client = ContentClient(
+        base_url="https://api.example.com",
+        auth=("user", "password"),
+    )
+    
+    response = client.get("/v1/data")
+    
+    assert route.called
+    assert response.status_code == 200
+    # Verify Basic auth header was set
+    sent_headers = route.calls[0].request.headers
+    assert "Authorization" in sent_headers
+    assert sent_headers["Authorization"].startswith("Basic ")
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_with_request_auth_override():
+    """Test ContentClient with auth override in request."""
+    from ContentClientApiModule import ContentClient
+    
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Pass auth in the request
+    response = client._http_request("GET", "/v1/data", auth=("override_user", "override_pass"))
+    
+    assert route.called
+    # Verify Basic auth header was set from request auth
+    sent_headers = route.calls[0].request.headers
+    assert "Authorization" in sent_headers
+    assert sent_headers["Authorization"].startswith("Basic ")
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_rate_limiter_enabled():
+    """Test ContentClient with rate limiter enabled."""
+    from ContentClientApiModule import ContentClient
+    
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        rate_limiter=RateLimitPolicy(rate_per_second=100.0, burst=10),
+    )
+    
+    response = client.get("/v1/data")
+    
+    assert route.called
+    assert response.status_code == 200
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_diagnostic_mode_with_error():
+    """Test ContentClient diagnostic mode captures errors."""
+    from ContentClientApiModule import ContentClient
+    
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(500, json={"error": "Server Error"})
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        diagnostic_mode=True,
+        retry_policy=RetryPolicy(max_attempts=1),
+    )
+    
+    with pytest.raises(CollectorError):
+        client.get("/v1/data")
+    
+    # Verify diagnostic report captured the error
+    report = client.get_diagnostic_report()
+    assert len(report.request_traces) > 0
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_health_check_with_quota_error():
+    """Test ContentClient health_check with quota errors."""
+    from ContentClientApiModule import ContentClient
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Simulate quota error
+    client.execution_metrics.quota_error = 3
+    
+    health = client.health_check()
+    
+    assert health["status"] == "degraded"
+    assert any("rate limit" in w.lower() for w in health["warnings"])
+    
+    client.close()
+
+
+def test_collector_logger_warning():
+    """Test CollectorLogger warning method."""
+    from ContentClientApiModule import CollectorLogger
+    
+    logger = CollectorLogger("TestCollector", diagnostic_mode=True)
+    
+    # Warning should not raise
+    logger.warning("Test warning", {"key": "value"})
+
+
+def test_collector_logger_trace_error():
+    """Test CollectorLogger trace_error method."""
+    from ContentClientApiModule import CollectorLogger, RequestTrace
+    
+    logger = CollectorLogger("TestCollector", diagnostic_mode=True)
+    
+    trace = RequestTrace(
+        method="GET",
+        url="https://api.example.com/test",
+        headers={},
+        params={},
+        body=None,
+        timestamp=0.0,
+    )
+    
+    logger.trace_error(trace, "Test error", elapsed_ms=100.0)
+    
+    assert trace.error == "Test error"
+    assert trace.elapsed_ms == 100.0
+
+
+def test_collector_logger_format_with_non_serializable():
+    """Test CollectorLogger._format with non-JSON-serializable extra."""
+    from ContentClientApiModule import CollectorLogger
+    
+    logger = CollectorLogger("TestCollector", diagnostic_mode=False)
+    
+    # Create a non-serializable object
+    class NonSerializable:
+        def __repr__(self):
+            return "NonSerializable()"
+    
+    extra = {"obj": NonSerializable()}
+    formatted = logger._format("INFO", "Test message", extra)
+    
+    # Should fall back to str() representation
+    assert "NonSerializable" in formatted
+
+
+@respx.mock
+def test_oauth2_with_auth_params():
+    """Test OAuth2ClientCredentialsHandler with additional auth_params."""
+    from ContentClientApiModule import OAuth2ClientCredentialsHandler
+    
+    # Mock token endpoint
+    token_route = respx.post("https://auth.example.com/token").mock(
+        return_value=Response(200, json={"access_token": "test_token", "expires_in": 3600})
+    )
+    
+    # Mock API endpoint
+    respx.get("https://api.example.com/v1/events").mock(
+        return_value=Response(200, json={"data": {"events": []}, "meta": {"next_cursor": None}})
+    )
+    
+    context_store = IntegrationContextStore("TestCollector")
+    auth = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token",
+        client_id="test_client",
+        client_secret="test_secret",
+        auth_params={"custom_param": "custom_value"},
+        context_store=context_store,
+    )
+    
+    request = CollectorRequest(endpoint="/v1/events", data_path="data.events")
+    blueprint = build_blueprint(request=request, auth_handler=auth)
+    client = BaseCollector(blueprint)
+    
+    client.collect_events_sync()
+    
+    # Verify custom param was sent in token request
+    assert token_route.called
+    # The request body should contain the custom param
+    request_content = token_route.calls[0].request.content.decode()
+    assert "custom_param" in request_content
+
+
+@respx.mock
+def test_content_client_response_types():
+    """Test ContentClient with different response types."""
+    from ContentClientApiModule import ContentClient
+    
+    # Mock endpoints
+    respx.get("https://api.example.com/json").mock(
+        return_value=Response(200, json={"key": "value"})
+    )
+    respx.get("https://api.example.com/text").mock(
+        return_value=Response(200, text="plain text response")
+    )
+    respx.get("https://api.example.com/content").mock(
+        return_value=Response(200, content=b"binary content")
+    )
+    respx.get("https://api.example.com/xml").mock(
+        return_value=Response(200, text="<root><item>value</item></root>")
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Test JSON response
+    result = client._http_request("GET", "/json", resp_type="json")
+    assert result == {"key": "value"}
+    
+    # Test text response
+    result = client._http_request("GET", "/text", resp_type="text")
+    assert result == "plain text response"
+    
+    # Test content response
+    result = client._http_request("GET", "/content", resp_type="content")
+    assert result == b"binary content"
+    
+    # Test XML response (returns text)
+    result = client._http_request("GET", "/xml", resp_type="xml")
+    assert "<root>" in result
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_empty_response_handling():
+    """Test ContentClient handles empty responses correctly."""
+    from ContentClientApiModule import ContentClient
+    
+    respx.get("https://api.example.com/empty").mock(
+        return_value=Response(204)
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Test with return_empty_response and empty_valid_codes
+    result = client._http_request(
+        "GET", "/empty",
+        resp_type="json",
+        return_empty_response=True,
+        empty_valid_codes=[204],
+        ok_codes=(204,),
+    )
+    assert result == {}
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_json_decode_error_empty_content():
+    """Test ContentClient handles JSON decode error with empty content."""
+    from ContentClientApiModule import ContentClient
+    
+    respx.get("https://api.example.com/empty-json").mock(
+        return_value=Response(200, content=b"")
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Should return empty dict when content is empty
+    result = client._http_request("GET", "/empty-json", resp_type="json")
+    assert result == {}
+    
+    client.close()
+
+
+@respx.mock
+def test_retryable_exception_handling():
+    """Test handling of retryable exceptions (network errors)."""
+    from ContentClientApiModule import ContentClient
+    import httpx
+    
+    # Mock endpoint that fails with network error then succeeds
+    respx.get("https://api.example.com/v1/data").mock(
+        side_effect=[
+            httpx.ConnectError("Connection refused"),
+            Response(200, json={"result": "success"}),
+        ]
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        retry_policy=RetryPolicy(max_attempts=3, initial_delay=0.01, max_delay=0.02),
+        diagnostic_mode=True,
+    )
+    
+    result = client._http_request("GET", "/v1/data", resp_type="json")
+    
+    assert result == {"result": "success"}
+    assert client.execution_metrics.retry_error == 1
+    
+    client.close()
+
+
+def test_deduplication_state_serialization():
+    """Test DeduplicationState to_dict and from_dict."""
+    from ContentClientApiModule import DeduplicationState
+    
+    state = DeduplicationState(
+        latest_timestamp="2023-01-01T00:00:00Z",
+        seen_keys=["key1", "key2", "key3"],
+    )
+    
+    # Serialize
+    state_dict = state.to_dict()
+    assert state_dict["latest_timestamp"] == "2023-01-01T00:00:00Z"
+    assert state_dict["seen_keys"] == ["key1", "key2", "key3"]
+    
+    # Deserialize
+    restored = DeduplicationState.from_dict(state_dict)
+    assert restored.latest_timestamp == "2023-01-01T00:00:00Z"
+    assert restored.seen_keys == ["key1", "key2", "key3"]
+    
+    # Test empty state
+    empty = DeduplicationState.from_dict(None)
+    assert empty.latest_timestamp is None
+    assert empty.seen_keys == []
+
+
+def test_collector_state_with_deduplication():
+    """Test CollectorState serialization with deduplication."""
+    from ContentClientApiModule import DeduplicationState
+    
+    dedup_state = DeduplicationState(
+        latest_timestamp="2023-01-01T00:00:00Z",
+        seen_keys=["key1"],
+    )
+    
+    state = CollectorState(
+        cursor="test_cursor",
+        deduplication=dedup_state,
+    )
+    
+    # Serialize
+    state_dict = state.to_dict()
+    assert state_dict["deduplication"]["latest_timestamp"] == "2023-01-01T00:00:00Z"
+    
+    # Deserialize
+    restored = CollectorState.from_dict(state_dict)
+    assert restored.deduplication is not None
+    assert restored.deduplication.latest_timestamp == "2023-01-01T00:00:00Z"
+
+
+@respx.mock
+def test_content_client_diagnose_error():
+    """Test ContentClient.diagnose_error method."""
+    from ContentClientApiModule import ContentClient
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Test all error types
+    auth_error = CollectorAuthenticationError("Auth failed")
+    diagnosis = client.diagnose_error(auth_error)
+    assert diagnosis["issue"] == "Authentication failed"
+    
+    rate_error = CollectorRateLimitError("Rate limit")
+    diagnosis = client.diagnose_error(rate_error)
+    assert diagnosis["issue"] == "Rate limit exceeded"
+    
+    timeout_error = CollectorTimeoutError("Timeout")
+    diagnosis = client.diagnose_error(timeout_error)
+    assert diagnosis["issue"] == "Execution timeout"
+    
+    circuit_error = CollectorCircuitOpenError("Circuit open")
+    diagnosis = client.diagnose_error(circuit_error)
+    assert diagnosis["issue"] == "Circuit breaker is open"
+    
+    retry_error = CollectorRetryError("Retries exhausted")
+    diagnosis = client.diagnose_error(retry_error)
+    assert diagnosis["issue"] == "All retry attempts exhausted"
+    
+    config_error = CollectorConfigurationError("Bad config")
+    diagnosis = client.diagnose_error(config_error)
+    assert diagnosis["issue"] == "Configuration error"
+    
+    generic_error = Exception("Unknown")
+    diagnosis = client.diagnose_error(generic_error)
+    assert diagnosis["issue"] == "Unexpected error"
+    
+    client.close()
