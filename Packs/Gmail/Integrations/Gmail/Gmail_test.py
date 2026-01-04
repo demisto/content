@@ -1138,14 +1138,13 @@ def test_search_command_with_next_page_token(mocker):
     import Gmail
     from Gmail import search_command
 
-    # Mock the search function to return a nextPageToken
     mocker.patch.object(
         Gmail,
         "search",
         return_value=(
-            [input_data.first_message],  # mails
-            "subject:test",  # query
-            "next_page_token_123",  # nextPageToken
+            [input_data.first_message],
+            "subject:test",
+            "next_page_token_123",
         ),
     )
 
@@ -1153,11 +1152,10 @@ def test_search_command_with_next_page_token(mocker):
 
     result = search_command()
 
-    # Verify that the nextPageToken is in the context
     assert result is not None
     assert "EntryContext" in result
-    assert "Gmail.PageToken" in result["EntryContext"]
-    assert result["EntryContext"]["Gmail.PageToken"]["NextPageToken"] == "next_page_token_123"
+    assert "GmailPageToken" in result["EntryContext"]
+    assert result["EntryContext"]["GmailPageToken"]["NextPageToken"] == "next_page_token_123"
 
 
 def test_search_command_without_next_page_token(mocker):
@@ -1173,14 +1171,13 @@ def test_search_command_without_next_page_token(mocker):
     import Gmail
     from Gmail import search_command
 
-    # Mock the search function to return None for nextPageToken
     mocker.patch.object(
         Gmail,
         "search",
         return_value=(
-            [input_data.first_message],  # mails
-            "subject:test",  # query
-            None,  # nextPageToken
+            [input_data.first_message],
+            "subject:test",
+            None,
         ),
     )
 
@@ -1188,8 +1185,6 @@ def test_search_command_without_next_page_token(mocker):
 
     result = search_command()
 
-    # Verify that the nextPageToken is not in the context when it's None
     assert result is not None
     assert "EntryContext" in result
-    # Gmail.PageToken should not exist when nextPageToken is None
-    assert "Gmail.PageToken" not in result["EntryContext"]
+    assert "GmailPageToken" not in result["EntryContext"]
