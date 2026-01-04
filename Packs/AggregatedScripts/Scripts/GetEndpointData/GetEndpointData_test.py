@@ -303,13 +303,14 @@ class TestEndpointCommandRunner:
         mocker.patch("GetEndpointData.demisto.debug")
         mocker.patch.object(command_runner, "run_execute_command", return_value=[])
 
-        # Mock: Empty Context, Valid Note ("No entries found"), Empty Errors
-        note_result = CommandResults(readable_output="No entries found")
         mocker.patch.object(
             command_runner, 
             "get_command_results", 
             return_value=([], [], []) 
         )
+
+        # Mock get_endpoint_not_found
+        mocker.patch("GetEndpointData.get_endpoint_not_found", return_value=[])
 
         # Execute
         hr, endpoints = command_runner.run_command(command, endpoint_args)
@@ -319,6 +320,9 @@ class TestEndpointCommandRunner:
         assert hr == [] 
         # Since 'hr' passed to get_endpoint_not_found was "", endpoints is empty
         assert endpoints == []
+
+        mock_run_execute_command.assert_called_once()
+        mock_get_command_results.assert_called_once()
 
 def test_is_private_ip():
     """
