@@ -56,12 +56,10 @@ def main():
 
     for review_comment in reviews:
         print(review_comment.body)
-        print(f"{(REQUIRED_TEXT in review_comment.body)}")
-        print(f"{review_comment.user.login}")
         # Check if comment is from the bot and has the required text
         if (review_comment.user.login == BOT_USERNAME) and (REQUIRED_TEXT in review_comment.body):
             found_bot_comment = True
-            print(f"Found AI Review comment (ID: {review_comment.id}). Checking reactions...")
+            print(f"Found AI Review comment (ID: {review_comment.id})")
 
     if not found_bot_comment:
         print("❌ AI Review check failed. No AI Review comment found from content-bot.")
