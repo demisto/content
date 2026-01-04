@@ -1,3 +1,4 @@
+import hashlib
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import aiohttp
@@ -18,7 +19,7 @@ EVENTS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "mimecast"
 PRODUCT = "mimecast"
 EVENT_TIME_KEY = "_time"
-SOURCE_LOG_TYPE_KEY = "_source_log_type"
+SOURCE_LOG_TYPE_KEY = "source_log_type"
 FILTER_TIME_KEY = "_filter_time"  # For last run and deduplication (will be removed before sending to dataset)
 
 # Response general error fields
@@ -30,7 +31,6 @@ ACCESS_TOKEN_KEY = "access_token"
 TOKEN_TYPE_KEY = "token_type"
 TOKEN_TTL_KEY = "expires_in"  # TTL in seconds
 TOKEN_VALID_UNTIL_KEY = "valid_until"
-
 DEFAULT_TOKEN_TTL = 1800  # 30 minutes
 DEFAULT_TOKEN_TYPE = "bearer"
 
@@ -52,10 +52,18 @@ UTC_HOUR_AGO = UTC_NOW - timedelta(hours=1)
 UTC_MINUTE_AGO = UTC_NOW - timedelta(minutes=1)
 
 # Event ID and time fields (for deduplication and formatting)
-AUDIT_ID_KEY = "id"
-SIEM_ID_KEY = "aCode"
+EVENT_ID_KEY = "id"  # generated if not exists
 AUDIT_TIME_KEY = "eventTime"
 SIEM_TIME_KEY = "timestamp"
+
+# Last run fields
+DEPRECATED_AUDIT_START_DATE_KEY = "audit_last_run"
+DEPRECATED_AUDIT_LAST_FETCHED_IDS_KEY = "audit_event_dedup_list"
+DEPRECATED_SIEM_NEXT_PAGE_KEY = "siem_last_run"
+DEPRECATED_SIEM_LAST_FETCHED_IDS_KEY = "siem_events_from_last_run"
+START_DATE_KEY = "start_date"
+LAST_FETCHED_IDS_KEY = "last_fetched_ids"
+NEXT_PAGE_KEY = "next_page"
 
 # Event types (Audit + SIEM types)
 DEFAULT_EVENT_TYPES = [
@@ -348,6 +356,24 @@ class AsyncClient:
 """ HELPER FUNCTIONS """
 
 
+def generate_event_id_if_not_exists(events: list[dict[str, Any]]):
+    """
+    Generates a unique SHA256 hash as the event ID if the `id` field does not exist in the event JSON.
+
+    Args:
+        events (list[dict[str, Any]]): The list of events to deduplicate.
+    """
+    for event in events:
+        if EVENT_ID_KEY in event:
+            continue
+
+        # SIEM events do *not* have an "id" field, so we need to generate a unique hash for deduplication
+        encoded_event: bytes = json.dumps(event, sort_keys=True).encode("utf-8")
+        event_id = str(hashlib.sha256(encoded_event).hexdigest())
+        event[EVENT_ID_KEY] = event_id
+        demisto.debug(f"Generated a unique SHA256 {event_id=} using the contents of {event=}.")
+
+
 def convert_to_audit_filter_format(filter_datetime: datetime) -> str:
     """
     Converts datetime object (e.g. 2025-12-24T11:23:41.955Z).
@@ -394,9 +420,8 @@ def is_within_last_24_hours(filter_datetime: datetime | str) -> bool:
 def deduplicate_and_format_events(
     events: list[dict[str, Any]],
     all_fetched_ids: set[str],
-    event_id_key: str,
     event_time_key: str,
-    source_log_type: str,
+    event_type: str,
     filter_format_func: Callable[[datetime], str],
 ) -> list[dict[str, Any]]:
     """
@@ -405,38 +430,40 @@ def deduplicate_and_format_events(
     Args:
         events (list[dict[str, Any]]): List of raw events.
         all_fetched_ids (set[str]): Set of event IDs that have already been fetched.
-        event_id_key (str): Key denoting the unique ID of each event (for deduplication).
         event_time_key (str): Key denoting the occurrence time of the each raw event (for deduplication and formatting).
-        source_log_time (str): Type of event (either "Audit" or "SIEM log").
+        event_type (str): Type of event (either "Audit" or "SIEM log").
         filter_format_func (Callable[[datetime], str]): Function formats a datetime object as a string (for deduplication).
 
     Returns:
         list[dict[str, Any]]: A list of deduplicated events.
     """
-    demisto.debug(f"Starting to deduplicate {len(events)} {source_log_type} events.")
+    demisto.debug(f"[{event_type}] Starting to deduplicate {len(events)} events.")
+    if not events:
+        demisto.debug(f"[{event_type}] No events to deduplicate. Returning empty list.")
+        return []
+
+    generate_event_id_if_not_exists(events)
     deduplicated_events = []
 
     for event in events:
-        event_id = event[event_id_key]
+        event_id = event[EVENT_ID_KEY]
 
         if event_id in all_fetched_ids:
-            demisto.debug(f"Skipping duplicate {source_log_type} {event_id=}.")
+            demisto.debug(f"[{event_type}] Skipping duplicate {event_id=}.")
             continue
 
         event_time = cast(datetime, arg_to_datetime(event[event_time_key], required=True))
 
         # For dataset
         event[EVENT_TIME_KEY] = event_time.strftime(EVENTS_DATE_FORMAT)
-        event[SOURCE_LOG_TYPE_KEY] = source_log_type
+        event[SOURCE_LOG_TYPE_KEY] = event_type
         # For last run (will be removed before sending to dataset)
         event[FILTER_TIME_KEY] = filter_format_func(event_time)
 
         all_fetched_ids.add(event_id)
         deduplicated_events.append(event)
 
-    demisto.debug(
-        f"Finished deduplicating {len(events)} {source_log_type} events. " f"Got {len(deduplicated_events)} unique events."
-    )
+    demisto.debug(f"[{event_type}] Finished deduplicating {len(events)} events. Got {len(deduplicated_events)} unique events.")
     return deduplicated_events
 
 
@@ -458,21 +485,24 @@ async def get_audit_events(
         last_fetched_ids (list[str]): A list of IDs of events that have already been fetched.
 
     Returns:
-        list[dict[str, Any]]: A list of new audit events.
+        list[dict[str, Any]]: List of audit events.
     """
     last_fetched_ids = last_fetched_ids or []
     all_fetched_ids = set(last_fetched_ids)
     all_events: list[dict[str, Any]] = []
+    page_number: int = 0
     next_page: str | None = None
-    page_number = 1
 
     demisto.debug(f"Fetching audit events between {start_date=} and {end_date=}.")
     while len(all_events) < limit:
+        page_number += 1
+        page_size = min(DEFAULT_AUDIT_PAGE_SIZE, (limit - len(all_events)))
+
         response = await client.get_audit_events(
             start_date=start_date,
             end_date=end_date,
             next_page=next_page,
-            page_size=DEFAULT_AUDIT_PAGE_SIZE,
+            page_size=page_size,
         )
 
         # Check for errors (if any) under "fail" key in audit endpoint
@@ -486,17 +516,14 @@ async def get_audit_events(
         deduplicated_events = deduplicate_and_format_events(
             page_events,
             all_fetched_ids,
-            event_id_key=AUDIT_ID_KEY,
             event_time_key=AUDIT_TIME_KEY,
-            source_log_type="Audit",
+            event_type="audit",
             filter_format_func=convert_to_audit_filter_format,
         )
         all_events.extend(deduplicated_events)
 
-        # Check if there are more pages
-        # API response has next page value even if the actual next page is empty, so use two conditions
         # If number of page events is less than requested page size *or* no next page, assume no more events to fetch
-        if len(page_events) < DEFAULT_AUDIT_PAGE_SIZE or next_page is None:
+        if len(page_events) < page_size or next_page is None:
             demisto.debug(
                 f"No more audit events available after {page_number=}. "
                 f"Got {len(page_events)} page events and {next_page=}. Breaking..."
@@ -507,12 +534,10 @@ async def get_audit_events(
             demisto.debug(f"Reached {limit=} for audit events on {page_number=}. Breaking...")
             break
 
-        page_number += 1
-
     demisto.debug(
-        f"Finished fetching {len(all_events)} audit events from {page_number} pages between {start_date=} and {end_date=}."
+        f"Finished fetching {len(all_events)} audit events from {page_number} pages " f"between {start_date=} and {end_date=}."
     )
-    return sorted(all_events, key=lambda item: item[AUDIT_TIME_KEY])[:limit]  # Sort by timestamp ascending
+    return sorted(all_events, key=lambda item: item[FILTER_TIME_KEY])
 
 
 async def get_siem_events(
@@ -522,7 +547,8 @@ async def get_siem_events(
     limit: int,
     last_fetched_ids: list[str] | None = None,
     end_date: str | None = None,
-) -> list[dict[str, Any]]:
+    next_page: str | None = None,
+) -> tuple[list[dict[str, Any]], str | None]:
     """
     Asynchronously fetches SIEM events from Mimecast for a specific SIEM event type.
 
@@ -532,25 +558,27 @@ async def get_siem_events(
         start_date (str | None): The start date in ISO 8601 format.
         limit (int): The maximum number of events to retrieve.
         last_fetched_ids (list[str]): A list of IDs of events that have already been fetched.
-        last_next_page (str | None): The last next page token.
+        next_page (str | None): The last next page token.
 
     Returns:
-        dict[str, Any]: A list of events.
+        tuple[list[dict[str, Any]], str | None]: Tuple of a list of SIEM events and new next page token.
     """
     last_fetched_ids = last_fetched_ids or []
     all_fetched_ids = set(last_fetched_ids)
     all_events: list[dict[str, Any]] = []
-    next_page: str | None = None
-    page_number = 1
+    page_number: int = 0
 
-    demisto.debug(f"[{event_type}] Starting to fetch SIEM events between {start_date=} and {end_date=}.")
+    demisto.debug(f"[{event_type}] Starting to fetch SIEM events between {start_date=} and {end_date=} with {next_page=}.")
     while len(all_events) < limit:
+        page_number += 1
+        page_size = min(DEFAULT_SIEM_PAGE_SIZE, (limit - len(all_events)))
+
         response = await client.get_siem_events(
             event_type=event_type,
             start_date=start_date,
             end_date=end_date,
             next_page=next_page,
-            page_size=DEFAULT_SIEM_PAGE_SIZE,
+            page_size=page_size,
         )
 
         # Check for errors (if any) under "error" key in SIEM endpoint
@@ -564,17 +592,14 @@ async def get_siem_events(
         deduplicated_events = deduplicate_and_format_events(
             page_events,
             all_fetched_ids,
-            event_id_key=SIEM_ID_KEY,
             event_time_key=SIEM_TIME_KEY,
-            source_log_type="SIEM log",
+            event_type=event_type,
             filter_format_func=convert_to_siem_filter_format,
         )
         all_events.extend(deduplicated_events)
 
-        # Check if there are more pages
-        # API response has next page value even if the actual next page is empty, so use two conditions
         # If number of page events is less than requested page size *or* no next page, assume no more events to fetch
-        if len(page_events) < DEFAULT_SIEM_PAGE_SIZE or next_page is None:
+        if len(page_events) < page_size or next_page is None:
             demisto.debug(
                 f"[{event_type}] No more SIEM events available after {page_number=}. "
                 f"Got {len(page_events)} page events and {next_page=}. Breaking..."
@@ -585,13 +610,11 @@ async def get_siem_events(
             demisto.debug(f"[{event_type}] Reached {limit=} for SIEM events on {page_number=}. Breaking...")
             break
 
-        page_number += 1
-
     demisto.debug(
-        f"[{event_type}] Finished fetching {len(all_events)} SIEM events "
-        f"from {page_number} pages between {start_date=} and {end_date=}."
+        f"[{event_type}] Finished fetching {len(all_events)} SIEM events from {page_number} pages "
+        f"between {start_date=} and {end_date=}. Got {next_page=}."
     )
-    return sorted(all_events, key=lambda item: item[SIEM_TIME_KEY])[:limit]  # Sort by timestamp ascending
+    return sorted(all_events, key=lambda item: item[FILTER_TIME_KEY]), next_page
 
 
 """ COMMAND FUNCTIONS """
@@ -667,9 +690,11 @@ async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple
     if "audit" in event_types:
         audit_start_date = convert_to_audit_filter_format(start_date)
         audit_end_date = convert_to_audit_filter_format(end_date)
+
         demisto.debug(f"Getting audit events between {audit_start_date=} and {audit_end_date=} with {limit=}.")
         audit_events = await get_audit_events(client, start_date=audit_start_date, end_date=audit_end_date, limit=limit)
         demisto.debug(f"Got {len(audit_events)} audit events between {audit_start_date=} and {audit_end_date=}.")
+
         all_events.extend(audit_events)
         human_readable = tableToMarkdown(name="Mimecast Audit Events", t=audit_events)
         command_results.append(CommandResults(readable_output=human_readable))
@@ -683,16 +708,21 @@ async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple
         else:
             siem_start_date = convert_to_siem_filter_format(start_date)
             siem_end_date = convert_to_siem_filter_format(end_date)
+
             demisto.debug(f"Getting audit events between {siem_start_date=} and {siem_end_date=} with {limit=}.")
             siem_tasks = [
                 get_siem_events(client, event_type=event_type, start_date=siem_start_date, end_date=siem_end_date, limit=limit)
                 for event_type in siem_event_types
             ]
-            siem_events_lists = await asyncio.gather(*siem_tasks)
+            siem_results = await asyncio.gather(*siem_tasks)
             # Flatten the list of lists
-            for siem_events in siem_events_lists:
-                all_events.extend(siem_events)
+            siem_events = []
+            for siem_result in siem_results:
+                event_type_events, _ = siem_result
+                siem_events.extend(event_type_events)
             demisto.debug(f"Got {len(siem_events)} SIEM events between {siem_start_date=} and {siem_end_date=}.")
+
+            all_events.extend(siem_events)
             human_readable = tableToMarkdown(name="Mimecast SIEM Events", t=siem_events)
             command_results.append(CommandResults(readable_output=human_readable))
 
@@ -717,18 +747,18 @@ async def fetch_audit_events(
         tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of (next_run_state, fetched_events).
     """
     demisto.debug(f"Starting to fetch audit events. Got {audit_last_run=}.")
-    audit_start_date = audit_last_run.get("start_date") or convert_to_audit_filter_format(UTC_MINUTE_AGO)
-    audit_end_date = convert_to_audit_filter_format(UTC_NOW)
-    audit_last_fetched_ids = audit_last_run.get("last_fetched_ids", [])
+    start_date = audit_last_run.get(START_DATE_KEY) or convert_to_audit_filter_format(UTC_MINUTE_AGO)
+    end_date = convert_to_audit_filter_format(UTC_NOW)
+    last_fetched_ids = audit_last_run.get(LAST_FETCHED_IDS_KEY, [])
 
-    demisto.debug(f"Fetching audit events from {audit_start_date=} to {audit_end_date=} with {max_fetch=}.")
+    demisto.debug(f"Fetching audit events using {start_date=}, {end_date=}, {max_fetch=}.")
     # Fetch audit events
     audit_events = await get_audit_events(
         client,
-        start_date=audit_start_date,
-        end_date=audit_end_date,
+        start_date=start_date,
+        end_date=end_date,
         limit=max_fetch,
-        last_fetched_ids=audit_last_fetched_ids,
+        last_fetched_ids=last_fetched_ids,
     )
 
     # Update next run state
@@ -736,11 +766,11 @@ async def fetch_audit_events(
         demisto.debug(f"No new audit events found. Keeping {audit_last_run=}.")
         return audit_last_run, []
 
-    newest_filter_time = audit_events[-1].get(FILTER_TIME_KEY)
-    newest_fetched_ids = [event.get(AUDIT_ID_KEY) for event in audit_events if event.pop(FILTER_TIME_KEY) == newest_filter_time]
-    audit_next_run = {"start_date": newest_filter_time, "last_fetched_ids": newest_fetched_ids}
+    new_start_time = audit_events[-1].get(FILTER_TIME_KEY)
+    new_last_fetched_ids = [event.get(EVENT_ID_KEY) for event in audit_events if event.pop(FILTER_TIME_KEY) == new_start_time]
+    audit_next_run = {START_DATE_KEY: new_start_time, LAST_FETCHED_IDS_KEY: new_last_fetched_ids}
 
-    demisto.debug(f"Finished fetching {len(audit_events)} audit events with {newest_filter_time=} and {newest_fetched_ids=}.")
+    demisto.debug(f"Finished fetching {len(audit_events)} audit events " f"with {new_start_time=}, {new_last_fetched_ids=}.")
     return audit_next_run, audit_events
 
 
@@ -768,28 +798,30 @@ async def fetch_siem_events(
     all_events: list[dict[str, Any]] = []
     siem_next_run: dict[str, Any] = {}
 
-    # Prepare tasks for concurrent fetching
+    # Prepare SIEM tasks for concurrent fetching
     siem_tasks = []
     for event_type in event_types:
         event_type_last_run = siem_last_run.get(event_type, {})
-        event_type_last_fetched_ids = event_type_last_run.get("last_fetched_ids", [])
-        event_type_start_date = event_type_last_run.get("start_date") or default_start_date
+        last_fetched_ids = event_type_last_run.get(LAST_FETCHED_IDS_KEY, [])
+        start_date = event_type_last_run.get(START_DATE_KEY) or default_start_date
+        next_page = event_type_last_run.get(NEXT_PAGE_KEY)
 
         # Ensure the start date within than 24 hours to avoid HTTP 400 (bad request) errors from SIEM API endpoint
         # If no events were fetched within the last 24 hours, the start date may not be within the allowed API range
-        if not is_within_last_24_hours(event_type_start_date):
-            demisto.info(f"[{event_type}] {event_type_start_date=} is older than 24 hours. Skipping forward to last 23 hours.")
-            event_type_start_date = convert_to_siem_filter_format(UTC_NOW - timedelta(hours=23))
+        if not is_within_last_24_hours(start_date):
+            demisto.info(f"[{event_type}] {start_date=} is older than 24 hours. Skipping forward to last 23 hours.")
+            start_date = convert_to_siem_filter_format(UTC_NOW - timedelta(hours=23))
 
-        demisto.debug(f"[{event_type}] Creating task to fetch SIEM from {event_type_start_date=} with {max_fetch=}.")
+        demisto.debug(f"[{event_type}] Creating task to fetch SIEM events using {start_date=}, {next_page=}, {max_fetch=}.")
         # Create async task
         siem_tasks.append(
             get_siem_events(
                 client,
                 event_type=event_type,
-                start_date=event_type_start_date,
+                start_date=start_date,
                 limit=max_fetch,
-                last_fetched_ids=event_type_last_fetched_ids,
+                last_fetched_ids=last_fetched_ids,
+                next_page=next_page,
             )
         )
 
@@ -811,26 +843,86 @@ async def fetch_siem_events(
             siem_next_run[event_type] = event_type_last_run
             continue
 
-        siem_events = cast(list, result)
+        event_type_events, new_next_page = cast(tuple[list, str], result)
 
         # Handle empty results
-        if not siem_events:
+        if not event_type_events:
             demisto.debug(f"[{event_type}] No new SIEM events found. Keeping {event_type_last_run=}.")
             siem_next_run[event_type] = event_type_last_run
             continue
 
         # Update state with newest events
-        newest_filter_time = siem_events[-1].get(FILTER_TIME_KEY)
-        newest_fetched_ids = [event.get(SIEM_ID_KEY) for event in siem_events if event.pop(FILTER_TIME_KEY) == newest_filter_time]
-        siem_next_run[event_type] = {"start_date": newest_filter_time, "last_fetched_ids": newest_fetched_ids}
+        new_start_time = event_type_events[-1].get(FILTER_TIME_KEY)
+        new_last_fetched_ids = [
+            event.get(EVENT_ID_KEY) for event in event_type_events if event.pop(FILTER_TIME_KEY) == new_start_time
+        ]
+        siem_next_run[event_type] = {
+            START_DATE_KEY: new_start_time,
+            LAST_FETCHED_IDS_KEY: new_last_fetched_ids,
+            NEXT_PAGE_KEY: new_next_page,
+        }
 
-        all_events.extend(siem_events)
+        all_events.extend(event_type_events)
         demisto.debug(
-            f"[{event_type}] Fetched {len(siem_events)} SIEM events with {newest_filter_time=} and {newest_fetched_ids=}."
+            f"[{event_type}] Fetched {len(event_type_events)} SIEM events "
+            f"with {new_start_time=}, {new_next_page=}, {new_last_fetched_ids=}."
         )
 
-    demisto.debug(f"Finished fetching {len(all_events)} events from {len(event_types)} event types.")
+    demisto.debug(f"Finished fetching {len(all_events)} SIEM events from {len(event_types)} SIEM event types.")
     return siem_next_run, all_events
+
+
+def ensure_new_last_run_schema(last_run: dict) -> dict[str, Any]:
+    """
+    Migrates the old last run schema (API 1.0) to the new schema (API 2.0) if needed.
+
+    Args:
+        last_run (dict): The old last run object.
+        event_types (list[str]): List of event types to migrate.
+
+    Returns:
+        dict[str, Any]: The migrated last run object in the new schema.
+    """
+    demisto.debug(f"Ensuring new schema for {last_run=}.")
+
+    if not last_run:
+        demisto.debug("Got empty last run. Skipping migration to new last run schema.")
+        return {}
+
+    deprecated_last_run_keys = {
+        DEPRECATED_AUDIT_LAST_FETCHED_IDS_KEY,
+        DEPRECATED_AUDIT_START_DATE_KEY,
+        DEPRECATED_SIEM_NEXT_PAGE_KEY,
+        DEPRECATED_SIEM_LAST_FETCHED_IDS_KEY,
+    }
+    if not any(key in last_run for key in deprecated_last_run_keys):
+        demisto.debug("Last run is already in the new schema.")
+        return last_run  # return last run without any change if it is in the new schema
+
+    new_last_run: dict[str, Any] = {}
+
+    # Migrate audit events
+    if DEPRECATED_AUDIT_START_DATE_KEY in last_run:
+        demisto.info("Detected old audit last run schema.")
+        try:
+            old_audit_start_date = cast(datetime, arg_to_datetime(last_run.get(DEPRECATED_AUDIT_START_DATE_KEY)))
+            new_last_run["audit"] = {
+                START_DATE_KEY: convert_to_audit_filter_format(old_audit_start_date),
+                LAST_FETCHED_IDS_KEY: last_run.get(DEPRECATED_AUDIT_LAST_FETCHED_IDS_KEY, []),
+            }
+            demisto.info(f"Successfully migrated audit previous run schema to {new_last_run['audit']}.")
+        except (ValueError, AttributeError):
+            # `arg_to_datetime` throws an exception if value is not a valid datetime string / timestamp
+            demisto.error("Could not migrate audit previous run schema. Failed to parse audit start date.")
+
+    # Migrate SIEM events
+    if DEPRECATED_SIEM_NEXT_PAGE_KEY in last_run:  # API V1.0 next page token (incompatible with API 2.0 next page token)
+        demisto.info("Detected old SIEM last run schema.")
+        demisto.error("SIEM last run cannot be migrated to new schema due to next page token incompatibility.")
+        new_last_run["siem"] = {}  # initialize to empty dict
+
+    demisto.info(f"Finished migrating last run to new schema {new_last_run=}.")
+    return new_last_run
 
 
 async def fetch_events_command(
@@ -853,6 +945,9 @@ async def fetch_events_command(
     """
     demisto.debug(f"Starting to fetch events with {max_fetch=} and {len(event_types)} event types. Got {last_run=}.")
 
+    # Detect and migrate old last run schema (API 1.0) to new schema (API 2.0)
+    last_run = ensure_new_last_run_schema(last_run)
+
     next_run = {}
     all_events = []
 
@@ -869,7 +964,7 @@ async def fetch_events_command(
         next_run["siem"] = siem_next_run
         all_events.extend(siem_events)
 
-    demisto.debug(f"Finished fetching events completed. Got {len(all_events)} total events. Updating {next_run=}.")
+    demisto.debug(f"Finished fetching events. Got {len(all_events)} total events. Updating {next_run=}.")
     return next_run, all_events
 
 

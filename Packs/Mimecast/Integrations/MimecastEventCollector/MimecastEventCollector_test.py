@@ -10,7 +10,6 @@ from MimecastEventCollector import (
     TOKEN_TYPE_KEY,
     TOKEN_TTL_KEY,
     TOKEN_VALID_UNTIL_KEY,
-    AUDIT_ID_KEY,
     AUDIT_TIME_KEY,
     EVENT_TIME_KEY,
     SOURCE_LOG_TYPE_KEY,
@@ -364,9 +363,13 @@ def test_deduplicate_and_format_events(
     """
     from MimecastEventCollector import deduplicate_and_format_events, convert_to_audit_filter_format
 
-    source_log_type = "Audit"
+    event_type = "audit"
     new_events = deduplicate_and_format_events(
-        events, all_fetched_ids, AUDIT_ID_KEY, AUDIT_TIME_KEY, source_log_type, convert_to_audit_filter_format
+        events=events,
+        all_fetched_ids=all_fetched_ids,
+        event_time_key=AUDIT_TIME_KEY,
+        event_type=event_type,
+        filter_format_func=convert_to_audit_filter_format,
     )
 
     assert len(new_events) == expected_events_count
@@ -374,7 +377,7 @@ def test_deduplicate_and_format_events(
 
     for event in new_events:
         assert EVENT_TIME_KEY in event
-        assert event[SOURCE_LOG_TYPE_KEY] == source_log_type
+        assert event[SOURCE_LOG_TYPE_KEY] == event_type
         assert FILTER_TIME_KEY in event
 
 
@@ -400,8 +403,8 @@ async def test_get_audit_events_pagination(async_client: AsyncClient, mocker: Mo
             "meta": {"pagination": {"next": "page2_token"}},
         },
         {  # Page 2
-            "data": [{"id": f"event-B{i}", "eventTime": "2025-01-01T01:00:00+0000"} for i in range(500)],
-            "meta": {"pagination": {"next": None}},
+            "data": [{"id": f"event-B{i}", "eventTime": "2025-01-01T01:00:00+0000"} for i in range(100)],
+            "meta": {"pagination": {"next": "page3_token"}},
         },
     ]
 
@@ -480,14 +483,14 @@ async def test_get_siem_events_pagination(async_client: AsyncClient, mocker: Moc
             "@nextPage": "page2_token",
         },
         {  # Page 2
-            "value": [{"aCode": f"event-B{i}", "timestamp": 1704070800000} for i in range(100)],
-            "@nextPage": None,
+            "value": [{"aCode": f"event-B{i}", "timestamp": 1704070800000} for i in range(50)],
+            "@nextPage": "page3_token",
         },
     ]
 
     async with async_client as _client:
         mock_get_siem_events = mocker.patch.object(_client, "get_siem_events", side_effect=mock_response_jsons)
-        events = await get_siem_events(
+        events, next_page = await get_siem_events(
             client=_client,
             event_type=event_type,
             start_date=start_date,
@@ -495,6 +498,7 @@ async def test_get_siem_events_pagination(async_client: AsyncClient, mocker: Moc
         )
 
     assert len(events) == limit
+    assert next_page == "page3_token"
     assert mock_get_siem_events.call_count == 2
 
 
@@ -516,7 +520,7 @@ async def test_get_events_command(async_client: AsyncClient, mocker: MockerFixtu
 
     mocker.patch("MimecastEventCollector.UTC_NOW", datetime(2025, 1, 2, 10, 0, 0, tzinfo=UTC))
     mock_get_audit_events = mocker.patch("MimecastEventCollector.get_audit_events", return_value=mock_audit_events)
-    mock_get_siem_events = mocker.patch("MimecastEventCollector.get_siem_events", return_value=mock_siem_events)
+    mock_get_siem_events = mocker.patch("MimecastEventCollector.get_siem_events", return_value=(mock_siem_events, "next_page"))
     mock_table_to_markdown = mocker.patch("MimecastEventCollector.tableToMarkdown")
 
     args = {"event_types": "audit,receipt", "limit": "10", "start_date": "1 hour ago"}
@@ -606,10 +610,13 @@ async def test_fetch_siem_events_service_failure_isolation(async_client: AsyncCl
     last_run = {}
     max_fetch = 100
 
-    async def mock_get_siem_events(client, event_type, start_date, limit, last_fetched_ids=None, end_date=None):
+    async def mock_get_siem_events(client, event_type, start_date, limit, last_fetched_ids=None, end_date=None, next_page=None):
         if event_type == "delivery":
             raise Exception("Service error")
-        return [{"aCode": f"{event_type}-event-1", "timestamp": 1704067200000, "_filter_time": "2025-01-01T00:00:00.000Z"}]
+        return (
+            [{"aCode": f"{event_type}-event-1", "timestamp": 1704067200000, "_filter_time": "2025-01-01T00:00:00.000Z"}],
+            "next_page",
+        )
 
     mocker.patch("MimecastEventCollector.get_siem_events", side_effect=mock_get_siem_events)
     mock_demisto_error = mocker.patch.object(demisto, "error")
@@ -680,3 +687,90 @@ async def test_test_module(async_client: AsyncClient, mocker: MockerFixture):
     assert mock_get_audit_events.call_count == 1
     assert mock_get_siem_events.call_count == 1
     assert result == "ok"
+
+
+@pytest.mark.parametrize(
+    "last_run, expected_last_run",
+    [
+        pytest.param(
+            {},
+            {},
+            id="Empty last run",
+        ),
+        pytest.param(
+            {
+                "audit": {"start_date": "2025-01-01T00:00:00+0000", "last_fetched_ids": ["id1", "id2"]},
+                "siem": {"receipt": {"start_date": "2025-01-01T00:00:00.000Z", "last_fetched_ids": []}},
+            },
+            {
+                "audit": {"start_date": "2025-01-01T00:00:00+0000", "last_fetched_ids": ["id1", "id2"]},
+                "siem": {"receipt": {"start_date": "2025-01-01T00:00:00.000Z", "last_fetched_ids": []}},
+            },
+            id="Already in new schema",
+        ),
+        pytest.param(
+            {
+                "audit_last_run": "2025-01-01T00:00:00+0000",
+                "audit_event_dedup_list": ["id1", "id2"],
+            },
+            {
+                "audit": {"start_date": "2025-01-01T00:00:00+0000", "last_fetched_ids": ["id1", "id2"]},
+            },
+            id="Old audit schema only",
+        ),
+        pytest.param(
+            {
+                "siem_last_run": "old_token_value",
+                "siem_events_from_last_run": ["id1", "id2"],
+            },
+            {
+                "siem": {},
+            },
+            id="Old SIEM schema only (incompatible next page)",
+        ),
+        pytest.param(
+            {
+                "audit_last_run": "2025-01-01T00:00:00+0000",
+                "audit_event_dedup_list": ["audit-id1"],
+                "siem_last_run": "old_siem_token",
+                "siem_events_from_last_run": ["siem-id1"],
+            },
+            {
+                "audit": {"start_date": "2025-01-01T00:00:00+0000", "last_fetched_ids": ["audit-id1"]},
+                "siem": {},
+            },
+            id="Both old audit and SIEM schemas",
+        ),
+        pytest.param(
+            {
+                "audit_last_run": "2025-01-01T00:00:00+0000",
+                "audit_event_dedup_list": [],
+            },
+            {
+                "audit": {"start_date": "2025-01-01T00:00:00+0000", "last_fetched_ids": []},
+            },
+            id="Old audit schema with empty dedup list",
+        ),
+        pytest.param(
+            {
+                "audit_last_run": "invalid_date_format",
+                "audit_event_dedup_list": ["id1"],
+            },
+            {},
+            id="Old audit schema with invalid date format",
+        ),
+    ],
+)
+def test_ensure_new_last_run_schema(capfd: pytest.CaptureFixture[str], last_run: dict, expected_last_run: dict):
+    """
+    Given:
+     - Various last run schemas (empty, new schema, old schema, mixed).
+    When:
+     - Calling ensure_new_last_run_schema.
+    Then:
+     - Ensure correct migration to last run schema (SIEM cannot be migrated due to API V1.0 to V2.0 incompatibility).
+    """
+    from MimecastEventCollector import ensure_new_last_run_schema
+
+    with capfd.disabled():  # Disable stdout/stderr capture since it is okay to have output in this case
+        assert ensure_new_last_run_schema(last_run) == expected_last_run
