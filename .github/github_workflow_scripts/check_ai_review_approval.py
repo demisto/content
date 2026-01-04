@@ -51,24 +51,21 @@ def main():
     print(f"Checking for AI review approval in PR {pr_number}...")
 
     # 2. Verify content-bot's comment existance and review approval.
-    comments = pr.get_reviews()
+    reviews = pr.get_reviews()
     found_bot_comment = False
 
-    for comment in comments:
-        print(comment.body)
+    for review_comment in reviews:
+        print(review_comment.body)
+        print(f"{(REQUIRED_TEXT in review_comment.body)}")
+        print(f"{review_comment.user.login}")
         # Check if comment is from the bot and has the required text
-        if (comment.user.login == BOT_USERNAME) and (REQUIRED_TEXT in comment.body):
+        if (review_comment.user.login == BOT_USERNAME) and (REQUIRED_TEXT in review_comment.body):
             found_bot_comment = True
-            print(f"Found AI Review comment (ID: {comment.id}). Checking reactions...")
+            print(f"Found AI Review comment (ID: {review_comment.id}). Checking reactions...")
 
     if not found_bot_comment:
-        print("⚠️ No AI Review comment found from content-bot.")
-
-    print(
-        "❌ AI Review check failed. Please trigger an AI review, check if the generated comments valid and relevant ",
-        "otherwise edit or delete them) and finally approve the results with a 👍 reaction.",
-    )
-    sys.exit(1)
+        print("❌ AI Review check failed. No AI Review comment found from content-bot.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
