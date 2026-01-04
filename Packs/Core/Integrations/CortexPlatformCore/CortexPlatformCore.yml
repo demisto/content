@@ -3142,7 +3142,7 @@ script:
         - "true"
         - "false"
         defaultValue: "true"
-      - description: Polling timeout in seconds when waiting for results.
+      - description: Polling timeout in seconds when waiting for results. Default - 180 seconds.
         name: timeout_in_seconds
         defaultValue: 180
       description: |-
