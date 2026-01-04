@@ -54,6 +54,7 @@ configuration:
     section: Connect
     display: Authorization Endpoint
     type: 0
+    advanced: true
     additionalinfo: |
       The URL for the OAuth 2.0 authorization endpoint. If not provided, the default will be the origin of the `base_url` followed by `/oauth2/authorize`.
       For example, if `base_url` is `https://example.com/mcp`, the default `Authorization Endpoint` will be `https://example.com/oauth2/authorize`.
@@ -61,6 +62,7 @@ configuration:
     section: Connect
     display: Token Endpoint
     type: 0
+    advanced: true
     additionalinfo: |
       The URL for the OAuth 2.0 token endpoint. If not provided, the default will be the origin of the `base_url` followed by `/oauth2/token`.
       For example, if `base_url` is `https://example.com/mcp`, the default `Token Endpoint` will be `https://example.com/oauth2/token`.
@@ -68,6 +70,7 @@ configuration:
     section: Connect
     display: Scope
     type: 0
+    advanced: true
     additionalinfo: Space-separated permission identifiers.
   - name: token
     type: 9
