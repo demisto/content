@@ -101,7 +101,7 @@ alter
 alter
     description = if(syslog_msg ~= "Deletion of file or directory", arrayindex(regextract(syslog_msg, "\[((?:[^\[\]]|\[[^\[\]]*\])*)\]"), 8),
                      arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8)),
-    source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6)
+    source_username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5)
 | alter
     source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6),
     target_hostname = coalesce(arrayindex(regextract(description, "on ([^\s]+) in"), 0),
@@ -263,7 +263,7 @@ alter
     ppid = parsed_fields -> ppid,
     uid = parsed_fields -> uid,
     success = parsed_fields -> success,
-    res = parsed_fields -> res   
+    res = parsed_fields -> res
 | alter
     xdm.observer.name = syslog_hostname,
     xdm.event.description = syslog_msg,
@@ -283,7 +283,6 @@ alter
     xdm.source.user.username = parsed_fields -> subj,
     xdm.source.process.pid = to_number(pid),
     xdm.source.process.parent_id = ppid,
-    xdm.source.process.name = parsed_fields -> comm,
     xdm.source.process.executable.path = parsed_fields -> exe,
     xdm.source.process.command_line = if(event_name_clean = "EXECVE", concat(parsed_fields -> a0, " ", coalesce(parsed_fields -> a1, "")),
                                          parsed_fields -> proctitle),
