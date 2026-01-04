@@ -79,7 +79,7 @@ class Modules:
 
 def is_valid_args(command: Command):
     """
-    Validate if the command has valid arguments.
+    Verify that the command has valid arguments.
 
     Args:
         command (Command): The command object to validate.
