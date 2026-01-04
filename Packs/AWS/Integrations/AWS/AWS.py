@@ -1174,26 +1174,11 @@ class S3:
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        next_token = response.get("ContinuationToken")
-        metadata = ""
-        if next_token:
-            metadata = (
-                "Run the following command to retrieve the next batch of buckets:\n"
-                f"!aws-s3-buckets-list account_id={account_id} region={region} next_token={next_token}"
-            )
-            limit = kwargs.get("MaxBuckets")
-            if limit and limit != 50:
-                metadata = f"{metadata} limit={limit}"
-            if prefix:
-                metadata = f"{metadata} prefix={prefix}"
-            if filter_by_region:
-                metadata = f"{metadata} filter_by_region{filter_by_region}"
-
         buckets = response.get("Buckets")
         for bucket in buckets:
             bucket["CreationDate"] = datetime.strftime(bucket["CreationDate"], "%Y-%m-%dT%H:%M:%S")
         readable_output = tableToMarkdown(
-            "The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace, metadata=metadata
+            "The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace
         )
         outputs = {
             "AWS.S3.Buckets(val.BucketArn && val.BucketArn == obj.BucketArn)": buckets,
@@ -4305,19 +4290,9 @@ class SSM:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         if response.get('Entries'):
-            metadata = ""
-            if response.get("NextToken"):
-                response["EntriesNextPageToken"] = response.pop("NextToken")
-                metadata = ("Run the following command to retrieve the next batch of inventory entries:\n"
-                            f"!aws-ssm-inventory-entries-list account_id={account_id} region={region} instance_id={instance_id} type_name={type_name} next_token={response['EntriesNextPageToken']}")
-                if filters:
-                    metadata = f"{metadata} filters={filters}"
-                limit = kwargs.get("MaxBuckets")
-                if limit and limit != 50:
-                    metadata = f"{metadata} limit={limit}"
             headers = ["Name", "URL", "Summary"]
             readable_output = tableToMarkdown(
-                f"The inventory entries of item {instance_id} with the type {type_name}", response.get("Entries"), headers, headerTransform=pascalToSpace, removeNull=True, metadata=metadata
+                f"The inventory entries of item {instance_id} with the type {type_name}", response.get("Entries"), headers, headerTransform=pascalToSpace, removeNull=True
             )
 
             return CommandResults(
@@ -4330,6 +4305,7 @@ class SSM:
         else:
             return CommandResults(readable_output=f"No entries found for the item {instance_id}.")
 
+    @staticmethod
     @polling_function(
         name="aws-ssm-command-run",
         interval=arg_to_number(
@@ -4338,7 +4314,7 @@ class SSM:
         timeout=arg_to_number(demisto.args().get("polling_timeout", DEFAULT_TIMEOUT)),
         requires_polling_arg=False,  # means it will always be default to poll, poll=true,
     )
-    def command_run_command(client: BotoClient, args: Dict[str, Any]) -> PollResult | None:
+    def command_run_command(args: Dict[str, Any], client: BotoClient) -> PollResult | None:
         """
         Runs commands on one or more managed nodes.
         Args:
@@ -4349,12 +4325,14 @@ class SSM:
             CommandResults: An object containing an inventory item, and it's list of entries.
         """
         if command_id := args.get("command_id"):
+            demisto.debug(f"There is a {command_id=}. Not the first execution.")
             response_command_list = client.list_commands(CommandId=command_id)
-            status = response_command_list.get("Commands", {}.get("Status"))
+            status = response_command_list.get("Commands", [])[0].get("Status")
+            demisto.debug(f"The {status=} of {command_id=}")
             if status in TERMINAL_COMMAND_STATUSES:
                 return PollResult(
                     response=CommandResults(
-                        readable_output=f"The command status is {status}, {TERMINAL_COMMAND_STATUSES[status]}",
+                        readable_output=f"The command {command_id} status is {status}, {TERMINAL_COMMAND_STATUSES[status]}",
                     ),
                     continue_to_poll=False,
                 )
@@ -4364,6 +4342,8 @@ class SSM:
                 args_for_next_run=args,
                 response=None,
             )
+
+        demisto.debug("First execution of command-run")
         kwargs = {
             "InstanceIds": argToList(args.get("instance_ids")),
             "DocumentName": args.get("document_name"),
@@ -4388,8 +4368,12 @@ class SSM:
                 )
             kwargs["TimeoutSeconds"] = command_timeout
         remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
+
         response_command_run = client.send_command(**kwargs)
+
         command_id = response_command_run.get('Command', {}).get('CommandId', '')
+        demisto.debug(f"The {command_id=} of the current execution.")
         args["command_id"] = command_id
         command_response = serialize_response_with_datetime_encoding(response_command_run.get('Command', {}))
         return PollResult(
@@ -4780,6 +4764,10 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
         credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
 
     service_client, _ = get_service_client(credentials, params, args, command)
+    # If it is a polling command, the args must be the first argument
+    if args.get('polling_timeout') is not None:
+        demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
+        return COMMANDS_MAPPING[command](args, service_client)
     return COMMANDS_MAPPING[command](service_client, args)
 
 
