@@ -3128,7 +3128,8 @@ script:
         - contextPath: Core.User.groups
           description: A specific name of a group the user belongs to within this instance.
           type: String
-    - arguments:
+    - name: core-xql-generic-query-platform
+      arguments:
       - description: XQL query string. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query.
         name: query
         required: true
@@ -3148,7 +3149,6 @@ script:
       description: |-
         Execute an XQL query and retrieve a link to the query in the query center.
         If set to wait for results, the command will be executed every 10 seconds until results are retrieved or until the timeout is reached.
-      name: core-xql-generic-query-platform
       hidden: true
       outputs:
       - contextPath: GenericXQLQuery.execution_id
