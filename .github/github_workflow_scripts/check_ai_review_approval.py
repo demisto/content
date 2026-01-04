@@ -51,30 +51,17 @@ def main():
     print(f"Checking for AI review approval in PR {pr_number}...")
 
     # 2. Verify content-bot's comment existance and review approval.
-    comments = pr.get_issue_comments()
+    comments = pr.get_reviews()
     found_bot_comment = False
 
     for comment in comments:
+        print(comment.body)
+        breakpoint()
+        print("JOEY -------------------------------------------------")
         # Check if comment is from the bot and has the required text
         if (comment.user.login == BOT_USERNAME) and (REQUIRED_TEXT in comment.body):
             found_bot_comment = True
             print(f"Found AI Review comment (ID: {comment.id}). Checking reactions...")
-
-            reactions = comment.get_reactions()
-            pr_reviewers = [reviewer.login for reviewer in pr.requested_reviewers]
-            print(f"PR Reviewers: {pr_reviewers}")
-
-            for reaction in reactions:
-                if reaction.content == "+1":
-                    if reaction.user.login in pr_reviewers:
-                        print(f"✅ Found 👍 reaction from assigned reviewer {reaction.user.login}. AI Review approved.")
-                        sys.exit(0)
-                    else:
-                        print(f"⚠️ Found 👍 reaction from {reaction.user.login}, but they are not an assigned reviewer.")
-
-            print(
-                "⚠️ AI Review comment found, but review approval / dismissal was missing (👍 reaction from an assigned reviewer.)"
-            )
 
     if not found_bot_comment:
         print("⚠️ No AI Review comment found from content-bot.")
