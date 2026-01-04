@@ -1681,6 +1681,9 @@
 				"Risk Score": {
 					"simple": "score"
 				},
+                "severity": {
+                    "simple": "severity"
+                },
 				"State": {
 					"simple": "status"
 				},
