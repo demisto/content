@@ -1475,7 +1475,8 @@ class TestGetElasticToken:
 
         mock_response = MagicMock()
         mock_response.status_code = 401
-        mock_response.text = "Unauthorized"
+        reason = "unable to authenticate user [test_user] for REST request [/_security/oauth2/token]"
+        mock_response.text = json.dumps({"error": {"reason": reason}})
         mock_requests_post.return_value = mock_response
 
         mocker.patch("Elasticsearch_v2.USERNAME", "test_user")
@@ -1486,4 +1487,4 @@ class TestGetElasticToken:
         with pytest.raises(DemistoException) as exc_info:
             Elasticsearch_v2.get_elastic_token()
 
-        assert "Failed to authenticate" in str(exc_info.value)
+        assert reason in str(exc_info.value)

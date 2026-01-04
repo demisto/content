@@ -298,8 +298,11 @@ def get_elastic_token():
             return integration_context["access_token"]
 
         demisto.debug(f"Failed to authenticate: {response.status_code}\n{response.text}")
-        reason = json.loads(response.text).get("error", {}).get("reason") or response.reason or response.text
-        raise DemistoException(f"{response.status_code}\n{reason}")
+        try:
+            reason = json.loads(response.text).get("error", {}).get("reason")
+        except Exception:
+            reason = response.reason or response.text
+        raise DemistoException(f"{response.status_code}, {reason}")
 
     except Exception as e:
         demisto.debug(f"get_elastic_token error: \n{str(e)}")
