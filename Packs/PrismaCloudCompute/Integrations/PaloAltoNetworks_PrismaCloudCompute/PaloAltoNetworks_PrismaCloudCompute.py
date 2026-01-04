@@ -910,27 +910,30 @@ def async_send_data_to_xsiam(
     else:
         data_chunks = split_data_to_chunks(data, chunk_size)
 
-    async def send_events_async(data_chunk):
+    async def send_events_async(data_chunk, shared_client):
         chunk_size = len(data_chunk)
         data_chunk = "\n".join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode("utf-8"))  # type: ignore[AttributeError,attr-defined]
-        async with client:
-            _ = await xsiam_api_call_async_with_retries(
-                client=client,
-                zipped_data=zipped_data,
-                headers=headers,
-                num_of_attempts=num_of_attempts,
-                data_type=data_type,
-                error_handler=data_error_handler,
-                error_msg=header_msg,
-                is_json_response=True,
-            )
+        _ = await xsiam_api_call_async_with_retries(
+            client=shared_client,
+            zipped_data=zipped_data,
+            headers=headers,
+            num_of_attempts=num_of_attempts,
+            data_type=data_type,
+            error_handler=data_error_handler,
+            error_msg=header_msg,
+            is_json_response=True,
+        )
 
         return chunk_size
 
-    all_chunks = list(data_chunks)
-    tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in all_chunks]
-    return tasks
+    async def run_all_tasks():
+        async with client:
+            all_chunks = list(data_chunks)
+            tasks = [asyncio.create_task(send_events_async(chunk, client)) for chunk in all_chunks]
+            return await asyncio.gather(*tasks)
+
+    return run_all_tasks()
 
 
 def split_data_by_slices(data, target_chunk_size):  # pragma: no cover
@@ -3455,10 +3458,9 @@ async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient
             if not data:
                 asset_type_related_data.write_debug_log("No more data to fetch, breaking.")
                 break
-            send_data_to_xsiam_tasks = process_asset_data_and_send_to_xsiam(
+            await process_asset_data_and_send_to_xsiam(
                 data=data, asset_type_related_data=asset_type_related_data
             )
-            await asyncio.gather(*send_data_to_xsiam_tasks)  # type: ignore
             asset_type_related_data.next_page()
             asset_type_related_data.write_debug_log(
                 f"Finished sending assets batch to xsiam, sent {asset_type_related_data.offset} assets so far."
