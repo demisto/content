@@ -1559,7 +1559,7 @@ def map_severity_to_xsoar(severity: str | None) -> int:
 """ COMMAND FUNCTIONS """
 
 
-def module_test(configuration: Configuration) -> str:
+def test_module(configuration: Configuration) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -3202,7 +3202,7 @@ def main() -> None:
             "get-modified-remote-data": get_modified_remote_data_command,
             "get-mapping-fields": lambda _c, _a: get_mapping_fields_command(),
             # Test commands
-            "test-module": lambda c, _a: return_results(module_test(c)),
+            "test-module": lambda c, _a: return_results(test_module(c)),
         }
         if command in commands:
             return_results(commands[command](configuration, args))
