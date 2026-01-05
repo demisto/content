@@ -145,6 +145,17 @@ class IntegrationEventsClient(ABC):
             response.raise_for_status()
             return response
         except Exception as exc:
+            if isinstance(exc, requests.exceptions.HTTPError) and exc.response.status_code == 500:
+                demisto.debug("MD: Got 500 error, retrying once...")
+                try:
+                    response = self.session.request(**request.dict())
+                    response.raise_for_status()
+                    return response
+                except Exception as retry_exc:
+                    demisto.debug(f"MD: Retry failed: {retry_exc}")
+                    # Fall through to raise the original exception or the retry exception
+                    exc = retry_exc
+
             msg = f"something went wrong with the http call {exc}"
             demisto.debug(msg)
             raise DemistoException(msg) from exc
@@ -187,6 +198,9 @@ class IntegrationGetEvents(ABC):
                     if len(stored_per_type) >= self.options.limit:
                         final_stored_all_types.extend(stored_per_type[: self.options.limit])
                         break
+            else:
+                final_stored_all_types.extend(stored_per_type)
+
         demisto.debug(f"MD: Sliced events, keeping {len(final_stored_all_types)} events from all event types")
         return final_stored_all_types
 
