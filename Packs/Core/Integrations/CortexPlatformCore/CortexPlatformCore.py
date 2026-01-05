@@ -15,7 +15,6 @@ MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
-MAX_ENHANCED_CASES = 10
 AGENTS_TABLE = "AGENTS_TABLE"
 
 ASSET_FIELDS = {
@@ -1668,12 +1667,16 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
 
 
 def add_cases_ai_summary(client, cases_list):
-    for case in cases_list:
-        case_id = case.get("case_id")
-        case_summary = get_case_ai_summary_command(client, {"case_id" : case_id})
-        if case_summary:
-            case['description'] = case_summary.outputs.get('case_description')
-            case["name"] = case_summary.outputs.get('case_name')
+    try:
+        for case in cases_list:
+            case_id = case.get("case_id")
+            print("replacing")
+            case_summary = get_case_ai_summary_command(client, {"case_id" : case_id})
+            if case_summary:
+                case['description'] = case_summary.outputs.get('case_description')
+                case["name"] = case_summary.outputs.get('case_name')
+    except Exception as e:
+        demisto.debug(str(e))
     return cases_list
 
 
@@ -1721,43 +1724,39 @@ def get_cases_command(client, args):
         outputs={"filter_count": filter_count, "returned_count": returned_count},
     )]
 
-    # Check for enrichment flags
+    if filter_count == 1 and returned_count == 1 and data[0].get("issue_count") > 1:
+        data = add_cases_ai_summary(client, data)
+
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
-    # Validate enrichment request
-    if get_enriched_case_data and len(data) > MAX_ENHANCED_CASES:
-        command_results.append(
-            CommandResults(
-                readable_output=f"Cannot retrieve enhanced data for more than {MAX_ENHANCED_CASES} cases. "
-                                "Only standard case data will be shown. "
-                                "Try using a more specific query, "
-                                "for example specific case IDs you want to get enhanced data for.",
-                entry_type=4,
-            )
-        )
-        enhanced_requested = False
+    # In case enriched case data was requested
+    if get_enriched_case_data and len(data) <= 10:
+        if isinstance(data, dict):
+            data = [data]
 
-    if isinstance(data, dict):
-        data = [data]
-    if enhanced_requested:
-        enhanced_data = data.copy()
-
-        if get_enriched_case_data:
-            enhanced_data = add_cases_extra_data(client, enhanced_data)
-
-        if ai_generated_description:
-            enhanced_data = add_cases_ai_summary(client, enhanced_data)
+        case_extra_data = add_cases_extra_data(client, data)
 
         command_results.append(
             CommandResults(
-                readable_output=tableToMarkdown("Cases", enhanced_data, headerTransform=string_to_table_header),
+                readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
                 outputs_prefix="Core.Case",
                 outputs_key_field="case_id",
-                outputs=enhanced_data,
-                raw_response=data,
+                outputs=case_extra_data,
+                raw_response=case_extra_data,
             )
         )
+
     else:
-        # Return standard case data without enrichment
+        if get_enriched_case_data:
+            command_results.append(
+                CommandResults(
+                    readable_output="Cannot retrieve enriched case data for more than 10 cases. "
+                                    "Only standard case data will be shown. "
+                                    "Try using a more specific query, "
+                                    "for example specific case IDs you want to get enriched data for.",
+                    entry_type=4,
+                )
+            )
+
         command_results.append(
             CommandResults(
                 readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
