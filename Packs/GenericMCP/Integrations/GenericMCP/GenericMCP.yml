@@ -2,7 +2,7 @@ category: Utilities
 sectionorder:
 - Connect
 commonfields:
-  id: GenericMCP
+  id: Generic MCP
   version: -1
 configuration:
   - name: base_url
@@ -100,7 +100,7 @@ configuration:
     advanced: true
 description: Use this integration to connect to an MCP server and automatically discover its available tools.
 display: Generic MCP
-name: GenericMCP
+name: Generic MCP
 script:
   commands:
   - arguments: []
