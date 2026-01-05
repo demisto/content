@@ -3653,6 +3653,7 @@ def fetch_items(command="fetch-incidents"):
             start_time_key="created_timestamp",
             is_fetch_events=False,
         )
+        demisto.debug(f"Extending items with Automated Leads: {fetched_ngsiem_automated_leads}")
         items.extend(fetched_ngsiem_automated_leads)
 
     if NGSIEM_CASES_FETCH_TYPE in fetch_incidents_or_detections:
