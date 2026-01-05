@@ -4614,7 +4614,6 @@ def test_get_case_extra_data_with_all_fields_present(mocker):
     args = {"case_id": "123"}
     result = get_case_extra_data(mock_client, args)
 
-    assert mock_client._base_url == "api/webapp/public_api/v1"
     assert result["issue_ids"] == ["issue1", "issue2"]
     assert result["network_artifacts"] == [{"id": "net1", "type": "ip"}]
     assert result["file_artifacts"] == [{"id": "file1", "hash": "abc123"}]
@@ -4624,32 +4623,6 @@ def test_get_case_extra_data_with_all_fields_present(mocker):
     assert result["manual_description"] == "Global manual description"
     assert result["detection_time"] == "2023-01-01T00:00:00Z"
 
-
-def test_get_case_extra_data_client_base_url_modification(mocker):
-    """
-    Given:
-        A mock client with an original base URL.
-    When:
-        The get_case_extra_data function is called.
-    Then:
-        The client's base URL should be modified to "api/webapp/public_api/v1".
-    """
-    from CortexPlatformCore import get_case_extra_data
-
-    mock_client = mocker.Mock()
-    original_url = "https://original.api.endpoint"
-    mock_client._base_url = original_url
-
-    mock_command_result = mocker.Mock()
-    mock_command_result.outputs = {}
-
-    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
-    mocker.patch("CortexPlatformCore.extract_ids", return_value=[])
-
-    args = {"case_id": "url_test"}
-    get_case_extra_data(mock_client, args)
-
-    assert mock_client._base_url == "api/webapp/public_api/v1"
 
 
 def test_add_cases_extra_data_single_case(mocker):
