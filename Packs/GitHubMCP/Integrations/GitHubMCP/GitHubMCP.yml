@@ -2,7 +2,7 @@ category: Utilities
 sectionorder:
 - Connect
 commonfields:
-  id: GitHubMCP
+  id: GitHub MCP
   version: -1
 configuration:
   - name: token
@@ -46,7 +46,7 @@ configuration:
     additionalinfo: When enabled, limits tools to read-only operations preventing any write/modification actions.
 description: Use this integration to connect securely with a GitHub Model Context Protocol (MCP) server and access its tools in real time.
 display: GitHub MCP
-name: GitHubMCP
+name: GitHub MCP
 script:
   commands:
   - arguments: []
