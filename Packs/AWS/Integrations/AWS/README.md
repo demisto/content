@@ -72,7 +72,6 @@ Delete AWS S3 bucket.
 
 There is no context output for this command.
 
-
 ### aws-s3-bucket-objects-list
 
 ***
@@ -102,7 +101,6 @@ Returns some or all (up to 1,000) of the objects in a bucket.
 | AWS.S3-Buckets.Objects.Objects.StorageClass | String | The storage class of the object. |
 | AWS.S3-Buckets.Objects.Objects.ChecksumType | Array | The checksum algorithm used to calculate the object checksum. |
 | AWS.S3-Buckets.Objects.Objects.ETag | String | The entity tag (hash) of the object. |
-
 
 ### aws-iam-account-password-policy-get
 

@@ -201,7 +201,7 @@ script:
       - description: The AWS account ID.
         name: account_id
         required: true
-      - description: A delimiter is a character that you use to group keys.
+      - description: A delimiter is a character that you use to group keys. For example, using '/' will group objects by folder.
         name: delimiter
       - description: Limits the response to keys that begin with the specified prefix.
         name: prefix

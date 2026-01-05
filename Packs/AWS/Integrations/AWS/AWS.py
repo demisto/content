@@ -461,7 +461,6 @@ class S3:
         else:
             return AWSErrorHandler.handle_response_error(response)
 
-
     @staticmethod
     def list_bucket_objects_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -478,6 +477,7 @@ class S3:
         Returns:
             CommandResults: Results of the command execution including the list of objects and their metadata
         """
+
         def convert_size(size_bytes):
             if size_bytes == 0:
                 return "0B"
@@ -514,30 +514,31 @@ class S3:
 
             table_data = []
             for obj in contents:
-                table_data.append({
-                    "Key": obj.get("Key"),
-                    "Size": convert_size(obj.get("Size", "")),
-                    "Size in Bytes": obj.get("Size"),
-                    "LastModified": obj.get("LastModified"),
-                    "StorageClass": obj.get("StorageClass")
-                })
+                table_data.append(
+                    {
+                        "Key": obj.get("Key"),
+                        "Size": convert_size(obj.get("Size", "")),
+                        "Size in Bytes": obj.get("Size"),
+                        "LastModified": obj.get("LastModified"),
+                        "StorageClass": obj.get("StorageClass"),
+                    }
+                )
 
-            human_readable = tableToMarkdown(f"AWS S3 Bucket Objects: {bucket}", table_data,
-                                             headers=["Key", "Size", "Size in Bytes", "LastModified", "StorageClass"],
-                                             removeNull=True)
+            human_readable = tableToMarkdown(
+                f"AWS S3 Bucket Objects: {bucket}",
+                table_data,
+                headers=["Key", "Size", "Size in Bytes", "LastModified", "StorageClass"],
+                removeNull=True,
+            )
             return CommandResults(
                 outputs_prefix="AWS.S3-Buckets.Objects",
                 outputs_key_field="BucketName",
-                outputs={
-                    "BucketName": bucket,
-                    "Objects": contents
-                },
+                outputs={"BucketName": bucket, "Objects": contents},
                 readable_output=human_readable,
             )
 
         except Exception as e:
             raise DemistoException(f"Failed to list objects for bucket {bucket}. Error: {str(e)}")
-
 
     @staticmethod
     def put_bucket_versioning_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
