@@ -8,7 +8,7 @@ Cisco Adaptive Security Appliances (ASA) is a unified security solution that int
 
 Data normalization capabilities:
 
-* Rules for parsing and modeling Cisco ASA logs that are ingested via the BrokerVM on Cortex XSIAM.
+Rules that parse and model Cisco ASA logs ingested via the Broker VM in Cortex XSIAM.
   * The ingested Cisco ASA logs can be queried in XQL Search using the *`cisco_asa_raw`* dataset.
 
 ## Supported event IDs
