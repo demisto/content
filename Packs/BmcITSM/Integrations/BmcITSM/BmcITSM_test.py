@@ -1435,7 +1435,7 @@ def test_fetch_command(mocker):
     expected_result = 1719671916
     mocker.patch.object(demisto, "getLastRun", return_value={"SRM:Request": {"last_create_time": "2021-06-29T14:38:36.000+0000"}})
     mocker.patch.object(BmcITSM, "fetch_relevant_tickets_by_ticket_type", return_value=mock_response)
-    incidents_result, last_run_result = BmcITSM.fetch_incidents(
+    _, last_run_result = BmcITSM.fetch_incidents(
         mock_client,
         max_fetch=2,
         first_fetch="2022-06-29T14:38:36.000+0000",
@@ -1486,3 +1486,36 @@ def test_worklog_add_command(
 
     result = worklog_add_command(mock_client, command_arguments)
     assert result.readable_output == "Worklog is successfully added"
+
+
+@pytest.mark.parametrize(
+    "response_file_name,command_arguments",
+    [
+        (
+            "list_worklogs.json",
+            {
+                "ticket_ids": "INC000010381027",
+                "limit": 50,
+            },
+        ),
+    ],
+)
+def test_worklog_list(
+    response_file_name,
+    command_arguments,
+    requests_mock,
+    mock_client,
+):
+    """ """
+    from BmcITSM import worklog_list_command
+
+    ticket_id = command_arguments.get("ticket_ids")
+
+    mock_response = load_mock_response(response_file_name)
+    query = f"('Incident Number' = \"{ticket_id}\")"
+    url = f"{BASE_URL}/api/arsys/v1/entry/HPD:WorkLog?q={query}"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = worklog_list_command(mock_client, command_arguments)
+    assert len(result.raw_response.get("entries")) == 1
+    assert result.raw_response.get("entries")[0].get("values").get("Incident Number") == ticket_id

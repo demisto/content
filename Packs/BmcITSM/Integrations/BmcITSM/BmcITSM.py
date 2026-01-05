@@ -473,7 +473,7 @@ class Client(BaseClient):
         first_request_id: str,
         second_form_name: str,
         second_request_id: str,
-    ) -> str:
+    ):
         """
         BmcITSM ticket relationship request.
 
@@ -502,8 +502,6 @@ class Client(BaseClient):
             }
         }
         self._http_request("POST", "arsys/v1/entry/HPD:Associations", json_data=data, resp_type="text")
-
-        return f"Created relationship between {first_request_id} and {second_request_id}."
 
     def create_service_request_request(
         self,
