@@ -474,10 +474,10 @@ PARAMS_V8 = {
 def test_incident_creation_e6(params, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     importlib.reload(ElasticsearchEventCollector)  # To reset the Elasticsearch client with the OpenSearch library
-    from ElasticsearchEventCollector import results_to_incidents_datetime
+    from ElasticsearchEventCollector import results_to_events_datetime
 
     last_fetch = "2019-08-29T14:44:00Z"
-    incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
+    incidents, last_fetch2 = results_to_events_datetime(ES_V6_RESPONSE, last_fetch)
 
     # last fetch should not truncate the milliseconds
     assert str(last_fetch2) == "2019-08-29T14:46:00.123456+00:00"
@@ -491,10 +491,10 @@ def test_incident_creation_e6(params, mocker):
 def test_incident_creation_e7(params, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     importlib.reload(ElasticsearchEventCollector)  # To reset the Elasticsearch client with the OpenSearch library
-    from ElasticsearchEventCollector import results_to_incidents_datetime
+    from ElasticsearchEventCollector import results_to_events_datetime
 
     last_fetch = "2019-08-27T17:59:00"
-    incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
+    incidents, last_fetch2 = results_to_events_datetime(ES_V7_RESPONSE, last_fetch)
 
     # last fetch should not truncate the milliseconds
     assert str(last_fetch2) == "2019-08-27T18:01:25.343212+00:00"
@@ -531,10 +531,10 @@ def test_incident_creation_with_timestamp_e7(params, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     importlib.reload(ElasticsearchEventCollector)  # To reset the Elasticsearch client with the OpenSearch library
     mocker.patch("ElasticsearchEventCollector.TIME_METHOD", "Timestamp-Seconds")
-    from ElasticsearchEventCollector import results_to_incidents_timestamp
+    from ElasticsearchEventCollector import results_to_events_timestamp
 
     lastfetch = int(datetime.strptime("2019-08-27T17:59:00Z", "%Y-%m-%dT%H:%M:%SZ").timestamp())
-    incidents, last_fetch2 = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
+    incidents, last_fetch2 = results_to_events_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
     assert last_fetch2 == 1572502640
     if params.get("map_labels"):
         assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
@@ -658,7 +658,7 @@ class GetMappingFields(unittest.TestCase):
 
 class TestIncidentLabelMaker(unittest.TestCase):
     def test_sanity(self):
-        from ElasticsearchEventCollector import incident_label_maker
+        from ElasticsearchEventCollector import event_label_maker
 
         sources = {
             "first_name": "John",
@@ -669,11 +669,11 @@ class TestIncidentLabelMaker(unittest.TestCase):
             {"type": "sur_name", "value": "Snow"},
         ]
 
-        labels = incident_label_maker(sources)
+        labels = event_label_maker(sources)
         assert labels == expected_labels
 
     def test_complex_value(self):
-        from ElasticsearchEventCollector import incident_label_maker
+        from ElasticsearchEventCollector import event_label_maker
 
         sources = {
             "name": "Ash",
@@ -695,7 +695,7 @@ class TestIncidentLabelMaker(unittest.TestCase):
             },
         ]
 
-        labels = incident_label_maker(sources)
+        labels = event_label_maker(sources)
         assert labels == expected_labels
 
 
