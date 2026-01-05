@@ -48,7 +48,7 @@ IOA_FETCH_TYPE = "Indicator of Attack"
 NGSIEM_DETECTION_FETCH_TYPE = "NGSIEM Detection"
 NGSIEM_INCIDENT_FETCH_TYPE = "NGSIEM Incident (XDR Alert)"
 NGSIEM_AUTOMATED_LEADS_FETCH_TYPE = "NGSIEM Automated Lead"
-NGSIEM_CASES_FETCH_TYPE ="NGSIEM Case"
+NGSIEM_CASES_FETCH_TYPE = "NGSIEM Case"
 THIRD_PARTY_DETECTION_FETCH_TYPE = "Third Party Detection"
 ENDPOINT_DETECTION = "detection"
 
@@ -394,6 +394,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 TOTAL_FETCH_TYPE_XSOAR = 13  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
 TOTAL_FETCH_TYPE_XSIAM = 6  # Matches the total number of fetch types for XSIAM in the LastRunIndex class
 
+
 class LastRunIndex(IntEnum):
     """
     The last_run object is defined as a list of dictionaries.
@@ -443,15 +444,6 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 def is_detection_fetch_type_selected(selected_types: list):
     return any(detection_type in selected_types for detection_type in DETECTION_FETCH_TYPES)
-
-
-def is_detection_occurred_before_fetch_time(detection_created_timestamp: str, start_fetch_time: str) -> bool:
-    # the following test is to filter out detections that are older than the start_fetch_time.
-    # The CS Falcon API does not do that reliably
-    create_date = datetime.fromisoformat(detection_created_timestamp.replace("Z", "+00:00"))
-    start_date = datetime.fromisoformat(start_fetch_time.replace("Z", "+00:00"))
-
-    return create_date < start_date
 
 
 def is_incident_fetch_type_selected(selected_types: list):
@@ -971,7 +963,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         NGSIEM_DETECTION_FETCH_TYPE,
         THIRD_PARTY_DETECTION_FETCH_TYPE,
         NGSIEM_INCIDENT_FETCH_TYPE,
-        NGSIEM_AUTOMATED_LEADS_FETCH_TYPE
+        NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
     ):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
@@ -1838,7 +1830,7 @@ def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
     full_cases = []
 
     for i in range(0, len(ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
-        batch_ids = ids[i: i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+        batch_ids = ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
         ids_json = {"ids": batch_ids}
         demisto.debug(f"Getting cases details with batch_ids len {len(batch_ids)}.")
@@ -2393,14 +2385,11 @@ def update_ngeism_case_request(id: str, status: str) -> dict:
         raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
 
     demisto.debug(f"Updating remote ngsiem case with {id=} and {status=}")
-    payload = {"fields": {"status": status}, "id": id }
+    payload = {"fields": {"status": status}, "id": id}
 
     # Call the hypothetical function
-    return http_request(
-        "PATCH",
-        "/cases/entities/cases/v2",
-        data=json.dumps(payload)
-    )
+    return http_request("PATCH", "/cases/entities/cases/v2", data=json.dumps(payload))
+
 
 def update_request_for_multiple_detection_types(ids: list[str], status: str) -> dict:
     """
@@ -2617,9 +2606,7 @@ def get_remote_data_command(args: dict[str, Any]):
             mirrored_data, updated_object = get_remote_ngsiem_case_date(remote_incident_id)
             if updated_object:
                 demisto.debug(f"Update ngsiem case {remote_incident_id} with fields: {updated_object}")
-                set_xsoar_entries(
-                    updated_object, entries, remote_incident_id, NGSIEM_CASE, reopen_statuses_list
-                )  # sets in place
+                set_xsoar_entries(updated_object, entries, remote_incident_id, NGSIEM_CASE, reopen_statuses_list)  # sets in place
         # for endpoint in the new version
         elif incident_type in (
             IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
@@ -2934,7 +2921,7 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         _, case_ids = get_cases_data(
             url_filter=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'",
             limit=INCIDENTS_PER_FETCH,
-            offset=0
+            offset=0,
         )
         raw_ids += [f"{IncidentType.NGSIEM_CASE.value}:{case_id}" for case_id in case_ids]
 
@@ -3221,13 +3208,6 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
         # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
         for detection in full_detections:
             detection_id = detection.get("composite_id")
-            if is_detection_occurred_before_fetch_time(detection.get("created_timestamp"), start_fetch_time):
-                demisto.debug(
-                    f"CrowdStrikeFalconMsg: Detection {detection_id} created at {detection.get('created_timestamp')} "
-                    f"was created before the fetch start date: {start_fetch_time}"
-                )
-                continue
-
             detection["incident_type"] = incident_type
             demisto.debug(
                 f"CrowdStrikeFalconMsg: Detection {detection_id} "
@@ -3635,7 +3615,7 @@ def fetch_items(command="fetch-incidents"):
             product_type="xdr",
             detection_name_prefix=NGSIEM_INCIDENT_FETCH_TYPE,
             start_time_key="created_timestamp",
-            is_fetch_events=False
+            is_fetch_events=False,
         )
         items.extend(fetched_ngsiem_incidents)
 
@@ -3661,9 +3641,7 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug(f"CrowdStrikeFalconMsg: Current NGSIEM Cases last_run_object: {ngsiem_case_last_run}")
 
         fetched_ngsiem_cases, ngsiem_case_last_run = fetch_ngsiem_cases(
-            ngsiem_case_last_run,
-            look_back,
-            params.get("ngsiem_cases_fetch_query", "")
+            ngsiem_case_last_run, look_back, params.get("ngsiem_cases_fetch_query", "")
         )
         items.extend(fetched_ngsiem_cases)
 
@@ -3730,15 +3708,11 @@ def fetch_items(command="fetch-incidents"):
     set_last_run_per_type(
         last_run, index=LastRunIndex.OFP_DETECTION, data=ofp_detection_last_run, is_fetch_events=is_fetch_events
     )
-    set_last_run_per_type(
-        last_run, index=LastRunIndex.NGSIEM_INCIDENTS, data=ngsiem_incident_last_run, is_fetch_events=False
-    )
+    set_last_run_per_type(last_run, index=LastRunIndex.NGSIEM_INCIDENTS, data=ngsiem_incident_last_run, is_fetch_events=False)
     set_last_run_per_type(
         last_run, index=LastRunIndex.NGSIEM_AUTOMATED_LEADS, data=ngsiem_automated_lead_last_run, is_fetch_events=False
     )
-    set_last_run_per_type(
-        last_run, index=LastRunIndex.NGSIEM_CASES, data=ngsiem_case_last_run, is_fetch_events=False
-    )
+    set_last_run_per_type(last_run, index=LastRunIndex.NGSIEM_CASES, data=ngsiem_case_last_run, is_fetch_events=False)
 
     if not is_fetch_events:
         set_last_run_per_type(last_run, index=LastRunIndex.IOM, data=iom_last_run, is_fetch_events=is_fetch_events)
@@ -3866,7 +3840,7 @@ def fetch_detections_by_product_type(
     detections_type: str,
     detection_name_prefix: str,
     start_time_key: str,
-    is_fetch_events: bool = False
+    is_fetch_events: bool = False,
 ) -> tuple[List, dict]:
     """The fetch logic for idp, ods and mobile detections.
 
@@ -3984,7 +3958,7 @@ def fetch_ngsiem_cases(last_run: dict, look_back: int, fetch_query: str):
             add_mirroring_fields(case)
             case["incident_type"] = NGSIEM_CASE
             fix_time_field(case, "created_timestamp")
-            case_context =  {
+            case_context = {
                 "name": f"{NGSIEM_CASE} ID: {case.get('id')}",
                 "occurred": case.get("created_timestamp"),
                 "severity": case.get("severity"),
@@ -4006,12 +3980,13 @@ def fetch_ngsiem_cases(last_run: dict, look_back: int, fetch_query: str):
         created_time_field="occurred",
         id_field="name",
         date_format=DETECTION_DATE_FORMAT,
-        new_offset=offset
+        new_offset=offset,
     )
     demisto.debug(f"CrowdstrikeFalconMsg: cases last_run after update: {last_run}")
     demisto.debug(f"CrowdstrikeFalconMsg: Ending NGSIEM Cases fetch. Fetched {len(cases)}")
     demisto.debug(f"CrowdstrikeFalconMsg: Ending NGSIEM Cases fetch. {cases=}")
     return cases, last_run
+
 
 def parse_ioa_iom_incidents(
     fetched_data: list[dict[str, Any]],
