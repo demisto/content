@@ -1362,6 +1362,7 @@ script:
         type: number
       name: core-get-case-ai-summary
       description: Retrieves an AI-generated summary for a specific case.
+      hidden: true
       outputs:
         - contextPath: Core.CaseAISummary.case_id
           description: The unique identifier for the case.

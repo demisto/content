@@ -1580,6 +1580,7 @@ def map_case_format(case_list):
 
     return mapped_cases
 
+
 def build_get_cases_filter(args: dict) -> FilterBuilder:
     since_creation_start_time = args.get("since_creation_time")
     since_creation_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_creation_start_time else None
@@ -1670,11 +1671,10 @@ def add_cases_ai_summary(client, cases_list):
     try:
         for case in cases_list:
             case_id = case.get("case_id")
-            print("replacing")
-            case_summary = get_case_ai_summary_command(client, {"case_id" : case_id})
+            case_summary = get_case_ai_summary_command(client, {"case_id": case_id})
             if case_summary:
-                case['description'] = case_summary.outputs.get('case_description')
-                case["name"] = case_summary.outputs.get('case_name')
+                case["description"] = case_summary.outputs.get("case_description")
+                case["name"] = case_summary.outputs.get("case_name")
     except Exception as e:
         demisto.debug(str(e))
     return cases_list
@@ -1719,10 +1719,12 @@ def get_cases_command(client, args):
     filter_count = int(reply.get("FILTER_COUNT", "0"))
     returned_count = len(data)
 
-    command_results = [CommandResults(
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
-        outputs={"filter_count": filter_count, "returned_count": returned_count},
-    )]
+    command_results = [
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
+            outputs={"filter_count": filter_count, "returned_count": returned_count},
+        )
+    ]
 
     if filter_count == 1 and returned_count == 1 and data[0].get("issue_count") > 1:
         data = add_cases_ai_summary(client, data)
@@ -1750,9 +1752,9 @@ def get_cases_command(client, args):
             command_results.append(
                 CommandResults(
                     readable_output="Cannot retrieve enriched case data for more than 10 cases. "
-                                    "Only standard case data will be shown. "
-                                    "Try using a more specific query, "
-                                    "for example specific case IDs you want to get enriched data for.",
+                    "Only standard case data will be shown. "
+                    "Try using a more specific query, "
+                    "for example specific case IDs you want to get enriched data for.",
                     entry_type=4,
                 )
             )
@@ -3131,19 +3133,19 @@ def get_case_ai_summary_command(client: Client, args: dict) -> CommandResults:
                         raw response, and outputs for integration context.
     """
     case_id = arg_to_number(args.get("case_id"))
-    
+
     response = client.get_case_ai_summary(case_id)
     if not response:
         raise DemistoException(f"Failed to fetch ai summary for case {case_id}. Ensure the asset ID is valid.")
 
     reply = response.get("reply", {})
-    
+
     output = {
         "case_id": reply.get("case_id"),
         "case_name": reply.get("case_name"),
         "case_description": reply.get("case_description"),
     }
-    
+
     return CommandResults(
         readable_output=tableToMarkdown("Case AI Summary", output, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CaseAISummary",
@@ -3163,32 +3165,29 @@ def init_client(api_type: str) -> Client:
     params = demisto.params()
 
     # Connection parameters
-    proxy = params.get('proxy', False)
-    verify_cert = not params.get('insecure', False)
+    proxy = params.get("proxy", False)
+    verify_cert = not params.get("insecure", False)
 
     try:
-        timeout = int(params.get('timeout', 120))
+        timeout = int(params.get("timeout", 120))
     except (ValueError, TypeError):
         timeout = 120
 
     # Base URL Mapping logic based on api_type
-    webapp_root = f"/api/webapp"
+    webapp_root = "/api/webapp"
 
     url_map = {
         "webapp": webapp_root,
         "public": f"{webapp_root}/public_api/v1",
         "data_platform": f"{webapp_root}/data-platform",
         "appsec": f"{webapp_root}/public_api/appsec",
-        "xsoar": f"/xsoar"
+        "xsoar": "/xsoar",
     }
 
     # Fallback to public API if the type isn't recognized
     client_url = url_map.get(api_type, url_map["public"])
 
-    headers: dict = {
-        "Authorization": params.get('api_key'),
-        "Content-Type": "application/json"
-    }
+    headers: dict = {"Authorization": params.get("api_key"), "Content-Type": "application/json"}
 
     return Client(
         base_url=client_url,
@@ -3197,6 +3196,7 @@ def init_client(api_type: str) -> Client:
         headers=headers,
         timeout=timeout,
     )
+
 
 def main():  # pragma: no cover
     """
@@ -3301,10 +3301,9 @@ def main():  # pragma: no cover
 
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
-            
+
         elif command == "core-get-case-ai-summary":
             return_results(get_case_ai_summary_command(client, args))
-            
 
     except Exception as err:
         demisto.error(traceback.format_exc())
