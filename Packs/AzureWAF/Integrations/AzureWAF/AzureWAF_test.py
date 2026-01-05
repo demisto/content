@@ -64,7 +64,7 @@ def test_get_policy_by_resource_body(mocker, demisto_args, expected_results):
     client = waf.AzureWAFClient(
         app_id="", subscription_id="test", resource_group_name="test", verify=True, proxy=False, auth_type="Device"
     )
-    m = mocker.patch.object(client, "http_request", return_value={"properties": {"test":"test"}})
+    m = mocker.patch.object(client, "http_request", return_value={"properties": {"test": "test"}})
     waf.policies_get_command(client, **demisto_args)
     assert m.call_args[1].get("full_url") == expected_results.get("full_url")
     assert m.call_args[1].get("method") == expected_results.get("method")
@@ -98,9 +98,8 @@ ApplicationGatewayWebApplicationFirewallPolicies/pol1",
     client = waf.AzureWAFClient(
         app_id="", subscription_id="test", resource_group_name="test", verify=True, proxy=False, auth_type="Device"
     )
-    side_effect = [Exception("Test"), {"properties": {"test2":"test2"}}]
-    expected_outputs = [{"properties": "res1 threw Exception: Test"},
-                        {"properties": {"test2":"test2"}}]
+    side_effect = [Exception("Test"), {"properties": {"test2": "test2"}}]
+    expected_outputs = [{"properties": "res1 threw Exception: Test"}, {"properties": {"test2": "test2"}}]
     m = mocker.patch.object(client, "http_request", side_effect=side_effect)
     commandResult = waf.policies_get_command(client, **demisto_args)
     assert commandResult.outputs == expected_outputs
@@ -432,47 +431,6 @@ def test_subscriptions_list_command(mocker):
     assert m.call_args[1].get("params") == expected_results.get("params")
 
 
-def test_resource_group_list_command(mocker):
-    client = waf.AzureWAFClient(
-        app_id="", subscription_id="test", resource_group_name="test", verify=True, proxy=False, auth_type="Device"
-    )
-    expected_results = {
-        "method": "GET",
-        "full_url": "https://management.azure.com/subscriptions/pol1/resourcegroups",
-        "params": {"api-version": API_VERSION, "$top": 10},
-    }
-    demisto_args = {"subscription_id": "pol1", "verbose": "false", "limit": "10", "location": "east"}
-    m = mocker.patch.object(
-        client,
-        "http_request",
-        return_value={
-            "value": [
-                {
-                    "id": "/subscriptions/pol1/resourceGroups/cloud-shell-storage-eastus",
-                    "name": "cloud-shell-storage-eastus",
-                    "type": "Microsoft.Resources/resourceGroups",
-                    "location": "eastus",
-                    "properties": {"provisioningState": "Succeeded"},
-                },
-                {
-                    "id": "/subscriptions/pol1/resourceGroups/demisto",
-                    "name": "demisto",
-                    "type": "Microsoft.Resources/resourceGroups",
-                    "location": "centralus",
-                    "properties": {"provisioningState": "Succeeded"},
-                },
-                {
-                    "id": "/subscriptions/pol1/resourceGroups/compute-integration",
-                    "name": "compute-integration",
-                    "type": "Microsoft.Resources/resourceGroups",
-                    "location": "eastus",
-                    "properties": {"provisioningState": "Succeeded"},
-                },
-            ]
-        },
-    )
-
-
 # Front Door WAF Policy Tests
 
 FRONT_DOOR_GET_COMMAND_DATA = [
@@ -690,7 +648,7 @@ def test_front_door_policy_array_group_names_upsert_request(mocker):
         "custom_rules": '{"customRules": [{"name": "Rule1"}]}',
         "location": "global",
     }
-    
+
     # Expected request body for both resource groups
     expected_body = {
         "location": "global",
@@ -700,33 +658,31 @@ def test_front_door_policy_array_group_names_upsert_request(mocker):
         },
         "sku": {"name": "Classic_AzureFrontDoor"},
     }
-    
+
     # Mock successful responses for both resource groups
     mock_response_1 = {"name": "fd_pol1", "id": "id1", "properties": {}}
     mock_response_2 = {"name": "fd_pol1", "id": "id2", "properties": {}}
-    
+
     client = waf.AzureWAFClient(
         app_id="", subscription_id="test", resource_group_name="test", verify=True, proxy=False, auth_type="Device"
     )
-    
+
     # Mock http_request to return successful responses for both calls
-    m = mocker.patch.object(
-        client, "http_request", side_effect=[mock_response_1, mock_response_2]
-    )
-    
+    m = mocker.patch.object(client, "http_request", side_effect=[mock_response_1, mock_response_2])
+
     # Execute the command
     commandResult = waf.front_door_policy_upsert_command(client, **demisto_args)
-    
+
     # Verify the command returns both results
     assert commandResult.outputs is not None
     assert isinstance(commandResult.outputs, list)
     assert len(commandResult.outputs) == 2
     assert commandResult.outputs[0] == mock_response_1
     assert commandResult.outputs[1] == mock_response_2
-    
+
     # Verify http_request was called twice (once per resource group)
     assert m.call_count == 2
-    
+
     # Verify the first call (fd_res1)
     first_call = m.call_args_list[0][1]
     assert first_call.get("method") == "PUT"
@@ -734,7 +690,7 @@ def test_front_door_policy_array_group_names_upsert_request(mocker):
     assert "FrontDoorWebApplicationFirewallPolicies/fd_pol1" in first_call.get("full_url")
     assert first_call.get("data") == expected_body
     assert first_call.get("params") == {"api-version": FRONT_DOOR_API_VERSION}
-    
+
     # Verify the second call (fd_res2)
     second_call = m.call_args_list[1][1]
     assert second_call.get("method") == "PUT"

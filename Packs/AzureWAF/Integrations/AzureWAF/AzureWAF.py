@@ -249,7 +249,9 @@ class AzureWAFClient:
                 res.append({"properties": f"{resource_group_name} threw Exception: {e!s}"})
         return res
 
-    def get_front_door_policy_list_by_resource_group_name(self, subscription_id: str, resource_group_name_list: list) -> list[dict]:
+    def get_front_door_policy_list_by_resource_group_name(
+        self, subscription_id: str, resource_group_name_list: list
+    ) -> list[dict]:
         base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
         res = []
         for resource_group_name in resource_group_name_list:
@@ -274,23 +276,25 @@ class AzureWAFClient:
                     self.http_request(
                         method="GET",
                         full_url=f"{base_url}/{FRONT_DOOR_POLICY_PATH}",
-                        params={"api-version": FRONT_DOOR_API_VERSION}
+                        params={"api-version": FRONT_DOOR_API_VERSION},
                     )
                 )
             except Exception as e:
                 res.append({"properties": f"Listing {subscription_id} threw Exception: {e!s}"})
         return res
 
-    def update_front_door_policy_upsert(self, policy_name: str, resource_group_names: list, subscription_id: str, data: dict) -> list[dict]:
+    def update_front_door_policy_upsert(
+        self, policy_name: str, resource_group_names: list, subscription_id: str, data: dict
+    ) -> list[dict]:
         base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
         res = []
         for resource_group_name in resource_group_names:
             result = self.http_request(
-                    method="PUT",
-                    full_url=f"{base_url}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}",
-                    data=data,
-                    params={"api-version": FRONT_DOOR_API_VERSION},
-                )
+                method="PUT",
+                full_url=f"{base_url}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}",
+                data=data,
+                params={"api-version": FRONT_DOOR_API_VERSION},
+            )
             res.append(result)
         return res
 
@@ -556,7 +560,6 @@ def front_door_policy_upsert_command(client: AzureWAFClient, **args) -> CommandR
     resource_group_names = argToList(args.get("resource_group_name", client.resource_group_name))
     subscription_id = args.get("subscription_id", client.subscription_id)
     managed_rules = args.get("managed_rules", {})
-    print(f"{managed_rules=}")
     sku = args.get("sku", "Classic_AzureFrontDoor")
     verbose = args.get("verbose", "false") == "true"
 
@@ -573,7 +576,6 @@ def front_door_policy_upsert_command(client: AzureWAFClient, **args) -> CommandR
         if val:
             key_hierarchy = FRONT_DOOR_UPSERT_PARAMS[param].split(".")
             parse_nested_keys_to_dict(base_dict=body, keys=key_hierarchy, value=val)
-    print(json.dumps(body, indent=2))
     if "location" not in body:
         body["location"] = "Global"
     # Set SKU if not already set
@@ -583,7 +585,6 @@ def front_door_policy_upsert_command(client: AzureWAFClient, **args) -> CommandR
     updated_policy = client.update_front_door_policy_upsert(
         policy_name=policy_name, resource_group_names=resource_group_names, subscription_id=subscription_id, data=body
     )
-    print(f"{updated_policy=}")
     return CommandResults(
         readable_output=policies_to_markdown(updated_policy, verbose),
         outputs=updated_policy,
@@ -605,9 +606,10 @@ def front_door_policy_delete_command(client: AzureWAFClient, **args):
 
     for resource_group_name in resource_group_names:
         # policy_path is unique and used as unique id in the product.
-        policy_id = f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}"
+        policy_id = (
+            f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}"
+        )
         status = client.delete_front_door_policy(policy_name, resource_group_name)
-        print(f"{status=}")
         md = ""
         context: dict = {}
         if status.status_code in [200, 202]:
@@ -636,17 +638,17 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
 
     policies_num = len(policies)
     policies = policies[: min(limit, policies_num)]
-    
+
     # Prepare data for table
     table_data = []
     md = tableToMarkdown("Policies", table_data)
     for policy in policies:
         policy_copy = policy.copy()
         properties = policy_copy.pop("properties", {})
-        if type(properties) == str:
+        if type(properties) is str:
             md += properties
             continue
-        
+
         if verbose:
             # Include detailed information
             row = {
@@ -673,7 +675,7 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
                 "Type": policy_copy.get("type", ""),
                 "ID": policy_copy.get("id", ""),
             }
-        
+
         table_data.append(row)
     md += f"\nShowing {min(limit, len(policies))} policies out of {policies_num}"
     return md
