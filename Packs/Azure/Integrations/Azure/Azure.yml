@@ -2259,7 +2259,7 @@ script:
         name: security_rule_name
         required: true
   - name: azure-nsg-security-rules-list
-    description: Get a specific rule.
+    description: Gets all security rules in a network security group.
     arguments:
       - description: The subscription ID.
         name: subscription_id

@@ -2615,8 +2615,8 @@ class EC2:
         region_names = argToList(args.get("region_names", ""))
         all_regions = arg_to_bool_or_none(args.get("all_regions"))
         kwargs = {"RegionNames": region_names, "AllRegions": all_regions, "Filters": parse_filter_field(args.get("filters"))}
-        if (region_names and all_regions is not None) or (not region_names and all_regions is None):
-            raise DemistoException("Exactly one of the arguments 'region_name' and 'all_regions' should be provided.")
+        if region_names and all_regions is not None:
+            raise DemistoException("Only one of the arguments 'region_name' and 'all_regions' should be provided.")
 
         remove_nulls_from_dictionary(kwargs)
         demisto.debug(f"{kwargs=}")
