@@ -58,6 +58,6 @@ To create or configure the Broker VM, use the information described [here](https
     | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in Cisco ASA). |
     | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Cisco ASA.   |
     | `Vendor`     | Enter Cisco                                                                                                                 |
-    | `Product`    | Enter ASA
+    | `Product`    | Enter ASA.
 
 </~XSIAM>
