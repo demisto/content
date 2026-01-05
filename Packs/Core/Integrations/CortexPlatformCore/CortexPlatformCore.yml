@@ -1660,14 +1660,14 @@ script:
           isArray: true
           auto: PREDEFINED
           predefined:
-          - EFFECTIVE
-          - EFFECTIVE_REQUIRES_CONFIGURATION_UPDATE
-          - EFFECTIVE_REQUIRES_CONTENT_UPDATE
-          - EXPLOIT_CONFIRMED
-          - EXPLOIT_UNREACHABLE
-          - NOT_INSTALLED
-          - NO_CONTROLS_FOUND
-          - UNKNOWN_COVERAGE
+            - EFFECTIVE
+            - EFFECTIVE_REQUIRES_CONFIGURATION_UPDATE
+            - EFFECTIVE_REQUIRES_CONTENT_UPDATE
+            - EXPLOIT_CONFIRMED
+            - EXPLOIT_UNREACHABLE
+            - NOT_INSTALLED
+            - NO_CONTROLS_FOUND
+            - UNKNOWN_COVERAGE
       outputs:
         - contextPath: Core.VulnerabilityIssue.ISSUE_ID
           description: The unique identifier for the vulnerability issue.

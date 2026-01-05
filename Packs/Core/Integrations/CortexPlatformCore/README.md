@@ -515,7 +515,7 @@ Retrieves vulnerabilities based on specified filters.
 | assignee | The email of the user assigned to the vulnerability. Accepts a comma-separated list. Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities. | Optional |
 | finding_sources | The finding sources of the vulnerability. Accepts a comma-separated list. Possible values are: CORTEX_AGENT, CORTEX_AGENTLESS_SCANNER, CORTEX_ATTACK_SURFACE_MANAGEMENT, CORTEX_ATTACK_SURFACE_TESTING, CORTEX_CLI_SCANNER, CORTEX_CONTAINER_REGISTRY_SCANNER, CORTEX_NETWORK_SCANNER, CORTEX_SERVERLESS_FUNCTION_SCANNER, QUALYS, TENABLE. | Optional |
 | cvrs_gte | The minimum risk score assigned to the vulnerability (range 0-100). | Optional |
-| compensating_controls_effective_coverage | No description provided. Possible values are: EFFECTIVE, EFFECTIVE_REQUIRES_CONFIGURATION_UPDATE, EFFECTIVE_REQUIRES_CONTENT_UPDATE, EXPLOIT_CONFIRMED, EXPLOIT_UNREACHABLE, NOT_INSTALLED, NO_CONTROLS_FOUND, UNKNOWN_COVERAGE. | Optional |
+| compensating_controls_effective_coverage | The assessed effectiveness and coverage of detected compensating controls. Possible values are: EFFECTIVE, EFFECTIVE_REQUIRES_CONFIGURATION_UPDATE, EFFECTIVE_REQUIRES_CONTENT_UPDATE, EXPLOIT_CONFIRMED, EXPLOIT_UNREACHABLE, NOT_INSTALLED, NO_CONTROLS_FOUND, UNKNOWN_COVERAGE. | Optional |
 
 #### Context Output
 
