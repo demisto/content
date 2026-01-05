@@ -1668,6 +1668,23 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
 
 
 def add_cases_ai_summary(client, cases_list):
+    """
+    Enriches a list of cases with AI-generated summaries.
+
+    For each case in the provided list, fetches an AI-generated summary using the case ID
+    and updates the case's 'description' and 'name' fields with the AI-generated values.
+
+    Args:
+        client: The API client instance used to fetch AI summaries
+        cases_list (list): List of case dictionaries, each containing at least a 'case_id' field
+
+    Returns:
+        list: The enriched cases list with updated 'description' and 'name' fields where available.
+              Returns the original list if cases_list is None or empty.
+
+    Note:
+        - If fetching AI summary fails for a case, that case remains unchanged
+    """
     try:
         for case in cases_list:
             case_id = case.get("case_id")
