@@ -3,6 +3,7 @@
 ## Overview
 
 SAP Business Technology Platform is a cloud-based platform that enables organizations to build, integrate, and extend applications using data, analytics, AI, and automation tools. It combines database, development, and integration services into a unified environment optimized for enterprise business processes.
+Dummy commit
 
 This integration collects audit log events from SAP BTP for security monitoring and compliance purposes in your Cortex environment.
 
