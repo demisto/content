@@ -18,6 +18,8 @@ from dateutil.parser import parse
 urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message=".*using SSL with verify_certs=False is insecure.")
 
+VENDOR = "Elasticsearch"
+PRODUCT = "Elasticsearch"
 ELASTICSEARCH_V8 = "Elasticsearch_v8"
 ELASTICSEARCH_V9 = "Elasticsearch_v9"
 OPEN_SEARCH = "OpenSearch"
@@ -60,20 +62,34 @@ HTTP_ERRORS = {
     503: "503 Service Unavailable",
 }
 
-"""VARIABLES FOR FETCH INCIDENTS"""
+LAST_RUN_EVENTS_KEY = "events"
+LAST_RUN_INCIDENTS_KEY = "incidents"
+
 param = demisto.params()
+"""COMMON VARIABLES FOR FETCH INCIDENTS AND FETCH EVENTS"""
+FETCH_TIME = "now" if demisto.command() == "fetch-events" else param.get("fetch_time", "3 days")
+INSECURE = not param.get("insecure", False)
+TIMEOUT = int(param.get("timeout") or 60)
+
+"""VARIABLES FOR FETCH INCIDENTS"""
 TIME_FIELD = param.get("fetch_time_field", "")
 FETCH_INDEX = param.get("fetch_index", "")
 FETCH_QUERY_PARM = param.get("fetch_query", "")
 RAW_QUERY = param.get("raw_query", "")
-FETCH_TIME = param.get("fetch_time", "3 days")
 FETCH_SIZE = int(param.get("fetch_size", 50))
-INSECURE = not param.get("insecure", False)
 TIME_METHOD = param.get("time_method", "Simple-Date")
-TIMEOUT = int(param.get("timeout") or 60)
 MAP_LABELS = param.get("map_labels", True)
-
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
+
+"""VARIABLES FOR FETCH EVENTS"""
+TIME_FIELD_FETCH_EVENTS = param.get("fetch_time_field_fetch_event", "")
+FETCH_INDEX_FETCH_EVENTS = param.get("fetch_index_fetch_event", "")
+FETCH_QUERY_PARM_FETCH_EVENTS = param.get("fetch_query_fetch_event", "")
+RAW_QUERY_FETCH_EVENTS = param.get("raw_query_fetch_event", "")
+FETCH_SIZE_FETCH_EVENTS = int(param.get("fetch_size_fetch_event", 50))
+TIME_METHOD_FETCH_EVENTS = param.get("time_method_fetch_event", "Simple-Date")
+MAP_LABELS_FETCH_EVENTS = param.get("map_labels_fetch_event", True)
+FETCH_QUERY_FETCH_EVENTS = RAW_QUERY_FETCH_EVENTS or FETCH_QUERY_PARM_FETCH_EVENTS
 
 
 def get_value_by_dot_notation(dictionary, key):
@@ -98,7 +114,7 @@ def get_value_by_dot_notation(dictionary, key):
     return value
 
 
-def convert_date_to_timestamp(date):
+def convert_date_to_timestamp(date, time_method=TIME_METHOD):
     """converts datetime to the relevant timestamp format.
 
     Args:
@@ -112,10 +128,10 @@ def convert_date_to_timestamp(date):
     if str(date).isdigit():
         return int(date)
 
-    if TIME_METHOD == "Timestamp-Seconds":
+    if time_method == "Timestamp-Seconds":
         return int(date.timestamp())
 
-    if TIME_METHOD == "Timestamp-Milliseconds":
+    if time_method == "Timestamp-Milliseconds":
         return int(date.timestamp() * 1000)
 
     # In case of 'Simple-Date'.
@@ -378,19 +394,38 @@ def search_command(proxies):
 
 
 def fetch_params_check():
-    """If is_fetch is ticked, this function checks that all the necessary parameters for the fetch are entered."""
+    """If isFetch or isFetchEvents is ticked, this function checks that all the necessary parameters for the fetch are entered."""
+    params = demisto.params()
+    is_fetch_events = params.get("isFetchEvents")
+    is_fetch = params.get("isFetch")
+
     str_error = []  # type:List
-    if (TIME_FIELD == "" or TIME_FIELD is None) and not RAW_QUERY:
-        str_error.append("Index time field is not configured.")
+    if is_fetch_events:
+        if (TIME_FIELD_FETCH_EVENTS == "" or TIME_FIELD_FETCH_EVENTS is None) and not RAW_QUERY_FETCH_EVENTS:
+            str_error.append("Index time field is not configured for fetch events.")
 
-    if not FETCH_QUERY:
-        str_error.append("Query by which to fetch incidents is not configured.")
+        if not FETCH_QUERY_FETCH_EVENTS:
+            str_error.append("Query by which to fetch events is not configured.")
 
-    if RAW_QUERY and FETCH_QUERY_PARM:
-        str_error.append("Both Query and Raw Query are configured. Please choose between Query or Raw Query.")
+        if RAW_QUERY_FETCH_EVENTS and FETCH_QUERY_PARM_FETCH_EVENTS:
+            str_error.append(
+                "Both Query and Raw Query are configured for fetch events. Please choose between Query or Raw Query."
+            )
+
+    if is_fetch:
+        if (TIME_FIELD == "" or TIME_FIELD is None) and not RAW_QUERY:
+            str_error.append("Index time field is not configured for fetch incidents.")
+
+        if not FETCH_QUERY:
+            str_error.append("Query by which to fetch incidents is not configured.")
+
+        if RAW_QUERY and FETCH_QUERY_PARM:
+            str_error.append(
+                "Both Query and Raw Query are configured for fetch incidents. Please choose between Query or Raw Query."
+            )
 
     if len(str_error) > 0:
-        return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + "\n".join(str_error))
+        return_error("Got the following errors in test:" + "\n".join(str_error))
 
 
 def test_query_to_fetch_incident_index(es):
@@ -601,9 +636,7 @@ def test_func(proxies):
 
     """
     test_connectivity_auth(proxies)
-    if demisto.params().get("isFetch"):
-        # check the existence of all necessary fields for fetch
-        fetch_params_check()
+    fetch_params_check()
     demisto.results("ok")
 
 
@@ -612,10 +645,9 @@ def integration_health_check(proxies):
     # build general Elasticsearch class
     es = elasticsearch_builder(proxies)
 
-    if demisto.params().get("isFetch"):
-        # check the existence of all necessary fields for fetch
-        fetch_params_check()
+    fetch_params_check()
 
+    if demisto.params().get("isFetch"):
         try:
             # test if FETCH_INDEX exists
             test_query_to_fetch_incident_index(es)
@@ -685,7 +717,7 @@ def incident_label_maker(source):
     return labels
 
 
-def results_to_incidents_timestamp(response, last_fetch):
+def results_to_incidents_timestamp(response, last_fetch, is_fetch_events=False):
     """Converts the current results into incidents.
 
     Args:
@@ -696,13 +728,16 @@ def results_to_incidents_timestamp(response, last_fetch):
     Returns:
         (list).The incidents.
         (num).The date of the last incident brought by this fetch.
+        (bool):Flag to determine whether it fetch incidents or fetch events running
     """
     current_fetch = last_fetch
     incidents = []
+    time_field = TIME_FIELD_FETCH_EVENTS if is_fetch_events else TIME_FIELD
+
     for hit in response.get("hits", {}).get("hits"):
         source = hit.get("_source")
         if source is not None:
-            time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD))
+            time_field_value = get_value_by_dot_notation(source, str(time_field))
 
             if time_field_value is not None:
                 # if timestamp convert to iso format date and save the timestamp
@@ -725,12 +760,14 @@ def results_to_incidents_timestamp(response, last_fetch):
                     if MAP_LABELS:
                         inc["labels"] = incident_label_maker(hit.get("_source"))
 
+                    if is_fetch_events:
+                        inc["_time"] = hit_date.isoformat() + "Z"
                     incidents.append(inc)
 
     return incidents, last_fetch
 
 
-def results_to_incidents_datetime(response, last_fetch):
+def results_to_incidents_datetime(response, last_fetch, is_fetch_events=False):
     """Converts the current results into incidents.
 
     Args:
@@ -741,16 +778,18 @@ def results_to_incidents_datetime(response, last_fetch):
     Returns:
         (list).The incidents.
         (datetime).The date of the last incident brought by this fetch.
+        (bool):Flag to determine whether it fetch incidents or fetch events running
     """
     last_fetch = dateparser.parse(last_fetch)
     last_fetch_timestamp = int(last_fetch.timestamp() * 1000)  # type:ignore[union-attr]
     current_fetch = last_fetch_timestamp
     incidents = []
+    time_field = TIME_FIELD_FETCH_EVENTS if is_fetch_events else TIME_FIELD
 
     for hit in response.get("hits", {}).get("hits"):
         source = hit.get("_source")
         if source is not None:
-            time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD))
+            time_field_value = get_value_by_dot_notation(source, str(time_field))
             if time_field_value is not None:
                 hit_date = parse(str(time_field_value))
                 hit_timestamp = int(hit_date.timestamp() * 1000)
@@ -774,7 +813,8 @@ def results_to_incidents_datetime(response, last_fetch):
 
                     if MAP_LABELS:
                         inc["labels"] = incident_label_maker(hit.get("_source"))
-
+                    if is_fetch_events:
+                        inc["_time"] = format_to_iso(hit_date.isoformat())
                     incidents.append(inc)
                 else:
                     demisto.debug(
@@ -806,7 +846,11 @@ def format_to_iso(date_string):
 
 
 def get_time_range(
-    last_fetch: Union[str, None] = None, time_range_start=FETCH_TIME, time_range_end=None, time_field=TIME_FIELD
+    last_fetch: Union[str, None] = None,
+    time_range_start=FETCH_TIME,
+    time_range_end=None,
+    time_field=TIME_FIELD,
+    time_method=TIME_METHOD,
 ) -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
@@ -831,7 +875,7 @@ def get_time_range(
     if not last_fetch and time_range_start:  # this is the first fetch
         start_date = dateparser.parse(time_range_start)
 
-        start_time = convert_date_to_timestamp(start_date)
+        start_time = convert_date_to_timestamp(start_date, time_method)
     else:
         start_time = last_fetch
 
@@ -841,10 +885,10 @@ def get_time_range(
 
     if time_range_end:
         end_date = dateparser.parse(time_range_end)
-        end_time = convert_date_to_timestamp(end_date)
+        end_time = convert_date_to_timestamp(end_date, time_method)
         range_dict["lt"] = end_time
 
-    if TIME_METHOD == "Simple-Date":
+    if time_method == "Simple-Date":
         range_dict["format"] = ES_DEFAULT_DATETIME_FORMAT
 
     if utc_offset := re.search(r"([+-]\d{2}:\d{2})$", time_range_start):
@@ -893,20 +937,40 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     return response
 
 
-def fetch_incidents(proxies):
-    last_run = demisto.getLastRun()
-    last_fetch = last_run.get("time") or FETCH_TIME
+def fetch_items(proxies, is_fetch_events=False):
+    """
+    Fetch items from Elasticsearch based on configured parameters.
+    This function is common to fetch-incidents and fetch-events.
+    Args:
+        proxies (dict): Proxy configuration
+        is_fetch_events (bool): Flag to determine whether to fetch incidents or events
+    """
+
+    demisto.debug(f"{demisto.command()} starting")
+    last_run: dict = demisto.getLastRun()
+
+    events_last_run: dict = last_run.get(LAST_RUN_EVENTS_KEY, {})
+    incidents_last_run: dict = last_run.get(LAST_RUN_INCIDENTS_KEY, {})
+
+    last_fetch = (events_last_run.get("time") if is_fetch_events else incidents_last_run.get("time")) or FETCH_TIME
+
+    time_field = TIME_FIELD_FETCH_EVENTS if is_fetch_events else TIME_FIELD
+    raw_query = RAW_QUERY_FETCH_EVENTS if is_fetch_events else RAW_QUERY
+    fetch_query = FETCH_QUERY_FETCH_EVENTS if is_fetch_events else FETCH_QUERY
+    fetch_index = FETCH_INDEX_FETCH_EVENTS if is_fetch_events else FETCH_INDEX
+    fetch_size = FETCH_SIZE_FETCH_EVENTS if is_fetch_events else FETCH_SIZE
+    time_method = TIME_METHOD_FETCH_EVENTS if is_fetch_events else TIME_METHOD
 
     es = elasticsearch_builder(proxies)
-    time_range_dict = get_time_range(time_range_start=last_fetch)
+    time_range_dict = get_time_range(time_range_start=last_fetch, time_field=time_field, time_method=time_method)
 
-    if RAW_QUERY:
-        response = execute_raw_query(es, RAW_QUERY)
+    if raw_query:
+        response = execute_raw_query(es, raw_query)
     else:
-        query = QueryString(query="(" + FETCH_QUERY + ") AND " + TIME_FIELD + ":*")
+        query = QueryString(query="(" + fetch_query + ") AND " + time_field + ":*")
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
-        search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
-        search = search.sort({TIME_FIELD: {"order": "asc"}})[0:FETCH_SIZE].query(query)
+        search = Search(using=es, index=fetch_index).filter(time_range_dict)
+        search = search.sort({time_field: {"order": "asc"}})[0:fetch_size].query(query)
 
         if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
             response = search.execute().to_dict()
@@ -915,22 +979,34 @@ def fetch_incidents(proxies):
             # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
-    demisto.debug(f"Fetch incidents response: {response}")
+    demisto.debug(f"Fetch response: {response}")
     _, total_results = get_total_results(response)
 
     incidents = []  # type: List
 
     if total_results > 0:
-        if "Timestamp" in TIME_METHOD:
-            incidents, last_fetch = results_to_incidents_timestamp(response, last_fetch)
-            demisto.setLastRun({"time": last_fetch})
-
+        # Process search results and convert them to incidents or events
+        if "Timestamp" in time_method:
+            incidents, last_fetch = results_to_incidents_timestamp(response, last_fetch, is_fetch_events)
         else:
-            incidents, last_fetch = results_to_incidents_datetime(response, last_fetch or FETCH_TIME)
-            demisto.setLastRun({"time": str(last_fetch)})
-
+            incidents, last_fetch = results_to_incidents_datetime(response, last_fetch or FETCH_TIME, is_fetch_events)
+            last_fetch = str(last_fetch)
         demisto.info(f"Extracted {len(incidents)} incidents.")
-    demisto.incidents(incidents)
+
+        # Build updated last_run object with the current fetch status
+        if is_fetch_events:
+            events_last_run["time"] = last_fetch
+        else:
+            incidents_last_run["time"] = last_fetch
+        updated_last_run = {LAST_RUN_INCIDENTS_KEY: incidents_last_run, LAST_RUN_EVENTS_KEY: events_last_run}
+
+        if is_fetch_events:
+            send_events_to_xsiam(incidents, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(updated_last_run)
+        else:
+            demisto.setLastRun(updated_last_run)
+            demisto.incidents(incidents)
+        demisto.debug(f"Updated last_run object after successful fetch:\n{updated_last_run}")
 
 
 def parse_subtree(my_map):
@@ -1217,10 +1293,12 @@ def main():  # pragma: no cover
         if demisto.command() == "test-module":
             test_func(proxies)
         elif demisto.command() == "fetch-incidents":
-            fetch_incidents(proxies)
-        elif demisto.command() in ["search", "es-search"]:
+            fetch_items(proxies)
+        elif demisto.command() == "fetch-events":
+            fetch_items(proxies, is_fetch_events=True)
+        elif demisto.command() in ["search", "es-search"]:  # ??? args default values: FETCH_TIME, TIME_FIELD
             search_command(proxies)
-        elif demisto.command() == "get-mapping-fields":
+        elif demisto.command() == "get-mapping-fields":  # ??? use FETCH_INDEX
             return_results(get_mapping_fields_command())
         elif demisto.command() == "es-eql-search":
             return_results(search_eql_command(args, proxies))
@@ -1228,7 +1306,7 @@ def main():  # pragma: no cover
             return_results(search_esql_command(args, proxies))
         elif demisto.command() == "es-index":
             return_results(index_document_command(args, proxies))
-        elif demisto.command() == "es-integration-health-check":
+        elif demisto.command() == "es-integration-health-check":  # ??? use fetch-incidents args
             return_results(integration_health_check(proxies))
         elif demisto.command() == "es-get-indices-statistics":
             return_results(get_indices_statistics_command(args, proxies))
