@@ -91,6 +91,7 @@ configuration:
     display: Server Name
     type: 0
     additionalinfo: The name to use for the server in tool names. If not provided, the default name returned by the server will be used.
+    advanced: true
   - name: insecure
     section: Connect
     display: Trust any certificate (not secure)
