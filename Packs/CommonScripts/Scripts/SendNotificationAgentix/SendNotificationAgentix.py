@@ -36,7 +36,7 @@ def send_notification_by_brand(brand: str, args: dict):
 
     if brand == "Microsoft Teams" and "thread_id" in command_args:
         command_args["message_id"] = command_args.pop("thread_id")
-    elif brand == "SlackV3" and "thread_id" in command_args:
+    elif brand == "Slack" and "thread_id" in command_args:
         command_args["threadID"] = command_args.pop("thread_id")
 
     return demisto.executeCommand("send-notification", args=command_args)
