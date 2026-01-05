@@ -536,7 +536,7 @@ script:
       - site
       - tenant
       required: true
-    description: Marks suspicious threats as threats. Can only be used with API V2.0.
+    description: Marks suspicious threats as threats. Can be used with both API V2.0 and V2.1.
     name: sentinelone-mark-as-threat
     outputs:
     - contextPath: SentinelOne.Threat.ID
@@ -577,7 +577,7 @@ script:
       isArray: true
       name: threat_ids
       required: true
-    description: Resolves threats using the threat ID. Can only be used with API V2.0.
+    description: Resolves threats using the threat ID. Can be used with both API V2.0 and V2.1.
     name: sentinelone-resolve-threat
     outputs:
     - contextPath: SentinelOne.Threat.ID

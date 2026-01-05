@@ -245,7 +245,7 @@ Returns a dashboard threat summary. Can only be used with API V2.1.
 ### sentinelone-mark-as-threat
 
 ***
-Marks suspicious threats as threats. Can only be used with API V2.0.
+Marks suspicious threats as threats. Can be used with both API V2.0 and V2.1.
 
 #### Base Command
 
@@ -292,7 +292,7 @@ Applies a mitigation action to a group of threats that match the specified input
 ### sentinelone-resolve-threat
 
 ***
-Resolves threats using the threat ID. Can only be used with API V2.0.
+Resolves threats using the threat ID. Can be used with both API V2.0 and V2.1.
 
 #### Base Command
 
