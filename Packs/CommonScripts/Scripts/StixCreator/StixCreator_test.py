@@ -100,6 +100,37 @@ IP_INDICATOR_SDO = {  # checking bc
     "sco_flag": "false",
 }
 
+SOFTWARE_INDICATOR_SCO = {
+    "indicators": {
+        "0": {
+            "expirationStatus": "active",
+            "firstSeen": "2023-05-07T14:42:59Z",
+            "indicator_type": "Software",
+            "lastSeen": "2023-05-07T14:42:59Z",
+            "score": "Unknown",
+            "timestamp": "2023-05-07T14:42:59Z",
+            "value": "Microsoft Word",
+            "CustomFields": {"vendor": "Microsoft", "version": "2019", "cpe": "cpe:2.3:a:microsoft:word:2019:*:*:*:*:*:*:*"},
+        }
+    },
+    "sco_flag": "true",
+}
+
+SOFTWARE_INDICATOR_MINIMAL = {
+    "indicators": {
+        "0": {
+            "expirationStatus": "active",
+            "firstSeen": "2023-05-07T14:42:59Z",
+            "indicator_type": "Software",
+            "lastSeen": "2023-05-07T14:42:59Z",
+            "score": "Unknown",
+            "timestamp": "2023-05-07T14:42:59Z",
+            "value": "Adobe Reader",
+        }
+    },
+    "sco_flag": "true",
+}
+
 
 @pytest.mark.parametrize(
     "indicators, stix_type",
@@ -110,6 +141,8 @@ IP_INDICATOR_SDO = {  # checking bc
         (ATTACK_PATTERN_INDICATOR, "attack-pattern"),
         (IP_INDICATOR_SCO, "ipv4-addr"),
         (IP_INDICATOR_SDO, "indicator"),
+        (SOFTWARE_INDICATOR_SCO, "software"),
+        (SOFTWARE_INDICATOR_MINIMAL, "software"),
     ],
 )
 def test_stixCreator_with_indicators(mocker, indicators, stix_type):
@@ -230,6 +263,71 @@ params_test_create_stix_sco_indicator = [
     (asn_stix_id, asn_stix_type, asn_value, xsoar_indicator_asn, expectes_stix_asn_indicator),
 ]
 
+# Software indicator test data
+xsoar_indicator_software_full = {
+    "expirationStatus": "active",
+    "firstSeen": "2023-05-07T14:42:59Z",
+    "indicator_type": "Software",
+    "lastSeen": "2023-05-07T14:42:59Z",
+    "score": "Unknown",
+    "timestamp": "2023-05-07T14:42:59Z",
+    "value": "Microsoft Word",
+    "CustomFields": {"vendor": "Microsoft", "version": "2019", "cpe": "cpe:2.3:a:microsoft:word:2019:*:*:*:*:*:*:*"},
+}
+
+xsoar_indicator_software_minimal = {
+    "expirationStatus": "active",
+    "firstSeen": "2023-05-07T14:42:59Z",
+    "indicator_type": "Software",
+    "lastSeen": "2023-05-07T14:42:59Z",
+    "score": "Unknown",
+    "timestamp": "2023-05-07T14:42:59Z",
+    "value": "Adobe Reader",
+}
+
+software_stix_id_full = "software--710b0b41-d4d0-5d6c-a400-fc9254554ffc"
+software_stix_id_minimal = "software--a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+software_stix_type = "software"
+software_value_full = "Microsoft Word"
+software_value_minimal = "Adobe Reader"
+
+expected_stix_software_indicator_full = {
+    "type": "software",
+    "spec_version": "2.1",
+    "id": "software--710b0b41-d4d0-5d6c-a400-fc9254554ffc",
+    "name": "Microsoft Word",
+    "vendor": "Microsoft",
+    "version": "2019",
+    "cpe": "cpe:2.3:a:microsoft:word:2019:*:*:*:*:*:*:*",
+}
+
+expected_stix_software_indicator_minimal = {
+    "type": "software",
+    "spec_version": "2.1",
+    "id": "software--a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Adobe Reader",
+}
+
+params_test_create_stix_sco_indicator = [
+    (file_stix_id, file_stix_type, file_value, xsoar_indicator_file, expectes_stix_file_indicator),
+    (domain_stix_id, domain_stix_type, domain_value, xsoar_indicator_domain, expectes_stix_domain_indicator),
+    (asn_stix_id, asn_stix_type, asn_value, xsoar_indicator_asn, expectes_stix_asn_indicator),
+    (
+        software_stix_id_full,
+        software_stix_type,
+        software_value_full,
+        xsoar_indicator_software_full,
+        expected_stix_software_indicator_full,
+    ),
+    (
+        software_stix_id_minimal,
+        software_stix_type,
+        software_value_minimal,
+        xsoar_indicator_software_minimal,
+        expected_stix_software_indicator_minimal,
+    ),
+]
+
 
 @pytest.mark.parametrize(
     "stix_id, stix_type, value, xsoar_indicator, expectes_stix_indicator", params_test_create_stix_sco_indicator
@@ -272,3 +370,120 @@ def test_stixCreator_with_indicators_spec_version(mocker, indicators, stix_type)
     assert "spec_version" in json_content
     assert json_content["spec_version"] == "2.1"
     assert stix_type in results[0]["Contents"]
+
+
+def test_software_indicator_with_all_fields():
+    """
+    Given:
+        - A Software indicator with all optional fields (vendor, version, cpe).
+    When:
+        - Creating a STIX SCO indicator using create_stix_sco_indicator.
+    Then:
+        - Assert all fields are correctly included in the STIX object.
+        - Assert the structure matches STIX 2.1 specification for software objects.
+    """
+    xsoar_indicator = {
+        "value": "Google Chrome",
+        "indicator_type": "Software",
+        "CustomFields": {
+            "vendor": "Google",
+            "version": "120.0.6099.109",
+            "cpe": "cpe:2.3:a:google:chrome:120.0.6099.109:*:*:*:*:*:*:*",
+        },
+    }
+    stix_id = "software--test-uuid-12345"
+    stix_type = "software"
+    value = "Google Chrome"
+
+    result = create_stix_sco_indicator(stix_id, stix_type, value, xsoar_indicator)
+
+    # Verify required fields
+    assert result["type"] == "software"
+    assert result["spec_version"] == "2.1"
+    assert result["id"] == stix_id
+    assert result["name"] == "Google Chrome"
+
+    # Verify optional fields are included
+    assert result["vendor"] == "Google"
+    assert result["version"] == "120.0.6099.109"
+    assert result["cpe"] == "cpe:2.3:a:google:chrome:120.0.6099.109:*:*:*:*:*:*:*"
+
+
+def test_software_indicator_without_optional_fields():
+    """
+    Given:
+        - A Software indicator without optional fields (only name).
+    When:
+        - Creating a STIX SCO indicator using create_stix_sco_indicator.
+    Then:
+        - Assert only required fields are present.
+        - Assert no optional fields with None/empty values are included.
+    """
+    xsoar_indicator = {
+        "value": "Unknown Software",
+        "indicator_type": "Software",
+    }
+    stix_id = "software--test-uuid-67890"
+    stix_type = "software"
+    value = "Unknown Software"
+
+    result = create_stix_sco_indicator(stix_id, stix_type, value, xsoar_indicator)
+
+    # Verify required fields
+    assert result["type"] == "software"
+    assert result["spec_version"] == "2.1"
+    assert result["id"] == stix_id
+    assert result["name"] == "Unknown Software"
+
+    # Verify optional fields are NOT included when not provided
+    assert "vendor" not in result
+    assert "version" not in result
+    assert "cpe" not in result
+
+
+def test_software_indicator_guess_type():
+    """
+    Given:
+        - A type string containing 'software'.
+    When:
+        - Calling guess_indicator_type.
+    Then:
+        - Assert it correctly identifies the type as 'software'.
+    """
+    result = guess_indicator_type("software", "test_value")
+    assert result == "software"
+
+
+def test_software_indicator_partial_fields():
+    """
+    Given:
+        - A Software indicator with only some optional fields (vendor and version, but no CPE).
+    When:
+        - Creating a STIX SCO indicator using create_stix_sco_indicator.
+    Then:
+        - Assert provided optional fields are included.
+        - Assert missing optional fields are not included.
+    """
+    xsoar_indicator = {
+        "value": "Firefox",
+        "indicator_type": "Software",
+        "CustomFields": {"vendor": "Mozilla", "version": "121.0"},
+    }
+    stix_id = "software--test-uuid-partial"
+    stix_type = "software"
+    value = "Firefox"
+
+    result = create_stix_sco_indicator(stix_id, stix_type, value, xsoar_indicator)
+
+    # Verify required fields
+    assert result["type"] == "software"
+    assert result["spec_version"] == "2.1"
+    assert result["id"] == stix_id
+    assert result["name"] == "Firefox"
+
+    # Verify provided optional fields are included
+    assert result["vendor"] == "Mozilla"
+    assert result["version"] == "121.0"
+
+    # Verify missing optional field is not included
+    assert "cpe" not in result
