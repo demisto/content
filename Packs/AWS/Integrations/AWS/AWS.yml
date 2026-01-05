@@ -183,7 +183,7 @@ script:
       - 'false'
 
   - name: aws-s3-bucket-delete
-    description: Delete AWS S3 bucket.
+    description: Delete AWS S3 bucket, the bucket must be empty from files.
     arguments:
       - description: The name of S3 bucket.
         name: bucket
@@ -201,7 +201,7 @@ script:
       - description: The AWS account ID.
         name: account_id
         required: true
-      - description: A delimiter is a character you use to group keys.
+      - description: A delimiter is a character that you use to group keys.
         name: delimiter
       - description: Limits the response to keys that begin with the specified prefix.
         name: prefix
