@@ -604,6 +604,286 @@ class ErrorTypes(object):
     RETRY_ERROR = "RetryError"
 
 
+class IntegrationErrorType(object):
+    """
+    Enum: Common integration error types for standardized error handling
+    
+    :return: None
+    :rtype: ``None``
+    """
+    # Network & Connectivity
+    RATE_LIMIT = 'rate_limit'
+    CONNECTION_ERROR = 'connection_error'
+    TIMEOUT_ERROR = 'timeout_error'
+    PROXY_ERROR = 'proxy_error'
+    SSL_ERROR = 'ssl_error'
+    DNS_ERROR = 'dns_error'
+    
+    # Authentication & Authorization
+    AUTH_ERROR = 'auth_error'
+    PERMISSION_ERROR = 'permission_error'
+    API_KEY_INVALID = 'api_key_invalid'
+    API_KEY_EXPIRED = 'api_key_expired'
+    
+    # Service & API
+    SERVICE_UNAVAILABLE = 'service_unavailable'
+    SERVICE_MAINTENANCE = 'service_maintenance'
+    API_DEPRECATED = 'api_deprecated'
+    QUOTA_EXCEEDED = 'quota_exceeded'
+    
+    # Data & Configuration
+    INVALID_RESPONSE = 'invalid_response'
+    MISSING_PARAMETER = 'missing_parameter'
+    INVALID_PARAMETER = 'invalid_parameter'
+    UNSUPPORTED_OPERATION = 'unsupported_operation'
+    
+    @staticmethod
+    def is_valid_type(_type):
+        return _type in (
+            IntegrationErrorType.RATE_LIMIT,
+            IntegrationErrorType.CONNECTION_ERROR,
+            IntegrationErrorType.TIMEOUT_ERROR,
+            IntegrationErrorType.PROXY_ERROR,
+            IntegrationErrorType.SSL_ERROR,
+            IntegrationErrorType.DNS_ERROR,
+            IntegrationErrorType.AUTH_ERROR,
+            IntegrationErrorType.PERMISSION_ERROR,
+            IntegrationErrorType.API_KEY_INVALID,
+            IntegrationErrorType.API_KEY_EXPIRED,
+            IntegrationErrorType.SERVICE_UNAVAILABLE,
+            IntegrationErrorType.SERVICE_MAINTENANCE,
+            IntegrationErrorType.API_DEPRECATED,
+            IntegrationErrorType.QUOTA_EXCEEDED,
+            IntegrationErrorType.INVALID_RESPONSE,
+            IntegrationErrorType.MISSING_PARAMETER,
+            IntegrationErrorType.INVALID_PARAMETER,
+            IntegrationErrorType.UNSUPPORTED_OPERATION,
+        )
+
+
+# Integration Error Messages Mapping
+INTEGRATION_ERROR_MESSAGES = {
+    IntegrationErrorType.RATE_LIMIT: {
+        'message': (
+            "Rate limiting detected. In SaaS environments, multiple tenants share the same "
+            "outbound IP address, which can trigger rate limits on external services."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/rate-limiting',
+        'suggestions': [
+            'Deploy a dedicated engine for this integration',
+            'Use an alternative integration with API-based authentication',
+            'Reduce query frequency or implement caching'
+        ]
+    },
+    IntegrationErrorType.CONNECTION_ERROR: {
+        'message': (
+            "Connection error occurred. This typically indicates network connectivity issues "
+            "between XSOAR and the external service."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/connectivity-troubleshooting',
+        'suggestions': [
+            'Verify the server URL is correct',
+            'Check network connectivity from your XSOAR instance',
+            'Verify firewall rules allow outbound connections',
+            'Test connectivity using the integration test button'
+        ]
+    },
+    IntegrationErrorType.TIMEOUT_ERROR: {
+        'message': (
+            "Request timeout. The external service did not respond within the configured timeout period."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/timeout-troubleshooting',
+        'suggestions': [
+            'Increase the timeout value in integration settings',
+            'Check network latency to the service',
+            'Verify the service is not experiencing performance issues',
+            'Consider using async operations if supported'
+        ]
+    },
+    IntegrationErrorType.PROXY_ERROR: {
+        'message': (
+            "Proxy configuration error. The integration cannot connect through the configured proxy."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/proxy-configuration',
+        'suggestions': [
+            'Verify proxy settings in integration configuration',
+            'Try disabling "Use system proxy" if enabled',
+            'Check proxy server accessibility',
+            'Verify proxy authentication credentials if required'
+        ]
+    },
+    IntegrationErrorType.SSL_ERROR: {
+        'message': (
+            "SSL certificate verification failed. This occurs when the server's SSL certificate "
+            "cannot be validated."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/ssl-troubleshooting',
+        'suggestions': [
+            'Enable "Trust any certificate" in integration settings (for testing only)',
+            'Verify the server URL uses HTTPS correctly',
+            'Check if the server uses a self-signed certificate',
+            'Ensure system CA certificates are up to date'
+        ]
+    },
+    IntegrationErrorType.DNS_ERROR: {
+        'message': (
+            "DNS resolution failed. The hostname could not be resolved to an IP address."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/dns-troubleshooting',
+        'suggestions': [
+            'Verify the server URL/hostname is correct',
+            'Check DNS server configuration',
+            'Try using an IP address instead of hostname',
+            'Verify network connectivity to DNS servers'
+        ]
+    },
+    IntegrationErrorType.AUTH_ERROR: {
+        'message': (
+            "Authentication failed. The provided credentials are invalid or have insufficient permissions."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/authentication-troubleshooting',
+        'suggestions': [
+            'Verify API key/credentials are correct',
+            'Check if credentials have expired',
+            'Ensure the account has necessary permissions',
+            'Verify the authentication method matches the API requirements'
+        ]
+    },
+    IntegrationErrorType.PERMISSION_ERROR: {
+        'message': (
+            "Permission denied. The authenticated user does not have sufficient permissions for this operation."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/permission-troubleshooting',
+        'suggestions': [
+            'Verify the account has the required permissions',
+            'Check role-based access control (RBAC) settings',
+            'Contact your administrator to grant necessary permissions',
+            'Review the API documentation for required permissions'
+        ]
+    },
+    IntegrationErrorType.API_KEY_INVALID: {
+        'message': (
+            "API key is invalid. The provided API key format or value is incorrect."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/api-key-troubleshooting',
+        'suggestions': [
+            'Verify the API key is copied correctly without extra spaces',
+            'Check if the API key format matches the expected format',
+            'Generate a new API key from the service provider',
+            'Verify you are using the correct API key type'
+        ]
+    },
+    IntegrationErrorType.API_KEY_EXPIRED: {
+        'message': (
+            "API key has expired. The API key needs to be renewed or regenerated."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/api-key-troubleshooting',
+        'suggestions': [
+            'Generate a new API key from the service provider',
+            'Update the integration configuration with the new key',
+            'Check the API key expiration policy',
+            'Set up API key rotation if supported'
+        ]
+    },
+    IntegrationErrorType.SERVICE_UNAVAILABLE: {
+        'message': (
+            "External service is temporarily unavailable. This may be due to maintenance or outage."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/service-availability',
+        'suggestions': [
+            'Check the service provider status page',
+            'Retry the operation after a few minutes',
+            'Configure a fallback integration if available',
+            'Contact the service provider if issue persists'
+        ]
+    },
+    IntegrationErrorType.SERVICE_MAINTENANCE: {
+        'message': (
+            "Service is under scheduled maintenance. The API is temporarily unavailable."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/service-availability',
+        'suggestions': [
+            'Check the service provider maintenance schedule',
+            'Wait for the maintenance window to complete',
+            'Subscribe to service status notifications',
+            'Plan operations around known maintenance windows'
+        ]
+    },
+    IntegrationErrorType.API_DEPRECATED: {
+        'message': (
+            "API version is deprecated. The API endpoint or version is no longer supported."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/api-deprecation',
+        'suggestions': [
+            'Update to the latest integration version',
+            'Check the API provider migration guide',
+            'Contact support for upgrade assistance',
+            'Review the API changelog for breaking changes'
+        ]
+    },
+    IntegrationErrorType.QUOTA_EXCEEDED: {
+        'message': (
+            "API quota exceeded. You have reached the rate limit for your API tier."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/api-quota-management',
+        'suggestions': [
+            'Wait for quota reset (check API provider documentation)',
+            'Upgrade to a higher API tier if available',
+            'Implement caching to reduce API calls',
+            'Distribute queries across multiple API keys if supported'
+        ]
+    },
+    IntegrationErrorType.INVALID_RESPONSE: {
+        'message': (
+            "Invalid response received from the service. The response format does not match expectations."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/response-validation',
+        'suggestions': [
+            'Verify the integration version is compatible with the API version',
+            'Check if the API has been updated recently',
+            'Enable debug mode to inspect the raw response',
+            'Contact support with the error details'
+        ]
+    },
+    IntegrationErrorType.MISSING_PARAMETER: {
+        'message': (
+            "Required parameter is missing. A mandatory parameter was not provided."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/parameter-configuration',
+        'suggestions': [
+            'Review the command documentation for required parameters',
+            'Check the integration configuration for missing fields',
+            'Verify all mandatory parameters are provided',
+            'Consult the integration README for parameter details'
+        ]
+    },
+    IntegrationErrorType.INVALID_PARAMETER: {
+        'message': (
+            "Invalid parameter value. The provided parameter value is not in the expected format or range."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/parameter-configuration',
+        'suggestions': [
+            'Verify parameter values match the expected format',
+            'Check parameter value constraints (min/max, allowed values)',
+            'Review the command documentation for parameter requirements',
+            'Validate input data before passing to the command'
+        ]
+    },
+    IntegrationErrorType.UNSUPPORTED_OPERATION: {
+        'message': (
+            "Operation not supported. The requested operation is not available for this API or configuration."
+        ),
+        'docs_link': 'https://xsoar.pan.dev/docs/reference/articles/api-limitations',
+        'suggestions': [
+            'Check the API documentation for supported operations',
+            'Verify your API tier supports this operation',
+            'Consider using an alternative command or integration',
+            'Contact the service provider for feature availability'
+        ]
+    }
+}
+
+
 class FeedIndicatorType(object):
     """Type of Indicator (Reputations), used in TIM integrations"""
     Account = "Account"
@@ -7679,8 +7959,11 @@ class CommandResults:
                  content_format=None,
                  extended_payload=None,
                  execution_metrics=None,
-                 replace_existing=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, dict, List[Any], bool) -> None  # noqa: E501
+                 replace_existing=False,
+                 error_type=None,
+                 include_suggestions=True,
+                 custom_error_message=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, dict, List[Any], bool, str, bool, str) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
@@ -7724,6 +8007,9 @@ class CommandResults:
         self.extended_payload = extended_payload
         self.execution_metrics = execution_metrics
         self.replace_existing = replace_existing
+        self.error_type = error_type
+        self.include_suggestions = include_suggestions
+        self.custom_error_message = custom_error_message
 
         if content_format is not None and not EntryFormat.is_valid_type(content_format):
             raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
@@ -7799,6 +8085,36 @@ class CommandResults:
 
         if self.indicators_timeline:
             indicators_timeline = self.indicators_timeline.indicators_timeline
+
+        # Handle integration error types
+        if self.error_type:
+            if not IntegrationErrorType.is_valid_type(self.error_type):
+                demisto.debug('Invalid error_type: {}'.format(self.error_type))
+            else:
+                error_info = INTEGRATION_ERROR_MESSAGES.get(self.error_type, {})
+                
+                # Build error message section
+                error_md = '\n### ⚠️ Integration Error\n'
+                error_md += self.custom_error_message or error_info.get('message', '')
+                
+                # Add documentation link
+                docs_link = error_info.get('docs_link')
+                if docs_link:
+                    error_md += '\n\n📚 **[Troubleshooting Guide]({}))**'.format(docs_link)
+                
+                # Add suggestions if enabled
+                if self.include_suggestions:
+                    suggestions = error_info.get('suggestions', [])
+                    if suggestions:
+                        error_md += '\n\n**Suggested Actions:**\n'
+                        for suggestion in suggestions:
+                            error_md += '- {}\n'.format(suggestion)
+                
+                # Append to human readable
+                if human_readable:
+                    human_readable += error_md
+                else:
+                    human_readable = error_md
 
         if self.outputs is not None and self.outputs != []:
             if not self.readable_output:

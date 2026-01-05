@@ -9308,6 +9308,213 @@ TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN = [
 ]
 
 
+class TestIntegrationErrorHandling:
+    """Tests for the enhanced error handling system"""
+    
+    def test_command_results_with_error_type(self):
+        """
+        Given:
+            - CommandResults with error_type parameter set to RATE_LIMIT
+        When:
+            - Converting to context
+        Then:
+            - Verify error message, documentation link, and suggestions are included
+        """
+        from CommonServerPython import CommandResults, IntegrationErrorType
+        
+        result = CommandResults(
+            readable_output="Test error",
+            error_type=IntegrationErrorType.RATE_LIMIT
+        )
+        context = result.to_context()
+        
+        assert 'Rate limiting detected' in context['HumanReadable']
+        assert 'Troubleshooting Guide' in context['HumanReadable']
+        assert 'Suggested Actions' in context['HumanReadable']
+        assert 'Deploy a dedicated engine' in context['HumanReadable']
+    
+    def test_command_results_without_suggestions(self):
+        """
+        Given:
+            - CommandResults with error_type and include_suggestions=False
+        When:
+            - Converting to context
+        Then:
+            - Verify error message is included but suggestions are not
+        """
+        from CommonServerPython import CommandResults, IntegrationErrorType
+        
+        result = CommandResults(
+            readable_output="Test error",
+            error_type=IntegrationErrorType.AUTH_ERROR,
+            include_suggestions=False
+        )
+        context = result.to_context()
+        
+        assert 'Authentication failed' in context['HumanReadable']
+        assert 'Suggested Actions' not in context['HumanReadable']
+    
+    def test_custom_error_message(self):
+        """
+        Given:
+            - CommandResults with custom_error_message
+        When:
+            - Converting to context
+        Then:
+            - Verify custom message is used instead of default
+        """
+        from CommonServerPython import CommandResults, IntegrationErrorType
+        
+        custom_msg = "Custom error description"
+        result = CommandResults(
+            readable_output="Test",
+            error_type=IntegrationErrorType.CONNECTION_ERROR,
+            custom_error_message=custom_msg
+        )
+        context = result.to_context()
+        
+        assert custom_msg in context['HumanReadable']
+        assert 'Connection error occurred' not in context['HumanReadable']
+    
+    def test_invalid_error_type(self, mocker):
+        """
+        Given:
+            - CommandResults with invalid error_type
+        When:
+            - Converting to context
+        Then:
+            - Verify debug message is logged and no error section is added
+        """
+        from CommonServerPython import CommandResults
+        
+        mocker.patch.object(demisto, 'debug')
+        result = CommandResults(
+            readable_output="Test error",
+            error_type='invalid_type'
+        )
+        context = result.to_context()
+        
+        demisto.debug.assert_called_with('Invalid error_type: invalid_type')
+        assert 'Integration Error' not in context['HumanReadable']
+    
+    def test_all_error_types_have_messages(self):
+        """
+        Given:
+            - All IntegrationErrorType enum values
+        When:
+            - Checking INTEGRATION_ERROR_MESSAGES mapping
+        Then:
+            - Verify all error types have corresponding messages
+        """
+        from CommonServerPython import IntegrationErrorType, INTEGRATION_ERROR_MESSAGES
+        
+        error_types = [
+            IntegrationErrorType.RATE_LIMIT,
+            IntegrationErrorType.CONNECTION_ERROR,
+            IntegrationErrorType.TIMEOUT_ERROR,
+            IntegrationErrorType.PROXY_ERROR,
+            IntegrationErrorType.SSL_ERROR,
+            IntegrationErrorType.DNS_ERROR,
+            IntegrationErrorType.AUTH_ERROR,
+            IntegrationErrorType.PERMISSION_ERROR,
+            IntegrationErrorType.API_KEY_INVALID,
+            IntegrationErrorType.API_KEY_EXPIRED,
+            IntegrationErrorType.SERVICE_UNAVAILABLE,
+            IntegrationErrorType.SERVICE_MAINTENANCE,
+            IntegrationErrorType.API_DEPRECATED,
+            IntegrationErrorType.QUOTA_EXCEEDED,
+            IntegrationErrorType.INVALID_RESPONSE,
+            IntegrationErrorType.MISSING_PARAMETER,
+            IntegrationErrorType.INVALID_PARAMETER,
+            IntegrationErrorType.UNSUPPORTED_OPERATION,
+        ]
+        
+        for error_type in error_types:
+            assert error_type in INTEGRATION_ERROR_MESSAGES
+            error_info = INTEGRATION_ERROR_MESSAGES[error_type]
+            assert 'message' in error_info
+            assert 'docs_link' in error_info
+            assert 'suggestions' in error_info
+            assert len(error_info['suggestions']) > 0
+    
+    def test_error_type_is_valid(self):
+        """
+        Given:
+            - Various error type values
+        When:
+            - Checking if they are valid using is_valid_type
+        Then:
+            - Verify correct validation results
+        """
+        from CommonServerPython import IntegrationErrorType
+        
+        assert IntegrationErrorType.is_valid_type(IntegrationErrorType.RATE_LIMIT)
+        assert IntegrationErrorType.is_valid_type(IntegrationErrorType.CONNECTION_ERROR)
+        assert IntegrationErrorType.is_valid_type(IntegrationErrorType.AUTH_ERROR)
+        assert not IntegrationErrorType.is_valid_type('invalid_type')
+        assert not IntegrationErrorType.is_valid_type(None)
+    
+    def test_error_message_appended_to_existing_readable(self):
+        """
+        Given:
+            - CommandResults with both readable_output and error_type
+        When:
+            - Converting to context
+        Then:
+            - Verify error message is appended to existing readable output
+        """
+        from CommonServerPython import CommandResults, IntegrationErrorType
+        
+        result = CommandResults(
+            readable_output="Original message",
+            error_type=IntegrationErrorType.TIMEOUT_ERROR
+        )
+        context = result.to_context()
+        
+        assert 'Original message' in context['HumanReadable']
+        assert 'Integration Error' in context['HumanReadable']
+        assert 'Request timeout' in context['HumanReadable']
+    
+    def test_multiple_error_types_coverage(self):
+        """
+        Given:
+            - Different error types (network, auth, service, data)
+        When:
+            - Creating CommandResults with each type
+        Then:
+            - Verify each produces appropriate error messages
+        """
+        from CommonServerPython import CommandResults, IntegrationErrorType
+        
+        # Network error
+        result = CommandResults(
+            readable_output="Test",
+            error_type=IntegrationErrorType.PROXY_ERROR
+        )
+        assert 'Proxy configuration error' in result.to_context()['HumanReadable']
+        
+        # Auth error
+        result = CommandResults(
+            readable_output="Test",
+            error_type=IntegrationErrorType.PERMISSION_ERROR
+        )
+        assert 'Permission denied' in result.to_context()['HumanReadable']
+        
+        # Service error
+        result = CommandResults(
+            readable_output="Test",
+            error_type=IntegrationErrorType.SERVICE_UNAVAILABLE
+        )
+        assert 'temporarily unavailable' in result.to_context()['HumanReadable']
+        
+        # Data error
+        result = CommandResults(
+            readable_output="Test",
+            error_type=IntegrationErrorType.INVALID_PARAMETER
+        )
+        assert 'Invalid parameter value' in result.to_context()['HumanReadable']
+
+
 @pytest.mark.parametrize('args, expected', TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN)
 def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
     from CommonServerPython import create_indicator_result_with_dbotscore_unknown
