@@ -463,76 +463,78 @@ class S3:
 
 
     @staticmethod
-    def convert_size(size_bytes):
-        if size_bytes == 0:
-            return "0B"
-        size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-        i = int(math.floor(math.log(size_bytes, 1024)))
-        p = math.pow(1024, i)
-        s = round(size_bytes / p, 2)
-        return f"{s} {size_name[i]}"
-
-    @staticmethod
     def list_bucket_objects_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        List objects in an Amazon S3 bucket (up to 1000 objects).
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the bucket
+                - prefix (str): Limits the response to keys that begin with the specified prefix
+                - delimiter (str): A delimiter is a character you use to group keys
+                - limit (str/int): Sets the maximum number of keys returned in the response (default is 1000)
+
+        Returns:
+            CommandResults: Results of the command execution including the list of objects and their metadata
+        """
+        def convert_size(size_bytes):
+            if size_bytes == 0:
+                return "0B"
+            size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+            i = int(math.floor(math.log(size_bytes, 1024)))
+            p = math.pow(1024, i)
+            s = round(size_bytes / p, 2)
+            return f"{s} {size_name[i]}"
+
         bucket: str = args.get("bucket")
         prefix: str = args.get("prefix")
         delimiter: str = args.get("delimiter")
+
+        print_debug_logs(client, f"Listing objects from bucket: {bucket}")
 
         kwargs = {
             "Bucket": bucket,
             "Prefix": prefix,
             "Delimiter": delimiter,
-            "PaginationConfig": {
-                "MaxItems": 10
-            }
         }
-
         remove_nulls_from_dictionary(kwargs)
 
         try:
-            paginator = client.get_paginator("list_objects")
-            demisto.debug(f"{paginator=}")
-            # if paginator.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
-            table_data = []
-            all_objects = []
+            response = client.list_objects(**kwargs)
 
-            for page in paginator.paginate(**kwargs):
-                for obj in page.get("Contents", []):
-                    raw_obj = obj.copy()
-                    converted_last_modified = raw_obj["LastModified"].strftime("%Y-%m-%dT%H:%M:%S") if raw_obj.get("LastModified") else None
-                    converted_size = S3.convert_size(obj["Size"])
+            if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
+                raise DemistoException(f"AWS returned status code: {response['ResponseMetadata']['HTTPStatusCode']}")
 
-                    raw_obj["LastModified"] = converted_last_modified
-                    raw_obj["Size"] = converted_size
+            serialized_response = serialize_response_with_datetime_encoding(response)
+            contents = serialized_response.get("Contents", [])
 
-                    all_objects.append(raw_obj)
-
-                    table_data.append({
-                        "Key": obj.get("Key", ""),
-                        "Size": converted_size,
-                        "LastModified": converted_last_modified,
-                        "StorageClass": obj.get("StorageClass")
-                    })
-
-            if not table_data:
+            if not contents:
                 return CommandResults(readable_output=f"No objects found in bucket {bucket}.")
 
-            human_readable = tableToMarkdown(f"AWS S3 Bucket Objects: {bucket}", table_data,
-                                             headers=["Key", "Size", "LastModified", "StorageClass"])
+            table_data = []
+            for obj in contents:
+                table_data.append({
+                    "Key": obj.get("Key"),
+                    "Size": convert_size(obj.get("Size", "")),
+                    "Size in Bytes": obj.get("Size"),
+                    "LastModified": obj.get("LastModified"),
+                    "StorageClass": obj.get("StorageClass")
+                })
 
+            human_readable = tableToMarkdown(f"AWS S3 Bucket Objects: {bucket}", table_data,
+                                             headers=["Key", "Size", "LastModified", "StorageClass"],
+                                             removeNull=True)
             return CommandResults(
                 outputs_prefix="AWS.S3-Buckets.Objects",
                 outputs_key_field="BucketName",
                 outputs={
                     "BucketName": bucket,
-                    "Objects": all_objects
+                    "Objects": contents
                 },
-                readable_output=human_readable
+                readable_output=human_readable,
             )
-            # raise DemistoException(
-            #     f"Request completed but received unexpected status code: "
-            #     f"{paginator['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(paginator)}"
-            # )
+
         except Exception as e:
             raise DemistoException(f"Failed to list objects for bucket {bucket}. Error: {str(e)}")
 
