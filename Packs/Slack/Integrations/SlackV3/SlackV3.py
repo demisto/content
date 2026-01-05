@@ -2916,6 +2916,7 @@ def conversation_replies():
     readable_output: str = ""
     body = {"channel": channel_id, "ts": args.get("thread_timestamp"), "limit": arg_to_number(args.get("limit"))}
     raw_response = send_slack_request_sync(CLIENT, "conversations.replies", http_verb="GET", body=body)
+    cursor: str = raw_response.get("response_metadata", {}).get("next_cursor", "")
     messages = raw_response.get("messages", "")
     if not raw_response.get("ok"):
         error = raw_response.get("error")
@@ -2949,16 +2950,25 @@ def conversation_replies():
         }
         context.append(entry)
     readable_output = tableToMarkdown(f"Channel details from Channel ID - {channel_id}", context)
-    demisto.results(
-        {
-            "Type": entryTypes["note"],
-            "Contents": messages,
-            "EntryContext": {"Slack.Threads": context},
-            "ContentsFormat": formats["json"],
-            "HumanReadable": readable_output,
-            "ReadableContentsFormat": formats["markdown"],
-        }
-    )
+    results = [
+        CommandResults(
+            outputs_prefix="Slack.Threads",
+            outputs_key_field="TimeStamp",
+            outputs=context,
+            readable_output=readable_output,
+            raw_response=messages,
+        )
+    ]
+    if cursor:
+        results.append(
+            CommandResults(
+                outputs_prefix="Slack.Threads",
+                outputs_key_field="NextPageToken",
+                outputs={"NextPageToken": cursor},
+            )
+        )
+
+    return_results(results)
 
 
 def long_running_main():
