@@ -2399,6 +2399,7 @@ class TestIncidentFetch:
             },
         )
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+        mocker.patch.object(demisto, "params", return_value={"fetch_incidents_or_detections": ["Endpoint Incident"]})
 
         _, incidents = fetch_items()
         for incident in incidents:
