@@ -2,7 +2,4 @@
 ignore=DS107,RM110
 
 [file:README.md]
-ignore=RM106
-
-[file:CoreLock.yml]
-ignore=RM110
+ignore=RM106,RM110
