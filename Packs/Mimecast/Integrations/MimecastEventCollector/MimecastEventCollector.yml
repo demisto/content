@@ -19,12 +19,13 @@ configuration:
   additionalinfo: Refer to the help section for instructions on how to obtain API 2.0 OAuth2 credentials.
   section: Connect
   type: 9
+  required: true
 - display: Fetch events
   name: isFetchEvents
   type: 8
   section: Collect
   required: false
-- display: Event types
+- display: Fetch event types
   name: event_types
   defaultvalue: 'audit,av,delivery,internal email protect,impersonation protect,journal,process,receipt,attachment protect,spam,url protect'
   options:

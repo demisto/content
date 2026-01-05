@@ -10,7 +10,7 @@ This is the default integration for this content pack when configured by the Dat
 | Client ID | Refer to the help section for instructions on how to obtain API 2.0 OAuth2 credentials. | True |
 | Client secret | Refer to the help section for instructions on how to obtain API 2.0 OAuth2 credentials. | True |
 | Fetch events | | False |
-| Event types | Possible values are: audit, av, delivery, internal email protect, impersonation protect, journal, process, receipt, attachment protect, spam, url protect. | False |
+| Fetch event types | Possible values are: audit, av, delivery, internal email protect, impersonation protect, journal, process, receipt, attachment protect, spam, url protect. | False |
 | Maximum number of events per fetch | Default is 1000. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -47,6 +47,6 @@ There is no context output for this command.
 
 Due to the data retention period of the Mimecast SIEM CG events endpoint, SIEM events are only available for fetching within a 24-hour rolling window. This limitation applies to all SIEM event types (av, delivery, internal email protect, impersonation protect, journal, process, receipt, attachment protect, spam, url protect) but does _not_ apply to audit events.
 
-* When retrieving SIEM events using the `!mimecast-get-events` command, ensure both the `start_date` and `end_date` arguments are within the last 24 hours in the UTC timezone. Values outside this time window will return an error for SIEM event types.
+* When retrieving SIEM events using the ***mimecast-get-events*** command, ensure both the `start_date` and `end_date` arguments are within the last 24 hours in the UTC timezone. Values outside this time window will return an error for SIEM event types.
 
-* If the integration instance is disabled or the **Fetch events** parameter is unchecked for more than 24 hours, the event collector will automatically adjust the SIEM collection start time to the most recent available data (within the last 24 hours) upon resumption. This prevents collection failures but may result in a gap in SIEM event coverage during the downtime period.
+* If the integration instance is disabled or the ***Fetch events*** checkbox is unchecked for a period of more than 24 hours, the event collector will automatically adjust the SIEM collection start time to the most recent available data (within the last 24 hours) upon resumption. This prevents collection failures but may result in a gap in SIEM event coverage during the downtime period.

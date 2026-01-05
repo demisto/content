@@ -954,7 +954,7 @@ def get_siem_new_start_time_last_fetched_ids(events: list[dict[str, Any]], event
         demisto.debug(f"[{event_type}] Using event IDs with time={new_start_time} for last run {LAST_FETCHED_IDS_KEY!r} value.")
         new_last_fetched_ids = events_with_newest_time
     else:
-        # In certain cases, even when using passing `next_page` to SIEM endpoint, we may get events from previous page on the next page
+        # Sometimes, even when using passing `next_page` to SIEM endpoint, we may get events from previous page on the next page
         demisto.debug(f"[{event_type}] Using all event IDs in last SIEM page for last run {LAST_FETCHED_IDS_KEY!r} value.")
         new_last_fetched_ids = events_from_last_page
 
