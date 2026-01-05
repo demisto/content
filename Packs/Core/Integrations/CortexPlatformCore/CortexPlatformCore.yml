@@ -3131,12 +3131,13 @@ script:
           description: A specific name of a group the user belongs to within this instance.
           type: String
     - arguments:
-        - description: A comma separated list of case IDs.
+        - description: The unique identifier of the case to retrieve resolution statuses for.
           isArray: true
           name: case_id
           required: true
       name: core-get-case-resolution-statuses
-      description: Get extra data fields of a specific case, including issues and key artifacts.
+      description:  Retrieves resolution status information for a specific case.
+      hidden: true
       outputs:
         outputs:
           - contextPath: Core.CaseResolutionStatus.category
