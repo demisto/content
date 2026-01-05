@@ -2,7 +2,7 @@ category: Network Security
 sectionorder:
 - Connect
 commonfields:
-  id: CloudflareMCP
+  id: Cloudflare MCP
   version: -1
 configuration:
   - display: Cloudflare Server
@@ -39,7 +39,7 @@ configuration:
     advanced: true
 description: Use this integration to connect securely with a Cloudflare Model Context Protocol (MCP) server and access its tools in real time.
 display: Cloudflare MCP
-name: CloudflareMCP
+name: Cloudflare MCP
 script:
   commands:
   - arguments: []
