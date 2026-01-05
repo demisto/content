@@ -681,7 +681,7 @@ class AsyncClient:  # pragma: no cover
         timeout: int = 60,
         auth=None,
         error_handler=None,
-        num_of_retires=1,
+        num_of_retries=1,
         ok_codes=(200,),
         data="",
     ):
@@ -713,10 +713,10 @@ class AsyncClient:  # pragma: no cover
         if auth:
             auth = aiohttp.BasicAuth(auth)
 
-        for attempt in range(1, num_of_retires + 1):
+        for attempt in range(1, num_of_retries + 1):
             if attempt > 1:
                 delay = self.connection_error_interval * attempt
-                demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{num_of_retires}. Waiting {delay}s...")
+                demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{num_of_retries}. Waiting {delay}s...")
                 await asyncio.sleep(delay)
             try:
                 response = await request_func(
@@ -747,11 +747,11 @@ class AsyncClient:  # pragma: no cover
                     response.close()
                     self._handle_error(error_handler, response)
             except Exception as e:
-                if attempt == num_of_retires:
+                if attempt == num_of_retries:
                     traceback_str = "".join(traceback.format_tb(e.__traceback__))
-                    raise DemistoException(f"errored after {num_of_retires} attempts: {e}\n{traceback_str=}")
+                    raise DemistoException(f"errored after {num_of_retries} attempts: {e}\n{traceback_str=}")
 
-        raise DemistoException(f"API request failed after {num_of_retires} attempts.")
+        raise DemistoException(f"API request failed after {num_of_retries} attempts.")
 
 
 def async_send_data_to_xsiam(
@@ -923,8 +923,6 @@ def async_send_data_to_xsiam(
             error_msg=header_msg,
             is_json_response=True,
         )
-
-        return chunk_size
 
     async def run_all_tasks():
         async with client:
