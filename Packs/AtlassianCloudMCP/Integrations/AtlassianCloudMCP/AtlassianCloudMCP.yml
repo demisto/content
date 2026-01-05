@@ -2,7 +2,7 @@ category: Case Management
 sectionorder:
 - Connect
 commonfields:
-  id: AtlassianCloudMCP
+  id: Atlassian Cloud MCP
   version: -1
 configuration:
   - name: auth_code
@@ -12,7 +12,7 @@ configuration:
     section: Connect
 description: Use this integration to connect securely with a Atlassian Cloud Model Context Protocol (MCP) server and access its tools in real time.
 display: Atlassian Cloud MCP
-name: AtlassianCloudMCP
+name: Atlassian Cloud MCP
 script:
   commands:
   - arguments: []
