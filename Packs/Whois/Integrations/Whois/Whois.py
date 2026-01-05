@@ -1853,10 +1853,12 @@ class WhoisEmptyResponse(Exception):
 class WhoisRateLimit(Exception):
     """Exception raised when WHOIS rate limit is exceeded."""
 
-    def __init__(self, message, response=None):
+    def __init__(self, message, response=None, server=None, tld=None):
         super().__init__(message)
         self.message = message
         self.response = response
+        self.server = server  # Track which server rate limited
+        self.tld = tld  # Track which TLD was queried
 
     def __str__(self):
         if self.response:
@@ -1909,6 +1911,123 @@ def increment_metric(execution_metrics: ExecutionMetrics, mapping: Dict[type, st
     finally:
         demisto.debug(f"Returning updated execution_metrics")
         return execution_metrics
+
+
+def detect_rate_limit_error(exception: Exception, response_text: str = "") -> bool:
+    """
+    Detect if error is rate limit related.
+
+    Args:
+        exception: The caught exception
+        response_text: Raw response text to check for patterns
+
+    Returns:
+        True if rate limit detected
+    """
+    # Check exception type
+    if isinstance(exception, (ipwhois.exceptions.HTTPRateLimitError, ipwhois.exceptions.WhoisRateLimitError, WhoisRateLimit)):
+        return True
+
+    # Check response text for rate limit patterns
+    if response_text and re.search(RATE_LIMIT_PATTERN, response_text):
+        return True
+
+    # Check error message
+    error_msg = str(exception).lower()
+    rate_limit_keywords = ["rate limit", "quota", "too many requests", "429"]
+    return any(keyword in error_msg for keyword in rate_limit_keywords)
+
+
+def detect_access_restriction_error(response_text: str) -> bool:
+    """
+    Detect if error is due to access restrictions or terms of use.
+
+    Args:
+        response_text: Raw response text
+
+    Returns:
+        True if access restriction detected
+    """
+    restriction_patterns = [
+        r"you may not access",
+        r"terms of use",
+        r"access may be withdrawn",
+        r"access restricted",
+        r"query rate.*limit",
+        r"exceeding query rate",
+    ]
+
+    text_lower = response_text.lower()
+    return any(re.search(pattern, text_lower) for pattern in restriction_patterns)
+
+
+def detect_not_found_error(exception: Exception, response_text: str = "") -> bool:
+    """
+    Detect if domain/IP was not found.
+
+    Args:
+        exception: The caught exception
+        response_text: Raw response text
+
+    Returns:
+        True if not found
+    """
+    if isinstance(exception, PywhoisError):
+        error_msg = str(exception).lower()
+        not_found_keywords = ["not found", "no match", "no data found", "no entries found"]
+        if any(keyword in error_msg for keyword in not_found_keywords):
+            return True
+
+    if response_text:
+        text_lower = response_text.lower()
+        return "not found" in text_lower or "no match" in text_lower
+
+    return False
+
+
+def get_error_type_from_exception(exception: Exception, response_text: str = "") -> Optional[IntegrationErrorType]:
+    """
+    Determine the appropriate IntegrationErrorType for an exception.
+
+    Args:
+        exception: The caught exception
+        response_text: Raw response text for additional context
+
+    Returns:
+        IntegrationErrorType or None if no specific type matches
+    """
+    # Check for rate limit first (highest priority)
+    if detect_rate_limit_error(exception, response_text):
+        return IntegrationErrorType.RATE_LIMIT
+
+    # Check for access restrictions
+    if response_text and detect_access_restriction_error(response_text):
+        return IntegrationErrorType.PERMISSION_DENIED
+
+    # Check for not found
+    if detect_not_found_error(exception, response_text):
+        return IntegrationErrorType.NOT_FOUND
+
+    # Map by exception type
+    exception_type_mapping = {
+        WhoisInvalidDomain: IntegrationErrorType.INVALID_INPUT,
+        WhoisEmptyResponse: IntegrationErrorType.SERVICE_UNAVAILABLE,
+        socket.timeout: IntegrationErrorType.TIMEOUT,
+        socket.error: IntegrationErrorType.CONNECTION_ERROR,
+        OSError: IntegrationErrorType.CONNECTION_ERROR,
+        socket.herror: IntegrationErrorType.CONNECTION_ERROR,
+        socket.gaierror: IntegrationErrorType.CONNECTION_ERROR,
+        ipwhois.exceptions.HTTPLookupError: IntegrationErrorType.CONNECTION_ERROR,
+        ipwhois.exceptions.NetError: IntegrationErrorType.CONNECTION_ERROR,
+        ipwhois.exceptions.BlacklistError: IntegrationErrorType.PERMISSION_DENIED,
+        urllib.error.HTTPError: IntegrationErrorType.SERVICE_ERROR,
+    }
+
+    for exc_type, error_type in exception_type_mapping.items():
+        if isinstance(exception, exc_type):
+            return error_type
+
+    return None  # Will use default error handling
 
 
 def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server_list=False, server_list=None, is_recursive=True):
@@ -3309,6 +3428,29 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
 
             execution = increment_metric(execution_metrics=execution, mapping=ipwhois_exception_mapping, caught_exception=type(e))
 
+            # Determine error type using enhanced error detection
+            error_type = get_error_type_from_exception(e, str(e))
+
+            # Build custom error message with context
+            custom_message = None
+            if error_type == IntegrationErrorType.RATE_LIMIT:
+                # Extract server URL if available
+                server_url = "Unknown"
+                if hasattr(e, "url"):
+                    server_url = str(e.url)
+                elif hasattr(e, "args") and e.args:
+                    # Try to extract URL from error message
+                    url_match = re.search(r"https?://[^\s]+", str(e))
+                    if url_match:
+                        server_url = url_match.group(0)
+
+                custom_message = (
+                    f"RDAP lookup for IP {ip} was rate limited. "
+                    f"In XSOAR SaaS environments, all tenants share the same outbound IP address, "
+                    f"which can trigger rate limits on external WHOIS servers. "
+                    f"Server: {server_url}"
+                )
+
             if should_error:
                 results.append(
                     CommandResults(
@@ -3317,6 +3459,9 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
                         outputs=output,
                         entry_type=EntryType.ERROR,
                         readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}",
+                        error_type=error_type,
+                        include_suggestions=True,
+                        custom_error_message=custom_message,
                     )
                 )
             else:
@@ -3327,6 +3472,9 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
                         outputs=output,
                         entry_type=EntryType.WARNING,
                         readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}",
+                        error_type=error_type,
+                        include_suggestions=True,
+                        custom_error_message=custom_message,
                     )
                 )
 
@@ -3385,12 +3533,36 @@ def whois_command(reliability: str) -> List[CommandResults]:
         except (
             PywhoisError,
             WhoisEmptyResponse,
-        ) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+            WhoisInvalidDomain,
+            WhoisRateLimit,
+        ) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes", "Rate Limits"
             demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
 
             execution_metrics = increment_metric(
                 execution_metrics=execution_metrics, mapping=whois_exception_mapping, caught_exception=type(e)
             )
+
+            # Get raw response for pattern detection
+            raw_response = getattr(e, "response", str(e))
+
+            # Determine error type using enhanced error detection
+            error_type = get_error_type_from_exception(e, str(raw_response))
+
+            # Build custom error message with context
+            custom_message = None
+            if error_type == IntegrationErrorType.RATE_LIMIT:
+                custom_message = (
+                    f"WHOIS lookup for domain '{domain}' was rate limited. "
+                    f"In XSOAR SaaS environments, all tenants share the same outbound IP address, "
+                    f"which can trigger rate limits on external WHOIS servers."
+                )
+            elif error_type == IntegrationErrorType.PERMISSION_DENIED:
+                # Extract TLD for specific guidance
+                tld = domain.split(".")[-1] if "." in domain else "unknown"
+                custom_message = (
+                    f"Access to .{tld} WHOIS data is restricted by the registry's terms of use. "
+                    f"This may be due to query rate limits or data usage restrictions."
+                )
 
             output = {
                 outputPaths["domain"]: {"Name": domain, "Whois": {"QueryStatus": f"Failed whois lookup: {e}"}},
@@ -3403,6 +3575,9 @@ def whois_command(reliability: str) -> List[CommandResults]:
                     f" was caught while performing whois lookup with the domain '{domain}': {e}",
                     entry_type=EntryType.ERROR if should_error else EntryType.WARNING,
                     raw_response=str(e),
+                    error_type=error_type,
+                    include_suggestions=True,
+                    custom_error_message=custom_message,
                 )
             )
 
@@ -3453,12 +3628,36 @@ def domain_command(reliability: str) -> List[CommandResults]:
         except (
             PywhoisError,
             WhoisEmptyResponse,
-        ) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+            WhoisInvalidDomain,
+            WhoisRateLimit,
+        ) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes", "Rate Limits"
             demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
 
             execution_metrics = increment_metric(
                 execution_metrics=execution_metrics, mapping=whois_exception_mapping, caught_exception=type(e)
             )
+
+            # Get raw response for pattern detection
+            raw_response = getattr(e, "response", str(e))
+
+            # Determine error type using enhanced error detection
+            error_type = get_error_type_from_exception(e, str(raw_response))
+
+            # Build custom error message with context
+            custom_message = None
+            if error_type == IntegrationErrorType.RATE_LIMIT:
+                custom_message = (
+                    f"WHOIS lookup for domain '{domain}' was rate limited. "
+                    f"In XSOAR SaaS environments, all tenants share the same outbound IP address, "
+                    f"which can trigger rate limits on external WHOIS servers."
+                )
+            elif error_type == IntegrationErrorType.PERMISSION_DENIED:
+                # Extract TLD for specific guidance
+                tld = domain.split(".")[-1] if "." in domain else "unknown"
+                custom_message = (
+                    f"Access to .{tld} WHOIS data is restricted by the registry's terms of use. "
+                    f"This may be due to query rate limits or data usage restrictions."
+                )
 
             output = {
                 outputPaths["domain"]: {"Name": domain, "Whois": {"QueryStatus": f"Failed domain lookup: {e}"}},
@@ -3471,6 +3670,9 @@ def domain_command(reliability: str) -> List[CommandResults]:
                     f" was caught while performing whois lookup with the domain '{domain}': {e}",
                     entry_type=EntryType.ERROR if should_error else EntryType.WARNING,
                     raw_response=str(e),
+                    error_type=error_type,
+                    include_suggestions=True,
+                    custom_error_message=custom_message,
                 )
             )
 
@@ -3489,10 +3691,19 @@ def test_command():
         # Check for rate limit pattern in whois result
         whois_result_str = str(whois_result)
         if re.search(RATE_LIMIT_PATTERN, whois_result_str):
-            raise WhoisRateLimit(
-                "Test completed but encountered rate limiting. Consider using an engine to avoid IP-based rate limits. For more info see: https://xsoar.pan.dev/docs/reference/integrations/whois#rate-limiting-or-ip-blocking-issues",
-                response=whois_result,
+            # Use the new error handling system for rate limit detection
+            error_result = CommandResults(
+                readable_output="Test completed but encountered rate limiting during WHOIS query.",
+                entry_type=EntryType.WARNING,
+                error_type=IntegrationErrorType.RATE_LIMIT,
+                include_suggestions=True,
+                custom_error_message=(
+                    "The test query encountered rate limiting from the WHOIS server. "
+                    "This is expected in XSOAR SaaS environments where all tenants share the same outbound IP address."
+                ),
             )
+            # Return the formatted error message from the CommandResults
+            return error_result.readable_output
     except Exception as e:
         raise WhoisException(f"Failed testing module using domain '{test_domain}': {e.__class__.__name__} {e}")
 
@@ -3756,7 +3967,9 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
         except (
             PywhoisError,
             WhoisEmptyResponse,
-        ) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+            WhoisInvalidDomain,
+            WhoisRateLimit,
+        ) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes", "Rate Limits"
             demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
 
             execution_metrics = increment_metric(
@@ -3764,6 +3977,28 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
                 mapping=whois_exception_mapping,
                 caught_exception=type(e),
             )
+
+            # Get raw response for pattern detection
+            raw_response = getattr(e, "response", str(e))
+
+            # Determine error type using enhanced error detection
+            error_type = get_error_type_from_exception(e, str(raw_response))
+
+            # Build custom error message with context
+            custom_message = None
+            if error_type == IntegrationErrorType.RATE_LIMIT:
+                custom_message = (
+                    f"WHOIS lookup for domain '{domain}' was rate limited. "
+                    f"In XSOAR SaaS environments, all tenants share the same outbound IP address, "
+                    f"which can trigger rate limits on external WHOIS servers."
+                )
+            elif error_type == IntegrationErrorType.PERMISSION_DENIED:
+                # Extract TLD for specific guidance
+                tld = domain.split(".")[-1] if "." in domain else "unknown"
+                custom_message = (
+                    f"Access to .{tld} WHOIS data is restricted by the registry's terms of use. "
+                    f"This may be due to query rate limits or data usage restrictions."
+                )
 
             output = {
                 outputPaths["domain"]: {
@@ -3778,6 +4013,9 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
                     f" was caught while performing whois lookup with the domain '{domain}': {e}",
                     entry_type=EntryType.ERROR if should_error else EntryType.WARNING,
                     raw_response=str(e),
+                    error_type=error_type,
+                    include_suggestions=True,
+                    custom_error_message=custom_message,
                 )
             )
     return append_metrics(execution_metrics=execution_metrics, results=results)
