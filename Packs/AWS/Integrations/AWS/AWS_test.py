@@ -6823,3 +6823,502 @@ def test_handle_port_range_with_port_range_single_dash():
     args = {"port": "80-80"}
     result = handle_port_range(args)
     assert result == (80, 80)
+
+
+def test_ec2_describe_images_command_success_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid filters argument.
+    When: describe_images_command is called with filters.
+    Then: It should return CommandResults with image details and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-1234567890abcdef0",
+                "Name": "test-ami",
+                "Description": "Test AMI",
+                "Architecture": "x86_64",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+                "OwnerId": "123456789012",
+                "RootDeviceType": "ebs",
+                "VirtualizationType": "hvm",
+                "Tags": [{"Key": "Environment", "Value": "Test"}],
+            }
+        ],
+    }
+
+    args = {"filters": "name=state,values=available"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Images"
+    assert result.outputs_key_field == "ImageId"
+    assert result.outputs[0]["ImageId"] == "ami-1234567890abcdef0"
+    assert "AWS EC2 Images" in result.readable_output
+
+
+def test_ec2_describe_images_command_with_image_ids(mocker):
+    """
+    Given: A mocked boto3 EC2 client and specific image IDs.
+    When: describe_images_command is called with image_ids parameter.
+    Then: It should return CommandResults with specified images only.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-specific123",
+                "Name": "specific-ami",
+                "Architecture": "x86_64",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+                "OwnerId": "123456789012",
+            }
+        ],
+    }
+
+    args = {"image_ids": "ami-specific123,ami-specific456"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.describe_images.assert_called_once()
+    call_args = mock_client.describe_images.call_args[1]
+    assert call_args["ImageIds"] == ["ami-specific123", "ami-specific456"]
+
+
+def test_ec2_describe_images_command_with_owners(mocker):
+    """
+    Given: A mocked boto3 EC2 client and owners filter.
+    When: describe_images_command is called with owners parameter.
+    Then: It should return CommandResults and pass owners to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-amazon123",
+                "Name": "amazon-linux-2",
+                "Architecture": "x86_64",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": True,
+                "OwnerId": "amazon",
+            }
+        ],
+    }
+
+    args = {"owners": "amazon,self"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.describe_images.call_args[1]
+    assert call_args["Owners"] == ["amazon", "self"]
+
+
+def test_ec2_describe_images_command_with_executable_users(mocker):
+    """
+    Given: A mocked boto3 EC2 client and executable_users parameter.
+    When: describe_images_command is called with executable_users.
+    Then: It should return CommandResults and pass executable users to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-executable123",
+                "Name": "shared-ami",
+                "Architecture": "x86_64",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+                "OwnerId": "123456789012",
+            }
+        ],
+    }
+
+    args = {"executable_users": "self,123456789012"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.describe_images.call_args[1]
+    assert call_args["ExecutableUsers"] == ["self", "123456789012"]
+
+
+def test_ec2_describe_images_command_with_include_deprecated(mocker):
+    """
+    Given: A mocked boto3 EC2 client and include_deprecated parameter.
+    When: describe_images_command is called with include_deprecated=true.
+    Then: It should return CommandResults and pass IncludeDeprecated to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-deprecated123",
+                "Name": "deprecated-ami",
+                "Architecture": "x86_64",
+                "CreationDate": "2020-01-15T14:30:45.000Z",
+                "State": "available",
+                "DeprecationTime": "2023-01-15T14:30:45.000Z",
+                "Public": False,
+                "OwnerId": "123456789012",
+            }
+        ],
+    }
+
+    args = {"include_deprecated": "true"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.describe_images.call_args[1]
+    assert call_args["IncludeDeprecated"] is True
+
+
+def test_ec2_describe_images_command_with_include_disabled(mocker):
+    """
+    Given: A mocked boto3 EC2 client and include_disabled parameter.
+    When: describe_images_command is called with include_disabled=false.
+    Then: It should return CommandResults and pass IncludeDisabled to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-active123",
+                "Name": "active-ami",
+                "Architecture": "x86_64",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+                "OwnerId": "123456789012",
+            }
+        ],
+    }
+
+    args = {"include_disabled": "false"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.describe_images.call_args[1]
+    assert call_args["IncludeDisabled"] is False
+
+
+def test_ec2_describe_images_command_no_images_found(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning empty images list.
+    When: describe_images_command is called with filters that match no images.
+    Then: It should return CommandResults with no images message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Images": []}
+
+    args = {"filters": "name=state,values=nonexistent"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No images were found."
+
+
+def test_ec2_describe_images_command_with_all_parameters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and all possible parameters.
+    When: describe_images_command is called with all parameters.
+    Then: It should return CommandResults and pass all parameters to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-complete123",
+                "Name": "complete-ami",
+                "Description": "Complete AMI with all fields",
+                "Architecture": "x86_64",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+                "OwnerId": "123456789012",
+                "Platform": "windows",
+                "RootDeviceType": "ebs",
+                "VirtualizationType": "hvm",
+                "EnaSupport": True,
+                "SriovNetSupport": "simple",
+                "BootMode": "uefi",
+                "ImdsSupport": "v2.0",
+            }
+        ],
+    }
+
+    args = {
+        "filters": "name=architecture,values=x86_64",
+        "image_ids": "ami-complete123",
+        "owners": "self",
+        "executable_users": "all",
+        "include_deprecated": "true",
+        "include_disabled": "false",
+    }
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.describe_images.call_args[1]
+    assert "Filters" in call_args
+    assert "ImageIds" in call_args
+    assert "Owners" in call_args
+    assert "ExecutableUsers" in call_args
+    assert call_args["IncludeDeprecated"] is True
+    assert call_args["IncludeDisabled"] is False
+
+
+def test_ec2_describe_images_command_unexpected_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: describe_images_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"filters": "name=state,values=available"}
+
+    EC2.describe_images_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_describe_images_command_with_complex_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and complex filter combinations.
+    When: describe_images_command is called with multiple filters.
+    Then: It should return CommandResults and properly parse all filters.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-filtered123",
+                "Name": "filtered-ami",
+                "Architecture": "x86_64",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+                "OwnerId": "123456789012",
+            }
+        ],
+    }
+
+    args = {"filters": "name=architecture,values=x86_64;name=state,values=available;name=root-device-type,values=ebs"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.describe_images.call_args[1]
+    assert "Filters" in call_args
+    assert len(call_args["Filters"]) == 3
+
+
+def test_ec2_describe_images_command_with_datetime_serialization(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning images with datetime objects.
+    When: describe_images_command processes the response with DatetimeEncoder.
+    Then: It should return CommandResults with properly serialized datetime data.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-datetime123",
+                "Name": "datetime-ami",
+                "Architecture": "x86_64",
+                "CreationDate": datetime(2023, 10, 15, 14, 30, 45),
+                "State": "available",
+                "Public": False,
+                "OwnerId": "123456789012",
+                "DeprecationTime": datetime(2024, 10, 15, 14, 30, 45),
+            }
+        ],
+    }
+
+    args = {"image_ids": "ami-datetime123"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs is not None
+    assert result.outputs[0]["CreationDate"] == "2023-10-15T14:30:45"
+
+
+def test_ec2_describe_images_command_with_multiple_images(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning multiple images.
+    When: describe_images_command is called successfully.
+    Then: It should return CommandResults with all images in outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-111",
+                "Name": "ami-1",
+                "Architecture": "x86_64",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+                "OwnerId": "123456789012",
+            },
+            {
+                "ImageId": "ami-222",
+                "Name": "ami-2",
+                "Architecture": "arm64",
+                "CreationDate": "2023-10-16T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+                "OwnerId": "123456789012",
+            },
+        ],
+    }
+
+    args = {"owners": "self"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["ImageId"] == "ami-111"
+    assert result.outputs[1]["ImageId"] == "ami-222"
+
+
+def test_ec2_describe_images_command_with_block_device_mappings(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning images with block device mappings.
+    When: describe_images_command is called successfully.
+    Then: It should return CommandResults with block device mapping details.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-ebs123",
+                "Name": "ebs-ami",
+                "Architecture": "x86_64",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+                "OwnerId": "123456789012",
+                "BlockDeviceMappings": [
+                    {
+                        "DeviceName": "/dev/sda1",
+                        "Ebs": {
+                            "VolumeSize": 8,
+                            "VolumeType": "gp3",
+                            "DeleteOnTermination": True,
+                            "Encrypted": True,
+                            "SnapshotId": "snap-1234567890abcdef0",
+                        },
+                    }
+                ],
+            }
+        ],
+    }
+
+    args = {"image_ids": "ami-ebs123"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "BlockDeviceMappings" in result.outputs[0]
+    assert result.outputs[0]["BlockDeviceMappings"][0]["DeviceName"] == "/dev/sda1"
+
+
+def test_ec2_describe_images_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: describe_images_command encounters an error during execution.
+    Then: It should call AWSErrorHandler.handle_client_error.
+    """
+    from AWS import EC2, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "InvalidAMIID.NotFound", "Message": "The image id '[ami-invalid]' does not exist"},
+        "ResponseMetadata": {"HTTPStatusCode": 400, "RequestId": "req-123"},
+    }
+    client_error = ClientError(error_response, "DescribeImages")
+    mock_client.describe_images.side_effect = client_error
+
+    handler_spy = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+
+    args = {"image_ids": "ami-invalid"}
+
+    EC2.describe_images_command(mock_client, args)
+    handler_spy.assert_called_once_with(client_error)
+
+
+def test_ec2_describe_images_command_with_all_boolean_flags(mocker):
+    """
+    Given: A mocked boto3 EC2 client and all boolean flags set.
+    When: describe_images_command is called with include_deprecated and include_disabled.
+    Then: It should return CommandResults and properly convert string booleans to Python booleans.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-flags123",
+                "Name": "flags-ami",
+                "Architecture": "x86_64",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+                "OwnerId": "123456789012",
+            }
+        ],
+    }
+
+    args = {"include_deprecated": "true", "include_disabled": "true"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.describe_images.call_args[1]
+    assert call_args["IncludeDeprecated"] is True
+    assert call_args["IncludeDisabled"] is True

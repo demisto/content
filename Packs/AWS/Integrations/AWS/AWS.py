@@ -2718,6 +2718,97 @@ class EC2:
         )
 
     @staticmethod
+    def describe_images_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more Amazon Machine Images (AMIs) available to you.
+        
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - image_ids (str, optional): Comma-separated list of image IDs
+                - owners (str, optional): Comma-separated list of image owners
+                - executable_users (str, optional): Comma-separated list of users with explicit launch permissions
+                - include_deprecated (str, optional): Whether to include deprecated AMIs
+                - include_disabled (str, optional): Whether to include disabled AMIs
+        
+        Returns:
+            CommandResults: Results containing AMI information
+        """
+        kwargs = {}
+        
+        # Add filters if provided
+        if filters_arg := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters_arg)
+        
+        # Add image IDs if provided
+        if image_ids := args.get("image_ids"):
+            kwargs["ImageIds"] = parse_resource_ids(image_ids)
+        
+        # Add owners if provided
+        if owners := args.get("owners"):
+            kwargs["Owners"] = parse_resource_ids(owners)
+        
+        # Add executable users if provided
+        if executable_users := args.get("executable_users"):
+            kwargs["ExecutableUsers"] = parse_resource_ids(executable_users)
+        
+        # Add include_deprecated if provided
+        if include_deprecated := args.get("include_deprecated"):
+            kwargs["IncludeDeprecated"] = argToBoolean(include_deprecated)
+        
+        # Add include_disabled if provided
+        if include_disabled := args.get("include_disabled"):
+            kwargs["IncludeDisabled"] = argToBoolean(include_disabled)
+        
+        print_debug_logs(client, f"Describing images with parameters: {kwargs}")
+        remove_nulls_from_dictionary(kwargs)
+        
+        try:
+            response = client.describe_images(**kwargs)
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        
+        images = response.get("Images", [])
+        if not images:
+            return CommandResults(readable_output="No images were found.")
+        
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+        images = response.get("Images", [])
+        
+        # Build readable output data
+        readable_outputs = []
+        for image in images:
+            readable_data = {
+                "ImageId": image.get("ImageId"),
+                "Name": image.get("Name"),
+                "CreationDate": image.get("CreationDate"),
+                "State": image.get("State"),
+                "Public": image.get("Public"),
+                "Description": image.get("Description"),
+            }
+            readable_data = remove_empty_elements(readable_data)
+            readable_outputs.append(readable_data)
+        
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Images",
+            outputs_key_field="ImageId",
+            outputs=images,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Images",
+                readable_outputs,
+                headers=["ImageId", "Name", "CreationDate", "State", "Public", "Description"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
     def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Adds the specified outbound (egress) rules to a security group.
@@ -4312,6 +4403,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-address-associate": EC2.associate_address_command,
     "aws-ec2-address-disassociate": EC2.disassociate_address_command,
     "aws-ec2-address-release": EC2.release_address_command,
+    "aws-ec2-images-describe": EC2.describe_images_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
