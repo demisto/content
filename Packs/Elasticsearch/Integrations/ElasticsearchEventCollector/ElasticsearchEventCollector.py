@@ -54,15 +54,15 @@ ELASTIC_SEARCH_CLIENT = PARAMS.get("client_type")
 if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
-    from opensearchpy import NotFoundError, RequestsHttpConnection
+    from opensearchpy import RequestsHttpConnection
     from opensearchpy import OpenSearch as Elasticsearch
 elif ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, ELASTICSEARCH_V9]:
     from elastic_transport import RequestsHttpNode
-    from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment]
+    from elasticsearch import Elasticsearch  # type: ignore[assignment]
     from elasticsearch.dsl import Search
     from elasticsearch.dsl.query import QueryString
 else:  # Elasticsearch (<= v7)
-    from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment,misc]
+    from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment,misc]
     from elasticsearch.dsl import Search
     from elasticsearch.dsl.query import QueryString
 
@@ -480,6 +480,7 @@ def test_func(proxies):
         fetch_params_check()
     return "ok"
 
+
 def event_label_maker(source):
     """Creates labels for the created event.
 
@@ -536,7 +537,7 @@ def results_to_events_timestamp(response, last_fetch):
 
                     if MAP_LABELS:
                         inc["labels"] = event_label_maker(hit.get("_source"))
-                    
+
                     inc["_time"] = hit_date.isoformat() + "Z"
 
                     events.append(inc)
@@ -722,7 +723,9 @@ def fetch_events(proxies):
         response = execute_raw_query(es, RAW_QUERY)
     else:
         query = QueryString(query="(" + FETCH_QUERY + ") AND " + TIME_FIELD + ":*")
-        demisto.debug(f"fetch_events - raw_query param is empty, search events using a query built from the configured fetch_query and fetch_time_field param:\n{query}")
+        demisto.debug(
+            f"fetch_events - raw_query param is empty, search events using a query built from the configured fetch_query and fetch_time_field param:\n{query}"
+        )
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {"order": "asc"}})[0:FETCH_SIZE].query(query)
@@ -767,6 +770,7 @@ def main():  # pragma: no cover
             fetch_events(proxies)
     except Exception as e:
         return_error(f"Failed executing {demisto.command()}.\nError message: {e}", error=str(e))
+
 
 if __name__ in ("__main__", "builtin", "builtins"):
     main()

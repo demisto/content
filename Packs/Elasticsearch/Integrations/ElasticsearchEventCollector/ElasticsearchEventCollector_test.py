@@ -622,6 +622,8 @@ The get-mapping-fields command perform a GET /<index name>/_mapping http command
 for e.g http://elasticserver.com/customers/_mapping the output is then formatted and arranged by the parse-tree function
 The test created a mock response.
 """
+
+
 class GetMapping:
     def fetch_json(self, url):
         response = requests.get(url)
@@ -722,7 +724,14 @@ class TestIncidentLabelMaker(unittest.TestCase):
             "2.1.2000 12:00:00.000000",
             "",
             "",
-            {"range": {"time_field": {"gt": "2.1.2000 12:00:00.000000", "format": ElasticsearchEventCollector.ES_DEFAULT_DATETIME_FORMAT}}},
+            {
+                "range": {
+                    "time_field": {
+                        "gt": "2.1.2000 12:00:00.000000",
+                        "format": ElasticsearchEventCollector.ES_DEFAULT_DATETIME_FORMAT,
+                    }
+                }
+            },
         ),
     ],
 )
@@ -954,7 +963,6 @@ def test_verify_es_server_version_errors(mocker, server_details, server_version,
     with pytest.raises(ValueError) as e:
         ElasticsearchEventCollector.verify_es_server_version(server_details)
     assert server_version in str(e.value)
-
 
 
 class TestGetElasticToken:
