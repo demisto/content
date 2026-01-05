@@ -29,7 +29,7 @@ from DatadogCloudSIEM import (
     list_security_signal_comments_command,
     logs_query_command,
     map_severity_to_xsoar,
-    module_test,
+    test_module,
     parse_log,
     parse_security_comment,
     parse_security_rule,
@@ -46,6 +46,16 @@ def configuration():
     """Mock Datadog API configuration."""
     config = MagicMock()
     config.api_key = {"apiKeyAuth": "test_api_key", "appKeyAuth": "test_app_key"}
+    # Add attributes that the Datadog API client expects to avoid initialization issues
+    config.assert_hostname = None
+    config.ssl_ca_cert = None
+    config.cert_file = None
+    config.key_file = None
+    config.verify_ssl = True
+    config.proxy = None
+    config.proxy_headers = None
+    config.safe_chars_for_path_param = ""
+    config.retries = None
     return config
 
 
@@ -1879,10 +1889,10 @@ class TestDataclassMethods:
         assert result["user"]["handle"] == "john@example.com"
 
 
-class TestModuleTest:
+class TestModule:
     """Tests for test-module command."""
 
-    def test_module_test_success(self, configuration):
+    def test_module_success(self, configuration):
         """Test module_test with valid authentication.
 
         Given: Valid API configuration
@@ -1897,16 +1907,16 @@ class TestModuleTest:
             mock_auth_api.return_value = mock_auth_instance
             mock_auth_instance.validate.return_value = None
 
-            result = module_test(configuration)
+            result = test_module(configuration)
 
             assert result == "ok"
             mock_auth_instance.validate.assert_called_once()
 
-    def test_module_test_authentication_error(self, configuration):
-        """Test module_test with invalid authentication.
+    def test_module_authentication_error(self, configuration):
+        """Test test_module with invalid authentication.
 
         Given: Invalid API configuration
-        When: module_test is executed
+        When: test_module is executed
         Then: Should return authentication error message
         """
         with (
@@ -1917,7 +1927,7 @@ class TestModuleTest:
             mock_auth_api.return_value = mock_auth_instance
             mock_auth_instance.validate.side_effect = Exception("Invalid API Key")
 
-            result = module_test(configuration)
+            result = test_module(configuration)
 
             assert "Authentication Error" in result
 
