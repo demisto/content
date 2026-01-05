@@ -95,7 +95,15 @@ TICKET_CLOSURE_STATES = {
         "closed": "3",
         "resolved": "3",
     },
+    "problem": {
+        "closed": "107",
+        "resolved": "106",
+    },
 
+    "change_request": {
+        "closed": "3",
+        "resolved": "3",
+    },
 }
 
 # Required fields for closure by ticket type
