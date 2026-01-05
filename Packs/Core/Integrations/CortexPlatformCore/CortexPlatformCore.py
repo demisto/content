@@ -66,7 +66,6 @@ WEBAPP_COMMANDS = [
     "core-update-case",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
-    # "core-get-case-resolution-statuses"
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -992,12 +991,6 @@ class Client(CoreClient):
         return reply
 
     def get_case_resolution_statuses(self, case_id: str) -> dict:
-        # reply = self._http_request(
-        #     method="POST",
-        #     json_data={"case_id" : case_id},
-        #     headers=self._headers,
-        #     url_suffix="resolution_actions/case/read",
-        # )
         reply = self._http_request(
             method="GET",
             json_data={},
