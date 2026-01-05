@@ -338,6 +338,40 @@ class MsGraphClient:
         """
         url_suffix = f"users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(policy_id)}"
         self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
+    
+    def list_owned_devices(self, page_url: str, user_id: str, filters: str, page_size: int):
+        """
+        Args:
+            user_id (str): The Azure AD user ID.
+
+        Returns:
+            list: A list that contains a dictionary representing the TAP policy info with the following keys:
+            - id (str): The unique identifier for the TAP policy.
+            - isUsable (bool): Indicates whether the TAP is currently usable.
+            - methodUsabilityReason (str): Explanation of why the TAP is or is not usable (e.g., 'Expired', 'NotYetValid).
+            - temporaryAccessPass (str or None): The generated password for the TAP policy.
+            - createdDateTime (str): The ISO 8601 timestamp when the TAP was created.
+            - startDateTime (str): The ISO 8601 timestamp when the TAP becomes valid.
+            - lifetimeInMinutes (int): The validity duration of the TAP in minutes.
+            - isUsableOnce (bool): Indicates whether the TAP can be used only once.
+
+        API Reference:
+            https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods
+        """
+        if page_url:
+            response = self.ms_client.http_request(method="GET", full_url=page_url)
+        else:
+            suffix_url = f'users/{quote(user_id)}/ownedDevices'
+            response = self.ms_client.http_request(
+                method="GET",
+                url_suffix=suffix_url,
+                headers={"ConsistencyLevel": "eventual"},
+                params={"$filter": filters, "$count": "true", "$top": page_size},
+            )
+
+        next_page_url = response.get("@odata.nextLink")
+        users = response.get("value")
+        return users, next_page_url
 
 
 def suppress_errors_with_404_code(func):
@@ -824,6 +858,33 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
 
     return CommandResults(readable_output=human_readable)
 
+def parse_owned_devices_outputs(devices_data):
+    readable_output = []
+    
+    for device in devices_data:
+        readable_output.extend({"Device Id": device.get("id"),
+                                "Azure Device Registration Id": device.get("deviceId"),
+                                "Device Display Name": device.get("displayName")})
+        
+
+def list_owned_device_command(client: MsGraphClient, args: dict) -> CommandResults:
+    
+    user_id = args.get("user_id", "")
+    next_page = args.get("next_page", "")
+    filters = args.get("filter", "")
+    limit = arg_to_number(args.get("limit", 50))
+    
+    devices_data, result_next_page = client.list_owned_devices(next_page, user_id, filters, limit)
+    devices_readable = parse_owned_devices_outputs(devices_data)
+
+    metadata = ''
+    if result_next_page:
+        metadata = "To get further results, enter this to the next_page parameter:\n" + str(result_next_page)
+        # Ensures the NextPage token is inserted as the first element only if it's a valid URL
+        devices_data["MSGraphUser"].insert(0, {"NextPage": result_next_page})
+    human_readable = tableToMarkdown(name="User owned devices:", t=devices_readable, removeNull=True, metadata=metadata)
+
+    return CommandResults(outputs_key_field="ID", outputs={"MSGraphUser": {"Id": user_id, "OwnedDevice": devices_data}}, readable_output=human_readable, raw_response=devices_data)
 
 def create_zip_with_password(generated_tap_password: str, zip_password: str):
     """
@@ -929,6 +990,7 @@ def main():
         "msgraph-user-tap-policy-list": list_tap_policy_command,
         "msgraph-user-tap-policy-create": create_tap_policy_command,
         "msgraph-user-tap-policy-delete": delete_tap_policy_command,
+        "msgraph-user-owned-devices-list": list_owned_device_command,
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
