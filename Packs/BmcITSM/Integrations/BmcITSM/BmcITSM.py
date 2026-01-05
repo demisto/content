@@ -1614,19 +1614,6 @@ def list_command(
     query_with_filtering = generate_query_with_filtering(query, filtering_mapper)
 
     response = client.list_request(form_name, query_with_filtering if query_with_filtering else None)
-    # Attach worklogs
-    #if form_name != "HPD:WorkLog":
-    #    for i, ticket in enumerate(response["entries"]):
-    #        incident_number = ticket.get("values").get("Incident Number")
-    #        query = f"'Incident Number' = \"{incident_number}\""
-    #        worklogs = client.list_request("HPD:WorkLog", query)
-    #        for w_i, worklog in enumerate(worklogs["entries"]):
-    #            # Change date format to ISO8601
-    #            for key, value in worklog.get("values").items():
-    #                if key.endswith("Date"):
-    #                    worklog["values"][key] = FormatIso8601(arg_to_datetime(value))
-    #            worklogs["entries"][w_i] = worklogs["entries"][w_i]["values"]
-    #        response["entries"][i]["values"]["Work Logs"] = worklogs.get("entries")
 
     relevant_records, header_suffix = get_paginated_records_with_hr(
         response.get("entries"),  # type: ignore[arg-type]
