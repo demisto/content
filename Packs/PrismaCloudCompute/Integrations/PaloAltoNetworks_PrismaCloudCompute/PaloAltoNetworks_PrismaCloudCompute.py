@@ -910,7 +910,6 @@ def async_send_data_to_xsiam(
         data_chunks = split_data_to_chunks(data, chunk_size)
 
     async def send_events_async(data_chunk, shared_client):
-        chunk_size = len(data_chunk)
         data_chunk = "\n".join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode("utf-8"))  # type: ignore[AttributeError,attr-defined]
         _ = await xsiam_api_call_async_with_retries(
