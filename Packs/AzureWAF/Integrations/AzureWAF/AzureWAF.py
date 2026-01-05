@@ -629,19 +629,23 @@ def front_door_policy_delete_command(client: AzureWAFClient, **args):
 
 def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int = 10) -> str:
     """
-    Formats a list of Front Door policies as a single table with columns as fields and rows as different policies.
+    Formats a list of policies as a single table with columns as fields and rows as different policies.
     """
     if not policies:
-        return "No Front Door policies were found."
+        return "No policies were found."
 
     policies_num = len(policies)
     policies = policies[: min(limit, policies_num)]
     
     # Prepare data for table
     table_data = []
+    md = tableToMarkdown("Policies", table_data)
     for policy in policies:
         policy_copy = policy.copy()
         properties = policy_copy.pop("properties", {})
+        if type(properties) == str:
+            md += properties
+            continue
         
         if verbose:
             # Include detailed information
@@ -671,8 +675,6 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
             }
         
         table_data.append(row)
-    
-    md = tableToMarkdown("Front Door Policies", table_data)
     md += f"\nShowing {min(limit, len(policies))} policies out of {policies_num}"
     return md
 
