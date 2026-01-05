@@ -1287,7 +1287,6 @@ If you encounter fetch issues and you have enriching enabled, the issue may be t
 Note that the way to reset the mechanism is to run the `splunk-reset-enriching-fetch-mechanism` command.  
 See [here](#resetting-the-enriching-fetch-mechanism).
 
-
 ### Large Search Results
 
-Commands that return a large number of results (such as `splunk-search`) may cause issues in playbooks. To avoid this, we recommend limiting the number of results. A limit of 30,000 results is suggested, depending on the size of the data. You can achieve this by using the `limit` argument (where available) or by appending `| head 30000` to your Splunk query.
+Commands that return a large number of results (such as `splunk-search`) may cause issues in playbooks. To avoid this, we recommend limiting the number of results. A limit of 30,000 results is suggested, depending on the size of the data. You can achieve this by using the `event_limit` argument (where available) or by appending `| head 30000` to your Splunk query.
