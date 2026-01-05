@@ -144,8 +144,8 @@ class IntegrationEventsClient(ABC):
             response = self.session.request(**request.dict())
             response.raise_for_status()
             return response
-        except Exception as exc:
-            if isinstance(exc, requests.exceptions.HTTPError) and exc.response.status_code == 500:
+        except requests.exceptions.HTTPError as exc:
+            if exc.response is not None and exc.response.status_code == 500:
                 demisto.debug("MD: Got 500 error, retrying once...")
                 try:
                     response = self.session.request(**request.dict())
@@ -153,9 +153,14 @@ class IntegrationEventsClient(ABC):
                     return response
                 except Exception as retry_exc:
                     demisto.debug(f"MD: Retry failed: {retry_exc}")
-                    # Fall through to raise the original exception or the retry exception
-                    exc = retry_exc
+                    msg = f"something went wrong with the http call {retry_exc}"
+                    demisto.debug(msg)
+                    raise DemistoException(msg) from retry_exc
 
+            msg = f"something went wrong with the http call {exc}"
+            demisto.debug(msg)
+            raise DemistoException(msg) from exc
+        except Exception as exc:
             msg = f"something went wrong with the http call {exc}"
             demisto.debug(msg)
             raise DemistoException(msg) from exc
