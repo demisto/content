@@ -1,3 +1,5 @@
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
@@ -19,6 +21,8 @@ MAX_GET_ENDPOINTS_LIMIT = 100
 AGENTS_TABLE = "AGENTS_TABLE"
 SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
+MAX_GET_SYSTEM_USERS_LIMIT = 50
+MAX_GET_EXCEPTION_RULES_LIMIT = 100
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -58,6 +62,8 @@ WEBAPP_COMMANDS = [
     "core-list-scripts",
     "core-run-script-agentix",
     "core-list-endpoints",
+    "core-list-exception-rules",
+    "core-update-case",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
 ]
@@ -85,6 +91,13 @@ class ScriptManagement:
         "linux": "AGENT_OS_LINUX",
         "macos": "AGENT_OS_MAC",
     }
+
+
+DISABLE_PREVENTION_RULES_TABLE = "AGENT_EXCEPTION_RULES_TABLE_ADVANCED"
+LEGACY_AGENT_EXCEPTIONS_TABLE = "AGENT_EXCEPTION_RULES_TABLE_LEGACY"
+
+
+CUSTOM_FIELDS_TABLE = "CUSTOM_FIELDS_CASE_TABLE"
 
 
 class CaseManagement:
@@ -320,6 +333,11 @@ COVERAGE_API_FIELDS_MAPPING = {
     "vendor_name": "asset_provider",
     "asset_provider": "unified_provider",
 }
+
+EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING = {
+    "legacy_agent_exceptions": LEGACY_AGENT_EXCEPTIONS_TABLE,
+    "disable_prevention_rules": DISABLE_PREVENTION_RULES_TABLE,
+}
 # Policy finding type mapping
 POLICY_FINDING_TYPE_MAPPING = {
     "CI/CD Risk": "CAS_CI_CD_RISK_SCANNER",
@@ -341,6 +359,8 @@ POLICY_CATEGORY_MAPPING = {
     "VCS Collaborator": "VCS_COLLABORATOR",
     "VCS Organization": "VCS_ORGANIZATION",
 }
+
+EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP = {"MODULES", "PROFILE_IDS"}
 
 
 DAYS_MAPPING = {
@@ -384,6 +404,7 @@ class FilterBuilder:
         IS_EMPTY = ("IS_EMPTY", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
         ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
+        RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
 
     AND = "AND"
     OR = "OR"
@@ -459,7 +480,7 @@ class FilterBuilder:
             end_time (str | None): The end time of the range.
         """
         start, end = self._prepare_time_range(start_time, end_time)
-        if start and end:
+        if start is not None and end is not None:
             self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
 
     def to_dict(self) -> dict[str, list]:
@@ -695,6 +716,57 @@ def filter_context_fields(output_keys: list, context: list):
 
 
 class Client(CoreClient):
+    def platform_http_request(
+        self,
+        method,
+        url_suffix="",
+        json_data=None,
+        params=None,
+        data=None,
+        timeout=None,
+        ok_codes=None,
+        error_handler=None,
+        with_metrics=False,
+    ):
+        """A wrapper for the platformAPICall method to better handle requests and responses.
+
+        Args:
+            method (str): The HTTP method, for example: GET, POST, and so on.
+            url_suffix (str): The API endpoint suffix to append to the base URL.
+            json_data (dict, optional): Dictionary to send in the request body as JSON.
+                Will be automatically serialized to JSON string.
+            params (dict, optional): URL parameters to specify the query string.
+            data (str, optional): Raw data to send in the request body.
+                Used when json_data is not provided.
+            timeout (float or tuple, optional): The amount of time (in seconds) that a request
+                will wait for a client to establish a connection to a remote machine before
+                a timeout occurs. Can be only float (Connection Timeout) or a tuple
+                (Connection Timeout, Read Timeout).
+            ok_codes (list, optional): List of HTTP status codes that are considered successful.
+                If the response status is not in this list, an error will be raised.
+            error_handler (callable, optional): Custom error handler function to process errors.
+            with_metrics (bool): Whether to include metrics in error handling.
+
+        Returns:
+            dict or str: The parsed JSON response as a dictionary, or the raw response data
+                if JSON parsing fails.
+
+        Raises:
+            DemistoException: If FORWARD_USER_RUN_RBAC is not enabled, indicating the integration
+                is cloned or the server version is too low.
+        """
+        data = json.dumps(json_data) if json_data is not None else data
+
+        response = demisto._platformAPICall(path=url_suffix, method=method, params=params, data=data, timeout=timeout)
+
+        if ok_codes and response.get("status") not in ok_codes:
+            self._handle_error(error_handler, response, with_metrics)
+        try:
+            return json.loads(response["data"])
+        except json.JSONDecodeError:
+            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
+            return response["data"]
+
     def test_module(self):
         """
         Performs basic get request to get item samples
@@ -780,6 +852,13 @@ class Client(CoreClient):
         return self._http_request(
             method="POST",
             url_suffix="/get_data",
+            json_data=request_data,
+        )
+
+    def get_webapp_view_def(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="GET",
+            url_suffix="/get_view_def",
             json_data=request_data,
         )
 
@@ -954,6 +1033,45 @@ class Client(CoreClient):
             },
             json_data=request_data,
         )
+
+    def get_users(self):
+        reply = self._http_request(
+            method="POST",
+            json_data={},
+            headers=self._headers,
+            url_suffix="/rbac/get_users",
+        )
+
+        return reply
+
+    def get_custom_fields_metadata(self) -> dict[str, Any]:
+        """
+        Retrieve custom fields metadata from the CUSTOM_FIELDS_CASE_TABLE.
+
+        Returns comprehensive metadata for all custom fields including:
+        - CUSTOM_FIELD_NAME: Internal field identifier
+        - CUSTOM_FIELD_PRETTY_NAME: User-friendly display name
+        - CUSTOM_FIELD_IS_SYSTEM: Boolean flag (true = system field, false = custom field)
+        - CUSTOM_FIELD_TYPE: Field data type
+
+        Returns:
+            dict: Response containing custom fields metadata in reply.DATA
+        """
+        request_data = {
+            "type": "grid",
+            "table_name": CUSTOM_FIELDS_TABLE,
+            "filter_data": {
+                "sort": [],
+                "filter": {},
+                "free_text": "",
+                "visible_columns": None,
+                "locked": None,
+                "paging": {"from": 0, "to": 1000},
+            },
+            "jsons": [],
+        }
+
+        return self.get_webapp_data(request_data)
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -2299,6 +2417,28 @@ def build_asset_coverage_filter(args: dict) -> FilterBuilder:
     return filter_builder
 
 
+def build_exception_rules_filter(args: dict) -> FilterBuilder:
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("ID", FilterType.CONTAINS, argToList(args.get("id")))
+    filter_builder.add_field("NAME", FilterType.CONTAINS, argToList(args.get("rule_name")))
+    filter_builder.add_field("PLATFORM", FilterType.EQ, argToList(args.get("platform")))
+    filter_builder.add_field("CONDITIONS_PRETTY", FilterType.CONTAINS, argToList(args.get("conditions")))
+    filter_builder.add_field("CREATED_BY", FilterType.CONTAINS, argToList(args.get("created_by")))
+    filter_builder.add_field("USER_EMAIL", FilterType.CONTAINS, argToList(args.get("user_email")))
+    start_modification_time_str, end_modification_time_str = (
+        args.get("start_modification_time"),
+        args.get("end_modification_time"),
+    )
+    if end_modification_time_str and not start_modification_time_str:
+        start_modification_time_str = (
+            "1970-01-01"  # The standard "beginning of time" for most systems - beginning_of_unix = datetime.fromtimestamp(0)
+        )
+    filter_builder.add_time_range_field("MODIFICATION_TIME", start_modification_time_str, end_modification_time_str)
+    filter_builder.add_field("STATUS", FilterType.EQ, argToList(args.get("status")))
+    filter_builder.add_field("SUBTYPE", FilterType.EQ, argToList(args.get("rule_type")))
+    return filter_builder
+
+
 def get_asset_coverage_command(client: Client, args: dict):
     """
     Retrieves ASPM assets coverage using the generic /api/webapp/get_data endpoint.
@@ -2983,6 +3123,8 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
             f"{list(CaseManagement.SEVERITY.keys())}"
         )
 
+    valid_fields_to_update, error_messages = validate_custom_fields(custom_fields, client)
+
     # Build request_data with mapped and filtered values
     case_update_payload = {
         "caseName": case_name if case_name else None,
@@ -2995,26 +3137,78 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
         "caseResolvedComment": resolved_comment if resolved_comment else None,
         "resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None,
-        "CustomFields": custom_fields if custom_fields else None,
+        "CustomFields": valid_fields_to_update if valid_fields_to_update else None,
     }
     remove_nulls_from_dictionary(case_update_payload)
 
     if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
-        raise ValueError("No valid update parameters provided for case update.")
+        raise ValueError(f"No valid update parameters provided.\n{error_messages}")
 
-    demisto.info(f"Executing case update for cases {case_ids} with request data: {case_update_payload}")
     responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
-    replies = []
-    for resp in responses:
-        replies.append(process_case_response(resp))
+    replies = [process_case_response(resp) for resp in responses]
 
-    return CommandResults(
+    command_results = CommandResults(
         readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
         outputs_key_field="case_id",
         outputs=replies,
         raw_response=replies,
     )
+
+    if error_messages:
+        return_results(command_results)
+        return_error(f"The following fields could not be updated:\n{error_messages}")
+
+    return command_results
+
+
+def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[dict, str]:
+    """
+    Validates custom fields against system metadata.
+
+    Args:
+        fields_to_validate: Dict of field names and values to validate.
+        client: Client instance for API calls.
+
+    Returns:
+        Tuple of (valid_fields_dict, error_messages_str).
+    """
+    if not fields_to_validate:
+        return {}, ""
+
+    fields_data = client.get_custom_fields_metadata().get("reply", {}).get("DATA", [])
+
+    if not fields_data:
+        return {}, "No Fields are defined in the system."
+
+    system_fields = {
+        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        for f in fields_data
+        if f.get("CUSTOM_FIELD_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
+    }
+    custom_fields = {
+        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        for f in fields_data
+        if f.get("CUSTOM_FIELD_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
+    }
+
+    if not custom_fields:
+        return {}, "No custom fields are defined in the system."
+
+    demisto.debug(f"Available custom fields: {custom_fields=}")
+    valid_fields, error_messages = {}, []
+    for field_name, field_value in fields_to_validate.items():
+        if field_name in system_fields:
+            error_messages.append(
+                f"Field '{field_name}' ({system_fields[field_name]}) is a system field and cannot"
+                f" be set with custom_fields argument."
+            )
+        elif field_name in custom_fields:
+            valid_fields[field_name] = field_value
+        else:
+            error_messages.append(f"Field '{field_name}' does not exist.")
+
+    return valid_fields, "\n".join(f"- {e}" for e in error_messages)
 
 
 def run_playbook_command(client: Client, args: dict) -> CommandResults:
@@ -3489,6 +3683,409 @@ def update_endpoint_version_command(client, args):
     )
 
 
+def build_column_mapping(column):
+    """
+    Extracts the mapping of module NAME (ugly name)
+    to PRETTY_NAME from the column definitions metadata.
+    """
+    mapping = {}
+    enum_values = column.get("FILTER_PARAMS", {}).get("ENUM_VALUES", [])
+    for enum in enum_values:
+        mapping[enum.get("NAME")] = enum.get("PRETTY_NAME")
+    return mapping
+
+
+def extract_mappings_from_view_def(view_def: dict, columns_to_map: set[str]):
+    """
+    Extracts the mapping of module listed in columns_to_map NAME (ugly name)
+    to PRETTY_NAME from the column definitions metadata.
+    """
+    mapping = {}
+    column_definitions = view_def.get("COLUMN_DEFINITIONS", [])
+    for column in column_definitions:
+        column_name = column.get("FIELD_NAME")
+        if column_name in columns_to_map:
+            mapping[column_name] = build_column_mapping(column)
+    return mapping
+
+
+def combine_pretty_names(list_of_criteria: list[list[dict[str, Any]]]) -> list[str]:
+    """
+    Takes a list of criteria (where each criterion is a list of dictionaries)
+    and combines the 'pretty_name' values from the dictionaries in each criterion
+    into a single string.
+
+    Args:
+        list_of_criteria: A list of lists, where the inner list contains
+                          dictionaries with a 'pretty_name' key.
+
+    Returns:
+        A list of strings, where each string is the concatenation of the
+        'pretty_name' values for one inner list.
+    """
+    result_strings = []
+    for criterion in list_of_criteria:
+        if isinstance(criterion, list):
+            combined_string = "".join(item.get("pretty_name", "") for item in criterion)
+            result_strings.append(combined_string)
+        else:
+            result_strings.append(criterion)
+    return result_strings
+
+
+def postprocess_exception_rules_response(view_def, data):
+    view_def_data = view_def[0]
+    mappings = extract_mappings_from_view_def(view_def_data, EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP)
+    for record in data:
+        for field in EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP:
+            record[field] = [mappings.get(field, {}).get(val, val) for val in record.get(field, [])]
+        record["ASSOCIATED_TARGETS"] = combine_pretty_names(record.get("ASSOCIATED_TARGETS", []))
+        record["CONDITIONS"] = record.get("CONDITIONS_PRETTY")
+        record["RULE_TYPE"] = record.get("SUBTYPE")
+        record["CREATION_TIMESTAMP"] = record.get("CREATION_TIME")
+        record["MODIFICATION_TIMESTAMP"] = record.get("MODIFICATION_TIME")
+        record["MODIFICATION_TIME"] = timestamp_to_datestring(record["MODIFICATION_TIMESTAMP"])
+        record["CREATION_TIME"] = timestamp_to_datestring(record["CREATION_TIMESTAMP"])
+        record.pop("CONDITIONS_PRETTY", None)
+        record.pop("SUBTYPE", None)
+
+    readable_output = tableToMarkdown(
+        view_def_data.get("TABLE_NAME"),
+        data,
+        headerTransform=string_to_table_header,
+        sort_headers=False,
+    )
+    return readable_output
+
+
+def get_webapp_data(
+    client,
+    table_name: str,
+    filter_dict: Any,
+    sort_field: str,
+    sort_order: str,
+    retrieve_all: bool,
+    base_limit: int,
+    max_limit: int,
+    offset: int = 0,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], int]:
+    """
+    Helper function to iteratively fetch records for a single table with optional pagination.
+    """
+    all_records = []
+    raw_responses = []
+
+    limit = max_limit if retrieve_all else base_limit
+    paging_from = offset
+    paging_to = offset + limit
+    filter_count = 0
+    while True:
+        demisto.debug(f"get_webapp_data pagination: {paging_from}, {paging_to}")
+        request_data = build_webapp_request_data(
+            table_name=table_name,
+            filter_dict=filter_dict.to_dict(),
+            sort_field=sort_field,
+            sort_order=sort_order,
+            limit=paging_to,
+            start_page=paging_from,
+        )
+        response = client.get_webapp_data(request_data)
+        raw_responses.append(copy.deepcopy(response))
+
+        reply = response.get("reply", {})
+        data = reply.get("DATA", [])
+        filter_count = int(reply.get("FILTER_COUNT", "0"))
+        all_records.extend(data)
+
+        if not retrieve_all or len(data) < limit:
+            break
+
+        paging_from += limit
+        paging_to += limit
+
+    return all_records, raw_responses, filter_count
+
+
+def list_exception_rules_command(client, args: dict[str, Any]) -> list[CommandResults]:
+    """
+    Retrieves Disable Prevention Rules and Legacy Agent Exceptions using the
+    generic /api/webapp/get_data endpoint, handling pagination.
+    """
+
+    exception_rule_type = args.get("type")
+    sort_field = args.get("sort_field", "MODIFICATION_TIME")
+    sort_order = args.get("sort_order", "DESC")
+
+    default_limit = arg_to_number(args.get("page_size")) or MAX_GET_EXCEPTION_RULES_LIMIT
+    page_number = arg_to_number(args.get("page", 0)) or 0
+    offset = page_number * default_limit if args.get("page") else 0
+    retrieve_all = argToBoolean(args.get("retrieve_all", False))
+
+    base_limit = MAX_GET_EXCEPTION_RULES_LIMIT if retrieve_all else default_limit
+
+    exception_rule_filter = build_exception_rules_filter(args)
+
+    if exception_rule_type in EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING:
+        table_names = [EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING.get(exception_rule_type)]
+    else:
+        table_names = [LEGACY_AGENT_EXCEPTIONS_TABLE, DISABLE_PREVENTION_RULES_TABLE]
+
+    all_outputs = []
+    all_raw_responses = []
+    readable_output_lines = []
+    total_filter_count = 0
+
+    for table_name in table_names:
+        demisto.debug(f"Retrieving {table_name}")
+        records, raw_responses, filter_count = get_webapp_data(
+            client=client,
+            table_name=str(table_name),
+            filter_dict=exception_rule_filter,
+            sort_field=sort_field,
+            sort_order=sort_order,
+            retrieve_all=retrieve_all,
+            base_limit=base_limit,
+            max_limit=MAX_GET_EXCEPTION_RULES_LIMIT,
+            offset=offset,
+        )
+
+        all_raw_responses.extend(raw_responses)
+        total_filter_count += filter_count
+
+        demisto.debug(f"Retrieved {len(records)} records")
+        if records:
+            view_def = client.get_webapp_view_def({"table_name": table_name})
+            hr_output = postprocess_exception_rules_response(view_def, records)
+            all_outputs.extend(records)
+            readable_output_lines.append(hr_output)
+        else:
+            readable_output_lines.append(f"No data found for {table_name} matching the filter.")
+
+    final_readable_output = "\n".join(readable_output_lines)
+
+    return [
+        CommandResults(
+            readable_output=final_readable_output,
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ExceptionRules",
+            outputs_key_field="ID",
+            outputs=all_outputs,
+            raw_response=all_raw_responses,
+        ),
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ExceptionRulesMetadata",
+            outputs={"filter_count": total_filter_count, "returned_count": len(all_outputs)},
+        ),
+    ]
+
+
+def list_system_users_command(client, args):
+    """
+    Retrieves system user optionally filtered by email using the public api ep /public_api/v1/rbac/get_users
+    This function calls the client to fetch all available system users. If specific
+    emails are provided via the 'email' argument, it filters the results. If no
+    emails are provided, it limits the results to 50.
+    """
+    emails = argToList(args.get("email", ""))
+    if len(emails) > MAX_GET_SYSTEM_USERS_LIMIT:
+        raise DemistoException("The maximum number of emails allowed is 50.")
+
+    response = client.get_users()
+    data = response.get("reply", {})
+    if emails:
+        data = [user for user in data if user.get("user_email") in emails]
+
+    if len(data) > MAX_GET_SYSTEM_USERS_LIMIT:
+        data = data[:MAX_GET_SYSTEM_USERS_LIMIT]
+
+    return CommandResults(
+        readable_output=tableToMarkdown("System Users", data, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.User",
+        outputs_key_field="user_email",
+        outputs=data,
+        raw_response=response,
+    )
+
+
+def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
+    """Convert a timeframe string to a json required for XQL queries.
+
+    Args:
+        time_to_convert (str): The time frame string to convert (supports seconds, minutes, hours, days, months, years, between).
+
+    Returns:
+        dict: The timeframe parameters in JSON.
+    """
+    try:
+        time_to_convert_lower = time_to_convert.strip().lower()
+        if time_to_convert_lower.startswith("between "):
+            tokens = time_to_convert_lower[len("between ") :].split(" and ")
+            if len(tokens) == 2:
+                time_from = dateparser.parse(tokens[0], settings={"TIMEZONE": "UTC"})
+                time_to = dateparser.parse(tokens[1], settings={"TIMEZONE": "UTC"})
+                if time_from is None or time_to is None:
+                    raise DemistoException(
+                        "Failed to parse timeframe argument, please use a valid format."
+                        " (e.g. '1 day', '3 weeks ago', 'between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00')"
+                    )
+                return {"from": int(time_from.timestamp() * 1000), "to": int(time_to.timestamp() * 1000)}
+        else:
+            relative = dateparser.parse(time_to_convert, settings={"TIMEZONE": "UTC"})
+            now_date = datetime.utcnow()
+            if relative is None or now_date is None:
+                raise DemistoException(
+                    "Failed to parse timeframe argument, please use a valid format."
+                    " (e.g. '1 day', '3 weeks ago', 'between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00')"
+                )
+            return {"relativeTime": int((now_date - relative).total_seconds() * 1000)}
+
+        raise ValueError(f"Invalid timeframe: {time_to_convert}")
+    except Exception as exc:
+        raise DemistoException(
+            f"Please enter a valid time frame (seconds, minutes, hours, days, weeks, months, years, between).\n{exc!s}"
+        )
+
+
+def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
+    """Retrieve results of an executed XQL query using Platform API.
+
+    Args:
+        client (Client): The XDR Client.
+        execution_id (str): The execution ID of the query to retrieve.
+
+    Returns:
+        dict: The query results including status, execution_id, and results if completed.
+    """
+    data: dict[str, Any] = {
+        "query_id": execution_id,
+    }
+
+    # Call the Client function and get the raw response
+    demisto.debug(f"Calling get_query_results with {data=}")
+    response = client.platform_http_request(
+        method="POST", json_data=data, url_suffix="/xql_queries/results/info/", ok_codes=[200]
+    )
+
+    response["execution_id"] = execution_id
+    stream_id = response.get("stream_id")
+    if response.get("status") != "PENDING" and stream_id:
+        data = {
+            "stream_id": stream_id,
+        }
+        demisto.debug(f"Requesting query results using {data=}")
+        query_data = client.platform_http_request(
+            method="POST", json_data=data, url_suffix="/xql_queries/results/", ok_codes=[200]
+        )
+        if isinstance(query_data, str):
+            response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
+        else:
+            response["results"] = query_data
+
+    if response.get("status") == "FAIL":
+        # Get full error details using PAPI
+        data = {
+            "request_data": {
+                "query_id": execution_id,
+                "pending_flag": True,
+                "format": "json",
+            }
+        }
+        res = client._http_request(method="POST", url_suffix="/xql/get_query_results", json_data=data)
+        response["error_details"] = res.get("reply", "")
+
+    return response
+
+
+def get_xql_query_results_platform_polling(client: Client, execution_id: str, timeout: int) -> dict:
+    """Retrieve results of an executed XQL query using Platform API with polling.
+
+    Args:
+        client (Client): The XDR Client.
+        execution_id (str): The execution ID of the query to fetch.
+        timeout (int): The polling timeout in seconds.
+
+    Returns:
+        dict: The query results after polling completes or timeout is reached.
+    """
+    interval_in_secs = 10
+
+    # Block execution until the execution status isn't pending or we time out
+    polling_start_time = datetime.now()
+    while (datetime.now() - polling_start_time).total_seconds() < timeout:
+        outputs = get_xql_query_results_platform(client, execution_id)
+        if outputs.get("status") != "PENDING":
+            break
+
+        t_to_timeout = (datetime.now() - polling_start_time).total_seconds()
+        demisto.debug(
+            f"Got status 'PENDING' for {execution_id}, next poll in {interval_in_secs} seconds. Timeout in {t_to_timeout}"
+        )
+        time.sleep(interval_in_secs)  # pylint: disable=E9003
+
+    return outputs
+
+
+def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str:
+    """Execute an XQL query using Platform API.
+
+    Args:
+        client (Client): The XDR Client.
+        query (str): The XQL query string to execute.
+        timeframe (dict): The timeframe for the query.
+
+    Returns:
+        str: The query execution ID.
+    """
+    DEFAULT_LIMIT = 100
+    if "limit" not in query:  # Add default limit if no limit was provided
+        query = f"{query} | limit {DEFAULT_LIMIT!s}"
+
+    data: Dict[str, Any] = {
+        "query": query,
+        "timeframe": timeframe,
+    }
+
+    demisto.debug(f"Calling xql_queries/submit with {data=}")
+    res = client.platform_http_request(url_suffix="/xql_queries/submit/", method="POST", json_data=data, ok_codes=[200])
+    return str(res)
+
+
+def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
+    """Execute an XQL query using Platform API and poll for results.
+
+    Args:
+        client (Client): The XDR Client.
+        args (dict): Command arguments including query, timeframe, wait_for_results, and timeout_in_seconds.
+
+    Returns:
+        CommandResults: The command results with execution_id, query_url, and optionally status and results.
+    """
+    query = args.get("query", "")
+    if not query:
+        raise ValueError("query is not specified")
+
+    timeframe = convert_timeframe_string_to_json(args.get("timeframe", "24 hours") or "24 hours")
+
+    execution_id = start_xql_query_platform(client, query, timeframe)
+
+    if not execution_id:
+        raise DemistoException("Failed to start query\n")
+
+    query_url = "/".join([demisto.demistoUrls().get("server", ""), "xql/xql-search", execution_id])
+    outputs = {
+        "execution_id": execution_id,
+        "query_url": query_url,
+    }
+
+    if argToBoolean(args.get("wait_for_results", True)):
+        demisto.debug(f"Polling query execution with {execution_id=}")
+        timeout_in_secs = int(args.get("timeout_in_seconds", 180))
+        outputs.update(get_xql_query_results_platform_polling(client, execution_id, timeout_in_secs))
+
+    return CommandResults(
+        outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -3509,7 +4106,6 @@ def main():  # pragma: no cover
     xsoar_api_url = "/xsoar"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
-
     try:
         timeout = int(demisto.params().get("timeout", 120))
     except ValueError as e:
@@ -3619,6 +4215,10 @@ def main():  # pragma: no cover
         elif command == "core-get-endpoint-support-file":
             return_results(get_endpoint_support_file_command(client, args))
 
+        elif command == "core-list-exception-rules":
+            return_results(list_exception_rules_command(client, args))
+        elif command == "core-list-system-users":
+            return_results(list_system_users_command(client, args))
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
 
@@ -3627,6 +4227,12 @@ def main():  # pragma: no cover
 
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
+
+        elif command == "core-xql-generic-query-platform":
+            if not is_demisto_version_ge("8.13.0"):
+                raise DemistoException("This command is not available for this platform version")
+
+            return_results(xql_query_platform_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
