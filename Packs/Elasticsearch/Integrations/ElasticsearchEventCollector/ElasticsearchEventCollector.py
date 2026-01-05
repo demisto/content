@@ -596,7 +596,7 @@ def results_to_events_datetime(response, last_fetch):
                     events.append(inc)
                 else:
                     demisto.debug(
-                        f"results_to_events_datetime - skipping hit ID: {hit.get('_id')} since {hit_timestamp=} is earlier than the {current_fetch=}"
+                        f"Skipping hit ID: {hit.get('_id')} since {hit_timestamp=} is earlier than the {current_fetch=}"
                     )
 
     return events, last_fetch.isoformat()  # type:ignore[union-attr]
@@ -724,7 +724,7 @@ def fetch_events(proxies):
     else:
         query = QueryString(query="(" + FETCH_QUERY + ") AND " + TIME_FIELD + ":*")
         demisto.debug(
-            f"fetch_events - raw_query param is empty, search events using a query built from the configured fetch_query and fetch_time_field param:\n{query}"
+            f"fetch_events - raw_query param is empty, search events using fetch_query and fetch_time_field param:\n{query}"
         )
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)

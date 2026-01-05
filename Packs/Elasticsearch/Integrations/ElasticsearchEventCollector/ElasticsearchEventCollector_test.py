@@ -180,6 +180,7 @@ MOCK_ES7_INCIDENTS = str(
             "occurred": "2019-08-27T18:00:00Z",
             "dbotMirrorId": "123",
             "labels": [{"type": "Date", "value": "2019-08-27T18:00:00Z"}],
+            "_time": "2019-08-27T18:00:00Z",
         },
         {
             "name": "Elasticsearch: Index: customer, ID: 456",
@@ -193,6 +194,7 @@ MOCK_ES7_INCIDENTS = str(
             "occurred": "2019-08-27T18:01:25Z",
             "dbotMirrorId": "456",
             "labels": [{"type": "Date", "value": "2019-08-27T18:01:25.343212Z"}],
+            "_time": "2019-08-27T18:01:25Z",
         },
     ]
 )
@@ -210,6 +212,7 @@ MOCK_ES7_INCIDENTS_WITHOUT_LABELS = str(
             "}",
             "occurred": "2019-08-27T18:00:00Z",
             "dbotMirrorId": "123",
+            "_time": "2019-08-27T18:00:00Z",
         },
         {
             "name": "Elasticsearch: Index: customer, ID: 456",
@@ -222,6 +225,7 @@ MOCK_ES7_INCIDENTS_WITHOUT_LABELS = str(
             "}",
             "occurred": "2019-08-27T18:01:25Z",
             "dbotMirrorId": "456",
+            "_time": "2019-08-27T18:01:25Z",
         },
     ]
 )
@@ -240,6 +244,7 @@ MOCK_ES6_INCIDETNS = str(
             "occurred": "2019-08-29T14:45:00Z",
             "dbotMirrorId": "123",
             "labels": [{"type": "Date", "value": "2019-08-29T14:45:00.123Z"}],
+            "_time": "2019-08-29T14:45:00Z",
         },
         {
             "name": "Elasticsearch: Index: users, ID: 456",
@@ -253,6 +258,7 @@ MOCK_ES6_INCIDETNS = str(
             "occurred": "2019-08-29T14:46:00Z",
             "dbotMirrorId": "456",
             "labels": [{"type": "Date", "value": "2019-08-29T14:46:00.123456Z"}],
+            "_time": "2019-08-29T14:46:00Z",
         },
     ]
 )
@@ -270,6 +276,7 @@ MOCK_ES6_INCIDETNS_WITHOUT_LABELS = str(
             "}",
             "occurred": "2019-08-29T14:45:00Z",
             "dbotMirrorId": "123",
+            "_time": "2019-08-29T14:45:00Z",
         },
         {
             "name": "Elasticsearch: Index: users, ID: 456",
@@ -282,6 +289,7 @@ MOCK_ES6_INCIDETNS_WITHOUT_LABELS = str(
             "}",
             "occurred": "2019-08-29T14:46:00Z",
             "dbotMirrorId": "456",
+            "_time": "2019-08-29T14:46:00Z",
         },
     ]
 )
@@ -314,6 +322,7 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str(
             "occurred": "2019-10-31T06:17:14Z",
             "dbotMirrorId": "123",
             "labels": [{"type": "Date", "value": "1572502634"}],
+            "_time": "2019-10-31T06:17:14Z",
         },
         {
             "name": "Elasticsearch: Index: customer, ID: 456",
@@ -327,6 +336,7 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str(
             "occurred": "2019-10-31T06:17:20Z",
             "dbotMirrorId": "456",
             "labels": [{"type": "Date", "value": "1572502640"}],
+            "_time": "2019-10-31T06:17:20Z",
         },
     ]
 )
@@ -344,6 +354,7 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS = str(
             "}",
             "occurred": "2019-10-31T06:17:14Z",
             "dbotMirrorId": "123",
+            "_time": "2019-10-31T06:17:14Z",
         },
         {
             "name": "Elasticsearch: Index: customer, ID: 456",
@@ -356,6 +367,7 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS = str(
             "}",
             "occurred": "2019-10-31T06:17:20Z",
             "dbotMirrorId": "456",
+            "_time": "2019-10-31T06:17:20Z",
         },
     ]
 )
