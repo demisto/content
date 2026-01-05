@@ -39,7 +39,7 @@ class Client:
             resp_json = resp.json()
             return resp_json
         except Exception as e:
-            demisto.debug(f"HTTP request failed: {e}, Responseee Text: {resp.text}")
+            demisto.debug(f"HTTP request failed: {e}, Response Text: {resp.text}")
             raise
 
     # ------------------------------
