@@ -3227,6 +3227,47 @@ script:
         - contextPath: Core.User.groups
           description: A specific name of a group the user belongs to within this instance.
           type: String
+    - name: core-xql-generic-query-platform
+      arguments:
+      - description: XQL query string. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query.
+        name: query
+        required: true
+      - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+        name: timeframe
+        defaultValue: "24 hours"
+      - description: Whether to poll and return the query results instead of only returning a link to the query in the query center.
+        name: wait_for_results
+        auto: PREDEFINED
+        predefined:
+        - "true"
+        - "false"
+        defaultValue: "true"
+      - description: Polling timeout in seconds when waiting for results. Default - 180 seconds.
+        name: timeout_in_seconds
+        defaultValue: 180
+      description: |-
+        Execute an XQL query and retrieve a link to the query in the query center.
+        If set to wait for results, the command will be executed every 10 seconds until results are retrieved or until the timeout is reached.
+      hidden: true
+      outputs:
+      - contextPath: GenericXQLQuery.execution_id
+        description: An integer representing the unique ID of the XQL query execution.
+        type: String
+      - contextPath: GenericXQLQuery.status
+        description: String representing the status of the Query; SUCCESS, FAIL, or PENDING.
+        type: String
+      - contextPath: GenericXQLQuery.error_details
+        description: Error information in case of a failed query.
+        type: String
+      - contextPath: GenericXQLQuery.query_url
+        description: URL to view the complete query results in the Query Center.
+        type: String
+      - contextPath: GenericXQLQuery.number_of_results
+        description: Integer representing the number of results returned.
+        type: Number
+      - contextPath: GenericXQLQuery.results
+        description: The output obtained from the query.
+        type: List
   runonce: false
   script: "-"
   subtype: python3
