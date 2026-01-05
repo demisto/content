@@ -1448,3 +1448,41 @@ def test_fetch_command(mocker):
         mirror_direction="both",
     )
     assert last_run_result["SRM:Request"]["last_create_time"] == expected_result
+
+
+@pytest.mark.parametrize(
+    "command_arguments,",
+    [
+        {
+            "incident_number": "INC000010381028",
+            "detailed_description": "Description TEST",
+            "view_access": "Public",
+            "worklog_type": "Chat",
+        },
+    ],
+)
+def test_worklog_add_command(
+    command_arguments,
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Create incident.
+    Given:
+     - User has provided valid credentials.
+     - User may provided pagination args.
+     - User may Provided filtering arguments.
+    When:
+     - bmc-itsm-incident-create command called.
+    Then:
+     - Ensure outputs prefix is correct.
+     - Ensure number of items is correct.
+     - Validate outputs' fields.
+    """
+    from BmcITSM import worklog_add_command
+
+    url = f"{BASE_URL}/api/arsys/v1/entry/HPD:WorkLog/"
+    requests_mock.post(url=url, status_code=201)
+
+    result = worklog_add_command(mock_client, command_arguments)
+    assert result.readable_output == "Worklog is successfully added"

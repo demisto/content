@@ -185,10 +185,6 @@ configuration:
   required: false
   section: Collect
 script:
-  script: ""
-  type: python
-  subtype: python3
-  dockerimage: demisto/python3:3.12.12.6204436
   commands:
   - name: bmc-itsm-user-list
     description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one performs a `LIKE` operation, and multiple filters are combined using the `AND` operator. To view the full JSON response, add raw_response=true to the end of the command.
@@ -2000,7 +1996,7 @@ script:
       description: The Work Log ID.
       type: String
   - arguments:
-   - description: First Request ID
+    - description: First Request ID
       name: first_request_id
       required: true
     - auto: PREDEFINED
@@ -2050,7 +2046,7 @@ script:
       - Resolved
       - Resolved by
       required: true
-     - auto: PREDEFINED
+    - auto: PREDEFINED
       defaultValue: "true"
       description: Bidirectionality
       name: bidirectional
@@ -2318,6 +2314,9 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.12.6204436
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)

@@ -449,8 +449,6 @@ class Client(BaseClient):
         else:
             self._http_request("POST", "arsys/v1/entry/HPD:WorkLog/", json_data=data, resp_type="response")
 
-        return "Worklog is successfully added"
-
     def ticket_delete_request(self, ticket_form: str, ticket_id: str) -> str:
         """
         BmcITSM ticket delete request.
@@ -1773,7 +1771,7 @@ def ticket_delete_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     return commands_results
 
 
-def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> str:
+def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """BmcITSM ticket create relationship command.
 
     Args:
@@ -1910,12 +1908,13 @@ def worklog_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         fps.append(fp)
         files[f"attach-z2AF Work Log0{i+1}"] = (file_name, fp, "application/octet-stream")
 
-    res = client.worklog_add_request(incident_number, worklog_type, view_access, detailed_description, files=files)
+    client.worklog_add_request(incident_number, worklog_type, view_access, detailed_description, files=files)
 
     # close files
     for f in fps:
         f.close()
-    return res
+
+    return CommandResults(readable_output="Worklog is successfully added")
 
 
 def incident_template_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
