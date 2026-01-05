@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: 'For example: https://192.168.0.1/rsaarcher, https://192.168.0.1/, or https://192.168.0.1/archer.'
-  display: Server URL 
+  display: Server URL
   name: url
   required: true
   section: Connect
@@ -456,7 +456,7 @@ script:
   - arguments: []
     description: Prints the Archer's integration cache.
     name: archer-print-cache
-  dockerimage: demisto/python3-deb:3.12.12.5735221
+  dockerimage: demisto/python3-deb:3.12.12.5919128
   isfetch: true
   script: ''
   subtype: python3
