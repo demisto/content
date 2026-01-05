@@ -1310,6 +1310,97 @@ def request_mfa_polling_command(args: dict, client: MsGraphClient) -> PollResult
                 continue_to_poll=False,
                 args_for_next_run=args
             )
+            
+            
+def initiate_mfa_request(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Pops a request to MFA for the given user.
+    """
+    demisto.debug("Starting a new interval of requesting MFA.")
+    user_mail = args.get("user_mail", "")
+        
+    try:
+        context_id = client.initiate_mfa_push_async(user_mail)
+    except Exception as e:
+        raise DemistoException(f"Failed to initiate MFA request for user {user_mail}: {e}")
+        
+    # Return pending result and schedule next poll
+    return CommandResults(
+        readable_output=f"MFA push notification sent to {user_mail}. Waiting for user response on job id {context_id}.",
+        outputs_prefix="MSGraphUser.MFA",
+        outputs_key_field="ContextId",
+        outputs={
+            "ContextId": context_id,
+            "UserMail": user_mail,
+            "Status": "pending"
+        }
+    )
+
+
+def get_mfa_request_status(client: MsGraphClient, args: dict) -> CommandResults:
+    user_mail = args.get("user_mail", "")
+    context_id = args.get("context_id", "")
+    demisto.debug(f"Checking MFA status for context_id: {context_id}")
+    
+    try:
+        poll_result = client.poll_mfa_status(user_mail, context_id)
+    except Exception as e:
+        raise DemistoException(f"Failed to poll MFA status for user {user_mail}: {e}")
+    
+    status = poll_result.get('status')
+    message = poll_result.get('message')
+    continue_polling = poll_result.get('continue_polling', False)
+
+    # Polling complete - return final result
+    if status == 'approved':
+        command_results = CommandResults(
+            readable_output=f"✅ MFA Request Approved: {message}",
+            outputs_prefix="MSGraphUser.MFA",
+            outputs_key_field="ContextId",
+            outputs={
+                "ContextId": context_id,
+                "UserMail": user_mail,
+                "Status": status,
+                "Result": "approved"
+            }
+        )
+    elif status == 'denied':
+        command_results = CommandResults(
+            readable_output=f"❌ MFA Request Denied: {message}",
+            outputs_prefix="MSGraphUser.MFA",
+            outputs_key_field="ContextId",
+            outputs={
+                "ContextId": context_id,
+                "UserMail": user_mail,
+                "Status": status,
+                "Result": "denied"
+            }
+        )
+    elif status == 'timeout':
+        command_results = CommandResults(
+            readable_output=f"⏳ MFA Request Timed Out: {message}",
+            outputs_prefix="MSGraphUser.MFA",
+            outputs_key_field="ContextId",
+            outputs={
+                "ContextId": context_id,
+                "UserMail": user_mail,
+                "Status": status,
+                "Result": "timeout"
+            }
+        )
+    else:
+        command_results = CommandResults(
+            readable_output=f"MFA Status: {message}",
+            outputs_prefix="MSGraphUser.MFA",
+            outputs_key_field="ContextId",
+            outputs={
+                "ContextId": context_id,
+                "UserMail": user_mail,
+                "Status": status
+            }
+        )
+    
+    return command_results
 
 
 def create_zip_with_password(generated_tap_password: str, zip_password: str):
@@ -1416,7 +1507,9 @@ def main():
         "msgraph-user-tap-policy-create": create_tap_policy_command,
         "msgraph-user-tap-policy-delete": delete_tap_policy_command,
         "msgraph-user-request-mfa": request_mfa_command,
-        "msgraph-user-create-mfa-client-secret": create_client_secret_command
+        "msgraph-user-create-mfa-client-secret": create_client_secret_command,
+        "msgraph-user-initiate-mfa-request": initiate_mfa_request,
+        "msgraph-user-get-mfa-request-status": get_mfa_request_status
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
