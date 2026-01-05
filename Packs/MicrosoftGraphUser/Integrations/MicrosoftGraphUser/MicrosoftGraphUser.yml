@@ -814,8 +814,6 @@ script:
     - contextPath: MSGraphUser.MFA.Result
       description: The final result of the MFA request (approved, denied, timeout).
       type: String
-  - name: msgraph-user-create-mfa-client-secret
-    description: Issue a new client secret for the MFA app.
   - arguments:
     - description: The user mail to pop the MFA to.
       name: user_mail
@@ -831,7 +829,6 @@ script:
     - contextPath: MSGraphUser.MFA.Status
       description: The current status of the MFA request (pending, approved, denied, timeout, error).
       type: String
-  
   - arguments:
     - description: The user mail to pop the MFA to.
       name: user_mail
@@ -854,8 +851,6 @@ script:
     - contextPath: MSGraphUser.MFA.Result
       description: The final result of the MFA request (approved, denied, timeout).
       type: String
-  - name: msgraph-user-create-mfa-client-secret
-    description: Issue a new client secret for the MFA app.
   - name: msgraph-user-create-mfa-client-secret
     description: Issue a new client secret for the MFA app.
   dockerimage: demisto/crypto:1.0.0.4578119

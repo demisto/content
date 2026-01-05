@@ -481,7 +481,6 @@ class MsGraphClient:
         Returns:
             str: The context_id to use for polling the MFA status.
         """
-        import xml.etree.ElementTree as ET
         import uuid
 
         # Hardcoded endpoints
@@ -529,7 +528,6 @@ class MsGraphClient:
             mfa_result.raise_for_status()
 
             demisto.debug(f"MFA Challenge initiated. Context ID: {context_id}")
-            demisto.debug(f"Response: {mfa_result.text}")
             
             # For async calls, we return the context_id to be used for polling
             return context_id
@@ -545,7 +543,7 @@ class MsGraphClient:
         
         Args:
             user_principal_name (str): The user principal name of the user.
-            context_id (str): The context_id returned from initiate_mfa_push_async.
+            context_id (str): The MFA context_id.
 
         Returns:
             dict: A dictionary containing:
@@ -1349,7 +1347,6 @@ def get_mfa_request_status(client: MsGraphClient, args: dict) -> CommandResults:
     
     status = poll_result.get('status')
     message = poll_result.get('message')
-    continue_polling = poll_result.get('continue_polling', False)
 
     # Polling complete - return final result
     if status == 'approved':
