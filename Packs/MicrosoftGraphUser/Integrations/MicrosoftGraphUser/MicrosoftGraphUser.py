@@ -495,7 +495,7 @@ class MsGraphClient:
             if limit:
                 params["$top"] = limit
             response = self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=params)
-        
+
         next_page_url = response.get("@odata.nextLink")
         methods = response.get("value", [])
         return methods, next_page_url
@@ -555,7 +555,7 @@ class MsGraphClient:
         else:
             url_suffix = f"users/{quote(user_id)}/authentication/phoneMethods"
             response = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
-        
+
         next_page_url = response.get("@odata.nextLink")
         methods = response.get("value", [])
         return methods, next_page_url
@@ -743,7 +743,7 @@ class MsGraphClient:
         if page_url:
             response = self.ms_client.http_request(method="GET", full_url=page_url)
         else:
-            suffix_url = f'users/{quote(user_id)}/ownedDevices'
+            suffix_url = f"users/{quote(user_id)}/ownedDevices"
             response = self.ms_client.http_request(
                 method="GET",
                 url_suffix=suffix_url,
@@ -1240,67 +1240,86 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
 
     return CommandResults(readable_output=human_readable)
 
-def parse_owned_devices_outputs(devices_data: dict) -> list:
-    readable_output = []
-    
-    for device in devices_data:
-        readable_output.extend({"Device Id": device.get("id"),
-                                "Azure Device Registration Id": device.get("deviceId"),
-                                "Device Display Name": device.get("displayName")})
-    
-    return readable_output
-        
+
 @suppress_errors_with_404_code
 def list_owned_device_command(client: MsGraphClient, args: dict) -> CommandResults:
-    
+    """
+    Lists the devices owned by a user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user_id (str, required): The user ID or user principal name
+            - limit (int, optional): Maximum number of results to return
+            - next_page (str, optional): URL for the next page of results
+            - filter (str, optional): Filter to apply to the results
+
+    Returns:
+        CommandResults: The devices owned by the specified user.
+    """
     user_id = args.get("user_id", "")
     next_page = args.get("next_page", "")
     filters = args.get("filter", "")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
-    
-    devices_data, result_next_page = client.list_owned_devices(next_page, user_id, filters, limit) # type: ignore
-    devices_readable = parse_owned_devices_outputs(devices_data)
 
-    metadata = ''
+    devices_data, result_next_page = client.list_owned_devices(next_page, user_id, filters, limit)  # type: ignore
+
+    if not devices_data:
+        return CommandResults(readable_output=f"No owned devices found for user {user_id}.")
+
+    devices_readable, devices_outputs = parse_outputs(devices_data)
+
+    # Map the field names to custom headers for human readable output
+    field_mapping = {"ID": "Device Id", "Device ID": "Azure Device Registration Id", "Display Name": "Device Display Name"}
+    devices_readable = map_auth_method_fields_to_readable(devices_readable, field_mapping)
+
+    headers = ["Device Id", "Azure Device Registration Id", "Device Display Name"]
+
+    metadata = None
     if result_next_page:
-        metadata = "To get further results, enter this to the next_page parameter:\n" + str(result_next_page)
-        # Ensures the NextPage token is inserted as the first element only if it's a valid URL
-        devices_data["MSGraphUser"].insert(0, {"NextPage": result_next_page})
-    human_readable = tableToMarkdown(name="User owned devices:", t=devices_data, removeNull=True, metadata=metadata, headers=["Device Id", "Azure Device Registration Id", "Device Display Name"] )
+        metadata = "To get further results, enter this to the next_page argument:\n" + str(result_next_page)
+        # Add NextPage to outputs if it's a list
+        if isinstance(devices_outputs, list):
+            devices_outputs.insert(0, {"NextPage": result_next_page})
 
-    return CommandResults(outputs_key_field="ID", outputs={"MSGraphUser": {"Id": user_id, "OwnedDevice": devices_data}},
-                          readable_output=human_readable, raw_response=devices_data)
+    human_readable = tableToMarkdown(
+        name=f"Owned Devices for User {user_id}:", headers=headers, t=devices_readable, removeNull=True, metadata=metadata
+    )
+
+    return CommandResults(
+        outputs_prefix="MSGraphUser.OwnedDevice",
+        outputs_key_field="ID",
+        outputs=devices_outputs,
+        readable_output=human_readable,
+        raw_response=devices_data,
+    )
 
 
-def map_fido2_fields_to_readable(fido2_readable):
+def map_auth_method_fields_to_readable(data, field_mapping: dict):
     """
-    Maps FIDO2 authentication method field names to custom human-readable headers.
+    Maps authentication method field names to custom human-readable headers.
     Creates a new dictionary/list to avoid modifying the original data.
 
     Args:
-        fido2_readable: A dictionary or list of dictionaries containing FIDO2 method data.
+        data: A dictionary or list of dictionaries containing authentication method data.
+        field_mapping: A dictionary mapping original field names to custom header names.
 
     Returns:
         A new data structure with renamed fields for better readability.
     """
+
     def map_single_item(item):
         """Helper function to map a single dictionary item."""
         mapped_item = {}
         for key, value in item.items():
-            if key == "ID":
-                mapped_item["Authentication method ID"] = value
-            elif key == "Display Name":
-                mapped_item["The display name of the key"] = value
-            elif key == "Aa Guid":
-                mapped_item["Authenticator Attestation GUID"] = value
-            else:
-                mapped_item[key] = value
+            # Use the mapping if it exists, otherwise keep the original key
+            mapped_item[field_mapping.get(key, key)] = value
         return mapped_item
-    
-    if isinstance(fido2_readable, list):
-        return [map_single_item(item) for item in fido2_readable]
+
+    if isinstance(data, list):
+        return [map_single_item(item) for item in data]
     else:
-        return map_single_item(fido2_readable)
+        return map_single_item(data)
 
 
 @suppress_errors_with_404_code
@@ -1321,33 +1340,33 @@ def list_fido2_method_command(client: MsGraphClient, args: dict) -> CommandResul
     user = args.get("user", "")
     method_id = args.get("method_id", "")
     limit = arg_to_number(args.get("limit", 50))
-    
+
     if method_id:
         fido2_data = client.get_fido2_method(user, method_id)
     else:
-        fido2_data = client.list_fido2_methods(user, method_id, limit)
-    
+        fido2_data = client.list_fido2_methods(user, method_id, limit)  # type: ignore
+
     if not fido2_data:
         return CommandResults(readable_output=f"No FIDO2 authentication methods found for user {user}.")
 
     fido2_readable, fido2_outputs = parse_outputs(fido2_data)
 
     # Map the field names to custom headers for human readable output
-    fido2_readable = map_fido2_fields_to_readable(fido2_readable)
+    field_mapping = {
+        "ID": "Authentication method ID",
+        "Display Name": "The display name of the key",
+        "Aa Guid": "Authenticator Attestation GUID",
+    }
+    fido2_readable = map_auth_method_fields_to_readable(fido2_readable, field_mapping)
 
     headers = ["Authentication method ID", "The display name of the key", "Authenticator Attestation GUID"]
-    
+
     if method_id:
         title = f"FIDO2 Authentication Method {method_id} for User {user}:"
     else:
         title = f"FIDO2 Authentication Methods for User {user}:"
-    
-    human_readable = tableToMarkdown(
-        name=title,
-        headers=headers,
-        t=fido2_readable,
-        removeNull=True
-    )
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=fido2_readable, removeNull=True)
 
     return CommandResults(
         outputs_prefix="MSGraphUser.FIDO2Method",
@@ -1374,7 +1393,7 @@ def delete_fido2_method_command(client: MsGraphClient, args: dict) -> CommandRes
     """
     user = args.get("user", "")
     method_id = args.get("method_id", "")
-    
+
     client.delete_fido2_method(user, method_id)
     human_readable = f"The user's FIDO2 Security Key Authentication Method {method_id} has been successfully deleted."
 
@@ -1397,30 +1416,25 @@ def list_email_method_command(client: MsGraphClient, args: dict) -> CommandResul
     """
     user = args.get("user", "")
     method_id = args.get("method_id", "")
-    
+
     if method_id:
         email_data = client.get_email_method(user, method_id)
     else:
         email_data = client.list_email_methods(user)
-    
+
     if not email_data:
         return CommandResults(readable_output=f"No email authentication methods found for user {user}.")
 
     email_readable, email_outputs = parse_outputs(email_data)
 
     headers = ["ID", "Email Address"]
-    
+
     if method_id:
         title = f"Email Authentication Method {method_id} for User {user}:"
     else:
         title = f"Email Authentication Methods for User {user}:"
-    
-    human_readable = tableToMarkdown(
-        name=title,
-        headers=headers,
-        t=email_readable,
-        removeNull=True
-    )
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=email_readable, removeNull=True)
 
     return CommandResults(
         outputs_prefix="MSGraphUser.EmailAuthMethod",
@@ -1447,42 +1461,11 @@ def delete_email_method_command(client: MsGraphClient, args: dict) -> CommandRes
     """
     user = args.get("user", "")
     method_id = args.get("method_id", "")
-    
+
     client.delete_email_method(user, method_id)
     human_readable = f"The user's Email Authentication Method object {method_id} has been successfully deleted."
 
     return CommandResults(readable_output=human_readable)
-
-
-def map_authenticator_fields_to_readable(authenticator_readable):
-    """
-    Maps Microsoft Authenticator authentication method field names to custom human-readable headers.
-    Creates a new dictionary/list to avoid modifying the original data.
-
-    Args:
-        authenticator_readable: A dictionary or list of dictionaries containing authenticator method data.
-
-    Returns:
-        A new data structure with renamed fields for better readability.
-    """
-    def map_single_item(item):
-        """Helper function to map a single dictionary item."""
-        mapped_item = {}
-        for key, value in item.items():
-            if key == "ID":
-                mapped_item["Authentication method ID"] = value
-            elif key == "Display Name":
-                mapped_item["Device Name"] = value
-            elif key == "Phone App Version":
-                mapped_item["Version of the Authenticator app"] = value
-            else:
-                mapped_item[key] = value
-        return mapped_item
-    
-    if isinstance(authenticator_readable, list):
-        return [map_single_item(item) for item in authenticator_readable]
-    else:
-        return map_single_item(authenticator_readable)
 
 
 @suppress_errors_with_404_code
@@ -1505,41 +1488,41 @@ def list_authenticator_method_command(client: MsGraphClient, args: dict) -> Comm
     method_id = args.get("method_id", "")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
     next_page = args.get("next_page", "")
-    
+
     if method_id:
         authenticator_data = client.get_authenticator_method(user, method_id)
         result_next_page = None
     else:
-        authenticator_data, result_next_page = client.list_authenticator_methods(user, limit, next_page) # type: ignore
-    
+        authenticator_data, result_next_page = client.list_authenticator_methods(user, limit, next_page)  # type: ignore
+
     if not authenticator_data:
         return CommandResults(readable_output=f"No Microsoft Authenticator authentication methods found for user {user}.")
 
     authenticator_readable, authenticator_outputs = parse_outputs(authenticator_data)
 
-    authenticator_readable = map_authenticator_fields_to_readable(authenticator_readable)
+    # Map the field names to custom headers for human readable output
+    field_mapping = {
+        "ID": "Authentication method ID",
+        "Display Name": "Device Name",
+        "Phone App Version": "Version of the Authenticator app",
+    }
+    authenticator_readable = map_auth_method_fields_to_readable(authenticator_readable, field_mapping)
 
     headers = ["Authentication method ID", "Device Name", "Version of the Authenticator app"]
-    
+
     if method_id:
         title = f"Microsoft Authenticator Authentication Method {method_id} for User {user}:"
     else:
         title = f"Microsoft Authenticator Authentication Methods for User {user}:"
-    
+
     metadata = None
     if result_next_page:
         metadata = "To get further results, enter this to the next_page argument:\n" + str(result_next_page)
         # Add NextPage to outputs if it's a list
         if isinstance(authenticator_outputs, list):
             authenticator_outputs.insert(0, {"NextPage": result_next_page})
-    
-    human_readable = tableToMarkdown(
-        name=title,
-        headers=headers,
-        t=authenticator_readable,
-        removeNull=True,
-        metadata=metadata
-    )
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=authenticator_readable, removeNull=True, metadata=metadata)
 
     return CommandResults(
         outputs_prefix="MSGraphUser.UserAuthMethod",
@@ -1566,44 +1549,11 @@ def delete_authenticator_method_command(client: MsGraphClient, args: dict) -> Co
     """
     user = args.get("user", "")
     method_id = args.get("method_id", "")
-    
+
     client.delete_authenticator_method(user, method_id)
     human_readable = f"Microsoft Authenticator authentication method {method_id} was successfully deleted for user {user}."
 
     return CommandResults(readable_output=human_readable)
-
-
-def map_phone_fields_to_readable(phone_readable):
-    """
-    Maps phone authentication method field names to custom human-readable headers.
-    Creates a new dictionary/list to avoid modifying the original data.
-
-    Args:
-        phone_readable: A dictionary or list of dictionaries containing phone method data.
-
-    Returns:
-        A new data structure with renamed fields for better readability.
-    """
-    def map_single_item(item):
-        """Helper function to map a single dictionary item."""
-        mapped_item = {}
-        for key, value in item.items():
-            if key == "ID":
-                mapped_item["Phone ID"] = value
-            elif key == "Phone Number":
-                mapped_item["Phone Number"] = value
-            elif key == "Phone Type":
-                mapped_item["Phone Type"] = value
-            elif key == "Sms Sign In State":
-                mapped_item["Sms SignIn State"] = value
-            else:
-                mapped_item[key] = value
-        return mapped_item
-    
-    if isinstance(phone_readable, list):
-        return [map_single_item(item) for item in phone_readable]
-    else:
-        return map_single_item(phone_readable)
 
 
 @suppress_errors_with_404_code
@@ -1624,42 +1574,37 @@ def list_phone_method_command(client: MsGraphClient, args: dict) -> CommandResul
     user = args.get("user", "")
     method_id = args.get("method_id", "")
     next_page = args.get("next_page", "")
-    
+
     if method_id:
         phone_data = client.get_phone_method(user, method_id)
         result_next_page = None
     else:
         phone_data, result_next_page = client.list_phone_methods(user, next_page)
-    
+
     if not phone_data:
         return CommandResults(readable_output=f"No phone authentication methods found for user {user}.")
 
     phone_readable, phone_outputs = parse_outputs(phone_data)
 
     # Map the field names to custom headers for human readable output
-    phone_readable = map_phone_fields_to_readable(phone_readable)
+    field_mapping = {"ID": "Phone ID", "Sms Sign In State": "Sms SignIn State"}
+    phone_readable = map_auth_method_fields_to_readable(phone_readable, field_mapping)
 
     headers = ["Phone ID", "Phone Number", "Phone Type", "Sms SignIn State"]
-    
+
     if method_id:
         title = f"Phone Authentication Method {method_id} for User {user}:"
     else:
         title = f"Phone Authentication Methods for User {user}:"
-    
+
     metadata = None
     if result_next_page:
         metadata = "To get further results, enter this to the next_page argument:\n" + str(result_next_page)
         # Add NextPage to outputs if it's a list
         if isinstance(phone_outputs, list):
             phone_outputs.insert(0, {"NextPage": result_next_page})
-    
-    human_readable = tableToMarkdown(
-        name=title,
-        headers=headers,
-        t=phone_readable,
-        removeNull=True,
-        metadata=metadata
-    )
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=phone_readable, removeNull=True, metadata=metadata)
 
     return CommandResults(
         outputs_prefix="MSGraphUser.PhoneAuthMethod",
@@ -1686,38 +1631,11 @@ def delete_phone_method_command(client: MsGraphClient, args: dict) -> CommandRes
     """
     user = args.get("user", "")
     method_id = args.get("method_id", "")
-    
+
     client.delete_phone_method(user, method_id)
     human_readable = f"The user's phone authentication method object id {method_id} has been successfully deleted."
 
     return CommandResults(readable_output=human_readable)
-
-
-def map_software_oath_fields_to_readable(software_oath_readable):
-    """
-    Maps software OATH authentication method field names to custom human-readable headers.
-    Creates a new dictionary/list to avoid modifying the original data.
-
-    Args:
-        software_oath_readable: A dictionary or list of dictionaries containing software OATH method data.
-
-    Returns:
-        A new data structure with renamed fields for better readability.
-    """
-    def map_single_item(item):
-        """Helper function to map a single dictionary item."""
-        mapped_item = {}
-        for key, value in item.items():
-            if key == "ID":
-                mapped_item["Authentication method ID"] = value
-            else:
-                mapped_item[key] = value
-        return mapped_item
-    
-    if isinstance(software_oath_readable, list):
-        return [map_single_item(item) for item in software_oath_readable]
-    else:
-        return map_single_item(software_oath_readable)
 
 
 @suppress_errors_with_404_code
@@ -1736,33 +1654,29 @@ def list_software_oath_method_command(client: MsGraphClient, args: dict) -> Comm
     """
     user = args.get("user", "")
     method_id = args.get("method_id", "")
-    
+
     if method_id:
         software_oath_data = client.get_software_oath_method(user, method_id)
     else:
         software_oath_data = client.list_software_oath_methods(user)
-    
+
     if not software_oath_data:
         return CommandResults(readable_output=f"No software OATH authentication methods found for user {user}.")
 
     software_oath_readable, software_oath_outputs = parse_outputs(software_oath_data)
 
     # Map the field names to custom headers for human readable output
-    software_oath_readable = map_software_oath_fields_to_readable(software_oath_readable)
+    field_mapping = {"ID": "Authentication method ID"}
+    software_oath_readable = map_auth_method_fields_to_readable(software_oath_readable, field_mapping)
 
     headers = ["Authentication method ID"]
-    
+
     if method_id:
         title = f"Software OATH Authentication Method {method_id} for User {user}:"
     else:
         title = f"Software OATH Authentication Methods for User {user}:"
-    
-    human_readable = tableToMarkdown(
-        name=title,
-        headers=headers,
-        t=software_oath_readable,
-        removeNull=True
-    )
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=software_oath_readable, removeNull=True)
 
     return CommandResults(
         outputs_prefix="MSGraphUser.SoftOathAuthMethod",
@@ -1789,42 +1703,11 @@ def delete_software_oath_method_command(client: MsGraphClient, args: dict) -> Co
     """
     user = args.get("user", "")
     method_id = args.get("method_id", "")
-    
+
     client.delete_software_oath_method(user, method_id)
     human_readable = f"The user's Software OATH token authentication method object id {method_id} has been successfully deleted."
 
     return CommandResults(readable_output=human_readable)
-
-
-def map_windows_hello_fields_to_readable(windows_hello_readable):
-    """
-    Maps Windows Hello for Business authentication method field names to custom human-readable headers.
-    Creates a new dictionary/list to avoid modifying the original data.
-
-    Args:
-        windows_hello_readable: A dictionary or list of dictionaries containing Windows Hello method data.
-
-    Returns:
-        A new data structure with renamed fields for better readability.
-    """
-    def map_single_item(item):
-        """Helper function to map a single dictionary item."""
-        mapped_item = {}
-        for key, value in item.items():
-            if key == "ID":
-                mapped_item["Windows Hello Method ID"] = value
-            elif key == "Display Name":
-                mapped_item["Display Name"] = value
-            elif key == "Key Strength":
-                mapped_item["Method Key Strength"] = value
-            else:
-                mapped_item[key] = value
-        return mapped_item
-    
-    if isinstance(windows_hello_readable, list):
-        return [map_single_item(item) for item in windows_hello_readable]
-    else:
-        return map_single_item(windows_hello_readable)
 
 
 @suppress_errors_with_404_code
@@ -1843,33 +1726,29 @@ def list_windows_hello_method_command(client: MsGraphClient, args: dict) -> Comm
     """
     user = args.get("user", "")
     method_id = args.get("method_id", "")
-    
+
     if method_id:
         windows_hello_data = client.get_windows_hello_method(user, method_id)
     else:
         windows_hello_data = client.list_windows_hello_methods(user)
-    
+
     if not windows_hello_data:
         return CommandResults(readable_output=f"No Windows Hello for Business authentication methods found for user {user}.")
 
     windows_hello_readable, windows_hello_outputs = parse_outputs(windows_hello_data)
 
     # Map the field names to custom headers for human readable output
-    windows_hello_readable = map_windows_hello_fields_to_readable(windows_hello_readable)
+    field_mapping = {"ID": "Windows Hello Method ID", "Key Strength": "Method Key Strength"}
+    windows_hello_readable = map_auth_method_fields_to_readable(windows_hello_readable, field_mapping)
 
     headers = ["Windows Hello Method ID", "Display Name", "Method Key Strength"]
-    
+
     if method_id:
         title = f"Windows Hello for Business Authentication Method {method_id} for User {user}:"
     else:
         title = f"Windows Hello for Business Authentication Methods for User {user}:"
-    
-    human_readable = tableToMarkdown(
-        name=title,
-        headers=headers,
-        t=windows_hello_readable,
-        removeNull=True
-    )
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=windows_hello_readable, removeNull=True)
 
     return CommandResults(
         outputs_prefix="MSGraphUser.WindowsHelloAuthMethod",
@@ -1896,7 +1775,7 @@ def delete_windows_hello_method_command(client: MsGraphClient, args: dict) -> Co
     """
     user = args.get("user", "")
     method_id = args.get("method_id", "")
-    
+
     client.delete_windows_hello_method(user, method_id)
     human_readable = f"The Windows Hello For Business Authentication Method object id {method_id} has been successfully deleted."
 

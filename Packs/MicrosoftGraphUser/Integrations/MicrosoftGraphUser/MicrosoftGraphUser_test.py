@@ -1083,3 +1083,760 @@ def test_change_password_user_on_premise_command_initiation_error(mocker):
 
     # The error message from the function is just the original exception message
     assert error_message in str(e.value)
+
+
+def test_map_auth_method_fields_to_readable_single_dict():
+    """
+    Tests the map_auth_method_fields_to_readable function with a single dictionary.
+
+    Given:
+        - A single dictionary with authentication method data
+        - A field mapping dictionary
+    When:
+        - Calling map_auth_method_fields_to_readable
+    Then:
+        - Verify that the fields are correctly mapped to custom headers
+        - Verify that unmapped fields remain unchanged
+    """
+    from MicrosoftGraphUser import map_auth_method_fields_to_readable
+
+    input_data = {
+        "ID": "method-id-123",
+        "Display Name": "Test Device",
+        "Key Strength": "normal",
+        "Created Date Time": "2025-01-01T00:00:00Z"
+    }
+
+    field_mapping = {
+        "ID": "Windows Hello Method ID",
+        "Key Strength": "Method Key Strength"
+    }
+
+    result = map_auth_method_fields_to_readable(input_data, field_mapping)
+
+    assert result["Windows Hello Method ID"] == "method-id-123"
+    assert result["Display Name"] == "Test Device"  # Unmapped field stays the same
+    assert result["Method Key Strength"] == "normal"
+    assert result["Created Date Time"] == "2025-01-01T00:00:00Z"  # Unmapped field stays the same
+
+
+def test_map_auth_method_fields_to_readable_list():
+    """
+    Tests the map_auth_method_fields_to_readable function with a list of dictionaries.
+
+    Given:
+        - A list of dictionaries with authentication method data
+        - A field mapping dictionary
+    When:
+        - Calling map_auth_method_fields_to_readable
+    Then:
+        - Verify that all items in the list are correctly mapped
+        - Verify that the function returns a list
+    """
+    from MicrosoftGraphUser import map_auth_method_fields_to_readable
+
+    input_data = [
+        {
+            "ID": "fido2-id-1",
+            "Display Name": "Security Key 1",
+            "Aa Guid": "guid-123"
+        },
+        {
+            "ID": "fido2-id-2",
+            "Display Name": "Security Key 2",
+            "Aa Guid": "guid-456"
+        }
+    ]
+
+    field_mapping = {
+        "ID": "Authentication method ID",
+        "Display Name": "The display name of the key",
+        "Aa Guid": "Authenticator Attestation GUID"
+    }
+
+    result = map_auth_method_fields_to_readable(input_data, field_mapping)
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0]["Authentication method ID"] == "fido2-id-1"
+    assert result[0]["The display name of the key"] == "Security Key 1"
+    assert result[0]["Authenticator Attestation GUID"] == "guid-123"
+    assert result[1]["Authentication method ID"] == "fido2-id-2"
+    assert result[1]["The display name of the key"] == "Security Key 2"
+    assert result[1]["Authenticator Attestation GUID"] == "guid-456"
+
+
+def test_map_auth_method_fields_to_readable_empty_mapping():
+    """
+    Tests the map_auth_method_fields_to_readable function with an empty field mapping.
+
+    Given:
+        - A dictionary with authentication method data
+        - An empty field mapping dictionary
+    When:
+        - Calling map_auth_method_fields_to_readable
+    Then:
+        - Verify that all fields remain unchanged
+    """
+    from MicrosoftGraphUser import map_auth_method_fields_to_readable
+
+    input_data = {
+        "ID": "method-id-123",
+        "Display Name": "Test Device",
+        "Phone Number": "+1234567890"
+    }
+
+    field_mapping = {}
+
+    result = map_auth_method_fields_to_readable(input_data, field_mapping)
+
+    assert result["ID"] == "method-id-123"
+    assert result["Display Name"] == "Test Device"
+    assert result["Phone Number"] == "+1234567890"
+
+
+def test_map_auth_method_fields_to_readable_partial_mapping():
+    """
+    Tests the map_auth_method_fields_to_readable function with partial field mapping.
+
+    Given:
+        - A dictionary with multiple fields
+        - A field mapping that only maps some of the fields
+    When:
+        - Calling map_auth_method_fields_to_readable
+    Then:
+        - Verify that mapped fields are renamed
+        - Verify that unmapped fields keep their original names
+    """
+    from MicrosoftGraphUser import map_auth_method_fields_to_readable
+
+    input_data = {
+        "ID": "phone-id-123",
+        "Phone Number": "+1234567890",
+        "Phone Type": "mobile",
+        "Sms Sign In State": "ready"
+    }
+
+    field_mapping = {
+        "ID": "Phone ID",
+        "Sms Sign In State": "Sms SignIn State"
+    }
+
+    result = map_auth_method_fields_to_readable(input_data, field_mapping)
+
+    assert result["Phone ID"] == "phone-id-123"
+    assert result["Phone Number"] == "+1234567890"  # Unmapped
+    assert result["Phone Type"] == "mobile"  # Unmapped
+    assert result["Sms SignIn State"] == "ready"
+
+
+def test_list_fido2_method_command_list_all(mocker):
+    """
+    Tests the list_fido2_method_command function when listing all FIDO2 methods for a user.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user
+    When:
+        - Running the list_fido2_method_command without a method_id
+    Then:
+        - Verify that the function returns the correct FIDO2 methods
+        - Verify that the output prefix and key field are correct
+    """
+    from MicrosoftGraphUser import MsGraphClient, list_fido2_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "limit": "50"}
+
+    mock_fido2_data = [
+        {
+            "id": "fido2-method-id-1",
+            "displayName": "Security Key 1",
+            "createdDateTime": "2025-01-01T00:00:00Z",
+            "aaGuid": "guid-123",
+            "model": "YubiKey 5",
+            "attestationLevel": "attested",
+        }
+    ]
+
+    mocker.patch.object(client, "list_fido2_methods", return_value=mock_fido2_data)
+    result = list_fido2_method_command(client, args)
+
+    assert result.outputs_prefix == "MSGraphUser.FIDO2Method"
+    assert result.outputs_key_field == "ID"
+    assert "FIDO2 Authentication Methods for User test-user" in result.readable_output
+
+
+def test_list_fido2_method_command_get_specific(mocker):
+    """
+    Tests the list_fido2_method_command function when retrieving a specific FIDO2 method.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user and method_id
+    When:
+        - Running the list_fido2_method_command with a method_id
+    Then:
+        - Verify that the function returns the correct FIDO2 method
+        - Verify that the output contains the method_id in the title
+    """
+    from MicrosoftGraphUser import MsGraphClient, list_fido2_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "method_id": "fido2-method-id-1"}
+
+    mock_fido2_data = {
+        "id": "fido2-method-id-1",
+        "displayName": "Security Key 1",
+        "createdDateTime": "2025-01-01T00:00:00Z",
+        "aaGuid": "guid-123",
+    }
+
+    mocker.patch.object(client, "get_fido2_method", return_value=mock_fido2_data)
+    result = list_fido2_method_command(client, args)
+
+    assert result.outputs_prefix == "MSGraphUser.FIDO2Method"
+    assert "FIDO2 Authentication Method fido2-method-id-1 for User test-user" in result.readable_output
+
+
+def test_delete_fido2_method_command(mocker):
+    """
+    Tests the delete_fido2_method_command function.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user and method_id
+    When:
+        - Running the delete_fido2_method_command
+    Then:
+        - Verify that the function returns the correct success message
+    """
+    from MicrosoftGraphUser import MsGraphClient, delete_fido2_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "method_id": "fido2-method-id-1"}
+
+    mocker.patch.object(client, "delete_fido2_method", return_value=None)
+    result = delete_fido2_method_command(client, args)
+
+    assert "FIDO2 Security Key Authentication Method fido2-method-id-1 has been successfully deleted" in result.readable_output
+
+
+def test_list_email_method_command_list_all(mocker):
+    """
+    Tests the list_email_method_command function when listing all email methods for a user.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user
+    When:
+        - Running the list_email_method_command without a method_id
+    Then:
+        - Verify that the function returns the correct email methods
+        - Verify that the output prefix and key field are correct
+    """
+    from MicrosoftGraphUser import MsGraphClient, list_email_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user"}
+
+    mock_email_data = [
+        {
+            "id": "email-method-id-1",
+            "emailAddress": "test@example.com",
+        }
+    ]
+
+    mocker.patch.object(client, "list_email_methods", return_value=mock_email_data)
+    result = list_email_method_command(client, args)
+
+    assert result.outputs_prefix == "MSGraphUser.EmailAuthMethod"
+    assert result.outputs_key_field == "ID"
+    assert "Email Authentication Methods for User test-user" in result.readable_output
+
+
+def test_delete_email_method_command(mocker):
+    """
+    Tests the delete_email_method_command function.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user and method_id
+    When:
+        - Running the delete_email_method_command
+    Then:
+        - Verify that the function returns the correct success message
+    """
+    from MicrosoftGraphUser import MsGraphClient, delete_email_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "method_id": "email-method-id-1"}
+
+    mocker.patch.object(client, "delete_email_method", return_value=None)
+    result = delete_email_method_command(client, args)
+
+    assert "Email Authentication Method object email-method-id-1 has been successfully deleted" in result.readable_output
+
+
+def test_list_authenticator_method_command_list_all(mocker):
+    """
+    Tests the list_authenticator_method_command function when listing all authenticator methods for a user.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user
+    When:
+        - Running the list_authenticator_method_command without a method_id
+    Then:
+        - Verify that the function returns the correct authenticator methods
+        - Verify that the output prefix and key field are correct
+    """
+    from MicrosoftGraphUser import MsGraphClient, list_authenticator_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "limit": "50"}
+
+    mock_authenticator_data = [
+        {
+            "id": "auth-method-id-1",
+            "displayName": "iPhone 12",
+            "phoneAppVersion": "6.5.0",
+            "createdDateTime": "2025-01-01T00:00:00Z",
+        }
+    ]
+
+    mocker.patch.object(client, "list_authenticator_methods", return_value=(mock_authenticator_data, None))
+    result = list_authenticator_method_command(client, args)
+
+    assert result.outputs_prefix == "MSGraphUser.UserAuthMethod"
+    assert result.outputs_key_field == "ID"
+    assert "Microsoft Authenticator Authentication Methods for User test-user" in result.readable_output
+
+
+def test_delete_authenticator_method_command(mocker):
+    """
+    Tests the delete_authenticator_method_command function.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user and method_id
+    When:
+        - Running the delete_authenticator_method_command
+    Then:
+        - Verify that the function returns the correct success message
+    """
+    from MicrosoftGraphUser import MsGraphClient, delete_authenticator_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "method_id": "auth-method-id-1"}
+
+    mocker.patch.object(client, "delete_authenticator_method", return_value=None)
+    result = delete_authenticator_method_command(client, args)
+
+    assert "Microsoft Authenticator authentication method auth-method-id-1 was successfully deleted" in result.readable_output
+
+
+def test_list_phone_method_command_list_all(mocker):
+    """
+    Tests the list_phone_method_command function when listing all phone methods for a user.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user
+    When:
+        - Running the list_phone_method_command without a method_id
+    Then:
+        - Verify that the function returns the correct phone methods
+        - Verify that the output prefix and key field are correct
+    """
+    from MicrosoftGraphUser import MsGraphClient, list_phone_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user"}
+
+    mock_phone_data = [
+        {
+            "id": "phone-method-id-1",
+            "phoneNumber": "+1234567890",
+            "phoneType": "mobile",
+            "smsSignInState": "ready",
+        }
+    ]
+
+    mocker.patch.object(client, "list_phone_methods", return_value=(mock_phone_data, None))
+    result = list_phone_method_command(client, args)
+
+    assert result.outputs_prefix == "MSGraphUser.PhoneAuthMethod"
+    assert result.outputs_key_field == "ID"
+    assert "Phone Authentication Methods for User test-user" in result.readable_output
+
+
+def test_delete_phone_method_command(mocker):
+    """
+    Tests the delete_phone_method_command function.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user and method_id
+    When:
+        - Running the delete_phone_method_command
+    Then:
+        - Verify that the function returns the correct success message
+    """
+    from MicrosoftGraphUser import MsGraphClient, delete_phone_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "method_id": "phone-method-id-1"}
+
+    mocker.patch.object(client, "delete_phone_method", return_value=None)
+    result = delete_phone_method_command(client, args)
+
+    assert "phone authentication method object id phone-method-id-1 has been successfully deleted" in result.readable_output
+
+
+def test_list_software_oath_method_command_list_all(mocker):
+    """
+    Tests the list_software_oath_method_command function when listing all software OATH methods for a user.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user
+    When:
+        - Running the list_software_oath_method_command without a method_id
+    Then:
+        - Verify that the function returns the correct software OATH methods
+        - Verify that the output prefix and key field are correct
+    """
+    from MicrosoftGraphUser import MsGraphClient, list_software_oath_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user"}
+
+    mock_software_oath_data = [
+        {
+            "id": "software-oath-method-id-1",
+        }
+    ]
+
+    mocker.patch.object(client, "list_software_oath_methods", return_value=mock_software_oath_data)
+    result = list_software_oath_method_command(client, args)
+
+    assert result.outputs_prefix == "MSGraphUser.SoftOathAuthMethod"
+    assert result.outputs_key_field == "ID"
+    assert "Software OATH Authentication Methods for User test-user" in result.readable_output
+
+
+def test_delete_software_oath_method_command(mocker):
+    """
+    Tests the delete_software_oath_method_command function.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user and method_id
+    When:
+        - Running the delete_software_oath_method_command
+    Then:
+        - Verify that the function returns the correct success message
+    """
+    from MicrosoftGraphUser import MsGraphClient, delete_software_oath_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "method_id": "software-oath-method-id-1"}
+
+    mocker.patch.object(client, "delete_software_oath_method", return_value=None)
+    result = delete_software_oath_method_command(client, args)
+
+    assert (
+        "Software OATH token authentication method object id software-oath-method-id-1 has been successfully deleted"
+        in result.readable_output
+    )
+
+
+def test_list_windows_hello_method_command_list_all(mocker):
+    """
+    Tests the list_windows_hello_method_command function when listing all Windows Hello methods for a user.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user
+    When:
+        - Running the list_windows_hello_method_command without a method_id
+    Then:
+        - Verify that the function returns the correct Windows Hello methods
+        - Verify that the output prefix and key field are correct
+    """
+    from MicrosoftGraphUser import MsGraphClient, list_windows_hello_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user"}
+
+    mock_windows_hello_data = [
+        {
+            "id": "windows-hello-method-id-1",
+            "displayName": "Work Laptop",
+            "keyStrength": "normal",
+            "createdDateTime": "2025-01-01T00:00:00Z",
+        }
+    ]
+
+    mocker.patch.object(client, "list_windows_hello_methods", return_value=mock_windows_hello_data)
+    result = list_windows_hello_method_command(client, args)
+
+    assert result.outputs_prefix == "MSGraphUser.WindowsHelloAuthMethod"
+    assert result.outputs_key_field == "ID"
+    assert "Windows Hello for Business Authentication Methods for User test-user" in result.readable_output
+
+
+def test_list_windows_hello_method_command_get_specific(mocker):
+    """
+    Tests the list_windows_hello_method_command function when retrieving a specific Windows Hello method.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user and method_id
+    When:
+        - Running the list_windows_hello_method_command with a method_id
+    Then:
+        - Verify that the function returns the correct Windows Hello method
+        - Verify that the output contains the method_id in the title
+    """
+    from MicrosoftGraphUser import MsGraphClient, list_windows_hello_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "method_id": "windows-hello-method-id-1"}
+
+    mock_windows_hello_data = {
+        "id": "windows-hello-method-id-1",
+        "displayName": "Work Laptop",
+        "keyStrength": "normal",
+    }
+
+    mocker.patch.object(client, "get_windows_hello_method", return_value=mock_windows_hello_data)
+    result = list_windows_hello_method_command(client, args)
+
+    assert result.outputs_prefix == "MSGraphUser.WindowsHelloAuthMethod"
+    assert (
+        "Windows Hello for Business Authentication Method windows-hello-method-id-1 for User test-user" in result.readable_output
+    )
+
+
+def test_delete_windows_hello_method_command(mocker):
+    """
+    Tests the delete_windows_hello_method_command function.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user and method_id
+    When:
+        - Running the delete_windows_hello_method_command
+    Then:
+        - Verify that the function returns the correct success message
+    """
+    from MicrosoftGraphUser import MsGraphClient, delete_windows_hello_method_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "method_id": "windows-hello-method-id-1"}
+
+    mocker.patch.object(client, "delete_windows_hello_method", return_value=None)
+    result = delete_windows_hello_method_command(client, args)
+
+    assert (
+        "Windows Hello For Business Authentication Method object id windows-hello-method-id-1 has been successfully deleted"
+        in result.readable_output
+    )
