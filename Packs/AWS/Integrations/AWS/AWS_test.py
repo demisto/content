@@ -8497,3 +8497,565 @@ def test_ec2_copy_image_command_output_format(mocker):
     assert "ami-formatted-copy" in result.readable_output
     assert "formatted-copy-ami" in result.readable_output
     assert "AWS EC2 Image Copy" in result.readable_output
+
+
+def test_ec2_image_available_waiter_command_success_minimal_params(mocker):
+    """
+    Given: A mocked boto3 EC2 client and minimal required parameters.
+    When: image_available_waiter_command is called successfully.
+    Then: It should wait for image availability and return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Image is now available." in result.readable_output
+    mock_client.get_waiter.assert_called_once_with("image_available")
+    mock_waiter.wait.assert_called_once()
+
+
+def test_ec2_image_available_waiter_command_success_with_image_ids(mocker):
+    """
+    Given: A mocked boto3 EC2 client and specific image IDs to wait for.
+    When: image_available_waiter_command is called with image_ids parameter.
+    Then: It should wait for specified images and return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"image_ids": "ami-1234567890abcdef0,ami-0987654321fedcba0"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Image is now available." in result.readable_output
+    mock_client.get_waiter.assert_called_once_with("image_available")
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["ImageIds"] == ["ami-1234567890abcdef0", "ami-0987654321fedcba0"]
+
+
+def test_ec2_image_available_waiter_command_success_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and filters parameter.
+    When: image_available_waiter_command is called with filters.
+    Then: It should wait with filters applied and return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"filters": "name=state,values=available;name=architecture,values=x86_64"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Image is now available." in result.readable_output
+    call_args = mock_waiter.wait.call_args[1]
+    assert "Filters" in call_args
+    assert len(call_args["Filters"]) == 2
+
+
+def test_ec2_image_available_waiter_command_success_with_owners(mocker):
+    """
+    Given: A mocked boto3 EC2 client and owners parameter.
+    When: image_available_waiter_command is called with owners filter.
+    Then: It should wait with owners filter and return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"owners": "self,123456789012"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Image is now available." in result.readable_output
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["Owners"] == ["self", "123456789012"]
+
+
+def test_ec2_image_available_waiter_command_success_with_executable_users(mocker):
+    """
+    Given: A mocked boto3 EC2 client and executable_users parameter.
+    When: image_available_waiter_command is called with executable_users.
+    Then: It should wait with executable users filter and return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"executable_users": "all"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Image is now available." in result.readable_output
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["ExecutableUsers"] == ["all"]
+
+
+def test_ec2_image_available_waiter_command_success_with_custom_waiter_config(mocker):
+    """
+    Given: A mocked boto3 EC2 client and custom waiter configuration.
+    When: image_available_waiter_command is called with waiter_delay and waiter_max_attempts.
+    Then: It should configure the waiter with custom delay and max attempts.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"waiter_delay": "30", "waiter_max_attempts": "20"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Image is now available." in result.readable_output
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["WaiterConfig"]["Delay"] == 30
+    assert call_args["WaiterConfig"]["MaxAttempts"] == 20
+
+
+def test_ec2_image_available_waiter_command_success_with_all_parameters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and all possible parameters.
+    When: image_available_waiter_command is called with all parameters.
+    Then: It should wait with all filters and custom waiter config, returning success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {
+        "image_ids": "ami-complete123",
+        "filters": "name=state,values=available",
+        "owners": "self",
+        "executable_users": "123456789012",
+        "waiter_delay": "20",
+        "waiter_max_attempts": "30",
+    }
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Image is now available." in result.readable_output
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["ImageIds"] == ["ami-complete123"]
+    assert "Filters" in call_args
+    assert call_args["Owners"] == ["self"]
+    assert call_args["ExecutableUsers"] == ["123456789012"]
+    assert call_args["WaiterConfig"]["Delay"] == 20
+    assert call_args["WaiterConfig"]["MaxAttempts"] == 30
+
+
+def test_ec2_image_available_waiter_command_timeout_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises WaiterError due to timeout.
+    When: image_available_waiter_command encounters timeout waiting for image.
+    Then: It should raise DemistoException with timeout message.
+    """
+    from AWS import EC2
+    from botocore.exceptions import WaiterError
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    
+    waiter_error = WaiterError(
+        name="ImageAvailable",
+        reason="Max attempts exceeded",
+        last_response={"Images": [{"State": "pending"}]}
+    )
+    mock_waiter.wait.side_effect = waiter_error
+
+    args = {"image_ids": "ami-timeout123", "waiter_max_attempts": "5"}
+
+    with pytest.raises(DemistoException, match="Waiter error occurred while waiting for image to become available"):
+        EC2.image_available_waiter_command(mock_client, args)
+
+
+def test_ec2_image_available_waiter_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: image_available_waiter_command encounters an error during execution.
+    Then: It should call AWSErrorHandler.handle_client_error.
+    """
+    from AWS import EC2, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    
+    error_response = {
+        "Error": {"Code": "InvalidAMIID.NotFound", "Message": "The image id 'ami-invalid' does not exist"},
+        "ResponseMetadata": {"HTTPStatusCode": 400, "RequestId": "req-waiter-error"},
+    }
+    client_error = ClientError(error_response, "DescribeImages")
+    mock_waiter.wait.side_effect = client_error
+
+    handler_spy = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+
+    args = {"image_ids": "ami-invalid"}
+
+    EC2.image_available_waiter_command(mock_client, args)
+    handler_spy.assert_called_once_with(client_error)
+
+
+def test_ec2_image_available_waiter_command_with_default_waiter_config(mocker):
+    """
+    Given: A mocked boto3 EC2 client without custom waiter configuration.
+    When: image_available_waiter_command is called without waiter_delay and waiter_max_attempts.
+    Then: It should use default waiter configuration values.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"image_ids": "ami-default-config"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["WaiterConfig"]["Delay"] == 15
+    assert call_args["WaiterConfig"]["MaxAttempts"] == 40
+
+
+def test_ec2_image_available_waiter_command_with_multiple_image_ids(mocker):
+    """
+    Given: A mocked boto3 EC2 client and multiple image IDs.
+    When: image_available_waiter_command is called with comma-separated image IDs.
+    Then: It should properly parse all image IDs and wait for all of them.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"image_ids": "ami-111,ami-222,ami-333"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["ImageIds"] == ["ami-111", "ami-222", "ami-333"]
+
+
+def test_ec2_image_available_waiter_command_with_whitespace_in_image_ids(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image IDs with whitespace.
+    When: image_available_waiter_command is called with space-separated image IDs.
+    Then: It should strip whitespace and properly parse the image IDs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"image_ids": "  ami-ws1  ,  ami-ws2  "}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["ImageIds"] == ["ami-ws1", "ami-ws2"]
+
+
+def test_ec2_image_available_waiter_command_with_complex_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and complex filter combinations.
+    When: image_available_waiter_command is called with multiple filters.
+    Then: It should properly parse all filters and wait with them applied.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"filters": "name=architecture,values=x86_64;name=state,values=available;name=root-device-type,values=ebs"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert "Filters" in call_args
+    assert len(call_args["Filters"]) == 3
+
+
+def test_ec2_image_available_waiter_command_with_multiple_owners(mocker):
+    """
+    Given: A mocked boto3 EC2 client and multiple owners.
+    When: image_available_waiter_command is called with comma-separated owners.
+    Then: It should properly parse all owners and wait with them applied.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"owners": "self,amazon,123456789012"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["Owners"] == ["self", "amazon", "123456789012"]
+
+
+def test_ec2_image_available_waiter_command_with_multiple_executable_users(mocker):
+    """
+    Given: A mocked boto3 EC2 client and multiple executable users.
+    When: image_available_waiter_command is called with comma-separated executable users.
+    Then: It should properly parse all executable users and wait with them applied.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"executable_users": "self,123456789012,987654321098"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["ExecutableUsers"] == ["self", "123456789012", "987654321098"]
+
+
+def test_ec2_image_available_waiter_command_with_only_delay(mocker):
+    """
+    Given: A mocked boto3 EC2 client and only waiter_delay parameter.
+    When: image_available_waiter_command is called with custom delay but default max attempts.
+    Then: It should use custom delay and default max attempts.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"waiter_delay": "60"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["WaiterConfig"]["Delay"] == 60
+    assert call_args["WaiterConfig"]["MaxAttempts"] == 40
+
+
+def test_ec2_image_available_waiter_command_with_only_max_attempts(mocker):
+    """
+    Given: A mocked boto3 EC2 client and only waiter_max_attempts parameter.
+    When: image_available_waiter_command is called with custom max attempts but default delay.
+    Then: It should use default delay and custom max attempts.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"waiter_max_attempts": "100"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["WaiterConfig"]["Delay"] == 15
+    assert call_args["WaiterConfig"]["MaxAttempts"] == 100
+
+
+def test_ec2_image_available_waiter_command_verify_api_call_parameters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid waiter arguments.
+    When: image_available_waiter_command is called successfully.
+    Then: It should call get_waiter with 'image_available' and wait with correct parameters.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {
+        "image_ids": "ami-verify123",
+        "owners": "self",
+        "waiter_delay": "25",
+        "waiter_max_attempts": "50",
+    }
+
+    EC2.image_available_waiter_command(mock_client, args)
+    mock_client.get_waiter.assert_called_once_with("image_available")
+    mock_waiter.wait.assert_called_once()
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["ImageIds"] == ["ami-verify123"]
+    assert call_args["Owners"] == ["self"]
+    assert call_args["WaiterConfig"]["Delay"] == 25
+    assert call_args["WaiterConfig"]["MaxAttempts"] == 50
+
+
+def test_ec2_image_available_waiter_command_waiter_error_with_last_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises WaiterError with last response details.
+    When: image_available_waiter_command encounters waiter error with response data.
+    Then: It should raise DemistoException with detailed error message including last response.
+    """
+    from AWS import EC2
+    from botocore.exceptions import WaiterError
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    
+    last_response = {
+        "Images": [
+            {
+                "ImageId": "ami-failed123",
+                "State": "failed",
+                "StateReason": {"Code": "Server.InternalError", "Message": "Internal error"}
+            }
+        ]
+    }
+    waiter_error = WaiterError(
+        name="ImageAvailable",
+        reason="Waiter encountered a terminal failure state: For expression \"Images[].State\" we matched expected path: \"failed\"",
+        last_response=last_response
+    )
+    mock_waiter.wait.side_effect = waiter_error
+
+    args = {"image_ids": "ami-failed123"}
+
+    with pytest.raises(DemistoException, match="Waiter error occurred while waiting for image to become available"):
+        EC2.image_available_waiter_command(mock_client, args)
+
+
+def test_ec2_image_available_waiter_command_general_exception(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises a general Exception.
+    When: image_available_waiter_command encounters an unexpected error.
+    Then: It should raise DemistoException with error details.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.side_effect = Exception("Unexpected error occurred")
+
+    args = {"image_ids": "ami-error123"}
+
+    with pytest.raises(DemistoException, match="Error waiting for image to become available"):
+        EC2.image_available_waiter_command(mock_client, args)
+
+
+def test_ec2_image_available_waiter_command_with_single_image_id(mocker):
+    """
+    Given: A mocked boto3 EC2 client and a single image ID.
+    When: image_available_waiter_command is called with one image ID.
+    Then: It should wait for the single image and return success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"image_ids": "ami-single123"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Image is now available." in result.readable_output
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["ImageIds"] == ["ami-single123"]
+
+
+def test_ec2_image_available_waiter_command_verify_waiter_name(mocker):
+    """
+    Given: A mocked boto3 EC2 client.
+    When: image_available_waiter_command is called.
+    Then: It should request the correct waiter name 'image_available'.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {}
+
+    EC2.image_available_waiter_command(mock_client, args)
+    mock_client.get_waiter.assert_called_once_with("image_available")
+
+
+def test_ec2_image_available_waiter_command_with_minimum_delay(mocker):
+    """
+    Given: A mocked boto3 EC2 client and minimum waiter_delay value.
+    When: image_available_waiter_command is called with waiter_delay=1.
+    Then: It should accept the minimum delay value and configure the waiter.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"waiter_delay": "1"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["WaiterConfig"]["Delay"] == 1
+
+
+def test_ec2_image_available_waiter_command_with_minimum_max_attempts(mocker):
+    """
+    Given: A mocked boto3 EC2 client and minimum waiter_max_attempts value.
+    When: image_available_waiter_command is called with waiter_max_attempts=1.
+    Then: It should accept the minimum max attempts value and configure the waiter.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.return_value = None
+
+    args = {"waiter_max_attempts": "1"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["WaiterConfig"]["MaxAttempts"] == 1

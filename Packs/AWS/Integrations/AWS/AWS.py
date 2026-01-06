@@ -3008,6 +3008,73 @@ class EC2:
         )
 
     @staticmethod
+    def image_available_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Waits until an Amazon Machine Image (AMI) becomes available.
+        
+        This command uses AWS EC2's built-in waiter functionality to poll the image state
+        until it reaches the 'available' state. The waiter will check the image status at
+        regular intervals (configurable via waiter_delay) up to a maximum number of attempts
+        (configurable via waiter_max_attempts).
+        
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - image_ids (str, optional): Comma-separated list of image IDs to wait for
+                - owners (str, optional): Comma-separated list of image owners
+                - executable_users (str, optional): Comma-separated list of users with explicit launch permissions
+                - waiter_delay (str, optional): Time in seconds to wait between polling attempts (default: 15)
+                - waiter_max_attempts (str, optional): Maximum number of polling attempts (default: 40)
+        
+        Returns:
+            CommandResults: Results with success message when image becomes available
+        
+        Raises:
+            WaiterError: If the waiter times out or encounters an error
+        """
+        kwargs: Dict[str, Any] = {}
+        
+        # Add optional filters
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+        
+        # Add optional image IDs
+        if image_ids := args.get("image_ids"):
+            kwargs["ImageIds"] = parse_resource_ids(image_ids)
+        
+        # Add optional executable users
+        if executable_users := args.get("executable_users"):
+            kwargs["ExecutableUsers"] = parse_resource_ids(executable_users)
+        
+        # Add optional owners
+        if owners := args.get("owners"):
+            kwargs["Owners"] = parse_resource_ids(owners)
+        
+        # Configure waiter settings
+        waiter_config: Dict[str, int] = {}
+        if waiter_delay := arg_to_number(args.get("waiter_delay")):
+            waiter_config["Delay"] = waiter_delay
+        if waiter_max_attempts := arg_to_number(args.get("waiter_max_attempts")):
+            waiter_config["MaxAttempts"] = waiter_max_attempts
+        
+        if waiter_config:
+            kwargs["WaiterConfig"] = waiter_config
+        
+        print_debug_logs(client, f"Waiting for image to become available with parameters: {kwargs}")
+        remove_nulls_from_dictionary(kwargs)
+        
+        try:
+            waiter = client.get_waiter("image_available")
+            waiter.wait(**kwargs)
+            
+            return CommandResults(
+                readable_output="Image is now available."
+            )
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+
+    @staticmethod
     def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Adds the specified outbound (egress) rules to a security group.
@@ -4606,6 +4673,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-image-create": EC2.create_image_command,
     "aws-ec2-image-deregister": EC2.deregister_image_command,
     "aws-ec2-image-copy": EC2.copy_image_command,
+    "aws-ec2-image-available-waiter": EC2.image_available_waiter_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [

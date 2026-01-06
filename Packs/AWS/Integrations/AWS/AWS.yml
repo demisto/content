@@ -5332,6 +5332,75 @@ script:
       description: The destination region where the AMI was copied to.
       type: string
 
+  - name: aws-ec2-image-available-waiter
+    description: Waits until an AMI is in the 'available' state. This command polls the AMI status until it becomes available or the maximum wait time is reached.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: "One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options."
+      required: false
+    - name: image_ids
+      description: "A comma-separated list of image IDs to wait for."
+      required: false
+      isArray: true
+    - name: owners
+      description: "Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft). Separated by ','."
+      required: false
+      isArray: true
+    - name: executable_users
+      description: "Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by ','."
+      required: false
+      isArray: true
+    - name: waiter_delay
+      description: "The amount of time in seconds to wait between attempts. Default is 15 seconds."
+      required: false
+      defaultValue: "15"
+    - name: waiter_max_attempts
+      description: "The maximum number of attempts to check the image status. Default is 40 attempts."
+      required: false
+      defaultValue: "40"
+
   - name: aws-ec2-network-acl-create
     description: Creates a network ACL in a VPC. Network ACLs provide an optional layer of security (in addition to security groups) for the instances in your VPC.
     arguments:
