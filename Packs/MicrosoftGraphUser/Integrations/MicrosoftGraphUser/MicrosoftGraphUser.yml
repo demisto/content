@@ -812,7 +812,7 @@ script:
     arguments: []
   - arguments:
     - description: The Azure AD user ID.
-      name: user_id
+      name: user
       required: true
     - description: Number of devices in the list. Maximum is 50.
       name: limit
@@ -848,6 +848,233 @@ script:
     - contextPath: MSGraphUser.TAPPolicy.StartDateTime
       description: TAP policy's start date and time.
       type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific FIDO2 authentication method to retrieve.
+      name: method_id
+      required: false
+    - description: Maximum number of FIDO2 methods to return when listing all methods.
+      name: limit
+      required: false
+    description: |-
+      Lists the FIDO2 authentication methods registered to a user, or retrieves a specific FIDO2 method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All
+    name: msgraph-user-fido2-method-list
+    outputs:
+    - contextPath: MSGraphUser.FIDO2Method.ID
+      description: The unique identifier of the FIDO2 authentication method.
+      type: String
+    - contextPath: MSGraphUser.FIDO2Method.DisplayName
+      description: The display name of the key as given by the user.
+      type: String
+    - contextPath: MSGraphUser.FIDO2Method.CreatedDateTime
+      description: The timestamp when this key was registered.
+      type: String
+    - contextPath: MSGraphUser.FIDO2Method.AaGuid
+      description: Authenticator Attestation GUID, an identifier that indicates the type of authenticator.
+      type: String
+    - contextPath: MSGraphUser.FIDO2Method.Model
+      description: The manufacturer-assigned model of the FIDO2 security key.
+      type: String
+    - contextPath: MSGraphUser.FIDO2Method.AttestationCertificates
+      description: The attestation certificate(s) attached to this security key.
+      type: Unknown
+    - contextPath: MSGraphUser.FIDO2Method.AttestationLevel
+      description: The attestation level of this FIDO2 security key.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the FIDO2 authentication method to delete.
+      name: method_id
+      required: true
+    description: |-
+      Deletes a FIDO2 authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-fido2-method-delete
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific email authentication method to retrieve.
+      name: method_id
+      required: false
+    description: |-
+      Lists the email authentication methods registered to a user, or retrieves a specific email method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-email-method-list
+    outputs:
+    - contextPath: MSGraphUser.EmailAuthMethod.ID
+      description: The unique identifier of the email authentication method.
+      type: String
+    - contextPath: MSGraphUser.EmailAuthMethod.EmailAddress
+      description: The email address registered to this user.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the email authentication method to delete.
+      name: method_id
+      required: true
+      defaultValue: 3ddfcfc8-9383-446f-83cc-3ab9be4be18f
+    description: |-
+      Deletes an email authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-email-method-delete
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific Microsoft Authenticator authentication method to retrieve.
+      name: method_id
+      required: false
+    - description: Maximum number of results to return when listing all methods.
+      name: limit
+      required: false
+      defaultValue: '50'
+    - description: The URL for the next page in the list.
+      name: next_page
+      required: false
+    description: |-
+      Lists the Microsoft Authenticator authentication methods registered to a user, or retrieves a specific method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-authenticator-method-list
+    outputs:
+    - contextPath: MSGraphUser.UserAuthMethod.ID
+      description: The unique identifier of the Microsoft Authenticator authentication method.
+      type: String
+    - contextPath: MSGraphUser.UserAuthMethod.DisplayName
+      description: The name of the device on which Microsoft Authenticator is registered.
+      type: String
+    - contextPath: MSGraphUser.UserAuthMethod.PhoneAppVersion
+      description: The version of Microsoft Authenticator installed on the device.
+      type: String
+    - contextPath: MSGraphUser.UserAuthMethod.DeviceTag
+      description: Tags containing app metadata.
+      type: String
+    - contextPath: MSGraphUser.UserAuthMethod.CreatedDateTime
+      description: The timestamp when this method was registered to the user.
+      type: String
+    - contextPath: MSGraphUser.UserAuthMethod.NextPage
+      description: A token to pass to the next list command to retrieve additional results.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the Microsoft Authenticator authentication method to delete.
+      name: method_id
+      required: true
+    description: |-
+      Deletes a Microsoft Authenticator authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-authenticator-method-delete
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific phone authentication method to retrieve.
+      name: method_id
+      required: false
+    - description: The URL for the next page in the list.
+      name: next_page
+      required: false
+    description: |-
+      Lists the phone authentication methods registered to a user, or retrieves a specific phone method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-phone-method-list
+    outputs:
+    - contextPath: MSGraphUser.PhoneAuthMethod.ID
+      description: The unique identifier of the phone authentication method.
+      type: String
+    - contextPath: MSGraphUser.PhoneAuthMethod.PhoneNumber
+      description: The phone number registered to this user.
+      type: String
+    - contextPath: MSGraphUser.PhoneAuthMethod.PhoneType
+      description: The type of phone (mobile, alternateMobile, or office).
+      type: String
+    - contextPath: MSGraphUser.PhoneAuthMethod.SmsSignInState
+      description: Whether the phone is ready to be used for SMS sign-in.
+      type: String
+    - contextPath: MSGraphUser.PhoneAuthMethod.NextPage
+      description: A token to pass to the next list command to retrieve additional results.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the phone authentication method to delete.
+      name: method_id
+      required: true
+    description: |-
+      Deletes a phone authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-phone-method-delete
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific software OATH authentication method to retrieve.
+      name: method_id
+      required: false
+    description: |-
+      Lists the software OATH authentication methods registered to a user, or retrieves a specific method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-software-oath-method-list
+    outputs:
+    - contextPath: MSGraphUser.SoftOathAuthMethod.ID
+      description: The unique identifier of the software OATH authentication method.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the software OATH authentication method to delete.
+      name: method_id
+      required: true
+    description: |-
+      Deletes a software OATH authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-software-oath-method-delete
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific Windows Hello for Business authentication method to retrieve.
+      name: method_id
+      required: false
+    description: |-
+      Lists the Windows Hello for Business authentication methods registered to a user, or retrieves a specific method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-windows-hello-method-list
+    outputs:
+    - contextPath: MSGraphUser.WindowsHelloAuthMethod.ID
+      description: The unique identifier of the Windows Hello for Business authentication method.
+      type: String
+    - contextPath: MSGraphUser.WindowsHelloAuthMethod.DisplayName
+      description: The name of the device on which Windows Hello is registered.
+      type: String
+    - contextPath: MSGraphUser.WindowsHelloAuthMethod.KeyStrength
+      description: The key strength of the Windows Hello for Business key (normal or weak).
+      type: String
+    - contextPath: MSGraphUser.WindowsHelloAuthMethod.CreatedDateTime
+      description: The timestamp when this method was registered to the user.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the Windows Hello for Business authentication method to delete.
+      name: method_id
+      required: true
+    description: |-
+      Deletes a Windows Hello for Business authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-windows-hello-method-delete
   dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
