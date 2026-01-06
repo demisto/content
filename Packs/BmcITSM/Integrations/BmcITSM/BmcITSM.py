@@ -1868,7 +1868,7 @@ def worklog_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
         "Communication Type": "CommunicationType",
         "Communication Source": "CommunicationSource",
         "Number of Attachments": "NumberOfAttachments",
-        "Work Log ID": "WorklogID",
+        "Work Log ID": "WorkLogID",
     }
     args["ids"] = argToList(args.get("ticket_ids"))
     command_results = list_command(
