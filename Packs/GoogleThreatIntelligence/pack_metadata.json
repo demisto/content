@@ -1,19 +1,53 @@
 {
     "name": "GoogleThreatIntelligence",
-    "description": "Analyze suspicious hashes, URLs, domains and IP addresses",
+    "description": "Analyzes suspicious hashes, URLs, domains, and IP addresses, and fetch incidents as DTM Alerts or ASM Issues from the Google Threat Intelligence platform.",
     "support": "partner",
-    "currentVersion": "1.3.7",
-    "author": "Google Threat Intelligence",
+    "currentVersion": "2.0.0",
+    "author": "Google",
     "url": "https://www.virustotal.com",
     "email": "contact@virustotal.com",
     "created": "2024-04-16T00:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {},
+    "tags": [
+        "Alerts", 
+        "Attack", 
+        "Threat Intelligence", 
+        "Threat Intelligence Management"
+    ],
+    "useCases": [
+        "Threat Intelligence Management",
+        "Phishing",
+        "Hunting"
+    ],
+    "keywords": [
+        "Google", 
+        "Threat", 
+        "Intelligence", 
+        "Enrichment", 
+        "Alerting", 
+        "Alerts", 
+        "IOC", 
+        "DTM", 
+        "ASM", 
+        "GTI", 
+        "DTM Alerts", 
+        "ASM Issues", 
+        "Threat Intelligence", 
+        "Issues", 
+        "Data"
+    ],
+    "dependencies": {
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2",
@@ -26,5 +60,10 @@
         "ENT_PLUS",
         "agentix",
         "xsiam"
-    ]
+    ],
+    "displayedImages": [
+        "CoreAlertFields",
+        "CommonTypes"
+    ],
+    "defaultDataSource": "GoogleThreatIntelligenceDTMAlerts"
 }

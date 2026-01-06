@@ -159,6 +159,10 @@ class MsGraphClient:
             body[field] = value
         self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
 
+    def force_reset_password(self, user):
+        body = {"passwordProfile": {"forceChangePasswordNextSignIn": True}}
+        self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
+
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
     def password_change_user_saas(
@@ -461,6 +465,12 @@ def change_password_user_saas_command(client: MsGraphClient, args: dict):
     human_readable = f"User {user} password was changed successfully."
 
     return CommandResults(readable_output=human_readable)
+
+
+def force_reset_password(client: MsGraphClient, args: dict):
+    user = args.get("user")
+    client.force_reset_password(user)
+    return CommandResults(readable_output=f"User {args['user']} will be required to change his password.")
 
 
 def validate_input_password(args: dict[str, Any]) -> str:
@@ -904,6 +914,7 @@ def main():
         "msgraph-user-terminate-session": disable_user_account_command,
         "msgraph-user-account-disable": disable_user_account_command,
         "msgraph-user-update": update_user_command,
+        "msgraph-user-force-reset-password": force_reset_password,
         "msgraph-user-change-password": change_password_user_saas_command,
         "msgraph-user-change-password-on-premise": change_password_user_on_premise_command,
         "msgraph-user-delete": delete_user_command,

@@ -24,11 +24,79 @@ configuration:
   type: 0
   required: false
   section: Collect
+- additionalinfo: The mirroring direction in which to mirror the findings. You can mirror "Incoming" (from Bitsight to XSOAR), "Outgoing" (from XSOAR to Bitsight), or in both directions.
+  display: Mirroring Direction
+  name: mirror_direction
+  type: 15
+  options:
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  section: Collect
+- additionalinfo: "The tag value should be used to mirror XSOAR incident notes to Bitsight finding comments by adding the same tag in the notes.\n\nNote: This parameter is required when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'."
+  defaultvalue: note
+  display: Mirror Tag for Notes
+  hidden: false
+  name: note_tag
+  required: false
+  type: 0
+  section: Collect
+- additionalinfo: "Provide the Bitsight user email address to be used for sending XSOAR incident notes as Bitsight finding comments.\n\nNote: This parameter is required when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'."
+  display: Bitsight User Email Address
+  name: user_email
+  type: 0
+  required: false
+  section: Collect
+- additionalinfo: "Remediation status to set in Bitsight when opening incidents in XSOAR. Default value is 'Open'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'."
+  display: Bitsight Remediation Status for Incident Opening
+  name: open_status_of_bitsight
+  type: 15
+  options:
+  - Open
+  - Work In Progress
+  defaultvalue: Open
+  required: false
+  section: Collect
+- additionalinfo: "If selected, closed incidents will be reopened in XSOAR when finding remediation status on Bitsight platform matches the configured 'Remediation Status for Incident Opening'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
+  display: Reopen incident based on Bitsight Remediation Status
+  name: reopen_closed_incident
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  section: Collect
+- additionalinfo: "Remediation status to set in Bitsight when closing incidents in XSOAR. Default value is 'Resolved'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'."
+  display: Bitsight Remediation Status for Incident Closure
+  name: close_status_of_bitsight
+  type: 15
+  options:
+  - Resolved
+  - Risk Accepted
+  defaultvalue: Resolved
+  required: false
+  section: Collect
+- additionalinfo: "If selected, active incidents will be closed in XSOAR when finding remediation status on Bitsight platform matches the configured 'Remediation Status for Incident Closure'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
+  display: Close incident based on Bitsight Remediation Status
+  name: close_active_incident
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  section: Collect
 - additionalinfo: Maximum number of incidents to fetch. The maximum value is 200.
   defaultvalue: '25'
   display: Max Fetch
   name: max_fetch
   type: 0
+  required: false
+  section: Collect
+- additionalinfo: Filter by the affect rating reason of the findings to fetch.
+  display: Findings Affect Rating Reason
+  name: findings_affect_rating_reason
+  options:
+  - "Yes"
+  - "No: Grace Period"
+  - "No: Incubation Period"
+  type: 16
   required: false
   section: Collect
 - additionalinfo: Minimum severity of the findings to fetch.
@@ -595,7 +663,7 @@ script:
     - contextPath: BitSight.MyCompany.guid
       description: The unique identifier of my company.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   script: ''

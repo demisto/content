@@ -31,6 +31,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Close Mirrored CrowdStrike Falcon Incident or Detection | Supported in Cortex XSOAR only. When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
 | Reopen Statuses | Supported in Cortex XSOAR only. CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
 | Incidents Fetch Interval | Supported in Cortex XSOAR only. | False |
+| Assets Fetch Interval | The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour. | False |
 
 ### Required API client scope
 
@@ -54,6 +55,7 @@ In order to use the CrowdStrike Falcon integration, the API client must have the
 - Identity Protection Detections - Read and Write
 - Identity Protection Timeline - Read
 - Identity Protection Assessment - Read
+- Falcon Container Image - Read
 
 ## Incident Mirroring (Cortex XSOAR Only)
 
@@ -6455,6 +6457,59 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 | --- | --- | --- | --- |  --- | --- |  --- | --- |  --- | --- |
 | CVE-20212-2222 |  host | 1 | Server | ip |  |  | site | 5.5 |  |
 
+### cs-falcon-list-cnapp-alerts
+
+***
+Returns a list of CNAPP alerts. Used for debugging fetch-assets.
+
+#### Base Command
+
+`cs-falcon-list-cnapp-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | The filter to use for the query. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.CnappAlert.containers_impacted_count | String | The number of containers impacted by the alert. |
+| CrowdStrike.CnappAlert.containers_impacted_ids | Array | The list of the ids of containers impacted by the alert. |
+| CrowdStrike.CnappAlert.detection_description | String | The description of the alert. |
+| CrowdStrike.CnappAlert.detection_event_simple_name | String | The simple name of the alert. |
+| CrowdStrike.CnappAlert.detection_name | String | The name of the alert. |
+| CrowdStrike.CnappAlert.first_seen_timestamp | String | The first time the alert was seen. |
+| CrowdStrike.CnappAlert.last_seen_timestamp | String | The last time the alert was seen. |
+| CrowdStrike.CnappAlert.severity | String | The severity of the alert. |
+
+#### Command Example
+
+``` cs-falcon-list-cnapp-alerts ```
+
+#### Context Example
+
+```json
+{
+    "severity": "Critical",
+    "first_seen_timestamp": "2025-11-24T11:04:03Z",
+    "last_seen_timestamp": "2025-11-26T10:18:35Z",
+    "detection_name": "PotentialKernelTampering",
+    "detection_event_simple_name": "BPFCommandIssued",
+    "detection_description": "some decription.",
+    "containers_impacted_count": "1",
+    "containers_impacted_ids": ["id1", "id2"],
+}
+```
+
+#### Human Readable Output
+
+|severity|first_seen_timestamp|last_seen_timestamp|detection_name|detection_event_simple_name|detection_description|containers_impacted_count|containers_impacted_ids|
+|---|---|---|---|---|---|---|---|
+| Critical | 2025-11-24T11:04:03Z | 2025-11-26T10:18:35Z | PotentialKernelTampering | BPFCommandIssued | alert description. | 1 | test |
+
 ## Troubleshooting
 
 - In the different fetch query configuration parameters such as "Endpoint Detections fetch query" and "Endpoint Incidents fetch query", to query for multiple values in the same field use the following format: `field:['value1','value2','value3']`.
@@ -6484,3 +6539,11 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 
   - Notes:
     - Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: "Endpoint Detection" and "OFP Detection".
+    - For CNAPP Alerts, you will need one of the following subscriptions:
+      - Falcon Cloud Security with Containers CNAPP
+      - Falcon Cloud Security CNAPP
+      - Falcon Cloud Security with Containers Runtime Protection
+      - Falcon for Managed Containers Runtime Protection
+      - Falcon Cloud Security Proactive
+      - Falcon Cloud Security with Containers
+      - Falcon for Managed Containers
