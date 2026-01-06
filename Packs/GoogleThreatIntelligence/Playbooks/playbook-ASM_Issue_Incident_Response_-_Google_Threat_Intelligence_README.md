@@ -1,6 +1,5 @@
 This playbook initiates the response for ASM Issues in XSOAR when an incident is investigated. For medium, high, or critical severity, it creates a ServiceNow ticket using the "ServiceNow v2" integration; otherwise, the incident is assigned to an analyst. The ticket is enriched with GTI ASM Issue details, including entity name, status, confidence, tags, UUID, collection info, and other relevant incident information.
 
-
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
