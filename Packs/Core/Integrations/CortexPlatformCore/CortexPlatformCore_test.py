@@ -8819,7 +8819,7 @@ def test_start_xql_query_platform_adds_limit(mocker):
 
     call_args = mock_http_request.call_args
     submitted_query = call_args[1]["json_data"]["query"]
-    assert "| limit 100" in submitted_query
+    assert "| limit 1000" in submitted_query
 
 
 def test_get_xql_query_results_platform_success(mocker):
