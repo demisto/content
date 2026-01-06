@@ -2830,12 +2830,12 @@ def conversation_history():
     args = demisto.args()
     if args.get("thread_timestamp"):
         return conversation_replies()
-        
+
     conversation_id = args.get("channel_id") or args.get("conversation_id")
     conversation_name = args.get("conversation_name")
     limit = arg_to_number(args.get("limit"))
     from_time = args.get("from_time")
-    
+
     if not conversation_id and not conversation_name:
         raise ValueError("Either conversation_id or conversation_name must be provided.")
 
@@ -2905,7 +2905,7 @@ def conversation_history():
     )
 
 
-def conversation_replies():
+def conversation_replies() -> list[CommandResults]:
     """
     Retrieves replies to specific messages, regardless of whether it's
     from a public or private channel, direct message, or otherwise.
@@ -2914,9 +2914,11 @@ def conversation_replies():
     channel_id = args.get("channel_id")
     context: list = []
     readable_output: str = ""
-    body = {"channel": channel_id, "ts": args.get("thread_timestamp"), "limit": arg_to_number(args.get("limit"))}
+    ts = args.get("thread_timestamp")
+    body = {"channel": channel_id, "ts": ts, "limit": arg_to_number(args.get("limit"))}
     raw_response = send_slack_request_sync(CLIENT, "conversations.replies", http_verb="GET", body=body)
-    cursor: str = raw_response.get("response_metadata", {}).get("next_cursor", "")
+    response_metadata: dict = raw_response.get("response_metadata", {})
+    cursor: str = response_metadata.get("next_cursor", "")
     messages = raw_response.get("messages", "")
     if not raw_response.get("ok"):
         error = raw_response.get("error")
@@ -2962,7 +2964,7 @@ def conversation_replies():
     if cursor:
         results.append(
             CommandResults(
-                outputs_prefix="Slack.Threads",
+                outputs_prefix="Slack.ThreadNextToken",
                 outputs_key_field="NextPageToken",
                 outputs={"NextPageToken": cursor},
             )
