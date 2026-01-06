@@ -244,7 +244,7 @@ Retrieves all the WAF policies in a subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional |
+| verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". | Optional |
 | limit | Maximum number of policies to be shown. (This will only affect visualized data, not context.). Default is 10. | Optional |
 | subscription_id | Comma-separated list of subscription IDs. Will override the default subscription ID. | Optional |
 
@@ -524,7 +524,7 @@ Lists all of the Front Door protection policies within a subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional |
+| verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". | Optional |
 | limit | Maximum number of policies to fetch. Default is "10". Default is 10. | Optional |
 | subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
 

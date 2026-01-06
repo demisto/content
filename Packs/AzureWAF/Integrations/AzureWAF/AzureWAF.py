@@ -612,6 +612,7 @@ def front_door_policy_delete_command(client: AzureWAFClient, **args):
         status = client.delete_front_door_policy(policy_name, resource_group_name)
         md = ""
         context: dict = {}
+        print(status.status_code)
         if status.status_code in [200, 202]:
             if not context:
                 context = {}
@@ -641,12 +642,11 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
 
     # Prepare data for table
     table_data: list[str | dict[str, Any]] = []
-    md = tableToMarkdown("Policies", table_data)
     for policy in policies:
         policy_copy = policy.copy()
         properties = policy_copy.pop("properties", {})
         if type(properties) is str:
-            md += properties
+            table_data.append({"Name" : properties})
             continue
 
         if verbose:
@@ -677,6 +677,7 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
             }
 
         table_data.append(row)
+    md = tableToMarkdown("Policies", table_data)
     md += f"\nShowing {min(limit, len(policies))} policies out of {policies_num}"
     return md
 
