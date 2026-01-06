@@ -2041,7 +2041,7 @@ async def test_collect_assets_and_send_to_xsiam_no_data(mocker):
     mock_client._http_request = AsyncMock(return_value=mock_response)
 
     asset_type_related_data = AssetTypeRelatedData(
-        endpoint="/hosts", product="Hosts", asset_type=AssetType.HOST, process_result_func=process_host_results, ctx_lock=ctx_lock
+        endpoint="/hosts", product="Hosts", asset_type=AssetType.HOST, process_result_func=process_host_results, ctx_lock=ctx_lock, snapshot_id="1",
     )
 
     mock_send_data = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.async_send_data_to_xsiam")
@@ -2077,6 +2077,7 @@ async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
         process_result_func=process_host_results,
         limit=1,
         ctx_lock=ctx_lock,
+        snapshot_id="1",
     )
 
     mock_send_data = mocker.patch(
