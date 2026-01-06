@@ -4605,7 +4605,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-images-describe": EC2.describe_images_command,
     "aws-ec2-image-create": EC2.create_image_command,
     "aws-ec2-image-deregister": EC2.deregister_image_command,
-    "aws-ec2-image-copy": EC2.copy_image_command, #comment
+    "aws-ec2-image-copy": EC2.copy_image_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
