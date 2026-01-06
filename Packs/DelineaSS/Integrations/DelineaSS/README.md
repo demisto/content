@@ -1340,7 +1340,7 @@ Update a single Platform user by ID
 | ReportsTo             | The user reports to this user UUID.                                                                                                         | Optional     |
 | PreferredCulture      | The user preferred culture.                                                                                                                 | Optional     |
 | DisplayName           | The user display.                                                                                                                           | Optional     |
-| password              | Password for new user. The password used to log in.                                                                                         | Optional     |
+| Password              | Password for new user. The password used to log in.                                                                                         | Optional     |
 | Name                  | The user name.                                                                                                                              | Optional     |
 | AccountExp            | Account expires date/time.                                                                                                                  | Optional     |
 | PasswordNeverExpire   | Does user's password expire?                                                                                                                | Optional     |
@@ -1386,7 +1386,7 @@ Update a single Platform user by ID
 
 ### delinea-platform-user-delete
 ***
-Delete a user by UUID or Name
+Delete a Platform user by UUID or Name
 
 
 #### Base Command
@@ -1452,9 +1452,9 @@ Get single Platform user by uuid
 
 #### Context Output
 
-| **Path**                       | **Type** | **Description**                                                 |
-|--------------------------------|----------|-----------------------------------------------------------------|
-| Delinea.Platform.Get.All.Users | String   | Returning users based on pageSize and default page size is 1000 |
+| **Path**               | **Type** | **Description**                                                 |
+|------------------------|----------|-----------------------------------------------------------------|
+| Delinea.Platform.Users | String   | Returning users based on pageSize and default page size is 1000 |
 
 
 #### Command Example
@@ -1508,7 +1508,7 @@ Get single Platform user by uuid
 }
 ```
 
-### delinea-platform-get-user-searchbytext
+### delinea-platform-get-user-search-by-text
 ***
 Get Platform users search by Text
 
@@ -1525,13 +1525,13 @@ Get Platform users search by Text
 
 #### Context Output
 
-| **Path**                               | **Type** | **Description**                                                   |
-|----------------------------------------|----------|-------------------------------------------------------------------|
-| Delinea.Platform.Get.User.Searchbytext | String   | SearchText is looked for in multiple fields and returning results |
+| **Path**                           | **Type** | **Description**                                                   |
+|------------------------------------|----------|-------------------------------------------------------------------|
+| Delinea.Platform.UserSearchResults | String   | SearchText is looked for in multiple fields and returning results |
 
 
 #### Command Example
-```!delinea-platform-get-user-searchbytext filter.searchText="sail" ```
+```!delinea-platform-get-user-search-by-text filter.searchText="sail" ```
 
 #### Context Example
 

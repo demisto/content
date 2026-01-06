@@ -1,14 +1,14 @@
-Delinea Secret Server and Platform is the fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution. This integration was integrated and tested with version 6.0 of Delinea.
+Delinea Secret Server and Platform are the fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution. This integration was integrated and tested with version 6.0 of Delinea.
 
 To use this integration, you must have an account on your Delinea Secret Server or Platform.
 
 As required parameters, you must specify:
 
-**Server URL** - URL Delinea Secret Server or Platform, for example https://example.com
+**Server URL** - URL of Delinea Secret Server or Delinea Platform, for example https://example.com
 
 Credentials for logging into Delinea Secret Server or Platform.
 
-**Username** - username to authenticate to Secret or Platform
+**Username** - username to authenticate to Secret Server or Platform
 
 **Password** - password to authenticate to Secret Server or Platform
 
