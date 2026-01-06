@@ -7971,3 +7971,529 @@ def test_ec2_deregister_image_command_invalid_ami_id_format(mocker):
 
     EC2.deregister_image_command(mock_client, args)
     handler_spy.assert_called_once_with(client_error)
+
+
+def test_ec2_copy_image_command_success_minimal_params(mocker):
+    """
+    Given: A mocked boto3 EC2 client and minimal required parameters (name, source_image_id, source_region).
+    When: copy_image_command is called successfully.
+    Then: It should return CommandResults with image copy details and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "us-west-2"}
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-copied123",
+    }
+
+    args = {
+        "name": "copied-ami",
+        "source_image_id": "ami-source123",
+        "source_region": "us-east-1",
+        "region": "us-west-2",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Images"
+    assert result.outputs_key_field == "ImageId"
+    assert result.outputs["ImageId"] == "ami-copied123"
+    assert result.outputs["Name"] == "copied-ami"
+    assert result.outputs["SourceImageId"] == "ami-source123"
+    assert result.outputs["SourceRegion"] == "us-east-1"
+    assert result.outputs["Region"] == "us-west-2"
+    assert "Successfully initiated copy of AMI" in result.readable_output
+    assert "ami-copied123" in result.readable_output
+
+
+def test_ec2_copy_image_command_success_with_description(mocker):
+    """
+    Given: A mocked boto3 EC2 client and arguments including description.
+    When: copy_image_command is called with description parameter.
+    Then: It should return CommandResults and pass description to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "eu-west-1"}
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-described-copy",
+    }
+
+    args = {
+        "name": "described-copy-ami",
+        "source_image_id": "ami-source456",
+        "source_region": "us-east-1",
+        "description": "Copied AMI with description",
+        "region": "eu-west-1",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.copy_image.assert_called_once()
+    call_args = mock_client.copy_image.call_args[1]
+    assert call_args["Name"] == "described-copy-ami"
+    assert call_args["SourceImageId"] == "ami-source456"
+    assert call_args["SourceRegion"] == "us-east-1"
+    assert call_args["Description"] == "Copied AMI with description"
+
+
+def test_ec2_copy_image_command_success_with_encryption(mocker):
+    """
+    Given: A mocked boto3 EC2 client and encrypted parameter set to true.
+    When: copy_image_command is called with encrypted=true.
+    Then: It should return CommandResults and pass Encrypted=True to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "ap-southeast-1"}
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-encrypted-copy",
+    }
+
+    args = {
+        "name": "encrypted-copy-ami",
+        "source_image_id": "ami-source789",
+        "source_region": "us-west-2",
+        "encrypted": "true",
+        "region": "ap-southeast-1",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.copy_image.call_args[1]
+    assert call_args["Encrypted"] is True
+
+
+def test_ec2_copy_image_command_success_with_kms_key(mocker):
+    """
+    Given: A mocked boto3 EC2 client and kms_key_id parameter.
+    When: copy_image_command is called with KMS key for encryption.
+    Then: It should return CommandResults and pass KmsKeyId to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "eu-central-1"}
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-kms-copy",
+    }
+
+    args = {
+        "name": "kms-encrypted-ami",
+        "source_image_id": "ami-source-kms",
+        "source_region": "us-east-1",
+        "encrypted": "true",
+        "kms_key_id": "arn:aws:kms:eu-central-1:123456789012:key/12345678-1234-1234-1234-123456789012",
+        "region": "eu-central-1",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.copy_image.call_args[1]
+    assert call_args["Encrypted"] is True
+    assert call_args["KmsKeyId"] == "arn:aws:kms:eu-central-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+
+
+def test_ec2_copy_image_command_success_with_client_token(mocker):
+    """
+    Given: A mocked boto3 EC2 client and client_token parameter for idempotency.
+    When: copy_image_command is called with client_token.
+    Then: It should return CommandResults and pass ClientToken to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "ca-central-1"}
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-idempotent-copy",
+    }
+
+    args = {
+        "name": "idempotent-ami",
+        "source_image_id": "ami-source-token",
+        "source_region": "us-west-1",
+        "client_token": "unique-token-12345",
+        "region": "ca-central-1",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.copy_image.call_args[1]
+    assert call_args["ClientToken"] == "unique-token-12345"
+
+
+def test_ec2_copy_image_command_success_with_all_parameters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and all possible parameters.
+    When: copy_image_command is called with all parameters.
+    Then: It should return CommandResults and pass all parameters to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "ap-northeast-1"}
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-complete-copy",
+    }
+
+    args = {
+        "name": "complete-copy-ami",
+        "source_image_id": "ami-source-complete",
+        "source_region": "eu-west-1",
+        "description": "Complete copy with all parameters",
+        "encrypted": "true",
+        "kms_key_id": "arn:aws:kms:ap-northeast-1:123456789012:key/abcd-1234",
+        "client_token": "complete-token-67890",
+        "region": "ap-northeast-1",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.copy_image.call_args[1]
+    assert call_args["Name"] == "complete-copy-ami"
+    assert call_args["SourceImageId"] == "ami-source-complete"
+    assert call_args["SourceRegion"] == "eu-west-1"
+    assert call_args["Description"] == "Complete copy with all parameters"
+    assert call_args["Encrypted"] is True
+    assert call_args["KmsKeyId"] == "arn:aws:kms:ap-northeast-1:123456789012:key/abcd-1234"
+    assert call_args["ClientToken"] == "complete-token-67890"
+
+
+def test_ec2_copy_image_command_missing_name(mocker):
+    """
+    Given: A mocked boto3 EC2 client and args without name parameter.
+    When: copy_image_command is called without required name.
+    Then: It should raise DemistoException indicating name is required.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {"source_image_id": "ami-source123", "source_region": "us-east-1"}
+
+    with pytest.raises(DemistoException, match="name parameter is required"):
+        EC2.copy_image_command(mock_client, args)
+
+
+def test_ec2_copy_image_command_missing_source_image_id(mocker):
+    """
+    Given: A mocked boto3 EC2 client and args without source_image_id parameter.
+    When: copy_image_command is called without required source_image_id.
+    Then: It should raise DemistoException indicating source_image_id is required.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {"name": "test-ami", "source_region": "us-east-1"}
+
+    with pytest.raises(DemistoException, match="source_image_id parameter is required"):
+        EC2.copy_image_command(mock_client, args)
+
+
+def test_ec2_copy_image_command_missing_source_region(mocker):
+    """
+    Given: A mocked boto3 EC2 client and args without source_region parameter.
+    When: copy_image_command is called without required source_region.
+    Then: It should raise DemistoException indicating source_region is required.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {"name": "test-ami", "source_image_id": "ami-source123"}
+
+    with pytest.raises(DemistoException, match="source_region parameter is required"):
+        EC2.copy_image_command(mock_client, args)
+
+
+def test_ec2_copy_image_command_empty_name(mocker):
+    """
+    Given: A mocked boto3 EC2 client and empty name parameter.
+    When: copy_image_command is called with empty name.
+    Then: It should raise DemistoException indicating name is required.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {"name": "", "source_image_id": "ami-source123", "source_region": "us-east-1"}
+
+    with pytest.raises(DemistoException, match="name parameter is required"):
+        EC2.copy_image_command(mock_client, args)
+
+
+def test_ec2_copy_image_command_unexpected_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: copy_image_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "us-east-1"}
+    mock_client.copy_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"name": "test-ami", "source_image_id": "ami-source123", "source_region": "us-west-1", "region": "us-east-1"}
+
+    EC2.copy_image_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_copy_image_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: copy_image_command encounters an error during execution.
+    Then: It should call AWSErrorHandler.handle_client_error.
+    """
+    from AWS import EC2, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "InvalidAMIID.NotFound", "Message": "The image id 'ami-invalid' does not exist"},
+        "ResponseMetadata": {"HTTPStatusCode": 400, "RequestId": "req-copy-error"},
+    }
+    client_error = ClientError(error_response, "CopyImage")
+    mock_client.copy_image.side_effect = client_error
+
+    handler_spy = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+
+    args = {"name": "test-ami", "source_image_id": "ami-invalid", "source_region": "us-east-1"}
+
+    EC2.copy_image_command(mock_client, args)
+    handler_spy.assert_called_once_with(client_error)
+
+
+def test_ec2_copy_image_command_missing_image_id_in_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning response without ImageId.
+    When: copy_image_command receives response missing ImageId.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "us-east-1"}
+    mock_client.copy_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"name": "test-ami", "source_image_id": "ami-source123", "source_region": "us-west-1", "region": "us-east-1"}
+
+    EC2.copy_image_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_copy_image_command_with_encrypted_false(mocker):
+    """
+    Given: A mocked boto3 EC2 client and encrypted parameter set to false.
+    When: copy_image_command is called with encrypted=false.
+    Then: It should return CommandResults and pass Encrypted=False to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "us-east-2"}
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-unencrypted-copy",
+    }
+
+    args = {
+        "name": "unencrypted-copy-ami",
+        "source_image_id": "ami-source-unenc",
+        "source_region": "us-east-1",
+        "encrypted": "false",
+        "region": "us-east-2",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.copy_image.call_args[1]
+    assert call_args["Encrypted"] is False
+
+
+def test_ec2_copy_image_command_verify_api_call_parameters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image copy arguments.
+    When: copy_image_command is called successfully.
+    Then: It should call copy_image with correct parameters.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "sa-east-1"}
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-verify-copy",
+    }
+
+    args = {
+        "name": "verify-copy-ami",
+        "source_image_id": "ami-verify-source",
+        "source_region": "us-east-1",
+        "description": "Verification copy",
+        "region": "sa-east-1",
+    }
+
+    EC2.copy_image_command(mock_client, args)
+    mock_client.copy_image.assert_called_once_with(
+        Name="verify-copy-ami",
+        SourceImageId="ami-verify-source",
+        SourceRegion="us-east-1",
+        Description="Verification copy",
+    )
+
+
+def test_ec2_copy_image_command_with_whitespace_in_parameters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and parameters with leading/trailing whitespace.
+    When: copy_image_command is called with whitespace in parameters.
+    Then: It should strip whitespace and successfully copy the image.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "us-west-1"}
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-whitespace-copy",
+    }
+
+    args = {
+        "name": "  whitespace-ami  ",
+        "source_image_id": "  ami-source-ws  ",
+        "source_region": "  us-east-1  ",
+        "region": "us-west-1",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully initiated copy of AMI" in result.readable_output
+    call_args = mock_client.copy_image.call_args[1]
+    assert call_args["Name"] == "whitespace-ami"
+    assert call_args["SourceImageId"] == "ami-source-ws"
+    assert call_args["SourceRegion"] == "us-east-1"
+
+
+def test_ec2_copy_image_command_access_denied_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises AccessDenied ClientError.
+    When: copy_image_command encounters permission error.
+    Then: It should call AWSErrorHandler.handle_client_error with the error.
+    """
+    from AWS import EC2, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "UnauthorizedOperation", "Message": "You are not authorized to perform this operation"},
+        "ResponseMetadata": {"HTTPStatusCode": 403, "RequestId": "req-copy-denied"},
+    }
+    client_error = ClientError(error_response, "CopyImage")
+    mock_client.copy_image.side_effect = client_error
+
+    handler_spy = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+
+    args = {"name": "test-ami", "source_image_id": "ami-source123", "source_region": "us-east-1"}
+
+    EC2.copy_image_command(mock_client, args)
+    handler_spy.assert_called_once_with(client_error)
+
+
+def test_ec2_copy_image_command_invalid_source_region_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises InvalidParameterValue for invalid source region.
+    When: copy_image_command is called with invalid source_region.
+    Then: It should call AWSErrorHandler.handle_client_error with the error.
+    """
+    from AWS import EC2, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "InvalidParameterValue", "Message": "Invalid region: 'invalid-region'"},
+        "ResponseMetadata": {"HTTPStatusCode": 400, "RequestId": "req-invalid-region"},
+    }
+    client_error = ClientError(error_response, "CopyImage")
+    mock_client.copy_image.side_effect = client_error
+
+    handler_spy = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+
+    args = {"name": "test-ami", "source_image_id": "ami-source123", "source_region": "invalid-region"}
+
+    EC2.copy_image_command(mock_client, args)
+    handler_spy.assert_called_once_with(client_error)
+
+
+def test_ec2_copy_image_command_missing_response_metadata(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning response without ResponseMetadata.
+    When: copy_image_command is called with malformed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "us-east-1"}
+    mock_client.copy_image.return_value = {}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"name": "test-ami", "source_image_id": "ami-source123", "source_region": "us-west-1", "region": "us-east-1"}
+
+    EC2.copy_image_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_copy_image_command_output_format(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image copy arguments.
+    When: copy_image_command is called successfully.
+    Then: It should return CommandResults with properly formatted outputs and table.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client._client_config = mocker.Mock()
+    mock_client._client_config._user_provided_options = {"region_name": "eu-west-2"}
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-formatted-copy",
+    }
+
+    args = {
+        "name": "formatted-copy-ami",
+        "source_image_id": "ami-source-format",
+        "source_region": "us-east-1",
+        "description": "Formatted copy AMI",
+        "region": "eu-west-2",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully initiated copy of AMI" in result.readable_output
+    assert "ami-formatted-copy" in result.readable_output
+    assert "formatted-copy-ami" in result.readable_output
+    assert "AWS EC2 Image Copy" in result.readable_output
