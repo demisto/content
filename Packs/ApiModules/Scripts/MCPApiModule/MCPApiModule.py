@@ -19,6 +19,8 @@ from urllib.parse import urlparse, urlunparse
 
 # --- Utility Functions ---
 
+TOKEN_EXPIRY_BUFFER = 60  # seconds
+
 
 def extract_root_error_message(exception: BaseException) -> str:
     """
@@ -71,7 +73,6 @@ def parse_custom_headers(headers_text: str) -> dict[str, str]:
         except ValueError:
             raise ValueError(f"Invalid header line format: {line}")
 
-    demisto.debug(f"parse_custom_headers={headers}")
     return headers
 
 
@@ -180,6 +181,12 @@ class OAuthHandler:
         self.verify = verify
         self.session = httpx.AsyncClient(timeout=5, verify=verify)
         self.command_prefix = command_prefix
+
+    async def close(self):
+        if self.session:
+            demisto.debug(f"Closing OAuth session for {self.command_prefix}")
+            await self.session.aclose()
+            self.session = None
 
     async def _discover_oauth_protected_resource_metadata(self) -> str:
         """
@@ -451,6 +458,10 @@ class Client:
         )
         self._headers_cache: dict[Any, Any] = {}  # Cache for resolved headers
 
+    async def close(self):
+        if self._oauth_handler:
+            await self._oauth_handler.close()
+
     async def _resolve_headers(self) -> dict[Any, Any]:
         """
         Generates and caches the necessary Authorization headers based on auth_type.
@@ -499,7 +510,7 @@ class Client:
         expires_in: float = integration_context.get("expires_in", 0)
 
         # 1. Check existing token
-        if access_token and time.time() < expires_in:
+        if access_token and time.time() < (expires_in - TOKEN_EXPIRY_BUFFER):
             demisto.debug("Using existing valid access token")
             return {"Authorization": f"Bearer {access_token}"}
 

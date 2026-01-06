@@ -31,7 +31,7 @@ def validate_required_params(
         raise ValueError("Username and Password are required for basic authentication.")
     if auth_type in (AuthMethods.TOKEN, AuthMethods.BEARER, AuthMethods.API_KEY, AuthMethods.RAW_TOKEN) and not token:
         raise ValueError(f"Token is required for {auth_type} authentication.")
-    if auth_type in (AuthMethods.CLIENT_CREDENTIALS, AuthMethods.AUTHORIZATION_CODE) and not all({client_id, client_secret}):
+    if auth_type in (AuthMethods.CLIENT_CREDENTIALS, AuthMethods.AUTHORIZATION_CODE) and not all((client_id, client_secret)):
         raise ValueError("Client ID, Client Secret are required for OAuth authentication.")
 
 
@@ -40,6 +40,7 @@ async def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
+    client = None
     try:
         base_url = params.get("base_url", "")
         auth_type = params.get("auth_type", "")
@@ -111,6 +112,11 @@ async def main() -> None:  # pragma: no cover
     except BaseException as eg:
         root_msg = extract_root_error_message(eg)
         return_error(f"Failed to execute {command} command.\nError:\n{root_msg}")
+
+    finally:
+        if client:
+            demisto.debug(f"Closing client connection for {command}")
+            await client.close()
 
 
 """ ENTRY POINT """
