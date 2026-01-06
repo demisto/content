@@ -58,7 +58,7 @@ script:
     - description: Search for secret using secret name.
       name: search_name
       required: true
-    description: Search a secret by name.
+    description: Search for a secret using secret name.
     name: delinea-secret-search-name
     outputs:
     - contextPath: Delinea.Secret.Id
@@ -201,7 +201,7 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: "Whether to include restricted secrets in results\t\t"
+      description: "Whether to include restricted secrets in results"
       name: filter_includerestricted
       predefined:
       - 'true'
@@ -602,7 +602,7 @@ script:
       description: User object
       type: String
   - arguments:
-    deprecated: false
+#    deprecated: false
     description: Get Secret Server users list
     execution: false
     name: delinea-secret-server-user-get
@@ -628,7 +628,7 @@ script:
       description: Secret summary
       type: String
   - arguments:
-    - description: The user mobile number.
+    - description: Mobile number of the user.
       name: MobileNumber
     - description: The UUID of the cloud user to change.
       name: ID
@@ -688,7 +688,7 @@ script:
         description: User object
         type: String
   - arguments:
-      - description: The user mobile number.
+      - description: Mobile number of the user.
         name: MobileNumber
       - description: The UUID of the cloud user to change.
         name: ID
@@ -709,7 +709,7 @@ script:
       - description: The user display .
         name: DisplayName
       - description: Password for new user. The password used to log in.
-        name: password
+        name: Password
       - description: The user name.
         name: Name
       - description: Account expires date/time.
@@ -753,10 +753,10 @@ script:
     - description: Page size. Default 1000.
       name: pageSize
       required: false
-    description: Fetch all Platform user.
+    description: Fetch all users from the platform.
     name: delinea-platform-get-all-users
     outputs:
-      - contextPath: Delinea.Platform.Get.All.Users
+      - contextPath: Delinea.Platform.Users
         description: User object
         type: String
   - arguments:
@@ -765,13 +765,13 @@ script:
         required: true
       - description: Page size. Default 1000.
         name: pageSize
-    description: Retrieve Platform users by search text.
-    name: delinea-platform-get-user-searchbytext
+    description: List of platform users matching search text.
+    name: delinea-platform-get-user-search-by-text
     outputs:
-      - contextPath: Delinea.Platform.Get.User.Searchbytext
+      - contextPath: Delinea.Platform.UserSearchResults
         description: User object
         type: String
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.12.12.6391686
   runonce: false
   script: '-'
   subtype: python3

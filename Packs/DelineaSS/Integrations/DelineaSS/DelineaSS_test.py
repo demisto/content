@@ -48,7 +48,8 @@ SECRET_PASSWORD_UPDATE_ARGS = {"secret_id": "4", "newpassword": "NEWPASSWORD1", 
 SECRET_CHECKOUT_ARGS = {"secret_id": "3"}
 SECRET_CHECKIN_ARGS = {"secret_id": "4"}
 SECRET_DELETE_ARGS = {"id": "9", "autoComment": "TestDeleteSecret"}
-FOLDER_CREATE_ARGS = {"folderName": "xsoarFolderTest3", "folderTypeId": "1", "parentFolderId": "3"}
+FOLDER_CREATE_ARGS = {"folderName": "xsoarFolderTest3", "folderTypeId": "1",
+                      "parentFolderId": "3"}
 FOLDER_DELETE_ARGS = {"folder_id": "9"}
 FOLDER_UPDATE_ARGS = {"id": "12", "folderName": "xsoarTF3New"}
 SECRET_SERVER_USER_CREATE_ARGS = {"displayName": "dispalyName", "password": "password",
@@ -115,11 +116,18 @@ PLATFORM_USER_SEARCH_TEXT_ARGS = {"pageSize": "2"}
     (platform_get_user_searchbytext_command, PLATFORM_USER_SEARCH_TEXT_ARGS, PLATFORM_USER_SEARCH_TEXT_RAW_RESPONSE,
      PLATFORM_USER_SEARCH_TEXT_CONTEXT),
 ])
-def test_delinea_commands(command, args, http_response, context, mocker):
-    ss_model = AuthenticationModel("username", "password", "https://test.example.com")
-    ss_model.set_platform_login(True)
-    mocker.patch("DelineaSS.is_platform_or_ss", return_value=ss_model)
+def test_commands(command, args, http_response, context, mocker):
+    """Test commands based on login type (Platform or Secret Server)"""
 
+    ss_model = AuthenticationModel("username", "password", "https://test.example.com")
+
+    if command in [platform_user_create_command, platform_user_update_command, platform_user_get_command,
+                   platform_user_delete_command, platform_get_all_users_command, platform_get_user_searchbytext_command]:
+        ss_model.set_platform_login(True)
+    else:
+        ss_model.set_platform_login(False)
+
+    mocker.patch("DelineaSS.is_platform_or_ss", return_value=ss_model)
     mocker.patch.object(Client, "_generate_token", return_value="Bearer TEST_TOKEN")
     mocker.patch.object(Client, "_http_request", return_value=http_response)
 

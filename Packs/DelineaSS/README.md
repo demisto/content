@@ -1,14 +1,15 @@
 # Delinea Secret Server / Platform
 This pack includes XSIAM content.
 
-Secret Server and Platform is the fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution. Palo Alto Networks and Delinea integrations allow you to manage credentials for applications, databases, CI/CD tools, and services without causing friction in the development process
+Secret Server and Platform are the fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. They empowers security and IT operations teams to secure and manage all types of privileged accounts, offering the fastest time to value of any PAM solution. Integrations between Palo Alto Networks and Delinea allow you to manage credentials for applications, databases, CI/CD tools, and services without disrupting the development process.
 
 This integration allows to secure privileges for service, application, root and administrator accounts across the enterprise. This updated package has the following:
 
-- Obtain a secret with the required fields for subsequent authentication
-- Methods for working with objects Secret: create, update, search, delete, check-in/check-out
-- Methods for working with objects Folder: create, update, search, delete
-- Methods for working with objects Users: create, update, search, delete
+- Retrieve a secret with the necessary fields for subsequent authentication, supported for both Secret Server and Platform.
+- Methods for managing Secret objects (Secret Server and Platform): create, update, search, delete, check-in/check-out.
+- Methods for managing Folder objects (Secret Server and Platform): create, update, search, delete.
+- Methods for managing User objects (Platform): create, update, search, delete.
+- Methods for managing User objects (Platform): create, update, search, delete, search by text
 - Fetch updated data from secret for usage in owner automate process.
 <~XSIAM>
 ## Configuration on Server Side
@@ -23,8 +24,6 @@ This integration allows to secure privileges for service, application, root and 
 8. Click the Syslog/CEF Protocol dropdown list and select *Secure TCP*. Secure TCP means either TLS v1.2 or v1.1 because other versions of SSL, such as SSL v3 and TLS v1.0, have known weaknesses.
 9. Click to select *Syslog/CEF Time Zone* list box to UTC Time or Server Time, depending on your preference.
 10. Click the **Save** button.
- 
- More information on SIEM integrations can be found [here](https://docs.thycotic.com/ss/11.1.0/events-and-alerts/secure-syslog-cef) and [here](https://docs.delinea.com/int/current/splunk/splunk-on-prem/config/event-log-analysis.md)
 
 ## Collect Events from Vendor
 
@@ -36,7 +35,7 @@ To create or configure the Broker VM, use the information described [here](https
 You can configure the specific vendor and product for this instance.
 
 
-1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
+1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
 2. Right-click and select **Syslog Collector** > **Configure**.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - thycotic_software

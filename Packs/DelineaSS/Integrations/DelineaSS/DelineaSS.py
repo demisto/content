@@ -14,7 +14,8 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 class AuthenticationModel:
     def __init__(self, username="", password="", server_url="", error=None, platform_login=False, token=None,
-                 token_expiration=None, vault_url=None, vault_type=None):
+                 token_expiration=None, vault_url=None, vault_type=None, verify=True,
+                 proxy=False):
         self.user_name = username
         self.password = password
         self.server_url = server_url
@@ -24,6 +25,8 @@ class AuthenticationModel:
         self.token_expiration = token_expiration
         self.vault_url = vault_url
         self.vault_type = vault_type
+        self.verify = verify
+        self.proxy = proxy
 
     def set_platform_login(self, platform_login: bool):
         self.platform_login = platform_login
@@ -52,10 +55,10 @@ class AuthenticationService:
             ss_url = f"{base}/api/v1/healthcheck"
             pf_url = f"{base}/health"
 
-            if self.check_json_response_async(ss_url):
+            if self.check_json_response_async(ss_url, auth_model):
                 auth_model.set_platform_login(False)
                 return auth_model
-            if self.check_json_response_async(pf_url):
+            if self.check_json_response_async(pf_url, auth_model):
                 auth_model.set_platform_login(True)
                 return PlatformLogin().platform_authentication(auth_model)
             error_model = AuthenticationModel()
@@ -65,9 +68,10 @@ class AuthenticationService:
         except Exception as e:
             raise RuntimeError(f"Authentication failed: {str(e)}")
 
-    def check_json_response_async(self, url):
+    def check_json_response_async(self, url, auth_model: AuthenticationModel):
         try:
-            response = requests.get(url, timeout=3)
+            response = requests.get(url, timeout=3, verify=auth_model.verify,
+                                    proxies=handle_proxy() if auth_model.proxy else None)
 
             if not response.text:
                 return False
@@ -90,7 +94,6 @@ class PlatformLogin:
 
     def platform_authentication(self, auth_model: AuthenticationModel):
         try:
-            # 1. ACCESS TOKEN
             response = self.get_access_token(auth_model)
             if response.status_code != 200:
                 return self.handle_error_response(response.text)
@@ -99,7 +102,6 @@ class PlatformLogin:
             auth_model.set_token(auth_data.get("access_token"))
             auth_model.set_token_expiration(auth_data.get("expires_in"))
 
-            # 2. GET VAULTS
             response = self.get_vaults(auth_model, auth_model.token)
             if response.status_code != 200:
                 return self.handle_error_response(response.text)
@@ -122,20 +124,29 @@ class PlatformLogin:
 
     def get_access_token(self, auth_model: AuthenticationModel):
         url = auth_model.server_url.rstrip("/") + "/identity/api/oauth2/token/xpmplatform"
-        body = (
-            f"grant_type=client_credentials&client_id={auth_model.user_name}"
-            f"&client_secret={auth_model.password}&scope=xpmheadless"
-        )
-        return requests.post(url, headers={"Content-Type": "application/x-www-form-urlencoded"}, data=body, verify=True)
+        data = {
+            'grant_type': 'client_credentials',
+            'client_id': auth_model.user_name,
+            'client_secret': auth_model.password,
+            'scope': 'xpmheadless'
+        }
+        return requests.post(url, headers={"Content-Type": "application/x-www-form-urlencoded"}, data=data,
+                             verify=auth_model.verify,
+                             proxies=handle_proxy() if auth_model.proxy else None)
 
     def get_vaults(self, auth_model: AuthenticationModel, token):
         url = auth_model.server_url.rstrip("/") + "/vaultbroker/api/vaults"
         headers = {"Authorization": f"Bearer {token}"}
-        return requests.get(url, headers=headers, verify=True)
+        return requests.get(url, headers=headers, verify=auth_model.verify,
+                            proxies=handle_proxy() if auth_model.proxy else None)
 
 
-def is_platform_or_ss(url, username, password):
-    model = AuthenticationModel(username, password, url)
+def is_platform_or_ss(url, username, password, verify, proxy):
+    model = AuthenticationModel(username=username,
+                                password=password,
+                                server_url=url,
+                                verify=verify,
+                                proxy=proxy)
     service = AuthenticationService()
     return service.authenticate_async(model)
 
@@ -150,12 +161,15 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, proxy=proxy, verify=verify)
         self._username = username
         self._password = password
+        self._proxy_param = proxy
+        self._verify_param = verify
         self._platform_url = None
         self._headers = {}
         self._token = self.authenticate()
 
     def authenticate(self):
-        authentication_model = is_platform_or_ss(self._base_url, self._username, self._password)
+        authentication_model = is_platform_or_ss(self._base_url, self._username, self._password, self._verify_param,
+                                                 self._proxy_param)
         if authentication_model.platform_login:
             if authentication_model.error:
                 raise Exception(authentication_model.error)
@@ -346,7 +360,7 @@ class Client(BaseClient):
     def userCreate(self, **kwargs) -> str:
         if self._platform_url:
             raise DemistoException(
-                "Secret Server commands cannot run against a Delinea Platform tenant URL."
+                "Secret Server commands cannot run against a Delinea Platform tenant URL. "
                 "Please configure a Secret Server instance URL (cloud or on-prem) to use Secret Server operations"
             )
         bodyJSON = {}
@@ -359,7 +373,7 @@ class Client(BaseClient):
     def userSearch(self, **kwargs) -> str:
         if self._platform_url:
             raise DemistoException(
-                "Secret Server commands cannot run against a Delinea Platform tenant URL."
+                "Secret Server commands cannot run against a Delinea Platform tenant URL. "
                 "Please configure a Secret Server instance URL (cloud or on-prem) to use Secret Server operations"
             )
         params = {}
@@ -375,7 +389,7 @@ class Client(BaseClient):
     def userUpdate(self, id: str, **kwargs) -> str:
         if self._platform_url:
             raise DemistoException(
-                "Secret Server commands cannot run against a Delinea Platform tenant URL."
+                "Secret Server commands cannot run against a Delinea Platform tenant URL. "
                 "Please configure a Secret Server instance URL (cloud or on-prem) to use Secret Server operations"
             )
         # 2 method
@@ -389,7 +403,7 @@ class Client(BaseClient):
     def userDelete(self, id: str) -> str:
         if self._platform_url:
             raise DemistoException(
-                "Secret Server commands cannot run against a Delinea Platform tenant URL."
+                "Secret Server commands cannot run against a Delinea Platform tenant URL. "
                 "Please configure a Secret Server instance URL (cloud or on-prem) to use Secret Server operations"
             )
         return self._http_request("DELETE", url_suffix="/api/v1/users/" + str(id))
@@ -397,7 +411,7 @@ class Client(BaseClient):
     def getuser(self) -> str:
         if self._platform_url:
             raise DemistoException(
-                "Secret Server commands cannot run against a Delinea Platform tenant URL."
+                "Secret Server commands cannot run against a Delinea Platform tenant URL. "
                 "Please configure a Secret Server instance URL (cloud or on-prem) to use Secret Server operations"
             )
         url_suffix = "/api/v1/users"
@@ -406,7 +420,7 @@ class Client(BaseClient):
     def platform_user_create(self, **kwargs) -> str:
         if not self._platform_url:
             raise DemistoException(
-                "Platform commands cannot run against a Secret Server URL."
+                "Platform commands cannot run against a Secret Server URL. "
                 "Please configure a valid Delinea Platform tenant URL to use Platform operations"
             )
         bodyJSON = {}
@@ -419,7 +433,7 @@ class Client(BaseClient):
     def platform_user_update(self, **kwargs) -> str:
         if not self._platform_url:
             raise DemistoException(
-                "Platform commands cannot run against a Secret Server URL."
+                "Platform commands cannot run against a Secret Server URL. "
                 "Please configure a valid Delinea Platform tenant URL to use Platform operations"
             )
         bodyJSON = {}
@@ -432,7 +446,7 @@ class Client(BaseClient):
     def platform_user_delete(self, id: str) -> str:
         if not self._platform_url:
             raise DemistoException(
-                "Platform commands cannot run against a Secret Server URL."
+                "Platform commands cannot run against a Secret Server URL. "
                 "Please configure a valid Delinea Platform tenant URL to use Platform operations"
             )
         return self._http_request("POST", full_url=f"{self._platform_url}/identity/api/UserMgmt/RemoveUser",
@@ -441,7 +455,7 @@ class Client(BaseClient):
     def get_platform_user(self, user_id: str) -> dict:
         if not self._platform_url:
             raise DemistoException(
-                "Platform commands cannot run against a Secret Server URL."
+                "Platform commands cannot run against a Secret Server URL. "
                 "Please configure a valid Delinea Platform tenant URL to use Platform operations"
             )
         full_url = f"{self._platform_url}/identity/api/users/{user_id}"
@@ -454,7 +468,7 @@ class Client(BaseClient):
     def get_all_platform_users(self, **kwargs) -> dict:
         if not self._platform_url:
             raise DemistoException(
-                "Platform commands cannot run against a Secret Server URL."
+                "Platform commands cannot run against a Secret Server URL. "
                 "Please configure a valid Delinea Platform tenant URL to use Platform operations"
             )
         params = {}
@@ -470,7 +484,7 @@ class Client(BaseClient):
     def get_platform_user_searchbytext(self, **kwargs) -> dict:
         if not self._platform_url:
             raise DemistoException(
-                "Platform commands cannot run against a Secret Server URL."
+                "Platform commands cannot run against a Secret Server URL. "
                 "Please configure a valid Delinea Platform tenant URL to use Platform operations"
             )
         params = {}
@@ -569,7 +583,7 @@ def secret_search_command(client, **kwargs):
         markdown = tableToMarkdown(
             'Secret Search Results',
             search_result,
-            headers=['id''name']
+            headers=['id', 'name']
         )
 
     return CommandResults(
@@ -777,7 +791,7 @@ def platform_get_all_users_command(client, **kwargs):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix='Delinea.Platform.Get.All.Users',
+        outputs_prefix='Delinea.Platform.Users',
         outputs_key_field='uuid',
         raw_response=users,
         outputs=user_list
@@ -792,7 +806,7 @@ def platform_get_user_searchbytext_command(client, **kwargs):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix='Delinea.Platform.Get.User.Searchbytext',
+        outputs_prefix='Delinea.Platform.UserSearchResults',
         outputs_key_field='uuid',
         raw_response=users,
         outputs=user_list
@@ -963,7 +977,7 @@ def main():
         'delinea-platform-user-delete': platform_user_delete_command,
         'delinea-platform-user-get': platform_user_get_command,
         'delinea-platform-get-all-users': platform_get_all_users_command,
-        'delinea-platform-get-user-searchbytext': platform_get_user_searchbytext_command
+        'delinea-platform-get-user-search-by-text': platform_get_user_searchbytext_command
     }
     command = demisto.command()
     try:

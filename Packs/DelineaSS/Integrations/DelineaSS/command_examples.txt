@@ -14,7 +14,7 @@
 !delinea-folder-update id=4 folderName="SafexsoarTest"
 !delinea-folder-delete folder_id="4"
 !delinea-secret-server-user-create displayName="xsoarUserTest1" password="1234567890" userName="XSOAR" emailAddress="ff@ff.com"
-!delinea-secret-server-user-search filter.searchFields="userName" filter.searchText="xsoarUser"
+!delinea-secret-server-user-search filter_searchfields="userName" filter_searchtext="xsoarUser"
 !delinea-secret-server-user-update id="10" displayName="XsoarNew" password="0987654321"
 !delinea-secret-server-user-delete id="10"
 !delinea-platform-user-create Name=xsoarUserTest1 Password=Test@12345 ServiceUser=true
@@ -22,4 +22,4 @@
 !delinea-platform-user-get userUuidOrUpn=b02319fc-b26a-4352-8e4e-d8ea1188f160
 !delinea-platform-user-delete id="a09eb441-f0a0-4894-a129-af4e0b3559d6"
 !delinea-platform-get-all-users pageSize=3
-!delinea-platform-get-user-searchbytext filter.searchText=xsoar
+!delinea-platform-get-user-search-by-text filter.searchText=xsoar

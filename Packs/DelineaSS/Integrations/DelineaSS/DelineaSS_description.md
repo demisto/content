@@ -75,6 +75,6 @@ The following commands are implemented:
 
 - delinea-platform-user-update Update a single user by ID in Platform
 
-- delinea-platform-get-all-users Fetches all Platform user
+- delinea-platform-get-all-users Fetches all Platform users
 
-- delinea-platform-get-user-searchbytext Retrieve Platform Users by Search Text
+- delinea-platform-get-user-search-by-text Retrieve Platform users by search text

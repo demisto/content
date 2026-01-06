@@ -1,6 +1,18 @@
-GET_PASSWORD_BY_ID_RAW_RESPONSE = {"Delinea": {"Secret": {"Password": "test00111"}}}
+GET_PASSWORD_BY_ID_RAW_RESPONSE = {
+    "Delinea": {
+        "Secret": {
+            "Password": "test00111"
+        }
+    }
+}
 
-GET_USERNAME_BY_ID_RAW_RESPONSE = {"Delinea": {"Secret": {"Username": "andy"}}}
+GET_USERNAME_BY_ID_RAW_RESPONSE = {
+    "Delinea": {
+        "Secret": {
+            "Username": "andy"
+        }
+    }
+}
 
 SECRET_GET_RAW_RESPONSE = {
     "id": 4,
@@ -20,7 +32,7 @@ SECRET_GET_RAW_RESPONSE = {
             "fieldDescription": "The Server or Location of the Unix Machine.",
             "isFile": False,
             "isNotes": False,
-            "isPassword": False,
+            "isPassword": False
         },
         {
             "itemId": 14,
@@ -33,7 +45,7 @@ SECRET_GET_RAW_RESPONSE = {
             "fieldDescription": "The Unix Machine Username.",
             "isFile": False,
             "isNotes": False,
-            "isPassword": False,
+            "isPassword": False
         },
         {
             "itemId": 15,
@@ -46,7 +58,7 @@ SECRET_GET_RAW_RESPONSE = {
             "fieldDescription": "The password of the Unix Machine.",
             "isFile": False,
             "isNotes": False,
-            "isPassword": True,
+            "isPassword": True
         },
         {
             "itemId": 16,
@@ -59,7 +71,7 @@ SECRET_GET_RAW_RESPONSE = {
             "fieldDescription": "Any additional notes.",
             "isFile": False,
             "isNotes": True,
-            "isPassword": False,
+            "isPassword": False
         },
         {
             "itemId": 17,
@@ -72,7 +84,7 @@ SECRET_GET_RAW_RESPONSE = {
             "fieldDescription": "The SSH private key.",
             "isFile": True,
             "isNotes": False,
-            "isPassword": False,
+            "isPassword": False
         },
         {
             "itemId": 18,
@@ -85,8 +97,8 @@ SECRET_GET_RAW_RESPONSE = {
             "fieldDescription": "The passphrase for decrypting the SSH private key.",
             "isFile": False,
             "isNotes": False,
-            "isPassword": True,
-        },
+            "isPassword": True
+        }
     ],
     "launcherConnectAsSecretId": -1,
     "checkOutMinutesRemaining": 0,
@@ -120,12 +132,20 @@ SECRET_GET_RAW_RESPONSE = {
     "failedPasswordChangeAttempts": 160,
     "lastPasswordChangeAttempt": "2020-11-10T10:32:59.217",
     "secretTemplateName": "Unix Account (SSH)",
-    "responseCodes": [],
+    "responseCodes": []
 }
 
-SECRET_PASSWORD_UPDATE_RAW_RESPONSE = {"Delinea": {"Secret": {"Newpassword": "NEWPASSWORD1"}}}
+SECRET_PASSWORD_UPDATE_RAW_RESPONSE = {
+    "Delinea": {
+        "Secret": {
+            "Newpassword": "NEWPASSWORD1"
+        }
+    }
+}
 
-SECRET_CHECKOUT_RAW_RESPONSE = {"responseCodes": []}
+SECRET_CHECKOUT_RAW_RESPONSE = {
+    "responseCodes": []
+}
 
 SECRET_CHECKIN_RAW_RESPONSE = {
     "active": "true",
@@ -152,10 +172,14 @@ SECRET_CHECKIN_RAW_RESPONSE = {
     "responseCodes": "null",
     "secretTemplateId": 6007,
     "secretTemplateName": "Unix Account (SSH)",
-    "siteId": 1,
+    "siteId": 1
 }
 
-SECRET_DELETE_RAW_RESPONSE = {"id": 9, "objectType": "Secret", "responseCodes": []}
+SECRET_DELETE_RAW_RESPONSE = {
+    "id": 9,
+    "objectType": "Secret",
+    "responseCodes": []
+}
 
 FOLDER_CREATE_RAW_RESPONSE = {
     "childFolders": "null",
@@ -167,10 +191,14 @@ FOLDER_CREATE_RAW_RESPONSE = {
     "inheritSecretPolicy": "false",
     "parentFolderId": 3,
     "secretPolicyId": -1,
-    "secretTemplates": "null",
+    "secretTemplates": "null"
 }
 
-FOLDER_DELETE_RAW_RESPONSE = {"id": 11, "objectType": "Folder", "responseCodes": []}
+FOLDER_DELETE_RAW_RESPONSE = {
+    "id": 11,
+    "objectType": "Folder",
+    "responseCodes": []
+}
 
 FOLDER_UPDATE_RAW_RESPONSE = {
     "childFolders": "null",
@@ -182,7 +210,7 @@ FOLDER_UPDATE_RAW_RESPONSE = {
     "inheritSecretPolicy": "false",
     "parentFolderId": 3,
     "secretPolicyId": -1,
-    "secretTemplates": "null",
+    "secretTemplates": "null"
 }
 
 SECRET_SERVER_USER_DELETE_RAW_RESPONSE = {
@@ -225,7 +253,7 @@ SECRET_CREATE_RAW_RESPONSE = {
             "isPassword": "false",
             "itemId": 22,
             "itemValue": "",
-            "slug": "notes",
+            "slug": "notes"
         }
     ],
     "lastHeartBeatCheck": "0001-01-01T00:00:00",
@@ -244,7 +272,7 @@ SECRET_CREATE_RAW_RESPONSE = {
     "secretTemplateId": 6003,
     "secretTemplateName": "Windows Account",
     "sessionRecordingEnabled": "false",
-    "siteId": 1,
+    "siteId": 1
 }
 
 SECRET_SERVER_USER_CREATE_RAW_RESPONSE = {
@@ -284,7 +312,7 @@ SECRET_SERVER_USER_CREATE_RAW_RESPONSE = {
     "unixAuthenticationMethod": "Password",
     "userLcid": 0,
     "userName": "UserOne",
-    "verifyEmailSentDate": "0001-01-01T00:00:00",
+    "verifyEmailSentDate": "0001-01-01T00:00:00"
 }
 
 SECRET_SERVER_USER_UPDATE_RAW_RESPONSE = {
@@ -324,7 +352,7 @@ SECRET_SERVER_USER_UPDATE_RAW_RESPONSE = {
     "timeOptionId": -1,
     "userLcid": 0,
     "dateOptionId": -1,
-    "domainId": -1,
+    "domainId": -1
 }
 
 SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE = {
@@ -353,41 +381,41 @@ SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE = {
     "hidePassword": "false",
     "createDate": "2022-08-30T10:32:14.407",
     "daysUntilExpiration": "null",
-    "hasLauncher": "false",
+    "hasLauncher": "false"
 }
 
 SECRET_GET_CREDENTIALS_RAW_RESPONSE = {
-    'id': 4,
-    'name': 'g1-machine',
-    'secretTemplateId': 6007,
-    'folderId': -1,
-    'active': True,
-    'items': [
+    "id": 4,
+    "name": "g1-machine",
+    "secretTemplateId": 6007,
+    "folderId": -1,
+    "active": True,
+    "items": [
         {
-            'itemId': 14,
-            'fileAttachmentId': None,
-            'filename': None,
-            'itemValue': 'user',
-            'fieldId': 111,
-            'fieldName': 'Username',
-            'slug': 'username',
-            'fieldDescription': 'The Unix Machine Username.',
-            'isFile': False,
-            'isNotes': False,
-            'isPassword': False
+            "itemId": 14,
+            "fileAttachmentId": None,
+            "filename": None,
+            "itemValue": "user",
+            "fieldId": 111,
+            "fieldName": "Username",
+            "slug": "username",
+            "fieldDescription": "The Unix Machine Username.",
+            "isFile": False,
+            "isNotes": False,
+            "isPassword": False
         },
         {
-            'itemId': 15,
-            'fileAttachmentId': None,
-            'filename': None,
-            'itemValue': 'password',
-            'fieldId': 110,
-            'fieldName': 'Password',
-            'slug': 'password',
-            'fieldDescription': 'The password of the Unix Machine.',
-            'isFile': False,
-            'isNotes': False,
-            'isPassword': True
+            "itemId": 15,
+            "fileAttachmentId": None,
+            "filename": None,
+            "itemValue": "password",
+            "fieldId": 110,
+            "fieldName": "Password",
+            "slug": "password",
+            "fieldDescription": "The password of the Unix Machine.",
+            "isFile": False,
+            "isNotes": False,
+            "isPassword": True
         }
     ],
     "launcherConnectAsSecretId": -1,
@@ -422,7 +450,7 @@ SECRET_GET_CREDENTIALS_RAW_RESPONSE = {
     "failedPasswordChangeAttempts": 160,
     "lastPasswordChangeAttempt": "2020-11-10T10:32:59.217",
     "secretTemplateName": "Unix Account (SSH)",
-    "responseCodes": [],
+    "responseCodes": []
 }
 
 SECRET_SEARCH_NAME_RAW_RESPONSE = {
@@ -450,7 +478,7 @@ SECRET_SEARCH_NAME_RAW_RESPONSE = {
         "doubleLockId": None,
         "isExactMatch": None,
         "allowDoubleLocks": None,
-        "doNotCalculateTotal": None,
+        "doNotCalculateTotal": None
     },
     "skip": 0,
     "take": 10,
@@ -463,18 +491,29 @@ SECRET_SEARCH_NAME_RAW_RESPONSE = {
     "hasPrev": False,
     "hasNext": False,
     "records": [
-        {"id": 3564, "value": "-1 - 6001 - alpha.thycotic.com\\ALMHitendra_sayali"},
-        {"id": 3566, "value": "-1 - 6001 - alpha.thycotic.com\\ALMHitendra_sayali2"},
-        {"id": 4241, "value": "241 - 9 - xsoartest1"},
+        {
+            "id": 3564,
+            "value": "-1 - 6001 - alpha.thycotic.com\\ALMHitendra_sayali"
+        },
+        {
+            "id": 3566,
+            "value": "-1 - 6001 - alpha.thycotic.com\\ALMHitendra_sayali2"
+        },
+        {
+            "id": 4241,
+            "value": "241 - 9 - xsoartest1"
+        }
     ],
     "sortBy": [],
     "success": True,
-    "severity": "None",
+    "severity": "None"
 }
 
 SECRET_SEARCH_RAW_RESPONSE = {
     "filter": {
-        "secretTemplateIds": [-1],
+        "secretTemplateIds": [
+            -1
+        ],
         "hasLauncher": None,
         "searchText": "app.zipbooks.com",
         "searchField": "name",
@@ -498,7 +537,7 @@ SECRET_SEARCH_RAW_RESPONSE = {
         "doubleLockId": None,
         "isExactMatch": None,
         "allowDoubleLocks": None,
-        "doNotCalculateTotal": None,
+        "doNotCalculateTotal": None
     },
     "skip": 0,
     "take": 10,
@@ -537,7 +576,7 @@ SECRET_SEARCH_RAW_RESPONSE = {
             "hidePassword": False,
             "createDate": "2021-07-08T05:48:33.83",
             "daysUntilExpiration": -519,
-            "hasLauncher": True,
+            "hasLauncher": True
         },
         {
             "id": 966,
@@ -565,12 +604,12 @@ SECRET_SEARCH_RAW_RESPONSE = {
             "hidePassword": False,
             "createDate": "2021-07-08T05:47:44.233",
             "daysUntilExpiration": -519,
-            "hasLauncher": True,
-        },
+            "hasLauncher": True
+        }
     ],
     "sortBy": [],
     "success": True,
-    "severity": "None",
+    "severity": "None"
 }
 
 FOLDER_SEARCH_RAW_RESPONSE = {
@@ -580,7 +619,7 @@ FOLDER_SEARCH_RAW_RESPONSE = {
         "parentFolderId": None,
         "limitToDirectDescendents": None,
         "permissionRequired": None,
-        "onlyIncludeRootFolders": False,
+        "onlyIncludeRootFolders": False
     },
     "skip": 0,
     "take": 10,
@@ -592,10 +631,15 @@ FOLDER_SEARCH_RAW_RESPONSE = {
     "nextSkip": 10,
     "hasPrev": False,
     "hasNext": False,
-    "records": [{"id": 145, "value": "admin"}],
+    "records": [
+        {
+            "id": 145,
+            "value": "admin"
+        }
+    ],
     "sortBy": [],
     "success": True,
-    "severity": "None",
+    "severity": "None"
 }
 
 SECRET_SERVER_USER_SEARCH_RAW_RESPONSE = {
@@ -605,7 +649,7 @@ SECRET_SERVER_USER_SEARCH_RAW_RESPONSE = {
         "domainId": None,
         "searchFields": None,
         "userIds": None,
-        "excludeInboxRuleIdSubscribers": None,
+        "excludeInboxRuleIdSubscribers": None
     },
     "skip": 0,
     "take": 10,
@@ -633,12 +677,24 @@ SECRET_SERVER_USER_SEARCH_RAW_RESPONSE = {
             "isApplicationAccount": False,
             "twoFactorMethod": "None",
             "externalUserSource": "Platform",
-            "platformIntegrationType": "Native",
+            "platformIntegrationType": "Native"
         }
     ],
-    "sortBy": [{"name": "DomainId", "direction": "Asc", "priority": 0}, {"name": "UserName", "direction": "Asc", "priority": 1}],
+    "sortBy": [
+        {
+            "name": "DomainId",
+            "direction": "Asc",
+            "priority": 0
+        },
+        {
+            "name": "UserName",
+            "direction": "Asc",
+            "priority": 1
+        }
+    ],
     "success": True,
-    "severity": "None",
+    "severity": "None"
+
 }
 
 PLATFORM_USER_DELETE_RAW_RESPONSE = {
@@ -653,7 +709,7 @@ PLATFORM_USER_CREATE_RAW_RESPONSE = {
     "Disabled": False,
     "SendEmailInvite": True,
     "Name": "Name",
-    "DisplayName": "XSOAR'",
+    "DisplayName": "XSOAR",
     "PasswordNeverExpire": False,
     "Mail": "example@example.com",
     "CmaRedirectedUserUuid": "null",
@@ -673,7 +729,7 @@ PLATFORM_USER_UPDATE_RAW_RESPONSE = {
     "Disabled": False,
     "SendEmailInvite": True,
     "Name": "Name",
-    "DisplayName": "XSOAR'",
+    "DisplayName": "XSOAR",
     "PasswordNeverExpire": False,
     "Mail": "example@example.com",
     "CmaRedirectedUserUuid": "null",
