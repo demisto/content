@@ -487,9 +487,9 @@ class S3:
             s = round(size_bytes / p, 2)
             return f"{s} {size_name[i]}"
 
-        bucket: str = args.get("bucket")
-        prefix: str = args.get("prefix")
-        delimiter: str = args.get("delimiter")
+        bucket = args.get("bucket")
+        prefix = args.get("prefix")
+        delimiter = args.get("delimiter")
 
         print_debug_logs(client, f"Listing objects from bucket: {bucket}")
 
